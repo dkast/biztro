@@ -8,7 +8,7 @@ import { getProviders, signIn } from "next-auth/react"
 import Image from "next/image"
 import { getServerSession } from "next-auth"
 
-import Button from "@/components/button"
+import Button from "@/components/Button"
 import { authOptions } from "@/lib/auth"
 
 const SignIn = ({
