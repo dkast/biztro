@@ -1,6 +1,7 @@
 import React, { useEffect } from "react"
-import Head from "next/head"
 import { useRouter } from "next/router"
+import Head from "next/head"
+import Image from "next/image"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 
@@ -21,7 +22,7 @@ const Home: NextPageWithAuthAndLayout = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex flex-col items-center justify-center h-screen">
-        <img src="/icon.svg" alt="Logo" width="200" height="200" />
+        <Image src="/icon.svg" alt="Logo" width={200} height={200} />
         <span className="font-bold text-6xl my-6">{"Próximamente"}</span>
         <a href="/dashboard">{"Entrar"}</a>
       </div>
