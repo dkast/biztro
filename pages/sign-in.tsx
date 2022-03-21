@@ -45,7 +45,7 @@ const SignIn = ({
                       variant="secondary"
                       mode="full"
                       leftIcon={
-                        <img src={`${provider.name}.svg`} alt="Google" />
+                        <img src={`/${provider.name}.svg`} alt="Google" />
                       }
                     >
                       Continuar con {provider.name}
