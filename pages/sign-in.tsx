@@ -46,7 +46,7 @@ const SignIn = ({
                       mode="full"
                       leftIcon={
                         <img
-                          src={`/${provider.name.toLowerCase}.svg`}
+                          src={`/${provider.name.toLowerCase()}.svg`}
                           alt="Google"
                         />
                       }
@@ -63,7 +63,7 @@ const SignIn = ({
           {/* https://images.unsplash.com/photo-1507914372368-b2b085b925a1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1980&q=80 */}
           <Image
             className="absolute inset-0 h-full w-full object-cover"
-            src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1932&q=80"
+            src="https://images.unsplash.com/photo-1507914372368-b2b085b925a1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1980&q=80"
             alt="Imagen restaurant"
             layout="fill"
           />
