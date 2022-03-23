@@ -16,7 +16,7 @@ const VARIANT = {
   primary:
     "border-transparent text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 active:bg-indigo-800",
   secondary:
-    "border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-indigo-500 active:text-gray-800 active:bg-gray-200"
+    "border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-zinc-700 active:text-gray-800 active:bg-gray-200"
 }
 
 const MODE = {

@@ -25,7 +25,7 @@ const sidebarNavigation = [
   { name: "Ajustes", href: "/settings", icon: CogIcon }
 ]
 const userNavigation = [
-  { name: "Tu Perfil", href: "/profile" },
+  { name: "Mi Perfil", href: "/profile" },
   { name: "Salir", href: "/sign-out" }
 ]
 
@@ -43,7 +43,7 @@ const Layout = ({ children }: LayoutProps) => {
       <div className="flex h-screen">
         {/* Narrow sidebar */}
         <div className="hidden w-16 overflow-y-auto border-r border-gray-200 bg-white md:block">
-          <div className="flex w-full flex-col items-center py-6">
+          <div className="flex w-full flex-col items-center py-4">
             <div className="flex flex-shrink-0 items-center">
               <Image
                 className="h-8 w-auto"
@@ -108,7 +108,7 @@ const Layout = ({ children }: LayoutProps) => {
                 leaveFrom="translate-x-0"
                 leaveTo="-translate-x-full"
               >
-                <div className="relative flex w-full max-w-xs flex-1 flex-col bg-indigo-700 pt-5 pb-4">
+                <div className="relative flex w-full max-w-xs flex-1 flex-col bg-white pt-5 pb-4">
                   <Transition.Child
                     as={Fragment}
                     enter="ease-in-out duration-300"
@@ -128,7 +128,7 @@ const Layout = ({ children }: LayoutProps) => {
                           className="h-6 w-6 text-white"
                           aria-hidden="true"
                         />
-                        <span className="sr-only">Close sidebar</span>
+                        <span className="sr-only">Cerrar menu</span>
                       </button>
                     </div>
                   </Transition.Child>
@@ -151,8 +151,8 @@ const Layout = ({ children }: LayoutProps) => {
                               href={item.href}
                               className={classNames(
                                 item.href === asPath
-                                  ? "bg-indigo-800 text-white"
-                                  : "text-indigo-100 hover:bg-indigo-800 hover:text-white",
+                                  ? "bg-gray-300 text-gray-700"
+                                  : "text-gray-400 hover:bg-zinc-800 hover:text-white",
                                 "group flex items-center rounded-md py-2 px-3 text-sm font-medium"
                               )}
                               aria-current={
@@ -162,8 +162,8 @@ const Layout = ({ children }: LayoutProps) => {
                               <item.icon
                                 className={classNames(
                                   item.href === asPath
-                                    ? "text-white"
-                                    : "text-indigo-300 group-hover:text-white",
+                                    ? "text-gray-700"
+                                    : "text-gray-400 group-hover:text-white",
                                   "mr-3 h-6 w-6"
                                 )}
                                 aria-hidden="true"
@@ -190,10 +190,10 @@ const Layout = ({ children }: LayoutProps) => {
             <div className="relative z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white">
               <button
                 type="button"
-                className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden"
+                className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-zinc-700 md:hidden"
                 onClick={() => setMobileMenuOpen(true)}
               >
-                <span className="sr-only">Open sidebar</span>
+                <span className="sr-only">Abrir menu</span>
                 <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
               </button>
               <div className="flex flex-1 justify-between px-4 sm:px-6">
@@ -223,8 +223,8 @@ const Layout = ({ children }: LayoutProps) => {
                   {/* Profile dropdown */}
                   <Menu as="div" className="relative flex-shrink-0">
                     <div>
-                      <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                        <span className="sr-only">Abre menu del suario</span>
+                      <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-zinc-700 focus:ring-offset-2">
+                        <span className="sr-only">Abre menu del usuario</span>
                         {session.user?.image ? (
                           <Image
                             className="inline-block h-8 w-8 rounded-full"
@@ -313,8 +313,7 @@ const Layout = ({ children }: LayoutProps) => {
                 aria-labelledby="primary-heading"
                 className="flex h-full min-w-0 flex-1 flex-col lg:order-last"
               >
-                <h1 id="primary-heading">Photos</h1>
-                {/* Your content */}
+                {children}
               </section>
             </main>
 
