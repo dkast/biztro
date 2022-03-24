@@ -1,0 +1,11 @@
+[[analyzers]]
+name = "javascript"
+enabled = true
+
+  [analyzers.meta]
+  ecma_version = "2020"
+  module_system = "es-modules"
+  plugins = ["react"]
+  dialect = "typescript"
+  style_guide = "standard"
+  environment = ["browser"]
