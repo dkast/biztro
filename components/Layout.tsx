@@ -5,6 +5,7 @@ import {
   HomeIcon,
   MenuAlt2Icon,
   ViewGridIcon,
+  TemplateIcon,
   XIcon
 } from "@heroicons/react/outline"
 import { SearchIcon } from "@heroicons/react/solid"
@@ -21,7 +22,8 @@ type LayoutProps = {
 
 const sidebarNavigation = [
   { name: "Inicio", href: "/dashboard", icon: HomeIcon },
-  { name: "Menu", href: "/menu-editor", icon: ViewGridIcon },
+  { name: "Items", href: "/items", icon: ViewGridIcon },
+  { name: "Menu", href: "/menu-editor", icon: TemplateIcon },
   { name: "Ajustes", href: "/settings", icon: CogIcon }
 ]
 const userNavigation = [
