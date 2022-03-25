@@ -5,7 +5,7 @@ const PageHeader = ({ title }) => {
     <div className="min-w-0 flex-1">
       <h1
         id="primary-heading"
-        className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl"
+        className="text-2xl font-semibold leading-7 text-gray-900 sm:truncate sm:text-3xl"
       >
         {title}
       </h1>

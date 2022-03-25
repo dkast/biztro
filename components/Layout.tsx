@@ -24,10 +24,10 @@ const sidebarNavigation = [
   { name: "Inicio", href: "/dashboard", icon: HomeIcon },
   { name: "Items", href: "/items", icon: ViewGridIcon },
   { name: "Menu", href: "/menu-editor", icon: TemplateIcon },
-  { name: "Ajustes", href: "/settings", icon: CogIcon }
+  { name: "Ajustes", href: "/settings/general", icon: CogIcon }
 ]
 const userNavigation = [
-  { name: "Mi Perfil", href: "/profile" },
+  { name: "Mi Perfil", href: "/settings/profile" },
   { name: "Salir", href: "/sign-out" }
 ]
 
@@ -44,7 +44,7 @@ const Layout = ({ children }: LayoutProps) => {
     <>
       <div className="flex h-screen">
         {/* Narrow sidebar */}
-        <div className="hidden w-16 overflow-y-auto border-r border-gray-200 bg-white md:block">
+        <div className="hidden w-16 overflow-y-auto border-r border-gray-200 bg-gray-50 md:block">
           <div className="flex w-full flex-col items-center py-4">
             <div className="flex flex-shrink-0 items-center">
               <Image
@@ -189,7 +189,7 @@ const Layout = ({ children }: LayoutProps) => {
         {/* Content area */}
         <div className="flex flex-1 flex-col overflow-hidden">
           <header className="w-full">
-            <div className="relative z-10 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white">
+            <div className="relative z-10 mx-0 flex h-16 flex-shrink-0 border-b border-gray-200 bg-white md:mx-8">
               <button
                 type="button"
                 className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-zinc-700 md:hidden"

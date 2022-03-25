@@ -1,6 +1,7 @@
 import Head from "next/head"
 
 import Layout from "@/components/Layout"
+import PageHeader from "@/components/PageHeader"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 
 const Dashboard: NextPageWithAuthAndLayout = () => {
@@ -11,12 +12,7 @@ const Dashboard: NextPageWithAuthAndLayout = () => {
       </Head>
       <div className="py-6">
         <div className="mx-auto px-4 sm:px-6 md:px-8">
-          <h1
-            id="primary-heading"
-            className="text-2xl font-semibold text-gray-900"
-          >
-            Inicio
-          </h1>
+          <PageHeader title={"Inicio"}></PageHeader>
         </div>
         <div className="mx-auto px-4 sm:px-6 md:px-8">
           {/* Replace with your content */}
