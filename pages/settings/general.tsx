@@ -15,7 +15,11 @@ interface IFormValues {
 }
 
 const SettingsGeneral: NextPageWithAuthAndLayout = () => {
-  const { register, handleSubmit } = useForm<IFormValues>()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<IFormValues>()
   return (
     <>
       <form className="space-y-8 divide-y divide-gray-200">
@@ -39,7 +43,12 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                   Nombre
                 </label>
                 <div className="mt-1 sm:col-span-2 sm:mt-0">
-                  <Input name="name" register={register} required></Input>
+                  <Input
+                    name="name"
+                    register={register}
+                    required
+                    invalid={errors.name ? true : false}
+                  ></Input>
                 </div>
               </div>
 
