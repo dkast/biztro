@@ -10,7 +10,7 @@ type LayoutProps = {
 }
 
 const tabs = [
-  { name: "Informacion Básica", href: "/settings/general" },
+  { name: "Información Básica", href: "/settings/general" },
   { name: "Perfil", href: "/settings/profile" }
 ]
 

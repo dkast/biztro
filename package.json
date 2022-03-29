@@ -18,6 +18,7 @@
     "next-auth": "^4.3.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-hook-form": "^7.28.1",
     "react-spinners-kit": "^1.9.1",
     "tailwindcss-radix": "^1.6.0"
   },

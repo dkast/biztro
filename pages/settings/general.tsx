@@ -1,10 +1,21 @@
-import * as Tabs from "@radix-ui/react-tabs"
+import { useForm } from "react-hook-form"
 
 import Layout from "@/components/Layout"
 import SettingsLayout from "@/components/SettingsLayout"
+import Input from "@/components/Input"
+import TextArea from "@/components/textArea"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 
+interface IFormValues {
+  name: string
+  description: string
+  logo: string
+  image: string
+  phone: string
+}
+
 const SettingsGeneral: NextPageWithAuthAndLayout = () => {
+  const { register, handleSubmit } = useForm<IFormValues>()
   return (
     <>
       <form className="space-y-8 divide-y divide-gray-200">
@@ -12,11 +23,10 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
           <div>
             <div>
               <h3 className="text-lg font-medium leading-6 text-gray-900">
-                Profile
+                Negocio
               </h3>
               <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                This information will be displayed publicly so be careful what
-                you share.
+                Información pública sobre tu negcio
               </p>
             </div>
 
@@ -26,21 +36,10 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                   htmlFor="username"
                   className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                 >
-                  Username
+                  Nombre
                 </label>
                 <div className="mt-1 sm:col-span-2 sm:mt-0">
-                  <div className="flex max-w-lg rounded-md shadow-sm">
-                    <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
-                      workcation.com/
-                    </span>
-                    <input
-                      type="text"
-                      name="username"
-                      id="username"
-                      autoComplete="username"
-                      className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
+                  <Input name="name" register={register} required></Input>
                 </div>
               </div>
 
