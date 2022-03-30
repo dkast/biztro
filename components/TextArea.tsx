@@ -2,7 +2,7 @@ import React from "react"
 import { UseFormRegister } from "react-hook-form"
 
 const DEFAULT =
-  "block w-full rounded-md focus:outline-none sm:text-sm transition duration-150 ease-in-out"
+  "block w-full max-w-lg rounded-md focus:outline-none sm:text-sm transition duration-150 ease-in-out"
 const VARIANT = {
   default: "border-gray-300 focus:ring-indigo-500 focus:border-indigo-500",
   error:
