@@ -14,7 +14,7 @@ const Home: NextPageWithAuthAndLayout = () => {
       <div className="flex h-screen flex-col items-center justify-center">
         <Image src="/icon.svg" alt="Logo" width={200} height={200} />
         <span className="my-6 text-6xl font-bold">{"Próximamente"}</span>
-        <Link href="/dashboard">Entrar</Link>
+        <Link href="/app/dashboard">Entrar</Link>
       </div>
     </>
   )

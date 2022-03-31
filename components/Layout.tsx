@@ -21,13 +21,13 @@ type LayoutProps = {
 }
 
 const sidebarNavigation = [
-  { name: "Inicio", href: "/dashboard", icon: HomeIcon },
-  { name: "Items", href: "/items", icon: ViewGridIcon },
-  { name: "Menu", href: "/menu-editor", icon: TemplateIcon },
-  { name: "Ajustes", href: "/settings/general", icon: CogIcon }
+  { name: "Inicio", href: "/app/dashboard", icon: HomeIcon },
+  { name: "Items", href: "/app/items", icon: ViewGridIcon },
+  { name: "Menu", href: "/app/menu-editor", icon: TemplateIcon },
+  { name: "Ajustes", href: "/app/settings/general", icon: CogIcon }
 ]
 const userNavigation = [
-  { name: "Mi Perfil", href: "/settings/profile" },
+  { name: "Mi Perfil", href: "/app/settings/profile" },
   { name: "Salir", href: "/sign-out" }
 ]
 
