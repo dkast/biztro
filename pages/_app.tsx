@@ -1,9 +1,10 @@
+import React from "react"
 import { SessionProvider, useSession, signIn } from "next-auth/react"
 import { AppProps } from "next/app"
 
-import type { NextPageWithAuthAndLayout } from "@/lib/types"
 import "../styles/globals.css"
-import React from "react"
+
+import type { NextPageWithAuthAndLayout } from "@/lib/types"
 
 type AppPropsWithAuthAndLayout = AppProps & {
   Component: NextPageWithAuthAndLayout

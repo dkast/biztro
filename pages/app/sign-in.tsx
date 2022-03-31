@@ -1,15 +1,16 @@
 import React from "react"
 import Head from "next/head"
-import type {
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType
-} from "next"
 import { getProviders, signIn } from "next-auth/react"
 import Image from "next/image"
 import { getServerSession } from "next-auth"
 
 import Button from "@/components/Button"
 import { authOptions } from "@/lib/auth"
+
+import type {
+  GetServerSidePropsContext,
+  InferGetServerSidePropsType
+} from "next"
 
 const SignIn = ({
   providers

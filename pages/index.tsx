@@ -1,8 +1,8 @@
 import Head from "next/head"
 import Image from "next/image"
+import Link from "next/link"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
-import Link from "next/link"
 
 const Home: NextPageWithAuthAndLayout = () => {
   return (

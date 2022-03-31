@@ -1,9 +1,10 @@
 import type { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
 
-const prisma = new PrismaClient()
+import prisma from "@/lib/prisma"
+
+import type { Role } from "@prisma/client"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -20,7 +21,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, user }) {
       return {
         ...session,
-        User: {
+        user: {
           ...session.user,
           id: user.id,
           role: user.role
@@ -32,4 +33,20 @@ export const authOptions: NextAuthOptions = {
     signIn: "/app/sign-in"
   },
   secret: process.env.NEXTAUTH_SECRET
+}
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string
+      name: string
+      email: string
+      image?: string | null
+      role: Role
+    }
+  }
+
+  interface User {
+    role: Role
+  }
 }
