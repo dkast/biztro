@@ -15,10 +15,10 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
+    signIn({ user, account, profile, email, credentials }) {
       return true
     },
-    async session({ session, user }) {
+    session({ session, user }) {
       return {
         ...session,
         user: {

@@ -2,7 +2,7 @@ import type { NextPage } from "next"
 import React from "react"
 
 export type NextPageWithAuthAndLayout = NextPage & {
-  auth?: Boolean
+  auth?: boolean
   getLayout?: (page: React.ReactElement) => React.ReactNode
 }
 

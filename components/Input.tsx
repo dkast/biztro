@@ -24,22 +24,19 @@ interface InputProps extends React.InputHTMLAttributes<HTMLElement> {
 const Input: React.FC<InputProps> = props => {
   let variant = "default"
   let mode = "normal"
-  let { name, register, required } = props
+  const { name, register, required, disabled, invalid, className } = props
 
-  if (props.disabled) {
+  if (disabled) {
     mode = "disabled"
   }
 
-  if (props.invalid) {
+  if (invalid) {
     variant = "error"
   }
 
-  const cssClasses = [
-    props.className,
-    DEFAULT,
-    VARIANT[variant],
-    MODE[mode]
-  ].join(" ")
+  const cssClasses = [className, DEFAULT, VARIANT[variant], MODE[mode]].join(
+    " "
+  )
 
   return (
     <>
@@ -50,7 +47,7 @@ const Input: React.FC<InputProps> = props => {
           {...register(name, { required })}
           {...props}
         />
-        {props.invalid ? (
+        {invalid ? (
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
             <ExclamationCircleIcon
               className="h-5 w-5 text-red-500"

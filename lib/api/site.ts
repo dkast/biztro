@@ -11,7 +11,7 @@ import prisma from "@/lib/prisma"
  * @param session - NextAuth.js session
  */
 import type { NextApiRequest, NextApiResponse } from "next"
-import type { Site } from "@prisma/client"
+import type { Site } from ".prisma/client"
 import type { Session } from "next-auth"
 
 export async function getSite(

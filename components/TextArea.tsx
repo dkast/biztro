@@ -1,5 +1,6 @@
 import React from "react"
 import { UseFormRegister } from "react-hook-form"
+import { constants } from "zlib"
 
 const DEFAULT =
   "block w-full max-w-lg rounded-md focus:outline-none sm:text-sm transition duration-150 ease-in-out"
@@ -24,18 +25,15 @@ interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLElement> {
 const TextArea: React.FC<TextAreaProps> = props => {
   let variant = "default"
   let mode = "normal"
-  let { name, register, required } = props
+  const { name, register, required, disabled, className } = props
 
-  if (props.disabled) {
+  if (disabled) {
     mode = "disabled"
   }
 
-  const cssClasses = [
-    props.className,
-    DEFAULT,
-    VARIANT[variant],
-    MODE[mode]
-  ].join(" ")
+  const cssClasses = [className, DEFAULT, VARIANT[variant], MODE[mode]].join(
+    " "
+  )
 
   return (
     <>
