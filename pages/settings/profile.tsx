@@ -1,5 +1,3 @@
-import * as Tabs from "@radix-ui/react-tabs"
-
 import Layout from "@/components/Layout"
 import SettingsLayout from "@/components/SettingsLayout"
 import { NextPageWithAuthAndLayout } from "@/lib/types"

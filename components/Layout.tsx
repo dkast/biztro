@@ -269,8 +269,7 @@ const Layout = ({ children }: LayoutProps) => {
                                       active ? "bg-gray-100" : "",
                                       "block cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                     )}
-                                    onClick={e => {
-                                      e.preventDefault
+                                    onClick={() => {
                                       signOut()
                                     }}
                                   >

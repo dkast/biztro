@@ -1,30 +1,20 @@
-import React, { useEffect } from "react"
-import { useRouter } from "next/router"
 import Head from "next/head"
 import Image from "next/image"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
+import Link from "next/link"
 
 const Home: NextPageWithAuthAndLayout = () => {
-  // const user = useUser<User>();
-  const router = useRouter()
-
-  // useEffect(() => {
-  //   if (user) {
-  //     router.push("/dashboard");
-  //   }
-  // }, [user]);
-
   return (
     <>
       <Head>
         <title>Bistro</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex h-screen flex-col items-center justify-center">
         <Image src="/icon.svg" alt="Logo" width={200} height={200} />
-        <span className="font-bold text-6xl my-6">{"Próximamente"}</span>
-        <a href="/dashboard">{"Entrar"}</a>
+        <span className="my-6 text-6xl font-bold">{"Próximamente"}</span>
+        <Link href="/dashboard">Entrar</Link>
       </div>
     </>
   )
