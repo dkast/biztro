@@ -11,7 +11,7 @@ import prisma from "@/lib/prisma"
  * @param session - NextAuth.js session
  */
 import type { NextApiRequest, NextApiResponse } from "next"
-import type { Site } from ".prisma/client"
+import type { Site } from "@prisma/client"
 import type { Session } from "next-auth"
 
 export async function getSite(
@@ -41,7 +41,8 @@ export async function getSite(
       return res.status(200).json(site)
     }
 
-    const sites = await prisma.site.findMany({
+    // Brings only one site, in the future a User could have multiple sites
+    const site = await prisma.site.findFirst({
       where: {
         user: {
           id: session.user.id
@@ -49,7 +50,7 @@ export async function getSite(
       }
     })
 
-    return res.status(200).json(sites)
+    return res.status(200).json(site)
   } catch (error) {
     console.error(error)
     return res.status(500).end(error)

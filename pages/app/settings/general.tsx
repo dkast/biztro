@@ -1,4 +1,6 @@
+import { useEffect } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
+import useSWR from "swr"
 
 import Layout from "@/components/Layout"
 import SettingsLayout from "@/components/SettingsLayout"
@@ -6,6 +8,9 @@ import Input from "@/components/Input"
 import TextArea from "@/components/TextArea"
 import Button from "@/components/Button"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
+import fetcher from "@/lib/fetcher"
+
+import type { Site } from "@prisma/client"
 
 interface IFormValues {
   name: string
@@ -19,8 +24,18 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm<IFormValues>()
+
+  const { data: site } = useSWR<Site>("/api/site", fetcher)
+
+  useEffect(() => {
+    reset({
+      name: site?.name,
+      description: site?.description
+    })
+  }, [site, reset])
 
   const onSubmit: SubmitHandler<IFormValues> = data => {
     alert(JSON.stringify(data))
