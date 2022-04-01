@@ -8,7 +8,7 @@ import {
   TemplateIcon,
   XIcon
 } from "@heroicons/react/outline"
-import { SearchIcon } from "@heroicons/react/solid"
+// import { SearchIcon } from "@heroicons/react/solid"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"

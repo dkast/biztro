@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    signIn({ user, account, profile, email, credentials }) {
+    signIn(/* { user, account, profile, email, credentials } */) {
       return true
     },
     session({ session, user }) {

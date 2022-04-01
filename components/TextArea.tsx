@@ -1,6 +1,5 @@
 import React from "react"
 import { UseFormRegister } from "react-hook-form"
-import { constants } from "zlib"
 
 const DEFAULT =
   "block w-full max-w-lg rounded-md focus:outline-none sm:text-sm transition duration-150 ease-in-out"
