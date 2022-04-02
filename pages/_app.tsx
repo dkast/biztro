@@ -1,6 +1,7 @@
 import React from "react"
 import { SessionProvider, useSession, signIn } from "next-auth/react"
 import { AppProps } from "next/app"
+import { Toaster } from "react-hot-toast"
 
 import "../styles/globals.css"
 
@@ -23,6 +24,16 @@ function MyApp({
       ) : (
         getLayout(<Component {...pageProps} />)
       )}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff"
+          }
+        }}
+      />
     </SessionProvider>
   )
 }

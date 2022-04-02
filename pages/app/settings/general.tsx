@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import useSWR from "swr"
 import { useSession } from "next-auth/react"
+import toast from "react-hot-toast"
 
 import Layout from "@/components/Layout"
 import SettingsLayout from "@/components/SettingsLayout"
@@ -42,7 +43,11 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
   }, [site, reset])
 
   const onSubmit: SubmitHandler<IFormValues> = data => {
-    createSite(data)
+    if (site.id) {
+      updateSite(data)
+    } else {
+      createSite(data)
+    }
   }
 
   async function createSite(data: IFormValues) {
@@ -57,6 +62,32 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
         description: data.description
       })
     })
+
+    if (res.ok) {
+      toast.success("Información actualizada")
+    } else {
+      toast.error("Algo salió mal")
+    }
+  }
+
+  async function updateSite(data: IFormValues) {
+    const res = await fetch("/api/site", {
+      method: HttpMethod.PUT,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: site.id,
+        name: data.name,
+        description: data.description
+      })
+    })
+
+    if (res.ok) {
+      toast.success("Información actualizada")
+    } else {
+      toast.error("Algo salió mal")
+    }
   }
 
   return (
