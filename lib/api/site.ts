@@ -1,5 +1,9 @@
 import prisma from "@/lib/prisma"
 
+import type { NextApiRequest, NextApiResponse } from "next"
+import type { Site } from "@prisma/client"
+import type { Session } from "next-auth"
+
 /**
  * Get Site
  * Fetches and returns either a single or all sites available dependin on
@@ -10,10 +14,6 @@ import prisma from "@/lib/prisma"
  * @param res - Next.js API Response
  * @param session - NextAuth.js session
  */
-import type { NextApiRequest, NextApiResponse } from "next"
-import type { Site } from "@prisma/client"
-import type { Session } from "next-auth"
-
 export async function getSite(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -51,6 +51,58 @@ export async function getSite(
     })
 
     return res.status(200).json(site)
+  } catch (error) {
+    console.error(error)
+    return res.status(500).end(error)
+  }
+}
+
+export async function createSite(
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void | NextApiResponse<{ siteId: string }>> {
+  const { name, description, userId } = req.body
+
+  try {
+    const response = await prisma.site.create({
+      data: {
+        name,
+        description,
+        user: {
+          connect: {
+            id: userId
+          }
+        }
+      }
+    })
+
+    return res.status(201).json({
+      siteId: response.id
+    })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).end(error)
+  }
+}
+
+export async function updateSite(
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void | NextApiResponse<Site>> {
+  const { id, name, description } = req.body
+
+  try {
+    const response = await prisma.site.update({
+      where: {
+        id: id
+      },
+      data: {
+        name,
+        description
+      }
+    })
+
+    return res.status(200).json(response)
   } catch (error) {
     console.error(error)
     return res.status(500).end(error)

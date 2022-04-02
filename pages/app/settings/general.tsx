@@ -1,13 +1,14 @@
 import { useEffect } from "react"
 import { SubmitHandler, useForm } from "react-hook-form"
 import useSWR from "swr"
+import { useSession } from "next-auth/react"
 
 import Layout from "@/components/Layout"
 import SettingsLayout from "@/components/SettingsLayout"
 import Input from "@/components/Input"
 import TextArea from "@/components/TextArea"
 import Button from "@/components/Button"
-import { NextPageWithAuthAndLayout } from "@/lib/types"
+import { HttpMethod, NextPageWithAuthAndLayout } from "@/lib/types"
 import fetcher from "@/lib/fetcher"
 
 import type { Site } from "@prisma/client"
@@ -28,7 +29,10 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     reset
   } = useForm<IFormValues>()
 
-  const { data: site } = useSWR<Site>("/api/site", fetcher)
+  const { data: session } = useSession()
+  const sessionId = session?.user?.id
+
+  const { data: site } = useSWR<Site>(sessionId && "/api/site", fetcher)
 
   useEffect(() => {
     reset({
@@ -38,7 +42,21 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
   }, [site, reset])
 
   const onSubmit: SubmitHandler<IFormValues> = data => {
-    alert(JSON.stringify(data))
+    createSite(data)
+  }
+
+  async function createSite(data: IFormValues) {
+    const res = await fetch("/api/site", {
+      method: HttpMethod.POST,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userId: sessionId,
+        name: data.name,
+        description: data.description
+      })
+    })
   }
 
   return (
