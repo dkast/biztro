@@ -11,6 +11,7 @@ import TextArea from "@/components/TextArea"
 import Button from "@/components/Button"
 import { HttpMethod, NextPageWithAuthAndLayout } from "@/lib/types"
 import fetcher from "@/lib/fetcher"
+import Loader from "@/components/Loader"
 
 import type { Site } from "@prisma/client"
 
@@ -33,7 +34,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
   const { data: session } = useSession()
   const sessionId = session?.user?.id
 
-  const { data: site } = useSWR<Site>(sessionId && "/api/site", fetcher)
+  const { data: site, error } = useSWR<Site>(sessionId && "/api/site", fetcher)
 
   useEffect(() => {
     reset({
@@ -90,6 +91,10 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     }
   }
 
+  if (!site && !error) {
+    return <Loader />
+  }
+
   return (
     <>
       <form
@@ -120,7 +125,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                     name="name"
                     register={register}
                     required
-                    invalid={errors.name ? true : false}
+                    invalid={errors.name ? true : undefined}
                   ></Input>
                 </div>
               </div>
@@ -130,14 +135,14 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                   htmlFor="description"
                   className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                 >
-                  Descripcion
+                  Descripción
                 </label>
                 <div className="mt-1 sm:col-span-2 sm:mt-0">
                   <TextArea
                     name="description"
                     register={register}
                     required
-                    invalid={errors.description ? true : false}
+                    invalid={errors.description ? true : undefined}
                   ></TextArea>
                   <p className="mt-2 text-sm text-gray-500">
                     Escribe una descripción sobre tu negocio.
