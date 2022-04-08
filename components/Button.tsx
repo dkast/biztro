@@ -14,7 +14,7 @@ const DEFAULT =
 
 const VARIANT = {
   primary:
-    "border-transparent text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 active:bg-indigo-800",
+    "border-transparent text-white bg-zinc-800 hover:bg-zinc-700 focus:ring-zinc-700 active:bg-zinc-900",
   secondary:
     "border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-zinc-700 active:text-gray-800 active:bg-gray-200"
 }

@@ -35,8 +35,8 @@ const SettingsLayout = ({ children }: LayoutProps) => {
                     href={tab.href}
                     className={classNames(
                       tab.href === asPath
-                        ? "border-indigo-500 text-indigo-600"
-                        : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
+                        ? "border-zinc-700 text-zinc-800"
+                        : "border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700",
                       "whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
                     )}
                     aria-current={tab.href === asPath ? "page" : undefined}

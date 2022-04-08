@@ -76,6 +76,7 @@ interface CloudinaryWidgetOptions {
   cloudName: string
   cropping: boolean
   uploadPreset: string
+  styles: object
 }
 
 export interface CloudinaryWidgetResult {

@@ -28,7 +28,31 @@ export default function CloudinaryUploadWidget({
       {
         cloudName: process.env.NEXT_PUBLIC_CLOUD_NAME,
         uploadPreset: process.env.NEXT_PUBLIC_UPLOAD_PRESET,
-        cropping: true
+        cropping: true,
+        styles: {
+          palette: {
+            window: "#ffffff",
+            sourceBg: "#f4f4f5",
+            windowBorder: "#a1a1aa",
+            tabIcon: "#27272a",
+            inactiveTabIcon: "#555a5f",
+            menuIcons: "#555a5f",
+            link: "#3f3f46",
+            action: "#16a34a",
+            inProgress: "#3f3f46",
+            complete: "#16a34a",
+            error: "#dc2626",
+            textDark: "#27272a",
+            textLight: "#fcfffd"
+          },
+          fonts: {
+            default: null,
+            "sans-serif": {
+              url: null,
+              active: true
+            }
+          }
+        }
       },
       (error: unknown | undefined, result: CloudinaryWidgetResult) => {
         if (!error && result && result.event === "success") {

@@ -18,6 +18,7 @@ import type { Site } from "@prisma/client"
 import CloudinaryUploadWidget from "@/components/Cloudinary"
 import saveImage from "@/lib/save-image"
 import BlurImage from "@/components/BlurImage"
+import { UploadIcon } from "@heroicons/react/solid"
 
 interface IFormValues {
   name: string
@@ -58,7 +59,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     })
   }, [site, reset])
 
-  const onSubmit: SubmitHandler<IFormValues> = data => {
+  async function onSubmit(data: IFormValues) {
     if (site.id) {
       updateSite(data)
     } else {
@@ -204,13 +205,21 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                       callback={e => saveImage(e, logoImage, setLogoImage)}
                     >
                       {({ open }) => (
-                        <button
-                          type="button"
-                          className="ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        // <button
+                        //   type="button"
+                        //   className="ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        //   onClick={open}
+                        // >
+                        //   Subir
+                        // </button>
+                        <Button
+                          variant="secondary"
                           onClick={open}
+                          size="sm"
+                          className="ml-5"
                         >
                           Subir
-                        </button>
+                        </Button>
                       )}
                     </CloudinaryUploadWidget>
                   </div>
@@ -226,17 +235,34 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                 </label>
                 <div className="mt-1 sm:col-span-2 sm:mt-0">
                   {bannerImage?.imageURL ? (
-                    <BlurImage
-                      alt="Banner"
-                      blurDataURL={bannerImage.imageBlurhash ?? undefined}
-                      className="rounded-md"
-                      height={250}
-                      layout="responsive"
-                      objectFit="cover"
-                      placeholder="blur"
-                      src={bannerImage.imageURL}
-                      width={400}
-                    />
+                    <div className="relative">
+                      <CloudinaryUploadWidget
+                        callback={e =>
+                          saveImage(e, bannerImage, setBannerImage)
+                        }
+                      >
+                        {({ open }) => (
+                          <button
+                            onClick={open}
+                            className="absolute z-10 flex h-full w-full flex-col items-center justify-center rounded-md bg-gray-100 opacity-0 transition-all duration-200 ease-linear hover:opacity-80"
+                          >
+                            <UploadIcon className="h-14 w-14" />
+                            <p>Subir otra imagen</p>
+                          </button>
+                        )}
+                      </CloudinaryUploadWidget>
+                      <BlurImage
+                        alt="Banner"
+                        blurDataURL={bannerImage.imageBlurhash ?? undefined}
+                        className="rounded-md"
+                        height={200}
+                        layout="responsive"
+                        objectFit="cover"
+                        placeholder="blur"
+                        src={bannerImage.imageURL}
+                        width={600}
+                      />
+                    </div>
                   ) : (
                     <CloudinaryUploadWidget
                       callback={e => saveImage(e, bannerImage, setBannerImage)}
@@ -263,7 +289,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                                 htmlFor="file-upload"
                                 className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
                               >
-                                <span onClick={open}>Sube una Imagen</span>
+                                <span onClick={open}>Subir una imagen</span>
                               </label>
                             </div>
                             <p className="text-xs text-gray-500">
@@ -282,9 +308,9 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
 
         <div className="pt-5">
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="secondary" size="sm">
+            {/* <Button type="button" variant="secondary" size="sm">
               Cancelar
-            </Button>
+            </Button> */}
             <Button type="submit" variant="primary" size="sm">
               Guardar
             </Button>

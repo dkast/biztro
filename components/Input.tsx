@@ -5,7 +5,7 @@ import { UseFormRegister } from "react-hook-form"
 const DEFAULT =
   "block w-full rounded-md sm:max-w-xs sm:text-sm transition duration-150 ease-in-out shadow-sm"
 const VARIANT = {
-  default: "border-gray-300 focus:ring-indigo-500 focus:border-indigo-500",
+  default: "border-gray-300 focus:ring-zinc-500 focus:border-zinc-500",
   error:
     "pr-10 border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:ring-red-500 focus:border-red-500"
 }
