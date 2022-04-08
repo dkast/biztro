@@ -10,7 +10,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const DEFAULT =
-  "inline-flex items-center border shadow-sm font-medium rounded focus:outline-none focus:ring-2 focus:ring-offset-2"
+  "inline-flex items-center border shadow-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2"
 
 const VARIANT = {
   primary:
@@ -60,7 +60,7 @@ const Button: React.FC<ButtonProps> = ({
     <span
       className={`${
         mode === "full" ? "w-full" : ""
-      } inline-flex rounded-md shadow-sm`}
+      } inline-flex rounded-lg shadow-sm`}
     >
       <button className={cssClasses} {...props}>
         {isLoading ? (

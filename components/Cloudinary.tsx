@@ -1,7 +1,6 @@
 /* eslint-disable */
 
 import Head from "next/head"
-import Script from "next/script"
 
 import type { MouseEvent, ReactNode } from "react"
 import type {
