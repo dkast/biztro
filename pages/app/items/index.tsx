@@ -55,11 +55,11 @@ const Items: NextPageWithAuthAndLayout = () => {
   return (
     <>
       <Head>
-        <title>Bistro - Items</title>
+        <title>Bistro - Productos</title>
       </Head>
       <div className="py-6">
         <div className="mx-auto px-4 sm:px-6 md:px-8">
-          <PageHeader title={"Items"}></PageHeader>
+          <PageHeader title={"Producto"}></PageHeader>
         </div>
         <div className="mx-auto px-4 sm:px-6 md:px-8">
           <Table
@@ -72,11 +72,11 @@ const Items: NextPageWithAuthAndLayout = () => {
                 leftIcon={<PlusIcon />}
                 onClick={() => setOpen(true)}
               >
-                Crear Item
+                Crear Producto
               </Button>
             }
           ></Table>
-          <SidePanel open={open} setOpen={setOpen} title="Item">
+          <SidePanel open={open} setOpen={setOpen} title="Producto">
             <form
               onSubmit={handleSubmit(onSubmit)}
               className="flex h-full flex-col"
@@ -94,6 +94,7 @@ const Items: NextPageWithAuthAndLayout = () => {
                   <div className="sm:col-span-2">
                     <Input
                       name="name"
+                      placeholder="Nombre del producto"
                       register={register}
                       required
                       invalid={errors.name ? true : undefined}
@@ -118,24 +119,59 @@ const Items: NextPageWithAuthAndLayout = () => {
                     ></TextArea>
                   </div>
                 </div>
+
+                {/* Price */}
+                <div className="space-y-1 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                  >
+                    Precio
+                  </label>
+                  <div className="sm:col-span-2">
+                    <Input
+                      name="price"
+                      placeholder="0.00"
+                      register={register}
+                      invalid={errors.name ? true : undefined}
+                      type="number"
+                    ></Input>
+                  </div>
+                </div>
+
+                {/* Extras */}
+                <div className="space-y-1 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                  >
+                    Extras
+                  </label>
+                  <div className="sm:col-span-2">
+                    <Input
+                      name="extras"
+                      placeholder="Extras"
+                      register={register}
+                      required
+                      invalid={errors.name ? true : undefined}
+                    ></Input>
+                  </div>
+                </div>
               </div>
 
               {/* Action buttons */}
               <div className="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
                 <div className="flex justify-end space-x-3">
-                  <button
+                  <Button
                     type="button"
-                    className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    variant="secondary"
                     onClick={() => setOpen(false)}
                   >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  >
-                    Create
-                  </button>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" variant="primary">
+                    Guardar
+                  </Button>
                 </div>
               </div>
             </form>

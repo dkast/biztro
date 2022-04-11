@@ -101,4 +101,5 @@ model Item {
   siteId        String?
 
   @@unique([id, siteId], name: "post_site_constraint")
+  @@index([siteId])
 }

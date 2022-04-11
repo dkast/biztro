@@ -22,7 +22,7 @@ type LayoutProps = {
 
 const sidebarNavigation = [
   { name: "Inicio", href: "/app/dashboard", icon: HomeIcon },
-  { name: "Items", href: "/app/items", icon: ViewGridIcon },
+  { name: "Productos", href: "/app/items", icon: ViewGridIcon },
   { name: "Menu", href: "/app/menu-editor", icon: TemplateIcon },
   { name: "Ajustes", href: "/app/settings/general", icon: CogIcon }
 ]
