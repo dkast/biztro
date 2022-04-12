@@ -49,7 +49,7 @@ const Layout = ({ children }: LayoutProps) => {
             <div className="flex flex-shrink-0 items-center">
               <Image
                 className="h-8 w-auto"
-                src="/icon.svg"
+                src="/logo-bistro.svg"
                 alt="Bistro"
                 width={32}
                 height={32}

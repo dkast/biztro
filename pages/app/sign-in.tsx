@@ -26,7 +26,7 @@ const SignIn = ({
             <div className="flex flex-col gap-4">
               <Image
                 className="h-12 w-12"
-                src="/icon.svg"
+                src="/logo-bistro.svg"
                 alt="Bistro"
                 width={64}
                 height={64}

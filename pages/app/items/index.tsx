@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react"
 import Head from "next/head"
 import { useForm } from "react-hook-form"
+import useSWR from "swr"
+import { useSession } from "next-auth/react"
 
 import Layout from "@/components/Layout"
 import PageHeader from "@/components/PageHeader"
@@ -10,8 +12,11 @@ import { PlusIcon } from "@heroicons/react/outline"
 import SidePanel from "@/components/SidePanel"
 import Input from "@/components/Input"
 import TextArea from "@/components/TextArea"
+import fetcher from "@/lib/fetcher"
+import Loader from "@/components/Loader"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
+import type { Site, Item } from "@prisma/client"
 
 interface IFormValues {
   name: string
@@ -19,6 +24,11 @@ interface IFormValues {
   logo: string
   image: string
   phone: string
+}
+
+interface SiteItemData {
+  items: Array<Item>
+  site: Site | null
 }
 
 const Items: NextPageWithAuthAndLayout = () => {
@@ -29,12 +39,19 @@ const Items: NextPageWithAuthAndLayout = () => {
     reset
   } = useForm<IFormValues>()
 
+  const { data: session } = useSession()
+  const sessionId = session?.user?.id
+
   function onSubmit(data: IFormValues) {
     alert(JSON.stringify(data))
   }
+  const { data: site } = useSWR<Site>(sessionId && "/api/site", fetcher)
+  const { data, error } = useSWR<SiteItemData>(
+    site?.id && `/api/item?siteId=${site?.id}`,
+    fetcher
+  )
 
   const [open, setOpen] = useState(false)
-  const data = []
   const columns = useMemo(
     () => [
       {
@@ -52,6 +69,11 @@ const Items: NextPageWithAuthAndLayout = () => {
     ],
     []
   )
+
+  if (!data && !error) {
+    return <Loader />
+  }
+
   return (
     <>
       <Head>
@@ -59,12 +81,12 @@ const Items: NextPageWithAuthAndLayout = () => {
       </Head>
       <div className="py-6">
         <div className="mx-auto px-4 sm:px-6 md:px-8">
-          <PageHeader title={"Producto"}></PageHeader>
+          <PageHeader title={"Productos"}></PageHeader>
         </div>
         <div className="mx-auto px-4 sm:px-6 md:px-8">
           <Table
             columns={columns}
-            data={data}
+            data={data.items}
             toolbar={
               <Button
                 variant="primary"
