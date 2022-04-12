@@ -4,16 +4,6 @@ import type { NextApiRequest, NextApiResponse } from "next"
 import type { Site } from "@prisma/client"
 import type { Session } from "next-auth"
 
-/**
- * Get Site
- * Fetches and returns either a single or all sites available dependin on
- * whether a 'siteId' query parameter is provided. If not all sites are
- * returned
- *
- * @param req - Next.js API Request
- * @param res - Next.js API Response
- * @param session - NextAuth.js session
- */
 export async function getSite(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -22,10 +12,10 @@ export async function getSite(
   const { siteId } = req.query
 
   if (Array.isArray(siteId))
-    return res.status(400).end("Bad Request. siteId parameter cannto be array")
+    return res.status(400).end("Bad Request. siteId parameter cannto be array.")
 
   if (!session.user.id)
-    return res.status(500).end("Server failed to get session user ID")
+    return res.status(500).end("Server failed to get session user ID.")
 
   try {
     if (siteId) {
