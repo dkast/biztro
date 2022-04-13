@@ -1,6 +1,6 @@
 import Head from "next/head"
 
-import Layout from "@/components/Layout"
+import Layout from "@/components/layouts/Layout"
 import PageHeader from "@/components/PageHeader"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 

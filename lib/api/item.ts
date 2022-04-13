@@ -145,7 +145,7 @@ export async function updateItem(
         title,
         description,
         extras,
-        price,
+        price: parseFloat(price),
         image,
         imageBlurhash
       }

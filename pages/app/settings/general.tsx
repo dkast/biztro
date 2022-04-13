@@ -5,8 +5,8 @@ import { useSession } from "next-auth/react"
 import toast from "react-hot-toast"
 import Image from "next/image"
 
-import Layout from "@/components/Layout"
-import SettingsLayout from "@/components/SettingsLayout"
+import Layout from "@/components/layouts/Layout"
+import SettingsLayout from "@/components/layouts/SettingsLayout"
 import Input from "@/components/Input"
 import TextArea from "@/components/TextArea"
 import Button from "@/components/Button"
@@ -66,7 +66,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
       createSite(data)
     }
 
-    mutate("api/site")
+    mutate("/api/site")
   }
 
   async function createSite(data: IFormValues) {
