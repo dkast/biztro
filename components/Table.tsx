@@ -34,7 +34,7 @@ function GlobalFilter({ globalFilter, setGlobalFilter, searchPlaceholder }) {
   }
 
   return (
-    <div className="w-2/3 md:w-1/2 lg:w-1/3">
+    <div className="w-full sm:w-2/3 md:w-1/2 lg:w-1/3">
       <InputGroup
         prepend={<SearchIcon />}
         value={value || ""}
@@ -84,16 +84,19 @@ const Table: React.FC<TableProps> = ({
   return (
     <div className="mt-8 flex flex-col">
       <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="flex flex-row items-center justify-between py-4 px-4 md:px-6 lg:px-8">
+        <div className="flex flex-col-reverse items-start justify-between gap-2 py-4 px-4 sm:flex-row sm:items-center md:px-6 lg:px-8">
           <GlobalFilter
             globalFilter={state.globalFilter}
             setGlobalFilter={setGlobalFilter}
             searchPlaceholder={searchPlaceholder}
           />
-          {toolbar}
+          <div className="flex w-full flex-row justify-end">{toolbar}</div>
         </div>
         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-          <table {...getTableProps()} className="min-w-full">
+          <table
+            {...getTableProps()}
+            className="min-w-full divide-y divide-gray-300"
+          >
             <thead>
               {headerGroups.map((headerGroup, n) => (
                 <tr key={n} {...headerGroup.getHeaderGroupProps()}>

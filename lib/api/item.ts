@@ -77,7 +77,7 @@ export async function createItem(
   itemId: string
 }>> {
   const { siteId } = req.query
-  const { title, description, extras, price } = req.body
+  // const { title, description, extras, price } = req.body
 
   if (Array.isArray(siteId))
     return res.status(400).end("Bad Request. siteId parameter cannto be array.")
@@ -85,10 +85,8 @@ export async function createItem(
   try {
     const response = await prisma.item.create({
       data: {
-        title,
-        description,
-        extras,
-        price,
+        title: "Sin título",
+        price: 0,
         site: {
           connect: {
             id: siteId

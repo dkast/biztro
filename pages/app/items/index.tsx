@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react"
 import Head from "next/head"
 import { useForm } from "react-hook-form"
-import useSWR from "swr"
+import useSWR, { mutate } from "swr"
 import { useSession } from "next-auth/react"
+import toast from "react-hot-toast"
 
 import Layout from "@/components/Layout"
 import PageHeader from "@/components/PageHeader"
@@ -15,7 +16,7 @@ import TextArea from "@/components/TextArea"
 import fetcher from "@/lib/fetcher"
 import Loader from "@/components/Loader"
 
-import type { NextPageWithAuthAndLayout } from "@/lib/types"
+import { HttpMethod, NextPageWithAuthAndLayout } from "@/lib/types"
 import type { Site, Item } from "@prisma/client"
 
 interface IFormValues {
@@ -39,6 +40,30 @@ const Items: NextPageWithAuthAndLayout = () => {
     reset
   } = useForm<IFormValues>()
 
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Producto",
+        accessor: "title"
+      },
+      {
+        Header: "Descripcion",
+        accessor: "description"
+      },
+      {
+        Header: "Precio",
+        accessor: "price"
+      },
+      {
+        Header: "Extras",
+        accessor: "extras"
+      }
+    ],
+    []
+  )
+
+  const [open, setOpen] = useState(false)
+  const [itemId, setItemId] = useState(null)
   const { data: session } = useSession()
   const sessionId = session?.user?.id
 
@@ -51,24 +76,28 @@ const Items: NextPageWithAuthAndLayout = () => {
     fetcher
   )
 
-  const [open, setOpen] = useState(false)
-  const columns = useMemo(
-    () => [
-      {
-        Header: "Item",
-        accesor: "name"
-      },
-      {
-        Header: "Descripcion",
-        accesor: "description"
-      },
-      {
-        Header: "Precio",
-        accesor: "price"
+  async function onCreateItem(siteId: string) {
+    try {
+      const res = await fetch(`/api/item?siteId=${siteId}`, {
+        method: HttpMethod.POST,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setItemId(data.itemId)
+        setOpen(true)
+        mutate(`/api/item?siteId=${site?.id}`)
+      } else {
+        toast.error("Algo salió mal")
       }
-    ],
-    []
-  )
+    } catch (error) {
+      console.error(error)
+      toast.error("Algo salió mal")
+    }
+  }
 
   if (!data && !error) {
     return <Loader />
@@ -92,7 +121,7 @@ const Items: NextPageWithAuthAndLayout = () => {
                 variant="primary"
                 size="sm"
                 leftIcon={<PlusIcon />}
-                onClick={() => setOpen(true)}
+                onClick={() => onCreateItem(site.id)}
               >
                 Crear Producto
               </Button>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { SubmitHandler, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import useSWR, { mutate } from "swr"
 import { useSession } from "next-auth/react"
 import toast from "react-hot-toast"
