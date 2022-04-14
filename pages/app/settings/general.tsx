@@ -10,15 +10,15 @@ import SettingsLayout from "@/components/layouts/SettingsLayout"
 import Input from "@/components/Input"
 import TextArea from "@/components/TextArea"
 import Button from "@/components/Button"
-import { HttpMethod, ImageInfo, NextPageWithAuthAndLayout } from "@/lib/types"
 import fetcher from "@/lib/fetcher"
 import Loader from "@/components/Loader"
-
-import type { Site } from "@prisma/client"
 import CloudinaryUploadWidget from "@/components/Cloudinary"
 import saveImage from "@/lib/save-image"
 import BlurImage from "@/components/BlurImage"
 import { UploadIcon } from "@heroicons/react/solid"
+
+import type { Site } from "@prisma/client"
+import { HttpMethod, ImageInfo, NextPageWithAuthAndLayout } from "@/lib/types"
 
 interface IFormValues {
   name: string

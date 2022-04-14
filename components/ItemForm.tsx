@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import useSWR, { mutate } from "swr"
 import toast from "react-hot-toast"
 import { useForm } from "react-hook-form"
@@ -11,7 +11,11 @@ import TextArea from "@/components/TextArea"
 import Loader from "@/components/Loader"
 
 import type { Item, Site } from "@prisma/client"
-import { HttpMethod } from "@/lib/types"
+import { HttpMethod, ImageInfo } from "@/lib/types"
+import CloudinaryUploadWidget from "./Cloudinary"
+import saveImage from "@/lib/save-image"
+import { UploadIcon } from "@heroicons/react/solid"
+import BlurImage from "./BlurImage"
 
 interface IFormValues {
   title: string
@@ -40,12 +44,19 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
     fetcher
   )
 
+  const [image, setImage] = useState<ImageInfo>(null)
+
   useEffect(() => {
     reset({
       title: item?.title,
       description: item?.description,
       extras: item?.extras,
       price: item?.price
+    })
+
+    setImage({
+      imageURL: item?.image,
+      imageBlurhash: item?.imageBlurhash
     })
   }, [item, reset])
 
@@ -64,7 +75,9 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
         title: data.title,
         description: data.description,
         extras: data.extras,
-        price: data.price
+        price: data.price,
+        image: image.imageURL,
+        imageBlurhash: image.imageBlurhash
       })
     })
 
@@ -156,6 +169,82 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
               register={register}
               invalid={errors.extras ? true : undefined}
             ></Input>
+          </div>
+        </div>
+
+        {/* Image */}
+        <div className="space-y-1 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
+          <label
+            htmlFor="cover-photo"
+            className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+          >
+            Imagen
+          </label>
+          <div className="mt-1 sm:col-span-2 sm:mt-0">
+            {image?.imageURL ? (
+              <div className="relative">
+                <CloudinaryUploadWidget
+                  callback={e => saveImage(e, image, setImage)}
+                >
+                  {({ open }) => (
+                    <button
+                      onClick={open}
+                      className="absolute z-10 flex h-[300px] w-[300px] flex-col items-center justify-center rounded-lg bg-gray-100 opacity-0 transition-all duration-200 ease-linear hover:opacity-80"
+                    >
+                      <UploadIcon className="h-14 w-14" />
+                      <p>Subir otra imagen</p>
+                    </button>
+                  )}
+                </CloudinaryUploadWidget>
+                <BlurImage
+                  alt="Banner"
+                  blurDataURL={image.imageBlurhash ?? undefined}
+                  className="rounded-lg"
+                  height={300}
+                  layout="fixed"
+                  objectFit="cover"
+                  placeholder="blur"
+                  src={image.imageURL}
+                  width={300}
+                />
+              </div>
+            ) : (
+              <CloudinaryUploadWidget
+                callback={e => saveImage(e, image, setImage)}
+              >
+                {({ open }) => (
+                  <div className="flex w-[300px] justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+                    <div className="space-y-1 text-center">
+                      <svg
+                        className="mx-auto h-12 w-12 text-gray-400"
+                        stroke="currentColor"
+                        fill="none"
+                        viewBox="0 0 48 48"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                          strokeWidth={2}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <div className="flex text-sm text-gray-600">
+                        <label
+                          htmlFor="file-upload"
+                          className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
+                        >
+                          <span onClick={open}>Subir una imagen</span>
+                        </label>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        PNG o JPG hasta 5MB
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </CloudinaryUploadWidget>
+            )}
           </div>
         </div>
       </div>

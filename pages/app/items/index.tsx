@@ -2,6 +2,7 @@ import { useMemo, useState } from "react"
 import Head from "next/head"
 import toast from "react-hot-toast"
 import useSWR, { mutate } from "swr"
+import Image from "next/image"
 import { useSession } from "next-auth/react"
 import { PlusIcon } from "@heroicons/react/outline"
 
@@ -27,7 +28,30 @@ const Items: NextPageWithAuthAndLayout = () => {
     () => [
       {
         Header: "Producto",
-        accessor: "title"
+        accessor: "title",
+        Cell: ({ row }) => {
+          if (row.original?.image) {
+            return (
+              <div className="flex items-center gap-4 pl-2">
+                <Image
+                  src={row.original.image}
+                  alt="Imagen Producto"
+                  width={40}
+                  height={32}
+                  className="rounded-md"
+                ></Image>
+                <span>{row.original?.title}</span>
+              </div>
+            )
+          } else {
+            return (
+              <div className="flex items-center gap-4 pl-2">
+                <div className="h-8 w-10 rounded-md bg-gray-100"></div>
+                <span>{row.original?.title}</span>
+              </div>
+            )
+          }
+        }
       },
       {
         Header: "Descripcion",
