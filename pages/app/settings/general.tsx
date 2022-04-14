@@ -69,7 +69,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     mutate("/api/site")
   }
 
-  async function createSite(data: IFormValues) {
+  async function createSite(data: IFormValues): Promise<void> {
     const res = await fetch("/api/site", {
       method: HttpMethod.POST,
       headers: {
@@ -89,7 +89,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     }
   }
 
-  async function updateSite(data: IFormValues) {
+  async function updateSite(data: IFormValues): Promise<void> {
     const res = await fetch("/api/site", {
       method: HttpMethod.PUT,
       headers: {

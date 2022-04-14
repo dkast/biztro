@@ -53,7 +53,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
     updateItem(data)
   }
 
-  async function updateItem(data: IFormValues) {
+  async function updateItem(data: IFormValues): Promise<void> {
     const res = await fetch("/api/item", {
       method: HttpMethod.PUT,
       headers: {

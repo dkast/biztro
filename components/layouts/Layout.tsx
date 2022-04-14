@@ -31,6 +31,15 @@ const userNavigation = [
   { name: "Salir", href: "/sign-out" }
 ]
 
+function MenuLink(props) {
+  let { href, children, ...rest } = props
+  return (
+    <Link href={href}>
+      <a {...rest}>{children}</a>
+    </Link>
+  )
+}
+
 const Layout = ({ children }: LayoutProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { asPath } = useRouter()
@@ -57,7 +66,7 @@ const Layout = ({ children }: LayoutProps) => {
             </div>
             <div className="mt-6 w-full flex-1 space-y-1 px-2">
               {sidebarNavigation.map(item => (
-                <Link key={item.name} href={item.href}>
+                <MenuLink key={item.name} href={item.href}>
                   <a
                     key={item.name}
                     href={item.href}
@@ -80,7 +89,7 @@ const Layout = ({ children }: LayoutProps) => {
                     />
                     {/* <span className="mt-2">{item.name}</span> */}
                   </a>
-                </Link>
+                </MenuLink>
               ))}
             </div>
           </div>
@@ -137,7 +146,7 @@ const Layout = ({ children }: LayoutProps) => {
                   <div className="flex flex-shrink-0 items-center px-4">
                     <Image
                       className="h-8 w-auto"
-                      src="/icon.svg"
+                      src="/logo-bistro.svg"
                       alt="Bistro"
                       width={32}
                       height={32}
@@ -282,7 +291,7 @@ const Layout = ({ children }: LayoutProps) => {
                             return (
                               <Menu.Item key={item.name}>
                                 {({ active }) => (
-                                  <Link key={item.name} href={item.href}>
+                                  <MenuLink key={item.name} href={item.href}>
                                     <a
                                       href={item.href}
                                       className={classNames(
@@ -292,7 +301,7 @@ const Layout = ({ children }: LayoutProps) => {
                                     >
                                       {item.name}
                                     </a>
-                                  </Link>
+                                  </MenuLink>
                                 )}
                               </Menu.Item>
                             )
