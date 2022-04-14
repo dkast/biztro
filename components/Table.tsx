@@ -3,7 +3,8 @@ import {
   useTable,
   useAsyncDebounce,
   useGlobalFilter,
-  usePagination
+  usePagination,
+  useSortBy
 } from "react-table"
 import {
   SearchIcon,
@@ -12,6 +13,7 @@ import {
 } from "@heroicons/react/solid"
 
 import InputGroup from "@/components/InputGroup"
+import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/outline"
 
 type TableProps = {
   columns: Array<any>
@@ -40,6 +42,7 @@ function GlobalFilter({ globalFilter, setGlobalFilter, searchPlaceholder }) {
         value={value || ""}
         onChange={handleChange}
         placeholder={searchPlaceholder}
+        type="search"
       />
     </div>
   )
@@ -77,6 +80,7 @@ const Table: React.FC<TableProps> = ({
       initialState: { pageIndex: 0 }
     },
     useGlobalFilter,
+    useSortBy,
     usePagination
   )
 
@@ -103,10 +107,22 @@ const Table: React.FC<TableProps> = ({
                   {headerGroup.headers.map((column, m) => (
                     <th
                       key={m}
-                      {...column.getHeaderProps()}
+                      {...column.getHeaderProps(column.getSortByToggleProps())}
                       className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 md:pl-0"
                     >
                       {column.render("Header")}
+                      {/* Add a sort direction indicator */}
+                      <span className="ml-2">
+                        {column.isSorted ? (
+                          column.isSortedDesc ? (
+                            <ArrowDownIcon className="inline h-4 w-4" />
+                          ) : (
+                            <ArrowUpIcon className="inline h-4 w-4" />
+                          )
+                        ) : (
+                          ""
+                        )}
+                      </span>
                     </th>
                   ))}
                 </tr>

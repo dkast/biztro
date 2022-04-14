@@ -5,13 +5,15 @@ interface InputGroupProps extends React.InputHTMLAttributes<HTMLElement> {
   onChange: (event: ChangeEvent<HTMLElement>) => void
   placeholder?: string
   prepend: React.ReactNode
+  type?: React.HTMLInputTypeAttribute
 }
 
 const InputGroup: React.FC<InputGroupProps> = ({
   value,
   onChange,
   placeholder,
-  prepend
+  prepend,
+  type = "text"
 }) => {
   return (
     <div className="relative mt-1 rounded-md shadow-sm">
@@ -22,7 +24,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
       </div>
       <input
         className="block w-full rounded-md border-gray-300 pl-9 transition duration-150 ease-in-out focus:border-zinc-500 focus:ring-zinc-500 sm:text-sm"
-        type="text"
+        type={type}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
