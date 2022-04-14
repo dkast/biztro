@@ -15,7 +15,8 @@ import { HttpMethod, ImageInfo } from "@/lib/types"
 import CloudinaryUploadWidget from "./Cloudinary"
 import saveImage from "@/lib/save-image"
 import { UploadIcon } from "@heroicons/react/solid"
-import BlurImage from "./BlurImage"
+import BlurImage from "@/components/BlurImage"
+import ConfirmDialog from "@/components/ConfirmDialog"
 
 interface IFormValues {
   title: string
@@ -45,6 +46,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
   )
 
   const [image, setImage] = useState<ImageInfo>(null)
+  const [openDialog, setOpenDialog] = useState(false)
 
   useEffect(() => {
     reset({
@@ -60,7 +62,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
     })
   }, [item, reset])
 
-  async function onSubmit(data: IFormValues) {
+  function onSubmit(data: IFormValues) {
     updateItem(data)
   }
 
@@ -87,6 +89,10 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
     } else {
       toast.error("Algo salió mal")
     }
+  }
+
+  function deleteItem() {
+    alert("eliminado")
   }
 
   if (!item && !error) {
@@ -252,18 +258,26 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
       {/* Action buttons */}
       <div className="flex-shrink-0 border-t border-gray-200 px-4 py-5 sm:px-6">
         <div className="flex justify-end space-x-3">
-          {/* <Button
+          <Button
             type="button"
-            variant="secondary"
-            // onClick={() => setOpen(false)}
+            variant="warn"
+            onClick={() => setOpenDialog(true)}
           >
-            Cancelar
-          </Button> */}
+            Eliminar
+          </Button>
           <Button type="submit" variant="primary">
             Guardar
           </Button>
         </div>
       </div>
+      <ConfirmDialog
+        open={openDialog}
+        setOpen={setOpenDialog}
+        title={"Desea eliminar?"}
+        onConfirm={deleteItem}
+      >
+        Aqui va el contenido
+      </ConfirmDialog>
     </form>
   )
 }

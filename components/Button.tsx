@@ -2,7 +2,7 @@ import React from "react"
 import { RotateSpinner } from "react-spinners-kit"
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant: "primary" | "secondary"
+  variant: "primary" | "secondary" | "danger" | "warn"
   mode?: "full" | "normal"
   isLoading?: boolean
   size?: "xs" | "sm" | "md" | "lg"
@@ -10,13 +10,16 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const DEFAULT =
-  "inline-flex items-center border shadow-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2"
+  "inline-flex items-center border font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2"
 
 const VARIANT = {
   primary:
     "border-transparent text-white bg-zinc-800 hover:bg-zinc-700 focus:ring-zinc-700 active:bg-zinc-900",
   secondary:
-    "border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-zinc-700 active:text-gray-800 active:bg-gray-200"
+    "border-gray-300 text-gray-700 shadow-sm bg-white hover:bg-gray-50 focus:ring-zinc-700 active:text-gray-800 active:bg-gray-200",
+  warn: "border-transparent text-red-700 bg-red-100 hover:bg-red-200 focus:ring-red-500 active:bg-red-300",
+  danger:
+    "border-transparent text-white bg-red-600 hover:bg-red-700 focus:ring-red-500 active:bg-red-800"
 }
 
 const MODE = {
