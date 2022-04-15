@@ -61,9 +61,9 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
 
   async function onSubmit(data: IFormValues) {
     if (site.id) {
-      updateSite(data)
+      await updateSite(data)
     } else {
-      createSite(data)
+      await createSite(data)
     }
 
     mutate("/api/site")
@@ -134,7 +134,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
             </div>
 
             <div className="mt-6 space-y-6 sm:mt-5 sm:space-y-5">
-              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-100 sm:pt-5">
                 <label
                   htmlFor="name"
                   className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
@@ -151,7 +151,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                 </div>
               </div>
 
-              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-100 sm:pt-5">
                 <label
                   htmlFor="description"
                   className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
@@ -171,7 +171,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                 </div>
               </div>
 
-              <div className="sm:grid sm:grid-cols-3 sm:items-center sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+              <div className="sm:grid sm:grid-cols-3 sm:items-center sm:gap-4 sm:border-t sm:border-gray-100 sm:pt-5">
                 <label
                   htmlFor="photo"
                   className="block text-sm font-medium text-gray-700"
@@ -216,7 +216,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                 </div>
               </div>
 
-              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
+              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-100 sm:pt-5">
                 <label
                   htmlFor="cover-photo"
                   className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"

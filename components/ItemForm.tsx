@@ -47,6 +47,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
 
   const [image, setImage] = useState<ImageInfo>(null)
   const [openDialog, setOpenDialog] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
 
   useEffect(() => {
     reset({
@@ -62,8 +63,10 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
     })
   }, [item, reset])
 
-  function onSubmit(data: IFormValues) {
-    updateItem(data)
+  async function onSubmit(data: IFormValues) {
+    setSubmitted(true)
+    await updateItem(data)
+    setSubmitted(false)
   }
 
   async function updateItem(data: IFormValues): Promise<void> {
@@ -91,8 +94,21 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
     }
   }
 
-  function deleteItem() {
-    alert("eliminado")
+  async function onDeleteItem() {
+    await deleteItem(item.id)
+  }
+
+  async function deleteItem(itemId: string): Promise<void> {
+    const res = await fetch(`/api/item?itemId=${itemId}`, {
+      method: HttpMethod.DELETE
+    })
+
+    if (res.ok) {
+      toast.success("Producto eliminado")
+      mutate(`/api/item?siteId=${site?.id}`)
+    } else {
+      toast.error("Algo salió mal")
+    }
   }
 
   if (!item && !error) {
@@ -102,7 +118,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
       {/* Divider container */}
-      <div className="flex-1 space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-200 sm:py-0">
+      <div className="flex-1 space-y-6 py-6 sm:space-y-0 sm:divide-y sm:divide-gray-100 sm:py-0">
         {/* Item name */}
         <div className="space-y-1 px-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 sm:px-6 sm:py-5">
           <label
@@ -265,7 +281,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
           >
             Eliminar
           </Button>
-          <Button type="submit" variant="primary">
+          <Button type="submit" variant="primary" isLoading={submitted}>
             Guardar
           </Button>
         </div>
@@ -273,10 +289,11 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
       <ConfirmDialog
         open={openDialog}
         setOpen={setOpenDialog}
-        title={"Desea eliminar?"}
-        onConfirm={deleteItem}
+        title={"Eliminar Producto"}
+        onConfirm={onDeleteItem}
       >
-        Aqui va el contenido
+        ¿Esta seguro de eliminar este Producto? Esta acción no se puede
+        deshacer.
       </ConfirmDialog>
     </form>
   )

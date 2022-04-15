@@ -20,7 +20,7 @@ const ConfirmDialog = ({ title, children, open, setOpen, onConfirm }) => {
         >
           <AlertDialog.Overlay className="fixed inset-0 z-50 min-h-screen bg-zinc-500 bg-opacity-75 px-4 pt-4 pb-20 transition-opacity sm:block sm:p-0" />
         </Transition.Child>
-        <div className="fixed inset-0 z-50 flex min-h-screen items-start justify-center overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex min-h-screen items-end justify-center overflow-y-auto px-4 pt-4 pb-20 sm:items-start">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -49,13 +49,8 @@ const ConfirmDialog = ({ title, children, open, setOpen, onConfirm }) => {
                   </div>
                 </div>
               </div>
-              <div className="mt-5 gap-2 sm:mt-4 sm:flex sm:flex-row-reverse">
-                <AlertDialog.Cancel asChild>
-                  <Button type="button" size="sm" variant="secondary">
-                    Cancelar
-                  </Button>
-                </AlertDialog.Cancel>
-                <AlertDialog.Action>
+              <div className="mt-5 flex flex-col gap-2 sm:mt-4 sm:flex-row-reverse">
+                <AlertDialog.Action asChild>
                   <Button
                     type="button"
                     size="sm"
@@ -65,6 +60,11 @@ const ConfirmDialog = ({ title, children, open, setOpen, onConfirm }) => {
                     Eliminar
                   </Button>
                 </AlertDialog.Action>
+                <AlertDialog.Cancel asChild>
+                  <Button type="button" size="sm" variant="secondary">
+                    Cancelar
+                  </Button>
+                </AlertDialog.Cancel>
               </div>
             </AlertDialog.Content>
           </Transition.Child>

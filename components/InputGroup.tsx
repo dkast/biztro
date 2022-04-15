@@ -23,7 +23,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
         </span>
       </div>
       <input
-        className="block w-full rounded-md border-gray-300 pl-9 transition duration-150 ease-in-out focus:border-zinc-500 focus:ring-zinc-500 sm:text-sm"
+        className="block w-full rounded-md border-gray-300 pl-9 transition duration-150 ease-in-out focus:border-zinc-600 focus:ring-zinc-600 sm:text-sm"
         type={type}
         value={value}
         onChange={onChange}
