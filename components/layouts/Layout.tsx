@@ -23,7 +23,7 @@ type LayoutProps = {
 const sidebarNavigation = [
   { name: "Inicio", href: "/app/dashboard", icon: HomeIcon },
   { name: "Productos", href: "/app/items", icon: ViewGridIcon },
-  { name: "Menu", href: "/app/menu-editor", icon: TemplateIcon },
+  { name: "Menu", href: "/app/site-editor", icon: TemplateIcon },
   { name: "Ajustes", href: "/app/settings/general", icon: CogIcon }
 ]
 const userNavigation = [
@@ -67,9 +67,8 @@ const Layout = ({ children }: LayoutProps) => {
             <div className="mt-6 w-full flex-1 space-y-1 px-2">
               {sidebarNavigation.map(item => (
                 <MenuLink key={item.name} href={item.href}>
-                  <a
+                  <div
                     key={item.name}
-                    href={item.href}
                     className={classNames(
                       item.href === asPath
                         ? "bg-gray-200 text-gray-700"
@@ -88,7 +87,7 @@ const Layout = ({ children }: LayoutProps) => {
                       aria-hidden="true"
                     />
                     {/* <span className="mt-2">{item.name}</span> */}
-                  </a>
+                  </div>
                 </MenuLink>
               ))}
             </div>
@@ -292,15 +291,14 @@ const Layout = ({ children }: LayoutProps) => {
                               <Menu.Item key={item.name}>
                                 {({ active }) => (
                                   <MenuLink key={item.name} href={item.href}>
-                                    <a
-                                      href={item.href}
+                                    <div
                                       className={classNames(
                                         active ? "bg-gray-100" : "",
                                         "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                       )}
                                     >
                                       {item.name}
-                                    </a>
+                                    </div>
                                   </MenuLink>
                                 )}
                               </Menu.Item>

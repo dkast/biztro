@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react"
 import Head from "next/head"
 import toast from "react-hot-toast"
-import useSWR, { mutate } from "swr"
+import { mutate } from "swr"
 import Image from "next/image"
 import { useSession } from "next-auth/react"
 import { PlusIcon } from "@heroicons/react/outline"
 
-import fetcher from "@/lib/fetcher"
 import Table from "@/components/Table"
+import useItems from "@/hooks/useItems"
 import Button from "@/components/Button"
 import Loader from "@/components/Loader"
 import ItemForm from "@/components/ItemForm"
@@ -17,6 +17,7 @@ import Layout from "@/components/layouts/Layout"
 
 import { HttpMethod, NextPageWithAuthAndLayout } from "@/lib/types"
 import type { Site, Item } from "@prisma/client"
+import useSite from "@/hooks/useSite"
 
 interface SiteItemData {
   items: Array<Item>
@@ -46,7 +47,7 @@ const Items: NextPageWithAuthAndLayout = () => {
           } else {
             return (
               <div className="flex items-center gap-4 pl-2">
-                <div className="h-8 w-10 rounded-md bg-gray-100"></div>
+                <div className="hidden h-8 w-10 rounded-md bg-gray-100 sm:visible"></div>
                 <span>{row.original?.title}</span>
               </div>
             )
@@ -74,11 +75,8 @@ const Items: NextPageWithAuthAndLayout = () => {
   const { data: session } = useSession()
   const sessionId = session?.user?.id
 
-  const { data: site } = useSWR<Site>(sessionId && "/api/site", fetcher)
-  const { data, error } = useSWR<SiteItemData>(
-    site?.id && `/api/item?siteId=${site?.id}`,
-    fetcher
-  )
+  const { site } = useSite(sessionId)
+  const { data, isLoading } = useItems(site?.id)
 
   async function onCreateItem(siteId: string) {
     try {
@@ -108,7 +106,7 @@ const Items: NextPageWithAuthAndLayout = () => {
     setItemId(itemId)
   }
 
-  if (!data && !error) {
+  if (isLoading) {
     return <Loader />
   }
 

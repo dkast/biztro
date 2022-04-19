@@ -23,7 +23,7 @@ const VARIANT = {
 }
 
 const MODE = {
-  full: "w-full justify-center",
+  full: "w-full justify-center sm:w-full",
   normal: ""
 }
 
