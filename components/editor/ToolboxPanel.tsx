@@ -2,15 +2,12 @@ import React, { useState } from "react"
 import * as Collapsible from "@radix-ui/react-collapsible"
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid"
 
-interface EditorToolboxPanelProps {
+interface ToolboxPanelProps {
   children: React.ReactNode
   title: string
 }
 
-const EditorToolboxPanel = ({
-  children,
-  title
-}: EditorToolboxPanelProps): JSX.Element => {
+const ToolboxPanel = ({ children, title }: ToolboxPanelProps): JSX.Element => {
   const [open, setOpen] = useState(true)
   return (
     <Collapsible.Root open={open} onOpenChange={setOpen}>
@@ -33,4 +30,4 @@ const EditorToolboxPanel = ({
   )
 }
 
-export default EditorToolboxPanel
+export default ToolboxPanel

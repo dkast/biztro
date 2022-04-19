@@ -3,7 +3,7 @@ import { Editor, Frame, Element } from "@craftjs/core"
 
 import Layout from "@/components/layouts/Layout"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
-import EditorToolbox from "@/components/editor/EditorToolbox"
+import Toolbox from "@/components/editor/Toolbox"
 import Container from "@/components/user/Container"
 import Text from "@/components/user/Text"
 
@@ -20,7 +20,7 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
           <div className="flex flex-1">
             {/* Toolbox */}
             <div className="w-60 border-r bg-white">
-              <EditorToolbox></EditorToolbox>
+              <Toolbox />
             </div>
             {/* Content */}
             <div className="flex grow items-center justify-center py-8">

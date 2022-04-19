@@ -6,12 +6,12 @@ import { useEditor } from "@craftjs/core"
 import useItems from "@/hooks/useItems"
 import Loader from "@/components/Loader"
 import useSite from "@/hooks/useSite"
-import EditorToolboxPanel from "@/components/editor/EditorToolboxPanel"
-import EditorMenuItem from "@/components/editor//EditorMenuItem"
-import EditorMenuComponent from "@/components/editor//EditorMenuComponent"
+import ToolboxPanel from "@/components/editor/ToolboxPanel"
+import MenuItem from "@/components/editor/MenuItem"
+import MenuComponent from "@/components/editor/MenuComponent"
 import Text from "@/components/user/Text"
 
-const EditorToolbox = (): JSX.Element => {
+const Toolbox = (): JSX.Element => {
   const { data: session } = useSession()
   const sessionId = session?.user?.id
 
@@ -25,24 +25,24 @@ const EditorToolbox = (): JSX.Element => {
 
   return (
     <div>
-      <EditorToolboxPanel title="Productos">
+      <ToolboxPanel title="Productos">
         {data &&
           data.items.map(item => (
-            <EditorMenuItem key={item.id} item={item}></EditorMenuItem>
+            <MenuItem key={item.id} item={item}></MenuItem>
           ))}
-      </EditorToolboxPanel>
-      <EditorToolboxPanel title="Elementos">
+      </ToolboxPanel>
+      <ToolboxPanel title="Elementos">
         <div
           ref={ref => connectors.create(ref, <Text text="Hola mundo"></Text>)}
         >
-          <EditorMenuComponent
+          <MenuComponent
             title="Encabezado"
             icon={<TextIcon className="text-blue-500" />}
           />
         </div>
-      </EditorToolboxPanel>
+      </ToolboxPanel>
     </div>
   )
 }
 
-export default EditorToolbox
+export default Toolbox
