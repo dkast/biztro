@@ -12,3 +12,11 @@
     @apply cursor-pointer;
   }
 } */
+
+.component-selected {
+  @apply relative;
+}
+.component-selected::after {
+  content: ' ';
+  @apply border-blue-500 border border-dashed w-full h-full absolute left-0 top-0 pointer-events-none block;
+}
