@@ -2,7 +2,6 @@ import ReactDOM from "react-dom"
 import { useNode, useEditor } from "@craftjs/core"
 import { ROOT_NODE } from "@craftjs/utils"
 import React, { useEffect, useRef, useCallback, useState } from "react"
-import useResizeObserver from "@react-hook/resize-observer"
 
 import { ArrowUpIcon } from "@radix-ui/react-icons"
 import { TrashIcon } from "@radix-ui/react-icons"
@@ -34,8 +33,6 @@ export const RenderNode = ({ render }) => {
   }))
 
   const currentRef = useRef<HTMLDivElement>()
-  // const [pos, setPos] = useState<ResizeObserverEntry["contentRect"]>(null)
-  // useResizeObserver(dom, entry => setPos(entry.contentRect))
   const rect = useRect(dom)
 
   useEffect(() => {
@@ -45,19 +42,16 @@ export const RenderNode = ({ render }) => {
     }
   }, [dom, isActive, isHover])
 
-  const getPos = useCallback(
-    (dom: HTMLElement, rect: DOMRect) => {
-      const { top, left, bottom } = dom
-        ? dom.getBoundingClientRect()
-        : { top: 0, left: 0, bottom: 0 }
-      console.dir(dom)
-      return {
-        top: `${top > 0 ? top : bottom}px`,
-        left: `${left}px`
-      }
-    },
-    [dom, rect]
-  )
+  const getPos = useCallback(() => {
+    const { top, left, bottom } = dom
+      ? dom.getBoundingClientRect()
+      : { top: 0, left: 0, bottom: 0 }
+    console.dir(dom)
+    return {
+      top: `${top > 0 ? top : bottom}px`,
+      left: `${left}px`
+    }
+  }, [dom, rect])
 
   // const scroll = useCallback(() => {
   //   const { current: currentDOM } = currentRef
@@ -88,8 +82,8 @@ export const RenderNode = ({ render }) => {
               ref={currentRef}
               className="fixed -mt-6 flex h-6 items-center bg-blue-500 px-2 py-2 text-xs text-white"
               style={{
-                left: getPos(dom, rect).left,
-                top: getPos(dom, rect).top,
+                left: getPos().left,
+                top: getPos().top,
                 zIndex: 9999
               }}
             >

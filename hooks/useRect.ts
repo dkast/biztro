@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
 export const useRect = <T extends Element>(
   dom: HTMLElement

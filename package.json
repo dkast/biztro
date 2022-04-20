@@ -21,7 +21,6 @@
     "@radix-ui/react-collapsible": "^0.1.6",
     "@radix-ui/react-icons": "^1.1.0",
     "@radix-ui/react-tabs": "^0.1.5",
-    "@react-hook/resize-observer": "^1.2.5",
     "blurhash": "^1.1.5",
     "next": "12.1.0",
     "next-auth": "^4.3.1",
