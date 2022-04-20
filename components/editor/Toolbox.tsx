@@ -9,7 +9,7 @@ import useSite from "@/hooks/useSite"
 import ToolboxPanel from "@/components/editor/ToolboxPanel"
 import MenuItem from "@/components/editor/MenuItem"
 import MenuComponent from "@/components/editor/MenuComponent"
-import Text from "@/components/user/Text"
+import Text from "@/components/selectors/Text"
 
 const Toolbox = (): JSX.Element => {
   const { data: session } = useSession()
@@ -33,7 +33,12 @@ const Toolbox = (): JSX.Element => {
       </ToolboxPanel>
       <ToolboxPanel title="Elementos">
         <div
-          ref={ref => connectors.create(ref, <Text text="Hola mundo"></Text>)}
+          ref={ref =>
+            connectors.create(
+              ref,
+              <Text text="Hola mundo" fontSize="12" textAlign="left"></Text>
+            )
+          }
         >
           <MenuComponent
             title="Encabezado"

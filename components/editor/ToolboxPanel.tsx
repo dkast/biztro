@@ -12,7 +12,7 @@ const ToolboxPanel = ({ children, title }: ToolboxPanelProps): JSX.Element => {
   return (
     <Collapsible.Root open={open} onOpenChange={setOpen}>
       <div className="flex justify-between border-b p-2">
-        <h3>{title}</h3>
+        <h3 className="text-sm">{title}</h3>
         <Collapsible.Trigger asChild>
           <button type="button">
             {open ? (

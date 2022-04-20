@@ -1,12 +1,13 @@
 import Head from "next/head"
 import { Editor, Frame, Element } from "@craftjs/core"
 
-import Text from "@/components/user/Text"
+import Text from "@/components/selectors/Text"
 import Layout from "@/components/layouts/Layout"
 import Toolbox from "@/components/editor/Toolbox"
-import Container from "@/components/user/Container"
+import Container from "@/components/selectors/Container"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 import { RenderNode } from "@/components/editor/RenderNode"
+import SettingsBar from "@/components/editor/SettingsBar"
 
 const SiteEditor: NextPageWithAuthAndLayout = () => {
   return (
@@ -35,7 +36,9 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
               </div>
             </div>
             {/* Settings */}
-            <div className="w-60 border-l bg-white"></div>
+            <div className="w-60 border-l bg-white">
+              <SettingsBar />
+            </div>
           </div>
         </div>
       </Editor>
