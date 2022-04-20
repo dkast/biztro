@@ -1,11 +1,13 @@
+import ReactDOM from "react-dom"
 import { useNode, useEditor } from "@craftjs/core"
 import { ROOT_NODE } from "@craftjs/utils"
-import React, { useEffect, useRef, useCallback } from "react"
-import ReactDOM from "react-dom"
+import React, { useEffect, useRef, useCallback, useState } from "react"
+import useResizeObserver from "@react-hook/resize-observer"
 
 import { ArrowUpIcon } from "@radix-ui/react-icons"
 import { TrashIcon } from "@radix-ui/react-icons"
 import { MoveIcon } from "@radix-ui/react-icons"
+import { useRect } from "@/hooks/useRect"
 
 export const RenderNode = ({ render }) => {
   const { id } = useNode()
@@ -32,6 +34,9 @@ export const RenderNode = ({ render }) => {
   }))
 
   const currentRef = useRef<HTMLDivElement>()
+  // const [pos, setPos] = useState<ResizeObserverEntry["contentRect"]>(null)
+  // useResizeObserver(dom, entry => setPos(entry.contentRect))
+  const rect = useRect(dom)
 
   useEffect(() => {
     if (dom) {
@@ -40,36 +45,40 @@ export const RenderNode = ({ render }) => {
     }
   }, [dom, isActive, isHover])
 
-  const getPos = useCallback((dom: HTMLElement) => {
-    const { top, left, bottom } = dom
-      ? dom.getBoundingClientRect()
-      : { top: 0, left: 0, bottom: 0 }
-    return {
-      top: `${top > 0 ? top : bottom}px`,
-      left: `${left}px`
-    }
-  }, [])
+  const getPos = useCallback(
+    (dom: HTMLElement, rect: DOMRect) => {
+      const { top, left, bottom } = dom
+        ? dom.getBoundingClientRect()
+        : { top: 0, left: 0, bottom: 0 }
+      console.dir(dom)
+      return {
+        top: `${top > 0 ? top : bottom}px`,
+        left: `${left}px`
+      }
+    },
+    [dom, rect]
+  )
 
-  const scroll = useCallback(() => {
-    const { current: currentDOM } = currentRef
+  // const scroll = useCallback(() => {
+  //   const { current: currentDOM } = currentRef
 
-    if (!currentDOM) return
-    const { top, left } = getPos(dom)
-    currentDOM.style.top = top
-    currentDOM.style.left = left
-  }, [dom, getPos])
+  //   if (!currentDOM) return
+  //   const { top, left } = getPos(dom)
+  //   currentDOM.style.top = top
+  //   currentDOM.style.left = left
+  // }, [dom, getPos])
 
-  useEffect(() => {
-    document
-      .querySelector(".craftjs-renderer")
-      .addEventListener("scroll", scroll)
+  // useEffect(() => {
+  //   document
+  //     .querySelector(".craftjs-renderer")
+  //     .addEventListener("scroll", scroll)
 
-    return () => {
-      document
-        .querySelector(".craftjs-renderer")
-        .removeEventListener("scroll", scroll)
-    }
-  }, [scroll])
+  //   return () => {
+  //     document
+  //       .querySelector(".craftjs-renderer")
+  //       .removeEventListener("scroll", scroll)
+  //   }
+  // }, [scroll])
 
   return (
     <>
@@ -79,8 +88,8 @@ export const RenderNode = ({ render }) => {
               ref={currentRef}
               className="fixed -mt-6 flex h-6 items-center bg-blue-500 px-2 py-2 text-xs text-white"
               style={{
-                left: getPos(dom).left,
-                top: getPos(dom).top,
+                left: getPos(dom, rect).left,
+                top: getPos(dom, rect).top,
                 zIndex: 9999
               }}
             >
