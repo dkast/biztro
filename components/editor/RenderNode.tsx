@@ -46,7 +46,7 @@ export const RenderNode = ({ render }) => {
     const { top, left, bottom } = dom
       ? dom.getBoundingClientRect()
       : { top: 0, left: 0, bottom: 0 }
-    console.dir(dom)
+    // console.dir(dom)
     return {
       top: `${top > 0 ? top : bottom}px`,
       left: `${left}px`
@@ -76,7 +76,7 @@ export const RenderNode = ({ render }) => {
 
   return (
     <>
-      {isHover || isActive
+      {isActive
         ? ReactDOM.createPortal(
             <div
               ref={currentRef}

@@ -6,7 +6,7 @@ const Container = ({ bgColor, children }) => {
     connectors: { connect, drag }
   } = useNode()
   return (
-    <div className="mt-1 bg-gray-400" ref={ref => connect(drag(ref))}>
+    <div className="bg-gray-400" ref={ref => connect(drag(ref))}>
       {children}
     </div>
   )
