@@ -42,7 +42,7 @@ const Toolbox = (): JSX.Element => {
         >
           <MenuComponent
             title="Encabezado"
-            icon={<TextIcon className="text-blue-500" />}
+            icon={<TextIcon className="text-current" />}
           />
         </div>
       </ToolboxPanel>

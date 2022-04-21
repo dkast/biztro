@@ -8,8 +8,8 @@ interface MenuItemProps {
 
 const MenuItem = ({ item }: MenuItemProps): JSX.Element => {
   return (
-    <div className="mb-1 flex items-center gap-2 truncate rounded border p-2 text-sm shadow-sm">
-      <ButtonIcon className="text-blue-500"></ButtonIcon>
+    <div className="mb-1 flex cursor-move items-center gap-2 truncate rounded-lg p-2 text-sm transition-transform hover:scale-105 hover:bg-blue-500 hover:text-white">
+      <ButtonIcon className="text-current"></ButtonIcon>
       <span>{item.title}</span>
     </div>
   )
