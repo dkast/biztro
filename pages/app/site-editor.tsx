@@ -27,9 +27,13 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
             {/* Content */}
             <div className="flex grow items-center justify-center py-8">
               <div className="page-container"></div>
-              <div className="craftjs-renderer h-full w-[384px] bg-white">
+              <div className="flex h-full w-[384px] bg-white">
                 <Frame>
-                  <Element is={Container} bgColor="#eee" canvas>
+                  <Element
+                    is={Container}
+                    canvas
+                    custom={{ displayName: "Sitio" }}
+                  >
                     Test
                   </Element>
                 </Frame>

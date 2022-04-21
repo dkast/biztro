@@ -8,7 +8,7 @@ interface TextProps {
   fontSize?: string
   textAlign?: string
   fontWeight?: string
-  color?: any
+  color?: Record<"r" | "g" | "b" | "a", number>
   text: string
 }
 
@@ -21,7 +21,7 @@ const Text: UserComponent<TextProps> = ({
 }) => {
   const {
     connectors: { connect },
-    setProp
+    actions: { setProp }
   } = useNode()
 
   return (
@@ -35,7 +35,8 @@ const Text: UserComponent<TextProps> = ({
       style={{
         color: `rgba(${Object.values(color)})`,
         fontWeight,
-        textAlign
+        textAlign,
+        outline: "none"
       }}
       className="text-xl sm:text-2xl"
     />
