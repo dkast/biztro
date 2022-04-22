@@ -23,7 +23,7 @@ const ToolboxPanel = ({ children, title }: ToolboxPanelProps): JSX.Element => {
           </button>
         </Collapsible.Trigger>
       </div>
-      <Collapsible.CollapsibleContent className="p-2">
+      <Collapsible.CollapsibleContent className="flex flex-col gap-2 px-2 pt-2">
         {children}
       </Collapsible.CollapsibleContent>
     </Collapsible.Root>

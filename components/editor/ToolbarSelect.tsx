@@ -1,4 +1,4 @@
-import React, { RefAttributes } from "react"
+import React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 import {
   CheckIcon,
