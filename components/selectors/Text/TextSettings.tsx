@@ -5,6 +5,7 @@ import {
   TextAlignLeftIcon,
   TextAlignRightIcon
 } from "@radix-ui/react-icons"
+import { SketchPicker } from "react-color"
 
 import ToolboxPanel from "@/components/editor/ToolboxPanel"
 import {
@@ -15,15 +16,22 @@ import {
   ToolbarToggleGroup,
   ToolbarToggleGroupItem
 } from "@/components/editor/ToolbarToggleGroup"
+import {
+  ToolbarPopover,
+  ToolbarPopoverContent,
+  ToolbarPopoverTrigger
+} from "@/components/editor/ToolbarPopover"
 
 const TextSettings = () => {
   const {
     actions: { setProp },
     textAlign,
-    fontWeight
+    fontWeight,
+    color
   } = useNode(node => ({
     textAlign: node.data.props.textAlign,
-    fontWeight: node.data.props.fontWeight
+    fontWeight: node.data.props.fontWeight,
+    color: node.data.props.color
   }))
 
   return (
@@ -63,6 +71,29 @@ const TextSettings = () => {
               <TextAlignRightIcon />
             </ToolbarToggleGroupItem>
           </ToolbarToggleGroup>
+        </div>
+      </div>
+      <div className="flex items-center justify-around px-2">
+        <span className="w-1/3 text-sm">Color</span>
+        <div className="w-2/3">
+          <ToolbarPopover>
+            <ToolbarPopoverTrigger>
+              <div
+                className="h-5 w-12 rounded border border-black/10"
+                style={{
+                  backgroundColor: `rgba(${Object.values(color)})`
+                }}
+              ></div>
+            </ToolbarPopoverTrigger>
+            <ToolbarPopoverContent>
+              <SketchPicker
+                color={color}
+                onChange={color => {
+                  setProp(props => (props.color = color.rgb))
+                }}
+              ></SketchPicker>
+            </ToolbarPopoverContent>
+          </ToolbarPopover>
         </div>
       </div>
     </ToolboxPanel>
