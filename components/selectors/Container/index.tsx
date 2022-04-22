@@ -1,6 +1,8 @@
 import React from "react"
 import { useNode, UserComponent } from "@craftjs/core"
 
+import ContainerSettings from "@/components/selectors/Container/ContainerSettings"
+
 interface ContainerProps {
   background?: Record<"r" | "g" | "b" | "a", number>
   children: React.ReactNode
@@ -24,9 +26,12 @@ const Container: UserComponent<ContainerProps> = ({ background, children }) => {
 }
 
 Container.craft = {
-  displayName: "Contenedor",
+  displayName: "Sección",
   props: {
     background: { r: 255, g: 255, b: 255, a: 1 }
+  },
+  related: {
+    toolbar: ContainerSettings
   }
 }
 
