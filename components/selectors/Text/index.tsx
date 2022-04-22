@@ -33,12 +33,12 @@ const Text: UserComponent<TextProps> = ({
       }}
       tagName="h2"
       style={{
+        fontSize: `${fontSize}px`,
         color: `rgba(${Object.values(color)})`,
         fontWeight,
         textAlign,
         outline: "none"
       }}
-      className="text-xl sm:text-2xl"
     />
   )
 }
@@ -46,6 +46,7 @@ const Text: UserComponent<TextProps> = ({
 Text.craft = {
   displayName: "Encabezado",
   props: {
+    fontSize: "12",
     color: { r: 92, g: 90, b: 90, a: 1 },
     fontWeight: "400",
     textAlign: "left",

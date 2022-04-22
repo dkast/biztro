@@ -36,7 +36,7 @@ const Toolbox = (): JSX.Element => {
           ref={ref =>
             connectors.create(
               ref,
-              <Text text="Hola mundo" fontSize="12" textAlign="left"></Text>
+              <Text text="Hola mundo" fontSize="20" textAlign="left"></Text>
             )
           }
         >

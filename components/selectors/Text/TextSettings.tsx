@@ -22,16 +22,39 @@ import {
   ToolbarPopoverTrigger
 } from "@/components/editor/ToolbarPopover"
 
+const SIZES = [
+  "9",
+  "10",
+  "11",
+  "12",
+  "13",
+  "14",
+  "16",
+  "18",
+  "20",
+  "24",
+  "30",
+  "36",
+  "40",
+  "48",
+  "60",
+  "72",
+  "96",
+  "128"
+]
+
 const TextSettings = () => {
   const {
     actions: { setProp },
     textAlign,
     fontWeight,
-    color
+    color,
+    fontSize
   } = useNode(node => ({
     textAlign: node.data.props.textAlign,
     fontWeight: node.data.props.fontWeight,
-    color: node.data.props.color
+    color: node.data.props.color,
+    fontSize: node.data.props.fontSize
   }))
 
   return (
@@ -94,6 +117,21 @@ const TextSettings = () => {
               ></SketchPicker>
             </ToolbarPopoverContent>
           </ToolbarPopover>
+        </div>
+      </div>
+      <div className="flex items-center justify-around px-2">
+        <span className="w-1/3 text-sm">Tamaño</span>
+        <div className="w-2/3">
+          <ToolbarSelect
+            defaultValue={fontSize}
+            onValueChange={value => setProp(props => (props.fontSize = value))}
+          >
+            {SIZES.map(size => (
+              <ToolbarSelectItem key={size} value={size}>
+                {size}
+              </ToolbarSelectItem>
+            ))}
+          </ToolbarSelect>
         </div>
       </div>
     </ToolboxPanel>
