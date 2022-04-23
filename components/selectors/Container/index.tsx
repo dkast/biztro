@@ -14,7 +14,7 @@ const Container: UserComponent<ContainerProps> = ({ background, children }) => {
   } = useNode()
   return (
     <div
-      className="flex flex-1 flex-col px-4"
+      className="flex flex-1 flex-col gap-4 px-4"
       ref={ref => connect(drag(ref))}
       style={{
         backgroundColor: `rgba(${Object.values(background)})`

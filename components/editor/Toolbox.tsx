@@ -10,6 +10,7 @@ import ToolboxPanel from "@/components/editor/ToolboxPanel"
 import MenuItem from "@/components/editor/MenuItem"
 import MenuComponent from "@/components/editor/MenuComponent"
 import Text from "@/components/selectors/Text"
+import CustomItem from "@/components/selectors/CustomItem"
 
 const Toolbox = (): JSX.Element => {
   const { data: session } = useSession()
@@ -28,7 +29,12 @@ const Toolbox = (): JSX.Element => {
       <ToolboxPanel title="Productos">
         {data &&
           data.items.map(item => (
-            <MenuItem key={item.id} item={item}></MenuItem>
+            <div
+              key={item.id}
+              ref={ref => connectors.create(ref, <CustomItem item={item} />)}
+            >
+              <MenuItem item={item}></MenuItem>
+            </div>
           ))}
       </ToolboxPanel>
       <ToolboxPanel title="Elementos">
@@ -36,7 +42,7 @@ const Toolbox = (): JSX.Element => {
           ref={ref =>
             connectors.create(
               ref,
-              <Text text="Hola mundo" fontSize="20" textAlign="left"></Text>
+              <Text text="Encabezado" fontSize="20"></Text>
             )
           }
         >

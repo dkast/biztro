@@ -22,13 +22,13 @@ export const ToolbarSelect = React.forwardRef<
         </SelectPrimitive.Icon>
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Content className="overflow-hidden rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-        <SelectPrimitive.ScrollUpButton>
+        <SelectPrimitive.ScrollUpButton className="flex h-6 items-center justify-center">
           <ChevronUpIcon />
         </SelectPrimitive.ScrollUpButton>
         <SelectPrimitive.Viewport className="p-2">
           {children}
         </SelectPrimitive.Viewport>
-        <SelectPrimitive.ScrollDownButton>
+        <SelectPrimitive.ScrollDownButton className="flex h-6 items-center justify-center">
           <ChevronDownIcon />
         </SelectPrimitive.ScrollDownButton>
       </SelectPrimitive.Content>

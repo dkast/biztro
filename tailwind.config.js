@@ -12,5 +12,9 @@ module.exports = {
       }
     }
   },
-  plugins: [require("@tailwindcss/forms"), require("tailwindcss-radix")()]
+  plugins: [
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/line-clamp"),
+    require("tailwindcss-radix")()
+  ]
 }

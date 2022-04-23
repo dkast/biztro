@@ -8,6 +8,7 @@ import Container from "@/components/selectors/Container"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 import { RenderNode } from "@/components/editor/RenderNode"
 import SettingsBar from "@/components/editor/SettingsBar"
+import CustomItem from "@/components/selectors/CustomItem"
 
 const SiteEditor: NextPageWithAuthAndLayout = () => {
   return (
@@ -15,7 +16,7 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
       <Head>
         <title>Bistro - Editor</title>
       </Head>
-      <Editor resolver={{ Container, Text }} onRender={RenderNode}>
+      <Editor resolver={{ Container, Text, CustomItem }} onRender={RenderNode}>
         <div className="flex flex-1 flex-col bg-gray-100">
           {/* Toolbar */}
           <div className="h-12 border-b bg-white"></div>
@@ -34,13 +35,13 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
                     canvas
                     custom={{ displayName: "Sitio" }}
                   >
-                    Test
+                    {" "}
                   </Element>
                 </Frame>
               </div>
             </div>
             {/* Settings */}
-            <div className="w-60 border-l bg-white">
+            <div className="flex w-60 border-l bg-white">
               <SettingsBar />
             </div>
           </div>
