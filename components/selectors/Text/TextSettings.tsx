@@ -21,7 +21,7 @@ import {
   ToolbarPopoverContent,
   ToolbarPopoverTrigger
 } from "@/components/editor/ToolbarPopover"
-import ToolboxItem from "@/components/editor/ToolboxItem"
+import ToolbarItem from "@/components/editor/ToolbarItem"
 
 const SIZES = [
   "9",
@@ -60,7 +60,7 @@ const TextSettings = (): JSX.Element => {
 
   return (
     <ToolboxPanel title="Texto">
-      <ToolboxItem label="Estilo">
+      <ToolbarItem label="Estilo">
         <ToolbarSelect
           defaultValue={fontWeight}
           onValueChange={value => setProp(props => (props.fontWeight = value))}
@@ -69,8 +69,8 @@ const TextSettings = (): JSX.Element => {
           <ToolbarSelectItem value="400">Regular</ToolbarSelectItem>
           <ToolbarSelectItem value="600">Bold</ToolbarSelectItem>
         </ToolbarSelect>
-      </ToolboxItem>
-      <ToolboxItem label="Alinea">
+      </ToolbarItem>
+      <ToolbarItem label="Alinea">
         <ToolbarToggleGroup
           type="single"
           value={textAlign}
@@ -88,8 +88,8 @@ const TextSettings = (): JSX.Element => {
             <TextAlignRightIcon />
           </ToolbarToggleGroupItem>
         </ToolbarToggleGroup>
-      </ToolboxItem>
-      <ToolboxItem label="Color">
+      </ToolbarItem>
+      <ToolbarItem label="Color">
         <ToolbarPopover>
           <ToolbarPopoverTrigger>
             <div
@@ -108,8 +108,8 @@ const TextSettings = (): JSX.Element => {
             ></SketchPicker>
           </ToolbarPopoverContent>
         </ToolbarPopover>
-      </ToolboxItem>
-      <ToolboxItem label="Tamaño">
+      </ToolbarItem>
+      <ToolbarItem label="Tamaño">
         <ToolbarSelect
           defaultValue={fontSize}
           onValueChange={value => setProp(props => (props.fontSize = value))}
@@ -120,7 +120,7 @@ const TextSettings = (): JSX.Element => {
             </ToolbarSelectItem>
           ))}
         </ToolbarSelect>
-      </ToolboxItem>
+      </ToolbarItem>
     </ToolboxPanel>
   )
 }

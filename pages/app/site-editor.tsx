@@ -1,6 +1,9 @@
 import Head from "next/head"
+import { useSession } from "next-auth/react"
 import { Editor, Frame, Element } from "@craftjs/core"
 
+import useSite from "@/hooks/useSite"
+import Loader from "@/components/Loader"
 import Text from "@/components/selectors/Text"
 import Layout from "@/components/layouts/Layout"
 import Toolbox from "@/components/editor/Toolbox"
@@ -8,15 +11,28 @@ import Container from "@/components/selectors/Container"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 import { RenderNode } from "@/components/editor/RenderNode"
 import SettingsBar from "@/components/editor/SettingsBar"
-import CustomItem from "@/components/selectors/CustomItem"
+import MenuItem from "@/components/selectors/MenuItem"
+import MenuBanner from "@/components/selectors/MenuBanner"
 
 const SiteEditor: NextPageWithAuthAndLayout = () => {
+  const { data: session } = useSession()
+  const sessionId = session?.user?.id
+
+  const { site, isLoading } = useSite(sessionId)
+
+  if (isLoading) {
+    return <Loader />
+  }
+
   return (
     <>
       <Head>
         <title>Bistro - Editor</title>
       </Head>
-      <Editor resolver={{ Container, Text, CustomItem }} onRender={RenderNode}>
+      <Editor
+        resolver={{ Container, Text, MenuItem, MenuBanner }}
+        onRender={RenderNode}
+      >
         <div className="flex flex-1 flex-col bg-gray-100">
           {/* Toolbar */}
           <div className="h-12 border-b bg-white"></div>
@@ -35,7 +51,7 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
                     canvas
                     custom={{ displayName: "Sitio" }}
                   >
-                    {" "}
+                    <MenuBanner site={site}></MenuBanner>
                   </Element>
                 </Frame>
               </div>

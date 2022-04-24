@@ -8,7 +8,7 @@ import {
   ToolbarPopoverContent,
   ToolbarPopoverTrigger
 } from "@/components/editor/ToolbarPopover"
-import ToolboxItem from "@/components/editor/ToolboxItem"
+import ToolbarItem from "@/components/editor/ToolbarItem"
 
 const ContainerSettings = (): JSX.Element => {
   const {
@@ -20,7 +20,7 @@ const ContainerSettings = (): JSX.Element => {
 
   return (
     <ToolboxPanel title="Sección">
-      <ToolboxItem label="Fondo">
+      <ToolbarItem label="Fondo">
         <ToolbarPopover>
           <ToolbarPopoverTrigger>
             <div
@@ -39,7 +39,7 @@ const ContainerSettings = (): JSX.Element => {
             ></SketchPicker>
           </ToolbarPopoverContent>
         </ToolbarPopover>
-      </ToolboxItem>
+      </ToolbarItem>
     </ToolboxPanel>
   )
 }

@@ -2,13 +2,13 @@ import React from "react"
 import { useNode } from "@craftjs/core"
 
 import ToolboxPanel from "@/components/editor/ToolboxPanel"
-import ToolboxItem from "@/components/editor/ToolboxItem"
+import ToolbarItem from "@/components/editor/ToolbarItem"
 import {
   ToolbarSelect,
   ToolbarSelectItem
 } from "@/components/editor/ToolbarSelect"
 
-const CustomItemSettings = (): JSX.Element => {
+const MenuItemSettings = (): JSX.Element => {
   const {
     actions: { setProp },
     layout
@@ -18,7 +18,7 @@ const CustomItemSettings = (): JSX.Element => {
 
   return (
     <ToolboxPanel title="Producto">
-      <ToolboxItem label="Plantilla">
+      <ToolbarItem label="Plantilla">
         <ToolbarSelect
           defaultValue={layout}
           onValueChange={value => setProp(props => (props.layout = value))}
@@ -27,9 +27,9 @@ const CustomItemSettings = (): JSX.Element => {
           <ToolbarSelectItem value="image">Con Imagen</ToolbarSelectItem>
           <ToolbarSelectItem value="center">Centrado</ToolbarSelectItem>
         </ToolbarSelect>
-      </ToolboxItem>
+      </ToolbarItem>
     </ToolboxPanel>
   )
 }
 
-export default CustomItemSettings
+export default MenuItemSettings

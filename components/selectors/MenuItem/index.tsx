@@ -3,19 +3,19 @@ import { useNode, UserComponent } from "@craftjs/core"
 import Image from "next/image"
 
 import { Item } from "@prisma/client"
-import CustomItemSettings from "@/components/selectors/CustomItem/CustomItemSettings"
+import MenuItemSettings from "@/components/selectors/MenuItem/MenuItemSettings"
 
-interface CustomItemProps {
+interface MenuItemProps {
   item: Item
   layout?: "default" | "image" | "center"
 }
 
-const CustomItem: UserComponent<CustomItemProps> = ({ item, layout }) => {
+const MenuItem: UserComponent<MenuItemProps> = ({ item, layout }) => {
   const {
     connectors: { connect }
   } = useNode()
   return (
-    <div ref={connect} className="flex flex-col">
+    <div ref={connect} className="flex flex-col px-4">
       <div className="flex flex-row items-center gap-2">
         <div className="flex items-center">
           {layout === "image" ? (
@@ -63,14 +63,14 @@ const CustomItem: UserComponent<CustomItemProps> = ({ item, layout }) => {
   )
 }
 
-CustomItem.craft = {
+MenuItem.craft = {
   displayName: "Producto",
   props: {
     layout: "default"
   },
   related: {
-    toolbar: CustomItemSettings
+    toolbar: MenuItemSettings
   }
 }
 
-export default CustomItem
+export default MenuItem

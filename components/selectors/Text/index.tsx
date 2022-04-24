@@ -39,6 +39,7 @@ const Text: UserComponent<TextProps> = ({
         textAlign,
         outline: "none"
       }}
+      className="px-4"
     />
   )
 }

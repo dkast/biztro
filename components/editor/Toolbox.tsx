@@ -7,10 +7,10 @@ import useItems from "@/hooks/useItems"
 import Loader from "@/components/Loader"
 import useSite from "@/hooks/useSite"
 import ToolboxPanel from "@/components/editor/ToolboxPanel"
-import MenuItem from "@/components/editor/MenuItem"
-import MenuComponent from "@/components/editor/MenuComponent"
+import ToolboxItem from "@/components/editor/ToolboxItem"
+import ToolboxComponent from "@/components/editor/ToolboxComponent"
 import Text from "@/components/selectors/Text"
-import CustomItem from "@/components/selectors/CustomItem"
+import MenuItem from "@/components/selectors/MenuItem"
 
 const Toolbox = (): JSX.Element => {
   const { data: session } = useSession()
@@ -31,9 +31,9 @@ const Toolbox = (): JSX.Element => {
           data.items.map(item => (
             <div
               key={item.id}
-              ref={ref => connectors.create(ref, <CustomItem item={item} />)}
+              ref={ref => connectors.create(ref, <MenuItem item={item} />)}
             >
-              <MenuItem item={item}></MenuItem>
+              <ToolboxItem item={item}></ToolboxItem>
             </div>
           ))}
       </ToolboxPanel>
@@ -46,7 +46,7 @@ const Toolbox = (): JSX.Element => {
             )
           }
         >
-          <MenuComponent
+          <ToolboxComponent
             title="Encabezado"
             icon={<TextIcon className="text-current" />}
           />
