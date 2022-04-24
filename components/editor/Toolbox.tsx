@@ -1,6 +1,6 @@
 import React from "react"
 import { useSession } from "next-auth/react"
-import { TextIcon } from "@radix-ui/react-icons"
+import { HeadingIcon } from "@radix-ui/react-icons"
 import { useEditor } from "@craftjs/core"
 
 import useItems from "@/hooks/useItems"
@@ -48,7 +48,7 @@ const Toolbox = (): JSX.Element => {
         >
           <ToolboxComponent
             title="Encabezado"
-            icon={<TextIcon className="text-current" />}
+            icon={<HeadingIcon className="text-current" />}
           />
         </div>
       </ToolboxPanel>

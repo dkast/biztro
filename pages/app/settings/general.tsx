@@ -36,6 +36,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     reset
   } = useForm<IFormValues>()
 
+  const [submitted, setSubmitted] = useState(false)
   const { data: session } = useSession()
   const sessionId = session?.user?.id
 
@@ -60,12 +61,13 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
   }, [site, reset])
 
   async function onSubmit(data: IFormValues) {
+    setSubmitted(true)
     if (site.id) {
       await updateSite(data)
     } else {
       await createSite(data)
     }
-
+    setSubmitted(false)
     mutate("/api/site")
   }
 
@@ -78,7 +80,8 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
       body: JSON.stringify({
         userId: sessionId,
         name: data.name,
-        description: data.description
+        description: data.description,
+        phone: data.phone
       })
     })
 
@@ -99,6 +102,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
         id: site.id,
         name: data.name,
         description: data.description,
+        phone: data.phone,
         logo: logoImage.imageURL,
         image: bannerImage.imageURL,
         imageBlurhash: bannerImage.imageBlurhash
@@ -156,7 +160,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                   htmlFor="description"
                   className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                 >
-                  Descripción
+                  Información
                 </label>
                 <div className="mt-1 sm:col-span-2 sm:mt-0">
                   <TextArea
@@ -166,7 +170,29 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                     invalid={errors.description ? true : undefined}
                   ></TextArea>
                   <p className="mt-2 text-sm text-gray-500">
-                    Escribe una descripción sobre tu negocio.
+                    Dirección del negocio, información, etc.
+                  </p>
+                </div>
+              </div>
+
+              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-100 sm:pt-5">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                >
+                  Teléfono
+                </label>
+                <div className="mt-1 sm:col-span-2 sm:mt-0">
+                  <Input
+                    type="tel"
+                    name="phone"
+                    register={register}
+                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                    placeholder="123-456-7890"
+                    invalid={errors.phone ? true : undefined}
+                  ></Input>
+                  <p className="mt-2 text-sm text-gray-500">
+                    Formato: 123-456-7890
                   </p>
                 </div>
               </div>
@@ -301,7 +327,12 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
             {/* <Button type="button" variant="secondary" size="sm">
               Cancelar
             </Button> */}
-            <Button type="submit" variant="primary" size="sm">
+            <Button
+              type="submit"
+              variant="primary"
+              size="sm"
+              isLoading={submitted}
+            >
               Guardar
             </Button>
           </div>

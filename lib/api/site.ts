@@ -51,13 +51,14 @@ export async function createSite(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void | NextApiResponse<{ siteId: string }>> {
-  const { name, description, userId } = req.body
+  const { name, description, phone, userId } = req.body
 
   try {
     const response = await prisma.site.create({
       data: {
         name,
         description,
+        phone,
         user: {
           connect: {
             id: userId
@@ -79,7 +80,7 @@ export async function updateSite(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void | NextApiResponse<Site>> {
-  const { id, name, description, logo, image, imageBlurhash } = req.body
+  const { id, name, description, phone, logo, image, imageBlurhash } = req.body
 
   try {
     const response = await prisma.site.update({
@@ -89,6 +90,7 @@ export async function updateSite(
       data: {
         name,
         description,
+        phone,
         logo,
         image,
         imageBlurhash
