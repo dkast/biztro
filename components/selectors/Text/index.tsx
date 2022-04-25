@@ -48,7 +48,7 @@ Text.craft = {
   displayName: "Encabezado",
   props: {
     fontSize: "12",
-    color: { r: 92, g: 90, b: 90, a: 1 },
+    color: { r: 38, g: 50, b: 56, a: 1 },
     fontWeight: "400",
     textAlign: "left",
     text: "Encabezado"

@@ -62,7 +62,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
 
   async function onSubmit(data: IFormValues) {
     setSubmitted(true)
-    if (site.id) {
+    if (site?.id) {
       await updateSite(data)
     } else {
       await createSite(data)
