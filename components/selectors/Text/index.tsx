@@ -3,11 +3,13 @@ import { useNode, UserComponent } from "@craftjs/core"
 import ContentEditable from "react-contenteditable"
 
 import TextSettings from "@/components/selectors/Text/TextSettings"
+import Font from "@/components/Font"
 
 interface TextProps {
   fontSize?: string
   textAlign?: string
-  fontWeight?: string
+  fontWeight?: string,
+  fontFamily?: string,
   color?: Record<"r" | "g" | "b" | "a", number>
   text: string
 }
@@ -16,6 +18,7 @@ const Text: UserComponent<TextProps> = ({
   fontSize,
   textAlign,
   fontWeight,
+  fontFamily,
   color,
   text
 }) => {
@@ -25,6 +28,7 @@ const Text: UserComponent<TextProps> = ({
   } = useNode()
 
   return (
+    <Font family={fontFamily}>
     <ContentEditable
       innerRef={connect}
       html={text}
@@ -41,6 +45,7 @@ const Text: UserComponent<TextProps> = ({
       }}
       className="px-4"
     />
+    </Font>
   )
 }
 
@@ -50,6 +55,7 @@ Text.craft = {
     fontSize: "12",
     color: { r: 38, g: 50, b: 56, a: 1 },
     fontWeight: "400",
+    fontFamily: "Inter",
     textAlign: "left",
     text: "Encabezado"
   },

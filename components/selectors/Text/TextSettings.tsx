@@ -44,22 +44,60 @@ const SIZES = [
   "128"
 ]
 
+const FONTS = [
+  "Archivo Narrow",
+  "Chivo",
+  "Cormorant",
+  "Federo",
+  "Inter",
+  "Italiana",
+  "Krona One",
+  "Merriweather",
+  "Montserrat",
+  "Neuton",
+  "Open Sans",
+  "Playfair Display",
+  "Raleway",
+  "Roboto",
+  "Roboto Slab",
+  "Rubik",
+  "Source Sans Pro",
+  "Source Serif Pro",
+  "Space Grotesk",
+  "Space Mono",
+  "Syne",
+]
+
 const TextSettings = (): JSX.Element => {
   const {
     actions: { setProp },
     textAlign,
     fontWeight,
     color,
-    fontSize
+    fontSize,
+    fontFamily
   } = useNode(node => ({
     textAlign: node.data.props.textAlign,
     fontWeight: node.data.props.fontWeight,
     color: node.data.props.color,
-    fontSize: node.data.props.fontSize
+    fontSize: node.data.props.fontSize,
+    fontFamily: node.data.props.fontFamily
   }))
 
   return (
     <ToolboxPanel title="Texto">
+      <ToolbarItem label="Fuente">
+        <ToolbarSelect
+          defaultValue={fontFamily}
+          onValueChange={value => setProp(props => (props.fontFamily = value))}
+        >
+          {FONTS.map(font => (
+            <ToolbarSelectItem key={font} value={font}>
+              {font}
+            </ToolbarSelectItem>
+          ))}
+        </ToolbarSelect>
+      </ToolbarItem>
       <ToolbarItem label="Estilo">
         <ToolbarSelect
           defaultValue={fontWeight}
