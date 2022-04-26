@@ -44,7 +44,7 @@ const MenuBanner: UserComponent<MenuBannerProps> = ({
         {site?.logo && showLogo ? (
           <div
             className={classNames(
-              site?.image && showBanner ? "-mt-12" : null,
+              site?.image && showBanner ? "-mt-12" : "my-2",
               "ml-4 h-[100px] w-[100px] overflow-hidden rounded-full border-4 border-white"
             )}
           >
@@ -53,7 +53,9 @@ const MenuBanner: UserComponent<MenuBannerProps> = ({
         ) : null}
         <div
           className={classNames(
-            !site?.logo || !showLogo ? "flex-1 text-center" : null,
+            !site?.logo || !showLogo
+              ? "flex flex-1 flex-col items-center"
+              : null,
             "flex flex-col gap-1 px-4 py-2"
           )}
         >

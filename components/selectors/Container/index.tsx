@@ -10,12 +10,12 @@ interface ContainerProps {
 
 const Container: UserComponent<ContainerProps> = ({ background, children }) => {
   const {
-    connectors: { connect, drag }
+    connectors: { connect }
   } = useNode()
   return (
     <div
       className="flex flex-1 flex-col gap-4"
-      ref={ref => connect(drag(ref))}
+      ref={connect}
       style={{
         backgroundColor: `rgba(${Object.values(background)})`
       }}
