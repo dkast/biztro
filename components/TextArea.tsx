@@ -35,7 +35,6 @@ const TextArea: React.FC<TextAreaProps> = props => {
   )
 
   return (
-    <>
       <div className="relative mt-1 w-full max-w-lg rounded-md shadow-sm">
         <textarea
           className={cssClasses}
@@ -43,7 +42,6 @@ const TextArea: React.FC<TextAreaProps> = props => {
           {...props}
         />
       </div>
-    </>
   )
 }
 

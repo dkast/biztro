@@ -210,6 +210,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
                 >
                   {({ open }) => (
                     <button
+                      type="button"
                       onClick={open}
                       className="absolute z-10 flex h-[300px] w-[300px] flex-col items-center justify-center rounded-lg bg-gray-100 opacity-0 transition-all duration-200 ease-linear hover:opacity-80"
                     >

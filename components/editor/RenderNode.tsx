@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom"
 import { useNode, useEditor } from "@craftjs/core"
 import { ROOT_NODE } from "@craftjs/utils"
-import React, { useEffect, useRef, useCallback, useState } from "react"
+import React, { useEffect, useRef, useCallback } from "react"
 
 import { ArrowUpIcon } from "@radix-ui/react-icons"
 import { TrashIcon } from "@radix-ui/react-icons"

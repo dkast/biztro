@@ -32,7 +32,7 @@ const userNavigation = [
 ]
 
 function MenuLink(props) {
-  let { href, children, ...rest } = props
+  const { href, children, ...rest } = props
   return (
     <Link href={href}>
       <a {...rest}>{children}</a>
@@ -50,7 +50,6 @@ const Layout = ({ children }: LayoutProps) => {
   }
 
   return (
-    <>
       <div className="flex h-screen">
         {/* Narrow sidebar */}
         <div className="hidden w-16 overflow-y-auto border-r border-gray-200 bg-gray-50 md:block">
@@ -332,7 +331,6 @@ const Layout = ({ children }: LayoutProps) => {
           </div>
         </div>
       </div>
-    </>
   )
 }
 

@@ -15,7 +15,7 @@ export const ToolbarToggleGroup = ({
   )
 }
 
-export const ToolbarToggleGroupItem = React.forwardRef<
+export const ToolbarToggleGroupItem = forwardRef<
   HTMLButtonElement,
   ToggleGroup.ToggleGroupItemProps
 >(({ children, ...props }, forwardRef) => {

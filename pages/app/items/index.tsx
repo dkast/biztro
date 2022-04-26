@@ -19,11 +19,6 @@ import { HttpMethod, NextPageWithAuthAndLayout } from "@/lib/types"
 import type { Site, Item } from "@prisma/client"
 import useSite from "@/hooks/useSite"
 
-interface SiteItemData {
-  items: Array<Item>
-  site: Site | null
-}
-
 const Items: NextPageWithAuthAndLayout = () => {
   const columns = useMemo(
     () => [

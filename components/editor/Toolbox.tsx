@@ -18,7 +18,7 @@ const Toolbox = (): JSX.Element => {
 
   const { site } = useSite(sessionId)
   const { data, isLoading } = useItems(site?.id)
-  const { connectors, query } = useEditor()
+  const { connectors } = useEditor()
 
   if (isLoading) {
     return <Loader />

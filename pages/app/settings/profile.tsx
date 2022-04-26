@@ -4,9 +4,7 @@ import { NextPageWithAuthAndLayout } from "@/lib/types"
 
 const SettingsProfile: NextPageWithAuthAndLayout = () => {
   return (
-    <>
       <div>Perfil</div>
-    </>
   )
 }
 

@@ -56,7 +56,8 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     })
     reset({
       name: site?.name,
-      description: site?.description
+      description: site?.description,
+      phone: site?.phone
     })
   }, [site, reset])
 
@@ -121,7 +122,6 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
   }
 
   return (
-    <>
       <form
         className="space-y-8 divide-y divide-gray-200"
         onSubmit={handleSubmit(onSubmit)}
@@ -338,7 +338,6 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
           </div>
         </div>
       </form>
-    </>
   )
 }
 
