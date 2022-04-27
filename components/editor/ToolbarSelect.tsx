@@ -48,7 +48,9 @@ export const ToolbarSelectItem = React.forwardRef<
       ref={forwardedRef}
       className="relative flex h-6 cursor-default items-center rounded pl-7 text-sm focus:bg-blue-500 focus:text-white focus:outline-none"
     >
-      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+      <SelectPrimitive.ItemText className="truncate">
+        {children}
+      </SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator className="absolute left-0 inline-flex w-6 items-center justify-center">
         <CheckIcon />
       </SelectPrimitive.ItemIndicator>

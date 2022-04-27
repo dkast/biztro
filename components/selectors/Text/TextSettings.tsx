@@ -23,6 +23,8 @@ import {
 } from "@/components/editor/ToolbarPopover"
 import ToolbarItem from "@/components/editor/ToolbarItem"
 
+import { FONTS } from "@/lib/types"
+
 const SIZES = [
   "9",
   "10",
@@ -42,30 +44,6 @@ const SIZES = [
   "72",
   "96",
   "128"
-]
-
-const FONTS = [
-  "Archivo Narrow",
-  "Chivo",
-  "Cormorant",
-  "Federo",
-  "Inter",
-  "Italiana",
-  "Krona One",
-  "Merriweather",
-  "Montserrat",
-  "Neuton",
-  "Open Sans",
-  "Playfair Display",
-  "Raleway",
-  "Roboto",
-  "Roboto Slab",
-  "Rubik",
-  "Source Sans Pro",
-  "Source Serif Pro",
-  "Space Grotesk",
-  "Space Mono",
-  "Syne",
 ]
 
 const TextSettings = (): JSX.Element => {

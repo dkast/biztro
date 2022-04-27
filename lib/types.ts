@@ -118,3 +118,38 @@ export interface ImageInfo {
   imageURL: string
   imageBlurhash: string
 }
+
+export const FONTS = [
+  "Alfa Slab One",
+  "Archivo Black",
+  "Arvo",
+  "Bebas Neue",
+  "Bitter",
+  "Comfortaa",
+  "Cookie",
+  "Creepster",
+  "Federo",
+  "Fugaz One",
+  "Homemade Apple",
+  "Inter",
+  "Merriweather",
+  "Montserrat",
+  "Neuton",
+  "Open Sans",
+  "Pacifico",
+  "Parisienne",
+  "Permanent Marker",
+  "Playfair Display",
+  "Poiriet One",
+  "Raleway",
+  "Roboto Slab",
+  "Roboto",
+  "Sacramento",
+  "Send Flowers",
+  "Source Sans Pro",
+  "Source Serif Pro",
+  "Space Grotesk",
+  "Space Mono",
+  "Special Elite",
+  "Square Peg"
+]
