@@ -36,30 +36,30 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
         <div className="flex flex-1 flex-col bg-gray-100">
           {/* Toolbar */}
           <div className="h-12 border-b bg-white"></div>
-          <div className="flex flex-1 min-h-0 flex-nowrap">
+          <div className="flex min-h-0 flex-1 flex-nowrap">
             {/* Toolbox */}
             <div className="w-60 border-r bg-white">
               <Toolbox />
             </div>
             {/* Content */}
-            <div className="page-container grow py-8 relative h-full">
+            <div className="page-container relative h-full grow py-8">
               <div className="absolute inset-0 overflow-auto">
-              <div className="flex min-h-[700px] w-[390px] bg-white mx-auto my-10">
-                <Frame>
-                  <Element
-                    is={Container}
-                    canvas
-                    custom={{ displayName: "Sitio" }}
+                <div className="mx-auto my-10 flex min-h-[700px] w-[390px] bg-white">
+                  <Frame>
+                    <Element
+                      is={Container}
+                      canvas
+                      custom={{ displayName: "Sitio" }}
                     >
-                    <MenuBanner
-                      site={site}
-                      showLogo={true}
-                      showBanner={true}
+                      <MenuBanner
+                        site={site}
+                        showLogo={true}
+                        showBanner={true}
                       ></MenuBanner>
-                  </Element>
-                </Frame>
+                    </Element>
+                  </Frame>
+                </div>
               </div>
-            </div>
             </div>
             {/* Settings */}
             <div className="flex w-60 border-l bg-white">

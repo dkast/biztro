@@ -1,7 +1,9 @@
 import React from "react"
 import { useEditor } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
-import ToolboxPanel from "./ToolboxPanel"
+
+import ToolboxPanel from "@/components/editor/ToolboxPanel"
+import ToolbarScroll from "@/components/editor/ToolbarScroll"
 
 const SettingsBar = (): JSX.Element => {
   const { active, related } = useEditor((state, query) => {
@@ -13,7 +15,7 @@ const SettingsBar = (): JSX.Element => {
     }
   })
   return (
-    <div className="flex flex-1 flex-col gap-4">
+    <ToolbarScroll>
       {active && related.toolbar && React.createElement(related.toolbar)}
       {!active && (
         <div className="flex flex-col items-center justify-center px-5 py-2 text-center">
@@ -27,7 +29,7 @@ const SettingsBar = (): JSX.Element => {
           <Layers />
         </div>
       </ToolboxPanel>
-    </div>
+    </ToolbarScroll>
   )
 }
 
