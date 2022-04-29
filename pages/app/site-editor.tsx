@@ -33,32 +33,33 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
         resolver={{ Container, Text, MenuItem, MenuBanner }}
         onRender={RenderNode}
       >
-        <div className="scro flex flex-1 flex-col bg-gray-100">
+        <div className="flex flex-1 flex-col bg-gray-100">
           {/* Toolbar */}
           <div className="h-12 border-b bg-white"></div>
-          <div className="flex flex-1">
+          <div className="flex flex-1 min-h-0 flex-nowrap">
             {/* Toolbox */}
             <div className="w-60 border-r bg-white">
               <Toolbox />
             </div>
             {/* Content */}
-            <div className="flex grow items-center justify-center py-8">
-              <div className="page-container"></div>
-              <div className="flex h-full max-h-[700px] w-[390px] overflow-scroll bg-white">
+            <div className="page-container grow py-8 relative h-full">
+              <div className="absolute inset-0 overflow-auto">
+              <div className="flex min-h-[700px] w-[390px] bg-white mx-auto my-10">
                 <Frame>
                   <Element
                     is={Container}
                     canvas
                     custom={{ displayName: "Sitio" }}
-                  >
+                    >
                     <MenuBanner
                       site={site}
                       showLogo={true}
                       showBanner={true}
-                    ></MenuBanner>
+                      ></MenuBanner>
                   </Element>
                 </Frame>
               </div>
+            </div>
             </div>
             {/* Settings */}
             <div className="flex w-60 border-l bg-white">
