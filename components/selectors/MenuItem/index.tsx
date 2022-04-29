@@ -12,6 +12,7 @@ interface MenuItemProps {
   titleColor?: Record<"r" | "g" | "b" | "a", number>
   textColor?: Record<"r" | "g" | "b" | "a", number>
   fontFamily?: string
+  fontWeight?: string
 }
 
 const MenuItem: UserComponent<MenuItemProps> = ({
@@ -19,7 +20,8 @@ const MenuItem: UserComponent<MenuItemProps> = ({
   layout,
   titleColor,
   textColor,
-  fontFamily
+  fontFamily,
+  fontWeight
 }) => {
   const {
     connectors: { connect }
@@ -47,7 +49,8 @@ const MenuItem: UserComponent<MenuItemProps> = ({
                 <h3
                   className="text-center text-lg"
                   style={{
-                    color: `rgba(${Object.values(titleColor)})`
+                    color: `rgba(${Object.values(titleColor)})`,
+                    fontWeight
                   }}
                 >
                   {item.title}
@@ -66,7 +69,8 @@ const MenuItem: UserComponent<MenuItemProps> = ({
                 <div
                   className="mt-1 text-center"
                   style={{
-                    color: `rgba(${Object.values(titleColor)})`
+                    color: `rgba(${Object.values(titleColor)})`,
+                    fontWeight
                   }}
                 >
                   <span>${item.price}</span>
@@ -86,7 +90,8 @@ const MenuItem: UserComponent<MenuItemProps> = ({
                 <div
                   className="flex flex-row items-center justify-between"
                   style={{
-                    color: `rgba(${Object.values(titleColor)})`
+                    color: `rgba(${Object.values(titleColor)})`,
+                    fontWeight
                   }}
                 >
                   <h3 className="text-lg">{item.title}</h3>
@@ -121,7 +126,8 @@ MenuItem.craft = {
     layout: "default",
     titleColor: { r: 38, g: 50, b: 56, a: 1 },
     textColor: { r: 82, g: 82, b: 82, a: 1 },
-    fontFamily: "Inter"
+    fontFamily: "Inter",
+    fontWeight: "400"
   },
   related: {
     toolbar: MenuItemSettings

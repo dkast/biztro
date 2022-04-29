@@ -86,6 +86,18 @@ const TextSettings = (): JSX.Element => {
           <ToolbarSelectItem value="600">Bold</ToolbarSelectItem>
         </ToolbarSelect>
       </ToolbarItem>
+      <ToolbarItem label="Tamaño">
+        <ToolbarSelect
+          defaultValue={fontSize}
+          onValueChange={value => setProp(props => (props.fontSize = value))}
+        >
+          {SIZES.map(size => (
+            <ToolbarSelectItem key={size} value={size}>
+              {size}
+            </ToolbarSelectItem>
+          ))}
+        </ToolbarSelect>
+      </ToolbarItem>
       <ToolbarItem label="Alinea">
         <ToolbarToggleGroup
           type="single"
@@ -124,18 +136,6 @@ const TextSettings = (): JSX.Element => {
             ></SwatchesPicker>
           </ToolbarPopoverContent>
         </ToolbarPopover>
-      </ToolbarItem>
-      <ToolbarItem label="Tamaño">
-        <ToolbarSelect
-          defaultValue={fontSize}
-          onValueChange={value => setProp(props => (props.fontSize = value))}
-        >
-          {SIZES.map(size => (
-            <ToolbarSelectItem key={size} value={size}>
-              {size}
-            </ToolbarSelectItem>
-          ))}
-        </ToolbarSelect>
       </ToolbarItem>
     </ToolboxPanel>
   )

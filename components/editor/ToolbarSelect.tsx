@@ -16,7 +16,9 @@ export const ToolbarSelect = React.forwardRef<
         ref={forwardedRef}
         className="inline-flex h-7 w-full items-center justify-between rounded bg-gray-100 px-1 pl-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
       >
-        <SelectPrimitive.Value />
+        <div className="truncate">
+          <SelectPrimitive.Value />
+        </div>
         <SelectPrimitive.Icon>
           <ChevronDownIcon />
         </SelectPrimitive.Icon>
@@ -48,7 +50,7 @@ export const ToolbarSelectItem = React.forwardRef<
       ref={forwardedRef}
       className="relative flex h-6 cursor-default items-center rounded pl-7 text-sm focus:bg-blue-500 focus:text-white focus:outline-none"
     >
-      <SelectPrimitive.ItemText className="truncate">
+      <SelectPrimitive.ItemText className="truncate text-sm">
         {children}
       </SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator className="absolute left-0 inline-flex w-6 items-center justify-center">

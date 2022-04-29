@@ -22,12 +22,14 @@ const MenuItemSettings = (): JSX.Element => {
     layout,
     titleColor,
     textColor,
-    fontFamily
+    fontFamily,
+    fontWeight
   } = useNode(node => ({
     layout: node.data.props.layout,
     titleColor: node.data.props.titleColor,
     textColor: node.data.props.textColor,
-    fontFamily: node.data.props.fontFamily
+    fontFamily: node.data.props.fontFamily,
+    fontWeight: node.data.props.fontWeight
   }))
 
   return (
@@ -44,8 +46,34 @@ const MenuItemSettings = (): JSX.Element => {
           </ToolbarSelect>
         </ToolbarItem>
       </ToolboxPanel>
-      <ToolboxPanel title="Color">
-        <ToolbarItem label="Titulo">
+      <ToolboxPanel title="Titulo">
+        <ToolbarItem label="Fuente">
+          <ToolbarSelect
+            defaultValue={fontFamily}
+            onValueChange={value =>
+              setProp(props => (props.fontFamily = value))
+            }
+          >
+            {FONTS.map(font => (
+              <ToolbarSelectItem key={font} value={font}>
+                {font}
+              </ToolbarSelectItem>
+            ))}
+          </ToolbarSelect>
+        </ToolbarItem>
+        <ToolbarItem label="Estilo">
+          <ToolbarSelect
+            defaultValue={fontWeight}
+            onValueChange={value =>
+              setProp(props => (props.fontWeight = value))
+            }
+          >
+            <ToolbarSelectItem value="200">Light</ToolbarSelectItem>
+            <ToolbarSelectItem value="400">Regular</ToolbarSelectItem>
+            <ToolbarSelectItem value="600">Bold</ToolbarSelectItem>
+          </ToolbarSelect>
+        </ToolbarItem>
+        <ToolbarItem label="Color">
           <ToolbarPopover>
             <ToolbarPopoverTrigger>
               <div
@@ -65,7 +93,9 @@ const MenuItemSettings = (): JSX.Element => {
             </ToolbarPopoverContent>
           </ToolbarPopover>
         </ToolbarItem>
-        <ToolbarItem label="Texto">
+      </ToolboxPanel>
+      <ToolboxPanel title="Descripcion">
+        <ToolbarItem label="Color">
           <ToolbarPopover>
             <ToolbarPopoverTrigger>
               <div
@@ -84,22 +114,6 @@ const MenuItemSettings = (): JSX.Element => {
               ></SwatchesPicker>
             </ToolbarPopoverContent>
           </ToolbarPopover>
-        </ToolbarItem>
-      </ToolboxPanel>
-      <ToolboxPanel title="Texto">
-        <ToolbarItem label="Fuente">
-          <ToolbarSelect
-            defaultValue={fontFamily}
-            onValueChange={value =>
-              setProp(props => (props.fontFamily = value))
-            }
-          >
-            {FONTS.map(font => (
-              <ToolbarSelectItem key={font} value={font}>
-                {font}
-              </ToolbarSelectItem>
-            ))}
-          </ToolbarSelect>
         </ToolbarItem>
       </ToolboxPanel>
     </>
