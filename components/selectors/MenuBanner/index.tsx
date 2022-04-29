@@ -107,6 +107,9 @@ MenuBanner.craft = {
   },
   related: {
     toolbar: MenuBannerSettings
+  },
+  rules: {
+    canDrag: () => false
   }
 }
 
