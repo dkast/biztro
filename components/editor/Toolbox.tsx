@@ -11,6 +11,7 @@ import ToolboxItem from "@/components/editor/ToolboxItem"
 import ToolboxComponent from "@/components/editor/ToolboxComponent"
 import Text from "@/components/selectors/Text"
 import MenuItem from "@/components/selectors/MenuItem"
+import ToolbarScroll from "@/components/editor/ToolbarScroll"
 
 const Toolbox = (): JSX.Element => {
   const { data: session } = useSession()
@@ -25,7 +26,7 @@ const Toolbox = (): JSX.Element => {
   }
 
   return (
-    <div>
+    <ToolbarScroll>
       <ToolboxPanel title="Productos">
         {data &&
           data.items.map(item => (
@@ -52,7 +53,7 @@ const Toolbox = (): JSX.Element => {
           />
         </div>
       </ToolboxPanel>
-    </div>
+    </ToolbarScroll>
   )
 }
 

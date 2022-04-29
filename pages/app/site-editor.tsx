@@ -38,7 +38,7 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
           <div className="h-12 border-b bg-white"></div>
           <div className="flex min-h-0 flex-1 flex-nowrap">
             {/* Toolbox */}
-            <div className="w-60 border-r bg-white">
+            <div className="flex w-60 border-r bg-white">
               <Toolbox />
             </div>
             {/* Content */}
