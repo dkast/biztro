@@ -43,11 +43,11 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
             {/* Content */}
             <div className="page-container relative h-full grow">
               {/* Toolbar */}
-              <div className="h-[45px] border-b bg-white">
+              <div className="z-30 h-[45px] border-b bg-white">
                 <ToolbarMenu />
               </div>
-              <div className="absolute inset-0 overflow-auto">
-                <div className="mx-auto my-16 flex min-h-[700px] w-[390px] bg-white">
+              <div className="absolute inset-0 my-16 overflow-auto">
+                <div className="mx-auto flex min-h-[700px] w-[390px] bg-white">
                   <Frame>
                     <Element
                       is={Container}
