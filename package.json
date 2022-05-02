@@ -27,6 +27,7 @@
     "@radix-ui/react-switch": "^0.1.5",
     "@radix-ui/react-tabs": "^0.1.5",
     "@radix-ui/react-toggle-group": "^0.1.5",
+    "@radix-ui/react-toolbar": "^0.1.5",
     "blurhash": "^1.1.5",
     "next": "12.1.5",
     "next-auth": "^4.3.3",

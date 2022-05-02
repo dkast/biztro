@@ -18,7 +18,7 @@ const SettingsBar = (): JSX.Element => {
     <ToolbarScroll>
       {active && related.toolbar && React.createElement(related.toolbar)}
       {!active && (
-        <div className="flex flex-col items-center justify-center px-5 py-2 text-center">
+        <div className="flex flex-col items-center justify-center px-5 py-12 text-center">
           <span className="text-sm text-gray-500">
             Selecciona un componente para editar
           </span>

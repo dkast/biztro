@@ -13,6 +13,7 @@ import { RenderNode } from "@/components/editor/RenderNode"
 import SettingsBar from "@/components/editor/SettingsBar"
 import MenuItem from "@/components/selectors/MenuItem"
 import MenuBanner from "@/components/selectors/MenuBanner"
+import ToolbarMenu from "@/components/editor/ToolbarMenu"
 
 const SiteEditor: NextPageWithAuthAndLayout = () => {
   const { data: session } = useSession()
@@ -34,17 +35,19 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
         onRender={RenderNode}
       >
         <div className="flex flex-1 flex-col bg-gray-100">
-          {/* Toolbar */}
-          <div className="h-12 border-b bg-white"></div>
           <div className="flex min-h-0 flex-1 flex-nowrap">
             {/* Toolbox */}
             <div className="flex w-60 border-r bg-white">
               <Toolbox />
             </div>
             {/* Content */}
-            <div className="page-container relative h-full grow py-8">
+            <div className="page-container relative h-full grow">
+              {/* Toolbar */}
+              <div className="h-[45px] border-b bg-white">
+                <ToolbarMenu />
+              </div>
               <div className="absolute inset-0 overflow-auto">
-                <div className="mx-auto my-10 flex min-h-[700px] w-[390px] bg-white">
+                <div className="mx-auto my-16 flex min-h-[700px] w-[390px] bg-white">
                   <Frame>
                     <Element
                       is={Container}
