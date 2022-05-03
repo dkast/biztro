@@ -12,6 +12,7 @@ import { useRecoilState } from "recoil"
 
 import { frameSizeState } from "@/lib/store"
 import { frameSize } from "@/lib/types"
+import Button from "@/components/Button"
 
 const ToolbarMenu = () => {
   const { enabled, canUndo, canRedo, actions } = useEditor((state, query) => ({
@@ -74,14 +75,15 @@ const ToolbarMenu = () => {
       >
         {enabled ? <LockOpen2Icon /> : <LockClosedIcon />}
       </Toolbar.Button>
-      <Toolbar.Link
-        href="#"
-        className="ml-auto inline-flex h-6 items-center justify-center justify-self-end rounded px-2 text-sm hover:bg-gray-100"
-      >
-        Vista Previa
-      </Toolbar.Link>
-      <Toolbar.Button className="inline-flex h-6 items-center justify-center rounded border border-transparent bg-zinc-800 p-2 text-sm font-medium text-white hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-700 focus:ring-offset-2 active:bg-zinc-900">
-        Guardar
+      <Toolbar.Button asChild>
+        <Button type="button" variant="flat" size="xs" className="ml-auto mr-2">
+          Vista Previa
+        </Button>
+      </Toolbar.Button>
+      <Toolbar.Button asChild>
+        <Button type="button" variant="primary" size="xs">
+          Guardar
+        </Button>
       </Toolbar.Button>
     </Toolbar.Root>
   )
