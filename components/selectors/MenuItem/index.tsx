@@ -42,7 +42,7 @@ const MenuItem: UserComponent<MenuItemProps> = ({
             ></Image>
           </div>
         ) : null}
-        <div>
+        <div className="flex-1">
           {layout === "center" ? (
             <>
               <Font family={fontFamily}>

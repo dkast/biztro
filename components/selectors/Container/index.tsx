@@ -14,7 +14,7 @@ const Container: UserComponent<ContainerProps> = ({ background, children }) => {
   } = useNode()
   return (
     <div
-      className="flex flex-1 flex-col gap-4"
+      className="mx-auto flex max-w-screen-md flex-1 flex-col gap-4"
       ref={connect}
       style={{
         backgroundColor: `rgba(${Object.values(background)})`

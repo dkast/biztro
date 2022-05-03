@@ -8,8 +8,8 @@ import Font from "@/components/Font"
 interface TextProps {
   fontSize?: string
   textAlign?: string
-  fontWeight?: string,
-  fontFamily?: string,
+  fontWeight?: string
+  fontFamily?: string
   color?: Record<"r" | "g" | "b" | "a", number>
   text: string
 }
@@ -28,24 +28,25 @@ const Text: UserComponent<TextProps> = ({
   } = useNode()
 
   return (
-    <Font family={fontFamily}>
-    <ContentEditable
-      innerRef={connect}
-      html={text}
-      onChange={e => {
-        setProp(prop => (prop.text = e.target.value), 500)
-      }}
-      tagName="h2"
-      style={{
-        fontSize: `${fontSize}px`,
-        color: `rgba(${Object.values(color)})`,
-        fontWeight,
-        textAlign,
-        outline: "none"
-      }}
-      className="px-4"
-    />
-    </Font>
+    <div className="px-4">
+      <Font family={fontFamily}>
+        <ContentEditable
+          innerRef={connect}
+          html={text}
+          onChange={e => {
+            setProp(prop => (prop.text = e.target.value), 500)
+          }}
+          tagName="h2"
+          style={{
+            fontSize: `${fontSize}px`,
+            color: `rgba(${Object.values(color)})`,
+            fontWeight,
+            textAlign,
+            outline: "none"
+          }}
+        />
+      </Font>
+    </div>
   )
 }
 
