@@ -2,6 +2,7 @@ import React from "react"
 import { SessionProvider, useSession, signIn } from "next-auth/react"
 import { AppProps } from "next/app"
 import { Toaster } from "react-hot-toast"
+import { RecoilRoot } from "recoil"
 
 import "../styles/globals.css"
 
@@ -19,21 +20,23 @@ function MyApp({
 
   return (
     <SessionProvider session={session}>
-      {Component.auth ? (
-        <Auth>{getLayout(<Component {...pageProps} />)}</Auth>
-      ) : (
-        getLayout(<Component {...pageProps} />)
-      )}
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            borderRadius: "10px",
-            background: "#333",
-            color: "#fff"
-          }
-        }}
-      />
+      <RecoilRoot>
+        {Component.auth ? (
+          <Auth>{getLayout(<Component {...pageProps} />)}</Auth>
+        ) : (
+          getLayout(<Component {...pageProps} />)
+        )}
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              borderRadius: "10px",
+              background: "#333",
+              color: "#fff"
+            }
+          }}
+        />
+      </RecoilRoot>
     </SessionProvider>
   )
 }

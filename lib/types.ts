@@ -18,6 +18,11 @@ export enum HttpMethod {
   TRACE = "TRACE"
 }
 
+export enum frameSize {
+  MOBILE = "MOBILE",
+  DESKTOP = "DESKTOP"
+}
+
 export type WithClassName<T = {}> = T & {
   className?: string
 }

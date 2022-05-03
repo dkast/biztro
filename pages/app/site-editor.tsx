@@ -1,9 +1,11 @@
 import Head from "next/head"
 import { useSession } from "next-auth/react"
 import { Editor, Frame, Element } from "@craftjs/core"
+import { useRecoilValue } from "recoil"
 
 import useSite from "@/hooks/useSite"
 import Loader from "@/components/Loader"
+import classNames from "@/lib/classnames"
 import Text from "@/components/selectors/Text"
 import Layout from "@/components/layouts/Layout"
 import Toolbox from "@/components/editor/Toolbox"
@@ -14,12 +16,16 @@ import SettingsBar from "@/components/editor/SettingsBar"
 import MenuItem from "@/components/selectors/MenuItem"
 import MenuBanner from "@/components/selectors/MenuBanner"
 import ToolbarMenu from "@/components/editor/ToolbarMenu"
+import { frameSizeState } from "@/lib/store"
+
+import { frameSize } from "@/lib/types"
 
 const SiteEditor: NextPageWithAuthAndLayout = () => {
   const { data: session } = useSession()
   const sessionId = session?.user?.id
 
   const { site, isLoading } = useSite(sessionId)
+  const size = useRecoilValue(frameSizeState)
 
   if (isLoading) {
     return <Loader />
@@ -47,7 +53,12 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
                 <ToolbarMenu />
               </div>
               <div className="absolute inset-0 my-16 overflow-auto">
-                <div className="mx-auto flex min-h-[700px] w-[390px] bg-white">
+                <div
+                  className={classNames(
+                    size === frameSize.MOBILE ? "w-[390px]" : "w-[1024px]",
+                    "mx-auto flex min-h-[700px] bg-white"
+                  )}
+                >
                   <Frame>
                     <Element
                       is={Container}
