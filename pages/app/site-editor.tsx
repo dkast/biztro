@@ -52,7 +52,7 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
               <div className="z-30 h-[45px] border-b bg-white">
                 <ToolbarMenu />
               </div>
-              <div className="absolute inset-0 my-16 overflow-auto">
+              <div className="absolute inset-0 mt-[45px] overflow-auto py-8">
                 <div
                   className={classNames(
                     size === frameSize.MOBILE ? "w-[390px]" : "w-[1024px]",

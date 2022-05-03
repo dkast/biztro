@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import * as Toolbar from "@radix-ui/react-toolbar"
 import {
   ResetIcon,
@@ -7,20 +7,64 @@ import {
   LockClosedIcon,
   LockOpen2Icon
 } from "@radix-ui/react-icons"
-import { useEditor } from "@craftjs/core"
+import lz from "lzutf8"
+import { mutate } from "swr"
+import toast from "react-hot-toast"
 import { useRecoilState } from "recoil"
+import { useEditor } from "@craftjs/core"
+import { useSession } from "next-auth/react"
 
-import { frameSizeState } from "@/lib/store"
-import { frameSize } from "@/lib/types"
+import useSite from "@/hooks/useSite"
 import Button from "@/components/Button"
+import { frameSizeState } from "@/lib/store"
+
+import { frameSize, HttpMethod } from "@/lib/types"
 
 const ToolbarMenu = () => {
-  const { enabled, canUndo, canRedo, actions } = useEditor((state, query) => ({
-    enabled: state.options.enabled,
-    canUndo: query.history.canUndo(),
-    canRedo: query.history.canRedo()
-  }))
+  const { enabled, canUndo, canRedo, actions, query } = useEditor(
+    (state, query) => ({
+      enabled: state.options.enabled,
+      canUndo: query.history.canUndo(),
+      canRedo: query.history.canRedo()
+    })
+  )
   const [size, setSize] = useRecoilState(frameSizeState)
+
+  const [submitted, setSubmitted] = useState(false)
+  const { data: session } = useSession()
+  const sessionId = session?.user?.id
+
+  const { site, isLoading } = useSite(sessionId)
+
+  if (site?.serialData && !isLoading) {
+    const json = lz.decompress(lz.decodeBase64(site.serialData))
+    actions.deserialize(json)
+  }
+
+  async function updateSite(): Promise<void> {
+    setSubmitted(true)
+    const json = query.serialize()
+    // console.dir(json)
+    // console.log(lz.encodeBase64(lz.compress(json)))
+    const res = await fetch("/api/site", {
+      method: HttpMethod.PUT,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: site.id,
+        serialData: lz.encodeBase64(lz.compress(json))
+      })
+    })
+    setSubmitted(false)
+
+    if (res.ok) {
+      toast.success("Información actualizada")
+      mutate("/api/site")
+    } else {
+      toast.error("Algo salió mal")
+    }
+  }
 
   return (
     <Toolbar.Root className="flex h-full w-full items-center gap-1 px-4">
@@ -81,7 +125,13 @@ const ToolbarMenu = () => {
         </Button>
       </Toolbar.Button>
       <Toolbar.Button asChild>
-        <Button type="button" variant="primary" size="xs">
+        <Button
+          type="button"
+          variant="primary"
+          size="xs"
+          onClick={() => updateSite()}
+          isLoading={submitted}
+        >
           Guardar
         </Button>
       </Toolbar.Button>

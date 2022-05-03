@@ -80,7 +80,16 @@ export async function updateSite(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void | NextApiResponse<Site>> {
-  const { id, name, description, phone, logo, image, imageBlurhash } = req.body
+  const {
+    id,
+    name,
+    description,
+    phone,
+    logo,
+    image,
+    imageBlurhash,
+    serialData
+  } = req.body
 
   try {
     const response = await prisma.site.update({
@@ -93,7 +102,8 @@ export async function updateSite(
         phone,
         logo,
         image,
-        imageBlurhash
+        imageBlurhash,
+        serialData
       }
     })
 

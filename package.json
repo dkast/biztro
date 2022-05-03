@@ -29,6 +29,7 @@
     "@radix-ui/react-toggle-group": "^0.1.5",
     "@radix-ui/react-toolbar": "^0.1.5",
     "blurhash": "^1.1.5",
+    "lzutf8": "^0.6.2",
     "next": "12.1.5",
     "next-auth": "^4.3.3",
     "plaiceholder": "^2.3.0",
