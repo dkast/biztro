@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import * as Toolbar from "@radix-ui/react-toolbar"
 import {
   ResetIcon,
@@ -34,12 +34,7 @@ const ToolbarMenu = () => {
   const { data: session } = useSession()
   const sessionId = session?.user?.id
 
-  const { site, isLoading } = useSite(sessionId)
-
-  if (site?.serialData && !isLoading) {
-    const json = lz.decompress(lz.decodeBase64(site.serialData))
-    actions.deserialize(json)
-  }
+  const { site } = useSite(sessionId)
 
   async function updateSite(): Promise<void> {
     setSubmitted(true)

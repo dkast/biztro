@@ -1,5 +1,5 @@
 import React from "react"
-import { useNode, UserComponent } from "@craftjs/core"
+import { useEditor, useNode, UserComponent } from "@craftjs/core"
 import ContentEditable from "react-contenteditable"
 
 import TextSettings from "@/components/selectors/Text/TextSettings"
@@ -26,11 +26,15 @@ const Text: UserComponent<TextProps> = ({
     connectors: { connect },
     actions: { setProp }
   } = useNode()
+  const { enabled } = useEditor(state => ({
+    enabled: state.options.enabled
+  }))
 
   return (
     <div className="px-4">
       <Font family={fontFamily}>
         <ContentEditable
+          disabled={!enabled}
           innerRef={connect}
           html={text}
           onChange={e => {

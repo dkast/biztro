@@ -1,7 +1,9 @@
 import Head from "next/head"
+import { useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { Editor, Frame, Element } from "@craftjs/core"
+import { Editor, Frame, Element, useEditor } from "@craftjs/core"
 import { useRecoilValue } from "recoil"
+import lz from "lzutf8"
 
 import useSite from "@/hooks/useSite"
 import Loader from "@/components/Loader"
@@ -26,6 +28,13 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
 
   const { site, isLoading } = useSite(sessionId)
   const size = useRecoilValue(frameSizeState)
+  let json = undefined
+
+  if (site?.serialData) {
+    console.log("render menu")
+    json = lz.decompress(lz.decodeBase64(site.serialData))
+    console.dir(json)
+  }
 
   if (isLoading) {
     return <Loader />
@@ -59,7 +68,7 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
                     "mx-auto flex min-h-[700px] bg-white"
                   )}
                 >
-                  <Frame>
+                  <Frame data={json}>
                     <Element
                       is={Container}
                       canvas
