@@ -19,6 +19,7 @@ import Button from "@/components/Button"
 import { frameSizeState } from "@/lib/store"
 
 import { frameSize, HttpMethod } from "@/lib/types"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/Dialog"
 
 const ToolbarMenu = () => {
   const { enabled, canUndo, canRedo, actions, query } = useEditor(
@@ -115,9 +116,14 @@ const ToolbarMenu = () => {
         {enabled ? <LockOpen2Icon /> : <LockClosedIcon />}
       </Toolbar.Button>
       <Toolbar.Button asChild>
-        <Button type="button" variant="flat" size="xs" className="ml-auto mr-2">
-          Vista Previa
-        </Button>
+        <Dialog>
+          <DialogTrigger className="ml-auto mr-2">
+            <Button type="button" variant="flat" size="xs">
+              Vista Previa
+            </Button>
+          </DialogTrigger>
+          <DialogContent>Hola</DialogContent>
+        </Dialog>
       </Toolbar.Button>
       <Toolbar.Button asChild>
         <Button

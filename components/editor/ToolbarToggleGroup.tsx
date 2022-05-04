@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react"
+import React from "react"
 import * as ToggleGroup from "@radix-ui/react-toggle-group"
 
 export const ToolbarToggleGroup = ({
@@ -15,7 +15,7 @@ export const ToolbarToggleGroup = ({
   )
 }
 
-export const ToolbarToggleGroupItem = forwardRef<
+export const ToolbarToggleGroupItem = React.forwardRef<
   HTMLButtonElement,
   ToggleGroup.ToggleGroupItemProps
 >(({ children, ...props }, forwardRef) => {
