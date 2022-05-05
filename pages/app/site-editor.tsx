@@ -1,30 +1,41 @@
 import Head from "next/head"
-import { useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { Editor, Frame, Element, useEditor } from "@craftjs/core"
-import { useRecoilValue } from "recoil"
+import { Editor, Frame, Element } from "@craftjs/core"
+import { useRecoilState, useRecoilValue } from "recoil"
 import lz from "lzutf8"
 
 import useSite from "@/hooks/useSite"
 import Loader from "@/components/Loader"
 import classNames from "@/lib/classnames"
+import absoluteUrl from "next-absolute-url"
+import { frameSizeState, hostState } from "@/lib/store"
 import Text from "@/components/selectors/Text"
 import Layout from "@/components/layouts/Layout"
 import Toolbox from "@/components/editor/Toolbox"
 import Container from "@/components/selectors/Container"
-import { NextPageWithAuthAndLayout } from "@/lib/types"
 import { RenderNode } from "@/components/editor/RenderNode"
 import SettingsBar from "@/components/editor/SettingsBar"
 import MenuItem from "@/components/selectors/MenuItem"
 import MenuBanner from "@/components/selectors/MenuBanner"
 import ToolbarMenu from "@/components/editor/ToolbarMenu"
-import { frameSizeState } from "@/lib/store"
 
 import { frameSize } from "@/lib/types"
+import { NextPageWithAuthAndLayout } from "@/lib/types"
+import type { GetServerSideProps, NextPage } from "next"
 
-const SiteEditor: NextPageWithAuthAndLayout = () => {
+type Props = {
+  host: string | null
+}
+
+type NextPageWithAuthAndLayoutAndProps = NextPage<Props> &
+  NextPageWithAuthAndLayout
+
+const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
   const { data: session } = useSession()
   const sessionId = session?.user?.id
+
+  const [host, setHost] = useRecoilState(hostState)
+  setHost(props.host)
 
   const { site, isLoading } = useSite(sessionId)
   const size = useRecoilValue(frameSizeState)
@@ -93,6 +104,16 @@ const SiteEditor: NextPageWithAuthAndLayout = () => {
       </Editor>
     </>
   )
+}
+
+export const getServerSideProps: GetServerSideProps<Props> = async context => {
+  const { origin } = absoluteUrl(context.req)
+
+  return {
+    props: {
+      host: origin
+    }
+  }
 }
 
 SiteEditor.auth = true

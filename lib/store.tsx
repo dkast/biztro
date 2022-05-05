@@ -6,3 +6,8 @@ export const frameSizeState = atom({
   key: "frameSizeState",
   default: frameSize.MOBILE
 })
+
+export const hostState = atom({
+  key: "hostState",
+  default: ""
+})

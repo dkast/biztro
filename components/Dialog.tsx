@@ -33,14 +33,12 @@ export const DialogContent = React.forwardRef<
           <DialogPrimitive.Content
             {...props}
             ref={forwardedRef}
-            className="inline-block transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle"
+            className="relative inline-block transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle"
           >
             {children}
-            <div className="flex justify-end">
-              <DialogPrimitive.Close>
-                <Cross1Icon />
-              </DialogPrimitive.Close>
-            </div>
+            <DialogPrimitive.Close className="absolute top-2 right-2 rounded-full p-2 text-gray-500 hover:bg-gray-50">
+              <Cross1Icon />
+            </DialogPrimitive.Close>
           </DialogPrimitive.Content>
         </Transition.Child>
       </div>

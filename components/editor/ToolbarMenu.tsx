@@ -10,13 +10,13 @@ import {
 import lz from "lzutf8"
 import { mutate } from "swr"
 import toast from "react-hot-toast"
-import { useRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue } from "recoil"
 import { useEditor } from "@craftjs/core"
 import { useSession } from "next-auth/react"
 
 import useSite from "@/hooks/useSite"
 import Button from "@/components/Button"
-import { frameSizeState } from "@/lib/store"
+import { frameSizeState, hostState } from "@/lib/store"
 
 import { frameSize, HttpMethod } from "@/lib/types"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/Dialog"
@@ -30,6 +30,7 @@ const ToolbarMenu = () => {
     })
   )
   const [size, setSize] = useRecoilState(frameSizeState)
+  const host = useRecoilValue(hostState)
 
   const [submitted, setSubmitted] = useState(false)
   const { data: session } = useSession()
@@ -122,7 +123,7 @@ const ToolbarMenu = () => {
               Vista Previa
             </Button>
           </DialogTrigger>
-          <DialogContent>Hola</DialogContent>
+          <DialogContent>{host}</DialogContent>
         </Dialog>
       </Toolbar.Button>
       <Toolbar.Button asChild>
