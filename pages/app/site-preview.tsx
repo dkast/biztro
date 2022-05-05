@@ -33,12 +33,18 @@ const SitePreview: NextPageWithAuthAndLayout = () => {
     )
   }
   return (
-    <Editor
-      resolver={{ Container, Text, MenuItem, MenuBanner }}
-      enabled={false}
-    >
-      <Frame data={json} />
-    </Editor>
+    <div className="flex flex-col">
+      <div className="relative h-screen grow">
+        <div className="absolute inset-0 overflow-auto">
+          <Editor
+            resolver={{ Container, Text, MenuItem, MenuBanner }}
+            enabled={false}
+          >
+            <Frame data={json} />
+          </Editor>
+        </div>
+      </div>
+    </div>
   )
 }
 SitePreview.auth = true
