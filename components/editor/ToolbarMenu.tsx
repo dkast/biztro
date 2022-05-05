@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
+import Link from "next/link"
 import * as Toolbar from "@radix-ui/react-toolbar"
 import {
   ResetIcon,
@@ -10,9 +11,10 @@ import {
 import lz from "lzutf8"
 import { mutate } from "swr"
 import toast from "react-hot-toast"
-import { useRecoilState, useRecoilValue } from "recoil"
+import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import { useSession } from "next-auth/react"
+import { useRecoilState, useRecoilValue } from "recoil"
 
 import useSite from "@/hooks/useSite"
 import Button from "@/components/Button"
@@ -30,7 +32,6 @@ const ToolbarMenu = () => {
     })
   )
   const [size, setSize] = useRecoilState(frameSizeState)
-  const host = useRecoilValue(hostState)
 
   const [submitted, setSubmitted] = useState(false)
   const { data: session } = useSession()
@@ -123,7 +124,9 @@ const ToolbarMenu = () => {
               Vista Previa
             </Button>
           </DialogTrigger>
-          <DialogContent>{host}</DialogContent>
+          <DialogContent>
+            <QRPreview />
+          </DialogContent>
         </Dialog>
       </Toolbar.Button>
       <Toolbar.Button asChild>
@@ -142,3 +145,23 @@ const ToolbarMenu = () => {
 }
 
 export default ToolbarMenu
+
+const QRPreview = (): JSX.Element => {
+  const host = useRecoilValue(hostState)
+  return (
+    <>
+      <h3 className="text-lg font-medium leading-6 text-gray-900">
+        Abrir en Móvil
+      </h3>
+      <div className="flex flex-col items-center justify-center">
+        <span className="my-2 text-gray-500">
+          Escanea con la cámara de tu móvil o aplicación QR o sigue{" "}
+          <Link href="/app/site-preview">
+            <a className="text-indigo-500 hover:text-indigo-700">esta liga.</a>
+          </Link>
+        </span>
+        <QRCode value={`${host}/app/site-preview`} />
+      </div>
+    </>
+  )
+}
