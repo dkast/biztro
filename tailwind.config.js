@@ -15,6 +15,7 @@ module.exports = {
   plugins: [
     require("@tailwindcss/forms"),
     require("@tailwindcss/line-clamp"),
+    require("tailwindcss-safe-area"),
     require("tailwindcss-radix")()
   ]
 }
