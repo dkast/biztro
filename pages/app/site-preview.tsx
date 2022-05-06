@@ -35,7 +35,7 @@ const SitePreview: NextPageWithAuthAndLayout = () => {
   return (
     <div className="flex flex-col">
       <div className="relative grow h-screen-safe sm:h-screen">
-        <div className="absolute inset-0 overflow-auto">
+        <div className="absolute inset-0 overflow-auto pb-4">
           <Editor
             resolver={{ Container, Text, MenuItem, MenuBanner }}
             enabled={false}
