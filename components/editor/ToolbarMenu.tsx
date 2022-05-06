@@ -6,7 +6,8 @@ import {
   MobileIcon,
   DesktopIcon,
   LockClosedIcon,
-  LockOpen2Icon
+  LockOpen2Icon,
+  Link1Icon
 } from "@radix-ui/react-icons"
 import lz from "lzutf8"
 import { mutate } from "swr"
@@ -15,7 +16,15 @@ import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import { useSession } from "next-auth/react"
 import { useRecoilState, useRecoilValue } from "recoil"
+import { EyeIcon } from "@heroicons/react/solid"
+import { DuplicateIcon, ExternalLinkIcon } from "@heroicons/react/outline"
+import { CopyToClipboard } from "react-copy-to-clipboard"
 
+import {
+  ToolbarPopover,
+  ToolbarPopoverContent,
+  ToolbarPopoverTrigger
+} from "@/components/editor/ToolbarPopover"
 import useSite from "@/hooks/useSite"
 import Button from "@/components/Button"
 import { frameSizeState, hostState } from "@/lib/store"
@@ -120,7 +129,12 @@ const ToolbarMenu = () => {
       <Toolbar.Button asChild>
         <Dialog>
           <DialogTrigger className="ml-auto mr-2">
-            <Button type="button" variant="flat" size="xs">
+            <Button
+              type="button"
+              variant="flat"
+              size="xs"
+              leftIcon={<EyeIcon className="text-gray-500" />}
+            >
               Vista Previa
             </Button>
           </DialogTrigger>
@@ -137,9 +151,23 @@ const ToolbarMenu = () => {
           onClick={() => updateSite()}
           isLoading={submitted}
         >
-          Guardar
+          Publicar
         </Button>
       </Toolbar.Button>
+      <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
+      <ToolbarPopover>
+        <ToolbarPopoverTrigger>
+          <Toolbar.Button
+            aria-label="Compartir"
+            className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
+          >
+            <Link1Icon />
+          </Toolbar.Button>
+        </ToolbarPopoverTrigger>
+        <ToolbarPopoverContent>
+          <PublishPanel siteId={site.id} />
+        </ToolbarPopoverContent>
+      </ToolbarPopover>
     </Toolbar.Root>
   )
 }
@@ -163,5 +191,48 @@ const QRPreview = (): JSX.Element => {
         <QRCode value={`${host}/app/site-preview`} />
       </div>
     </>
+  )
+}
+
+interface PublishPanelProps {
+  siteId: string
+}
+
+const PublishPanel = ({ siteId }): JSX.Element => {
+  const host = useRecoilValue(hostState)
+  const [copy, setCopy] = useState(false)
+  return (
+    <div className="overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+      <div className="flex flex-col gap-4 divide-y divide-solid px-2 py-3 sm:p-4">
+        <div className="flex items-center justify-center gap-4">
+          <span className="select-all text-xs">{`${host}/site/${siteId}`}</span>
+          <Link href={`/site/${siteId}`} passHref>
+            <a
+              className="rounded bg-gray-100 p-1 text-gray-500 hover:text-gray-700"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ExternalLinkIcon className="h-4 w-4" />
+            </a>
+          </Link>
+        </div>
+        <div className="pt-2">
+          <CopyToClipboard
+            text={`${host}/site/${siteId}`}
+            onCopy={() => setCopy(true)}
+          >
+            <Button
+              type="button"
+              variant="flat"
+              mode="full"
+              size="xs"
+              leftIcon={!copy && <DuplicateIcon className="h-4 w-4" />}
+            >
+              {copy ? "Listo" : "Copiar URL"}
+            </Button>
+          </CopyToClipboard>
+        </div>
+      </div>
+    </div>
   )
 }
