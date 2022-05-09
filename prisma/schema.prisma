@@ -85,6 +85,7 @@ model Site {
   user          User?    @relation(fields: [userId], references: [id])
   userId        String?
   serialData    String?  @db.LongText
+  published     Boolean  @default(false)
   items         Item[]
 }
 

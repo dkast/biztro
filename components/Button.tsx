@@ -7,6 +7,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean
   size?: "xs" | "sm" | "md" | "lg"
   leftIcon?: React.ReactNode
+  rightIcon?: React.ReactNode
 }
 
 const DEFAULT =
@@ -35,11 +36,18 @@ const SIZE = {
   lg: "px-6 py-3 text-base"
 }
 
-const SIZE_ICON = {
+const SIZE_ICON_LEFT = {
   xs: "-ml-0.5 mr-2 h-4 w-4",
   sm: "-ml-1 mr-2 h-4 w-4",
   md: "-ml-1 mr-3 h-5 w-5",
   lg: "-ml-1 mr-3 h-5 w-5"
+}
+
+const SIZE_ICON_RIGHT = {
+  xs: "-mr-0.5 ml-2 h-4 w-4",
+  sm: "-mr-1 ml-2 h-4 w-4",
+  md: "-mr-1 ml-3 h-5 w-5",
+  lg: "-mr-1 ml-3 h-5 w-5"
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -50,6 +58,7 @@ const Button: React.FC<ButtonProps> = ({
   mode = "normal",
   size = "md",
   leftIcon,
+  rightIcon,
   ...props
 }) => {
   const cssClasses = [
@@ -68,8 +77,11 @@ const Button: React.FC<ButtonProps> = ({
             <RotateSpinner size={16} color={"#FFF"}></RotateSpinner>
           </span>
         ) : null}
-        {leftIcon ? <i className={SIZE_ICON[size]}>{leftIcon}</i> : null}
+        {leftIcon ? <i className={SIZE_ICON_LEFT[size]}>{leftIcon}</i> : null}
         {children}
+        {rightIcon ? (
+          <i className={SIZE_ICON_RIGHT[size]}>{rightIcon}</i>
+        ) : null}
       </>
     </button>
   )

@@ -42,9 +42,7 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
   let json = undefined
 
   if (site?.serialData) {
-    console.log("render menu")
     json = lz.decompress(lz.decodeBase64(site.serialData))
-    console.dir(json)
   }
 
   if (isLoading) {

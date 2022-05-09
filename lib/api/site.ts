@@ -88,7 +88,8 @@ export async function updateSite(
     logo,
     image,
     imageBlurhash,
-    serialData
+    serialData,
+    published
   } = req.body
 
   try {
@@ -103,7 +104,8 @@ export async function updateSite(
         logo,
         image,
         imageBlurhash,
-        serialData
+        serialData,
+        published
       }
     })
 

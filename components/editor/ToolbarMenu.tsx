@@ -16,8 +16,12 @@ import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import { useSession } from "next-auth/react"
 import { useRecoilState, useRecoilValue } from "recoil"
-import { EyeIcon } from "@heroicons/react/solid"
-import { DuplicateIcon, ExternalLinkIcon } from "@heroicons/react/outline"
+import { ChevronDownIcon, EyeIcon } from "@heroicons/react/solid"
+import {
+  DuplicateIcon,
+  ExternalLinkIcon,
+  SaveIcon
+} from "@heroicons/react/outline"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 
 import {
@@ -31,6 +35,12 @@ import { frameSizeState, hostState } from "@/lib/store"
 
 import { frameSize, HttpMethod } from "@/lib/types"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/Dialog"
+import {
+  ToolbarDropdown,
+  ToolbarDropdownContent,
+  ToolbarDropdownItem,
+  ToolbarDropdownTrigger
+} from "./ToolbarDropdown"
 
 const ToolbarMenu = () => {
   const { enabled, canUndo, canRedo, actions, query } = useEditor(
@@ -42,17 +52,15 @@ const ToolbarMenu = () => {
   )
   const [size, setSize] = useRecoilState(frameSizeState)
 
-  const [submitted, setSubmitted] = useState(false)
   const { data: session } = useSession()
   const sessionId = session?.user?.id
 
   const { site } = useSite(sessionId)
 
   async function updateSite(): Promise<void> {
-    setSubmitted(true)
+    const toastId = toast.loading("Guardando...")
     const json = query.serialize()
-    // console.dir(json)
-    // console.log(lz.encodeBase64(lz.compress(json)))
+
     const res = await fetch("/api/site", {
       method: HttpMethod.PUT,
       headers: {
@@ -63,7 +71,33 @@ const ToolbarMenu = () => {
         serialData: lz.encodeBase64(lz.compress(json))
       })
     })
-    setSubmitted(false)
+    toast.dismiss(toastId)
+
+    if (res.ok) {
+      toast.success("Información actualizada")
+      mutate("/api/site")
+    } else {
+      toast.error("Algo salió mal")
+    }
+  }
+
+  async function publishSite(published: boolean): Promise<void> {
+    const toastId = toast.loading("Guardando...")
+    const json = query.serialize()
+    // console.dir(json)
+    // console.log(lz.encodeBase64(lz.compress(json)))
+    const res = await fetch("/api/site", {
+      method: HttpMethod.PUT,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: site.id,
+        published,
+        serialData: lz.encodeBase64(lz.compress(json))
+      })
+    })
+    toast.dismiss(toastId)
 
     if (res.ok) {
       toast.success("Información actualizada")
@@ -128,7 +162,7 @@ const ToolbarMenu = () => {
       </Toolbar.Button>
       <Toolbar.Button asChild>
         <Dialog>
-          <DialogTrigger className="ml-auto mr-2">
+          <DialogTrigger className="ml-auto" asChild>
             <Button
               type="button"
               variant="flat"
@@ -146,17 +180,46 @@ const ToolbarMenu = () => {
       <Toolbar.Button asChild>
         <Button
           type="button"
-          variant="primary"
+          variant="flat"
           size="xs"
+          className="mr-2"
+          leftIcon={<SaveIcon className="text-gray-500" />}
           onClick={() => updateSite()}
-          isLoading={submitted}
         >
-          Publicar
+          Guardar
         </Button>
       </Toolbar.Button>
+      {!site.published ? (
+        <Toolbar.Button asChild>
+          <Button
+            type="button"
+            variant="primary"
+            size="xs"
+            onClick={() => publishSite(true)}
+          >
+            Publicar
+          </Button>
+        </Toolbar.Button>
+      ) : (
+        <ToolbarDropdown>
+          <ToolbarDropdownTrigger className="outline-none">
+            <Button
+              type="button"
+              variant="primary"
+              size="xs"
+              rightIcon={<ChevronDownIcon />}
+            >
+              Publicado
+            </Button>
+          </ToolbarDropdownTrigger>
+          <ToolbarDropdownContent>
+            <ToolbarDropdownItem>Cambiar a Borrador</ToolbarDropdownItem>
+          </ToolbarDropdownContent>
+        </ToolbarDropdown>
+      )}
       <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
       <ToolbarPopover>
-        <ToolbarPopoverTrigger>
+        <ToolbarPopoverTrigger asChild>
           <Toolbar.Button
             aria-label="Compartir"
             className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
@@ -198,7 +261,7 @@ interface PublishPanelProps {
   siteId: string
 }
 
-const PublishPanel = ({ siteId }): JSX.Element => {
+const PublishPanel = ({ siteId }: PublishPanelProps): JSX.Element => {
   const host = useRecoilValue(hostState)
   const [copy, setCopy] = useState(false)
   return (
