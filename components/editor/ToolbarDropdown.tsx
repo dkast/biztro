@@ -10,6 +10,7 @@ export const ToolbarDropdownContent = React.forwardRef<
 >(({ children, ...props }, forwardedRef) => {
   return (
     <DropdownMenuPrimitive.Content
+      {...props}
       ref={forwardedRef}
       className="mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
     >

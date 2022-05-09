@@ -73,9 +73,10 @@ export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({
 
   const { site } = params
 
-  const data = await prisma.site.findUnique({
+  const data = await prisma.site.findFirst({
     where: {
-      id: site as string
+      id: site as string,
+      published: true
     },
     select: {
       serialData: true

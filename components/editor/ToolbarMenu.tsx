@@ -40,7 +40,8 @@ import {
   ToolbarDropdownContent,
   ToolbarDropdownItem,
   ToolbarDropdownTrigger
-} from "./ToolbarDropdown"
+} from "@/components/editor/ToolbarDropdown"
+import { Tooltip } from "@/components/Tooltip"
 
 const ToolbarMenu = () => {
   const { enabled, canUndo, canRedo, actions, query } = useEditor(
@@ -71,13 +72,12 @@ const ToolbarMenu = () => {
         serialData: lz.encodeBase64(lz.compress(json))
       })
     })
-    toast.dismiss(toastId)
 
     if (res.ok) {
-      toast.success("Información actualizada")
+      toast.success("Información actualizada", { id: toastId })
       mutate("/api/site")
     } else {
-      toast.error("Algo salió mal")
+      toast.error("Algo salió mal", { id: toastId })
     }
   }
 
@@ -93,73 +93,79 @@ const ToolbarMenu = () => {
       },
       body: JSON.stringify({
         id: site.id,
-        published,
-        serialData: lz.encodeBase64(lz.compress(json))
+        published
       })
     })
-    toast.dismiss(toastId)
 
     if (res.ok) {
-      toast.success("Información actualizada")
+      toast.success("Información actualizada", { id: toastId })
       mutate("/api/site")
     } else {
-      toast.error("Algo salió mal")
+      toast.error("Algo salió mal", { id: toastId })
     }
   }
 
   return (
     <Toolbar.Root className="flex h-full w-full items-center gap-1 px-4">
-      <Toolbar.Button
-        disabled={!canUndo}
-        onClick={() => actions.history.undo()}
-        aria-label="Deshacer"
-        className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
-      >
-        <ResetIcon />
-      </Toolbar.Button>
-      <Toolbar.Button
-        disabled={!canRedo}
-        onClick={() => actions.history.redo()}
-        aria-label="Rehacer"
-        className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
-      >
-        <ResetIcon
-          style={{
-            transform: "scaleX(-1)"
-          }}
-        />
-      </Toolbar.Button>
-      <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
-      <Toolbar.ToggleGroup
-        type="single"
-        defaultValue={size}
-        aria-label="Tamaño Vista Previa"
-        className="inline-flex rounded bg-gray-100 p-0.5"
-        onValueChange={(value: frameSize) => setSize(value)}
-      >
-        <Toolbar.ToggleItem
-          value={frameSize.MOBILE}
-          className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 radix-state-on:bg-white radix-state-on:shadow"
+      <Tooltip content="Deshacer">
+        <Toolbar.Button
+          disabled={!canUndo}
+          onClick={() => actions.history.undo()}
+          aria-label="Deshacer"
+          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
         >
-          <MobileIcon />
-        </Toolbar.ToggleItem>
-        <Toolbar.ToggleItem
-          value={frameSize.DESKTOP}
-          className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 radix-state-on:bg-white radix-state-on:shadow"
+          <ResetIcon />
+        </Toolbar.Button>
+      </Tooltip>
+      <Tooltip content="Rehacer">
+        <Toolbar.Button
+          disabled={!canRedo}
+          onClick={() => actions.history.redo()}
+          aria-label="Rehacer"
+          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
         >
-          <DesktopIcon />
-        </Toolbar.ToggleItem>
-      </Toolbar.ToggleGroup>
+          <ResetIcon
+            style={{
+              transform: "scaleX(-1)"
+            }}
+          />
+        </Toolbar.Button>
+      </Tooltip>
       <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
-      <Toolbar.Button
-        onClick={() =>
-          actions.setOptions(options => (options.enabled = !enabled))
-        }
-        aria-label="Editor habilitado"
-        className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
-      >
-        {enabled ? <LockOpen2Icon /> : <LockClosedIcon />}
-      </Toolbar.Button>
+      <Tooltip content="Tamaño Pantalla">
+        <Toolbar.ToggleGroup
+          type="single"
+          defaultValue={size}
+          aria-label="Tamaño Vista Previa"
+          className="inline-flex rounded bg-gray-100 p-0.5"
+          onValueChange={(value: frameSize) => setSize(value)}
+        >
+          <Toolbar.ToggleItem
+            value={frameSize.MOBILE}
+            className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 radix-state-on:bg-white radix-state-on:shadow"
+          >
+            <MobileIcon />
+          </Toolbar.ToggleItem>
+          <Toolbar.ToggleItem
+            value={frameSize.DESKTOP}
+            className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 radix-state-on:bg-white radix-state-on:shadow"
+          >
+            <DesktopIcon />
+          </Toolbar.ToggleItem>
+        </Toolbar.ToggleGroup>
+      </Tooltip>
+      <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
+      <Tooltip content="Restringir cambios">
+        <Toolbar.Button
+          onClick={() =>
+            actions.setOptions(options => (options.enabled = !enabled))
+          }
+          aria-label="Editor habilitado"
+          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
+        >
+          {enabled ? <LockOpen2Icon /> : <LockClosedIcon />}
+        </Toolbar.Button>
+      </Tooltip>
       <Toolbar.Button asChild>
         <Dialog>
           <DialogTrigger className="ml-auto" asChild>
@@ -213,20 +219,24 @@ const ToolbarMenu = () => {
             </Button>
           </ToolbarDropdownTrigger>
           <ToolbarDropdownContent>
-            <ToolbarDropdownItem>Cambiar a Borrador</ToolbarDropdownItem>
+            <ToolbarDropdownItem onSelect={() => publishSite(false)}>
+              Cambiar a Borrador
+            </ToolbarDropdownItem>
           </ToolbarDropdownContent>
         </ToolbarDropdown>
       )}
       <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
       <ToolbarPopover>
-        <ToolbarPopoverTrigger asChild>
-          <Toolbar.Button
-            aria-label="Compartir"
-            className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
-          >
-            <Link1Icon />
-          </Toolbar.Button>
-        </ToolbarPopoverTrigger>
+        <Tooltip content="Compartir">
+          <ToolbarPopoverTrigger asChild>
+            <Toolbar.Button
+              aria-label="Compartir"
+              className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
+            >
+              <Link1Icon />
+            </Toolbar.Button>
+          </ToolbarPopoverTrigger>
+        </Tooltip>
         <ToolbarPopoverContent>
           <PublishPanel siteId={site.id} />
         </ToolbarPopoverContent>
@@ -265,7 +275,7 @@ const PublishPanel = ({ siteId }: PublishPanelProps): JSX.Element => {
   const host = useRecoilValue(hostState)
   const [copy, setCopy] = useState(false)
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+    <div className="mt-2 overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
       <div className="flex flex-col gap-4 divide-y divide-solid px-2 py-3 sm:p-4">
         <div className="flex items-center justify-center gap-4">
           <span className="select-all text-xs">{`${host}/site/${siteId}`}</span>
