@@ -8,7 +8,8 @@ import {
   LockClosedIcon,
   LockOpen2Icon,
   Link1Icon,
-  ClipboardCopyIcon
+  ClipboardCopyIcon,
+  CopyIcon
 } from "@radix-ui/react-icons"
 import lz from "lzutf8"
 import { mutate } from "swr"
@@ -53,7 +54,7 @@ const ToolbarMenu = () => {
       selectedNodeId: state.events.selected
     }))
   const [size, setSize] = useRecoilState(frameSizeState)
-  const propsCopy = useRecoilValue(propState)
+  const [propsCopy, setPropsCopy] = useRecoilState(propState)
 
   const { data: session } = useSession()
   const sessionId = session?.user?.id
@@ -107,10 +108,19 @@ const ToolbarMenu = () => {
   const onPasteProps = clonedProps => {
     const values = selectedNodeId.values()
     const nodeId = values.next()
-    console.dir(nodeId.value)
     actions.setProp(nodeId.value, props => {
-      props = Object.assign({}, clonedProps)
+      props = Object.assign(props, clonedProps)
     })
+  }
+
+  const onCopyProps = () => {
+    const values = selectedNodeId.values()
+    const nodeId = values.next()
+    if (selectedNodeId) {
+      const node = query.node(nodeId.value).get()
+      const { item, text, ...propsCopy } = node.data.props
+      setPropsCopy(propsCopy)
+    }
   }
 
   return (
@@ -163,6 +173,15 @@ const ToolbarMenu = () => {
         </Toolbar.ToggleGroup>
       </Tooltip>
       <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
+      <Tooltip content="Copiar Estilo">
+        <Toolbar.Button
+          onClick={() => onCopyProps()}
+          aria-label="Copiar Estilo"
+          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
+        >
+          <CopyIcon />
+        </Toolbar.Button>
+      </Tooltip>
       <Tooltip content="Pegar Estilo">
         <Toolbar.Button
           disabled={!propsCopy}

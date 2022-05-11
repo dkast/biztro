@@ -37,7 +37,7 @@ const MenuItemSettings = (): JSX.Element => {
       <ToolboxPanel title="Producto">
         <ToolbarItem label="Plantilla">
           <ToolbarSelect
-            defaultValue={layout}
+            value={layout}
             onValueChange={value => setProp(props => (props.layout = value))}
           >
             <ToolbarSelectItem value="default">Default</ToolbarSelectItem>
@@ -49,7 +49,7 @@ const MenuItemSettings = (): JSX.Element => {
       <ToolboxPanel title="Titulo">
         <ToolbarItem label="Fuente">
           <ToolbarSelect
-            defaultValue={fontFamily}
+            value={fontFamily}
             onValueChange={value =>
               setProp(props => (props.fontFamily = value))
             }
@@ -63,7 +63,7 @@ const MenuItemSettings = (): JSX.Element => {
         </ToolbarItem>
         <ToolbarItem label="Estilo">
           <ToolbarSelect
-            defaultValue={fontWeight}
+            value={fontWeight}
             onValueChange={value =>
               setProp(props => (props.fontWeight = value))
             }

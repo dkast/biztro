@@ -6,9 +6,10 @@ import {
   ArrowUpIcon,
   CopyIcon,
   TrashIcon,
-  MoveIcon
+  MoveIcon,
+  ClipboardCopyIcon
 } from "@radix-ui/react-icons"
-import { useSetRecoilState } from "recoil"
+import { useRecoilState } from "recoil"
 
 import { useRect } from "@/hooks/useRect"
 import { propState } from "@/lib/store"
@@ -40,7 +41,7 @@ export const RenderNode = ({ render }) => {
 
   const currentRef = useRef<HTMLDivElement>()
   const rect = useRect(dom)
-  const setPropsCopy = useSetRecoilState(propState)
+  const [propsCopy, setPropsCopy] = useRecoilState(propState)
 
   useEffect(() => {
     if (dom) {
@@ -60,9 +61,14 @@ export const RenderNode = ({ render }) => {
     }
   }, [dom, rect])
 
+  const onPasteProps = clonedProps => {
+    actions.setProp(id, props => {
+      props = Object.assign(props, clonedProps)
+    })
+  }
+
   const onCopyProps = props => {
     const { item, text, ...propsCopy } = props
-    console.dir(propsCopy)
     setPropsCopy(propsCopy)
   }
 
@@ -113,6 +119,14 @@ export const RenderNode = ({ render }) => {
               >
                 <CopyIcon />
               </a>
+              {propsCopy ? (
+                <a
+                  className="ml-2 cursor-pointer active:scale-90"
+                  onClick={() => onPasteProps(propsCopy)}
+                >
+                  <ClipboardCopyIcon />
+                </a>
+              ) : null}
             </div>,
             document.querySelector(".page-container")
           )

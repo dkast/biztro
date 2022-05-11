@@ -66,7 +66,7 @@ const TextSettings = (): JSX.Element => {
     <ToolboxPanel title="Texto">
       <ToolbarItem label="Fuente">
         <ToolbarSelect
-          defaultValue={fontFamily}
+          value={fontFamily}
           onValueChange={value => setProp(props => (props.fontFamily = value))}
         >
           {FONTS.map(font => (
@@ -78,7 +78,7 @@ const TextSettings = (): JSX.Element => {
       </ToolbarItem>
       <ToolbarItem label="Estilo">
         <ToolbarSelect
-          defaultValue={fontWeight}
+          value={fontWeight}
           onValueChange={value => setProp(props => (props.fontWeight = value))}
         >
           <ToolbarSelectItem value="200">Light</ToolbarSelectItem>
@@ -88,7 +88,7 @@ const TextSettings = (): JSX.Element => {
       </ToolbarItem>
       <ToolbarItem label="Tamaño">
         <ToolbarSelect
-          defaultValue={fontSize}
+          value={fontSize}
           onValueChange={value => setProp(props => (props.fontSize = value))}
         >
           {SIZES.map(size => (
