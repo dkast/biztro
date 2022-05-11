@@ -16,7 +16,6 @@ import PageHeader from "@/components/PageHeader"
 import Layout from "@/components/layouts/Layout"
 
 import { HttpMethod, NextPageWithAuthAndLayout } from "@/lib/types"
-import type { Site, Item } from "@prisma/client"
 import useSite from "@/hooks/useSite"
 
 const Items: NextPageWithAuthAndLayout = () => {

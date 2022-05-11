@@ -83,9 +83,6 @@ const ToolbarMenu = () => {
 
   async function publishSite(published: boolean): Promise<void> {
     const toastId = toast.loading("Guardando...")
-    const json = query.serialize()
-    // console.dir(json)
-    // console.log(lz.encodeBase64(lz.compress(json)))
     const res = await fetch("/api/site", {
       method: HttpMethod.PUT,
       headers: {

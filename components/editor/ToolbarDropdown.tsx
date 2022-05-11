@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react"
+import React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 
 export const ToolbarDropdown = DropdownMenuPrimitive.Root
