@@ -11,3 +11,8 @@ export const hostState = atom({
   key: "hostState",
   default: ""
 })
+
+export const propState = atom({
+  key: "propState",
+  default: null
+})

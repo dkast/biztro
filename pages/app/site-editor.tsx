@@ -1,7 +1,7 @@
 import Head from "next/head"
 import { useSession } from "next-auth/react"
 import { Editor, Frame, Element } from "@craftjs/core"
-import { useRecoilState, useRecoilValue } from "recoil"
+import { useRecoilValue, useSetRecoilState } from "recoil"
 import lz from "lzutf8"
 
 import useSite from "@/hooks/useSite"
@@ -34,7 +34,7 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
   const { data: session } = useSession()
   const sessionId = session?.user?.id
 
-  const [host, setHost] = useRecoilState(hostState)
+  const setHost = useSetRecoilState(hostState)
   setHost(props.host)
 
   const { site, isLoading } = useSite(sessionId)
