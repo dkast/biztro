@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react"
+import React from "react"
 import * as SwitchPrimitive from "@radix-ui/react-switch"
 
 export const ToolbarSwitch = React.forwardRef<
