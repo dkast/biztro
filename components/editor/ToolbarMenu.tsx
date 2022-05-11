@@ -7,7 +7,8 @@ import {
   DesktopIcon,
   LockClosedIcon,
   LockOpen2Icon,
-  Link1Icon
+  Link1Icon,
+  ClipboardCopyIcon
 } from "@radix-ui/react-icons"
 import lz from "lzutf8"
 import { mutate } from "swr"
@@ -31,7 +32,7 @@ import {
 } from "@/components/editor/ToolbarPopover"
 import useSite from "@/hooks/useSite"
 import Button from "@/components/Button"
-import { frameSizeState, hostState } from "@/lib/store"
+import { frameSizeState, hostState, propState } from "@/lib/store"
 
 import { frameSize, HttpMethod } from "@/lib/types"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/Dialog"
@@ -44,14 +45,15 @@ import {
 import { Tooltip } from "@/components/Tooltip"
 
 const ToolbarMenu = () => {
-  const { enabled, canUndo, canRedo, actions, query } = useEditor(
-    (state, query) => ({
+  const { enabled, canUndo, canRedo, actions, query, selectedNodeId } =
+    useEditor((state, query) => ({
       enabled: state.options.enabled,
       canUndo: query.history.canUndo(),
-      canRedo: query.history.canRedo()
-    })
-  )
+      canRedo: query.history.canRedo(),
+      selectedNodeId: state.events.selected
+    }))
   const [size, setSize] = useRecoilState(frameSizeState)
+  const propsCopy = useRecoilValue(propState)
 
   const { data: session } = useSession()
   const sessionId = session?.user?.id
@@ -102,6 +104,15 @@ const ToolbarMenu = () => {
     }
   }
 
+  const onPasteProps = clonedProps => {
+    const values = selectedNodeId.values()
+    const nodeId = values.next()
+    console.dir(nodeId.value)
+    actions.setProp(nodeId.value, props => {
+      props = Object.assign({}, clonedProps)
+    })
+  }
+
   return (
     <Toolbar.Root className="flex h-full w-full items-center gap-1 px-4">
       <Tooltip content="Deshacer">
@@ -109,7 +120,7 @@ const ToolbarMenu = () => {
           disabled={!canUndo}
           onClick={() => actions.history.undo()}
           aria-label="Deshacer"
-          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
+          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
         >
           <ResetIcon />
         </Toolbar.Button>
@@ -119,7 +130,7 @@ const ToolbarMenu = () => {
           disabled={!canRedo}
           onClick={() => actions.history.redo()}
           aria-label="Rehacer"
-          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
+          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
         >
           <ResetIcon
             style={{
@@ -150,6 +161,17 @@ const ToolbarMenu = () => {
             <DesktopIcon />
           </Toolbar.ToggleItem>
         </Toolbar.ToggleGroup>
+      </Tooltip>
+      <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
+      <Tooltip content="Pegar Estilo">
+        <Toolbar.Button
+          disabled={!propsCopy}
+          onClick={() => onPasteProps(propsCopy)}
+          aria-label="Pegar Estilo"
+          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
+        >
+          <ClipboardCopyIcon />
+        </Toolbar.Button>
       </Tooltip>
       <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
       <Tooltip content="Restringir cambios">

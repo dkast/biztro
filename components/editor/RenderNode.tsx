@@ -2,11 +2,16 @@ import ReactDOM from "react-dom"
 import { useNode, useEditor } from "@craftjs/core"
 import { ROOT_NODE } from "@craftjs/utils"
 import React, { useEffect, useRef, useCallback } from "react"
+import {
+  ArrowUpIcon,
+  CopyIcon,
+  TrashIcon,
+  MoveIcon
+} from "@radix-ui/react-icons"
+import { useSetRecoilState } from "recoil"
 
-import { ArrowUpIcon } from "@radix-ui/react-icons"
-import { TrashIcon } from "@radix-ui/react-icons"
-import { MoveIcon } from "@radix-ui/react-icons"
 import { useRect } from "@/hooks/useRect"
+import { propState } from "@/lib/store"
 
 export const RenderNode = ({ render }) => {
   const { id } = useNode()
@@ -21,7 +26,8 @@ export const RenderNode = ({ render }) => {
     moveable,
     deletable,
     connectors: { drag },
-    parent
+    parent,
+    props
   } = useNode(node => ({
     isHover: node.events.hovered,
     dom: node.dom,
@@ -34,6 +40,7 @@ export const RenderNode = ({ render }) => {
 
   const currentRef = useRef<HTMLDivElement>()
   const rect = useRect(dom)
+  const setPropsCopy = useSetRecoilState(propState)
 
   useEffect(() => {
     if (dom) {
@@ -53,26 +60,11 @@ export const RenderNode = ({ render }) => {
     }
   }, [dom, rect])
 
-  // const scroll = useCallback(() => {
-  //   const { current: currentDOM } = currentRef
-
-  //   if (!currentDOM) return
-  //   const { top, left } = getPos(dom)
-  //   currentDOM.style.top = top
-  //   currentDOM.style.left = left
-  // }, [dom, getPos])
-
-  // useEffect(() => {
-  //   document
-  //     .querySelector(".craftjs-renderer")
-  //     .addEventListener("scroll", scroll)
-
-  //   return () => {
-  //     document
-  //       .querySelector(".craftjs-renderer")
-  //       .removeEventListener("scroll", scroll)
-  //   }
-  // }, [scroll])
+  const onCopyProps = props => {
+    const { item, text, ...propsCopy } = props
+    console.dir(propsCopy)
+    setPropsCopy(propsCopy)
+  }
 
   return (
     <>
@@ -94,7 +86,7 @@ export const RenderNode = ({ render }) => {
               ) : null}
               {id !== ROOT_NODE && (
                 <a
-                  className="mr-2 cursor-pointer"
+                  className="mr-2 cursor-pointer active:scale-90"
                   onClick={() => {
                     actions.selectNode(parent)
                   }}
@@ -104,7 +96,7 @@ export const RenderNode = ({ render }) => {
               )}
               {deletable ? (
                 <a
-                  className="cursor-pointer"
+                  className="mr-2 cursor-pointer active:scale-90"
                   onMouseDown={(e: React.MouseEvent) => {
                     e.stopPropagation()
                     actions.delete(id)
@@ -113,6 +105,14 @@ export const RenderNode = ({ render }) => {
                   <TrashIcon />
                 </a>
               ) : null}
+              <a
+                className="cursor-pointer active:scale-90"
+                onClick={() => {
+                  onCopyProps(props)
+                }}
+              >
+                <CopyIcon />
+              </a>
             </div>,
             document.querySelector(".page-container")
           )
