@@ -1,49 +1,75 @@
 import React, { Fragment } from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { Cross1Icon } from "@radix-ui/react-icons"
-import { Transition } from "@headlessui/react"
+import { AnimatePresence, motion } from "framer-motion"
+
+const overlay = {
+  visible: {
+    opacity: 1,
+    transition: {
+      ease: "easeOut",
+      duration: 0.2
+    }
+  },
+  hidden: {
+    opacity: 0
+  }
+}
+
+const dialog = {
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      ease: "easeOut",
+      duration: 0.2
+    }
+  },
+  hidden: {
+    opacity: 0,
+    y: 4,
+    scale: 0.95
+  }
+}
 
 export const DialogContent = React.forwardRef<
   HTMLDivElement,
   DialogPrimitive.DialogContentProps
 >(({ children, ...props }, forwardedRef) => (
-  <DialogPrimitive.Portal>
-    <Transition show={true}>
-      <Transition.Child
-        as={Fragment}
-        enter="ease-out duration-300"
-        enterFrom="opacity-0"
-        enterTo="opacity-100"
-        leave="ease-in duration-200"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-      >
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 min-h-screen bg-zinc-500 bg-opacity-75 px-4 pt-4 pb-20 transition-opacity sm:block sm:p-0" />
-      </Transition.Child>
+  <AnimatePresence>
+    <DialogPrimitive.Portal>
+      <DialogPrimitive.Overlay asChild>
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={overlay}
+          className="fixed inset-0 z-50 min-h-screen bg-zinc-500 bg-opacity-75 px-4 pt-4 pb-20 transition-opacity sm:block sm:p-0"
+        />
+      </DialogPrimitive.Overlay>
       <div className="fixed inset-0 z-50 flex min-h-screen items-end justify-center overflow-y-auto px-4 pt-4 pb-20 sm:items-start">
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-          enterTo="opacity-100 translate-y-0 sm:scale-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-          leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        <DialogPrimitive.Content
+          {...props}
+          asChild
+          forceMount
+          ref={forwardedRef}
         >
-          <DialogPrimitive.Content
-            {...props}
-            ref={forwardedRef}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={dialog}
             className="relative inline-block transform overflow-hidden rounded-xl bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle"
           >
             {children}
             <DialogPrimitive.Close className="absolute top-2 right-2 rounded-full p-2 text-gray-500 hover:bg-gray-50">
               <Cross1Icon />
             </DialogPrimitive.Close>
-          </DialogPrimitive.Content>
-        </Transition.Child>
+          </motion.div>
+        </DialogPrimitive.Content>
       </div>
-    </Transition>
-  </DialogPrimitive.Portal>
+    </DialogPrimitive.Portal>
+  </AnimatePresence>
 ))
 
 DialogContent.displayName = "DialogContent"
