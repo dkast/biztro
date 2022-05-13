@@ -36,7 +36,7 @@ import Button from "@/components/Button"
 import { frameSizeState, hostState, propState } from "@/lib/store"
 
 import { frameSize, HttpMethod } from "@/lib/types"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/Dialog"
+import Dialog from "@/components/Dialog"
 import {
   ToolbarDropdown,
   ToolbarDropdownContent,
@@ -53,12 +53,11 @@ const ToolbarMenu = () => {
       canRedo: query.history.canRedo(),
       selectedNodeId: state.events.selected
     }))
+  const [openDialog, setOpenDialog] = useState(false)
   const [size, setSize] = useRecoilState(frameSizeState)
   const [propsCopy, setPropsCopy] = useRecoilState(propState)
-
   const { data: session } = useSession()
   const sessionId = session?.user?.id
-
   const { site } = useSite(sessionId)
 
   async function updateSite(): Promise<void> {
@@ -124,162 +123,162 @@ const ToolbarMenu = () => {
   }
 
   return (
-    <Toolbar.Root className="flex h-full w-full items-center gap-1 px-4">
-      <Tooltip content="Deshacer">
-        <Toolbar.Button
-          disabled={!canUndo}
-          onClick={() => actions.history.undo()}
-          aria-label="Deshacer"
-          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
-        >
-          <ResetIcon />
-        </Toolbar.Button>
-      </Tooltip>
-      <Tooltip content="Rehacer">
-        <Toolbar.Button
-          disabled={!canRedo}
-          onClick={() => actions.history.redo()}
-          aria-label="Rehacer"
-          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
-        >
-          <ResetIcon
-            style={{
-              transform: "scaleX(-1)"
-            }}
-          />
-        </Toolbar.Button>
-      </Tooltip>
-      <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
-      <Tooltip content="Tamaño Pantalla">
-        <Toolbar.ToggleGroup
-          type="single"
-          defaultValue={size}
-          aria-label="Tamaño Vista Previa"
-          className="inline-flex rounded bg-gray-100 p-0.5"
-          onValueChange={(value: frameSize) => setSize(value)}
-        >
-          <Toolbar.ToggleItem
-            value={frameSize.MOBILE}
-            className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 radix-state-on:bg-white radix-state-on:shadow"
+    <>
+      <Toolbar.Root className="flex h-full w-full items-center gap-1 px-4">
+        <Tooltip content="Deshacer">
+          <Toolbar.Button
+            disabled={!canUndo}
+            onClick={() => actions.history.undo()}
+            aria-label="Deshacer"
+            className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
           >
-            <MobileIcon />
-          </Toolbar.ToggleItem>
-          <Toolbar.ToggleItem
-            value={frameSize.DESKTOP}
-            className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 radix-state-on:bg-white radix-state-on:shadow"
+            <ResetIcon />
+          </Toolbar.Button>
+        </Tooltip>
+        <Tooltip content="Rehacer">
+          <Toolbar.Button
+            disabled={!canRedo}
+            onClick={() => actions.history.redo()}
+            aria-label="Rehacer"
+            className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
           >
-            <DesktopIcon />
-          </Toolbar.ToggleItem>
-        </Toolbar.ToggleGroup>
-      </Tooltip>
-      <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
-      <Tooltip content="Copiar Estilo">
-        <Toolbar.Button
-          onClick={() => onCopyProps()}
-          aria-label="Copiar Estilo"
-          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
-        >
-          <CopyIcon />
-        </Toolbar.Button>
-      </Tooltip>
-      <Tooltip content="Pegar Estilo">
-        <Toolbar.Button
-          disabled={!propsCopy}
-          onClick={() => onPasteProps(propsCopy)}
-          aria-label="Pegar Estilo"
-          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
-        >
-          <ClipboardCopyIcon />
-        </Toolbar.Button>
-      </Tooltip>
-      <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
-      <Tooltip content="Restringir cambios">
-        <Toolbar.Button
-          onClick={() =>
-            actions.setOptions(options => (options.enabled = !enabled))
-          }
-          aria-label="Editor habilitado"
-          className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
-        >
-          {enabled ? <LockOpen2Icon /> : <LockClosedIcon />}
-        </Toolbar.Button>
-      </Tooltip>
-      <Toolbar.Button asChild>
-        <Dialog>
-          <DialogTrigger className="ml-auto" asChild>
-            <Button
-              type="button"
-              variant="flat"
-              size="xs"
-              leftIcon={<EyeIcon className="text-gray-500" />}
+            <ResetIcon
+              style={{
+                transform: "scaleX(-1)"
+              }}
+            />
+          </Toolbar.Button>
+        </Tooltip>
+        <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
+        <Tooltip content="Tamaño Pantalla">
+          <Toolbar.ToggleGroup
+            type="single"
+            defaultValue={size}
+            aria-label="Tamaño Vista Previa"
+            className="inline-flex rounded bg-gray-100 p-0.5"
+            onValueChange={(value: frameSize) => setSize(value)}
+          >
+            <Toolbar.ToggleItem
+              value={frameSize.MOBILE}
+              className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 radix-state-on:bg-white radix-state-on:shadow"
             >
-              Vista Previa
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <QRPreview />
-          </DialogContent>
-        </Dialog>
-      </Toolbar.Button>
-      <Toolbar.Button asChild>
-        <Button
-          type="button"
-          variant="flat"
-          size="xs"
-          className="mr-2"
-          leftIcon={<SaveIcon className="text-gray-500" />}
-          onClick={() => updateSite()}
-        >
-          Guardar
-        </Button>
-      </Toolbar.Button>
-      {!site.published ? (
+              <MobileIcon />
+            </Toolbar.ToggleItem>
+            <Toolbar.ToggleItem
+              value={frameSize.DESKTOP}
+              className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 radix-state-on:bg-white radix-state-on:shadow"
+            >
+              <DesktopIcon />
+            </Toolbar.ToggleItem>
+          </Toolbar.ToggleGroup>
+        </Tooltip>
+        <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
+        <Tooltip content="Copiar Estilo">
+          <Toolbar.Button
+            onClick={() => onCopyProps()}
+            aria-label="Copiar Estilo"
+            className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
+          >
+            <CopyIcon />
+          </Toolbar.Button>
+        </Tooltip>
+        <Tooltip content="Pegar Estilo">
+          <Toolbar.Button
+            disabled={!propsCopy}
+            onClick={() => onPasteProps(propsCopy)}
+            aria-label="Pegar Estilo"
+            className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
+          >
+            <ClipboardCopyIcon />
+          </Toolbar.Button>
+        </Tooltip>
+        <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
+        <Tooltip content="Restringir cambios">
+          <Toolbar.Button
+            onClick={() =>
+              actions.setOptions(options => (options.enabled = !enabled))
+            }
+            aria-label="Editor habilitado"
+            className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
+          >
+            {enabled ? <LockOpen2Icon /> : <LockClosedIcon />}
+          </Toolbar.Button>
+        </Tooltip>
         <Toolbar.Button asChild>
           <Button
             type="button"
-            variant="primary"
+            variant="flat"
             size="xs"
-            onClick={() => publishSite(true)}
+            className="ml-auto"
+            leftIcon={<EyeIcon className="text-gray-500" />}
+            onClick={() => setOpenDialog(true)}
           >
-            Publicar
+            Vista Previa
           </Button>
         </Toolbar.Button>
-      ) : (
-        <ToolbarDropdown>
-          <ToolbarDropdownTrigger className="outline-none">
+        <Toolbar.Button asChild>
+          <Button
+            type="button"
+            variant="flat"
+            size="xs"
+            className="mr-2"
+            leftIcon={<SaveIcon className="text-gray-500" />}
+            onClick={() => updateSite()}
+          >
+            Guardar
+          </Button>
+        </Toolbar.Button>
+        {!site.published ? (
+          <Toolbar.Button asChild>
             <Button
               type="button"
               variant="primary"
               size="xs"
-              rightIcon={<ChevronDownIcon />}
+              onClick={() => publishSite(true)}
             >
-              Publicado
+              Publicar
             </Button>
-          </ToolbarDropdownTrigger>
-          <ToolbarDropdownContent>
-            <ToolbarDropdownItem onSelect={() => publishSite(false)}>
-              Cambiar a Borrador
-            </ToolbarDropdownItem>
-          </ToolbarDropdownContent>
-        </ToolbarDropdown>
-      )}
-      <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
-      <ToolbarPopover>
-        <Tooltip content="Compartir">
-          <ToolbarPopoverTrigger asChild>
-            <Toolbar.Button
-              aria-label="Compartir"
-              className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
-            >
-              <Link1Icon />
-            </Toolbar.Button>
-          </ToolbarPopoverTrigger>
-        </Tooltip>
-        <ToolbarPopoverContent>
-          <PublishPanel siteId={site.id} />
-        </ToolbarPopoverContent>
-      </ToolbarPopover>
-    </Toolbar.Root>
+          </Toolbar.Button>
+        ) : (
+          <ToolbarDropdown>
+            <ToolbarDropdownTrigger className="outline-none">
+              <Button
+                type="button"
+                variant="primary"
+                size="xs"
+                rightIcon={<ChevronDownIcon />}
+              >
+                Publicado
+              </Button>
+            </ToolbarDropdownTrigger>
+            <ToolbarDropdownContent>
+              <ToolbarDropdownItem onSelect={() => publishSite(false)}>
+                Cambiar a Borrador
+              </ToolbarDropdownItem>
+            </ToolbarDropdownContent>
+          </ToolbarDropdown>
+        )}
+        <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
+        <ToolbarPopover>
+          <Tooltip content="Compartir">
+            <ToolbarPopoverTrigger asChild>
+              <Toolbar.Button
+                aria-label="Compartir"
+                className="flex h-6 w-6 items-center justify-center rounded hover:bg-gray-100 disabled:text-gray-300"
+              >
+                <Link1Icon />
+              </Toolbar.Button>
+            </ToolbarPopoverTrigger>
+          </Tooltip>
+          <ToolbarPopoverContent>
+            <PublishPanel siteId={site.id} />
+          </ToolbarPopoverContent>
+        </ToolbarPopover>
+      </Toolbar.Root>
+      <Dialog open={openDialog} setOpen={setOpenDialog}>
+        <QRPreview />
+      </Dialog>
+    </>
   )
 }
 
@@ -313,7 +312,7 @@ const PublishPanel = ({ siteId }: PublishPanelProps): JSX.Element => {
   const host = useRecoilValue(hostState)
   const [copy, setCopy] = useState(false)
   return (
-    <div className="mt-2 overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+    <div className="overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
       <div className="flex flex-col gap-4 divide-y divide-solid px-2 py-3 sm:p-4">
         <div className="flex items-center justify-center gap-4">
           <span className="select-all text-xs">{`${host}/site/${siteId}`}</span>
