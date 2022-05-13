@@ -31,26 +31,25 @@ const Text: UserComponent<TextProps> = ({
   }))
 
   return (
-    <div className="px-4">
-      <Font family={fontFamily}>
-        <ContentEditable
-          disabled={!enabled}
-          innerRef={connect}
-          html={text}
-          onChange={e => {
-            setProp(prop => (prop.text = e.target.value), 500)
-          }}
-          tagName="h2"
-          style={{
-            fontSize: `${fontSize}px`,
-            color: `rgba(${Object.values(color)})`,
-            fontWeight,
-            textAlign,
-            outline: "none"
-          }}
-        />
-      </Font>
-    </div>
+    <Font family={fontFamily}>
+      <ContentEditable
+        disabled={!enabled}
+        innerRef={connect}
+        html={text}
+        onChange={e => {
+          setProp(prop => (prop.text = e.target.value), 500)
+        }}
+        tagName="h2"
+        style={{
+          fontSize: `${fontSize}px`,
+          color: `rgba(${Object.values(color)})`,
+          fontWeight,
+          textAlign,
+          outline: "none"
+        }}
+        className="px-4"
+      />
+    </Font>
   )
 }
 
