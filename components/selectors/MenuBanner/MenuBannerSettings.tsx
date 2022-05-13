@@ -44,7 +44,7 @@ const MenuBannerSettings = (): JSX.Element => {
             </ToolbarPopoverTrigger>
             <ToolbarPopoverContent>
               <SketchPicker
-                disableAlpha={true}
+                disableAlpha
                 presetColors={COLORS}
                 color={titleColor}
                 onChange={color => {
@@ -66,7 +66,7 @@ const MenuBannerSettings = (): JSX.Element => {
             </ToolbarPopoverTrigger>
             <ToolbarPopoverContent>
               <SketchPicker
-                disableAlpha={true}
+                disableAlpha
                 presetColors={COLORS}
                 color={textColor}
                 onChange={color => {
