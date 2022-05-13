@@ -33,7 +33,7 @@ const ContainerSettings = (): JSX.Element => {
           </ToolbarPopoverTrigger>
           <ToolbarPopoverContent>
             <SketchPicker
-              disableAlpha={true}
+              disableAlpha
               presetColors={COLORS}
               color={background}
               onChange={color => {

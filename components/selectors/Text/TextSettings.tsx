@@ -129,7 +129,7 @@ const TextSettings = (): JSX.Element => {
           </ToolbarPopoverTrigger>
           <ToolbarPopoverContent>
             <SketchPicker
-              disableAlpha={true}
+              disableAlpha
               presetColors={COLORS}
               color={color}
               onChange={color => {
