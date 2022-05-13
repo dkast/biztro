@@ -85,8 +85,8 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
                     >
                       <MenuBanner
                         site={site}
-                        showLogo={true}
-                        showBanner={true}
+                        showLogo
+                        showBanner
                       ></MenuBanner>
                     </Element>
                   </Frame>
