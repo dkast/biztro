@@ -1,6 +1,6 @@
 import React from "react"
 import { useNode } from "@craftjs/core"
-import { SwatchesPicker } from "react-color"
+import { SketchPicker } from "react-color"
 
 import ToolboxPanel from "@/components/editor/ToolboxPanel"
 import ToolbarItem from "@/components/editor/ToolbarItem"
@@ -13,6 +13,7 @@ import {
   ToolbarSwitch,
   ToolbarSwitchThumb
 } from "@/components/editor/ToolbarSwitch"
+import { COLORS } from "@/lib/types"
 
 const MenuBannerSettings = (): JSX.Element => {
   const {
@@ -42,12 +43,14 @@ const MenuBannerSettings = (): JSX.Element => {
               ></div>
             </ToolbarPopoverTrigger>
             <ToolbarPopoverContent>
-              <SwatchesPicker
+              <SketchPicker
+                disableAlpha={true}
+                presetColors={COLORS}
                 color={titleColor}
                 onChange={color => {
                   setProp(props => (props.titleColor = color.rgb))
                 }}
-              ></SwatchesPicker>
+              ></SketchPicker>
             </ToolbarPopoverContent>
           </ToolbarPopover>
         </ToolbarItem>
@@ -62,12 +65,14 @@ const MenuBannerSettings = (): JSX.Element => {
               ></div>
             </ToolbarPopoverTrigger>
             <ToolbarPopoverContent>
-              <SwatchesPicker
+              <SketchPicker
+                disableAlpha={true}
+                presetColors={COLORS}
                 color={textColor}
                 onChange={color => {
                   setProp(props => (props.textColor = color.rgb))
                 }}
-              ></SwatchesPicker>
+              ></SketchPicker>
             </ToolbarPopoverContent>
           </ToolbarPopover>
         </ToolbarItem>
