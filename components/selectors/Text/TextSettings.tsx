@@ -5,7 +5,7 @@ import {
   TextAlignLeftIcon,
   TextAlignRightIcon
 } from "@radix-ui/react-icons"
-import { SwatchesPicker } from "react-color"
+import { SketchPicker } from "react-color"
 
 import ToolboxPanel from "@/components/editor/ToolboxPanel"
 import {
@@ -23,7 +23,7 @@ import {
 } from "@/components/editor/ToolbarPopover"
 import ToolbarItem from "@/components/editor/ToolbarItem"
 
-import { FONTS } from "@/lib/types"
+import { COLORS, FONTS } from "@/lib/types"
 
 const SIZES = [
   "9",
@@ -128,12 +128,14 @@ const TextSettings = (): JSX.Element => {
             ></div>
           </ToolbarPopoverTrigger>
           <ToolbarPopoverContent>
-            <SwatchesPicker
+            <SketchPicker
+              disableAlpha={true}
+              presetColors={COLORS}
               color={color}
               onChange={color => {
                 setProp(props => (props.color = color.rgb))
               }}
-            ></SwatchesPicker>
+            ></SketchPicker>
           </ToolbarPopoverContent>
         </ToolbarPopover>
       </ToolbarItem>

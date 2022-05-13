@@ -9,6 +9,7 @@ import {
   ToolbarPopoverTrigger
 } from "@/components/editor/ToolbarPopover"
 import ToolbarItem from "@/components/editor/ToolbarItem"
+import { COLORS } from "@/lib/types"
 
 const ContainerSettings = (): JSX.Element => {
   const {
@@ -32,6 +33,8 @@ const ContainerSettings = (): JSX.Element => {
           </ToolbarPopoverTrigger>
           <ToolbarPopoverContent>
             <SketchPicker
+              disableAlpha={true}
+              presetColors={COLORS}
               color={background}
               onChange={color => {
                 setProp(props => (props.background = color.rgb))
