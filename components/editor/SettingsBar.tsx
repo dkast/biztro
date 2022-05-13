@@ -4,6 +4,7 @@ import { Layers } from "@craftjs/layers"
 
 import ToolboxPanel from "@/components/editor/ToolboxPanel"
 import ToolbarScroll from "@/components/editor/ToolbarScroll"
+import { DefaultLayer } from "@/components/editor/DefaultLayer"
 
 const SettingsBar = (): JSX.Element => {
   const { active, related } = useEditor((state, query) => {
@@ -26,7 +27,7 @@ const SettingsBar = (): JSX.Element => {
       )}
       <ToolboxPanel title="Estructura">
         <div className="-m-2">
-          <Layers />
+          <Layers renderLayer={DefaultLayer} />
         </div>
       </ToolboxPanel>
     </ToolbarScroll>
