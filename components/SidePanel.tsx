@@ -34,7 +34,7 @@ const SidePanel = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="absolute inset-0 bg-zinc-500 bg-opacity-75 transition-opacity" />
+            <Dialog.Overlay className="absolute inset-0 bg-black bg-opacity-30 transition-opacity" />
           </Transition.Child>
 
           <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
@@ -50,7 +50,7 @@ const SidePanel = ({
               <div className="pointer-events-auto w-screen max-w-2xl">
                 <div className="flex h-full flex-col bg-white shadow-xl">
                   {/* Header */}
-                  <div className="bg-gray-50 px-4 py-6 sm:px-6">
+                  <div className="bg-gray-100 px-4 py-6 sm:px-6">
                     <div className="flex items-start justify-between space-x-3">
                       <div className="space-y-1">
                         <Dialog.Title className="text-lg font-medium text-gray-900">

@@ -23,7 +23,7 @@ export const ToolbarToggleGroupItem = React.forwardRef<
     <ToggleGroup.ToggleGroupItem
       ref={forwardRef}
       {...props}
-      className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 radix-state-on:bg-white radix-state-on:shadow"
+      className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-2 focus:ring-zinc-600 radix-state-on:bg-white radix-state-on:shadow"
     >
       {children}
     </ToggleGroup.ToggleGroupItem>

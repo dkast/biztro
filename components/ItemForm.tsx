@@ -277,7 +277,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
         <div className="flex justify-end space-x-3">
           <Button
             type="button"
-            variant="warn"
+            variant="secondary"
             onClick={() => setOpenDialog(true)}
           >
             Eliminar

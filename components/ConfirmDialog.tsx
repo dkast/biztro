@@ -18,7 +18,7 @@ const ConfirmDialog = ({ title, children, open, setOpen, onConfirm }) => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <AlertDialog.Overlay className="fixed inset-0 z-50 min-h-screen bg-zinc-500 bg-opacity-75 px-4 pt-4 pb-20 transition-opacity sm:block sm:p-0" />
+          <AlertDialog.Overlay className="fixed inset-0 z-50 min-h-screen bg-black bg-opacity-30 px-4 pt-4 pb-20 transition-opacity sm:block sm:p-0" />
         </Transition.Child>
         <div className="fixed inset-0 z-50 flex min-h-screen items-end justify-center overflow-y-auto px-4 pt-4 pb-20 sm:items-start">
           <Transition.Child

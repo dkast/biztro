@@ -160,13 +160,13 @@ const ToolbarMenu = () => {
           >
             <Toolbar.ToggleItem
               value={frameSize.MOBILE}
-              className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 radix-state-on:bg-white radix-state-on:shadow"
+              className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-2 focus:ring-zinc-600 radix-state-on:bg-white radix-state-on:shadow"
             >
               <MobileIcon />
             </Toolbar.ToggleItem>
             <Toolbar.ToggleItem
               value={frameSize.DESKTOP}
-              className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-500 radix-state-on:bg-white radix-state-on:shadow"
+              className="flex h-6 w-6 items-center justify-center rounded bg-transparent focus:outline-none focus:ring-2 focus:ring-zinc-600 radix-state-on:bg-white radix-state-on:shadow"
             >
               <DesktopIcon />
             </Toolbar.ToggleItem>
@@ -295,7 +295,7 @@ const QRPreview = (): JSX.Element => {
         <span className="my-2 text-gray-500">
           Escanea con la cámara de tu móvil o aplicación QR o sigue{" "}
           <Link href="/app/site-preview">
-            <a className="text-indigo-500 hover:text-indigo-700">esta liga.</a>
+            <a className="text-violet-500 hover:text-violet-700">esta liga.</a>
           </Link>
         </span>
         <QRCode value={`${host}/app/site-preview`} />
