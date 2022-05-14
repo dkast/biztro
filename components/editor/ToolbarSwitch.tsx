@@ -9,7 +9,7 @@ export const ToolbarSwitch = React.forwardRef<
     <SwitchPrimitive.Root
       {...props}
       ref={forwardRef}
-      className="relative h-5 w-10 rounded-full bg-gray-200 px-0.5 transition-colors radix-state-checked:bg-blue-500"
+      className="relative h-5 w-10 rounded-full bg-gray-200 px-0.5 transition-colors radix-state-checked:bg-violet-500"
     >
       {children}
     </SwitchPrimitive.Root>

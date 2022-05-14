@@ -8,7 +8,7 @@ interface MenuItemProps {
 
 const ToolboxItem = ({ item }: MenuItemProps): JSX.Element => {
   return (
-    <div className="mb-1 flex cursor-move items-center gap-2 truncate rounded-lg p-2 text-sm transition-transform hover:scale-105 hover:bg-blue-500 hover:text-white">
+    <div className="mb-1 flex cursor-move items-center gap-2 truncate rounded-lg p-2 text-sm transition-transform hover:scale-105 hover:bg-zinc-800 hover:text-white">
       <ButtonIcon className="text-current"></ButtonIcon>
       <span>{item.title}</span>
     </div>

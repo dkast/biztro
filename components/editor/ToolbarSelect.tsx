@@ -14,7 +14,7 @@ export const ToolbarSelect = React.forwardRef<
     <SelectPrimitive.Root {...props}>
       <SelectPrimitive.Trigger
         ref={forwardedRef}
-        className="inline-flex h-7 w-full items-center justify-between rounded bg-gray-100 px-1 pl-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+        className="inline-flex h-7 w-full items-center justify-between rounded bg-gray-100 px-1 pl-3 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-600"
       >
         <div className="truncate">
           <SelectPrimitive.Value />
@@ -48,7 +48,7 @@ export const ToolbarSelectItem = React.forwardRef<
     <SelectPrimitive.Item
       {...props}
       ref={forwardedRef}
-      className="relative flex h-6 cursor-default items-center rounded pl-7 text-sm focus:bg-blue-500 focus:text-white focus:outline-none"
+      className="relative flex h-6 cursor-default items-center rounded pl-7 text-sm focus:bg-violet-500 focus:text-white focus:outline-none"
     >
       <SelectPrimitive.ItemText className="truncate text-sm">
         {children}

@@ -51,7 +51,7 @@ const Layout = ({ children }: LayoutProps) => {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen pb-safe">
       {/* Narrow sidebar */}
       <div className="hidden w-16 overflow-y-auto border-r border-gray-200 bg-gray-50 md:block">
         <div className="flex w-full flex-col items-center py-4">
@@ -109,7 +109,7 @@ const Layout = ({ children }: LayoutProps) => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Overlay className="fixed inset-0 bg-gray-600 bg-opacity-75" />
+              <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
             </Transition.Child>
             <Transition.Child
               as={Fragment}
