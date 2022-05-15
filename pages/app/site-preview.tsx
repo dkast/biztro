@@ -1,4 +1,5 @@
 import React from "react"
+import Head from "next/head"
 import { useSession } from "next-auth/react"
 import { Editor, Frame } from "@craftjs/core"
 import lz from "lzutf8"
@@ -31,18 +32,23 @@ const SitePreview: NextPageWithAuthAndLayout = () => {
     )
   }
   return (
-    <div className="flex flex-col">
-      <div className="relative grow h-screen-safe sm:h-screen">
-        <div className="absolute inset-0 overflow-auto pb-4">
-          <Editor
-            resolver={{ Container, Text, MenuItem, MenuBanner }}
-            enabled={false}
-          >
-            <Frame data={json} />
-          </Editor>
+    <>
+      <Head>
+        <title>Bistro - Vista Previa</title>
+      </Head>
+      <div className="flex flex-col">
+        <div className="relative grow h-screen-safe sm:h-screen">
+          <div className="absolute inset-0 overflow-auto pb-4">
+            <Editor
+              resolver={{ Container, Text, MenuItem, MenuBanner }}
+              enabled={false}
+            >
+              <Frame data={json} />
+            </Editor>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 SitePreview.auth = true

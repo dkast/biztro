@@ -1,4 +1,5 @@
 import React from "react"
+import { NextSeo } from "next-seo"
 import { useRouter } from "next/router"
 import { Editor, Frame } from "@craftjs/core"
 import lz from "lzutf8"
@@ -18,11 +19,20 @@ interface PathProps extends ParsedUrlQuery {
 }
 
 interface IndexProps {
+  name: string
+  description: string
+  image: string
   serialData: string
 }
 
-const Site: NextPage<IndexProps> = ({ serialData }) => {
+const Site: NextPage<IndexProps> = ({
+  name,
+  description,
+  image,
+  serialData
+}) => {
   const router = useRouter()
+  const siteTitle = `${name} - Menu`
 
   if (router.isFallback)
     return (
@@ -34,18 +44,36 @@ const Site: NextPage<IndexProps> = ({ serialData }) => {
   const json = lz.decompress(lz.decodeBase64(serialData))
 
   return (
-    <div className="flex flex-col">
-      <div className="relative grow h-screen-safe sm:h-screen">
-        <div className="absolute inset-0 overflow-auto pb-4">
-          <Editor
-            resolver={{ Container, Text, MenuItem, MenuBanner }}
-            enabled={false}
-          >
-            <Frame data={json} />
-          </Editor>
+    <>
+      <NextSeo
+        title={siteTitle}
+        description={description}
+        openGraph={{
+          title: siteTitle,
+          description: description,
+          images: [
+            {
+              url: image,
+              width: 800,
+              height: 600,
+              type: "image/jpeg"
+            }
+          ]
+        }}
+      />
+      <div className="flex flex-col">
+        <div className="relative grow h-screen-safe sm:h-screen">
+          <div className="absolute inset-0 overflow-auto pb-4">
+            <Editor
+              resolver={{ Container, Text, MenuItem, MenuBanner }}
+              enabled={false}
+            >
+              <Frame data={json} />
+            </Editor>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
@@ -79,6 +107,9 @@ export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({
       published: true
     },
     select: {
+      name: true,
+      description: true,
+      image: true,
       serialData: true
     }
   })
@@ -87,6 +118,9 @@ export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({
 
   return {
     props: {
+      name: data.name,
+      description: data.description,
+      image: data.image,
       serialData: data.serialData
     },
     revalidate: 900

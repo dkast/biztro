@@ -3,8 +3,10 @@ import { SessionProvider, useSession, signIn } from "next-auth/react"
 import { AppProps } from "next/app"
 import { Toaster } from "react-hot-toast"
 import { RecoilRoot } from "recoil"
+import { DefaultSeo } from "next-seo"
 
 import "../styles/globals.css"
+import SEO from "next-seo-config"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 
@@ -21,6 +23,7 @@ function MyApp({
   return (
     <SessionProvider session={session}>
       <RecoilRoot>
+        <DefaultSeo {...SEO} />
         {Component.auth ? (
           <Auth>{getLayout(<Component {...pageProps} />)}</Auth>
         ) : (
