@@ -17,19 +17,25 @@ const SettingsBar = (): JSX.Element => {
   })
   return (
     <ToolbarScroll>
-      {active && related.toolbar && React.createElement(related.toolbar)}
-      {!active && (
-        <div className="flex flex-col items-center justify-center px-5 py-12 text-center">
-          <span className="text-sm text-gray-500">
-            Selecciona un componente para editar
-          </span>
+      <div className="grid w-full grid-cols-1 grid-rows-2">
+        <div>
+          {active && related.toolbar && React.createElement(related.toolbar)}
+          {!active && (
+            <div className="flex flex-col items-center justify-center px-5 py-12 text-center">
+              <span className="text-sm text-gray-500">
+                Selecciona un componente para editar
+              </span>
+            </div>
+          )}
         </div>
-      )}
-      <ToolboxPanel title="Estructura">
-        <div className="-m-2">
-          <Layers renderLayer={DefaultLayer} />
+        <div>
+          <ToolboxPanel title="Estructura">
+            <div className="-m-2">
+              <Layers renderLayer={DefaultLayer} />
+            </div>
+          </ToolboxPanel>
         </div>
-      </ToolboxPanel>
+      </div>
     </ToolbarScroll>
   )
 }
