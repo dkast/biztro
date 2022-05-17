@@ -1,9 +1,7 @@
-import { useEffect } from "react"
 import Head from "next/head"
 import { useSession } from "next-auth/react"
-import { Editor, Frame, Element } from "@craftjs/core"
+import { Editor, Frame, Element, useEditor } from "@craftjs/core"
 import { useRecoilValue, useSetRecoilState } from "recoil"
-import { InformationCircleIcon } from "@heroicons/react/solid"
 import lz from "lzutf8"
 
 import useSite from "@/hooks/useSite"
@@ -21,11 +19,11 @@ import SettingsBar from "@/components/editor/SettingsBar"
 import MenuItem from "@/components/selectors/MenuItem"
 import MenuBanner from "@/components/selectors/MenuBanner"
 import ToolbarMenu from "@/components/editor/ToolbarMenu"
+import EditorSync from "@/components/editor/EditorSync"
 
-import { frameSize } from "@/lib/types"
+import { frameSize, HttpMethod } from "@/lib/types"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 import type { GetServerSideProps, NextPage } from "next"
-import Alert from "@/components/Alert"
 
 type Props = {
   host: string | null
@@ -35,45 +33,23 @@ type NextPageWithAuthAndLayoutAndProps = NextPage<Props> &
   NextPageWithAuthAndLayout
 
 const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
+  // Hooks
   const { data: session } = useSession()
   const sessionId = session?.user?.id
+  const { site, isLoading } = useSite(sessionId)
 
+  // Atoms
   const setHost = useSetRecoilState(hostState)
+  const synReq = useRecoilValue(syncReqState)
+  const size = useRecoilValue(frameSizeState)
+
   setHost(props.host)
 
-  const setSyncRec = useSetRecoilState(syncReqState)
-
-  const { site, isLoading } = useSite(sessionId)
-  const { data } = useItems(site?.id)
-
-  const size = useRecoilValue(frameSizeState)
+  // Load state
   let json = undefined
-
   if (site?.serialData) {
     json = lz.decompress(lz.decodeBase64(site.serialData))
   }
-
-  useEffect(() => {
-    if (site && data) {
-      // Get Menu Items and check if update is necessary
-      let serial = lz.decompress(lz.decodeBase64(site?.serialData))
-      let items = []
-      const objectData = JSON.parse(serial)
-      for (const property in objectData) {
-        const item = objectData[property]
-        if (item?.type?.resolvedName === "MenuItem") {
-          items.push(item?.props?.item)
-        }
-      }
-
-      let result: boolean = items.every(item => {
-        const dbItem = data.items.filter(dbItem => dbItem.id === item.id)
-        return dbItem[0].updatedAt === item.updatedAt
-      })
-
-      setSyncRec(result)
-    }
-  }, [data, site, setSyncRec])
 
   if (isLoading) {
     return <Loader />
@@ -101,17 +77,7 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
                 <ToolbarMenu />
               </div>
               <div className="absolute inset-0 mt-[45px] overflow-auto py-8">
-                <div className="-mt-4 px-4 pb-4">
-                  <Alert
-                    icon={
-                      <InformationCircleIcon
-                        className="h-5 w-5 text-blue-400"
-                        aria-hidden="true"
-                      />
-                    }
-                    message="Sincronizar"
-                  />
-                </div>
+                <EditorSync />
                 <div
                   className={classNames(
                     size === frameSize.MOBILE ? "w-[390px]" : "w-[1024px]",
