@@ -16,3 +16,8 @@ export const propState = atom({
   key: "propState",
   default: null
 })
+
+export const syncReqState = atom({
+  key: "syncReqState",
+  default: false
+})
