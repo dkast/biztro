@@ -5,10 +5,9 @@ import { confirmState } from "@/lib/store"
 
 const useConfirm = () => {
   const [confirm, setConfirm] = useRecoilState(confirmState)
-  const [needsCleanup, setNeedsCleanup] = useState(false)
+  // const [needsCleanup, setNeedsCleanup] = useState(false)
   const isConfirmed = prompt => {
-    console.log(prompt)
-    setNeedsCleanup(true)
+    // setNeedsCleanup(true)
     const promise = new Promise((resolve, reject) => {
       setConfirm({
         prompt,
@@ -28,13 +27,15 @@ const useConfirm = () => {
       }
     )
   }
-  useEffect(() => {
-    return () => {
-      if (confirm.cancel && needsCleanup) {
-        confirm.cancel()
-      }
-    }
-  }, [confirm, needsCleanup])
+
+  // useEffect(() => {
+  //   return () => {
+  //     if (confirm.cancel && needsCleanup) {
+  //       confirm.cancel()
+  //     }
+  //   }
+  // }, [confirm, needsCleanup])
+
   return {
     ...confirm,
     isConfirmed

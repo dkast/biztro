@@ -44,7 +44,6 @@ import {
 } from "@/components/editor/ToolbarDropdown"
 import { Tooltip } from "@/components/Tooltip"
 import useWarnChanges from "@/hooks/useWarnChanges"
-import useConfirm from "@/hooks/useConfirm"
 
 const ToolbarMenu = () => {
   // Hooks
@@ -59,7 +58,6 @@ const ToolbarMenu = () => {
   const { data: session } = useSession()
   const sessionId = session?.user?.id
   const { site } = useSite(sessionId)
-  const { isConfirmed } = useConfirm()
 
   // Atoms
   const [size, setSize] = useRecoilState(frameSizeState)
@@ -84,6 +82,8 @@ const ToolbarMenu = () => {
     if (res.ok) {
       toast.success("Información actualizada", { id: toastId })
       mutate("/api/site")
+      // Reset Editor history state
+      actions.history.clear()
     } else {
       toast.error("Algo salió mal", { id: toastId })
     }
@@ -128,17 +128,10 @@ const ToolbarMenu = () => {
     }
   }
 
-  useWarnChanges(canUndo, () => {
-    console.log("canUndo", canUndo)
-    const result = isConfirmed("Cambios no guardados")
-    result
-      .then(res => {
-        return res
-      })
-      .catch(err => {
-        return false
-      })
-  })
+  useWarnChanges(
+    canUndo,
+    "Tiene cambios sin guardar - ¿Está seguro de salir del Editor?"
+  )
 
   return (
     <>
