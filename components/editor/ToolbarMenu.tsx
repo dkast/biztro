@@ -18,7 +18,11 @@ import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import { useSession } from "next-auth/react"
 import { useRecoilState, useRecoilValue } from "recoil"
-import { ChevronDownIcon, EyeIcon } from "@heroicons/react/solid"
+import {
+  ChevronDownIcon,
+  EyeIcon,
+  TrendingUpIcon
+} from "@heroicons/react/solid"
 import {
   DuplicateIcon,
   ExternalLinkIcon,
@@ -34,7 +38,6 @@ import {
 import useSite from "@/hooks/useSite"
 import Button from "@/components/Button"
 import { frameSizeState, hostState, propState } from "@/lib/store"
-
 import { frameSize, HttpMethod } from "@/lib/types"
 import Dialog from "@/components/Dialog"
 import {
@@ -44,8 +47,12 @@ import {
   ToolbarDropdownTrigger
 } from "@/components/editor/ToolbarDropdown"
 import { Tooltip } from "@/components/Tooltip"
+import useWarnChanges from "@/hooks/useWarnChanges"
+import useConfirm from "@/hooks/useConfirm"
+import ConfirmModal from "../ConfirmModal"
 
 const ToolbarMenu = () => {
+  // Hooks
   const { enabled, canUndo, canRedo, actions, query, selectedNodeId } =
     useEditor((state, query) => ({
       enabled: state.options.enabled,
@@ -54,12 +61,16 @@ const ToolbarMenu = () => {
       selectedNodeId: state.events.selected
     }))
   const [openDialog, setOpenDialog] = useState(false)
-  const [size, setSize] = useRecoilState(frameSizeState)
-  const [propsCopy, setPropsCopy] = useRecoilState(propState)
   const { data: session } = useSession()
   const sessionId = session?.user?.id
   const { site } = useSite(sessionId)
+  const { isConfirmed } = useConfirm()
 
+  // Atoms
+  const [size, setSize] = useRecoilState(frameSizeState)
+  const [propsCopy, setPropsCopy] = useRecoilState(propState)
+
+  // Actions
   async function updateSite(): Promise<void> {
     const toastId = toast.loading("Guardando...")
     const json = query.serialize()
@@ -121,6 +132,11 @@ const ToolbarMenu = () => {
       setPropsCopy(propsCopy)
     }
   }
+
+  useWarnChanges(canUndo, async () => {
+    const result = await isConfirmed("Cambios no guardados")
+    return result
+  })
 
   return (
     <>
@@ -278,6 +294,7 @@ const ToolbarMenu = () => {
       <Dialog open={openDialog} setOpen={setOpenDialog}>
         <QRPreview />
       </Dialog>
+      <ConfirmModal />
     </>
   )
 }

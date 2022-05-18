@@ -21,3 +21,13 @@ export const syncReqState = atom({
   key: "syncReqState",
   default: false
 })
+
+export const confirmState = atom({
+  key: "confirmState",
+  default: {
+    prompt: "",
+    isOpen: false,
+    proceed: null,
+    cancel: null
+  }
+})

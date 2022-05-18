@@ -1,5 +1,4 @@
 import lz from "lzutf8"
-import { mutate } from "swr"
 import toast from "react-hot-toast"
 import React, { useEffect } from "react"
 import { useRecoilState } from "recoil"
@@ -10,12 +9,11 @@ import { InformationCircleIcon } from "@heroicons/react/solid"
 import Alert from "@/components/Alert"
 import useSite from "@/hooks/useSite"
 import useItems from "@/hooks/useItems"
-import { HttpMethod } from "@/lib/types"
 import { syncReqState } from "@/lib/store"
 
 const EditorSync = () => {
   // Hooks
-  const { actions, query } = useEditor()
+  const { actions } = useEditor()
   const { data: session } = useSession()
   const sessionId = session?.user?.id
   const { site } = useSite(sessionId)
@@ -35,7 +33,6 @@ const EditorSync = () => {
         const item = objectData[property]
         if (item?.type?.resolvedName === "MenuItem") {
           items.push(item?.props?.item)
-          console.dir(property)
         }
       }
 
@@ -50,7 +47,7 @@ const EditorSync = () => {
 
   // Update site state
   async function syncSite(): Promise<void> {
-    const toastId = toast.loading("Sincronizando...")
+    // const toastId = toast.loading("Sincronizando...")
 
     // Update items
     let serial = lz.decompress(lz.decodeBase64(site?.serialData))
@@ -69,25 +66,8 @@ const EditorSync = () => {
       }
     }
 
-    const json = query.serialize()
-    const res = await fetch("/api/site", {
-      method: HttpMethod.PUT,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        id: site.id,
-        serialData: lz.encodeBase64(lz.compress(json))
-      })
-    })
-
-    if (res.ok) {
-      toast.success("Información actualizada", { id: toastId })
-      mutate("/api/site")
-      setSyncReq(false)
-    } else {
-      toast.error("Algo salió mal", { id: toastId })
-    }
+    toast.success("Información actualizada")
+    setSyncReq(false)
   }
   return (
     <>
