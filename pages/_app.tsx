@@ -7,6 +7,7 @@ import { DefaultSeo } from "next-seo"
 
 import "../styles/globals.css"
 import SEO from "next-seo-config"
+import ConfirmModal from "@/components/ConfirmModal"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 
@@ -39,6 +40,7 @@ function MyApp({
             }
           }}
         />
+        <ConfirmModal />
       </RecoilRoot>
     </SessionProvider>
   )

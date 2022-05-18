@@ -18,11 +18,7 @@ import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import { useSession } from "next-auth/react"
 import { useRecoilState, useRecoilValue } from "recoil"
-import {
-  ChevronDownIcon,
-  EyeIcon,
-  TrendingUpIcon
-} from "@heroicons/react/solid"
+import { ChevronDownIcon, EyeIcon } from "@heroicons/react/solid"
 import {
   DuplicateIcon,
   ExternalLinkIcon,
@@ -49,7 +45,6 @@ import {
 import { Tooltip } from "@/components/Tooltip"
 import useWarnChanges from "@/hooks/useWarnChanges"
 import useConfirm from "@/hooks/useConfirm"
-import ConfirmModal from "../ConfirmModal"
 
 const ToolbarMenu = () => {
   // Hooks
@@ -133,9 +128,16 @@ const ToolbarMenu = () => {
     }
   }
 
-  useWarnChanges(canUndo, async () => {
-    const result = await isConfirmed("Cambios no guardados")
-    return result
+  useWarnChanges(canUndo, () => {
+    console.log("canUndo", canUndo)
+    const result = isConfirmed("Cambios no guardados")
+    result
+      .then(res => {
+        return res
+      })
+      .catch(err => {
+        return false
+      })
   })
 
   return (
@@ -294,7 +296,6 @@ const ToolbarMenu = () => {
       <Dialog open={openDialog} setOpen={setOpenDialog}>
         <QRPreview />
       </Dialog>
-      <ConfirmModal />
     </>
   )
 }
