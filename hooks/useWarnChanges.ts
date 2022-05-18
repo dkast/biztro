@@ -1,10 +1,7 @@
 import Router from "next/router"
 import { useEffect } from "react"
 
-const useWarnChanges = (
-  unsavedChanges: boolean,
-  callback: () => Promise<boolean>
-) => {
+const useWarnChanges = (unsavedChanges: boolean, callback: () => boolean) => {
   useEffect(() => {
     if (unsavedChanges) {
       const routeChangeStart = () => {

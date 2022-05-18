@@ -7,6 +7,7 @@ const useConfirm = () => {
   const [confirm, setConfirm] = useRecoilState(confirmState)
   const [needsCleanup, setNeedsCleanup] = useState(false)
   const isConfirmed = prompt => {
+    console.log(prompt)
     setNeedsCleanup(true)
     const promise = new Promise((resolve, reject) => {
       setConfirm({
