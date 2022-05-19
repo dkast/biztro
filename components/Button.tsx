@@ -71,18 +71,14 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button className={cssClasses} {...props}>
-      <>
-        {isLoading ? (
-          <span className="mr-2">
-            <RotateSpinner size={16} color={"#FFF"}></RotateSpinner>
-          </span>
-        ) : null}
-        {leftIcon ? <i className={SIZE_ICON_LEFT[size]}>{leftIcon}</i> : null}
-        {children}
-        {rightIcon ? (
-          <i className={SIZE_ICON_RIGHT[size]}>{rightIcon}</i>
-        ) : null}
-      </>
+      {isLoading ? (
+        <span className="mr-2">
+          <RotateSpinner size={16} color={"#FFF"}></RotateSpinner>
+        </span>
+      ) : null}
+      {leftIcon ? <i className={SIZE_ICON_LEFT[size]}>{leftIcon}</i> : null}
+      {children}
+      {rightIcon ? <i className={SIZE_ICON_RIGHT[size]}>{rightIcon}</i> : null}
     </button>
   )
 }

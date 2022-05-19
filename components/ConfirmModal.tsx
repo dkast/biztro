@@ -1,14 +1,12 @@
-import React, { Fragment } from "react"
+import React from "react"
 import * as AlertDialog from "@radix-ui/react-alert-dialog"
 import { ExclamationIcon } from "@heroicons/react/outline"
-import { Transition } from "@headlessui/react"
 
 import Button from "@/components/Button"
 import useConfirm from "@/hooks/useConfirm"
 
 const ConfirmModal = () => {
   const { prompt, isOpen, proceed, cancel } = useConfirm()
-  console.log("isOpen", isOpen)
   return (
     <AlertDialog.Root open={isOpen}>
       <AlertDialog.Portal>
