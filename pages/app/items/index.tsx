@@ -13,6 +13,7 @@ import Loader from "@/components/Loader"
 import ItemForm from "@/components/ItemForm"
 import SidePanel from "@/components/SidePanel"
 import PageHeader from "@/components/PageHeader"
+import EmptyState from "@/components/EmptyState"
 import Layout from "@/components/layouts/Layout"
 
 import { HttpMethod, NextPageWithAuthAndLayout } from "@/lib/types"
@@ -114,23 +115,41 @@ const Items: NextPageWithAuthAndLayout = () => {
           <PageHeader title={"Productos"}></PageHeader>
         </div>
         <div className="mx-auto px-4 sm:px-6 md:px-8">
-          <Table
-            columns={columns}
-            data={data.items}
-            getRowProps={row => ({
-              onClick: () => openSidePanelItem(row.original.id)
-            })}
-            toolbar={
-              <Button
-                variant="primary"
-                size="sm"
-                leftIcon={<PlusIcon />}
-                onClick={() => onCreateItem(site.id)}
-              >
-                Crear Producto
-              </Button>
-            }
-          ></Table>
+          {data?.items?.length > 0 ? (
+            <Table
+              columns={columns}
+              data={data.items}
+              getRowProps={row => ({
+                onClick: () => openSidePanelItem(row.original.id)
+              })}
+              toolbar={
+                <Button
+                  variant="primary"
+                  size="sm"
+                  leftIcon={<PlusIcon />}
+                  onClick={() => onCreateItem(site.id)}
+                >
+                  Crear Producto
+                </Button>
+              }
+            ></Table>
+          ) : (
+            <EmptyState
+              header="No hay Productos"
+              description="Inicia creando un nuevo Producto"
+              imageURL="/placeholder-items.svg"
+              primaryAction={
+                <Button
+                  variant="primary"
+                  size="sm"
+                  leftIcon={<PlusIcon />}
+                  onClick={() => onCreateItem(site.id)}
+                >
+                  Crear Producto
+                </Button>
+              }
+            />
+          )}
           <SidePanel open={open} setOpen={setOpen} title="Modificar Producto">
             <ItemForm itemId={itemId} />
           </SidePanel>
