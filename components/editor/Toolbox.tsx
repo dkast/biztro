@@ -22,7 +22,11 @@ const Toolbox = (): JSX.Element => {
   const { connectors } = useEditor()
 
   if (isLoading) {
-    return <Loader />
+    return (
+      <div className="w-full">
+        <Loader />
+      </div>
+    )
   }
 
   return (

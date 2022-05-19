@@ -59,7 +59,7 @@ export const DefaultLayerHeader: React.FC = () => {
             </div>
           ) : null}
 
-          <div className="layer-name s flex-1">
+          <div className="layer-name flex-1 text-sm">
             <EditableLayerName />
           </div>
           <div>
