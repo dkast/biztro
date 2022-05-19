@@ -1,15 +1,14 @@
 import Head from "next/head"
 import { useSession } from "next-auth/react"
-import { Editor, Frame, Element, useEditor } from "@craftjs/core"
+import { Editor, Frame, Element } from "@craftjs/core"
 import { useRecoilValue, useSetRecoilState } from "recoil"
 import lz from "lzutf8"
 
 import useSite from "@/hooks/useSite"
-import useItems from "@/hooks/useItems"
 import Loader from "@/components/Loader"
 import classNames from "@/lib/classnames"
 import absoluteUrl from "next-absolute-url"
-import { frameSizeState, hostState, syncReqState } from "@/lib/store"
+import { frameSizeState, hostState } from "@/lib/store"
 import Text from "@/components/selectors/Text"
 import Layout from "@/components/layouts/Layout"
 import Toolbox from "@/components/editor/Toolbox"
@@ -21,7 +20,7 @@ import MenuBanner from "@/components/selectors/MenuBanner"
 import ToolbarMenu from "@/components/editor/ToolbarMenu"
 import EditorSync from "@/components/editor/EditorSync"
 
-import { frameSize, HttpMethod } from "@/lib/types"
+import { frameSize } from "@/lib/types"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 import type { GetServerSideProps, NextPage } from "next"
 
@@ -40,7 +39,6 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
 
   // Atoms
   const setHost = useSetRecoilState(hostState)
-  const synReq = useRecoilValue(syncReqState)
   const size = useRecoilValue(frameSizeState)
 
   setHost(props.host)

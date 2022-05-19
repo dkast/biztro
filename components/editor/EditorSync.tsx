@@ -26,8 +26,8 @@ const EditorSync = () => {
   useEffect(() => {
     if (site && data) {
       // Get Menu Items and check if update is necessary
-      let serial = lz.decompress(lz.decodeBase64(site?.serialData))
-      let items = []
+      const serial = lz.decompress(lz.decodeBase64(site?.serialData))
+      const items = []
       const objectData = JSON.parse(serial)
       for (const property in objectData) {
         const item = objectData[property]
@@ -36,7 +36,7 @@ const EditorSync = () => {
         }
       }
 
-      let result: boolean = items.every(item => {
+      const result: boolean = items.every(item => {
         const dbItem = data.items.filter(dbItem => dbItem.id === item.id)
         return dbItem[0].updatedAt === item.updatedAt
       })
@@ -46,11 +46,11 @@ const EditorSync = () => {
   }, [data, site, setSyncReq])
 
   // Update site state
-  async function syncSite(): Promise<void> {
+  function syncSite(): void {
     // const toastId = toast.loading("Sincronizando...")
 
     // Update items
-    let serial = lz.decompress(lz.decodeBase64(site?.serialData))
+    const serial = lz.decompress(lz.decodeBase64(site?.serialData))
     const objectData = JSON.parse(serial)
     for (const property in objectData) {
       const item = objectData[property]
@@ -69,6 +69,7 @@ const EditorSync = () => {
     toast.success("Información actualizada")
     setSyncReq(false)
   }
+
   return (
     <>
       {synReq ? (
