@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react"
+import { Fragment, useState, useEffect } from "react"
 import { Dialog, Menu, Transition } from "@headlessui/react"
 import {
   CogIcon,
@@ -43,8 +43,29 @@ function MenuLink(props) {
 
 const Layout = ({ children }: LayoutProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { asPath } = useRouter()
   const { data: session, status } = useSession()
+  const router = useRouter()
+  const asPath = router.asPath
+  const [loadingRoute, setLoadingRoute] = useState(false)
+
+  useEffect(() => {
+    const handleStart = url => {
+      setLoadingRoute(true)
+    }
+    const handleStop = () => {
+      setLoadingRoute(false)
+    }
+
+    router.events.on("routeChangeStart", handleStart)
+    router.events.on("routeChangeComplete", handleStop)
+    router.events.on("routeChangeError", handleStop)
+
+    return () => {
+      router.events.off("routeChangeStart", handleStart)
+      router.events.off("routeChangeComplete", handleStop)
+      router.events.off("routeChangeError", handleStop)
+    }
+  }, [router])
 
   if (status === "loading") {
     return null
@@ -55,7 +76,12 @@ const Layout = ({ children }: LayoutProps) => {
       {/* Narrow sidebar */}
       <div className="hidden w-16 overflow-y-auto border-r border-gray-200 bg-gray-50 md:block">
         <div className="flex w-full flex-col items-center py-4">
-          <div className="flex flex-shrink-0 items-center">
+          <div
+            className={classNames(
+              loadingRoute ? "animate-pulse" : "",
+              "flex flex-shrink-0 items-center"
+            )}
+          >
             <Image
               className="h-8 w-auto"
               src="/logo-bistro.svg"
