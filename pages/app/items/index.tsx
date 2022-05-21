@@ -70,7 +70,7 @@ const Items: NextPageWithAuthAndLayout = () => {
   const { data: session } = useSession()
   const sessionId = session?.user?.id
 
-  const { site } = useSite(sessionId)
+  const { site, isValidating } = useSite(sessionId)
   const { data, isLoading } = useItems(site?.id)
 
   async function onCreateItem(siteId: string) {
@@ -101,7 +101,7 @@ const Items: NextPageWithAuthAndLayout = () => {
     setItemId(itemId)
   }
 
-  if (isLoading) {
+  if (isLoading && !isValidating) {
     return <Loader />
   }
 

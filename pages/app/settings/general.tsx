@@ -29,6 +29,7 @@ interface IFormValues {
 }
 
 const SettingsGeneral: NextPageWithAuthAndLayout = () => {
+  // hooks
   const {
     register,
     handleSubmit,
@@ -39,11 +40,13 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
   const [submitted, setSubmitted] = useState(false)
   const { data: session } = useSession()
   const sessionId = session?.user?.id
+  const { data: site, isValidating } = useSWR<Site>(
+    sessionId && "/api/site",
+    fetcher
+  )
 
   const [logoImage, setLogoImage] = useState<ImageInfo>(null)
   const [bannerImage, setBannerImage] = useState<ImageInfo>(null)
-
-  const { data: site, error } = useSWR<Site>(sessionId && "/api/site", fetcher)
 
   useEffect(() => {
     setLogoImage({
@@ -61,6 +64,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     })
   }, [site, reset])
 
+  // actions
   async function onSubmit(data: IFormValues) {
     setSubmitted(true)
     if (site?.id) {
@@ -117,7 +121,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     }
   }
 
-  if (!site && !error) {
+  if (isValidating) {
     return <Loader />
   }
 
