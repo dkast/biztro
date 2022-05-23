@@ -1,10 +1,14 @@
 import Head from "next/head"
+import { useSession } from "next-auth/react"
 
 import Layout from "@/components/layouts/Layout"
 import PageHeader from "@/components/PageHeader"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 
 const Dashboard: NextPageWithAuthAndLayout = () => {
+  const { data: session } = useSession()
+  const firstName = session?.user?.name.split(" ")[0]
+
   return (
     <>
       <Head>
@@ -12,7 +16,7 @@ const Dashboard: NextPageWithAuthAndLayout = () => {
       </Head>
       <div className="py-6">
         <div className="mx-auto px-4 sm:px-6 md:px-8">
-          <PageHeader title={"Inicio"}></PageHeader>
+          <PageHeader title={`Empecemos, ${firstName}`}></PageHeader>
         </div>
         <div className="mx-auto px-4 sm:px-6 md:px-8">
           {/* Replace with your content */}
