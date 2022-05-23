@@ -13,7 +13,7 @@ export default function useSite(sessionId) {
   return {
     site: data,
     isLoading: !error && !data,
-    isError: error,
+    error,
     isValidating
   }
 }

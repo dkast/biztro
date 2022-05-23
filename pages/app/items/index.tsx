@@ -3,8 +3,9 @@ import Head from "next/head"
 import toast from "react-hot-toast"
 import { mutate } from "swr"
 import Image from "next/image"
+import Link from "next/link"
 import { useSession } from "next-auth/react"
-import { PlusIcon } from "@heroicons/react/outline"
+import { ArrowRightIcon, PlusIcon } from "@heroicons/react/outline"
 
 import Table from "@/components/Table"
 import useItems from "@/hooks/useItems"
@@ -70,7 +71,7 @@ const Items: NextPageWithAuthAndLayout = () => {
   const { data: session } = useSession()
   const sessionId = session?.user?.id
 
-  const { site, isValidating } = useSite(sessionId)
+  const { site, error } = useSite(sessionId)
   const { data, isLoading } = useItems(site?.id)
 
   async function onCreateItem(siteId: string) {
@@ -101,8 +102,27 @@ const Items: NextPageWithAuthAndLayout = () => {
     setItemId(itemId)
   }
 
-  if (isLoading && !isValidating) {
+  const isSiteLoading = typeof site === "undefined" && !error
+
+  if (isLoading && isSiteLoading) {
     return <Loader />
+  }
+
+  if (!isSiteLoading && !site) {
+    return (
+      <EmptyState
+        header="No hay información del sitio"
+        description="Agrega la información básica de tu sitio."
+        imageURL="/placeholder-store.svg"
+        primaryAction={
+          <Link href="/app/settings/general">
+            <Button variant="primary" size="sm" rightIcon={<ArrowRightIcon />}>
+              Ir a Ajustes
+            </Button>
+          </Link>
+        }
+      />
+    )
   }
 
   return (
