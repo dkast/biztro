@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react"
 import Layout from "@/components/layouts/Layout"
 import PageHeader from "@/components/PageHeader"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
+import Onboarding from "@/components/Onboarding"
 
 const Dashboard: NextPageWithAuthAndLayout = () => {
   const { data: session } = useSession()
@@ -21,7 +22,7 @@ const Dashboard: NextPageWithAuthAndLayout = () => {
         <div className="mx-auto px-4 sm:px-6 md:px-8">
           {/* Replace with your content */}
           <div className="py-4">
-            <div className="h-96 rounded-lg border-4 border-dashed border-gray-200" />
+            <Onboarding />
           </div>
           {/* /End replace */}
         </div>
