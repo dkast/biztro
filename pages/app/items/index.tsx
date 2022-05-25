@@ -115,7 +115,7 @@ const Items: NextPageWithAuthAndLayout = () => {
         description="Agrega la información básica de tu sitio."
         imageURL="/placeholder-store.svg"
         primaryAction={
-          <Link href="/app/settings/general">
+          <Link href="/app/settings">
             <Button variant="primary" size="sm" rightIcon={<ArrowRightIcon />}>
               Ir a Ajustes
             </Button>

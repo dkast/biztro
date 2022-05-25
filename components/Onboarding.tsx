@@ -3,14 +3,20 @@ import Link from "next/link"
 import * as Accordion from "@radix-ui/react-accordion"
 import {
   ArrowRightIcon,
+  CheckIcon,
   ChevronDownIcon,
   CollectionIcon,
   InformationCircleIcon,
   TemplateIcon
 } from "@heroicons/react/outline"
 import { AnimatePresence, motion } from "framer-motion"
+import { useSession } from "next-auth/react"
 
 import Button from "@/components/Button"
+import useSite from "@/hooks/useSite"
+import useItems from "@/hooks/useItems"
+import classNames from "@/lib/classnames"
+import Loader from "@/components/Loader"
 
 const accordion = {
   open: {
@@ -46,6 +52,18 @@ const accordion = {
 
 const Onboarding = () => {
   const [value, setValue] = useState(null)
+
+  const { data: session } = useSession()
+  const sessionId = session?.user?.id
+  const { site, error } = useSite(sessionId)
+  const { data, isLoading } = useItems(site?.id)
+
+  const isSiteLoading = typeof site === "undefined" && !error
+
+  if (isLoading && isSiteLoading) {
+    return <Loader />
+  }
+
   return (
     <div className="">
       <Accordion.Root
@@ -60,15 +78,16 @@ const Onboarding = () => {
               <InformationCircleIcon className="m-auto h-6 w-6 text-blue-700" />
             </div>
           }
-          title="Captura la información sobre tu negocio"
+          title="Agrega la información sobre tu negocio"
           value="item-1"
           selectedValue={value}
+          disabled={site !== null}
         >
           <div>
             <p className="pb-4 text-gray-600">
               Inicia capturando la información básica sobre tu negocio
             </p>
-            <Link href="/app/settings/general">
+            <Link href="/app/settings">
               <Button
                 variant="primary"
                 size="sm"
@@ -88,10 +107,11 @@ const Onboarding = () => {
           title="Crea tu primer Producto"
           value="item-2"
           selectedValue={value}
+          disabled={data?.items?.length > 0}
         >
           <div>
             <p className="pb-4 text-gray-600">
-              Inicia capturando la información básica sobre tu negocio
+              Ingresa tus productos y empieza a construir tu Menú
             </p>
             <Link href="/app/items">
               <Button
@@ -106,19 +126,20 @@ const Onboarding = () => {
         </AccordionItem>
         <AccordionItem
           icon={
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-50">
-              <TemplateIcon className="m-auto h-6 w-6 text-green-700" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50">
+              <TemplateIcon className="m-auto h-6 w-6 text-amber-700" />
             </div>
           }
           title="Personaliza tu Menú"
           value="item-3"
           selectedValue={value}
+          disabled={site?.published}
         >
           <div>
             <p className="pb-4 text-gray-600">
-              Inicia capturando la información básica sobre tu negocio
+              Personaliza y publica tu Menú para compartirlo con tus clientes
             </p>
-            <Link href="/app/items">
+            <Link href="/app/site-editor">
               <Button
                 variant="primary"
                 size="sm"
@@ -134,15 +155,42 @@ const Onboarding = () => {
   )
 }
 
-const AccordionItem = ({ icon, title, children, value, selectedValue }) => {
+interface AccordionItemProps {
+  icon: React.ReactNode
+  title: string
+  children: React.ReactNode
+  value: string
+  selectedValue: string
+  disabled?: boolean
+}
+
+const AccordionItem = ({
+  icon,
+  title,
+  children,
+  value,
+  selectedValue,
+  disabled = false
+}: AccordionItemProps) => {
   const isShowing = value === selectedValue
 
   return (
-    <Accordion.Item value={value} className="p-4">
+    <Accordion.Item value={value} className="p-4" disabled={disabled}>
       <Accordion.Trigger asChild>
-        <div className="group flex items-center justify-between">
+        <div
+          className={classNames(
+            disabled ? "" : "cursor-pointer",
+            "group flex items-center justify-between"
+          )}
+        >
           <div className="flex items-center gap-4">
-            {icon}
+            {!disabled ? (
+              icon
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-50">
+                <CheckIcon className="m-auto h-6 w-6 text-green-700" />
+              </div>
+            )}
             <h2 className="text-lg">{title}</h2>
           </div>
           <div>
@@ -152,7 +200,7 @@ const AccordionItem = ({ icon, title, children, value, selectedValue }) => {
       </Accordion.Trigger>
       <Accordion.Content forceMount asChild>
         <AnimatePresence>
-          {isShowing && (
+          {isShowing && !disabled && (
             <motion.div
               initial="closed"
               animate="open"

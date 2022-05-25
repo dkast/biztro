@@ -25,7 +25,7 @@ const sidebarNavigation = [
   { name: "Inicio", href: "/app/dashboard", icon: HomeIcon },
   { name: "Productos", href: "/app/items", icon: ViewGridIcon },
   { name: "Menu", href: "/app/site-editor", icon: TemplateIcon },
-  { name: "Ajustes", href: "/app/settings/general", icon: CogIcon }
+  { name: "Ajustes", href: "/app/settings", icon: CogIcon }
 ]
 const userNavigation = [
   { name: "Mi Perfil", href: "/app/settings/profile" },
