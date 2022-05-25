@@ -11,7 +11,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const DEFAULT =
-  "w-full sm:w-auto inline-flex items-center justify-center border font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2"
+  "w-full sm:w-auto inline-flex items-center justify-center border font-medium rounded-lg transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2"
 
 const VARIANT = {
   primary:
