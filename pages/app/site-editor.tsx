@@ -39,7 +39,7 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
   // Hooks
   const { data: session } = useSession()
   const sessionId = session?.user?.id
-  const { site, isValidating } = useSite(sessionId)
+  const { site, error } = useSite(sessionId)
 
   // Atoms
   const setHost = useSetRecoilState(hostState)
@@ -53,11 +53,12 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
     json = lz.decompress(lz.decodeBase64(site.serialData))
   }
 
-  if (isValidating) {
+  const isSiteLoading = typeof site === "undefined" && !error
+  if (isSiteLoading) {
     return <Loader />
   }
 
-  if (!isValidating && !site) {
+  if (!isSiteLoading && !site) {
     return (
       <EmptyState
         header="No hay información del sitio"
