@@ -13,6 +13,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { signOut, useSession } from "next-auth/react"
+import { BallSpinner } from "react-spinners-kit"
 
 import classNames from "@/lib/classnames"
 import { Tooltip } from "@/components/Tooltip"
@@ -78,8 +79,8 @@ const Layout = ({ children }: LayoutProps) => {
         <div className="flex w-full flex-col items-center py-4">
           <div
             className={classNames(
-              loadingRoute ? "animate-pulse" : "",
-              "flex flex-shrink-0 items-center"
+              loadingRoute ? "scale-90 animate-pulse transition-transform" : "",
+              "flex h-10 flex-shrink-0 flex-col items-center overflow-hidden"
             )}
           >
             <Image
@@ -89,6 +90,11 @@ const Layout = ({ children }: LayoutProps) => {
               width={32}
               height={32}
             />
+            {loadingRoute && (
+              <div className="pt-1">
+                <BallSpinner color="#CBD5E0" size={30} />
+              </div>
+            )}
           </div>
           <div className="mt-6 w-full flex-1 space-y-1 px-2">
             {sidebarNavigation.map(item => (
