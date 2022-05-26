@@ -49,7 +49,7 @@ const Layout = ({ children }: LayoutProps) => {
   const [loadingRoute, setLoadingRoute] = useState(false)
 
   useEffect(() => {
-    const handleStart = url => {
+    const handleStart = () => {
       setLoadingRoute(true)
     }
     const handleStop = () => {

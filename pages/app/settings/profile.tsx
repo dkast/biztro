@@ -6,7 +6,7 @@ import SettingsLayout from "@/components/layouts/SettingsLayout"
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 
 const SettingsProfile: NextPageWithAuthAndLayout = () => {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
 
   return (
     <div className="space-y-8 divide-y divide-gray-200">

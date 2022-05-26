@@ -45,7 +45,8 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
   const setHost = useSetRecoilState(hostState)
   const size = useRecoilValue(frameSizeState)
 
-  setHost(props.host)
+  const { host } = props
+  setHost(host)
 
   // Load state
   let json = undefined

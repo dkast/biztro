@@ -12,16 +12,16 @@ interface BlurImageProps extends WithClassName, ComponentProps<typeof Image> {
 
 export default function BlurImage(props: BlurImageProps) {
   const [isLoading, setLoading] = useState(true)
-  const { width, height } = props
+  const { width, height, alt, className } = props
 
   return (
     <Image
       {...props}
-      alt={props.alt}
+      alt={alt}
       width={width}
       height={height}
       className={classNames(
-        props.className,
+        className,
         "duration-700 ease-in-out",
         isLoading
           ? "scale-110 blur-2xl grayscale"
