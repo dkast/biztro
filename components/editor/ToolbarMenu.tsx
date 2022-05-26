@@ -82,7 +82,7 @@ const ToolbarMenu = () => {
     if (res.ok) {
       toast.success("Información actualizada", { id: toastId })
       mutate("/api/site")
-      revalidate(site.id)
+      void revalidate(site.id)
       // Reset Editor history state
       actions.history.clear()
     } else {
@@ -106,7 +106,7 @@ const ToolbarMenu = () => {
     if (res.ok) {
       toast.success("Información actualizada", { id: toastId })
       mutate("/api/site")
-      revalidate(site.id)
+      void revalidate(site.id)
     } else {
       toast.error("Algo salió mal", { id: toastId })
     }
