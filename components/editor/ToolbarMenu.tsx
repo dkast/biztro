@@ -82,6 +82,7 @@ const ToolbarMenu = () => {
     if (res.ok) {
       toast.success("Información actualizada", { id: toastId })
       mutate("/api/site")
+      revalidate(site.id)
       // Reset Editor history state
       actions.history.clear()
     } else {
@@ -105,8 +106,23 @@ const ToolbarMenu = () => {
     if (res.ok) {
       toast.success("Información actualizada", { id: toastId })
       mutate("/api/site")
+      revalidate(site.id)
     } else {
       toast.error("Algo salió mal", { id: toastId })
+    }
+  }
+
+  // Revalidate to build the site with ISR On-Demand
+  async function revalidate(siteId): Promise<void> {
+    const res = await fetch(`/api/revalidate?site=${siteId}`, {
+      method: HttpMethod.GET,
+      headers: {
+        "content-Type": "application/json"
+      }
+    })
+
+    if (!res.ok) {
+      toast.error("No se pudo actualizar el sitio")
     }
   }
 

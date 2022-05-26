@@ -122,8 +122,7 @@ export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({
       description: data.description,
       image: data.image,
       serialData: data.serialData
-    },
-    revalidate: 900
+    }
   }
 }
 
