@@ -177,11 +177,12 @@ const AccordionItem = ({
   return (
     <Accordion.Item value={value} className="p-4" disabled={disabled}>
       <Accordion.Trigger asChild>
-        <div
+        <button
           className={classNames(
             disabled ? "" : "cursor-pointer",
-            "group flex items-center justify-between"
+            "group flex w-full items-center justify-between"
           )}
+          type="button"
         >
           <div className="flex items-center gap-4">
             {!disabled ? (
@@ -196,7 +197,7 @@ const AccordionItem = ({
           <div>
             <ChevronDownIcon className="h-radix-accordion h-4 w-4 transform text-gray-500 group-radix-state-open:rotate-180" />
           </div>
-        </div>
+        </button>
       </Accordion.Trigger>
       <Accordion.Content forceMount asChild>
         <AnimatePresence>
