@@ -14,7 +14,7 @@
   "dependencies": {
     "@craftjs/core": "^0.2.0-beta.4",
     "@craftjs/layers": "^0.2.0-beta.4",
-    "@headlessui/react": "^1.6.1",
+    "@headlessui/react": "^1.6.4",
     "@heroicons/react": "^1.0.6",
     "@next-auth/prisma-adapter": "^1.0.3",
     "@prisma/client": "^3.14.0",
