@@ -4,6 +4,7 @@ import * as Toolbar from "@radix-ui/react-toolbar"
 import Link from "next/link"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
+import { ArrowSmRightIcon } from "@heroicons/react/outline"
 
 const Home: NextPageWithAuthAndLayout = () => {
   return (
@@ -34,8 +35,9 @@ const Home: NextPageWithAuthAndLayout = () => {
             {/* CTA */}
             <div className="flex justify-center gap-4">
               <Link href="/app/dashboard">
-                <a className="rounded-lg bg-orange-500 px-4 py-3 text-orange-100 shadow-md shadow-orange-500/50 hover:bg-orange-600">
+                <a className="flex items-center rounded-lg bg-orange-500 px-4 py-3 text-orange-100 shadow-md shadow-orange-500/50 hover:bg-orange-600">
                   Crea tu menú
+                  <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
                 </a>
               </Link>
               <Link href="/app/dashboard">
@@ -95,6 +97,30 @@ const Home: NextPageWithAuthAndLayout = () => {
             </div>
             <div className="md:order-first">Imagen 4</div>
           </section>
+        </div>
+        {/* Banner */}
+        <div className="flex w-full flex-col justify-center py-16">
+          <div className="mx-auto w-full max-w-5xl px-2 xl:px-0">
+            <div className="flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 via-orange-500 to-red-500 p-8 shadow-xl xl:p-16">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-lg shadow-orange-700/50">
+                <Image
+                  src="/logo-bistro.svg"
+                  alt="Logo"
+                  width={40}
+                  height={40}
+                />
+              </div>
+              <h3 className="mt-4 mb-12 text-3xl text-white">
+                Crea tu menú en Bistro hoy.
+              </h3>
+              <Link href="/app/dashboard">
+                <a className="flex items-center rounded-lg bg-white px-4 py-3 text-orange-500 shadow-md shadow-orange-700/50 hover:bg-gray-50">
+                  Crea tú cuenta
+                  <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
+                </a>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </>
