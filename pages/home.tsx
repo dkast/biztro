@@ -16,56 +16,12 @@ const Home: NextPageWithAuthAndLayout = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex h-screen flex-col items-center overflow-auto">
-        {/* Menu */}
-        <div className="mt-2 flex w-full max-w-6xl items-center py-2 px-2 xl:px-0">
-          <Image src="/logo-bistro.svg" alt="Logo" width={40} height={40} />
-          <Toolbar.Root className="ml-auto">
-            <Toolbar.Button>
-              <Link href="/app/dashboard">
-                <a className="hover:text-violet-600">Iniciar sesión</a>
-              </Link>
-            </Toolbar.Button>
-          </Toolbar.Root>
-        </div>
-        {/* Hero */}
-        <div className="grid w-full max-w-6xl px-2 sm:grid-cols-2 xl:px-0">
-          <div className="py-12 md:py-24">
-            <h1 className="text-6xl font-bold">Tu menú digital en minutos</h1>
-            <h2 className="py-6 text-2xl text-gray-600 md:py-8">
-              Crea tu menú digital y QR, compartelo con tus clientes.
-            </h2>
-            {/* CTA */}
-            <div className="flex justify-center gap-4">
-              <Link href="/app/dashboard">
-                <a className="flex items-center rounded-lg bg-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600">
-                  Crea tu menú
-                  <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
-                </a>
-              </Link>
-              <Link href="/app/dashboard">
-                <a className="rounded-lg border border-orange-500 px-4 py-3 text-orange-600 transition hover:scale-[98%] hover:bg-orange-50">
-                  Ver un Ejemplo
-                </a>
-              </Link>
-            </div>
-          </div>
-          <div className="relative flex justify-end">
-            <div className="absolute bottom-1/3 h-1/2 w-2/3 rotate-6 rounded-2xl bg-orange-100"></div>
-            <Image
-              src="/iphone-hero.png"
-              alt="Menu en telefono movil"
-              width={479}
-              height={721}
-            ></Image>
-            <div className="absolute bottom-6 left-6 rounded-2xl bg-white p-2 shadow-lg">
-              <QRCode value="https://bistro.vercel.app" />
-            </div>
-          </div>
-        </div>
+        <HomeMenu />
+        <HomeHero />
         {/* Main */}
-        <div className="flex w-full flex-col justify-center gap-12 bg-gradient-to-br from-white via-orange-50 to-red-50 p-16 lg:gap-24 lg:p-32">
+        <div className="flex w-full flex-col justify-center gap-12 bg-gradient-to-br from-white via-gray-50 to-red-50 p-16 lg:gap-24 lg:p-32">
           {/* QR */}
-          <section className="mx-auto grid w-full max-w-6xl px-2 md:grid-cols-2 lg:px-0">
+          <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <div className="flex flex-col justify-center p-4">
               <h3 className="text-3xl font-bold">Obtén tu Código QR</h3>
               <p className="mt-4 text-lg text-orange-900">
@@ -86,7 +42,7 @@ const Home: NextPageWithAuthAndLayout = () => {
             </div>
           </section>
           {/* Online */}
-          <section className="mx-auto grid w-full max-w-6xl px-2 md:grid-cols-2 lg:px-0">
+          <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <div className="col-start-1 flex flex-col justify-center p-4 md:col-start-2">
               <h3 className="text-3xl font-bold">No requiere instalación</h3>
               <p className="mt-4 text-lg text-orange-900">
@@ -109,7 +65,7 @@ const Home: NextPageWithAuthAndLayout = () => {
             </div>
           </section>
           {/* Customize */}
-          <section className="mx-auto grid w-full max-w-6xl px-2 md:grid-cols-2 lg:px-0">
+          <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <div className="flex flex-col justify-center p-4">
               <h3 className="text-3xl font-bold">Diseño flexible</h3>
               <p className="mt-4 text-lg text-orange-900">
@@ -119,8 +75,8 @@ const Home: NextPageWithAuthAndLayout = () => {
             </div>
             <div>Imagen 3</div>
           </section>
-          {/* Social */}
-          <section className="mx-auto grid w-full max-w-6xl px-2 md:grid-cols-2 lg:px-0">
+          {/* Editor */}
+          <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <div className="col-start-1 flex flex-col justify-center p-4 md:col-start-2">
               <h3 className="text-3xl font-bold">Haz cambios al instante</h3>
               <p className="mt-4 text-lg text-orange-900">
@@ -129,35 +85,101 @@ const Home: NextPageWithAuthAndLayout = () => {
                 pueden ver al instante.
               </p>
             </div>
-            <div className="md:order-first">Imagen 4</div>
-          </section>
-        </div>
-        {/* Banner */}
-        <div className="flex w-full flex-col justify-center py-16">
-          <div className="mx-auto w-full max-w-5xl px-2 xl:px-0">
-            <div className="flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 via-orange-500 to-red-500 p-8 shadow-xl xl:p-16">
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-lg shadow-orange-700/50">
+            <div className="md:order-first">
+              <div className="flex items-end justify-start overflow-hidden rounded-lg bg-gradient-to-b from-teal-200 to-cyan-300 shadow-lg shadow-cyan-400/50">
                 <Image
-                  src="/logo-bistro.svg"
-                  alt="Logo"
-                  width={40}
-                  height={40}
+                  src="/editor.png"
+                  width={400}
+                  height={300}
+                  alt="Imagen del Editor"
                 />
               </div>
-              <h3 className="mt-4 mb-12 text-3xl text-white">
-                Crea tu menú en Bistro hoy.
-              </h3>
-              <Link href="/app/dashboard">
-                <a className="flex items-center rounded-lg bg-white px-4 py-3 text-orange-500 shadow-md shadow-orange-700/50 transition hover:scale-[98%] hover:bg-gray-50">
-                  Crea tú cuenta
-                  <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
-                </a>
-              </Link>
             </div>
-          </div>
+          </section>
         </div>
+        <HomeBanner />
       </div>
     </>
+  )
+}
+
+const HomeMenu = (): JSX.Element => {
+  return (
+    <div className="mt-2 flex w-full max-w-6xl items-center py-2 px-2 xl:px-0">
+      <Image src="/logo-bistro.svg" alt="Logo" width={40} height={40} />
+      <Toolbar.Root className="ml-auto">
+        <Toolbar.Button>
+          <Link href="/app/dashboard">
+            <a className="hover:text-violet-600">Iniciar sesión</a>
+          </Link>
+        </Toolbar.Button>
+      </Toolbar.Root>
+    </div>
+  )
+}
+
+const HomeHero = (): JSX.Element => {
+  return (
+    <div className="grid w-full max-w-6xl px-2 sm:grid-cols-2 xl:px-0">
+      <div className="py-12 md:py-24">
+        <h1 className="text-6xl font-bold">Tu menú digital en minutos</h1>
+        <h2 className="py-6 text-2xl text-gray-600 md:py-8">
+          Crea tu menú digital y QR, compartelo con tus clientes.
+        </h2>
+        {/* CTA */}
+        <div className="flex justify-center gap-4">
+          <Link href="/app/dashboard">
+            <a className="flex items-center rounded-lg bg-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600">
+              Crea tu menú
+              <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
+            </a>
+          </Link>
+          <Link href="/app/dashboard">
+            <a className="rounded-lg border border-orange-500 px-4 py-3 text-orange-600 transition hover:scale-[98%] hover:bg-orange-50">
+              Ver un Ejemplo
+            </a>
+          </Link>
+        </div>
+      </div>
+      <div className="relative flex justify-end">
+        <div className="absolute bottom-1/3 h-1/2 w-2/3 rotate-6 rounded-2xl bg-orange-100"></div>
+        <Image
+          src="/iphone-hero.png"
+          alt="Menu en telefono movil"
+          width={479}
+          height={721}
+        ></Image>
+        <div className="absolute bottom-6 left-6 rounded-2xl bg-white p-2 shadow-lg">
+          <QRCode value="https://bistro.vercel.app" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const HomeBanner = (): JSX.Element => {
+  return (
+    <div className="flex w-full flex-col justify-center py-16">
+      <div className="mx-auto w-full max-w-5xl px-2 xl:px-0">
+        <div className="flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 via-orange-500 to-red-500 p-8 shadow-xl xl:p-16">
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-lg shadow-orange-700/50">
+            <Image src="/logo-bistro.svg" alt="Logo" width={40} height={40} />
+          </div>
+          <p className="mt-4 mb-1 text-lg text-orange-200">
+            Inicia con una cuenta gratis
+          </p>
+          <h3 className="mb-12 text-3xl text-white">
+            Crea tu menú en Bistro hoy
+          </h3>
+          <Link href="/app/dashboard">
+            <a className="flex items-center rounded-lg bg-white px-4 py-3 text-orange-500 shadow-md shadow-orange-700/50 transition hover:scale-[98%] hover:bg-gray-50">
+              Crea tú cuenta
+              <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
+            </a>
+          </Link>
+        </div>
+      </div>
+    </div>
   )
 }
 
