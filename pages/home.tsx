@@ -63,7 +63,7 @@ const Home: NextPageWithAuthAndLayout = () => {
           </div>
         </div>
         {/* Main */}
-        <div className="flex w-full flex-col justify-center gap-12 bg-gradient-to-br from-white via-orange-50 to-red-50 lg:gap-24 lg:p-32">
+        <div className="flex w-full flex-col justify-center gap-12 bg-gradient-to-br from-white via-orange-50 to-red-50 p-16 lg:gap-24 lg:p-32">
           {/* QR */}
           <section className="mx-auto grid w-full max-w-6xl px-2 md:grid-cols-2 lg:px-0">
             <div className="flex flex-col justify-center p-4">
@@ -75,12 +75,12 @@ const Home: NextPageWithAuthAndLayout = () => {
               </p>
             </div>
             <div className="relative flex items-center justify-center p-4">
-              <div className="absolute bottom-0 left-0 h-full w-1/2 -rotate-6 rounded-lg bg-purple-300 lg:left-1/4"></div>
+              <div className="left-1/5 absolute bottom-0 h-full w-2/3 -rotate-6 rounded-lg bg-purple-300 shadow-lg shadow-purple-300/50"></div>
               <div className="z-10 rounded-xl bg-white p-2 shadow-xl">
-                <QRCode value="https://bistro.app/tu-menu" />
+                <QRCode value="https://bistro.app/menu" />
               </div>
-              <div className="absolute top-0 left-1/2 z-20 flex items-center gap-1 rounded-full bg-gradient-to-b from-yellow-400 to-yellow-500 px-3 py-1 text-yellow-900 shadow-lg">
-                <span>https://bistro.app/tu-menu</span>
+              <div className="absolute top-0 left-1/2 z-20 flex items-center gap-1 rounded-full bg-gradient-to-b from-yellow-300 to-yellow-400 px-3 py-1 text-yellow-900 shadow-lg">
+                <span>https://bistro.app/menu</span>
                 <ChevronRightIcon className="h-4 w-4 text-current" />
               </div>
             </div>
@@ -88,19 +88,31 @@ const Home: NextPageWithAuthAndLayout = () => {
           {/* Online */}
           <section className="mx-auto grid w-full max-w-6xl px-2 md:grid-cols-2 lg:px-0">
             <div className="col-start-1 flex flex-col justify-center p-4 md:col-start-2">
-              <h3 className="text-2xl font-bold">No requiere instalación</h3>
-              <p>
+              <h3 className="text-3xl font-bold">No requiere instalación</h3>
+              <p className="mt-4 text-lg text-orange-900">
                 Tu menú esta disponible para todos, no se requiere instalar
                 alguna app, puede verse desde tú teléfono, tablet o escritorio.
               </p>
             </div>
-            <div className="md:order-first">Imagen 2</div>
+            <div className="relative flex items-center md:order-first">
+              <div className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-green-100"></div>
+              <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-green-200 to-green-300 px-4 py-4 shadow-lg shadow-green-300/50">
+                <div>
+                  <Image
+                    src="/devices.svg"
+                    alt="Icono de dispositivos"
+                    width={150}
+                    height={150}
+                  ></Image>
+                </div>
+              </div>
+            </div>
           </section>
           {/* Customize */}
           <section className="mx-auto grid w-full max-w-6xl px-2 md:grid-cols-2 lg:px-0">
             <div className="flex flex-col justify-center p-4">
-              <h3 className="text-2xl font-bold">Diseño flexible</h3>
-              <p>
+              <h3 className="text-3xl font-bold">Diseño flexible</h3>
+              <p className="mt-4 text-lg text-orange-900">
                 Inicia con una plantilla moderna, personalizala a tu gusto para
                 crear algo original justo como tu negocio.
               </p>
@@ -110,8 +122,8 @@ const Home: NextPageWithAuthAndLayout = () => {
           {/* Social */}
           <section className="mx-auto grid w-full max-w-6xl px-2 md:grid-cols-2 lg:px-0">
             <div className="col-start-1 flex flex-col justify-center p-4 md:col-start-2">
-              <h3 className="text-2xl font-bold">Haz cambios al instante</h3>
-              <p>
+              <h3 className="text-3xl font-bold">Haz cambios al instante</h3>
+              <p className="mt-4 text-lg text-orange-900">
                 Con una interfaz de arrastrar y soltar, es fácil cambios a tu
                 menú, no requieres habilidades técnicas y los resultados se
                 pueden ver al instante.
