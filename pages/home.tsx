@@ -1,12 +1,27 @@
 import Head from "next/head"
 import Image from "next/image"
-import * as Toolbar from "@radix-ui/react-toolbar"
 import Link from "next/link"
+import * as Toolbar from "@radix-ui/react-toolbar"
+import * as Accordion from "@radix-ui/react-accordion"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
-import { ArrowSmRightIcon } from "@heroicons/react/outline"
+import { ArrowSmRightIcon, ChevronDownIcon } from "@heroicons/react/outline"
 import { QRCode } from "react-qrcode-logo"
 import { ChevronRightIcon } from "@heroicons/react/solid"
+
+const FAQ = [
+  {
+    question: "¿Qué es un menú QR?",
+    answer:
+      "Un menú QR es un menú de restaurante que puede ser leído directamente en el Smartphone del cliente, escanenando el código QR."
+  },
+  {
+    question: "¿Como funcionan los menú QR para los restaurantes?",
+    answer: `El restaurante publica el menú en línea y crea un código QR que pueden poner en su negocio. 
+      Los clientes simplemente escanean el código QR con su teléfono móvil y el menú les es mostrado
+      en su navegador.`
+  }
+]
 
 const Home: NextPageWithAuthAndLayout = () => {
   return (
@@ -23,6 +38,9 @@ const Home: NextPageWithAuthAndLayout = () => {
           {/* QR */}
           <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <div className="flex flex-col justify-center p-4">
+              <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
+                Acceso por QR
+              </small>
               <h3 className="text-3xl font-bold">Obtén tu Código QR</h3>
               <p className="mt-4 text-lg text-orange-900">
                 Crea tu menú que permita que tus clientes consultarlo
@@ -44,6 +62,9 @@ const Home: NextPageWithAuthAndLayout = () => {
           {/* Online */}
           <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <div className="col-start-1 flex flex-col justify-center p-4 md:col-start-2">
+              <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
+                Online
+              </small>
               <h3 className="text-3xl font-bold">No requiere instalación</h3>
               <p className="mt-4 text-lg text-orange-900">
                 Tu menú esta disponible para todos, no se requiere instalar
@@ -67,6 +88,9 @@ const Home: NextPageWithAuthAndLayout = () => {
           {/* Customize */}
           <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <div className="flex flex-col justify-center p-4">
+              <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
+                Personalizacion
+              </small>
               <h3 className="text-3xl font-bold">Diseño flexible</h3>
               <p className="mt-4 text-lg text-orange-900">
                 Inicia con una plantilla moderna, personalizala a tu gusto para
@@ -78,6 +102,9 @@ const Home: NextPageWithAuthAndLayout = () => {
           {/* Editor */}
           <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <div className="col-start-1 flex flex-col justify-center p-4 md:col-start-2">
+              <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
+                Editor Web
+              </small>
               <h3 className="text-3xl font-bold">Haz cambios al instante</h3>
               <p className="mt-4 text-lg text-orange-900">
                 Con una interfaz de arrastrar y soltar, es fácil cambios a tu
@@ -97,7 +124,9 @@ const Home: NextPageWithAuthAndLayout = () => {
             </div>
           </section>
         </div>
+        <HomeFaq />
         <HomeBanner />
+        <HomeFooter />
       </div>
     </>
   )
@@ -179,6 +208,57 @@ const HomeBanner = (): JSX.Element => {
           </Link>
         </div>
       </div>
+    </div>
+  )
+}
+
+const HomeFaq = (): JSX.Element => {
+  return (
+    <div className="mx-auto mt-8 w-full max-w-5xl px-2 sm:w-[80ch] xl:px-0">
+      <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
+        FAQ
+      </small>
+      <h3 className="text-3xl font-bold">Preguntas más frecuentes</h3>
+      <Accordion.Root type="multiple" className="my-6 divide-y">
+        {FAQ.map((item, index) => {
+          return (
+            <FaqItem
+              key={index}
+              question={item.question}
+              answer={item.answer}
+            />
+          )
+        })}
+      </Accordion.Root>
+    </div>
+  )
+}
+
+const FaqItem = ({ question, answer }): JSX.Element => {
+  return (
+    <Accordion.Item value={question} className="py-4">
+      <Accordion.Trigger asChild>
+        <button
+          type="button"
+          className="group flex w-full items-center justify-between"
+        >
+          <span className="text-left text-lg font-semibold">{question}</span>
+          <div>
+            <ChevronDownIcon className="h-radix-accordion h-4 w-4 transform text-gray-500 group-radix-state-open:rotate-180" />
+          </div>
+        </button>
+      </Accordion.Trigger>
+      <Accordion.Content asChild>
+        <span className="block py-4 px-2 text-gray-500">{answer}</span>
+      </Accordion.Content>
+    </Accordion.Item>
+  )
+}
+
+const HomeFooter = (): JSX.Element => {
+  return (
+    <div className="flex w-full max-w-6xl justify-center p-8 text-gray-500">
+      <span>&copy; Bistro {new Date().getFullYear()}</span>
     </div>
   )
 }
