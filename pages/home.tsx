@@ -3,23 +3,41 @@ import Image from "next/image"
 import Link from "next/link"
 import * as Toolbar from "@radix-ui/react-toolbar"
 import * as Accordion from "@radix-ui/react-accordion"
+import { QRCode } from "react-qrcode-logo"
+import { ChevronRightIcon } from "@heroicons/react/solid"
+import { motion } from "framer-motion"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 import { ArrowSmRightIcon, ChevronDownIcon } from "@heroicons/react/outline"
-import { QRCode } from "react-qrcode-logo"
-import { ChevronRightIcon } from "@heroicons/react/solid"
 
 const FAQ = [
   {
     question: "¿Qué es un menú QR?",
-    answer:
-      "Un menú QR es un menú de restaurante que puede ser leído directamente en el Smartphone del cliente, escanenando el código QR."
+    answer: `Un menú QR es un menú de restaurante que puede ser leído directamente en 
+      el teléfono móvil del cliente, escanenando el código QR.`
   },
   {
     question: "¿Como funcionan los menú QR para los restaurantes?",
     answer: `El restaurante publica el menú en línea y crea un código QR que pueden poner en su negocio. 
       Los clientes simplemente escanean el código QR con su teléfono móvil y el menú les es mostrado
       en su navegador.`
+  },
+  {
+    question: "¿Como creo un código QR para el menú de mi restaurante?",
+    answer: `Primero se necesita publicar el menú de tu restaurante online, entonces puedes generar un código QR para
+      convertir la liga hacia tu menú en un código QR. Con Bistro puedes crear tu menú digital online, descargar tu código QR y
+      utilizarlo en tu material impreso.`
+  },
+  {
+    question: "¿Puedo actualizar el menú sin reimprimir el código QR?",
+    answer: `Si, la ventaja de un menú digital es que puedes editarlo en cualquier momento sin necesidad de reimprimir 
+      o actualizar una imagen o PDF de tu menú.`
+  },
+  {
+    question: "¿Como escaneo un código QR para mi menú?",
+    answer: `En tu dispositivo con Android o iOS puedes simplemente abrir la aplicación de la Cámara y escanear tu código QR. 
+      Después de esto, el menú se desplegará en tu navegador, como lo hace una página wbeb normal. No necesitas 
+      descargar una aplicación para leer el código QR de tu menú.`
   }
 ]
 
@@ -37,7 +55,16 @@ const Home: NextPageWithAuthAndLayout = () => {
         <div className="flex w-full flex-col justify-center gap-12 bg-gradient-to-br from-white via-gray-50 to-red-50 p-16 lg:gap-24 lg:p-32">
           {/* QR */}
           <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
-            <div className="flex flex-col justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0.3 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{
+                once: true,
+                amount: "all",
+                margin: "-100px"
+              }}
+              className="flex flex-col justify-center p-4"
+            >
               <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
                 Acceso por QR
               </small>
@@ -45,18 +72,49 @@ const Home: NextPageWithAuthAndLayout = () => {
               <p className="mt-4 text-lg text-orange-900">
                 Crea tu menú que permita que tus clientes consultarlo
                 rápidamente utilizando simplementa la cámara en su télefono
-                móvil.
+                móvil. Personalizalo con tu logo.
               </p>
-            </div>
+            </motion.div>
             <div className="relative flex items-center justify-center p-4">
-              <div className="left-1/5 absolute bottom-0 h-full w-2/3 -rotate-6 rounded-lg bg-purple-300 shadow-lg shadow-purple-300/50"></div>
-              <div className="z-10 rounded-xl bg-white p-2 shadow-xl">
-                <QRCode value="https://bistro.app/menu" />
-              </div>
-              <div className="absolute top-0 left-1/2 z-20 flex items-center gap-1 rounded-full bg-gradient-to-b from-yellow-300 to-yellow-400 px-3 py-1 text-yellow-900 shadow-lg">
+              <motion.div
+                initial={{ opacity: 0, y: 100, rotate: "0deg" }}
+                whileInView={{ opacity: 1, y: 0, rotate: "6deg" }}
+                viewport={{
+                  once: true,
+                  amount: "some"
+                }}
+                className="left-1/5 absolute bottom-0 h-full w-2/3 -rotate-6 rounded-lg bg-purple-300 shadow-lg shadow-purple-300/50"
+              ></motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.4 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{
+                  once: true,
+                  amount: "all"
+                }}
+                className="z-10 rounded-xl bg-white p-2 shadow-xl"
+              >
+                <QRCode
+                  value="https://bistro.vercel.app/menu"
+                  logoImage="/logo-bistro.svg"
+                  removeQrCodeBehindLogo
+                  ecLevel="Q"
+                  fgColor="#312e81"
+                />
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.4 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{
+                  once: true,
+                  amount: "all",
+                  margin: "-200px"
+                }}
+                className="absolute top-0 left-1/2 z-20 flex items-center gap-1 rounded-full bg-gradient-to-b from-yellow-300 to-yellow-400 px-3 py-1 text-yellow-900 shadow-lg"
+              >
                 <span>https://bistro.app/menu</span>
                 <ChevronRightIcon className="h-4 w-4 text-current" />
-              </div>
+              </motion.div>
             </div>
           </section>
           {/* Online */}
@@ -94,7 +152,7 @@ const Home: NextPageWithAuthAndLayout = () => {
               <h3 className="text-3xl font-bold">Diseño flexible</h3>
               <p className="mt-4 text-lg text-orange-900">
                 Inicia con una plantilla moderna, personalizala a tu gusto para
-                crear algo original justo como tu negocio.
+                crear algo original, justo como tú negocio.
               </p>
             </div>
             <div>Imagen 3</div>
@@ -171,16 +229,37 @@ const HomeHero = (): JSX.Element => {
         </div>
       </div>
       <div className="relative flex justify-end">
-        <div className="absolute bottom-1/3 h-1/2 w-2/3 rotate-6 rounded-2xl bg-orange-100"></div>
-        <Image
-          src="/iphone-hero.png"
-          alt="Menu en telefono movil"
-          width={479}
-          height={721}
-        ></Image>
-        <div className="absolute bottom-6 left-6 rounded-2xl bg-white p-2 shadow-lg">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute bottom-1/3 h-1/2 w-2/3 rotate-6 rounded-2xl bg-orange-100"
+        ></motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 1,
+            y: { type: "spring", stiffness: 100 },
+            default: { duration: 1 }
+          }}
+        >
+          <Image
+            src="/iphone-hero.png"
+            alt="Menu en telefono movil"
+            width={479}
+            height={721}
+          ></Image>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.6 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            delay: 2
+          }}
+          className="absolute bottom-6 left-6 rounded-2xl bg-white p-2 shadow-lg"
+        >
           <QRCode value="https://bistro.vercel.app" />
-        </div>
+        </motion.div>
       </div>
     </div>
   )
