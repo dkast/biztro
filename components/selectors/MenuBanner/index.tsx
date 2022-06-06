@@ -68,7 +68,7 @@ const MenuBanner: UserComponent<MenuBannerProps> = ({
             {site.name}
           </h1>
           <p
-            className="text-sm"
+            className="text-sm line-clamp-1"
             style={{
               color: `rgba(${Object.values(textColor)})`
             }}

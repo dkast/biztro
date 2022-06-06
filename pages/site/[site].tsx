@@ -33,6 +33,7 @@ const Site: NextPage<IndexProps> = ({
 }) => {
   const router = useRouter()
   const siteTitle = `${name} - Menu`
+  let backgroundColor: Record<"r" | "g" | "b" | "a", number>
 
   if (router.isFallback)
     return (
@@ -42,6 +43,19 @@ const Site: NextPage<IndexProps> = ({
     )
 
   const json = lz.decompress(lz.decodeBase64(serialData))
+
+  // Search container style (color)
+  const data = JSON.parse(json)
+  console.dir(data)
+  let keys = Object.keys(data)
+  keys.forEach(el => {
+    let node = data[el]
+    let { displayName } = node
+    if (displayName === "Sitio") {
+      console.dir(data[el])
+      backgroundColor = data[el]?.props?.background
+    }
+  })
 
   return (
     <>
@@ -61,17 +75,18 @@ const Site: NextPage<IndexProps> = ({
           ]
         }}
       />
-      <div className="flex flex-col">
-        <div className="relative grow h-screen-safe sm:h-screen">
-          <div className="absolute inset-0 overflow-auto pb-4">
-            <Editor
-              resolver={{ Container, Text, MenuItem, MenuBanner }}
-              enabled={false}
-            >
-              <Frame data={json} />
-            </Editor>
-          </div>
-        </div>
+      <div
+        className="relative grow overflow-auto h-screen-safe sm:h-screen"
+        style={{
+          backgroundColor: `rgba(${Object.values(backgroundColor)})`
+        }}
+      >
+        <Editor
+          resolver={{ Container, Text, MenuItem, MenuBanner }}
+          enabled={false}
+        >
+          <Frame data={json} />
+        </Editor>
       </div>
     </>
   )

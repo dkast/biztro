@@ -4,12 +4,16 @@ import React, { useEffect } from "react"
 import { useRecoilState } from "recoil"
 import { useEditor } from "@craftjs/core"
 import { useSession } from "next-auth/react"
+import { isSameMinute } from "date-fns"
 import { InformationCircleIcon } from "@heroicons/react/solid"
 
 import Alert from "@/components/Alert"
 import useSite from "@/hooks/useSite"
 import useItems from "@/hooks/useItems"
 import { syncReqState } from "@/lib/store"
+import difference from "@/lib/difference"
+
+import type { Site } from "@prisma/client"
 
 const EditorSync = () => {
   // Hooks
@@ -28,20 +32,35 @@ const EditorSync = () => {
       // Get Menu Items and check if update is necessary
       const serial = lz.decompress(lz.decodeBase64(site?.serialData))
       const items = []
+      let siteItem: Site
       const objectData = JSON.parse(serial)
       for (const property in objectData) {
-        const item = objectData[property]
-        if (item?.type?.resolvedName === "MenuItem") {
-          items.push(item?.props?.item)
+        const component = objectData[property]
+        if (component?.type?.resolvedName === "MenuItem") {
+          items.push(component?.props?.item)
+        }
+
+        if (component?.type?.resolvedName === "MenuBanner") {
+          siteItem = component?.props?.site
         }
       }
 
-      const result: boolean = items.every(item => {
+      const equalItems: boolean = items.every(item => {
         const dbItem = data.items.filter(dbItem => dbItem.id === item.id)
         return dbItem[0].updatedAt === item.updatedAt
       })
 
-      setSyncReq(!result)
+      let equalSite = true
+      const diff = difference(siteItem, site)
+      console.dir(diff)
+      // Check changed properties, exclude serialData and updatedAt
+      Object.getOwnPropertyNames(diff).forEach(propName => {
+        if (propName !== "serialData" && propName !== "updatedAt") {
+          equalSite = false
+        }
+      })
+
+      setSyncReq(!equalItems || !equalSite)
     }
   }, [data, site, setSyncReq])
 
@@ -64,6 +83,12 @@ const EditorSync = () => {
           })
         }
       }
+
+      if (item?.type?.resolvedName === "MenuBanner") {
+        actions.setProp(property, props => {
+          props.site = site
+        })
+      }
     }
 
     toast.success("Información actualizada")
@@ -78,7 +103,7 @@ const EditorSync = () => {
             icon={
               <InformationCircleIcon className="h-5 w-5" aria-hidden="true" />
             }
-            message="Algunos productos han sido actualizados, sincronice sus cambios con el menú."
+            message="Alguna información ha sido actualizada, sincroniza tus cambios con el menú."
             action={
               <button
                 type="button"
