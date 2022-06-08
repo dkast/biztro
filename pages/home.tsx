@@ -61,12 +61,16 @@ const Home: NextPageWithAuthAndLayout = () => {
       <Head>
         <title>Bistro</title>
         <link rel="icon" href="/favicon.ico" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0"
+        ></meta>
       </Head>
       <div className="flex h-screen flex-col items-center overflow-auto">
         <HomeMenu />
         <HomeHero />
         {/* Main */}
-        <div className="flex w-full flex-col justify-center gap-12 bg-gradient-to-br from-white via-gray-50 to-red-50 p-16 lg:gap-24 lg:p-32">
+        <div className="flex w-full flex-col justify-center gap-12 bg-gradient-to-br from-white via-gray-50 to-red-50 py-16 px-4 md:px-12 lg:gap-24 lg:p-32">
           {/* QR */}
           <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <motion.div
@@ -97,7 +101,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "some"
                 }}
-                className="left-1/5 absolute bottom-0 h-full w-2/3 -rotate-6 rounded-lg bg-purple-300 shadow-lg shadow-purple-300/50"
+                className="left-1/5 absolute bottom-0 h-full w-2/3 -rotate-6 rounded-lg bg-gradient-to-br from-purple-300 to-purple-400 shadow-lg shadow-purple-300/50"
               ></motion.div>
               <motion.div
                 initial={{ opacity: 0, scale: 0.4 }}
@@ -304,7 +308,7 @@ const Home: NextPageWithAuthAndLayout = () => {
 
 const HomeMenu = (): JSX.Element => {
   return (
-    <div className="mt-2 flex w-full max-w-6xl items-center py-2 px-2 xl:px-0">
+    <div className="mt-2 flex w-full max-w-6xl items-center py-2 px-4 lg:px-2 xl:px-0">
       <Image src="/logo-bistro.svg" alt="Logo" width={40} height={40} />
       <Toolbar.Root className="ml-auto">
         <Toolbar.Button>
@@ -319,23 +323,23 @@ const HomeMenu = (): JSX.Element => {
 
 const HomeHero = (): JSX.Element => {
   return (
-    <div className="grid w-full max-w-6xl px-2 sm:grid-cols-2 xl:px-0">
-      <div className="py-12 px-6 md:py-24 md:px-0">
-        <h1 className="text-5xl font-bold md:text-6xl">
+    <div className="grid w-full max-w-6xl px-4 sm:grid-cols-2 lg:px-2 xl:px-0">
+      <div className="flex flex-col justify-center py-12 px-6 md:py-24 md:px-0">
+        <h1 className="lg:text-6l text-4xl font-bold tracking-tight md:text-5xl">
           Tu menú digital en minutos
         </h1>
-        <h2 className="py-6 text-xl text-gray-600 md:py-8 md:text-2xl">
+        <h2 className="py-6 text-xl text-gray-600 md:py-8 md:text-2xl lg:text-xl lg:leading-6">
           Crea tu menú digital y QR, compartelo con tus clientes.
         </h2>
         {/* CTA */}
-        <div className="flex justify-center gap-4">
+        <div className="flex flex-col justify-center gap-4 md:flex-row">
           <Link href="/app/dashboard">
-            <a className="flex items-center rounded-lg bg-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600">
+            <a className="flex items-center rounded-lg bg-gradient-to-tl from-red-500 to-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600">
               Crea tu menú
               <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
             </a>
           </Link>
-          <Link href="/app/dashboard">
+          <Link href="/ejemplo">
             <a className="rounded-lg border border-orange-500 px-4 py-3 text-orange-600 transition hover:scale-[98%] hover:bg-orange-50">
               Ver un Ejemplo
             </a>
@@ -382,7 +386,7 @@ const HomeHero = (): JSX.Element => {
 const HomeBanner = (): JSX.Element => {
   return (
     <div className="flex w-full flex-col justify-center py-16">
-      <div className="mx-auto w-full max-w-5xl px-2 xl:px-0">
+      <div className="mx-auto w-full max-w-5xl px-4 lg:px-2 xl:px-0">
         <div className="flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 via-orange-500 to-red-500 p-8 shadow-xl xl:p-16">
           <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-lg shadow-orange-700/50">
             <Image src="/logo-bistro.svg" alt="Logo" width={40} height={40} />
@@ -390,12 +394,12 @@ const HomeBanner = (): JSX.Element => {
           <p className="mt-4 mb-1 text-lg text-orange-200">
             Inicia con una cuenta gratis
           </p>
-          <h3 className="mb-12 text-3xl text-white">
+          <h3 className="mb-12 text-center text-3xl text-white">
             Crea tu menú en Bistro hoy
           </h3>
           <Link href="/app/dashboard">
             <a className="flex items-center rounded-lg bg-white px-4 py-3 text-orange-500 shadow-md shadow-orange-700/50 transition hover:scale-[98%] hover:bg-gray-50">
-              Crea tú cuenta
+              Solicita Acceso
               <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
             </a>
           </Link>
@@ -407,7 +411,7 @@ const HomeBanner = (): JSX.Element => {
 
 const HomeFaq = (): JSX.Element => {
   return (
-    <div className="mx-auto mt-8 w-full max-w-5xl px-2 sm:w-[80ch] xl:px-0">
+    <div className="mx-auto mt-8 w-full max-w-5xl px-4 sm:w-[80ch] lg:px-2 xl:px-0">
       <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
         FAQ
       </small>
