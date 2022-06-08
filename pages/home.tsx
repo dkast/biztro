@@ -66,7 +66,7 @@ const Home: NextPageWithAuthAndLayout = () => {
           content="width=device-width, initial-scale=1.0"
         ></meta>
       </Head>
-      <div className="flex h-screen flex-col items-center overflow-auto">
+      <div className="flex h-screen flex-col items-center overflow-y-auto overflow-x-hidden">
         <HomeMenu />
         <HomeHero />
         {/* Main */}
@@ -454,7 +454,7 @@ const FaqItem = ({ question, answer }): JSX.Element => {
 
 const HomeFooter = (): JSX.Element => {
   return (
-    <div className="flex w-full max-w-6xl justify-center p-8 text-gray-500">
+    <div className="m-8 flex w-full max-w-6xl justify-center text-gray-500 pb-safe">
       <span>&copy; Bistro {new Date().getFullYear()}</span>
     </div>
   )
