@@ -24,8 +24,8 @@ const FAQ = [
   },
   {
     question: "¿Como creo un código QR para el menú de mi restaurante?",
-    answer: `Primero se necesita publicar el menú de tu restaurante online, entonces puedes generar un código QR para
-      convertir la liga hacia tu menú en un código QR. Con Bistro puedes crear tu menú digital online, descargar tu código QR y
+    answer: `Primero se necesita publicar el menú de tu restaurante online, entonces puedes generar un código QR convirtiendo 
+      la liga hacia tu menú en un código QR. Con Bistro puedes crear tu menú digital online, descargar tu código QR y
       utilizarlo en tu material impreso.`
   },
   {
@@ -35,11 +35,25 @@ const FAQ = [
   },
   {
     question: "¿Como escaneo un código QR para mi menú?",
-    answer: `En tu dispositivo con Android o iOS puedes simplemente abrir la aplicación de la Cámara y escanear tu código QR. 
-      Después de esto, el menú se desplegará en tu navegador, como lo hace una página wbeb normal. No necesitas 
+    answer: `En tu dispositivo con Android o iOS puedes simplemente abrir la aplicación de la cámara y escanear tu código QR. 
+      Después de esto, el menú se desplegará en tu navegador, como lo hace una página web normal. No necesitas 
       descargar una aplicación para leer el código QR de tu menú.`
   }
 ]
+
+const text = {
+  initial: {
+    opacity: 0,
+    y: 50
+  },
+  view: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 1
+    }
+  }
+}
 
 const Home: NextPageWithAuthAndLayout = () => {
   return (
@@ -56,12 +70,12 @@ const Home: NextPageWithAuthAndLayout = () => {
           {/* QR */}
           <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <motion.div
-              initial={{ opacity: 0.3 }}
-              whileInView={{ opacity: 1 }}
+              variants={text}
+              initial="initial"
+              whileInView="view"
               viewport={{
                 once: true,
-                amount: "all",
-                margin: "-100px"
+                amount: "some"
               }}
               className="flex flex-col justify-center p-4"
             >
@@ -70,9 +84,9 @@ const Home: NextPageWithAuthAndLayout = () => {
               </small>
               <h3 className="text-3xl font-bold">Obtén tu Código QR</h3>
               <p className="mt-4 text-lg text-orange-900">
-                Crea tu menú que permita que tus clientes consultarlo
-                rápidamente utilizando simplementa la cámara en su télefono
-                móvil. Personalizalo con tu logo.
+                Crea tu menú y permite a tus clientes consultarlo rápidamente
+                utilizando simplementa la cámara en su télefono móvil.
+                Personalízalo añadiedo tu logo.
               </p>
             </motion.div>
             <div className="relative flex items-center justify-center p-4">
@@ -120,65 +134,163 @@ const Home: NextPageWithAuthAndLayout = () => {
           {/* Online */}
           <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <div className="col-start-1 flex flex-col justify-center p-4 md:col-start-2">
-              <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
-                Online
-              </small>
-              <h3 className="text-3xl font-bold">No requiere instalación</h3>
-              <p className="mt-4 text-lg text-orange-900">
-                Tu menú esta disponible para todos, no se requiere instalar
-                alguna app, puede verse desde tú teléfono, tablet o escritorio.
-              </p>
+              <motion.div
+                variants={text}
+                initial="initial"
+                whileInView="view"
+                viewport={{
+                  once: true,
+                  amount: "some"
+                }}
+                className="flex flex-col justify-center p-4"
+              >
+                <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
+                  Online
+                </small>
+                <h3 className="text-3xl font-bold">No requiere instalación</h3>
+                <p className="mt-4 text-lg text-orange-900">
+                  Tu menú esta disponible para todos, no se requiere instalar
+                  alguna app, puede verse desde tú teléfono, tablet o
+                  escritorio.
+                </p>
+              </motion.div>
             </div>
             <div className="relative flex items-center md:order-first">
-              <div className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-green-100"></div>
+              <motion.div
+                initial={{ opacity: 0, x: 100, rotate: "6deg" }}
+                whileInView={{ opacity: 1, x: 0, rotate: "-3deg" }}
+                viewport={{
+                  once: true,
+                  amount: "all"
+                }}
+                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-green-100"
+              ></motion.div>
               <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-green-200 to-green-300 px-4 py-4 shadow-lg shadow-green-300/50">
-                <div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{
+                    once: true,
+                    amount: "all"
+                  }}
+                  transition={{ duration: 0.5 }}
+                >
                   <Image
                     src="/devices.svg"
                     alt="Icono de dispositivos"
                     width={150}
                     height={150}
                   ></Image>
-                </div>
+                </motion.div>
               </div>
             </div>
           </section>
           {/* Customize */}
           <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <div className="flex flex-col justify-center p-4">
-              <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
-                Personalizacion
-              </small>
-              <h3 className="text-3xl font-bold">Diseño flexible</h3>
-              <p className="mt-4 text-lg text-orange-900">
-                Inicia con una plantilla moderna, personalizala a tu gusto para
-                crear algo original, justo como tú negocio.
-              </p>
+              <motion.div
+                variants={text}
+                initial="initial"
+                whileInView="view"
+                viewport={{
+                  once: true,
+                  amount: "some"
+                }}
+                className="flex flex-col justify-center p-4"
+              >
+                <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
+                  Personalizacion
+                </small>
+                <h3 className="text-3xl font-bold">Diseño flexible</h3>
+                <p className="mt-4 text-lg text-orange-900">
+                  Inicia con una plantilla moderna, modifícala a tu gusto para
+                  crear algo original, justo como tú negocio.
+                </p>
+              </motion.div>
             </div>
-            <div>Imagen 3</div>
+            <div className="">
+              <div className="relative h-[300px] overflow-hidden rounded-lg bg-gradient-to-b from-orange-300 to-red-500 shadow-lg shadow-red-400/50">
+                <div className="absolute inset-x-0 bottom-[-6px] flex items-end justify-center">
+                  <motion.div
+                    initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{
+                      once: true,
+                      amount: "some"
+                    }}
+                    transition={{ duration: 0.7 }}
+                  >
+                    <Image
+                      src="/menu-back.png"
+                      width={400}
+                      height={300}
+                      alt="Imagen del Editor"
+                    />
+                  </motion.div>
+                </div>
+                <div className="absolute inset-x-0 bottom-[-6px] flex items-end justify-center">
+                  <motion.div
+                    initial={{ y: 30, scale: 0.95 }}
+                    whileInView={{ y: 0, scale: 1 }}
+                    viewport={{
+                      once: true,
+                      amount: "some"
+                    }}
+                    transition={{ duration: 0.7 }}
+                  >
+                    <Image
+                      src="/menu-front.png"
+                      width={400}
+                      height={300}
+                      alt="Imagen del Editor"
+                    />
+                  </motion.div>
+                </div>
+              </div>
+            </div>
           </section>
           {/* Editor */}
           <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
             <div className="col-start-1 flex flex-col justify-center p-4 md:col-start-2">
-              <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
-                Editor Web
-              </small>
-              <h3 className="text-3xl font-bold">Haz cambios al instante</h3>
-              <p className="mt-4 text-lg text-orange-900">
-                Con una interfaz de arrastrar y soltar, es fácil cambios a tu
-                menú, no requieres habilidades técnicas y los resultados se
-                pueden ver al instante.
-              </p>
+              <motion.div
+                variants={text}
+                initial="initial"
+                whileInView="view"
+                viewport={{
+                  once: true,
+                  amount: "some"
+                }}
+                className="flex flex-col justify-center p-4"
+              >
+                <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
+                  Editor Web
+                </small>
+                <h3 className="text-3xl font-bold">Haz cambios al instante</h3>
+                <p className="mt-4 text-lg text-orange-900">
+                  Con una interfaz de arrastrar y soltar, es fácil realizar
+                  cambios a tu menú, no requieres habilidades técnicas y los
+                  resultados se pueden ver al instante.
+                </p>
+              </motion.div>
             </div>
             <div className="md:order-first">
-              <div className="flex items-end justify-start overflow-hidden rounded-lg bg-gradient-to-b from-teal-200 to-cyan-300 shadow-lg shadow-cyan-400/50">
+              <motion.div
+                initial={{ opacity: 0, y: 100 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{
+                  once: true,
+                  amount: "some"
+                }}
+                transition={{ duration: 0.7 }}
+                className="flex items-end justify-start overflow-hidden rounded-lg bg-gradient-to-b from-teal-200 to-cyan-300 shadow-lg shadow-cyan-400/50"
+              >
                 <Image
                   src="/editor.png"
                   width={400}
                   height={300}
                   alt="Imagen del Editor"
                 />
-              </div>
+              </motion.div>
             </div>
           </section>
         </div>
@@ -208,9 +320,11 @@ const HomeMenu = (): JSX.Element => {
 const HomeHero = (): JSX.Element => {
   return (
     <div className="grid w-full max-w-6xl px-2 sm:grid-cols-2 xl:px-0">
-      <div className="py-12 md:py-24">
-        <h1 className="text-6xl font-bold">Tu menú digital en minutos</h1>
-        <h2 className="py-6 text-2xl text-gray-600 md:py-8">
+      <div className="py-12 px-6 md:py-24 md:px-0">
+        <h1 className="text-5xl font-bold md:text-6xl">
+          Tu menú digital en minutos
+        </h1>
+        <h2 className="py-6 text-xl text-gray-600 md:py-8 md:text-2xl">
           Crea tu menú digital y QR, compartelo con tus clientes.
         </h2>
         {/* CTA */}
