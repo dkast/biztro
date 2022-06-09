@@ -86,7 +86,7 @@ const Home: NextPageWithAuthAndLayout = () => {
               <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
                 Acceso por QR
               </small>
-              <h3 className="text-3xl font-bold">Obtén tu Código QR</h3>
+              <h3 className="font-display text-3xl">Obtén tu Código QR</h3>
               <p className="mt-4 text-lg text-orange-900">
                 Crea tu menú y permite a tus clientes consultarlo rápidamente
                 utilizando simplementa la cámara en su télefono móvil.
@@ -151,7 +151,9 @@ const Home: NextPageWithAuthAndLayout = () => {
                 <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
                   Online
                 </small>
-                <h3 className="text-3xl font-bold">No requiere instalación</h3>
+                <h3 className="font-display text-3xl">
+                  No requiere instalación
+                </h3>
                 <p className="mt-4 text-lg text-orange-900">
                   Tu menú esta disponible para todos, no se requiere instalar
                   alguna app, puede verse desde tú teléfono, tablet o
@@ -205,7 +207,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                 <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
                   Personalizacion
                 </small>
-                <h3 className="text-3xl font-bold">Diseño flexible</h3>
+                <h3 className="font-display text-3xl">Diseño flexible</h3>
                 <p className="mt-4 text-lg text-orange-900">
                   Inicia con una plantilla moderna, modifícala a tu gusto para
                   crear algo original, justo como tú negocio.
@@ -269,7 +271,9 @@ const Home: NextPageWithAuthAndLayout = () => {
                 <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
                   Editor Web
                 </small>
-                <h3 className="text-3xl font-bold">Haz cambios al instante</h3>
+                <h3 className="font-display text-3xl">
+                  Haz cambios al instante
+                </h3>
                 <p className="mt-4 text-lg text-orange-900">
                   Con una interfaz de arrastrar y soltar, es fácil realizar
                   cambios a tu menú, no requieres habilidades técnicas y los
@@ -325,7 +329,7 @@ const HomeHero = (): JSX.Element => {
   return (
     <div className="grid w-full max-w-6xl px-4 sm:grid-cols-2 lg:px-2 xl:px-0">
       <div className="flex flex-col justify-center py-12 px-6 md:py-24 md:px-0">
-        <h1 className="lg:text-6l text-4xl font-bold tracking-tight md:text-5xl">
+        <h1 className="font-display text-4xl tracking-tight md:text-5xl lg:text-6xl">
           Tu menú digital en minutos
         </h1>
         <h2 className="py-6 text-xl text-gray-600 md:py-8 md:text-2xl lg:text-xl lg:leading-6">
@@ -415,7 +419,7 @@ const HomeFaq = (): JSX.Element => {
       <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
         FAQ
       </small>
-      <h3 className="text-3xl font-bold">Preguntas más frecuentes</h3>
+      <h3 className="font-display text-3xl">Preguntas más frecuentes</h3>
       <Accordion.Root type="multiple" className="my-6 divide-y">
         {FAQ.map((item, index) => {
           return (
