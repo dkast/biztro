@@ -41,8 +41,8 @@ export const DefaultLayerHeader: React.FC = () => {
     <div
       ref={drag}
       className={classNames(
-        selected ? "bg-zinc-600 text-white" : "bg-transparent text-gray-500",
-        "flex flex-row items-center px-1 py-2"
+        selected ? "bg-zinc-500 text-white" : "bg-transparent text-gray-500",
+        "flex flex-row items-center rounded-lg px-1 py-2"
       )}
     >
       <a
