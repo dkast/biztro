@@ -415,7 +415,7 @@ const HomeBanner = (): JSX.Element => {
 
 const HomeFaq = (): JSX.Element => {
   return (
-    <div className="mx-auto mt-8 w-full max-w-5xl px-4 sm:w-[80ch] lg:px-2 xl:px-0">
+    <div className="mx-auto mt-8 w-full max-w-5xl px-4 sm:w-[80ch] md:mt-16 lg:px-2 xl:px-0">
       <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
         FAQ
       </small>
