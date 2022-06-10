@@ -107,7 +107,7 @@ const EditorSync = () => {
             action={
               <button
                 type="button"
-                className="rounded-md py-1 px-2 text-sm font-semibold text-white hover:bg-blue-400"
+                className="rounded-full bg-blue-400 py-1 px-2 text-sm font-semibold text-white hover:bg-blue-600 active:scale-95"
                 onClick={() => syncSite()}
               >
                 Sincronizar
