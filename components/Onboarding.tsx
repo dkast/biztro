@@ -68,7 +68,7 @@ const Onboarding = () => {
     <div className="">
       <Accordion.Root
         type="single"
-        className="divide-y rounded-lg border bg-white shadow"
+        className="divide-y rounded-xl border border-gray-100 bg-white shadow"
         collapsible
         onValueChange={selectedValue => setValue(selectedValue)}
       >

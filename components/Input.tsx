@@ -3,7 +3,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/solid"
 import { UseFormRegister } from "react-hook-form"
 
 const DEFAULT =
-  "block w-full rounded-md sm:max-w-xs sm:text-sm transition duration-150 ease-in-out shadow-sm"
+  "block w-full rounded-lg sm:max-w-xs sm:text-sm transition duration-150 ease-in-out shadow-sm"
 const VARIANT = {
   default: "border-gray-300 focus:ring-zinc-600 focus:border-zinc-600",
   error:

@@ -13,7 +13,7 @@ const Alert = ({ message, icon, action }: AlertProps) => {
   return (
     <>
       {show ? (
-        <div className="rounded-xl bg-blue-500 px-3 py-2 shadow shadow-blue-300/50">
+        <div className="rounded-full bg-blue-500 px-3 py-2 shadow shadow-blue-300/50">
           <div className="flex items-center">
             <div className="flex-shrink-0 text-blue-50">
               {/* <CheckCircleIcon className="h-5 w-5 text-blue-400" aria-hidden="true" /> */}

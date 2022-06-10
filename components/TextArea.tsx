@@ -2,7 +2,7 @@ import React from "react"
 import { UseFormRegister } from "react-hook-form"
 
 const DEFAULT =
-  "block w-full max-w-lg rounded-md focus:outline-none sm:text-sm transition duration-150 ease-in-out"
+  "block w-full max-w-lg rounded-lg focus:outline-none sm:text-sm transition duration-150 ease-in-out"
 const VARIANT = {
   default: "border-gray-300 focus:ring-zinc-600 focus:border-zinc-600",
   error:
@@ -35,13 +35,13 @@ const TextArea: React.FC<TextAreaProps> = props => {
   )
 
   return (
-      <div className="relative mt-1 w-full max-w-lg rounded-md shadow-sm">
-        <textarea
-          className={cssClasses}
-          {...register(name, { required })}
-          {...props}
-        />
-      </div>
+    <div className="relative mt-1 w-full max-w-lg rounded-md shadow-sm">
+      <textarea
+        className={cssClasses}
+        {...register(name, { required })}
+        {...props}
+      />
+    </div>
   )
 }
 
