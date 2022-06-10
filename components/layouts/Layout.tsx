@@ -75,7 +75,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex h-screen pb-safe">
       {/* Narrow sidebar */}
-      <div className="hidden w-16 overflow-y-auto border-r border-gray-200 bg-gray-50 md:block">
+      <div className="hidden w-16 overflow-y-auto border-r border-gray-100 bg-gray-50 md:block">
         <div className="flex w-full flex-col items-center py-4">
           <div
             className={classNames(

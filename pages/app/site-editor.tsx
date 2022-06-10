@@ -88,7 +88,7 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
         <div className="flex flex-1 flex-col bg-gray-100">
           <div className="flex min-h-0 flex-1 flex-nowrap">
             {/* Toolbox */}
-            <div className="flex w-60 border-r bg-white">
+            <div className="flex w-60 bg-white">
               <Toolbox />
             </div>
             {/* Content */}
@@ -118,7 +118,7 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
               </div>
             </div>
             {/* Settings */}
-            <div className="flex w-60 border-l bg-white">
+            <div className="flex w-60 bg-white">
               <SettingsBar />
             </div>
           </div>

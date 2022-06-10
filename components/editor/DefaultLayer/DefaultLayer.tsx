@@ -27,7 +27,7 @@ export const DefaultLayer: React.FC = ({ children }) => {
       className={classNames(
         hovered ? "bg-gray-100" : "bg-transparent",
         hasChildCanvases && expanded ? "pb-1" : "pb-0",
-        "block"
+        "mx-1 block rounded-lg"
       )}
     >
       <DefaultLayerHeader />
