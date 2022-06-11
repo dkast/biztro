@@ -20,9 +20,11 @@ import { UploadIcon } from "@heroicons/react/solid"
 import type { Site } from "@prisma/client"
 import { HttpMethod, ImageInfo, NextPageWithAuthAndLayout } from "@/lib/types"
 import { CameraIcon } from "@heroicons/react/outline"
+import InputAddon from "@/components/InputAddon"
 
 interface IFormValues {
   name: string
+  subdomain: string
   description: string
   logo: string
   image: string
@@ -157,6 +159,26 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                   required
                   invalid={errors.name ? true : undefined}
                 ></Input>
+              </div>
+            </div>
+
+            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-100 sm:pt-5">
+              <label
+                htmlFor="subdomain"
+                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+              >
+                URL
+              </label>
+              <div className="mt-1 sm:col-span-2 sm:mt-0">
+                <InputAddon
+                  name="subdomain"
+                  type="text"
+                  addon="https://biztro.app/"
+                  {...register("subdomain", { pattern: /^[a-z](-?[a-z])*$/i })}
+                  required
+                  invalid={errors.subdomain ? true : undefined}
+                  placeholder="mi-menu"
+                ></InputAddon>
               </div>
             </div>
 

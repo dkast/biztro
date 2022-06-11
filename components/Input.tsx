@@ -5,7 +5,8 @@ import { UseFormRegister } from "react-hook-form"
 const DEFAULT =
   "block w-full rounded-lg sm:max-w-xs sm:text-sm transition duration-150 ease-in-out shadow-sm"
 const VARIANT = {
-  default: "border-gray-300 focus:ring-zinc-600 focus:border-zinc-600",
+  default:
+    "border-gray-300 focus:ring-zinc-600 focus:border-zinc-600 placeholder-gray-400",
   error:
     "pr-10 border-red-300 text-red-900 placeholder-red-300 focus:border-red-300 focus:ring-red-500 focus:border-red-500"
 }
@@ -15,7 +16,7 @@ const MODE = {
 }
 interface InputProps extends React.InputHTMLAttributes<HTMLElement> {
   name: string
-  register: UseFormRegister<any>
+  register?: UseFormRegister<any>
   disabled?: boolean
   invalid?: boolean
   required?: boolean
