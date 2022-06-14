@@ -95,12 +95,13 @@ const Site: NextPage<IndexProps> = ({
 export const getStaticPaths: GetStaticPaths<PathProps> = async () => {
   const sites = await prisma.site.findMany({
     select: {
-      id: true
+      id: true,
+      subdomain: true
     }
   })
 
   const paths = sites.map(site => ({
-    params: { site: site.id }
+    params: { site: site.subdomain }
   }))
 
   return {
@@ -118,7 +119,7 @@ export const getStaticProps: GetStaticProps<IndexProps, PathProps> = async ({
 
   const data = await prisma.site.findFirst({
     where: {
-      id: site as string,
+      subdomain: site as string,
       published: true
     },
     select: {

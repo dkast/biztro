@@ -22,12 +22,12 @@ const Alert = ({ message, icon, action }: AlertProps) => {
             <div className="ml-3">
               <p className="text-sm font-medium text-blue-50">{message}</p>
             </div>
-            <div className="ml-3">{action}</div>
-            <div className="ml-auto pl-3">
+            <div className="ml-auto">{action}</div>
+            <div className="pl-3">
               <div className="-mx-1.5 -my-1.5">
                 <button
                   type="button"
-                  className="inline-flex rounded-md bg-blue-500 p-1.5 text-blue-50 hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-blue-50"
+                  className="inline-flex rounded-full bg-blue-500 p-1.5 text-blue-50 hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-blue-50"
                   onClick={() => setShow(false)}
                 >
                   <span className="sr-only">Cerrar</span>

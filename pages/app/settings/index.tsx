@@ -62,6 +62,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     })
     reset({
       name: site?.name,
+      subdomain: site?.subdomain,
       description: site?.description,
       phone: site?.phone
     })
@@ -88,6 +89,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
       body: JSON.stringify({
         userId: sessionId,
         name: data.name,
+        subdomain: data.subdomain,
         description: data.description,
         phone: data.phone
       })
@@ -109,6 +111,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
       body: JSON.stringify({
         id: site.id,
         name: data.name,
+        subdomain: data.subdomain,
         description: data.description,
         phone: data.phone,
         logo: logoImage.imageURL,
