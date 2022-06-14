@@ -37,7 +37,8 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setError
   } = useForm<IFormValues>()
 
   const [submitted, setSubmitted] = useState(false)
@@ -98,7 +99,11 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     if (res.ok) {
       toast.success("Información actualizada")
     } else {
-      toast.error("Algo salió mal")
+      if (res.status === 409) {
+        setError("subdomain", { message: "URL para sitio ya existe" })
+      } else {
+        toast.error("Algo salió mal")
+      }
     }
   }
 
@@ -123,13 +128,17 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
     if (res.ok) {
       toast.success("Información actualizada")
     } else {
-      toast.error("Algo salió mal")
+      if (res.status === 409) {
+        setError("subdomain", { message: "URL ya existe." })
+      } else {
+        toast.error("Algo salió mal")
+      }
     }
   }
 
-  if (isValidating) {
-    return <Loader />
-  }
+  // if (isValidating) {
+  //   return <Loader />
+  // }
 
   return (
     <form
@@ -160,7 +169,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                   name="name"
                   register={register}
                   required
-                  invalid={errors.name ? true : undefined}
+                  invalid={errors.name ? true : false}
                 ></Input>
               </div>
             </div>
@@ -177,11 +186,19 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                   name="subdomain"
                   type="text"
                   addon="https://biztro.app/"
-                  {...register("subdomain", { pattern: /^[a-z](-?[a-z])*$/i })}
+                  {...register("subdomain", {
+                    pattern: /^[a-z0-9](-?[a-z0-9])*$/i
+                  })}
                   required
                   invalid={errors.subdomain ? true : undefined}
                   placeholder="mi-menu"
                 ></InputAddon>
+                <p className="mt-2 text-sm text-gray-500">
+                  Solo se permiten números, letras y guiones.
+                </p>
+                <span className="mt-2 text-sm text-red-500">
+                  {errors.subdomain?.message}
+                </span>
               </div>
             </div>
 
@@ -197,7 +214,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                   name="description"
                   register={register}
                   required
-                  invalid={errors.description ? true : undefined}
+                  invalid={errors.description ? true : false}
                 ></TextArea>
                 <p className="mt-2 text-sm text-gray-500">
                   Dirección del negocio, información, etc.
