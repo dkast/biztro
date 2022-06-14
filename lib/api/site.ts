@@ -55,6 +55,15 @@ export async function createSite(
   const { name, subdomain, description, phone, userId } = req.body
 
   try {
+    const siteExists = await prisma.site.count({
+      where: {
+        subdomain: subdomain
+      }
+    })
+
+    if (siteExists > 0)
+      return res.status(409).end("Site domain already exists.")
+
     const response = await prisma.site.create({
       data: {
         name,
@@ -96,6 +105,18 @@ export async function updateSite(
   } = req.body
 
   try {
+    const siteExists = await prisma.site.count({
+      where: {
+        id: {
+          not: id
+        },
+        subdomain: subdomain
+      }
+    })
+
+    if (siteExists > 0)
+      return res.status(409).end("Site domain already exists.")
+
     const response = await prisma.site.update({
       where: {
         id: id
