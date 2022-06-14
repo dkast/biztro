@@ -298,7 +298,7 @@ const ToolbarMenu = () => {
             </ToolbarPopoverTrigger>
           </Tooltip>
           <ToolbarPopoverContent>
-            <PublishPanel siteId={site.id} />
+            <PublishPanel siteId={site.subdomain} />
           </ToolbarPopoverContent>
         </ToolbarPopover>
       </Toolbar.Root>
@@ -342,8 +342,8 @@ const PublishPanel = ({ siteId }: PublishPanelProps): JSX.Element => {
     <div className="overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
       <div className="flex flex-col gap-4 divide-y divide-solid px-2 py-3 sm:p-4">
         <div className="flex items-center justify-center gap-4">
-          <span className="select-all text-xs">{`${host}/site/${siteId}`}</span>
-          <Link href={`/site/${siteId}`} passHref>
+          <span className="select-all text-xs">{`${host}/${siteId}`}</span>
+          <Link href={`/${siteId}`} passHref>
             <a
               className="rounded bg-gray-100 p-1 text-gray-500 hover:text-gray-700"
               target="_blank"
@@ -355,7 +355,7 @@ const PublishPanel = ({ siteId }: PublishPanelProps): JSX.Element => {
         </div>
         <div className="pt-2">
           <CopyToClipboard
-            text={`${host}/site/${siteId}`}
+            text={`${host}/${siteId}`}
             onCopy={() => setCopy(true)}
           >
             <Button

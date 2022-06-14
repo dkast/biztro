@@ -1,3 +1,4 @@
+import cuid from "cuid"
 import prisma from "@/lib/prisma"
 
 import type { NextApiRequest, NextApiResponse } from "next"
@@ -51,12 +52,13 @@ export async function createSite(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void | NextApiResponse<{ siteId: string }>> {
-  const { name, description, phone, userId } = req.body
+  const { name, subdomain, description, phone, userId } = req.body
 
   try {
     const response = await prisma.site.create({
       data: {
         name,
+        subdomain: subdomain.length > 0 ? subdomain : cuid(),
         description,
         phone,
         user: {
@@ -83,6 +85,7 @@ export async function updateSite(
   const {
     id,
     name,
+    subdomain,
     description,
     phone,
     logo,
@@ -99,6 +102,7 @@ export async function updateSite(
       },
       data: {
         name,
+        subdomain: subdomain.length > 0 ? subdomain : cuid(),
         description,
         phone,
         logo,
