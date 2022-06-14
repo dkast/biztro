@@ -52,7 +52,18 @@ export async function createSite(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void | NextApiResponse<{ siteId: string }>> {
-  const { name, subdomain, description, phone, userId } = req.body
+  const {
+    name,
+    subdomain,
+    description,
+    phone,
+    logo,
+    image,
+    imageBlurhash,
+    serialData,
+    published,
+    userId
+  } = req.body
 
   try {
     const siteExists = await prisma.site.count({
@@ -70,6 +81,11 @@ export async function createSite(
         subdomain: subdomain.length > 0 ? subdomain : cuid(),
         description,
         phone,
+        logo,
+        image,
+        imageBlurhash,
+        serialData,
+        published,
         user: {
           connect: {
             id: userId
