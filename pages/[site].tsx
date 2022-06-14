@@ -46,7 +46,6 @@ const Site: NextPage<IndexProps> = ({
 
   // Search container style (color)
   const data = JSON.parse(json)
-  console.dir(data)
   let keys = Object.keys(data)
   keys.forEach(el => {
     let node = data[el]

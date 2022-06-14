@@ -11,7 +11,7 @@ import Input from "@/components/Input"
 import TextArea from "@/components/TextArea"
 import Button from "@/components/Button"
 import fetcher from "@/lib/fetcher"
-import Loader from "@/components/Loader"
+// import Loader from "@/components/Loader"
 import CloudinaryUploadWidget from "@/components/Cloudinary"
 import saveImage from "@/lib/save-image"
 import BlurImage from "@/components/BlurImage"
@@ -21,6 +21,7 @@ import type { Site } from "@prisma/client"
 import { HttpMethod, ImageInfo, NextPageWithAuthAndLayout } from "@/lib/types"
 import { CameraIcon } from "@heroicons/react/outline"
 import InputAddon from "@/components/InputAddon"
+import useWarnChanges from "@/hooks/useWarnChanges"
 
 interface IFormValues {
   name: string
@@ -36,7 +37,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     reset,
     setError
   } = useForm<IFormValues>()
@@ -51,6 +52,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
 
   const [logoImage, setLogoImage] = useState<ImageInfo>(null)
   const [bannerImage, setBannerImage] = useState<ImageInfo>(null)
+  const [isImageDirty, setIsImageDirty] = useState<boolean>(false)
 
   useEffect(() => {
     setLogoImage({
@@ -92,12 +94,16 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
         name: data.name,
         subdomain: data.subdomain,
         description: data.description,
-        phone: data.phone
+        phone: data.phone,
+        logo: logoImage.imageURL,
+        image: bannerImage.imageURL,
+        imageBlurhash: bannerImage.imageBlurhash
       })
     })
 
     if (res.ok) {
       toast.success("Información actualizada")
+      setIsImageDirty(false)
     } else {
       if (res.status === 409) {
         setError("subdomain", { message: "URL para sitio ya existe" })
@@ -127,6 +133,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
 
     if (res.ok) {
       toast.success("Información actualizada")
+      setIsImageDirty(false)
     } else {
       if (res.status === 409) {
         setError("subdomain", { message: "URL ya existe." })
@@ -135,6 +142,11 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
       }
     }
   }
+
+  useWarnChanges(
+    isImageDirty || isDirty,
+    "Tiene cambios sin guardar - ¿Está seguro de salir de esta página?"
+  )
 
   // if (isValidating) {
   //   return <Loader />
@@ -269,7 +281,10 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                     </span>
                   )}
                   <CloudinaryUploadWidget
-                    callback={e => saveImage(e, logoImage, setLogoImage)}
+                    callback={e => {
+                      saveImage(e, logoImage, setLogoImage)
+                      setIsImageDirty(true)
+                    }}
                   >
                     {({ open }) => (
                       <div className="ml-5">
@@ -294,7 +309,10 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                 {bannerImage?.imageURL ? (
                   <div className="relative">
                     <CloudinaryUploadWidget
-                      callback={e => saveImage(e, bannerImage, setBannerImage)}
+                      callback={e => {
+                        saveImage(e, bannerImage, setBannerImage)
+                        setIsImageDirty(true)
+                      }}
                     >
                       {({ open }) => (
                         <button
@@ -321,7 +339,10 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                   </div>
                 ) : (
                   <CloudinaryUploadWidget
-                    callback={e => saveImage(e, bannerImage, setBannerImage)}
+                    callback={e => {
+                      saveImage(e, bannerImage, setBannerImage)
+                      setIsImageDirty(true)
+                    }}
                   >
                     {({ open }) => (
                       <div className="flex max-w-lg justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
