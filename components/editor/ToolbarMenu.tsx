@@ -277,6 +277,7 @@ const ToolbarMenu = () => {
                 variant="primary"
                 size="xs"
                 rightIcon={<ChevronDownIcon />}
+                renderAs="a"
               >
                 Publicado
               </Button>
