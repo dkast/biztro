@@ -52,7 +52,6 @@ const EditorSync = () => {
 
       let equalSite = true
       const diff = difference(siteItem, site)
-      console.dir(diff)
       // Check changed properties, exclude serialData and updatedAt
       Object.getOwnPropertyNames(diff).forEach(propName => {
         if (propName !== "serialData" && propName !== "updatedAt") {

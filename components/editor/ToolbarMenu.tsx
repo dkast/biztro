@@ -75,6 +75,7 @@ const ToolbarMenu = () => {
       },
       body: JSON.stringify({
         id: site.id,
+        subdomain: site.subdomain,
         serialData: lz.encodeBase64(lz.compress(json))
       })
     })
@@ -87,6 +88,7 @@ const ToolbarMenu = () => {
       actions.history.clear()
     } else {
       toast.error("Algo salió mal", { id: toastId })
+      console.dir(res)
     }
   }
 
@@ -99,6 +101,7 @@ const ToolbarMenu = () => {
       },
       body: JSON.stringify({
         id: site.id,
+        subdomain: site.subdomain,
         published
       })
     })
