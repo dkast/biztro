@@ -15,10 +15,14 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    signIn(/* { user, account, profile, email, credentials } */) {
-      return true
+    async signIn({ email, user }) {
+      if (user.email === "dcastillejo@gmail.com") {
+        return true
+      } else {
+        return false
+      }
     },
-    session({ session, user }) {
+    async session({ session, user }) {
       return {
         ...session,
         user: {
