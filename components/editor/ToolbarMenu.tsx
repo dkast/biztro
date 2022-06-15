@@ -83,7 +83,7 @@ const ToolbarMenu = () => {
     if (res.ok) {
       toast.success("Información actualizada", { id: toastId })
       mutate("/api/site")
-      void revalidate(site.id)
+      void revalidate(site.subdomain)
       // Reset Editor history state
       actions.history.clear()
     } else {
@@ -109,7 +109,7 @@ const ToolbarMenu = () => {
     if (res.ok) {
       toast.success("Información actualizada", { id: toastId })
       mutate("/api/site")
-      void revalidate(site.id)
+      void revalidate(site.subdomain)
     } else {
       toast.error("Algo salió mal", { id: toastId })
     }
@@ -261,10 +261,10 @@ const ToolbarMenu = () => {
         {!site.published ? (
           <Toolbar.Button asChild>
             <Button
-              type="button"
               variant="primary"
               size="xs"
               onClick={() => publishSite(true)}
+              renderAs="a"
             >
               Publicar
             </Button>
@@ -273,7 +273,6 @@ const ToolbarMenu = () => {
           <ToolbarDropdown>
             <ToolbarDropdownTrigger className="outline-none">
               <Button
-                type="button"
                 variant="primary"
                 size="xs"
                 rightIcon={<ChevronDownIcon />}
