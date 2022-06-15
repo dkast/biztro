@@ -8,6 +8,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: "xs" | "sm" | "md" | "lg"
   leftIcon?: React.ReactNode
   rightIcon?: React.ReactNode
+  renderAs?: React.ElementType
 }
 
 const DEFAULT =
@@ -59,6 +60,7 @@ const Button: React.FC<ButtonProps> = ({
   size = "md",
   leftIcon,
   rightIcon,
+  renderAs = "button",
   ...props
 }) => {
   const cssClasses = [
@@ -69,8 +71,10 @@ const Button: React.FC<ButtonProps> = ({
     MODE[mode]
   ].join(" ")
 
+  const Element = renderAs
+
   return (
-    <button className={cssClasses} {...props}>
+    <Element className={cssClasses} {...props}>
       {isLoading ? (
         <span className="mr-2">
           <RotateSpinner size={16} color={"#FFF"}></RotateSpinner>
@@ -79,7 +83,7 @@ const Button: React.FC<ButtonProps> = ({
       {leftIcon ? <i className={SIZE_ICON_LEFT[size]}>{leftIcon}</i> : null}
       {children}
       {rightIcon ? <i className={SIZE_ICON_RIGHT[size]}>{rightIcon}</i> : null}
-    </button>
+    </Element>
   )
 }
 
