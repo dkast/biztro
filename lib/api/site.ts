@@ -121,6 +121,7 @@ export async function updateSite(
   } = req.body
 
   try {
+    // Request must always include subdomain to keep the integrity
     const siteExists = await prisma.site.count({
       where: {
         id: {
