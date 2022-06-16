@@ -106,3 +106,10 @@ model Item {
   @@unique([id, siteId], name: "post_site_constraint")
   @@index([siteId])
 }
+
+model Invite {
+  id    String @id @default(cuid())
+  email String @unique
+
+  @@index([email])
+}
