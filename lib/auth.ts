@@ -16,11 +16,14 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ email, user }) {
-      if (user.email === "dcastillejo@gmail.com") {
-        return true
-      } else {
-        return false
-      }
+      const found = await prisma.invite.count({
+        where: {
+          email: user.email
+        }
+      })
+
+      // If found invite then allow to continue
+      return found > 0
     },
     async session({ session, user }) {
       return {
@@ -34,7 +37,8 @@ export const authOptions: NextAuthOptions = {
     }
   },
   pages: {
-    signIn: "/app/sign-in"
+    signIn: "/app/auth/sign-in",
+    error: "/app/auth/error"
   },
   secret: process.env.NEXTAUTH_SECRET
 }
