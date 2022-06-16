@@ -81,7 +81,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                 once: true,
                 amount: "some"
               }}
-              className="flex flex-col justify-center p-4"
+              className="flex flex-col justify-center p-4 md:h-[400px]"
             >
               <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
                 Acceso por QR
@@ -101,7 +101,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "some"
                 }}
-                className="left-1/5 absolute bottom-0 h-full w-2/3 -rotate-6 rounded-lg bg-gradient-to-br from-purple-300 to-purple-400 shadow-lg shadow-purple-300/50"
+                className="left-1/5 absolute bottom-0 h-full w-2/3 -rotate-6 rounded-lg bg-gradient-to-br from-purple-300 to-purple-400 shadow-lg shadow-purple-300/50 md:bottom-1/4 md:h-1/2"
               ></motion.div>
               <motion.div
                 initial={{ opacity: 0, scale: 0.4 }}
@@ -113,7 +113,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                 className="z-10 rounded-xl bg-white p-2 shadow-xl"
               >
                 <QRCode
-                  value="https://bistro.vercel.app/menu"
+                  value="https://biztro.co/menu"
                   logoImage="/logo-bistro.svg"
                   removeQrCodeBehindLogo
                   ecLevel="Q"
@@ -128,9 +128,9 @@ const Home: NextPageWithAuthAndLayout = () => {
                   amount: "all",
                   margin: "-200px"
                 }}
-                className="absolute top-0 left-1/2 z-20 flex items-center gap-1 rounded-full bg-gradient-to-b from-yellow-300 to-yellow-400 px-3 py-1 text-yellow-900 shadow-lg"
+                className="absolute top-0 left-1/2 z-20 flex items-center gap-1 rounded-full bg-gradient-to-b from-yellow-300 to-yellow-400 px-3 py-1 text-yellow-900 shadow-lg md:top-1/4"
               >
-                <span>https://bistro.app/menu</span>
+                <span>https://biztro.co/menu</span>
                 <ChevronRightIcon className="h-4 w-4 text-current" />
               </motion.div>
             </div>
@@ -146,7 +146,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "some"
                 }}
-                className="flex flex-col justify-center p-4"
+                className="flex flex-col justify-center p-4 md:h-[400px]"
               >
                 <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
                   Online
@@ -169,7 +169,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "all"
                 }}
-                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-green-100"
+                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-green-100 md:bottom-1/4 md:h-1/2"
               ></motion.div>
               <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-green-200 to-green-300 px-4 py-4 shadow-lg shadow-green-300/50">
                 <motion.div
@@ -203,7 +203,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "some"
                 }}
-                className="flex flex-col justify-center p-4"
+                className="flex flex-col justify-center p-4 md:h-[400px]"
               >
                 <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
                   Personalizacion
@@ -215,8 +215,8 @@ const Home: NextPageWithAuthAndLayout = () => {
                 </p>
               </motion.div>
             </div>
-            <div className="">
-              <div className="relative h-[300px] overflow-hidden rounded-lg bg-gradient-to-b from-orange-300 to-red-500 shadow-lg shadow-red-400/50">
+            <div>
+              <div className="relative h-[300px] overflow-hidden rounded-lg bg-gradient-to-b from-orange-300 to-red-500 shadow-lg shadow-red-400/50 md:h-[400px]">
                 <div className="absolute inset-x-0 bottom-[-6px] flex items-end justify-center">
                   <motion.div
                     initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -269,7 +269,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "some"
                 }}
-                className="flex flex-col justify-center p-4"
+                className="flex flex-col justify-center p-4 md:h-[400px]"
               >
                 <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
                   Editor Web
@@ -293,7 +293,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   amount: "some"
                 }}
                 transition={{ duration: 0.7 }}
-                className="flex items-end justify-start overflow-hidden rounded-lg bg-gradient-to-b from-teal-200 to-cyan-300 shadow-lg shadow-cyan-400/50"
+                className="flex items-end justify-start overflow-hidden rounded-lg bg-gradient-to-b from-teal-200 to-cyan-300 shadow-lg shadow-cyan-400/50 md:h-[400px]"
               >
                 <Image
                   src="/editor.png"
@@ -347,7 +347,7 @@ const HomeHero = (): JSX.Element => {
               <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
             </a>
           </Link>
-          <Link href="/ejemplo">
+          <Link href="/menu">
             <a className="rounded-lg border border-orange-500 px-4 py-3 text-orange-600 transition hover:scale-[98%] hover:bg-orange-50">
               Ver un Ejemplo
             </a>
@@ -384,7 +384,7 @@ const HomeHero = (): JSX.Element => {
           }}
           className="absolute bottom-6 left-6 rounded-2xl bg-white p-2 shadow-lg"
         >
-          <QRCode value="https://bistro.vercel.app" />
+          <QRCode value="https://biztro.co/menu" />
         </motion.div>
       </div>
     </div>
