@@ -179,9 +179,8 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
               <div className="mt-1 sm:col-span-2 sm:mt-0">
                 <Input
                   name="name"
-                  register={register}
-                  required
-                  invalid={errors.name ? true : false}
+                  {...register("name", { required: true })}
+                  invalid={errors.name ? true : undefined}
                 ></Input>
               </div>
             </div>
@@ -199,9 +198,9 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                   type="text"
                   addon="https://biztro.app/"
                   {...register("subdomain", {
-                    pattern: /^[a-z0-9](-?[a-z0-9])*$/i
+                    pattern: /^[a-z0-9](-?[a-z0-9])*$/i,
+                    required: true
                   })}
-                  required
                   invalid={errors.subdomain ? true : undefined}
                   placeholder="mi-menu"
                 ></InputAddon>
@@ -224,9 +223,8 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
               <div className="mt-1 sm:col-span-2 sm:mt-0">
                 <TextArea
                   name="description"
-                  register={register}
-                  required
-                  invalid={errors.description ? true : false}
+                  {...register("description", { required: true })}
+                  invalid={errors.description ? true : undefined}
                 ></TextArea>
                 <p className="mt-2 text-sm text-gray-500">
                   Dirección del negocio, información, etc.
@@ -245,7 +243,9 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
                 <Input
                   type="tel"
                   name="phone"
-                  register={register}
+                  {...register("phone", {
+                    pattern: /[0-9]{3}-[0-9]{3}-[0-9]{4}/i
+                  })}
                   pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                   placeholder="123-456-7890"
                   invalid={errors.phone ? true : undefined}
