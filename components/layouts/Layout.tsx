@@ -86,7 +86,7 @@ const Layout = ({ children }: LayoutProps) => {
             <Image
               className="h-8 w-auto"
               src="/logo-bistro.svg"
-              alt="Bistro"
+              alt="Biztro"
               width={32}
               height={32}
             />
@@ -180,7 +180,7 @@ const Layout = ({ children }: LayoutProps) => {
                   <Image
                     className="h-8 w-auto"
                     src="/logo-bistro.svg"
-                    alt="Bistro"
+                    alt="Biztro"
                     width={32}
                     height={32}
                   />

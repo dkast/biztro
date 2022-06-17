@@ -23,7 +23,11 @@ export const authOptions: NextAuthOptions = {
       })
 
       // If found invite then allow to continue
-      return found > 0
+      if (found) {
+        return true
+      } else {
+        return false
+      }
     },
     async session({ session, user }) {
       return {

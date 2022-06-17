@@ -25,7 +25,7 @@ const FAQ = [
   {
     question: "¿Como creo un código QR para el menú de mi restaurante?",
     answer: `Primero se necesita publicar el menú de tu restaurante online, entonces puedes generar un código QR convirtiendo 
-      la liga hacia tu menú en un código QR. Con Bistro puedes crear tu menú digital online, descargar tu código QR y
+      la liga hacia tu menú en un código QR. Con Biztro puedes crear tu menú digital online, descargar tu código QR y
       utilizarlo en tu material impreso.`
   },
   {
@@ -59,7 +59,7 @@ const Home: NextPageWithAuthAndLayout = () => {
   return (
     <>
       <Head>
-        <title>Bistro</title>
+        <title>Biztro</title>
         <link rel="icon" href="/favicon.ico" />
         <meta
           name="viewport"
@@ -403,7 +403,7 @@ const HomeBanner = (): JSX.Element => {
             Inicia con una cuenta gratis
           </p>
           <h3 className="mb-12 text-center text-3xl text-white">
-            Crea tu menú en Bistro hoy
+            Crea tu menú en Biztro hoy
           </h3>
           <Link href="/app/dashboard">
             <a className="flex items-center rounded-lg bg-white px-4 py-3 text-orange-500 shadow-md shadow-orange-700/50 transition hover:scale-[98%] hover:bg-gray-50">
@@ -463,7 +463,7 @@ const FaqItem = ({ question, answer }): JSX.Element => {
 const HomeFooter = (): JSX.Element => {
   return (
     <div className="m-8 flex w-full max-w-6xl justify-center text-gray-500 pb-safe">
-      <span>&copy; Bistro {new Date().getFullYear()}</span>
+      <span>&copy; Biztro {new Date().getFullYear()}</span>
     </div>
   )
 }

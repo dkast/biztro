@@ -1,14 +1,14 @@
-const title = "Bistro"
+const title = "Biztro"
 const description = "Tu slogan va aqui."
 
 const SEO = {
   title,
   description,
-  canonical: "https://bistro.vercel.app",
+  canonical: "https://biztro.co",
   openGraph: {
     type: "website",
     locale: "es_MX",
-    url: "https://bistro.vercel.app",
+    url: "https://biztro.co",
     title,
     description
   },
