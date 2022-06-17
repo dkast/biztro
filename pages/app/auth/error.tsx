@@ -13,7 +13,7 @@ const AuthError = () => {
     return (
       <>
         <Head>
-          <title>Bistro - Bienvenido</title>
+          <title>Biztro - Bienvenido</title>
         </Head>
         <div className="flex min-h-screen bg-white">
           <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
@@ -22,7 +22,7 @@ const AuthError = () => {
                 <Image
                   className="h-12 w-12"
                   src="/logo-bistro.svg"
-                  alt="Bistro"
+                  alt="Biztro"
                   width={64}
                   height={64}
                 />

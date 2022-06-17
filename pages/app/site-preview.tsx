@@ -34,7 +34,7 @@ const SitePreview: NextPageWithAuthAndLayout = () => {
   return (
     <>
       <Head>
-        <title>Bistro - Vista Previa</title>
+        <title>Biztro - Vista Previa</title>
       </Head>
       <div className="flex flex-col">
         <div className="relative grow h-screen-safe sm:h-screen">

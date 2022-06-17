@@ -18,7 +18,7 @@ const SignIn = ({
   return (
     <>
       <Head>
-        <title>Bistro - Bienvenido</title>
+        <title>Biztro - Bienvenido</title>
       </Head>
       <div className="flex min-h-screen bg-white">
         <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
@@ -27,7 +27,7 @@ const SignIn = ({
               <Image
                 className="h-12 w-12"
                 src="/logo-bistro.svg"
-                alt="Bistro"
+                alt="Biztro"
                 width={64}
                 height={64}
               />
@@ -36,7 +36,7 @@ const SignIn = ({
                   Bienvenido
                 </h2>
                 <span className="text-gray-500">
-                  Ingresa a tu cuenta de Bistro
+                  Ingresa a tu cuenta de Biztro
                 </span>
               </div>
               <div className="mt-6">

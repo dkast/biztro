@@ -1,4 +1,4 @@
-## Bistro
+## Biztro
 
 [![DeepSource](https://deepsource.io/gh/dkast/bistro.svg/?label=active+issues&show_trend=true&token=ka1uwQTdoJTIVeRZl6gI7ERb)](https://deepsource.io/gh/dkast/bistro/?ref=repository-badge)
 

@@ -79,7 +79,7 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
   return (
     <>
       <Head>
-        <title>Bistro - Editor</title>
+        <title>Biztro - Editor</title>
       </Head>
       <Editor
         resolver={{ Container, Text, MenuItem, MenuBanner }}
