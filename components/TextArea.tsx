@@ -1,5 +1,4 @@
 import React from "react"
-import { UseFormRegister } from "react-hook-form"
 
 const DEFAULT =
   "block w-full max-w-lg rounded-lg focus:outline-none sm:text-sm transition duration-150 ease-in-out"
@@ -14,35 +13,31 @@ const MODE = {
 }
 
 interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLElement> {
-  name: string
-  register: UseFormRegister<any>
-  disabled?: boolean
   invalid?: boolean
-  required?: boolean
 }
 
-const TextArea: React.FC<TextAreaProps> = props => {
-  let variant = "default"
-  let mode = "normal"
-  const { name, register, required, disabled, className } = props
+const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
+  (props, forwardRef) => {
+    let variant = "default"
+    let mode = "normal"
+    const { disabled, className } = props
 
-  if (disabled) {
-    mode = "disabled"
+    if (disabled) {
+      mode = "disabled"
+    }
+
+    const cssClasses = [className, DEFAULT, VARIANT[variant], MODE[mode]].join(
+      " "
+    )
+
+    return (
+      <div className="relative mt-1 w-full max-w-lg rounded-md shadow-sm">
+        <textarea ref={forwardRef} className={cssClasses} {...props} />
+      </div>
+    )
   }
+)
 
-  const cssClasses = [className, DEFAULT, VARIANT[variant], MODE[mode]].join(
-    " "
-  )
-
-  return (
-    <div className="relative mt-1 w-full max-w-lg rounded-md shadow-sm">
-      <textarea
-        className={cssClasses}
-        {...register(name, { required })}
-        {...props}
-      />
-    </div>
-  )
-}
+TextArea.displayName = "TextArea"
 
 export default TextArea

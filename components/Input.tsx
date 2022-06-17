@@ -1,6 +1,5 @@
 import React from "react"
 import { ExclamationCircleIcon } from "@heroicons/react/solid"
-import { UseFormRegister } from "react-hook-form"
 
 const DEFAULT =
   "block w-full rounded-lg sm:max-w-xs sm:text-sm transition duration-150 ease-in-out shadow-sm"
@@ -15,39 +14,30 @@ const MODE = {
   disabled: "bg-gray-50 "
 }
 interface InputProps extends React.InputHTMLAttributes<HTMLElement> {
-  name: string
-  register?: UseFormRegister<any>
-  disabled?: boolean
   invalid?: boolean
-  required?: boolean
 }
 
-const Input: React.FC<InputProps> = props => {
-  let variant = "default"
-  let mode = "normal"
-  const { name, register, required, disabled, invalid, className } = props
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  (props, forwardRef) => {
+    let variant = "default"
+    let mode = "normal"
+    const { disabled, invalid, className } = props
 
-  if (disabled) {
-    mode = "disabled"
-  }
+    if (disabled) {
+      mode = "disabled"
+    }
 
-  if (invalid) {
-    variant = "error"
-  }
+    if (invalid) {
+      variant = "error"
+    }
 
-  const cssClasses = [className, DEFAULT, VARIANT[variant], MODE[mode]].join(
-    " "
-  )
+    const cssClasses = [className, DEFAULT, VARIANT[variant], MODE[mode]].join(
+      " "
+    )
 
-  return (
-    <>
+    return (
       <div className="relative mt-1 w-full max-w-lg">
-        <input
-          type="text"
-          className={cssClasses}
-          {...register(name, { required })}
-          {...props}
-        />
+        <input type="text" className={cssClasses} {...props} ref={forwardRef} />
         {invalid ? (
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
             <ExclamationCircleIcon
@@ -57,11 +47,10 @@ const Input: React.FC<InputProps> = props => {
           </div>
         ) : null}
       </div>
-      {/* {props.invalid ? (
-        <p className="mt-2 text-sm text-red-600">{meta.error}</p>
-      ) : null} */}
-    </>
-  )
-}
+    )
+  }
+)
+
+Input.displayName = "Input"
 
 export default Input
