@@ -32,7 +32,12 @@ const AuthError = () => {
                   </h2>
                   <p className="mt-4 text-lg text-gray-500">
                     Actualmente estamos en Beta. Nos encontramos afinando los
-                    últimos detalles. Vuelve pronto.
+                    últimos detalles.{" "}
+                    <Link href="/invite">
+                      <a className=" text-violet-500 hover:text-violet-700">
+                        Solicita acceso.
+                      </a>
+                    </Link>
                   </p>
                 </div>
                 <div className="mt-6 text-center">
