@@ -341,7 +341,7 @@ const HomeHero = (): JSX.Element => {
         </h2>
         {/* CTA */}
         <div className="flex flex-col justify-center gap-4 md:flex-row">
-          <Link href="/app/dashboard">
+          <Link href="/invite">
             <a className="flex items-center rounded-lg bg-gradient-to-tl from-red-500 to-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600">
               Crea tu menú
               <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
@@ -405,7 +405,7 @@ const HomeBanner = (): JSX.Element => {
           <h3 className="mb-12 text-center text-3xl text-white">
             Crea tu menú en Biztro hoy
           </h3>
-          <Link href="/app/dashboard">
+          <Link href="/invite">
             <a className="flex items-center rounded-lg bg-white px-4 py-3 text-orange-500 shadow-md shadow-orange-700/50 transition hover:scale-[98%] hover:bg-gray-50">
               Solicita Acceso
               <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />

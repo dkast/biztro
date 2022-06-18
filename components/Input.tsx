@@ -2,7 +2,7 @@ import React from "react"
 import { ExclamationCircleIcon } from "@heroicons/react/solid"
 
 const DEFAULT =
-  "block w-full rounded-lg sm:max-w-xs sm:text-sm transition duration-150 ease-in-out shadow-sm"
+  "block w-full rounded-lg transition duration-150 ease-in-out shadow-sm"
 const VARIANT = {
   default:
     "border-gray-300 focus:ring-zinc-600 focus:border-zinc-600 placeholder-gray-400",
@@ -36,7 +36,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     )
 
     return (
-      <div className="relative mt-1 w-full max-w-lg">
+      <div className="relative mt-1 w-full max-w-lg sm:text-sm">
         <input type="text" className={cssClasses} {...props} ref={forwardRef} />
         {invalid ? (
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
