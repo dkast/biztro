@@ -66,33 +66,18 @@ const Home: NextPageWithAuthAndLayout = () => {
           content="width=device-width, initial-scale=1.0"
         ></meta>
       </Head>
-      <div className="flex h-screen flex-col items-center overflow-y-auto overflow-x-hidden">
+      <div className="flex flex-col items-center overflow-y-auto overflow-x-hidden h-screen-safe sm:h-screen">
         <HomeMenu />
         <HomeHero />
         {/* Main */}
         <div className="flex w-full flex-col justify-center gap-12 bg-gradient-to-br from-white via-gray-50 to-red-50 py-16 px-4 md:px-12 lg:gap-24 lg:p-32">
           {/* QR */}
-          <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
-            <motion.div
-              variants={text}
-              initial="initial"
-              whileInView="view"
-              viewport={{
-                once: true,
-                amount: "some"
-              }}
-              className="flex flex-col justify-center p-4 md:h-[400px]"
-            >
-              <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
-                Acceso por QR
-              </small>
-              <h3 className="font-display text-3xl">Obtén tu Código QR</h3>
-              <p className="mt-4 text-lg text-orange-900">
-                Crea tu menú y permite a tus clientes consultarlo rápidamente
-                utilizando simplementa la cámara en su télefono móvil.
-                Personalízalo añadiedo tu logo.
-              </p>
-            </motion.div>
+          <HomeSection>
+            <HomeSectionText eyebrow="Acceso por QR" title="Obtén tu Código QR">
+              Crea tu menú y permite a tus clientes consultarlo rápidamente
+              utilizando simplementa la cámara en su télefono móvil.
+              Personalízalo añadiedo tu logo.
+            </HomeSectionText>
             <div className="relative flex items-center justify-center p-4">
               <motion.div
                 initial={{ opacity: 0, y: 100, rotate: "0deg" }}
@@ -134,88 +119,19 @@ const Home: NextPageWithAuthAndLayout = () => {
                 <ChevronRightIcon className="h-4 w-4 text-current" />
               </motion.div>
             </div>
-          </section>
-          {/* Online */}
-          <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
-            <div className="col-start-1 flex flex-col justify-center p-4 md:col-start-2">
-              <motion.div
-                variants={text}
-                initial="initial"
-                whileInView="view"
-                viewport={{
-                  once: true,
-                  amount: "some"
-                }}
-                className="flex flex-col justify-center p-4 md:h-[400px]"
-              >
-                <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
-                  Online
-                </small>
-                <h3 className="font-display text-3xl">
-                  No requiere instalación
-                </h3>
-                <p className="mt-4 text-lg text-orange-900">
-                  Tu menú esta disponible para todos, no se requiere instalar
-                  alguna app, puede verse desde tú teléfono, tablet o
-                  escritorio.
-                </p>
-              </motion.div>
-            </div>
-            <div className="relative flex items-center md:order-first">
-              <motion.div
-                initial={{ opacity: 0, x: 100, rotate: "6deg" }}
-                whileInView={{ opacity: 1, x: 0, rotate: "-3deg" }}
-                viewport={{
-                  once: true,
-                  amount: "all"
-                }}
-                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-green-100 md:bottom-1/4 md:h-1/2"
-              ></motion.div>
-              <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-green-200 to-green-300 px-4 py-4 shadow-lg shadow-green-300/50">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{
-                    once: true,
-                    amount: "all"
-                  }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Image
-                    src="/devices.svg"
-                    alt="Icono de dispositivos"
-                    width={150}
-                    height={150}
-                    priority
-                  ></Image>
-                </motion.div>
-              </div>
-            </div>
-          </section>
+          </HomeSection>
           {/* Customize */}
-          <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
-            <div className="flex flex-col justify-center p-4">
-              <motion.div
-                variants={text}
-                initial="initial"
-                whileInView="view"
-                viewport={{
-                  once: true,
-                  amount: "some"
-                }}
-                className="flex flex-col justify-center p-4 md:h-[400px]"
+          <HomeSection>
+            <div className="col-start-1 flex flex-col justify-center md:col-start-2">
+              <HomeSectionText
+                eyebrow="Personalizacion"
+                title="Diseño flexible"
               >
-                <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
-                  Personalizacion
-                </small>
-                <h3 className="font-display text-3xl">Diseño flexible</h3>
-                <p className="mt-4 text-lg text-orange-900">
-                  Inicia con una plantilla moderna, modifícala a tu gusto para
-                  crear algo original, justo como tú negocio.
-                </p>
-              </motion.div>
+                Inicia con una plantilla moderna, modifícala a tu gusto para
+                crear algo original, justo como tú negocio.
+              </HomeSectionText>
             </div>
-            <div>
+            <div className="md:order-first">
               <div className="relative h-[300px] overflow-hidden rounded-lg bg-gradient-to-b from-orange-300 to-red-500 shadow-lg shadow-red-400/50 md:h-[400px]">
                 <div className="absolute inset-x-0 bottom-[-6px] flex items-end justify-center">
                   <motion.div
@@ -257,32 +173,55 @@ const Home: NextPageWithAuthAndLayout = () => {
                 </div>
               </div>
             </div>
-          </section>
-          {/* Editor */}
-          <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
-            <div className="col-start-1 flex flex-col justify-center p-4 md:col-start-2">
+          </HomeSection>
+          {/* Online */}
+          <HomeSection>
+            <HomeSectionText eyebrow="Online" title="No requiere instalación">
+              Tu menú esta disponible para todos, no se requiere instalar alguna
+              app, puede verse desde tú teléfono, tablet o escritorio.
+            </HomeSectionText>
+            <div className="relative flex items-center">
               <motion.div
-                variants={text}
-                initial="initial"
-                whileInView="view"
+                initial={{ opacity: 0, x: 100, rotate: "6deg" }}
+                whileInView={{ opacity: 1, x: 0, rotate: "-3deg" }}
                 viewport={{
                   once: true,
-                  amount: "some"
+                  amount: "all"
                 }}
-                className="flex flex-col justify-center p-4 md:h-[400px]"
+                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-green-100 md:bottom-1/4 md:h-1/2"
+              ></motion.div>
+              <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-green-200 to-green-300 px-4 py-4 shadow-lg shadow-green-300/50">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{
+                    once: true,
+                    amount: "all"
+                  }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Image
+                    src="/devices.svg"
+                    alt="Icono de dispositivos"
+                    width={150}
+                    height={150}
+                    priority
+                  ></Image>
+                </motion.div>
+              </div>
+            </div>
+          </HomeSection>
+          {/* Editor */}
+          <HomeSection>
+            <div className="col-start-1 flex flex-col justify-center p-4 md:col-start-2">
+              <HomeSectionText
+                eyebrow="Editor Web"
+                title="Haz cambios al instante"
               >
-                <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
-                  Editor Web
-                </small>
-                <h3 className="font-display text-3xl">
-                  Haz cambios al instante
-                </h3>
-                <p className="mt-4 text-lg text-orange-900">
-                  Con una interfaz de arrastrar y soltar, es fácil realizar
-                  cambios a tu menú, no requieres habilidades técnicas y los
-                  resultados se pueden ver al instante.
-                </p>
-              </motion.div>
+                Con una interfaz de arrastrar y soltar, es fácil realizar
+                cambios a tu menú, no requieres habilidades técnicas y los
+                resultados se pueden ver al instante.
+              </HomeSectionText>
             </div>
             <div className="md:order-first">
               <motion.div
@@ -304,7 +243,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                 />
               </motion.div>
             </div>
-          </section>
+          </HomeSection>
         </div>
         <HomeFaq />
         <HomeBanner />
@@ -420,10 +359,12 @@ const HomeBanner = (): JSX.Element => {
 const HomeFaq = (): JSX.Element => {
   return (
     <div className="mx-auto mt-8 w-full max-w-5xl px-4 sm:w-[80ch] md:mt-16 lg:px-2 xl:px-0">
-      <small className="text-md font-semibold uppercase tracking-widest text-orange-600">
+      <small className="text-md mb-1 font-semibold uppercase tracking-widest text-orange-600">
         FAQ
       </small>
-      <h3 className="font-display text-3xl">Preguntas más frecuentes</h3>
+      <h3 className="font-display text-3xl md:text-4xl">
+        Preguntas más frecuentes
+      </h3>
       <Accordion.Root type="multiple" className="my-6 divide-y">
         {FAQ.map((item, index) => {
           return (
@@ -462,9 +403,43 @@ const FaqItem = ({ question, answer }): JSX.Element => {
 
 const HomeFooter = (): JSX.Element => {
   return (
-    <div className="m-8 flex w-full max-w-6xl justify-center text-gray-500 pb-safe">
-      <span>&copy; Biztro {new Date().getFullYear()}</span>
+    <div className="m-8 flex w-full max-w-5xl justify-between text-gray-500 pb-safe">
+      <div>
+        <span>&copy; Biztro {new Date().getFullYear()}</span>
+      </div>
+      <div>
+        <a href="mailto:hola@biztro.co">Contacto</a>
+      </div>
     </div>
+  )
+}
+
+const HomeSection = ({ children }): JSX.Element => {
+  return (
+    <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
+      {children}
+    </section>
+  )
+}
+
+const HomeSectionText = ({ eyebrow, title, children }): JSX.Element => {
+  return (
+    <motion.div
+      variants={text}
+      initial="initial"
+      whileInView="view"
+      viewport={{
+        once: true,
+        amount: "some"
+      }}
+      className="flex flex-col justify-center p-4 md:h-[400px]"
+    >
+      <small className="text-md mb-1 font-semibold uppercase tracking-widest text-orange-600">
+        {eyebrow}
+      </small>
+      <h3 className="font-display text-3xl md:text-4xl">{title}</h3>
+      <p className="mt-4 text-lg text-orange-900">{children}</p>
+    </motion.div>
   )
 }
 
