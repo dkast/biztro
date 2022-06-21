@@ -131,8 +131,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
             <Input
               name="title"
               placeholder="Nombre del producto"
-              register={register}
-              required
+              {...register("title", { required: true })}
               invalid={errors.title ? true : undefined}
             ></Input>
           </div>
@@ -149,8 +148,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
           <div className="sm:col-span-2">
             <TextArea
               name="description"
-              register={register}
-              required
+              {...register("description", { required: true })}
               invalid={errors.description ? true : undefined}
             ></TextArea>
           </div>
@@ -169,7 +167,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
               name="price"
               placeholder="0.00"
               step="0.01"
-              register={register}
+              {...register("price", { required: true })}
               invalid={errors.price ? true : undefined}
               type="number"
             ></Input>
@@ -188,7 +186,7 @@ const ItemForm = ({ itemId }: ItemFormProps): JSX.Element => {
             <Input
               name="extras"
               placeholder="Extras"
-              register={register}
+              {...register("extras")}
               invalid={errors.extras ? true : undefined}
             ></Input>
           </div>
