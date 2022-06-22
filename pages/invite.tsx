@@ -101,7 +101,8 @@ const Invite = () => {
                     Crea tú menú en minutos
                   </h2>
                   <p className="mt-2 text-lg text-gray-500">
-                    Prueba nuestro servicio gratis.
+                    Estamos en fase beta, durante este periodo el servicio no
+                    tiene ningún costo. Solicita tu acceso.
                   </p>
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="mt-8">
@@ -129,7 +130,7 @@ const Invite = () => {
                         <span className="mr-1 text-gray-500">
                           ¿Ya tienes una cuenta?
                         </span>
-                        <Link href="/app/auth/sign-in">
+                        <Link href="/app/dashboard">
                           <a className="text-violet-500 hover:text-violet-700">
                             Inicia sesión
                           </a>

@@ -70,7 +70,7 @@ const Home: NextPageWithAuthAndLayout = () => {
         <HomeMenu />
         <HomeHero />
         {/* Main */}
-        <div className="flex w-full flex-col justify-center gap-12 bg-gradient-to-br from-white via-gray-50 to-red-50 py-16 px-4 md:px-12 lg:gap-24 lg:p-32">
+        <div className="flex w-full flex-col justify-center gap-12 bg-gradient-to-b from-purple-900 to-slate-900 py-16 px-4 md:px-12 lg:gap-24 lg:p-32">
           {/* QR */}
           <HomeSection>
             <HomeSectionText eyebrow="Acceso por QR" title="Obtén tu Código QR">
@@ -86,7 +86,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "some"
                 }}
-                className="left-1/5 absolute bottom-0 h-full w-2/3 -rotate-6 rounded-lg bg-gradient-to-br from-purple-300 to-purple-400 shadow-lg shadow-purple-300/50 md:bottom-1/4 md:h-1/2"
+                className="left-1/5 absolute bottom-0 h-full w-2/3 -rotate-6 rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 shadow-lg shadow-purple-700/50 md:bottom-1/4 md:h-1/2"
               ></motion.div>
               <motion.div
                 initial={{ opacity: 0, scale: 0.4 }}
@@ -132,7 +132,7 @@ const Home: NextPageWithAuthAndLayout = () => {
               </HomeSectionText>
             </div>
             <div className="md:order-first">
-              <div className="relative h-[300px] overflow-hidden rounded-lg bg-gradient-to-b from-orange-300 to-red-500 shadow-lg shadow-red-400/50 md:h-[400px]">
+              <div className="relative h-[300px] overflow-hidden rounded-lg bg-gradient-to-b from-orange-300 to-red-500 shadow-lg shadow-red-700/50 md:h-[400px]">
                 <div className="absolute inset-x-0 bottom-[-6px] flex items-end justify-center">
                   <motion.div
                     initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -188,9 +188,9 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "all"
                 }}
-                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-green-100 md:bottom-1/4 md:h-1/2"
+                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-indigo-500/5 md:bottom-1/4 md:h-1/2"
               ></motion.div>
-              <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-green-200 to-green-300 px-4 py-4 shadow-lg shadow-green-300/50">
+              <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-green-200 to-green-300 px-4 py-4 shadow-lg shadow-green-600/50">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.5 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -232,7 +232,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   amount: "some"
                 }}
                 transition={{ duration: 0.7 }}
-                className="flex items-end justify-start overflow-hidden rounded-lg bg-gradient-to-b from-teal-200 to-cyan-300 shadow-lg shadow-cyan-400/50 md:h-[400px]"
+                className="flex items-end justify-start overflow-hidden rounded-lg bg-gradient-to-b from-teal-200 to-cyan-300 shadow-lg shadow-cyan-600/50 md:h-[400px]"
               >
                 <Image
                   src="/editor.png"
@@ -270,7 +270,7 @@ const HomeMenu = (): JSX.Element => {
 
 const HomeHero = (): JSX.Element => {
   return (
-    <div className="grid w-full max-w-6xl px-4 sm:grid-cols-2 lg:px-2 xl:px-0">
+    <div className="mb-16 grid w-full max-w-6xl px-4 sm:grid-cols-2 lg:px-2 xl:px-0">
       <div className="flex flex-col justify-center py-12 px-6 md:py-24 md:px-0">
         <h1 className="font-display text-4xl tracking-tight md:text-5xl lg:text-6xl">
           Tu menú digital en minutos
@@ -437,8 +437,8 @@ const HomeSectionText = ({ eyebrow, title, children }): JSX.Element => {
       <small className="text-md mb-1 font-semibold uppercase tracking-widest text-orange-600">
         {eyebrow}
       </small>
-      <h3 className="font-display text-3xl md:text-4xl">{title}</h3>
-      <p className="mt-4 text-lg text-orange-900">{children}</p>
+      <h3 className="font-display text-3xl text-white md:text-4xl">{title}</h3>
+      <p className="mt-4 text-lg text-violet-200">{children}</p>
     </motion.div>
   )
 }
