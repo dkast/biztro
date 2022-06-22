@@ -297,7 +297,7 @@ const HomeHero = (): JSX.Element => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute bottom-1/3 h-1/2 w-2/3 rotate-6 rounded-2xl bg-orange-100"
+          className="absolute bottom-1/3 h-1/2 w-full rotate-6 rounded-2xl bg-orange-100 sm:w-2/3"
         ></motion.div>
         <motion.div
           initial={{ opacity: 0, y: 100 }}
@@ -321,7 +321,7 @@ const HomeHero = (): JSX.Element => {
           transition={{
             delay: 2
           }}
-          className="absolute bottom-6 left-6 rounded-2xl bg-white p-2 shadow-lg"
+          className="absolute bottom-6 left-6 hidden rounded-2xl bg-white p-2 shadow-lg sm:block"
         >
           <QRCode value="https://biztro.co/menu" />
         </motion.div>
@@ -403,7 +403,7 @@ const FaqItem = ({ question, answer }): JSX.Element => {
 
 const HomeFooter = (): JSX.Element => {
   return (
-    <div className="m-8 flex w-full max-w-5xl justify-between text-gray-500 pb-safe">
+    <div className="m-8 flex w-full max-w-5xl justify-between px-4 text-gray-500 pb-safe md:px-0">
       <div>
         <span>&copy; Biztro {new Date().getFullYear()}</span>
       </div>
