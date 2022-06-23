@@ -349,8 +349,8 @@ const PublishPanel = ({ siteId }: PublishPanelProps): JSX.Element => {
   const [copy, setCopy] = useState(false)
   return (
     <div className="overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-      <div className="flex flex-col gap-4 divide-y divide-solid px-2 py-3 sm:p-4">
-        <div className="flex items-center justify-center gap-4">
+      <div className="flex flex-col">
+        <div className="flex items-center justify-center gap-4 px-2 pt-3 sm:p-4">
           <span className="select-all text-xs">{`${host}/${siteId}`}</span>
           <Link href={`/${siteId}`} passHref>
             <a
@@ -362,14 +362,14 @@ const PublishPanel = ({ siteId }: PublishPanelProps): JSX.Element => {
             </a>
           </Link>
         </div>
-        <div className="pt-2">
+        <div className="bg-gray-100 p-3">
           <CopyToClipboard
             text={`${host}/${siteId}`}
             onCopy={() => setCopy(true)}
           >
             <Button
               type="button"
-              variant="flat"
+              variant="secondary"
               mode="full"
               size="xs"
               leftIcon={!copy && <DuplicateIcon className="h-4 w-4" />}

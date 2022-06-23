@@ -50,10 +50,10 @@ const SidePanel = ({
               <div className="pointer-events-auto w-screen max-w-2xl">
                 <div className="flex h-full flex-col bg-white shadow-xl">
                   {/* Header */}
-                  <div className="bg-gray-100 px-4 py-6 sm:px-6">
+                  <div className="px-4 py-6 sm:px-6">
                     <div className="flex items-start justify-between space-x-3">
                       <div className="space-y-1">
-                        <Dialog.Title className="text-lg font-medium text-gray-900">
+                        <Dialog.Title className="text-xl font-medium text-gray-900">
                           {title}
                         </Dialog.Title>
                         <p className="text-sm text-gray-500">{subtitle}</p>
