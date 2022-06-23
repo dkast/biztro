@@ -51,7 +51,6 @@ const Site: NextPage<IndexProps> = ({
     let node = data[el]
     let { displayName } = node
     if (displayName === "Sitio") {
-      console.dir(data[el])
       backgroundColor = data[el]?.props?.background
     }
   })

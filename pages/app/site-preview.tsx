@@ -16,12 +16,24 @@ import { NextPageWithAuthAndLayout } from "@/lib/types"
 const SitePreview: NextPageWithAuthAndLayout = () => {
   const { data: session } = useSession()
   const sessionId = session?.user?.id
+  let backgroundColor: Record<"r" | "g" | "b" | "a", number>
 
   const { site, isLoading } = useSite(sessionId)
   let json = undefined
 
   if (site?.serialData) {
     json = lz.decompress(lz.decodeBase64(site.serialData))
+
+    // Search container style (color)
+    const data = JSON.parse(json)
+    let keys = Object.keys(data)
+    keys.forEach(el => {
+      let node = data[el]
+      let { displayName } = node
+      if (displayName === "Sitio") {
+        backgroundColor = data[el]?.props?.background
+      }
+    })
   }
 
   if (isLoading) {
@@ -36,17 +48,21 @@ const SitePreview: NextPageWithAuthAndLayout = () => {
       <Head>
         <title>Biztro - Vista Previa</title>
       </Head>
-      <div className="flex flex-col">
-        <div className="relative grow h-screen-safe sm:h-screen">
-          <div className="absolute inset-0 overflow-auto pb-4">
-            <Editor
-              resolver={{ Container, Text, MenuItem, MenuBanner }}
-              enabled={false}
-            >
-              <Frame data={json} />
-            </Editor>
-          </div>
-        </div>
+      <div className="bg-zinc-900 py-2 text-center text-zinc-300">
+        <span>Vista Previa</span>
+      </div>
+      <div
+        className="relative grow overflow-auto h-screen-safe sm:h-screen"
+        style={{
+          backgroundColor: `rgba(${Object.values(backgroundColor)})`
+        }}
+      >
+        <Editor
+          resolver={{ Container, Text, MenuItem, MenuBanner }}
+          enabled={false}
+        >
+          <Frame data={json} />
+        </Editor>
       </div>
     </>
   )

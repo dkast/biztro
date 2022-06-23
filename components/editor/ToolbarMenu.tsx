@@ -324,8 +324,14 @@ const QRPreview = (): JSX.Element => {
       <div className="flex flex-col items-center justify-center">
         <span className="my-2 text-gray-500">
           Escanea con la cámara de tu móvil o aplicación QR o sigue{" "}
-          <Link href="/app/site-preview">
-            <a className="text-violet-500 hover:text-violet-700">esta liga.</a>
+          <Link href="/app/site-preview" passHref>
+            <a
+              className="text-violet-500 hover:text-violet-700"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              esta liga.
+            </a>
           </Link>
         </span>
         <QRCode value={`${host}/app/site-preview`} />
