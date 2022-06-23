@@ -1,5 +1,5 @@
 const title = "Biztro"
-const description = "Tu slogan va aqui."
+const description = "Crea tu menú digital en minutos."
 
 const SEO = {
   title,
@@ -10,7 +10,15 @@ const SEO = {
     locale: "es_MX",
     url: "https://biztro.co",
     title,
-    description
+    description,
+    images: [
+      {
+        url: "https://biztro.co/og-image.jpg",
+        width: 1230,
+        height: 630,
+        alt: "Biztro"
+      }
+    ]
   },
   twitter: {
     cardType: "summary_large_image"
