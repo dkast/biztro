@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
-    async signIn({ email, user }) {
+    async signIn({ user }) {
       const found = await prisma.invite.count({
         where: {
           email: user.email

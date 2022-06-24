@@ -45,10 +45,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
   const [submitted, setSubmitted] = useState(false)
   const { data: session } = useSession()
   const sessionId = session?.user?.id
-  const { data: site, isValidating } = useSWR<Site>(
-    sessionId && "/api/site",
-    fetcher
-  )
+  const { data: site } = useSWR<Site>(sessionId && "/api/site", fetcher)
 
   const [logoImage, setLogoImage] = useState<ImageInfo>(null)
   const [bannerImage, setBannerImage] = useState<ImageInfo>(null)

@@ -46,10 +46,10 @@ const Site: NextPage<IndexProps> = ({
 
   // Search container style (color)
   const data = JSON.parse(json)
-  let keys = Object.keys(data)
+  const keys = Object.keys(data)
   keys.forEach(el => {
-    let node = data[el]
-    let { displayName } = node
+    const node = data[el]
+    const { displayName } = node
     if (displayName === "Sitio") {
       backgroundColor = data[el]?.props?.background
     }
