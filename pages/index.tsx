@@ -70,7 +70,7 @@ const Home: NextPageWithAuthAndLayout = () => {
         <HomeMenu />
         <HomeHero />
         {/* Main */}
-        <div className="flex w-full flex-col justify-center gap-12 bg-gradient-to-b from-purple-900 to-slate-900 py-16 px-4 md:px-12 lg:gap-24 lg:p-32">
+        <div className="flex w-full flex-col justify-center gap-8 bg-gradient-to-b from-purple-900 to-slate-900 py-12 px-4 md:gap-24 md:px-12 lg:p-24">
           {/* QR */}
           <HomeSection>
             <HomeSectionText eyebrow="Acceso por QR" title="Obtén tu Código QR">
@@ -95,6 +95,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "all"
                 }}
+                transition={{ duration: 0.7 }}
                 className="z-10 rounded-xl bg-white p-2 shadow-xl"
               >
                 <QRCode
@@ -188,9 +189,9 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "all"
                 }}
-                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-indigo-500/5 md:bottom-1/4 md:h-1/2"
+                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-emerald-500/25 md:bottom-1/4 md:h-1/2"
               ></motion.div>
-              <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-green-200 to-green-300 px-4 py-4 shadow-lg shadow-green-600/50">
+              <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-emerald-300 to-emerald-400 px-4 py-4 shadow-lg shadow-emerald-600/50">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.5 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -416,7 +417,7 @@ const HomeFooter = (): JSX.Element => {
 
 const HomeSection = ({ children }): JSX.Element => {
   return (
-    <section className="mx-auto grid w-full max-w-6xl gap-4 px-2 md:grid-cols-2 lg:px-0">
+    <section className="mx-auto grid w-full max-w-6xl gap-12 px-2 md:grid-cols-2 lg:px-0">
       {children}
     </section>
   )
