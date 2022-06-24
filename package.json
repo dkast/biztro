@@ -45,6 +45,7 @@
     "next": "12.1.6",
     "next-absolute-url": "^1.2.2",
     "next-auth": "^4.5.0",
+    "next-axiom": "^0.8.0",
     "next-seo": "^5.4.0",
     "plaiceholder": "^2.4.0",
     "postmark": "^3.0.11",
