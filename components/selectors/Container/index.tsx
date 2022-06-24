@@ -1,5 +1,5 @@
 import React from "react"
-import { useEditor, useNode, UserComponent } from "@craftjs/core"
+import { useNode, UserComponent } from "@craftjs/core"
 
 import ContainerSettings from "@/components/selectors/Container/ContainerSettings"
 

@@ -4,7 +4,6 @@ import React, { useEffect } from "react"
 import { useRecoilState } from "recoil"
 import { useEditor } from "@craftjs/core"
 import { useSession } from "next-auth/react"
-import { isSameMinute } from "date-fns"
 import { InformationCircleIcon } from "@heroicons/react/solid"
 
 import Alert from "@/components/Alert"

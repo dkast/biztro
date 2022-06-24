@@ -88,7 +88,6 @@ const ToolbarMenu = () => {
       actions.history.clear()
     } else {
       toast.error("Algo salió mal", { id: toastId })
-      console.dir(res)
     }
   }
 
