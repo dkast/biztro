@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const { withAxiom } = require("next-axiom")
+
+const nextConfig = withAxiom({
   reactStrictMode: true,
   images: {
     domains: [
@@ -8,6 +10,6 @@ const nextConfig = {
       "res.cloudinary.com"
     ]
   }
-}
+})
 
 module.exports = nextConfig

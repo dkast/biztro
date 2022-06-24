@@ -15,6 +15,8 @@ type AppPropsWithAuthAndLayout = AppProps & {
   Component: NextPageWithAuthAndLayout
 }
 
+export { reportWebVitals } from "next-axiom"
+
 function MyApp({
   Component,
   pageProps: { session, ...pageProps }
