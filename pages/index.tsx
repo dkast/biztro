@@ -7,6 +7,7 @@ import { QRCode } from "react-qrcode-logo"
 import { ChevronRightIcon } from "@heroicons/react/solid"
 import { motion } from "framer-motion"
 import Spline from "@splinetool/react-spline"
+import { BrowserView, MobileView } from "react-device-detect"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 import { ArrowSmRightIcon, ChevronDownIcon } from "@heroicons/react/outline"
@@ -276,10 +277,22 @@ const HomeHero = (): JSX.Element => {
   return (
     <div className="mb-16 w-full max-w-6xl px-4 lg:px-2 xl:px-0">
       <div className="relative min-h-[600px]">
-        <Spline
-          className="absolute top-0 right-0 translate-x-60 scale-125 md:scale-100 lg:translate-x-0"
-          scene="https://prod.spline.design/gPnbrzsH-C0FmGbG/scene.splinecode"
-        />
+        <BrowserView>
+          <Spline
+            className="absolute top-0 right-0 translate-x-60 scale-125 md:scale-100 lg:translate-x-0"
+            scene="https://prod.spline.design/gPnbrzsH-C0FmGbG/scene.splinecode"
+          />
+        </BrowserView>
+        <MobileView>
+          <div className="absolute top-0 right-0 translate-x-16 translate-y-32 scale-125 sm:translate-y-0 sm:translate-x-60 md:scale-100">
+            <Image
+              src="/biztro-hero.png"
+              alt="Imagen aplicación"
+              width={800}
+              height={600}
+            />
+          </div>
+        </MobileView>
         <div className="absolute top-0 left-0 mt-8 w-full sm:mt-32 sm:w-1/2">
           <h1 className="font-display text-4xl tracking-tight text-white md:text-5xl lg:text-6xl">
             Tu menú digital en minutos
