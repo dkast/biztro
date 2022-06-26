@@ -277,17 +277,17 @@ const HomeHero = (): JSX.Element => {
     <div className="mb-16 w-full max-w-6xl px-4 lg:px-2 xl:px-0">
       <div className="relative min-h-[600px]">
         <Spline
-          className="absolute top-0 right-0 translate-x-72 lg:translate-x-0"
+          className="absolute top-0 right-0 translate-x-60 scale-125 md:scale-100 lg:translate-x-0"
           scene="https://prod.spline.design/gPnbrzsH-C0FmGbG/scene.splinecode"
         />
-        <div className="absolute top-0 left-0 mt-32 w-1/2">
+        <div className="absolute top-0 left-0 mt-8 w-full sm:mt-32 sm:w-1/2">
           <h1 className="font-display text-4xl tracking-tight text-white md:text-5xl lg:text-6xl">
             Tu menú digital en minutos
           </h1>
           <h2 className="py-6 text-xl text-orange-100 md:py-8 md:text-2xl lg:text-xl lg:leading-6">
             Crea tu menú digital y QR, compartelo con tus clientes.
           </h2>
-          <div className="flex flex-col justify-center gap-4 md:flex-row">
+          <div className="mt-52 flex flex-col justify-center gap-4 md:m-0 md:flex-row">
             <Link href="/invite">
               <a className="flex items-center rounded-lg bg-gradient-to-tl from-red-500 to-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600">
                 Crea tu menú
