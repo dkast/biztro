@@ -6,6 +6,7 @@ import * as Accordion from "@radix-ui/react-accordion"
 import { QRCode } from "react-qrcode-logo"
 import { ChevronRightIcon } from "@heroicons/react/solid"
 import { motion } from "framer-motion"
+import Spline from "@splinetool/react-spline"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 import { ArrowSmRightIcon, ChevronDownIcon } from "@heroicons/react/outline"
@@ -67,10 +68,12 @@ const Home: NextPageWithAuthAndLayout = () => {
         ></meta>
       </Head>
       <div className="flex flex-col items-center overflow-y-auto overflow-x-hidden h-screen-safe sm:h-screen">
-        <HomeMenu />
-        <HomeHero />
+        <div className="flex w-full flex-col items-center bg-violet-900">
+          <HomeMenu />
+          <HomeHero />
+        </div>
         {/* Main */}
-        <div className="flex w-full flex-col justify-center gap-8 bg-gradient-to-b from-purple-900 to-slate-900 py-12 px-4 md:gap-24 md:px-12 lg:p-24">
+        <div className="flex w-full flex-col justify-center gap-8 bg-gradient-to-br from-gray-100 to-red-100 py-12 px-4 md:gap-24 md:px-12 lg:p-16">
           {/* QR */}
           <HomeSection>
             <HomeSectionText eyebrow="Acceso por QR" title="Obtén tu Código QR">
@@ -189,9 +192,9 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "all"
                 }}
-                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-emerald-500/25 md:bottom-1/4 md:h-1/2"
+                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-emerald-300/25 md:bottom-1/4 md:h-1/2"
               ></motion.div>
-              <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-emerald-300 to-emerald-400 px-4 py-4 shadow-lg shadow-emerald-600/50">
+              <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-emerald-200 to-emerald-300 px-4 py-4 shadow-lg shadow-emerald-500/50">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.5 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -261,7 +264,7 @@ const HomeMenu = (): JSX.Element => {
       <Toolbar.Root className="ml-auto">
         <Toolbar.Button>
           <Link href="/app/dashboard">
-            <a className="hover:text-violet-600">Iniciar sesión</a>
+            <a className="text-white hover:text-violet-300">Iniciar sesión</a>
           </Link>
         </Toolbar.Button>
       </Toolbar.Root>
@@ -271,61 +274,33 @@ const HomeMenu = (): JSX.Element => {
 
 const HomeHero = (): JSX.Element => {
   return (
-    <div className="mb-16 grid w-full max-w-6xl px-4 sm:grid-cols-2 lg:px-2 xl:px-0">
-      <div className="flex flex-col justify-center py-12 px-6 md:py-24 md:px-0">
-        <h1 className="font-display text-4xl tracking-tight md:text-5xl lg:text-6xl">
-          Tu menú digital en minutos
-        </h1>
-        <h2 className="py-6 text-xl text-gray-600 md:py-8 md:text-2xl lg:text-xl lg:leading-6">
-          Crea tu menú digital y QR, compartelo con tus clientes.
-        </h2>
-        {/* CTA */}
-        <div className="flex flex-col justify-center gap-4 md:flex-row">
-          <Link href="/invite">
-            <a className="flex items-center rounded-lg bg-gradient-to-tl from-red-500 to-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600">
-              Crea tu menú
-              <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
-            </a>
-          </Link>
-          <Link href="/menu">
-            <a className="rounded-lg border border-orange-500 px-4 py-3 text-orange-600 transition hover:scale-[98%] hover:bg-orange-50">
-              Ver un Ejemplo
-            </a>
-          </Link>
+    <div className="mb-16 w-full max-w-6xl px-4 lg:px-2 xl:px-0">
+      <div className="relative min-h-[600px]">
+        <Spline
+          className="absolute top-0 right-0 translate-x-72 lg:translate-x-0"
+          scene="https://prod.spline.design/gPnbrzsH-C0FmGbG/scene.splinecode"
+        />
+        <div className="absolute top-0 left-0 mt-32 w-1/2">
+          <h1 className="font-display text-4xl tracking-tight text-white md:text-5xl lg:text-6xl">
+            Tu menú digital en minutos
+          </h1>
+          <h2 className="py-6 text-xl text-orange-100 md:py-8 md:text-2xl lg:text-xl lg:leading-6">
+            Crea tu menú digital y QR, compartelo con tus clientes.
+          </h2>
+          <div className="flex flex-col justify-center gap-4 md:flex-row">
+            <Link href="/invite">
+              <a className="flex items-center rounded-lg bg-gradient-to-tl from-red-500 to-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600">
+                Crea tu menú
+                <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
+              </a>
+            </Link>
+            <Link href="/menu">
+              <a className="rounded-lg border border-orange-500 bg-orange-500/25 px-4 py-3 text-orange-100 backdrop-blur-md transition hover:scale-[98%] hover:bg-orange-500">
+                Ver un Ejemplo
+              </a>
+            </Link>
+          </div>
         </div>
-      </div>
-      <div className="relative flex justify-end">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute bottom-1/3 h-1/2 w-full rotate-6 rounded-2xl bg-orange-100 sm:w-2/3"
-        ></motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: 1,
-            y: { type: "spring", stiffness: 100 },
-            default: { duration: 1 }
-          }}
-        >
-          <Image
-            src="/iphone-hero.png"
-            alt="Menu en telefono movil"
-            width={479}
-            height={721}
-          ></Image>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.6 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{
-            delay: 2
-          }}
-          className="absolute bottom-6 left-6 hidden rounded-2xl bg-white p-2 shadow-lg sm:block"
-        >
-          <QRCode value="https://biztro.co/menu" />
-        </motion.div>
       </div>
     </div>
   )
@@ -438,8 +413,10 @@ const HomeSectionText = ({ eyebrow, title, children }): JSX.Element => {
       <small className="text-md mb-1 font-semibold uppercase tracking-widest text-orange-600">
         {eyebrow}
       </small>
-      <h3 className="font-display text-3xl text-white md:text-4xl">{title}</h3>
-      <p className="mt-4 text-lg text-violet-200">{children}</p>
+      <h3 className="font-display text-3xl text-gray-900 md:text-4xl">
+        {title}
+      </h3>
+      <p className="mt-4 text-lg text-orange-900">{children}</p>
     </motion.div>
   )
 }
