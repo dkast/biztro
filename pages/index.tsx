@@ -10,7 +10,11 @@ import Spline from "@splinetool/react-spline"
 import { BrowserView, MobileView } from "react-device-detect"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
-import { ArrowSmRightIcon, ChevronDownIcon } from "@heroicons/react/outline"
+import {
+  ArrowSmRightIcon,
+  BadgeCheckIcon,
+  ChevronDownIcon
+} from "@heroicons/react/outline"
 
 const FAQ = [
   {
@@ -245,6 +249,7 @@ const Home: NextPageWithAuthAndLayout = () => {
             </div>
           </HomeSection>
         </div>
+        <HomeBenefit />
         <HomeFaq />
         <HomeBanner />
         <HomeFooter />
@@ -431,6 +436,29 @@ const HomeSectionText = ({ eyebrow, title, children }): JSX.Element => {
       </h3>
       <p className="mt-4 text-lg text-orange-900">{children}</p>
     </motion.div>
+  )
+}
+
+const HomeBenefit = (): JSX.Element => {
+  return (
+    <div className="mx-auto my-12 w-full max-w-6xl">
+      <h3 className="font-display text-3xl md:text-4xl">Beneficios</h3>
+      <div className="mt-8 grid grid-cols-3">
+        <div className="flex flex-col gap-2">
+          <div>
+            <BadgeCheckIcon className="h-12 w-12 rounded-full bg-orange-200 p-1 text-orange-700" />
+          </div>
+          <p className="text-lg font-semibold text-orange-600">
+            Comparte en tus redes sociales
+          </p>
+          <span className="text-gray-500">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad,
+            nostrum. Laudantium explicabo atque dolorum nesciunt itaque
+            consectetur ut.
+          </span>
+        </div>
+      </div>
+    </div>
   )
 }
 
