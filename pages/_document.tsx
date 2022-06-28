@@ -30,6 +30,10 @@ class MyDocument extends Document {
           <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#f84e32" />
           <meta name="msapplication-TileColor" content="#603cba" />
           <meta name="theme-color" content="#ffffff" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+          />
         </Head>
         <body className="h-full overflow-hidden">
           <Main />
