@@ -6,8 +6,8 @@ import * as Accordion from "@radix-ui/react-accordion"
 import { QRCode } from "react-qrcode-logo"
 import { ChevronRightIcon } from "@heroicons/react/solid"
 import { motion } from "framer-motion"
-// import Spline from "@splinetool/react-spline"
-// import { BrowserView, MobileView } from "react-device-detect"
+import Spline from "@splinetool/react-spline"
+import { BrowserView, MobileView } from "react-device-detect"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 import { ArrowSmRightIcon, ChevronDownIcon } from "@heroicons/react/outline"
@@ -62,13 +62,8 @@ const Home: NextPageWithAuthAndLayout = () => {
     <>
       <Head>
         <title>Biztro</title>
-        <link rel="icon" href="/favicon.ico" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0"
-        ></meta>
       </Head>
-      <div className="flex h-screen flex-col items-center overflow-y-auto overflow-x-hidden pb-safe">
+      <div className="flex h-screen flex-col items-center overflow-y-auto overflow-x-hidden">
         <div className="flex w-full flex-col items-center bg-violet-900">
           <HomeMenu />
           <HomeHero />
@@ -277,28 +272,27 @@ const HomeHero = (): JSX.Element => {
   return (
     <div className="mb-16 w-full max-w-6xl px-4 lg:px-2 xl:px-0">
       <div className="relative min-h-[600px]">
-        {/* TODO: Find how to fix performance, until then, disable */}
-        {/* <BrowserView>
+        <BrowserView>
           <Spline
             className="absolute top-0 right-0 translate-x-60 scale-125 md:scale-100 lg:translate-x-0"
-            scene="https://prod.spline.design/gPnbrzsH-C0FmGbG/scene.splinecode"
+            scene="https://prod.spline.design/45sQS3DmiIWkyCeK/scene.splinecode"
           />
-        </BrowserView> */}
-        {/* <MobileView> */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="absolute top-0 right-0 translate-x-16 translate-y-32 scale-125 sm:translate-y-0 md:scale-100"
-        >
-          <Image
-            src="/biztro-hero.png"
-            alt="Imagen aplicación"
-            width={800}
-            height={600}
-          />
-        </motion.div>
-        {/* </MobileView> */}
+        </BrowserView>
+        <MobileView>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            className="absolute top-0 right-0 translate-x-16 translate-y-32 scale-125 sm:translate-y-0 md:scale-100"
+          >
+            <Image
+              src="/biztro-hero.png"
+              alt="Imagen aplicación"
+              width={800}
+              height={600}
+            />
+          </motion.div>
+        </MobileView>
         <div className="absolute top-0 left-0 mt-8 w-full sm:mt-32 sm:w-1/2">
           <h1 className="font-display text-4xl tracking-tight text-white md:text-5xl lg:text-6xl">
             Tu menú digital en minutos
