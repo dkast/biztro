@@ -6,14 +6,19 @@ import * as Accordion from "@radix-ui/react-accordion"
 import { QRCode } from "react-qrcode-logo"
 import { ChevronRightIcon } from "@heroicons/react/solid"
 import { motion } from "framer-motion"
-import Spline from "@splinetool/react-spline"
-import { BrowserView, MobileView } from "react-device-detect"
+// import Spline from "@splinetool/react-spline"
+// import { BrowserView, MobileView } from "react-device-detect"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 import {
   ArrowSmRightIcon,
   BadgeCheckIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  CurrencyDollarIcon,
+  AtSymbolIcon,
+  BanIcon,
+  CollectionIcon,
+  QrcodeIcon
 } from "@heroicons/react/outline"
 
 const FAQ = [
@@ -44,6 +49,62 @@ const FAQ = [
     answer: `En tu dispositivo con Android o iOS puedes simplemente abrir la aplicación de la cámara y escanear tu código QR. 
       Después de esto, el menú se desplegará en tu navegador, como lo hace una página web normal. No necesitas 
       descargar una aplicación para leer el código QR de tu menú.`
+  }
+]
+
+const BENEFITS = [
+  {
+    title: "Comparte en tus Redes Sociales",
+    icon: (
+      <AtSymbolIcon className="h-12 w-12 rounded-full bg-purple-200 p-2 text-purple-700" />
+    ),
+    description: `Diseñado especialmente para dispositivos móviles, puedes compartir la liga a tu menú en tus redes sociales.`,
+    soon: false
+  },
+  {
+    title: "Menú actualizado",
+    icon: (
+      <BadgeCheckIcon className="h-12 w-12 rounded-full bg-purple-200 p-2 text-purple-700" />
+    ),
+    description: `A diferencia de una imagen o un PDF, puedes hacer cambios a tú menú en minutos. 
+      Mantén tu menú siempre actualizado.`,
+    soon: false
+  },
+  {
+    title: "Sin contratos",
+    icon: (
+      <BanIcon className="h-12 w-12 rounded-full bg-purple-200 p-2 text-purple-700" />
+    ),
+    description: `Puedes usar el servicio el tiempo que lo necesites y cancelar en cualquier momento, sin restricciones 
+      o penalizaciones.`,
+    soon: false
+  },
+  {
+    title: "Ofertas y Promociones",
+    icon: (
+      <CurrencyDollarIcon className="h-12 w-12 rounded-full bg-purple-200 p-2 text-purple-700" />
+    ),
+    description:
+      "Muestra las promociones directamente en tú menú de forma dinámica y atractiva.",
+    soon: true
+  },
+  {
+    title: "Multiples menús",
+    icon: (
+      <CollectionIcon className="h-12 w-12 rounded-full bg-purple-200 p-2 text-purple-700" />
+    ),
+    description:
+      "Crea diferentes menús, prueba otro estilo o menú de temporada.",
+    soon: true
+  },
+  {
+    title: "Personaliza tu código QR",
+    icon: (
+      <QrcodeIcon className="h-12 w-12 rounded-full bg-purple-200 p-2 text-purple-700" />
+    ),
+    description:
+      "Agrega tu logo, personaliza sus colores y adapta tu código QR para reflejar mejor la imágen de tu negocio.",
+    soon: true
   }
 ]
 
@@ -277,27 +338,28 @@ const HomeHero = (): JSX.Element => {
   return (
     <div className="mb-16 w-full max-w-6xl px-4 lg:px-2 xl:px-0">
       <div className="relative min-h-[600px]">
-        <BrowserView>
+        {/* Disabled, we're not ready yet for 3D mainstream */}
+        {/* <BrowserView>
           <Spline
             className="absolute top-0 right-0 translate-x-60 scale-125 md:scale-100 lg:translate-x-0"
             scene="https://prod.spline.design/45sQS3DmiIWkyCeK/scene.splinecode"
           />
-        </BrowserView>
-        <MobileView>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="absolute top-0 right-0 translate-x-16 translate-y-32 scale-125 sm:translate-y-0 md:scale-100"
-          >
-            <Image
-              src="/biztro-hero.png"
-              alt="Imagen aplicación"
-              width={800}
-              height={600}
-            />
-          </motion.div>
-        </MobileView>
+        </BrowserView> */}
+        {/* <MobileView> */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="absolute top-0 right-0 translate-x-16 translate-y-32 scale-125 sm:translate-y-0 md:scale-100"
+        >
+          <Image
+            src="/biztro-hero.png"
+            alt="Imagen aplicación"
+            width={800}
+            height={600}
+          />
+        </motion.div>
+        {/* </MobileView> */}
         <div className="absolute top-0 left-0 mt-8 w-full sm:mt-32 sm:w-1/2">
           <h1 className="font-display text-4xl tracking-tight text-white md:text-5xl lg:text-6xl">
             Tu menú digital en minutos
@@ -370,6 +432,17 @@ const HomeFaq = (): JSX.Element => {
           )
         })}
       </Accordion.Root>
+      <div>
+        <p className="text-center text-lg font-semibold">
+          ¿Tienes alguna otra duda?{" "}
+          <a
+            href="mailto:hola@biztro.co"
+            className="text-purple-600 hover:text-purple-500"
+          >
+            Contáctanos.
+          </a>
+        </p>
+      </div>
     </div>
   )
 }
@@ -389,7 +462,7 @@ const FaqItem = ({ question, answer }): JSX.Element => {
         </button>
       </Accordion.Trigger>
       <Accordion.Content asChild>
-        <span className="block py-4 px-2 text-gray-500">{answer}</span>
+        <span className="block py-4 px-2 text-gray-600">{answer}</span>
       </Accordion.Content>
     </Accordion.Item>
   )
@@ -441,23 +514,43 @@ const HomeSectionText = ({ eyebrow, title, children }): JSX.Element => {
 
 const HomeBenefit = (): JSX.Element => {
   return (
-    <div className="mx-auto my-12 w-full max-w-6xl">
-      <h3 className="font-display text-3xl md:text-4xl">Beneficios</h3>
-      <div className="mt-8 grid grid-cols-3">
-        <div className="flex flex-col gap-2">
-          <div>
-            <BadgeCheckIcon className="h-12 w-12 rounded-full bg-orange-200 p-1 text-orange-700" />
-          </div>
-          <p className="text-lg font-semibold text-orange-600">
-            Comparte en tus redes sociales
-          </p>
-          <span className="text-gray-500">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad,
-            nostrum. Laudantium explicabo atque dolorum nesciunt itaque
-            consectetur ut.
-          </span>
-        </div>
+    <div className="mx-auto my-12 w-full max-w-6xl px-4 lg:px-2 xl:px-0">
+      <small className="text-md mb-1 font-semibold uppercase tracking-widest text-orange-600">
+        Porque Biztro
+      </small>
+      <h3 className="font-display text-3xl text-gray-900 md:text-4xl">
+        Obtén los beneficions de tú menu en digital
+      </h3>
+      <div className="mt-12 grid grid-cols-2 gap-y-8 gap-x-4 md:grid-cols-3">
+        {BENEFITS.map((item, index) => {
+          return (
+            <BenefitItem
+              key={index}
+              title={item.title}
+              icon={item.icon}
+              description={item.description}
+              soon={item.soon}
+            />
+          )
+        })}
       </div>
+    </div>
+  )
+}
+
+const BenefitItem = ({ icon, title, description, soon }): JSX.Element => {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="mb-2">{icon}</div>
+      <p className="text-lg font-semibold text-orange-600">
+        {title}
+        {soon && (
+          <span className="ml-3 rounded-full bg-purple-100 py-1 px-2 text-xs uppercase tracking-wide text-purple-400">
+            Pronto
+          </span>
+        )}
+      </p>
+      <span className="text-gray-600">{description}</span>
     </div>
   )
 }
