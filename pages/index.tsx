@@ -521,7 +521,7 @@ const HomeBenefit = (): JSX.Element => {
       <h3 className="font-display text-3xl text-gray-900 md:text-4xl">
         Obtén los beneficions de tú menu en digital
       </h3>
-      <div className="mt-12 grid grid-cols-2 gap-y-8 gap-x-4 md:grid-cols-3">
+      <div className="mt-12 grid gap-y-8 gap-x-4 sm:grid-cols-2 md:grid-cols-3">
         {BENEFITS.map((item, index) => {
           return (
             <BenefitItem
