@@ -1,7 +1,6 @@
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
-import * as Toolbar from "@radix-ui/react-toolbar"
 import * as Accordion from "@radix-ui/react-accordion"
 import { QRCode } from "react-qrcode-logo"
 import { ChevronRightIcon } from "@heroicons/react/solid"
@@ -9,7 +8,8 @@ import { motion } from "framer-motion"
 // import Spline from "@splinetool/react-spline"
 // import { BrowserView, MobileView } from "react-device-detect"
 
-import type { NextPageWithAuthAndLayout } from "@/lib/types"
+import Footer from "@/components/marketing/Footer"
+import MainMenu from "@/components/marketing/MainMenu"
 import {
   ArrowSmRightIcon,
   BadgeCheckIcon,
@@ -20,6 +20,8 @@ import {
   CollectionIcon,
   QrcodeIcon
 } from "@heroicons/react/outline"
+
+import type { NextPageWithAuthAndLayout } from "@/lib/types"
 
 const FAQ = [
   {
@@ -130,7 +132,7 @@ const Home: NextPageWithAuthAndLayout = () => {
       </Head>
       <div className="flex h-screen flex-col items-center overflow-y-auto overflow-x-hidden">
         <div className="flex w-full flex-col items-center bg-violet-900">
-          <HomeMenu />
+          <MainMenu variant="dark" />
           <HomeHero />
         </div>
         {/* Main */}
@@ -313,24 +315,9 @@ const Home: NextPageWithAuthAndLayout = () => {
         <HomeBenefit />
         <HomeFaq />
         <HomeBanner />
-        <HomeFooter />
+        <Footer />
       </div>
     </>
-  )
-}
-
-const HomeMenu = (): JSX.Element => {
-  return (
-    <div className="mt-2 flex w-full max-w-6xl items-center py-2 px-4 lg:px-2 xl:px-0">
-      <Image src="/logo-bistro.svg" alt="Logo" width={40} height={40} />
-      <Toolbar.Root className="ml-auto">
-        <Toolbar.Button>
-          <Link href="/app/dashboard">
-            <a className="text-white hover:text-violet-300">Iniciar sesión</a>
-          </Link>
-        </Toolbar.Button>
-      </Toolbar.Root>
-    </div>
   )
 }
 
@@ -465,19 +452,6 @@ const FaqItem = ({ question, answer }): JSX.Element => {
         <span className="block py-4 px-2 text-gray-600">{answer}</span>
       </Accordion.Content>
     </Accordion.Item>
-  )
-}
-
-const HomeFooter = (): JSX.Element => {
-  return (
-    <div className="m-8 flex w-full max-w-5xl justify-between px-4 text-gray-500 pb-safe md:px-0">
-      <div>
-        <span>&copy; Biztro {new Date().getFullYear()}</span>
-      </div>
-      <div>
-        <a href="mailto:hola@biztro.co">Contacto</a>
-      </div>
-    </div>
   )
 }
 

@@ -11,6 +11,7 @@ import SEO from "next-seo-config"
 import ConfirmModal from "@/components/ConfirmModal"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
+import BlogLayout from "@/components/layouts/BlogLayout"
 
 type AppPropsWithAuthAndLayout = AppProps & {
   Component: NextPageWithAuthAndLayout
@@ -24,6 +25,7 @@ function MyApp({
 }: AppPropsWithAuthAndLayout) {
   const getLayout = Component.getLayout ?? (page => page)
 
+  console.dir(pageProps)
   return (
     <SessionProvider session={session}>
       <RecoilRoot>
@@ -36,6 +38,10 @@ function MyApp({
         <DefaultSeo {...SEO} />
         {Component.auth ? (
           <Auth>{getLayout(<Component {...pageProps} />)}</Auth>
+        ) : "markdoc" in pageProps ? (
+          <BlogLayout>
+            <Component {...pageProps} />
+          </BlogLayout>
         ) : (
           getLayout(<Component {...pageProps} />)
         )}
