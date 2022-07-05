@@ -8,8 +8,8 @@ import { motion } from "framer-motion"
 // import Spline from "@splinetool/react-spline"
 // import { BrowserView, MobileView } from "react-device-detect"
 
-import Footer from "@/components/marketing/Footer"
-import MainMenu from "@/components/marketing/MainMenu"
+import Footer from "@/components/blog/Footer"
+import MainMenu from "@/components/blog/MainMenu"
 import {
   ArrowSmRightIcon,
   BadgeCheckIcon,

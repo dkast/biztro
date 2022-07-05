@@ -18,6 +18,7 @@ module.exports = {
     require("@tailwindcss/forms"),
     require("@tailwindcss/line-clamp"),
     require("tailwindcss-safe-area"),
+    require("@tailwindcss/typography"),
     require("tailwindcss-radix")()
   ]
 }
