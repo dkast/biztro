@@ -1,1 +1,1 @@
-export * from "./BlogHeader.markdoc"
+export * from "./header.markdoc"
