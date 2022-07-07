@@ -23,6 +23,14 @@ export const header = {
     user: {
       type: String,
       description: "Autor de la entrada"
+    },
+    avatar: {
+      type: String,
+      description: "Nombre de la Imagen, debe existir en folder public"
+    },
+    twitter: {
+      type: String,
+      description: "Username de twitter"
     }
   },
   selfClosing: true

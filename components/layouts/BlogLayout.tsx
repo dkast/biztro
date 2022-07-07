@@ -9,7 +9,9 @@ const BlogLayout = ({ children }: LayoutProps) => {
     <div className="flex h-screen flex-col items-center overflow-y-auto overflow-x-hidden">
       <MainMenu variant="light" />
       <div className="w-full grow">
-        <div className="prose mx-auto max-w-2xl lg:prose-lg">{children}</div>
+        <div className="prose prose-violet mx-auto max-w-2xl lg:prose-lg">
+          {children}
+        </div>
       </div>
       <Footer />
     </div>
