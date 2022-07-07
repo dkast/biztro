@@ -1,16 +1,26 @@
+import format from "date-fns/format"
+import { es } from "date-fns/locale"
 import React from "react"
 
 const Header = ({ title, category, description, date, user }) => {
   return (
-    <div className="mt-16">
-      <p>{category}</p>
+    <div className="my-20 text-center">
+      <span className="bg-gradient-to-r from-orange-500 to-violet-500 bg-clip-text  font-medium text-transparent">
+        {category}
+      </span>
       <h1 className="font-display">{title}</h1>
-      <p>{description}</p>
+      <p className="font-medium leading-relaxed text-gray-500 sm:text-xl md:text-2xl">
+        {description}
+      </p>
       <div>
-        <span>{date}</span>
+        <p className="text-xs font-medium text-gray-500 md:text-sm">
+          {format(new Date(date), "PPP", { locale: es })}
+        </p>
       </div>
       <div>
-        <span>Autor:{user}</span>
+        <span className="text-xs font-medium text-gray-500 md:text-sm">
+          {user}
+        </span>
       </div>
     </div>
   )
