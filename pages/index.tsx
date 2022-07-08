@@ -132,6 +132,7 @@ const Home: NextPageWithAuthAndLayout = () => {
       </Head>
       <div className="flex h-screen flex-col items-center overflow-y-auto overflow-x-hidden">
         <div className="flex w-full flex-col items-center bg-violet-900">
+          <HomeMessage />
           <MainMenu variant="dark" />
           <HomeHero />
         </div>
@@ -525,6 +526,19 @@ const BenefitItem = ({ icon, title, description, soon }): JSX.Element => {
         )}
       </p>
       <span className="text-gray-600">{description}</span>
+    </div>
+  )
+}
+
+const HomeMessage = (): JSX.Element => {
+  return (
+    <div className="flex h-10 w-full bg-gradient-to-r from-violet-500 via-red-500 to-amber-500">
+      <Link href="/blog/beta">
+        <a className="text-xm mx-auto flex items-center text-white md:text-sm">
+          Estamos en Beta
+          <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
+        </a>
+      </Link>
     </div>
   )
 }

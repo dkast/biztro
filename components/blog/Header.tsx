@@ -23,9 +23,19 @@ const Header = ({
         {description}
       </p>
       <div>
-        <p className="text-xs font-medium text-gray-500 md:text-sm">
-          {format(new Date(date), "PPP", { locale: es })}
-        </p>
+        <div className="relative my-8">
+          <div
+            className="absolute inset-0 flex items-center"
+            aria-hidden="true"
+          >
+            <div className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-white px-2 text-xs text-gray-500 md:text-sm">
+              {format(new Date(date), "PPP", { locale: es })}
+            </span>
+          </div>
+        </div>
       </div>
       <div className="mx-auto flex w-fit flex-row items-center gap-2">
         <div className="relative h-[40px] w-[40px] overflow-hidden rounded-full border border-gray-100 shadow">
