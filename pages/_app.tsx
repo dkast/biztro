@@ -25,7 +25,6 @@ function MyApp({
 }: AppPropsWithAuthAndLayout) {
   const getLayout = Component.getLayout ?? (page => page)
 
-  console.dir(pageProps)
   return (
     <SessionProvider session={session}>
       <RecoilRoot>
