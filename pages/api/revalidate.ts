@@ -1,4 +1,4 @@
-import { getServerSession } from "next-auth"
+import { unstable_getServerSession } from "next-auth/next"
 
 import { authOptions } from "@/lib/auth"
 
@@ -9,7 +9,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const session = await getServerSession({ req, res }, authOptions)
+  const session = await unstable_getServerSession(req, res, authOptions)
   // If is not signed in, abort
   if (!session) return res.status(400).end()
 
@@ -24,7 +24,7 @@ export default async function handler(
   try {
     // ♻️ Regenerate the `/site` page and push the resulting static files to
     // the edge
-    await res.unstable_revalidate(`/${site}`)
+    await res.revalidate(`/${site}`)
 
     return res.status(200).json({ revalidated: true })
   } catch (err) {
