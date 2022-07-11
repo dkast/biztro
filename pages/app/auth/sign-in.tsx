@@ -2,7 +2,7 @@ import React from "react"
 import Head from "next/head"
 import { getProviders, signIn } from "next-auth/react"
 import Image from "next/image"
-import { getServerSession } from "next-auth"
+import { unstable_getServerSession } from "next-auth/next"
 
 import Button from "@/components/Button"
 import { authOptions } from "@/lib/auth"
@@ -79,7 +79,11 @@ export const getServerSideProps = async (
 ) => {
   const { callbackUrl } = context.query
   const providers = await getProviders()
-  const session = await getServerSession(context, authOptions)
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  )
 
   if (session?.user) {
     return {

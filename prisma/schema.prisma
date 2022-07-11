@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["referentialIntegrity"]
@@ -10,12 +7,6 @@ datasource db {
   provider             = "mysql"
   url                  = env("DATABASE_URL")
   referentialIntegrity = "prisma"
-}
-
-enum Role {
-  USER
-  PRO
-  ADMIN
 }
 
 model Account {
@@ -100,7 +91,7 @@ model Item {
   imageBlurhash String?  @db.LongText
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  site          Site?    @relation(fields: [siteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  site          Site?    @relation(fields: [siteId], references: [id], onDelete: Cascade)
   siteId        String?
 
   @@unique([id, siteId], name: "post_site_constraint")
@@ -112,4 +103,10 @@ model Invite {
   email String @unique
 
   @@index([email])
+}
+
+enum Role {
+  USER
+  PRO
+  ADMIN
 }
