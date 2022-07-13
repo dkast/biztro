@@ -18,7 +18,7 @@ import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import { useSession } from "next-auth/react"
 import { useRecoilState, useRecoilValue } from "recoil"
-import { ChevronDownIcon, EyeIcon } from "@heroicons/react/solid"
+import { ChevronDownIcon, EyeIcon, QrcodeIcon } from "@heroicons/react/solid"
 import {
   DuplicateIcon,
   ExternalLinkIcon,
@@ -44,6 +44,7 @@ import {
 } from "@/components/editor/ToolbarDropdown"
 import { Tooltip } from "@/components/Tooltip"
 import useWarnChanges from "@/hooks/useWarnChanges"
+import QREditor from "@/components/editor/QREditor"
 
 const ToolbarMenu = () => {
   // Hooks
@@ -55,6 +56,7 @@ const ToolbarMenu = () => {
       selectedNodeId: state.events.selected
     }))
   const [openDialog, setOpenDialog] = useState(false)
+  const [openQR, setOpenQR] = useState(false)
   const { data: session } = useSession()
   const sessionId = session?.user?.id
   const { site } = useSite(sessionId)
@@ -288,6 +290,15 @@ const ToolbarMenu = () => {
           </ToolbarDropdown>
         )}
         <Toolbar.Separator className="mx-2 inline-flex h-6 border-l border-gray-200" />
+        <Tooltip content="Código QR">
+          <Toolbar.Button
+            onClick={() => setOpenQR(true)}
+            aria-label="Código QR"
+            className="flex h-6 w-6 items-center justify-center rounded text-gray-600 hover:bg-gray-100 active:scale-90 disabled:text-gray-300"
+          >
+            <QrcodeIcon className="h-5 w-5 text-current" />
+          </Toolbar.Button>
+        </Tooltip>
         <ToolbarPopover>
           <Tooltip content="Compartir">
             <ToolbarPopoverTrigger asChild>
@@ -306,6 +317,10 @@ const ToolbarMenu = () => {
       </Toolbar.Root>
       <Dialog open={openDialog} setOpen={setOpenDialog}>
         <QRPreview />
+      </Dialog>
+      {/* QR Editor */}
+      <Dialog open={openQR} setOpen={setOpenQR}>
+        <QREditor siteId={site.subdomain} />
       </Dialog>
     </>
   )
