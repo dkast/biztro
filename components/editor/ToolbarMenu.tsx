@@ -320,7 +320,7 @@ const ToolbarMenu = () => {
       </Dialog>
       {/* QR Editor */}
       <Dialog open={openQR} setOpen={setOpenQR}>
-        <QREditor siteId={site.subdomain} />
+        <QREditor siteId={site.subdomain} logo={site?.logo} />
       </Dialog>
     </>
   )

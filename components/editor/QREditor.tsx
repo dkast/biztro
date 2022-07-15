@@ -13,15 +13,21 @@ import {
   ToolbarPopoverTrigger
 } from "@/components/editor/ToolbarPopover"
 import { COLORS } from "@/lib/types"
-import { ToolbarSwitch, ToolbarSwitchThumb } from "./ToolbarSwitch"
+import {
+  ToolbarSwitch,
+  ToolbarSwitchThumb
+} from "@/components/editor/ToolbarSwitch"
+import rgbToHex from "@/lib/rgba-to-hex"
 
 interface QREditorProps {
   siteId: string
+  logo?: string
   background?: Record<"r" | "g" | "b" | "a", number>
 }
 
 const QREditor = ({
   siteId,
+  logo,
   background = { r: 0, g: 0, b: 0, a: 1 }
 }: QREditorProps): JSX.Element => {
   const host = useRecoilValue(hostState)
@@ -49,7 +55,15 @@ const QREditor = ({
         </span>
         <div className="my-6 rounded-lg border-2 border-dashed border-gray-300">
           <div ref={exportRef} className="p-1">
-            <QRCode value={`${host}/${siteId}`} />
+            <QRCode
+              value={`${host}/${siteId}`}
+              ecLevel={showLogo ? "H" : "M"}
+              logoImage={showLogo ? logo : ""}
+              logoWidth={showLogo ? 50 : 0}
+              removeQrCodeBehindLogo={showLogo}
+              enableCORS
+              fgColor={rgbToHex(`rgba(${Object.values(color)})`)}
+            />
           </div>
         </div>
         <div className="flex w-full justify-between px-2 py-4">
@@ -77,9 +91,10 @@ const QREditor = ({
             </ToolbarPopover>
           </div>
           <div className="flex items-center gap-4">
-            <label>Mostrar Logo</label>
+            <label className={logo ? "" : "text-gray-400"}>Mostrar Logo</label>
             <ToolbarSwitch
               checked={showLogo}
+              disabled={logo ? false : true}
               onCheckedChange={value => setShowLogo(value)}
             >
               <ToolbarSwitchThumb />
