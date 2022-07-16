@@ -51,7 +51,7 @@ const Header = ({
           <span className="text-xs font-medium text-gray-500 md:text-sm">
             {user}
           </span>
-          <Link href={`https:\\twitter.com\\${twitter}`} passHref>
+          <Link href={`https://twitter.com/${twitter}`} passHref>
             <a className="text-xs no-underline md:text-sm">@{twitter}</a>
           </Link>
         </div>

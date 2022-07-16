@@ -18,23 +18,25 @@ import {
   ToolbarSwitchThumb
 } from "@/components/editor/ToolbarSwitch"
 import rgbToHex from "@/lib/rgba-to-hex"
+import useLocalStorage from "@/hooks/useLocalStorage"
 
 interface QREditorProps {
   siteId: string
   logo?: string
-  background?: Record<"r" | "g" | "b" | "a", number>
+  fgColor?: Record<"r" | "g" | "b" | "a", number>
 }
 
 const QREditor = ({
   siteId,
   logo,
-  background = { r: 0, g: 0, b: 0, a: 1 }
+  fgColor = { r: 0, g: 0, b: 0, a: 1 }
 }: QREditorProps): JSX.Element => {
   const host = useRecoilValue(hostState)
   const exportRef = useRef()
-  const [color, setColor] =
-    useState<Record<"r" | "g" | "b" | "a", number>>(background)
-  const [showLogo, setShowLogo] = useState(false)
+  const [color, setColor] = useLocalStorage<
+    Record<"r" | "g" | "b" | "a", number>
+  >("color", fgColor)
+  const [showLogo, setShowLogo] = useLocalStorage<boolean>("logo", false)
 
   return (
     <>
