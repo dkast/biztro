@@ -55,6 +55,7 @@ const AuthError = () => {
             {/* https://images.unsplash.com/photo-1507914372368-b2b085b925a1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1980&q=80 */}
             <Image
               className="absolute inset-0 h-full w-full object-cover"
+              priority
               src="https://images.unsplash.com/photo-1529514027228-b808875f9d37?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1980&q=80"
               alt="Imagen restaurant"
               layout="fill"
