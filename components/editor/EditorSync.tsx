@@ -27,7 +27,7 @@ const EditorSync = () => {
 
   // Check sync status
   useEffect(() => {
-    if (site && data?.items?.length > 0) {
+    if (site && data?.items?.length > 0 && site?.serialData) {
       // Get Menu Items and check if update is necessary
       const serial = lz.decompress(lz.decodeBase64(site?.serialData))
       const items = []
