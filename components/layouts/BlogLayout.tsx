@@ -1,8 +1,8 @@
-import Link from "next/link"
 import { ArrowSmRightIcon } from "@heroicons/react/outline"
+import Link from "next/link"
 
-import MainMenu from "@/components/blog/MainMenu"
 import Footer from "@/components//blog/Footer"
+import MainMenu from "@/components/blog/MainMenu"
 
 type LayoutProps = {
   children: React.ReactNode

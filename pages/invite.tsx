@@ -1,16 +1,17 @@
-import { useState } from "react"
-import Head from "next/head"
-import Link from "next/link"
-import Image from "next/image"
-import { useForm } from "react-hook-form"
+import { ArrowSmRightIcon } from "@heroicons/react/outline"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { motion } from "framer-motion"
+import Head from "next/head"
+import Image from "next/image"
+import Link from "next/link"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import * as yup from "yup"
-import { motion } from "framer-motion"
-import { ArrowSmRightIcon } from "@heroicons/react/outline"
 
-import Input from "@/components/Input"
 import Button from "@/components/Button"
+import Input from "@/components/Input"
+
 import { HttpMethod } from "@/lib/types"
 
 interface IFormInputs {
@@ -87,11 +88,12 @@ const Invite = () => {
                     </p>
                   </div>
                   <div className="mt-6 text-center">
-                    <Link href="/">
-                      <a className="font-semibold text-violet-500 hover:text-violet-700">
-                        Volver al inicio
-                        <ArrowSmRightIcon className="inline h-6 w-6" />
-                      </a>
+                    <Link
+                      href="/"
+                      className="font-semibold text-violet-500 hover:text-violet-700"
+                    >
+                      Volver al inicio
+                      <ArrowSmRightIcon className="inline h-6 w-6" />
                     </Link>
                   </div>
                 </motion.div>
@@ -130,10 +132,11 @@ const Invite = () => {
                         <span className="mr-1 text-gray-500">
                           ¿Ya tienes una cuenta?
                         </span>
-                        <Link href="/app/dashboard">
-                          <a className="text-violet-500 hover:text-violet-700">
-                            Inicia sesión
-                          </a>
+                        <Link
+                          href="/app/dashboard"
+                          className="text-violet-500 hover:text-violet-700"
+                        >
+                          Inicia sesión
                         </Link>
                       </div>
                     </div>

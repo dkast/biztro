@@ -1,24 +1,25 @@
+import useLocalStorage from "@/hooks/useLocalStorage"
 import Link from "next/link"
 import { useRef, useState } from "react"
-import { useRecoilValue } from "recoil"
-import { QRCode } from "react-qrcode-logo"
 import { SketchPicker } from "react-color"
+import { QRCode } from "react-qrcode-logo"
+import { useRecoilValue } from "recoil"
 
-import { hostState } from "@/lib/store"
 import Button from "@/components/Button"
-import exportAsImage from "@/lib/export-as-image"
 import {
   ToolbarPopover,
   ToolbarPopoverContent,
   ToolbarPopoverTrigger
 } from "@/components/editor/ToolbarPopover"
-import { COLORS } from "@/lib/types"
 import {
   ToolbarSwitch,
   ToolbarSwitchThumb
 } from "@/components/editor/ToolbarSwitch"
+
+import exportAsImage from "@/lib/export-as-image"
 import rgbToHex from "@/lib/rgba-to-hex"
-import useLocalStorage from "@/hooks/useLocalStorage"
+import { hostState } from "@/lib/store"
+import { COLORS } from "@/lib/types"
 
 interface QREditorProps {
   siteId: string

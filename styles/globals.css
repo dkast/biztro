@@ -17,6 +17,6 @@
   @apply relative;
 }
 .component-selected::after {
-  content: ' ';
-  @apply border-violet-500 border w-full h-full absolute left-0 top-0 pointer-events-none block;
+  content: " ";
+  @apply pointer-events-none absolute left-0 top-0 block h-full w-full border border-violet-500;
 }

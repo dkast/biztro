@@ -1,14 +1,15 @@
-import React from "react"
 import { useNode } from "@craftjs/core"
+import React from "react"
 import { SketchPicker } from "react-color"
 
-import ToolboxPanel from "@/components/editor/ToolboxPanel"
+import ToolbarItem from "@/components/editor/ToolbarItem"
 import {
   ToolbarPopover,
   ToolbarPopoverContent,
   ToolbarPopoverTrigger
 } from "@/components/editor/ToolbarPopover"
-import ToolbarItem from "@/components/editor/ToolbarItem"
+import ToolboxPanel from "@/components/editor/ToolboxPanel"
+
 import { COLORS } from "@/lib/types"
 
 const ContainerSettings = (): JSX.Element => {

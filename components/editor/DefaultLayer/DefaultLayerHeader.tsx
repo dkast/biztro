@@ -1,5 +1,4 @@
 import { useEditor } from "@craftjs/core"
-import React from "react"
 import { useLayer } from "@craftjs/layers"
 import {
   ChevronDownIcon,
@@ -8,9 +7,11 @@ import {
   EyeOffIcon,
   LinkIcon
 } from "@heroicons/react/solid"
+import React from "react"
+
+import classNames from "@/lib/classnames"
 
 import { EditableLayerName } from "./EditableLayerName"
-import classNames from "@/lib/classnames"
 
 export const DefaultLayerHeader: React.FC = () => {
   const {

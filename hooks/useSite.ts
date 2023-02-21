@@ -1,8 +1,7 @@
+import type { Site } from "@prisma/client"
 import useSWR from "swr"
 
 import fetcher from "@/lib/fetcher"
-
-import type { Site } from "@prisma/client"
 
 export default function useSite(sessionId) {
   const { data, error, isValidating } = useSWR<Site>(

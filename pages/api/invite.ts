@@ -1,7 +1,8 @@
-const postmark = require("postmark")
-
 import type { NextApiRequest, NextApiResponse } from "next"
+
 import { HttpMethod } from "@/lib/types"
+
+const postmark = require("postmark")
 
 const client = new postmark.ServerClient(process.env.POSTMARK_API)
 

@@ -1,10 +1,10 @@
-import React from "react"
 import { useEditor } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
+import React from "react"
 
-import ToolboxPanel from "@/components/editor/ToolboxPanel"
-import ToolbarScroll from "@/components/editor/ToolbarScroll"
 import { DefaultLayer } from "@/components/editor/DefaultLayer"
+import ToolbarScroll from "@/components/editor/ToolbarScroll"
+import ToolboxPanel from "@/components/editor/ToolboxPanel"
 
 const SettingsBar = (): JSX.Element => {
   const { active, related } = useEditor((state, query) => {

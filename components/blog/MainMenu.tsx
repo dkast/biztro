@@ -1,6 +1,7 @@
+import * as Toolbar from "@radix-ui/react-toolbar"
 import Image from "next/image"
 import Link from "next/link"
-import * as Toolbar from "@radix-ui/react-toolbar"
+
 import classNames from "@/lib/classnames"
 
 interface MainMenuProps {

@@ -1,10 +1,11 @@
-import Head from "next/head"
 import { useSession } from "next-auth/react"
+import Head from "next/head"
 
 import Layout from "@/components/layouts/Layout"
-import PageHeader from "@/components/PageHeader"
-import { NextPageWithAuthAndLayout } from "@/lib/types"
 import Onboarding from "@/components/Onboarding"
+import PageHeader from "@/components/PageHeader"
+
+import { NextPageWithAuthAndLayout } from "@/lib/types"
 
 const Dashboard: NextPageWithAuthAndLayout = () => {
   const { data: session } = useSession()

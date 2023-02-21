@@ -1,8 +1,8 @@
-import React from "react"
-import Image from "next/image"
 import format from "date-fns/format"
 import { es } from "date-fns/locale"
+import Image from "next/image"
 import Link from "next/link"
+import React from "react"
 
 const Header = ({
   title,

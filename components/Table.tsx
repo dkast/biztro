@@ -1,19 +1,19 @@
+import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/outline"
+import {
+  ArrowNarrowLeftIcon,
+  ArrowNarrowRightIcon,
+  SearchIcon
+} from "@heroicons/react/solid"
 import React, { useState } from "react"
 import {
-  useTable,
   useAsyncDebounce,
   useGlobalFilter,
   usePagination,
-  useSortBy
+  useSortBy,
+  useTable
 } from "react-table"
-import {
-  SearchIcon,
-  ArrowNarrowLeftIcon,
-  ArrowNarrowRightIcon
-} from "@heroicons/react/solid"
 
 import InputGroup from "@/components/InputGroup"
-import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/outline"
 
 type TableProps = {
   columns: Array<any>

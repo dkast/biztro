@@ -1,6 +1,5 @@
-import React from "react"
-
 import * as TooltipPrimitive from "@radix-ui/react-tooltip"
+import React from "react"
 
 interface TooltipProps extends TooltipPrimitive.TooltipContentProps {
   children: React.ReactNode

@@ -1,6 +1,7 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { useState } from "react"
+
 import { XIcon } from "@heroicons/react/solid"
+import { useState } from "react"
 
 interface AlertProps {
   message: string

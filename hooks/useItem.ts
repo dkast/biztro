@@ -1,8 +1,7 @@
+import type { Item, Site } from "@prisma/client"
 import useSWR from "swr"
 
 import fetcher from "@/lib/fetcher"
-
-import type { Item, Site } from "@prisma/client"
 
 interface SiteItemData {
   items: Array<Item>

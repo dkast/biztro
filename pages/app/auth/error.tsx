@@ -1,7 +1,7 @@
-import Head from "next/head"
-import Link from "next/link"
-import Image from "next/image"
 import { ArrowSmRightIcon } from "@heroicons/react/outline"
+import Head from "next/head"
+import Image from "next/image"
+import Link from "next/link"
 import { useRouter } from "next/router"
 
 const AuthError = () => {
@@ -33,19 +33,21 @@ const AuthError = () => {
                   <p className="mt-4 text-lg text-gray-500">
                     Actualmente estamos en Beta. Nos encontramos afinando los
                     últimos detalles.{" "}
-                    <Link href="/invite">
-                      <a className=" text-violet-500 hover:text-violet-700">
-                        Solicita acceso.
-                      </a>
+                    <Link
+                      href="/invite"
+                      className=" text-violet-500 hover:text-violet-700"
+                    >
+                      Solicita acceso.
                     </Link>
                   </p>
                 </div>
                 <div className="mt-6 text-center">
-                  <Link href="/">
-                    <a className="font-semibold text-violet-500 hover:text-violet-700">
-                      Volver al inicio
-                      <ArrowSmRightIcon className="inline h-6 w-6" />
-                    </a>
+                  <Link
+                    href="/"
+                    className="font-semibold text-violet-500 hover:text-violet-700"
+                  >
+                    Volver al inicio
+                    <ArrowSmRightIcon className="inline h-6 w-6" />
                   </Link>
                 </div>
               </div>
@@ -76,11 +78,12 @@ const AuthError = () => {
           No pudimos encontrar la página que esta buscando.
         </p>
         <div className="mt-6">
-          <Link href="/">
-            <a className="font-semibold text-violet-500 hover:text-violet-700">
-              Volver al inicio
-              <ArrowSmRightIcon className="inline h-6 w-6" />
-            </a>
+          <Link
+            href="/"
+            className="font-semibold text-violet-500 hover:text-violet-700"
+          >
+            Volver al inicio
+            <ArrowSmRightIcon className="inline h-6 w-6" />
           </Link>
         </div>
       </div>

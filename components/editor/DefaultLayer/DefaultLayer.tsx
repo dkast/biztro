@@ -1,9 +1,10 @@
-import React from "react"
 import { useEditor } from "@craftjs/core"
 import { useLayer } from "@craftjs/layers"
+import React from "react"
+
+import classNames from "@/lib/classnames"
 
 import { DefaultLayerHeader } from "./DefaultLayerHeader"
-import classNames from "@/lib/classnames"
 
 export const DefaultLayer: React.FC = ({ children }) => {
   const {

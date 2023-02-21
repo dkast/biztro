@@ -1,6 +1,5 @@
-import React, { useState } from "react"
-import Link from "next/link"
-import * as Accordion from "@radix-ui/react-accordion"
+import useItems from "@/hooks/useItems"
+import useSite from "@/hooks/useSite"
 import {
   ArrowRightIcon,
   CheckIcon,
@@ -9,14 +8,16 @@ import {
   InformationCircleIcon,
   TemplateIcon
 } from "@heroicons/react/outline"
+import * as Accordion from "@radix-ui/react-accordion"
 import { AnimatePresence, motion } from "framer-motion"
 import { useSession } from "next-auth/react"
+import Link from "next/link"
+import React, { useState } from "react"
 
 import Button from "@/components/Button"
-import useSite from "@/hooks/useSite"
-import useItems from "@/hooks/useItems"
-import classNames from "@/lib/classnames"
 import Loader from "@/components/Loader"
+
+import classNames from "@/lib/classnames"
 
 const accordion = {
   open: {

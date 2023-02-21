@@ -1,22 +1,23 @@
-import { Fragment, useState, useEffect } from "react"
 import { Dialog, Menu, Transition } from "@headlessui/react"
 import {
   CogIcon,
   HomeIcon,
   MenuAlt2Icon,
-  ViewGridIcon,
   TemplateIcon,
+  ViewGridIcon,
   XIcon
 } from "@heroicons/react/outline"
+import { signOut, useSession } from "next-auth/react"
 // import { SearchIcon } from "@heroicons/react/solid"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { signOut, useSession } from "next-auth/react"
+import { Fragment, useEffect, useState } from "react"
 import { BallSpinner } from "react-spinners-kit"
 
-import classNames from "@/lib/classnames"
 import { Tooltip } from "@/components/Tooltip"
+
+import classNames from "@/lib/classnames"
 
 type LayoutProps = {
   children: React.ReactNode

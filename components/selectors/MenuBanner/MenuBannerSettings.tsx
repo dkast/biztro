@@ -1,8 +1,7 @@
-import React from "react"
 import { useNode } from "@craftjs/core"
+import React from "react"
 import { SketchPicker } from "react-color"
 
-import ToolboxPanel from "@/components/editor/ToolboxPanel"
 import ToolbarItem from "@/components/editor/ToolbarItem"
 import {
   ToolbarPopover,
@@ -13,6 +12,8 @@ import {
   ToolbarSwitch,
   ToolbarSwitchThumb
 } from "@/components/editor/ToolbarSwitch"
+import ToolboxPanel from "@/components/editor/ToolboxPanel"
+
 import { COLORS } from "@/lib/types"
 
 const MenuBannerSettings = (): JSX.Element => {

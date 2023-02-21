@@ -1,7 +1,7 @@
-import React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { Cross1Icon } from "@radix-ui/react-icons"
 import { AnimatePresence, motion } from "framer-motion"
+import React from "react"
 
 const overlay = {
   visible: {

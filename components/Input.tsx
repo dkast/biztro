@@ -1,5 +1,5 @@
-import React from "react"
 import { ExclamationCircleIcon } from "@heroicons/react/solid"
+import React from "react"
 
 const DEFAULT =
   "block w-full rounded-lg transition duration-150 ease-in-out shadow-sm"

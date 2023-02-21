@@ -1,10 +1,10 @@
-import React from "react"
 import { useNode, UserComponent } from "@craftjs/core"
-import Image from "next/image"
-
 import { Item } from "@prisma/client"
-import MenuItemSettings from "@/components/selectors/MenuItem/MenuItemSettings"
+import Image from "next/image"
+import React from "react"
+
 import Font from "@/components/Font"
+import MenuItemSettings from "@/components/selectors/MenuItem/MenuItemSettings"
 
 interface MenuItemProps {
   item: Item

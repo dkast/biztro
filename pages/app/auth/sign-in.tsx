@@ -1,16 +1,16 @@
-import React from "react"
-import Head from "next/head"
-import { getProviders, signIn } from "next-auth/react"
-import Image from "next/image"
-import { unstable_getServerSession } from "next-auth/next"
-
-import Button from "@/components/Button"
-import { authOptions } from "@/lib/auth"
-
 import type {
   GetServerSidePropsContext,
   InferGetServerSidePropsType
 } from "next"
+import { unstable_getServerSession } from "next-auth/next"
+import { getProviders, signIn } from "next-auth/react"
+import Head from "next/head"
+import Image from "next/image"
+import React from "react"
+
+import Button from "@/components/Button"
+
+import { authOptions } from "@/lib/auth"
 
 const SignIn = ({
   providers

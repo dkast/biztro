@@ -1,50 +1,51 @@
-import React, { useState } from "react"
-import Link from "next/link"
-import * as Toolbar from "@radix-ui/react-toolbar"
-import {
-  ResetIcon,
-  MobileIcon,
-  DesktopIcon,
-  LockClosedIcon,
-  LockOpen2Icon,
-  Link1Icon,
-  ClipboardCopyIcon,
-  CopyIcon
-} from "@radix-ui/react-icons"
-import lz from "lzutf8"
-import { mutate } from "swr"
-import toast from "react-hot-toast"
-import { QRCode } from "react-qrcode-logo"
+import useSite from "@/hooks/useSite"
+import useWarnChanges from "@/hooks/useWarnChanges"
 import { useEditor } from "@craftjs/core"
-import { useSession } from "next-auth/react"
-import { useRecoilState, useRecoilValue } from "recoil"
-import { ChevronDownIcon, EyeIcon, QrcodeIcon } from "@heroicons/react/solid"
 import {
   DuplicateIcon,
   ExternalLinkIcon,
   SaveIcon
 } from "@heroicons/react/outline"
-import { CopyToClipboard } from "react-copy-to-clipboard"
-
+import { ChevronDownIcon, EyeIcon, QrcodeIcon } from "@heroicons/react/solid"
 import {
-  ToolbarPopover,
-  ToolbarPopoverContent,
-  ToolbarPopoverTrigger
-} from "@/components/editor/ToolbarPopover"
-import useSite from "@/hooks/useSite"
+  ClipboardCopyIcon,
+  CopyIcon,
+  DesktopIcon,
+  Link1Icon,
+  LockClosedIcon,
+  LockOpen2Icon,
+  MobileIcon,
+  ResetIcon
+} from "@radix-ui/react-icons"
+import * as Toolbar from "@radix-ui/react-toolbar"
+import lz from "lzutf8"
+import { useSession } from "next-auth/react"
+import Link from "next/link"
+import React, { useState } from "react"
+import { CopyToClipboard } from "react-copy-to-clipboard"
+import toast from "react-hot-toast"
+import { QRCode } from "react-qrcode-logo"
+import { useRecoilState, useRecoilValue } from "recoil"
+import { mutate } from "swr"
+
 import Button from "@/components/Button"
-import { frameSizeState, hostState, propState } from "@/lib/store"
-import { frameSize, HttpMethod } from "@/lib/types"
 import Dialog from "@/components/Dialog"
+import QREditor from "@/components/editor/QREditor"
 import {
   ToolbarDropdown,
   ToolbarDropdownContent,
   ToolbarDropdownItem,
   ToolbarDropdownTrigger
 } from "@/components/editor/ToolbarDropdown"
+import {
+  ToolbarPopover,
+  ToolbarPopoverContent,
+  ToolbarPopoverTrigger
+} from "@/components/editor/ToolbarPopover"
 import { Tooltip } from "@/components/Tooltip"
-import useWarnChanges from "@/hooks/useWarnChanges"
-import QREditor from "@/components/editor/QREditor"
+
+import { frameSizeState, hostState, propState } from "@/lib/store"
+import { frameSize, HttpMethod } from "@/lib/types"
 
 const ToolbarMenu = () => {
   // Hooks

@@ -1,25 +1,26 @@
+import {
+  ArrowSmRightIcon,
+  AtSymbolIcon,
+  BadgeCheckIcon,
+  BanIcon,
+  ChevronDownIcon,
+  CollectionIcon,
+  CurrencyDollarIcon,
+  QrcodeIcon
+} from "@heroicons/react/outline"
+import { ChevronRightIcon } from "@heroicons/react/solid"
+import * as Accordion from "@radix-ui/react-accordion"
+import { motion } from "framer-motion"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
-import * as Accordion from "@radix-ui/react-accordion"
 import { QRCode } from "react-qrcode-logo"
-import { ChevronRightIcon } from "@heroicons/react/solid"
-import { motion } from "framer-motion"
+
 // import Spline from "@splinetool/react-spline"
 // import { BrowserView, MobileView } from "react-device-detect"
 
 import Footer from "@/components/blog/Footer"
 import MainMenu from "@/components/blog/MainMenu"
-import {
-  ArrowSmRightIcon,
-  BadgeCheckIcon,
-  ChevronDownIcon,
-  CurrencyDollarIcon,
-  AtSymbolIcon,
-  BanIcon,
-  CollectionIcon,
-  QrcodeIcon
-} from "@heroicons/react/outline"
 
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 
@@ -356,16 +357,18 @@ const HomeHero = (): JSX.Element => {
             Crea tu menú digital y QR, compartelo con tus clientes.
           </h2>
           <div className="mt-52 flex flex-col justify-center gap-4 md:m-0 md:flex-row">
-            <Link href="/invite">
-              <a className="flex items-center rounded-lg bg-gradient-to-tl from-red-500 to-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600">
-                Crea tu menú
-                <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
-              </a>
+            <Link
+              href="/invite"
+              className="flex items-center rounded-lg bg-gradient-to-tl from-red-500 to-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600"
+            >
+              Crea tu menú
+              <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
             </Link>
-            <Link href="/menu">
-              <a className="rounded-lg border border-orange-500 bg-orange-500/25 px-4 py-3 text-orange-100 backdrop-blur-md transition hover:scale-[98%] hover:bg-orange-500">
-                Ver un Ejemplo
-              </a>
+            <Link
+              href="/menu"
+              className="rounded-lg border border-orange-500 bg-orange-500/25 px-4 py-3 text-orange-100 backdrop-blur-md transition hover:scale-[98%] hover:bg-orange-500"
+            >
+              Ver un Ejemplo
             </Link>
           </div>
         </div>
@@ -388,11 +391,12 @@ const HomeBanner = (): JSX.Element => {
           <h3 className="mb-12 text-center text-3xl text-white">
             Crea tu menú en Biztro hoy
           </h3>
-          <Link href="/invite">
-            <a className="flex items-center rounded-lg bg-white px-4 py-3 text-orange-500 shadow-md shadow-orange-700/50 transition hover:scale-[98%] hover:bg-gray-50">
-              Solicita Acceso
-              <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
-            </a>
+          <Link
+            href="/invite"
+            className="flex items-center rounded-lg bg-white px-4 py-3 text-orange-500 shadow-md shadow-orange-700/50 transition hover:scale-[98%] hover:bg-gray-50"
+          >
+            Solicita Acceso
+            <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
           </Link>
         </div>
       </div>
@@ -533,11 +537,12 @@ const BenefitItem = ({ icon, title, description, soon }): JSX.Element => {
 const HomeMessage = (): JSX.Element => {
   return (
     <div className="flex h-10 w-full bg-gradient-to-r from-violet-500 via-red-500 to-amber-500">
-      <Link href="/blog/beta">
-        <a className="text-xm mx-auto flex items-center text-white md:text-sm">
-          Estamos en Beta
-          <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
-        </a>
+      <Link
+        href="/blog/beta"
+        className="text-xm mx-auto flex items-center text-white md:text-sm"
+      >
+        Estamos en Beta
+        <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
       </Link>
     </div>
   )
