@@ -88,7 +88,7 @@ const Onboarding = () => {
             <p className="pb-4 text-gray-600">
               Inicia capturando la información básica sobre tu negocio
             </p>
-            <Link href="/app/settings">
+            <Link href="/app/settings" legacyBehavior>
               <Button
                 variant="primary"
                 size="sm"
@@ -114,7 +114,7 @@ const Onboarding = () => {
             <p className="pb-4 text-gray-600">
               Ingresa tus productos y empieza a construir tu Menú
             </p>
-            <Link href="/app/items">
+            <Link href="/app/items" legacyBehavior>
               <Button
                 variant="primary"
                 size="sm"
@@ -140,7 +140,7 @@ const Onboarding = () => {
             <p className="pb-4 text-gray-600">
               Personaliza y publica tu Menú para compartirlo con tus clientes
             </p>
-            <Link href="/app/site-editor">
+            <Link href="/app/site-editor" legacyBehavior>
               <Button
                 variant="primary"
                 size="sm"
@@ -153,7 +153,7 @@ const Onboarding = () => {
         </AccordionItem>
       </Accordion.Root>
     </div>
-  )
+  );
 }
 
 interface AccordionItemProps {

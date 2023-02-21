@@ -332,28 +332,27 @@ export default ToolbarMenu
 
 const QRPreview = (): JSX.Element => {
   const host = useRecoilValue(hostState)
-  return (
-    <>
-      <h3 className="text-lg font-medium leading-6 text-gray-900">
-        Abrir en Móvil
-      </h3>
-      <div className="flex flex-col items-center justify-center">
-        <span className="my-2 text-gray-500">
-          Escanea con la cámara de tu móvil o aplicación QR o sigue{" "}
-          <Link href="/app/site-preview" passHref>
-            <a
-              className="text-violet-500 hover:text-violet-700"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              esta liga.
-            </a>
-          </Link>
-        </span>
-        <QRCode value={`${host}/app/site-preview`} />
-      </div>
-    </>
-  )
+  return <>
+    <h3 className="text-lg font-medium leading-6 text-gray-900">
+      Abrir en Móvil
+    </h3>
+    <div className="flex flex-col items-center justify-center">
+      <span className="my-2 text-gray-500">
+        Escanea con la cámara de tu móvil o aplicación QR o sigue{" "}
+        <Link
+          href="/app/site-preview"
+          passHref
+          className="text-violet-500 hover:text-violet-700"
+          target="_blank"
+          rel="noopener noreferrer">
+          
+            esta liga.
+          
+        </Link>
+      </span>
+      <QRCode value={`${host}/app/site-preview`} />
+    </div>
+  </>;
 }
 
 interface PublishPanelProps {
@@ -368,14 +367,15 @@ const PublishPanel = ({ siteId }: PublishPanelProps): JSX.Element => {
       <div className="flex flex-col">
         <div className="flex items-center justify-center gap-4 px-2 pt-3 sm:p-4">
           <span className="select-all text-xs">{`${host}/${siteId}`}</span>
-          <Link href={`/${siteId}`} passHref>
-            <a
-              className="rounded bg-gray-100 p-1 text-gray-500 hover:text-gray-700"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <ExternalLinkIcon className="h-4 w-4" />
-            </a>
+          <Link
+            href={`/${siteId}`}
+            passHref
+            className="rounded bg-gray-100 p-1 text-gray-500 hover:text-gray-700"
+            target="_blank"
+            rel="noopener noreferrer">
+
+            <ExternalLinkIcon className="h-4 w-4" />
+
           </Link>
         </div>
         <div className="bg-gray-100 p-3">
@@ -396,5 +396,5 @@ const PublishPanel = ({ siteId }: PublishPanelProps): JSX.Element => {
         </div>
       </div>
     </div>
-  )
+  );
 }

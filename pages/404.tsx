@@ -17,13 +17,13 @@ const Custom404 = () => {
         <Link
           href="/"
           className="font-semibold text-violet-500 hover:text-violet-700"
-        >
+          legacyBehavior>
           Volver al inicio
           <ArrowSmRightIcon className="inline h-6 w-6" />
         </Link>
       </div>
     </div>
-  )
+  );
 }
 
 export default Custom404

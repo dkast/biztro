@@ -37,10 +37,10 @@ const userNavigation = [
 function MenuLink(props) {
   const { href, children, ...rest } = props
   return (
-    <Link href={href}>
-      <a {...rest}>{children}</a>
+    <Link href={href} {...rest}>
+      {children}
     </Link>
-  )
+  );
 }
 
 const Layout = ({ children }: LayoutProps) => {
@@ -190,32 +190,31 @@ const Layout = ({ children }: LayoutProps) => {
                   <nav className="flex h-full flex-col">
                     <div className="space-y-1">
                       {sidebarNavigation.map(item => (
-                        <Link key={item.name} href={item.href}>
-                          <a
-                            key={item.name}
-                            href={item.href}
+                        (<Link
+                          key={item.name}
+                          href={item.href}
+                          className={classNames(
+                            item.href === asPath
+                              ? "bg-gray-300 text-gray-700"
+                              : "text-gray-400 hover:bg-zinc-800 hover:text-white",
+                            "group flex items-center rounded-md py-2 px-3 text-sm font-medium"
+                          )}
+                          aria-current={
+                            item.href === asPath ? "page" : undefined
+                          }>
+
+                          <item.icon
                             className={classNames(
                               item.href === asPath
-                                ? "bg-gray-300 text-gray-700"
-                                : "text-gray-400 hover:bg-zinc-800 hover:text-white",
-                              "group flex items-center rounded-md py-2 px-3 text-sm font-medium"
+                                ? "text-gray-700"
+                                : "text-gray-400 group-hover:text-white",
+                              "mr-3 h-6 w-6"
                             )}
-                            aria-current={
-                              item.href === asPath ? "page" : undefined
-                            }
-                          >
-                            <item.icon
-                              className={classNames(
-                                item.href === asPath
-                                  ? "text-gray-700"
-                                  : "text-gray-400 group-hover:text-white",
-                                "mr-3 h-6 w-6"
-                              )}
-                              aria-hidden="true"
-                            />
-                            <span>{item.name}</span>
-                          </a>
-                        </Link>
+                            aria-hidden="true"
+                          />
+                          <span>{item.name}</span>
+
+                        </Link>)
                       ))}
                     </div>
                   </nav>
@@ -367,7 +366,7 @@ const Layout = ({ children }: LayoutProps) => {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default Layout

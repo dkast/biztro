@@ -396,7 +396,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
         </div>
       </div>
     </form>
-  )
+  );
 }
 
 SettingsGeneral.auth = true
