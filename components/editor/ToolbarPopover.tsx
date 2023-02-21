@@ -34,6 +34,7 @@ export const ToolbarPopoverContent = React.forwardRef<
     {...props}
     ref={forwardedRef}
     asChild
+    className="z-[90]"
   >
     <motion.div initial="hidden" animate="visible" variants={popover}>
       {children}
