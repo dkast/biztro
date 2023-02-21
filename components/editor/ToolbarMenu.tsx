@@ -266,13 +266,14 @@ const ToolbarMenu = () => {
               size="xs"
               onClick={() => publishSite(true)}
               renderAs="a"
+              className="cursor-pointer"
             >
               Publicar
             </Button>
           </Toolbar.Button>
         ) : (
           <ToolbarDropdown>
-            <ToolbarDropdownTrigger className="outline-none">
+            <ToolbarDropdownTrigger className="cursor-pointer outline-none">
               <Button
                 variant="primary"
                 size="xs"

@@ -23,7 +23,7 @@ export const ToolbarSelect = React.forwardRef<
           <ChevronDownIcon />
         </SelectPrimitive.Icon>
       </SelectPrimitive.Trigger>
-      <SelectPrimitive.Content className="overflow-hidden rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+      <SelectPrimitive.Content className="z-50 overflow-hidden rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
         <SelectPrimitive.ScrollUpButton className="flex h-6 items-center justify-center">
           <ChevronUpIcon />
         </SelectPrimitive.ScrollUpButton>

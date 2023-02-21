@@ -19,21 +19,23 @@ export const Tooltip = ({
   ...props
 }: TooltipProps) => {
   return (
-    <TooltipPrimitive.Root
-      open={open}
-      defaultOpen={defaultOpen}
-      onOpenChange={onOpenChange}
-    >
-      <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
-      <TooltipPrimitive.Content
-        side="top"
-        align="center"
-        {...props}
-        className="rounded bg-black px-2 py-1 text-xs text-white"
+    <TooltipPrimitive.Provider>
+      <TooltipPrimitive.Root
+        open={open}
+        defaultOpen={defaultOpen}
+        onOpenChange={onOpenChange}
       >
-        {content}
-        <TooltipPrimitive.Arrow offset={5} width={11} height={5} />
-      </TooltipPrimitive.Content>
-    </TooltipPrimitive.Root>
+        <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
+        <TooltipPrimitive.Content
+          side="top"
+          align="center"
+          {...props}
+          className="z-[100] rounded bg-zinc-900 px-2 py-1 text-xs text-white"
+        >
+          {content}
+          <TooltipPrimitive.Arrow offset={5} width={11} height={5} />
+        </TooltipPrimitive.Content>
+      </TooltipPrimitive.Root>
+    </TooltipPrimitive.Provider>
   )
 }
