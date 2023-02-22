@@ -1,5 +1,5 @@
-import React from "react"
 import * as SwitchPrimitive from "@radix-ui/react-switch"
+import React from "react"
 
 export const ToolbarSwitch = React.forwardRef<
   HTMLButtonElement,

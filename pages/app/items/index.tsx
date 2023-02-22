@@ -1,24 +1,24 @@
-import { useMemo, useState } from "react"
+import useItems from "@/hooks/useItems"
+import useSite from "@/hooks/useSite"
+import { ArrowRightIcon, PlusIcon } from "@heroicons/react/outline"
+import { useSession } from "next-auth/react"
 import Head from "next/head"
-import toast from "react-hot-toast"
-import { mutate } from "swr"
 import Image from "next/image"
 import Link from "next/link"
-import { useSession } from "next-auth/react"
-import { ArrowRightIcon, PlusIcon } from "@heroicons/react/outline"
+import { useMemo, useState } from "react"
+import toast from "react-hot-toast"
+import { mutate } from "swr"
 
-import Table from "@/components/Table"
-import useItems from "@/hooks/useItems"
 import Button from "@/components/Button"
-import Loader from "@/components/Loader"
-import ItemForm from "@/components/ItemForm"
-import SidePanel from "@/components/SidePanel"
-import PageHeader from "@/components/PageHeader"
 import EmptyState from "@/components/EmptyState"
+import ItemForm from "@/components/ItemForm"
 import Layout from "@/components/layouts/Layout"
+import Loader from "@/components/Loader"
+import PageHeader from "@/components/PageHeader"
+import SidePanel from "@/components/SidePanel"
+import Table from "@/components/Table"
 
 import { HttpMethod, NextPageWithAuthAndLayout } from "@/lib/types"
-import useSite from "@/hooks/useSite"
 
 const Items: NextPageWithAuthAndLayout = () => {
   const columns = useMemo(
@@ -115,7 +115,7 @@ const Items: NextPageWithAuthAndLayout = () => {
         description="Agrega la información básica de tu sitio."
         imageURL="/placeholder-store.svg"
         primaryAction={
-          <Link href="/app/settings">
+          <Link href="/app/settings" legacyBehavior>
             <Button variant="primary" size="sm" rightIcon={<ArrowRightIcon />}>
               Ir a Ajustes
             </Button>

@@ -1,7 +1,7 @@
-import { getPlaiceholder } from "plaiceholder"
-import { HttpMethod } from "@/lib/types"
-
 import type { NextApiRequest, NextApiResponse } from "next"
+import { getPlaiceholder } from "plaiceholder"
+
+import { HttpMethod } from "@/lib/types"
 
 export default async function blurhash(
   req: NextApiRequest,

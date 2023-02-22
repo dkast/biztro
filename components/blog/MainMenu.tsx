@@ -1,6 +1,7 @@
+import * as Toolbar from "@radix-ui/react-toolbar"
 import Image from "next/image"
 import Link from "next/link"
-import * as Toolbar from "@radix-ui/react-toolbar"
+
 import classNames from "@/lib/classnames"
 
 interface MainMenuProps {
@@ -13,28 +14,28 @@ const MainMenu = ({ variant }: MainMenuProps): JSX.Element => {
       <Toolbar.Root className="flex w-full items-center">
         <Toolbar.Button asChild>
           <Link href="/">
-            <a>
-              <Image src="/logo-bistro.svg" alt="Logo" width={40} height={40} />
-            </a>
+
+            <Image src="/logo-bistro.svg" alt="Logo" width={40} height={40} />
+
           </Link>
         </Toolbar.Button>
         <Toolbar.Button asChild>
-          <Link href="/app/dashboard">
-            <a
-              className={classNames(
-                "ml-auto rounded-lg border px-3 py-2 text-sm transition",
-                variant === "dark"
-                  ? "border-violet-600 bg-violet-500/10  text-violet-300 hover:bg-violet-500/30"
-                  : "border-gray-300 text-violet-500 hover:bg-violet-50"
-              )}
-            >
+          <Link
+            href="/app/dashboard"
+            className={classNames(
+              "ml-auto rounded-lg border px-3 py-2 text-sm transition",
+              variant === "dark"
+                ? "border-violet-600 bg-violet-500/10  text-violet-300 hover:bg-violet-500/30"
+                : "border-gray-300 text-violet-500 hover:bg-violet-50"
+            )}>
+            
               Iniciar sesión
-            </a>
+            
           </Link>
         </Toolbar.Button>
       </Toolbar.Root>
     </div>
-  )
+  );
 }
 
 export default MainMenu

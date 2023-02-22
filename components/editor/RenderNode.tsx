@@ -1,17 +1,20 @@
-import ReactDOM from "react-dom"
-import { useNode, useEditor } from "@craftjs/core"
-import { ROOT_NODE } from "@craftjs/utils"
-import React, { useEffect, useRef, useCallback } from "react"
+// import { useRect } from "@/hooks/useRect"
+
+import { ROOT_NODE, useEditor, useNode } from "@craftjs/core"
+// import { ROOT_NODE } from "@craftjs/utils"
 import {
   ArrowUpIcon,
+  ClipboardCopyIcon,
   CopyIcon,
-  TrashIcon,
   MoveIcon,
-  ClipboardCopyIcon
+  TrashIcon
 } from "@radix-ui/react-icons"
+import React, { useCallback, useEffect, useRef } from "react"
+import ReactDOM from "react-dom"
 import { useRecoilState } from "recoil"
 
 import { useRect } from "@/hooks/useRect"
+
 import { propState } from "@/lib/store"
 
 export const RenderNode = ({ render }) => {

@@ -1,15 +1,15 @@
-import React from "react"
-import Head from "next/head"
-import { useSession } from "next-auth/react"
+import useSite from "@/hooks/useSite"
 import { Editor, Frame } from "@craftjs/core"
 import lz from "lzutf8"
+import { useSession } from "next-auth/react"
+import Head from "next/head"
+import React from "react"
 
-import useSite from "@/hooks/useSite"
 import Loader from "@/components/Loader"
-import Text from "@/components/selectors/Text"
 import Container from "@/components/selectors/Container"
-import MenuItem from "@/components/selectors/MenuItem"
 import MenuBanner from "@/components/selectors/MenuBanner"
+import MenuItem from "@/components/selectors/MenuItem"
+import Text from "@/components/selectors/Text"
 
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 

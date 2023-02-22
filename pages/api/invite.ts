@@ -1,7 +1,8 @@
-const postmark = require("postmark")
-
 import type { NextApiRequest, NextApiResponse } from "next"
+
 import { HttpMethod } from "@/lib/types"
+
+const postmark = require("postmark")
 
 const client = new postmark.ServerClient(process.env.POSTMARK_API)
 
@@ -19,12 +20,12 @@ export default async function handler(
     }
 
     try {
-      const message = `El correo ${email} solicita acceso a la aplicacion.`
+      const message = `El correo ${email} solicita acceso a la aplicación.`
 
       await client.sendEmail({
         From: "invite@biztro.co",
         To: "hola@biztro.co",
-        Subject: "Solicitud de Invitacion",
+        Subject: "Solicitud de Invitación",
         TextBody: message,
         MessageStream: "broadcast"
       })

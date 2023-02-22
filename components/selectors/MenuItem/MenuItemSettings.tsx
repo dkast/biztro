@@ -1,18 +1,18 @@
-import React from "react"
 import { useNode } from "@craftjs/core"
+import React from "react"
 import { SketchPicker } from "react-color"
 
-import ToolboxPanel from "@/components/editor/ToolboxPanel"
 import ToolbarItem from "@/components/editor/ToolbarItem"
-import {
-  ToolbarSelect,
-  ToolbarSelectItem
-} from "@/components/editor/ToolbarSelect"
 import {
   ToolbarPopover,
   ToolbarPopoverContent,
   ToolbarPopoverTrigger
 } from "@/components/editor/ToolbarPopover"
+import {
+  ToolbarSelect,
+  ToolbarSelectItem
+} from "@/components/editor/ToolbarSelect"
+import ToolboxPanel from "@/components/editor/ToolboxPanel"
 
 import { COLORS, FONTS } from "@/lib/types"
 

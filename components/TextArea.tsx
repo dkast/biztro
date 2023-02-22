@@ -18,7 +18,7 @@ interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLElement> {
 
 const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (props, forwardRef) => {
-    let variant = "default"
+    const variant = "default"
     let mode = "normal"
     const { disabled, className } = props
 

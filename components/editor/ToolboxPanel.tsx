@@ -1,6 +1,6 @@
-import React, { useState } from "react"
-import * as Collapsible from "@radix-ui/react-collapsible"
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid"
+import * as Collapsible from "@radix-ui/react-collapsible"
+import React, { useState } from "react"
 
 interface ToolboxPanelProps {
   children: React.ReactNode

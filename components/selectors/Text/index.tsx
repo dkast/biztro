@@ -1,9 +1,9 @@
-import React from "react"
 import { useEditor, useNode, UserComponent } from "@craftjs/core"
+import React from "react"
 import ContentEditable from "react-contenteditable"
 
-import TextSettings from "@/components/selectors/Text/TextSettings"
 import Font from "@/components/Font"
+import TextSettings from "@/components/selectors/Text/TextSettings"
 
 interface TextProps {
   fontSize?: string

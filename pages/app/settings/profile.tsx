@@ -1,8 +1,9 @@
-import Image from "next/image"
 import { useSession } from "next-auth/react"
+import Image from "next/image"
 
 import Layout from "@/components/layouts/Layout"
 import SettingsLayout from "@/components/layouts/SettingsLayout"
+
 import { NextPageWithAuthAndLayout } from "@/lib/types"
 
 const SettingsProfile: NextPageWithAuthAndLayout = () => {
