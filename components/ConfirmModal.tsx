@@ -1,9 +1,9 @@
-import React from "react"
-import * as AlertDialog from "@radix-ui/react-alert-dialog"
+import useConfirm from "@/hooks/useConfirm"
 import { ExclamationIcon } from "@heroicons/react/outline"
+import * as AlertDialog from "@radix-ui/react-alert-dialog"
+import React from "react"
 
 import Button from "@/components/Button"
-import useConfirm from "@/hooks/useConfirm"
 
 const ConfirmModal = () => {
   const { prompt, isOpen, proceed, cancel } = useConfirm()

@@ -1,8 +1,7 @@
+import type { NextApiRequest, NextApiResponse } from "next"
 import { unstable_getServerSession } from "next-auth/next"
 
 import { authOptions } from "@/lib/auth"
-
-import type { NextApiRequest, NextApiResponse } from "next"
 
 // API route that revalidates the `/site` static page
 export default async function handler(

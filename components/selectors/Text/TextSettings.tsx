@@ -1,13 +1,18 @@
-import React from "react"
 import { useNode } from "@craftjs/core"
 import {
   TextAlignCenterIcon,
   TextAlignLeftIcon,
   TextAlignRightIcon
 } from "@radix-ui/react-icons"
+import React from "react"
 import { SketchPicker } from "react-color"
 
-import ToolboxPanel from "@/components/editor/ToolboxPanel"
+import ToolbarItem from "@/components/editor/ToolbarItem"
+import {
+  ToolbarPopover,
+  ToolbarPopoverContent,
+  ToolbarPopoverTrigger
+} from "@/components/editor/ToolbarPopover"
 import {
   ToolbarSelect,
   ToolbarSelectItem
@@ -16,12 +21,7 @@ import {
   ToolbarToggleGroup,
   ToolbarToggleGroupItem
 } from "@/components/editor/ToolbarToggleGroup"
-import {
-  ToolbarPopover,
-  ToolbarPopoverContent,
-  ToolbarPopoverTrigger
-} from "@/components/editor/ToolbarPopover"
-import ToolbarItem from "@/components/editor/ToolbarItem"
+import ToolboxPanel from "@/components/editor/ToolboxPanel"
 
 import { COLORS, FONTS } from "@/lib/types"
 

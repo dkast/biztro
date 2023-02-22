@@ -1,10 +1,10 @@
-import React from "react"
-import * as SelectPrimitive from "@radix-ui/react-select"
 import {
   CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon
 } from "@radix-ui/react-icons"
+import * as SelectPrimitive from "@radix-ui/react-select"
+import React from "react"
 
 export const ToolbarSelect = React.forwardRef<
   HTMLButtonElement,

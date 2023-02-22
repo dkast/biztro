@@ -1,17 +1,17 @@
-import React from "react"
-import { useSession } from "next-auth/react"
-import { HeadingIcon } from "@radix-ui/react-icons"
-import { useEditor } from "@craftjs/core"
-
 import useItems from "@/hooks/useItems"
-import Loader from "@/components/Loader"
 import useSite from "@/hooks/useSite"
-import ToolboxPanel from "@/components/editor/ToolboxPanel"
-import ToolboxItem from "@/components/editor/ToolboxItem"
-import ToolboxComponent from "@/components/editor/ToolboxComponent"
-import Text from "@/components/selectors/Text"
-import MenuItem from "@/components/selectors/MenuItem"
+import { useEditor } from "@craftjs/core"
+import { HeadingIcon } from "@radix-ui/react-icons"
+import { useSession } from "next-auth/react"
+import React from "react"
+
 import ToolbarScroll from "@/components/editor/ToolbarScroll"
+import ToolboxComponent from "@/components/editor/ToolboxComponent"
+import ToolboxItem from "@/components/editor/ToolboxItem"
+import ToolboxPanel from "@/components/editor/ToolboxPanel"
+import Loader from "@/components/Loader"
+import MenuItem from "@/components/selectors/MenuItem"
+import Text from "@/components/selectors/Text"
 
 const Toolbox = (): JSX.Element => {
   const { data: session } = useSession()

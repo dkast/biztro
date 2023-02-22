@@ -1,32 +1,31 @@
-import Head from "next/head"
-import Link from "next/link"
-import { useSession } from "next-auth/react"
-import { Editor, Frame, Element } from "@craftjs/core"
-import { useRecoilValue, useSetRecoilState } from "recoil"
+import useSite from "@/hooks/useSite"
+import { Editor, Element, Frame } from "@craftjs/core"
 import { ArrowRightIcon } from "@heroicons/react/outline"
 import lz from "lzutf8"
-
-import useSite from "@/hooks/useSite"
-import Loader from "@/components/Loader"
-import classNames from "@/lib/classnames"
+import type { GetServerSideProps, NextPage } from "next"
 import absoluteUrl from "next-absolute-url"
-import { frameSizeState, hostState } from "@/lib/store"
-import Text from "@/components/selectors/Text"
-import Layout from "@/components/layouts/Layout"
-import Toolbox from "@/components/editor/Toolbox"
-import Container from "@/components/selectors/Container"
+import { useSession } from "next-auth/react"
+import Head from "next/head"
+import Link from "next/link"
+import { useRecoilValue, useSetRecoilState } from "recoil"
+
+import Button from "@/components/Button"
+import EditorSync from "@/components/editor/EditorSync"
 import { RenderNode } from "@/components/editor/RenderNode"
 import SettingsBar from "@/components/editor/SettingsBar"
-import MenuItem from "@/components/selectors/MenuItem"
-import MenuBanner from "@/components/selectors/MenuBanner"
 import ToolbarMenu from "@/components/editor/ToolbarMenu"
-import EditorSync from "@/components/editor/EditorSync"
+import Toolbox from "@/components/editor/Toolbox"
 import EmptyState from "@/components/EmptyState"
-import { NextPageWithAuthAndLayout } from "@/lib/types"
-import Button from "@/components/Button"
-import { frameSize } from "@/lib/types"
+import Layout from "@/components/layouts/Layout"
+import Loader from "@/components/Loader"
+import Container from "@/components/selectors/Container"
+import MenuBanner from "@/components/selectors/MenuBanner"
+import MenuItem from "@/components/selectors/MenuItem"
+import Text from "@/components/selectors/Text"
 
-import type { GetServerSideProps, NextPage } from "next"
+import classNames from "@/lib/classnames"
+import { frameSizeState, hostState } from "@/lib/store"
+import { frameSize, NextPageWithAuthAndLayout } from "@/lib/types"
 
 type Props = {
   host: string | null
@@ -66,7 +65,7 @@ const SiteEditor: NextPageWithAuthAndLayoutAndProps = props => {
         description="Agrega la información básica de tu sitio."
         imageURL="/placeholder-store.svg"
         primaryAction={
-          <Link href="/app/settings">
+          <Link href="/app/settings" legacyBehavior>
             <Button variant="primary" size="sm" rightIcon={<ArrowRightIcon />}>
               Ir a Ajustes
             </Button>

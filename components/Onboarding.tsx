@@ -1,6 +1,5 @@
-import React, { useState } from "react"
-import Link from "next/link"
-import * as Accordion from "@radix-ui/react-accordion"
+import useItems from "@/hooks/useItems"
+import useSite from "@/hooks/useSite"
 import {
   ArrowRightIcon,
   CheckIcon,
@@ -9,14 +8,16 @@ import {
   InformationCircleIcon,
   TemplateIcon
 } from "@heroicons/react/outline"
+import * as Accordion from "@radix-ui/react-accordion"
 import { AnimatePresence, motion } from "framer-motion"
 import { useSession } from "next-auth/react"
+import Link from "next/link"
+import React, { useState } from "react"
 
 import Button from "@/components/Button"
-import useSite from "@/hooks/useSite"
-import useItems from "@/hooks/useItems"
-import classNames from "@/lib/classnames"
 import Loader from "@/components/Loader"
+
+import classNames from "@/lib/classnames"
 
 const accordion = {
   open: {
@@ -87,7 +88,7 @@ const Onboarding = () => {
             <p className="pb-4 text-gray-600">
               Inicia capturando la información básica sobre tu negocio
             </p>
-            <Link href="/app/settings">
+            <Link href="/app/settings" legacyBehavior>
               <Button
                 variant="primary"
                 size="sm"
@@ -113,7 +114,7 @@ const Onboarding = () => {
             <p className="pb-4 text-gray-600">
               Ingresa tus productos y empieza a construir tu Menú
             </p>
-            <Link href="/app/items">
+            <Link href="/app/items" legacyBehavior>
               <Button
                 variant="primary"
                 size="sm"
@@ -139,7 +140,7 @@ const Onboarding = () => {
             <p className="pb-4 text-gray-600">
               Personaliza y publica tu Menú para compartirlo con tus clientes
             </p>
-            <Link href="/app/site-editor">
+            <Link href="/app/site-editor" legacyBehavior>
               <Button
                 variant="primary"
                 size="sm"
@@ -152,7 +153,7 @@ const Onboarding = () => {
         </AccordionItem>
       </Accordion.Root>
     </div>
-  )
+  );
 }
 
 interface AccordionItemProps {

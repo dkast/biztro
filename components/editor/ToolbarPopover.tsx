@@ -1,7 +1,8 @@
 // your-popover.js
-import React from "react"
+
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { motion } from "framer-motion"
+import React from "react"
 
 export const ToolbarPopover = PopoverPrimitive.Root
 export const ToolbarPopoverTrigger = PopoverPrimitive.Trigger

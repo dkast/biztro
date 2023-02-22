@@ -1,11 +1,12 @@
-import React from "react"
-import Image from "next/image"
-import { Site } from "@prisma/client"
-import { PhoneIcon } from "@heroicons/react/solid"
 import { useNode, UserComponent } from "@craftjs/core"
+import { PhoneIcon } from "@heroicons/react/solid"
+import { Site } from "@prisma/client"
+import Image from "next/image"
+import React from "react"
 
 import BlurImage from "@/components/BlurImage"
 import MenuBannerSettings from "@/components/selectors/MenuBanner/MenuBannerSettings"
+
 import classNames from "@/lib/classnames"
 
 interface MenuBannerProps {

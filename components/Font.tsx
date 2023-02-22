@@ -1,5 +1,5 @@
 // Extracted from https://github.com/NWylynko/react-font
-import React, { useEffect } from 'react'
+import React, { useEffect } from "react"
 // import WebFont from 'webfontloader'
 import type WebFont from "webfontloader"
 
@@ -33,13 +33,13 @@ export const Text = (
         ...Object.keys(props).reduce((object, key) => {
           if (
             ![
-              'family',
-              'italic',
-              'weight',
-              'onLoad',
-              'onError',
-              'onAllLoad',
-              'onAllError'
+              "family",
+              "italic",
+              "weight",
+              "onLoad",
+              "onError",
+              "onAllLoad",
+              "onAllError"
             ].includes(key)
           ) {
             object[key] = props[key]
@@ -68,7 +68,7 @@ export const FontLoader = ({
   family,
   weight = 400,
   italic = false,
-  provider = 'google',
+  provider = "google",
   onLoad = () => {},
   onError = () => {},
   onAllLoad = () => {},
@@ -85,7 +85,7 @@ export const FontLoader = ({
       inactive: onAllError
     }
 
-    if (provider === 'google') {
+    if (provider === "google") {
       const fontFamily = GoogleFont({
         family,
         weight,
@@ -95,14 +95,14 @@ export const FontLoader = ({
         families: [fontFamily],
         text
       }
-    } else if (provider === 'local') {
+    } else if (provider === "local") {
       WebFontConfig.custom = {
         families: [family]
       }
     }
 
     WebFont.load(WebFontConfig)
-  }, [family, weight, italic, provider, onLoad, onError])
+  }, [family, weight, italic, provider, onLoad, onError, onAllLoad, onAllError, text])
 
   return null
 }
@@ -130,7 +130,7 @@ interface FontProps {
 const styleGen = ({ family, italic, weight }: FontProps) => {
   return {
     fontFamily: `'${family}'`,
-    fontStyle: italic ? 'italic' : undefined,
+    fontStyle: italic ? "italic" : undefined,
     fontWeight: weight
   }
 }

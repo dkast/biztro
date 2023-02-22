@@ -1,9 +1,9 @@
-import cuid from "cuid"
-import prisma from "@/lib/prisma"
-
-import type { NextApiRequest, NextApiResponse } from "next"
 import type { Site } from "@prisma/client"
+import cuid from "cuid"
+import type { NextApiRequest, NextApiResponse } from "next"
 import type { Session } from "next-auth"
+
+import prisma from "@/lib/prisma"
 
 export async function getSite(
   req: NextApiRequest,

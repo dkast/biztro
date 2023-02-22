@@ -1,18 +1,19 @@
-import React from "react"
-import { NextSeo } from "next-seo"
-import { useRouter } from "next/router"
+import type { ParsedUrlQuery } from "querystring"
+
 import { Editor, Frame } from "@craftjs/core"
 import lz from "lzutf8"
+import type { GetStaticPaths, GetStaticProps, NextPage } from "next"
+import { NextSeo } from "next-seo"
+import { useRouter } from "next/router"
+import React from "react"
+
+import Loader from "@/components/Loader"
+import Container from "@/components/selectors/Container"
+import MenuBanner from "@/components/selectors/MenuBanner"
+import MenuItem from "@/components/selectors/MenuItem"
+import Text from "@/components/selectors/Text"
 
 import prisma from "@/lib/prisma"
-import Loader from "@/components/Loader"
-
-import type { GetStaticPaths, GetStaticProps, NextPage } from "next"
-import type { ParsedUrlQuery } from "querystring"
-import Text from "@/components/selectors/Text"
-import Container from "@/components/selectors/Container"
-import MenuItem from "@/components/selectors/MenuItem"
-import MenuBanner from "@/components/selectors/MenuBanner"
 
 interface PathProps extends ParsedUrlQuery {
   site: string
