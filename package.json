@@ -1,6 +1,6 @@
 {
   "name": "biztro",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,8 +12,8 @@
     "prisma:migrate": "prisma migrate deploy"
   },
   "dependencies": {
-    "@craftjs/core": "0.2.0-beta.6",
-    "@craftjs/layers": "0.2.0-beta.6",
+    "@craftjs/core": "0.2.0-beta.7",
+    "@craftjs/layers": "0.2.0-beta.7",
     "@headlessui/react": "^1.7.11",
     "@heroicons/react": "^1.0.6",
     "@hookform/resolvers": "^2.9.11",

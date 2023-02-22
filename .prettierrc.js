@@ -13,6 +13,7 @@ module.exports = {
   ],
   importOrder: [
     "^@/components/(.*)$",
+    "^@/hooks/(.*)$",
     "^@/lib/(.*)$",
     "^@/styles/(.*)$",
     "^[./]"
