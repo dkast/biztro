@@ -1,5 +1,5 @@
 export default function rgba2hex(rgbaColor: string) {
-  let rgba = rgbaColor.match(
+  const rgba = rgbaColor.match(
     /^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i
   )
   return rgba && rgba.length === 4

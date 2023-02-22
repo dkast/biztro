@@ -6,7 +6,7 @@ import classNames from "@/lib/classnames"
 
 import { DefaultLayerHeader } from "./DefaultLayerHeader"
 
-export const DefaultLayer: React.FC = ({ children }) => {
+export const DefaultLayer = ({ children }) => {
   const {
     id,
     expanded,

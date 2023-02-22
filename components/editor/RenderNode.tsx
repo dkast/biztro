@@ -1,6 +1,5 @@
-import { useRect } from "@/hooks/useRect"
-import { useEditor, useNode } from "@craftjs/core"
-import { ROOT_NODE } from "@craftjs/utils"
+// import { useRect } from "@/hooks/useRect"
+import { ROOT_NODE, useEditor, useNode } from "@craftjs/core"
 import {
   ArrowUpIcon,
   ClipboardCopyIcon,
@@ -40,7 +39,7 @@ export const RenderNode = ({ render }) => {
   }))
 
   const currentRef = useRef<HTMLDivElement>()
-  const rect = useRect(dom)
+  // const rect = useRect(dom)
   const [propsCopy, setPropsCopy] = useRecoilState(propState)
 
   useEffect(() => {
@@ -59,7 +58,7 @@ export const RenderNode = ({ render }) => {
       top: `${top > 0 ? top : bottom}px`,
       left: `${left}px`
     }
-  }, [dom, rect])
+  }, [dom])
 
   const onPasteProps = clonedProps => {
     actions.setProp(id, props => {

@@ -20,12 +20,12 @@ export default async function handler(
     }
 
     try {
-      const message = `El correo ${email} solicita acceso a la aplicacion.`
+      const message = `El correo ${email} solicita acceso a la aplicación.`
 
       await client.sendEmail({
         From: "invite@biztro.co",
         To: "hola@biztro.co",
-        Subject: "Solicitud de Invitacion",
+        Subject: "Solicitud de Invitación",
         TextBody: message,
         MessageStream: "broadcast"
       })

@@ -102,7 +102,7 @@ export const FontLoader = ({
     }
 
     WebFont.load(WebFontConfig)
-  }, [family, weight, italic, provider, onLoad, onError])
+  }, [family, weight, italic, provider, onLoad, onError, onAllLoad, onAllError, text])
 
   return null
 }

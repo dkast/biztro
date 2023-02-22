@@ -16,7 +16,6 @@ import { EditableLayerName } from "./EditableLayerName"
 export const DefaultLayerHeader: React.FC = () => {
   const {
     id,
-    depth,
     expanded,
     children,
     connectors: { drag, layerHeader },

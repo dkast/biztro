@@ -10,10 +10,7 @@ const AuthError = () => {
   const { error } = router.query
 
   if (error) {
-    return <>
-      <Head>
-        <title>Biztro - Bienvenido</title>
-      </Head>
+    return (
       <div className="flex min-h-screen bg-white">
         <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
@@ -44,7 +41,7 @@ const AuthError = () => {
                 <Link
                   href="/"
                   className="font-semibold text-violet-500 hover:text-violet-700"
-                  legacyBehavior>
+                >
                   Volver al inicio
                   <ArrowSmRightIcon className="inline h-6 w-6" />
                 </Link>
@@ -63,7 +60,7 @@ const AuthError = () => {
           />
         </div>
       </div>
-    </>;
+    )
   } else {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center">
@@ -79,13 +76,13 @@ const AuthError = () => {
           <Link
             href="/"
             className="font-semibold text-violet-500 hover:text-violet-700"
-            legacyBehavior>
+          >
             Volver al inicio
             <ArrowSmRightIcon className="inline h-6 w-6" />
           </Link>
         </div>
       </div>
-    );
+    )
   }
 }
 
