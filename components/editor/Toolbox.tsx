@@ -1,5 +1,3 @@
-import useItems from "@/hooks/useItems"
-import useSite from "@/hooks/useSite"
 import { useEditor } from "@craftjs/core"
 import { HeadingIcon } from "@radix-ui/react-icons"
 import { useSession } from "next-auth/react"
@@ -12,6 +10,9 @@ import ToolboxPanel from "@/components/editor/ToolboxPanel"
 import Loader from "@/components/Loader"
 import MenuItem from "@/components/selectors/MenuItem"
 import Text from "@/components/selectors/Text"
+
+import useItems from "@/hooks/useItems"
+import useSite from "@/hooks/useSite"
 
 const Toolbox = (): JSX.Element => {
   const { data: session } = useSession()

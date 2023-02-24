@@ -1,5 +1,3 @@
-import useItems from "@/hooks/useItems"
-import useSite from "@/hooks/useSite"
 import { useEditor } from "@craftjs/core"
 import { InformationCircleIcon } from "@heroicons/react/solid"
 import type { Site } from "@prisma/client"
@@ -10,6 +8,9 @@ import toast from "react-hot-toast"
 import { useRecoilState } from "recoil"
 
 import Alert from "@/components/Alert"
+
+import useItems from "@/hooks/useItems"
+import useSite from "@/hooks/useSite"
 
 import difference from "@/lib/difference"
 import { syncReqState } from "@/lib/store"

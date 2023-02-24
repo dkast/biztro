@@ -27,15 +27,16 @@ const BlogLayout = ({ children }: LayoutProps) => {
         <div className="flex items-center justify-center md:justify-end">
           <Link
             href="/invite"
-            className="flex items-center rounded-lg bg-gradient-to-tl from-red-500 to-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600">
-            Solicita acceso<ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
-
+            className="flex items-center rounded-lg bg-gradient-to-tl from-red-500 to-orange-500 px-4 py-3 text-orange-100 shadow-sm shadow-orange-500/50 transition hover:scale-[98%] hover:bg-orange-600"
+          >
+            Solicita acceso
+            <ArrowSmRightIcon className="ml-2 h-6 w-6 text-current" />
           </Link>
         </div>
       </div>
       <Footer />
     </div>
-  );
+  )
 }
 
 export default BlogLayout

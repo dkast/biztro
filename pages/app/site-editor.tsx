@@ -1,4 +1,3 @@
-import useSite from "@/hooks/useSite"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { ArrowRightIcon } from "@heroicons/react/outline"
 import lz from "lzutf8"
@@ -22,6 +21,8 @@ import Container from "@/components/selectors/Container"
 import MenuBanner from "@/components/selectors/MenuBanner"
 import MenuItem from "@/components/selectors/MenuItem"
 import Text from "@/components/selectors/Text"
+
+import useSite from "@/hooks/useSite"
 
 import classNames from "@/lib/classnames"
 import { frameSizeState, hostState } from "@/lib/store"

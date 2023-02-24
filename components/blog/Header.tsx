@@ -54,13 +54,14 @@ const Header = ({
           <Link
             href={`https://twitter.com/${twitter}`}
             passHref
-            className="text-xs no-underline md:text-sm">
+            className="text-xs no-underline md:text-sm"
+          >
             @{twitter}
           </Link>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default Header

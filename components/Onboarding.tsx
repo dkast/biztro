@@ -1,5 +1,3 @@
-import useItems from "@/hooks/useItems"
-import useSite from "@/hooks/useSite"
 import {
   ArrowRightIcon,
   CheckIcon,
@@ -16,6 +14,9 @@ import React, { useState } from "react"
 
 import Button from "@/components/Button"
 import Loader from "@/components/Loader"
+
+import useItems from "@/hooks/useItems"
+import useSite from "@/hooks/useSite"
 
 import classNames from "@/lib/classnames"
 
@@ -153,7 +154,7 @@ const Onboarding = () => {
         </AccordionItem>
       </Accordion.Root>
     </div>
-  );
+  )
 }
 
 interface AccordionItemProps {
