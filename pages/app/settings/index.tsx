@@ -1,4 +1,3 @@
-import useWarnChanges from "@/hooks/useWarnChanges"
 import { CameraIcon } from "@heroicons/react/outline"
 import { UploadIcon } from "@heroicons/react/solid"
 import type { Site } from "@prisma/client"
@@ -18,6 +17,8 @@ import InputAddon from "@/components/InputAddon"
 import Layout from "@/components/layouts/Layout"
 import SettingsLayout from "@/components/layouts/SettingsLayout"
 import TextArea from "@/components/TextArea"
+
+import useWarnChanges from "@/hooks/useWarnChanges"
 
 import fetcher from "@/lib/fetcher"
 import saveImage from "@/lib/save-image"
@@ -396,7 +397,7 @@ const SettingsGeneral: NextPageWithAuthAndLayout = () => {
         </div>
       </div>
     </form>
-  );
+  )
 }
 
 SettingsGeneral.auth = true

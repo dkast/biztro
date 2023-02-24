@@ -1,4 +1,3 @@
-import useLocalStorage from "@/hooks/useLocalStorage"
 import Link from "next/link"
 import { useRef } from "react"
 import { SketchPicker } from "react-color"
@@ -15,6 +14,8 @@ import {
   ToolbarSwitch,
   ToolbarSwitchThumb
 } from "@/components/editor/ToolbarSwitch"
+
+import useLocalStorage from "@/hooks/useLocalStorage"
 
 import exportAsImage from "@/lib/export-as-image"
 import rgbToHex from "@/lib/rgba-to-hex"

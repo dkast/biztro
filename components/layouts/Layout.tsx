@@ -40,7 +40,7 @@ function MenuLink(props) {
     <Link href={href} {...rest}>
       {children}
     </Link>
-  );
+  )
 }
 
 const Layout = ({ children }: LayoutProps) => {
@@ -190,7 +190,7 @@ const Layout = ({ children }: LayoutProps) => {
                   <nav className="flex h-full flex-col">
                     <div className="space-y-1">
                       {sidebarNavigation.map(item => (
-                        (<Link
+                        <Link
                           key={item.name}
                           href={item.href}
                           className={classNames(
@@ -201,8 +201,8 @@ const Layout = ({ children }: LayoutProps) => {
                           )}
                           aria-current={
                             item.href === asPath ? "page" : undefined
-                          }>
-
+                          }
+                        >
                           <item.icon
                             className={classNames(
                               item.href === asPath
@@ -213,8 +213,7 @@ const Layout = ({ children }: LayoutProps) => {
                             aria-hidden="true"
                           />
                           <span>{item.name}</span>
-
-                        </Link>)
+                        </Link>
                       ))}
                     </div>
                   </nav>
@@ -366,7 +365,7 @@ const Layout = ({ children }: LayoutProps) => {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default Layout

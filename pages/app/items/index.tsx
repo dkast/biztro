@@ -1,5 +1,3 @@
-import useItems from "@/hooks/useItems"
-import useSite from "@/hooks/useSite"
 import { ArrowRightIcon, PlusIcon } from "@heroicons/react/outline"
 import { useSession } from "next-auth/react"
 import Head from "next/head"
@@ -17,6 +15,9 @@ import Loader from "@/components/Loader"
 import PageHeader from "@/components/PageHeader"
 import SidePanel from "@/components/SidePanel"
 import Table from "@/components/Table"
+
+import useItems from "@/hooks/useItems"
+import useSite from "@/hooks/useSite"
 
 import { HttpMethod, NextPageWithAuthAndLayout } from "@/lib/types"
 

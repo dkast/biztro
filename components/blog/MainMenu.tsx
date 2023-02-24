@@ -14,9 +14,7 @@ const MainMenu = ({ variant }: MainMenuProps): JSX.Element => {
       <Toolbar.Root className="flex w-full items-center">
         <Toolbar.Button asChild>
           <Link href="/">
-
             <Image src="/logo-bistro.svg" alt="Logo" width={40} height={40} />
-
           </Link>
         </Toolbar.Button>
         <Toolbar.Button asChild>
@@ -27,15 +25,14 @@ const MainMenu = ({ variant }: MainMenuProps): JSX.Element => {
               variant === "dark"
                 ? "border-violet-600 bg-violet-500/10  text-violet-300 hover:bg-violet-500/30"
                 : "border-gray-300 text-violet-500 hover:bg-violet-50"
-            )}>
-            
-              Iniciar sesión
-            
+            )}
+          >
+            Iniciar sesión
           </Link>
         </Toolbar.Button>
       </Toolbar.Root>
     </div>
-  );
+  )
 }
 
 export default MainMenu
