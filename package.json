@@ -46,7 +46,7 @@
     "lodash.isobject": "^3.0.2",
     "lodash.transform": "^4.6.0",
     "lzutf8": "^0.6.3",
-    "next": "13.1.6",
+    "next": "13.2.2",
     "next-absolute-url": "^1.2.2",
     "next-auth": "^4.19.2",
     "next-axiom": "^0.17.0",
