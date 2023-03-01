@@ -37,7 +37,7 @@
     "@splinetool/react-spline": "^2.2.5",
     "@splinetool/runtime": "^0.9.223",
     "blurhash": "^1.1.5",
-    "cuid": "^2.1.8",
+    "cuid": "^3.0.0",
     "date-fns": "^2.29.3",
     "framer-motion": "^9.0.7",
     "html2canvas": "^1.4.1",
