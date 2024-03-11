@@ -1,21 +1,24 @@
-// @ts-check
-
-/** @type {import("@ianvs/prettier-plugin-sort-imports").PrettierConfig} */
-module.exports = {
+/** @type {import('prettier').Config & import('prettier-plugin-tailwindcss').options} */
+const config = {
   trailingComma: "none",
   arrowParens: "avoid",
   tabWidth: 2,
-  useTabs: false,
   semi: false,
+  printWidth: 80,
+  endOfLine: "lf",
   plugins: [
-    "prettier-plugin-tailwindcss",
-    "@ianvs/prettier-plugin-sort-imports"
+    "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
   ],
   importOrder: [
+    "^react",
+    "<THIRD_PARTY_MODULES>",
+    "",
     "^@/components/(.*)$",
-    "^@/hooks/(.*)$",
+    "^@/server/(.*)$",
     "^@/lib/(.*)$",
     "^@/styles/(.*)$",
+    "^@/env.mjs",
     "^[./]"
   ],
   importOrderBuiltinModulesToTop: true,
@@ -26,3 +29,5 @@ module.exports = {
   importOrderSeparation: true,
   importOrderSortSpecifiers: true
 }
+
+export default config

@@ -1,0 +1,67 @@
+import { type Metadata, type Viewport } from "next"
+import { Inter, Sora } from "next/font/google"
+
+import "../../../styles/globals.css"
+
+// import "react-photo-view/dist/react-photo-view.css"
+
+import Providers from "@/app/home/providers"
+
+// import { SpeedInsights } from "@vercel/speed-insights/next"
+// import { AxiomWebVitals } from "next-axiom"
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://biztro.co"),
+  title: {
+    template: "%s | Biztro",
+    default: "Biztro"
+  },
+  icons: {
+    icon: "/favicon.ico"
+  },
+  appleWebApp: {
+    title: "Biztro"
+  },
+  description: "Crea tu menú digital en minutos"
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  userScalable: false
+}
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter"
+})
+
+const sora = Sora({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-sora"
+})
+
+export default function RootLayout({
+  children
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html
+      className={`${inter.variable} ${sora.variable}`}
+      suppressHydrationWarning
+    >
+      {/* <AxiomWebVitals /> */}
+      <body className="bg-white text-gray-950 antialiased dark:bg-gray-900 dark:text-white">
+        <Providers>
+          <main className="flex min-h-dvh flex-col">{children}</main>
+        </Providers>
+        {/* <SpeedInsights /> */}
+      </body>
+    </html>
+  )
+}
