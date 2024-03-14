@@ -14,7 +14,8 @@
     "prepare": "husky",
     "prebuild": "prisma generate",
     "predev": "prisma generate",
-    "prisma:migrate": "prisma migrate deploy"
+    "prisma:migrate": "prisma migrate deploy",
+    "db:dev": "turso dev --db-file local.db"
   },
   "dependencies": {
     "@craftjs/core": "0.2.0-beta.7",

@@ -25,7 +25,9 @@ export const env = createEnv({
     R2_ACCESS_KEY_ID: z.string().min(1),
     R2_SECRET_KEY_ID: z.string().min(1),
     R2_BUCKET_NAME: z.string().min(1),
-    TURSO_AUTH_TOKEN: z.string().min(1)
+    TURSO_AUTH_TOKEN: z.string().min(1),
+    GOOGLE_SECRET: z.string().min(1),
+    GOOGLE_ID: z.string().min(1)
   },
 
   /**
@@ -50,7 +52,9 @@ export const env = createEnv({
     R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
     R2_SECRET_KEY_ID: process.env.R2_SECRET_KEY_ID,
     R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
-    TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN
+    TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
+    GOOGLE_SECRET: process.env.GOOGLE_SECRET,
+    GOOGLE_ID: process.env.GOOGLE_ID
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
