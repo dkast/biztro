@@ -1,11 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Account {
@@ -14,16 +14,16 @@ model Account {
   type                     String
   provider                 String
   providerAccountId        String
-  refresh_token            String? @db.VarChar(2000)
+  refresh_token            String?
   refresh_token_expires_in Int?
-  access_token             String? @db.VarChar(2000)
+  access_token             String?
   expires_at               Int?
   token_type               String?
   scope                    String?
-  id_token                 String? @db.VarChar(2000)
-  session_state            String? @db.VarChar(2000)
-  oauth_token_secret       String? @db.VarChar(2000)
-  oauth_token              String? @db.VarChar(2000)
+  id_token                 String?
+  session_state            String?
+  oauth_token_secret       String?
+  oauth_token              String?
   user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -49,8 +49,6 @@ model User {
   accounts      Account[]
   sessions      Session[]
   memberships   Membership[] @relation("Memberships")
-  role          Role         @default(USER) // Deprecated
-  Site          Site[] // Deprecated
 }
 
 model VerificationToken {
@@ -62,14 +60,14 @@ model VerificationToken {
 }
 
 model Membership {
-  id             String         @id @default(cuid())
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  role           MembershipRole
-  user           User           @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
+  id             String       @id @default(cuid())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  role           String       @default("MEMBER")
+  user           User         @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
   userId         String
-  isActive       Boolean        @default(true)
-  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  isActive       Boolean      @default(true)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String
 
   @@unique([organizationId, userId])
@@ -77,17 +75,17 @@ model Membership {
 }
 
 model Organization {
-  id           String             @id @default(cuid())
-  name         String             @unique
+  id           String       @id @default(cuid())
+  name         String       @unique
   description  String?
   logo         String?
   banner       String?
-  status       OrganizationStatus @default(ACTIVE)
-  plan         OrganizationPlan   @default(TRIAL)
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  subdomain    String             @unique
-  customDomain String?            @unique
+  status       String       @default("ACTIVE")
+  plan         String       @default("BASIC")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  subdomain    String       @unique
+  customDomain String?      @unique
   memberships  Membership[]
   menus        Menu[]
   menuItems    MenuItem[]
@@ -97,12 +95,12 @@ model Menu {
   id             String       @id @default(cuid())
   name           String
   description    String?
-  status         MenuStatus   @default(DRAFT)
+  status         String       @default("DRAFT")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String
-  data           String?      @db.Text
+  data           String?
 }
 
 model MenuItem {
@@ -128,44 +126,6 @@ model Variant {
   menuItemId  String
 }
 
-// Deprecated
-model Site {
-  id            String   @id @default(cuid())
-  name          String?
-  description   String?  @db.Text
-  logo          String?
-  image         String?  @db.Text
-  imageBlurhash String?  @db.LongText
-  phone         String?
-  subdomain     String?  @unique
-  customDomain  String?  @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  user          User?    @relation(fields: [userId], references: [id])
-  userId        String?
-  serialData    String?  @db.LongText
-  published     Boolean  @default(false)
-  items         Item[]
-}
-
-// Deprecated
-model Item {
-  id            String   @id @default(cuid())
-  title         String?
-  description   String?  @db.Text
-  extras        String?  @db.Text
-  price         Float?
-  image         String?  @db.Text
-  imageBlurhash String?  @db.LongText
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  site          Site?    @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  siteId        String?
-
-  @@unique([id, siteId], name: "post_site_constraint")
-  @@index([siteId])
-}
-
 model Invite {
   id    String @id @default(cuid())
   email String @unique
@@ -174,31 +134,30 @@ model Invite {
 }
 
 // Deprecated
-enum Role {
-  USER
-  PRO
-  ADMIN
-}
+// enum Role {
+//   USER
+//   PRO
+//   ADMIN
+// }
 
-enum OrganizationStatus {
-  ACTIVE
-  DUE
-  INACTIVE
-}
+// enum OrganizationStatus {
+//   ACTIVE
+//   DUE
+//   INACTIVE
+// }
 
-enum OrganizationPlan {
-  TRIAL
-  BASIC
-  PRO
-}
+// enum OrganizationPlan {
+//   BASIC
+//   PRO
+// }
 
-enum MembershipRole {
-  OWNER
-  ADMIN
-  MEMBER
-}
+// enum MembershipRole {
+//   ADMIN
+//   SUPER_ADMIN
+//   MEMBER
+// }
 
-enum MenuStatus {
-  DRAFT
-  PUBLISHED
-}
+// enum MenuStatus {
+//   DRAFT
+//   PUBLISHED
+// }

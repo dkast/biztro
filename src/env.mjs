@@ -24,7 +24,8 @@ export const env = createEnv({
     R2_ACCOUNT_ID: z.string().min(1),
     R2_ACCESS_KEY_ID: z.string().min(1),
     R2_SECRET_KEY_ID: z.string().min(1),
-    R2_BUCKET_NAME: z.string().min(1)
+    R2_BUCKET_NAME: z.string().min(1),
+    TURSO_AUTH_TOKEN: z.string().min(1)
   },
 
   /**
@@ -48,7 +49,8 @@ export const env = createEnv({
     R2_ACCOUNT_ID: process.env.R2_ACCOUNT_ID,
     R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
     R2_SECRET_KEY_ID: process.env.R2_SECRET_KEY_ID,
-    R2_BUCKET_NAME: process.env.R2_BUCKET_NAME
+    R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
+    TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

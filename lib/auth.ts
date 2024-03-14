@@ -1,23 +1,24 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import type { Role } from "@prisma/client"
+// import type { Role } from "@prisma/client"
 import type { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 
 import prisma from "@/lib/prisma"
+import { env } from "@/env.mjs"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_SECRET
+      clientId: env.GOOGLE_ID,
+      clientSecret: env.GOOGLE_SECRET
     })
   ],
   callbacks: {
     async signIn({ user }) {
       const found = await prisma.invite.count({
         where: {
-          email: user.email
+          email: user.email ?? ""
         }
       })
 
@@ -53,11 +54,11 @@ declare module "next-auth" {
       name: string
       email: string
       image?: string | null
-      role: Role
+      role: string
     }
   }
 
   interface User {
-    role: Role
+    role: string
   }
 }
