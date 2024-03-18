@@ -80,7 +80,8 @@ export const authOptions: NextAuthOptions = {
     }
   },
   pages: {
-    signIn: "/login"
+    signIn: "/login",
+    newUser: "/new-org"
     // error: "/app/auth/error"
   },
   secret: process.env.NEXTAUTH_SECRET
