@@ -73,14 +73,14 @@ function Providers({ children }: { children: React.ReactNode }) {
       {/* <QueryClientProvider client={queryClient}> */}
       {/* <Provider> */}
       {/* <PhotoProvider> */}
-      <Suspense fallback={null}>
+      {/* <Suspense fallback={null}>
         <ProgressBar
           color="#FF6500"
           options={{ showSpinner: false }}
           shallowRouting
           delay={200}
         />
-      </Suspense>
+      </Suspense> */}
       {/* <ReactQueryStreamedHydration> */}
       {children}
       {/* </ReactQueryStreamedHydration> */}

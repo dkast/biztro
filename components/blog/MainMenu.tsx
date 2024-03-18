@@ -10,7 +10,7 @@ interface MainMenuProps {
 
 const MainMenu = ({ variant }: MainMenuProps): JSX.Element => {
   return (
-    <div className="mt-2 flex w-full max-w-6xl items-center py-2 px-4 lg:px-2 xl:px-0">
+    <div className="mt-2 flex w-full max-w-6xl items-center px-4 py-2 lg:px-2 xl:px-0">
       <Toolbar.Root className="flex w-full items-center">
         <Toolbar.Button asChild>
           <Link href="/">
@@ -19,7 +19,7 @@ const MainMenu = ({ variant }: MainMenuProps): JSX.Element => {
         </Toolbar.Button>
         <Toolbar.Button asChild>
           <Link
-            href="/app/dashboard"
+            href="/dashboard"
             className={classNames(
               "ml-auto rounded-lg border px-3 py-2 text-sm transition",
               variant === "dark"

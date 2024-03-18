@@ -12,7 +12,7 @@ const config = {
   prefix: "",
   theme: {
     fontFamily: {
-      display: ["var(--font-outfit)"],
+      display: ["var(--font-sora)"],
       sans: ["var(--font-inter)", ...fontFamily.sans]
     },
     container: {

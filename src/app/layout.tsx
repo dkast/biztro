@@ -1,11 +1,11 @@
 import { type Metadata, type Viewport } from "next"
 import { Inter, Sora } from "next/font/google"
 
-import "../../../styles/globals.css"
+import "../../styles/globals.css"
 
 // import "react-photo-view/dist/react-photo-view.css"
 
-import Providers from "@/app/home/providers"
+import Providers from "@/app/providers"
 
 // import { SpeedInsights } from "@vercel/speed-insights/next"
 // import { AxiomWebVitals } from "next-axiom"
