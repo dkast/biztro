@@ -1,4 +1,3 @@
-import { log } from "console"
 import { z } from "zod"
 
 export enum HttpMethod {
@@ -77,7 +76,7 @@ export const COLORS = [
 export const orgSchema = z.object({
   id: z.string().cuid().optional(),
   name: z
-    .string()
+    .string({ required_error: "Nombre es requerido" })
     .min(3, { message: "Nombre muy corto" })
     .max(100, { message: "Nombre muy largo" }),
   description: z.string().optional(),
@@ -89,7 +88,18 @@ export const orgSchema = z.object({
     .string()
     .min(3, { message: "Subdominio muy corto" })
     .trim()
-    .regex(/^[a-z0-9_-]+$/i, {
-      message: "Solo se permiten letras, números, guiones y guiones bajos"
+    .regex(/^[a-z0-9-]+$/i, {
+      message: "Solo letras, números y guiones son permitidos"
     })
 })
+
+export const enum Status {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  DUE = "DUE"
+}
+
+export const enum Plan {
+  BASIC = "BASIC",
+  PRO = "PRO"
+}

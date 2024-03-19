@@ -41,10 +41,11 @@ export default function LoginForm({
         </Button>
       ))}
       {error && (
-        <div>
+        <div className="mt-8">
           <Alert variant="destructive">
             <AlertDescription>
-              Usuario y/o contraseña incorrectos
+              Ocurrió un error al iniciar sesión. Por favor, intenta de nuevo
+              más tarde.
             </AlertDescription>
           </Alert>
         </div>

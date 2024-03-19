@@ -15,6 +15,8 @@ const config = {
       display: ["var(--font-sora)"],
       sans: ["var(--font-inter)", ...fontFamily.sans]
     },
+    transparent: "transparent",
+    current: "currentColor",
     container: {
       center: true,
       padding: "2rem",
@@ -39,14 +41,7 @@ const config = {
       }
     }
   },
-  plugins: [
-    require("tailwindcss-animate"),
-    require("@tailwindcss/forms"),
-    require("@tailwindcss/line-clamp"),
-    require("tailwindcss-safe-area"),
-    require("@tailwindcss/typography"),
-    require("tailwindcss-radix")
-  ]
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")]
 } satisfies Config
 
 export default config
