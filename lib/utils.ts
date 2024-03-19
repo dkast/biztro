@@ -10,6 +10,6 @@ export function getInitials(name: string | undefined | null) {
   if (!name) return ""
   return name
     .split(" ")
-    .map(word => word.charAt(0))
+    .map(word => word.charAt(0).toUpperCase())
     .join("")
 }

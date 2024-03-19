@@ -3,8 +3,8 @@
 import React, { Suspense } from "react"
 import { Toaster } from "react-hot-toast"
 // import { PhotoProvider } from "react-photo-view"
-// import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-// import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental"
 // import { Provider } from "jotai"
 import { SessionProvider } from "next-auth/react"
 import { AppProgressBar as ProgressBar } from "next-nprogress-bar"
@@ -12,7 +12,6 @@ import { AppProgressBar as ProgressBar } from "next-nprogress-bar"
 // import { ThemeProvider } from "next-themes"
 // import { usePathname } from "next/navigation"
 
-/* 
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
@@ -40,7 +39,6 @@ function getQueryClient() {
     return browserQueryClient
   }
 }
-*/
 
 /*
 const getForcedTheme = (pathname: string) => {
@@ -58,7 +56,7 @@ const getForcedTheme = (pathname: string) => {
 */
 
 function Providers({ children }: { children: React.ReactNode }) {
-  // const queryClient = getQueryClient()
+  const queryClient = getQueryClient()
   // const forcedTheme = getForcedTheme(usePathname())
 
   return (
@@ -70,32 +68,30 @@ function Providers({ children }: { children: React.ReactNode }) {
         disableTransitionOnChange
         forcedTheme={forcedTheme}
       > */}
-      {/* <QueryClientProvider client={queryClient}> */}
-      {/* <Provider> */}
-      {/* <PhotoProvider> */}
-      {/* <Suspense fallback={null}>
-        <ProgressBar
-          color="#FF6500"
-          options={{ showSpinner: false }}
-          shallowRouting
-          delay={200}
+      <QueryClientProvider client={queryClient}>
+        {/* <Provider> */}
+        {/* <PhotoProvider> */}
+        <Suspense fallback={null}>
+          <ProgressBar
+            color="#FF6500"
+            options={{ showSpinner: false }}
+            shallowRouting
+            delay={200}
+          />
+        </Suspense>
+        <ReactQueryStreamedHydration>{children}</ReactQueryStreamedHydration>
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              background: "#333",
+              color: "#fff"
+            }
+          }}
         />
-      </Suspense> */}
-      {/* <ReactQueryStreamedHydration> */}
-      {children}
-      {/* </ReactQueryStreamedHydration> */}
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            background: "#333",
-            color: "#fff"
-          }
-        }}
-      />
-      {/* </PhotoProvider> */}
-      {/* </Provider> */}
-      {/* </QueryClientProvider> */}
+        {/* </PhotoProvider> */}
+        {/* </Provider> */}
+      </QueryClientProvider>
       {/* </ThemeProvider> */}
     </SessionProvider>
   )

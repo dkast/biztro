@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { bootstrapOrg } from "@/server/organization"
+import { bootstrapOrg } from "@/server/actions/organization/mutations"
 import { orgSchema, Plan, Status } from "@/lib/types"
 
 export default function NewOrgForm() {

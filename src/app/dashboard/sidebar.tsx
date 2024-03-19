@@ -1,5 +1,6 @@
 "use client"
 
+import Workgroup from "@/app/dashboard/workgroup"
 import { motion } from "framer-motion"
 import {
   LayoutList,
@@ -8,11 +9,7 @@ import {
   type LucideIcon
 } from "lucide-react"
 import Link from "next/link"
-import {
-  useParams,
-  usePathname,
-  useSelectedLayoutSegment
-} from "next/navigation"
+import { usePathname, useSelectedLayoutSegment } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 
@@ -46,6 +43,7 @@ export default function Sidebar() {
           {/* <div className="justify-betweenflex h-16 shrink-0 items-center">
             <Workgroup className={cn(isSidebarOpen ? "visible" : "hidden")} />
           </div> */}
+          <Workgroup />
           <nav className="flex flex-1 flex-col">
             <ul className="flex flex-1 flex-col gap-y-7">
               <li>

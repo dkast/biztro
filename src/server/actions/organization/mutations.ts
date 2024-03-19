@@ -1,6 +1,8 @@
 "use server"
 
+import { appConfig } from "@/app/config"
 import { revalidateTag } from "next/cache"
+import { cookies } from "next/headers"
 
 import prisma from "@/lib/prisma"
 import { action } from "@/lib/safe-actions"
@@ -66,6 +68,11 @@ export const bootstrapOrg = action(
           organizationId: org.id,
           role: "OWNER"
         }
+      })
+
+      // Set the current organization
+      cookies().set(appConfig.cookieOrg, org.id, {
+        maxAge: 60 * 60 * 24 * 365
       })
 
       revalidateTag(`organization-${org.id}`)
