@@ -103,3 +103,9 @@ export const enum Plan {
   BASIC = "BASIC",
   PRO = "PRO"
 }
+
+export const enum ImageType {
+  LOGO = "LOGO",
+  BANNER = "BANNER",
+  MENUITEM = "MENUITEM"
+}

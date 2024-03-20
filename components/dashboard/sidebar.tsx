@@ -1,6 +1,5 @@
 "use client"
 
-import Workgroup from "@/app/dashboard/workgroup"
 import { motion } from "framer-motion"
 import {
   LayoutList,
@@ -11,6 +10,7 @@ import {
 import Link from "next/link"
 import { usePathname, useSelectedLayoutSegment } from "next/navigation"
 
+import Workgroup from "@/components/dashboard/workgroup"
 import { cn } from "@/lib/utils"
 
 type NavigationItem = {
@@ -20,7 +20,7 @@ type NavigationItem = {
 }
 
 const navigation: NavigationItem[] = [
-  { name: "Menús", href: "dashboard", icon: LayoutTemplate },
+  { name: "Menú", href: "dashboard", icon: LayoutTemplate },
   {
     name: "Productos",
     href: "dashboard/items",
@@ -39,11 +39,13 @@ export default function Sidebar() {
       {/* Sidebar for desktop */}
       <div className="hidden transition-all duration-300 ease-in-out lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-60 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pt-16 dark:border-gray-800 dark:bg-gray-900/50">
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pt-20 dark:border-gray-800 dark:bg-gray-900/50">
           {/* <div className="justify-betweenflex h-16 shrink-0 items-center">
             <Workgroup className={cn(isSidebarOpen ? "visible" : "hidden")} />
           </div> */}
-          <Workgroup />
+          <div className="flex h-16 shrink-0 items-center justify-between">
+            <Workgroup />
+          </div>
           <nav className="flex flex-1 flex-col">
             <ul className="flex flex-1 flex-col gap-y-7">
               <li>
@@ -83,7 +85,7 @@ function NavigationLink({ item }: { item: NavigationItem }) {
     >
       <div
         className={cn(
-          isActive ? "bg-cyan-500" : "bg-transparent",
+          isActive ? "bg-orange-500" : "bg-transparent",
           "h-6 w-1 rounded-full"
         )}
         aria-hidden="true"

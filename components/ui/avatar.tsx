@@ -7,24 +7,24 @@ import { cn } from "@/lib/utils"
 
 // Tailwind colors
 const colors = [
-  "amber",
-  "blue",
-  "cyan",
-  "emerald",
-  "fuchsia",
-  "gray",
-  "green",
-  "indigo",
-  "lime",
-  "orange",
-  "pink",
-  "purple",
-  "red",
-  "rose",
-  "sky",
-  "teal",
-  "violet",
-  "yellow"
+  "bg-amber-500 dark:bg-amber-400 text-amber-100",
+  "bg-blue-500 dark:bg-blue-400 text-blue-100",
+  "bg-cyan-500 dark:bg-cyan-400 text-cyan-100",
+  "bg-emerald-500 dark:bg-emerald-400 text-emerald-100",
+  "bg-fuchsia-500 dark:bg-fuchsia-400 text-fuchsia-100",
+  "bg-gray-500 dark:bg-gray-400 text-gray-100",
+  "bg-green-500 dark:bg-green-400 text-green-100",
+  "bg-indigo-500 dark:bg-indigo-400 text-indigo-100",
+  "bg-lime-500 dark:bg-lime-400 text-lime-100",
+  "bg-orange-500 dark:bg-orange-400 text-orange-100",
+  "bg-pink-500 dark:bg-pink-400 text-pink-100",
+  "bg-purple-500 dark:bg-purple-400 text-purple-100",
+  "bg-red-500 dark:bg-red-400 text-red-100",
+  "bg-rose-500 dark:bg-rose-400 text-rose-100",
+  "bg-sky-500 dark:bg-sky-400 text-sky-100",
+  "bg-teal-500 dark:bg-teal-400 text-teal-100",
+  "bg-violet-500 dark:bg-violet-400 text-violet-100",
+  "bg-yellow-500 dark:bg-yellow-400 text-yellow-100"
 ]
 
 // Get a random color from the list based on the hash of the name
@@ -58,6 +58,7 @@ const AvatarImage = React.forwardRef<
     {...props}
   />
 ))
+
 AvatarImage.displayName = AvatarPrimitive.Image.displayName
 
 const AvatarFallback = React.memo(
@@ -75,8 +76,6 @@ const AvatarFallback = React.memo(
     })
 
     const colorClass = getColor(text)
-    const bgColorClass = `bg-${colorClass}-500 dark:bg-${colorClass}-400`
-    const textColorClass = `text-${colorClass}-100 dark:text-${colorClass}-100`
 
     return (
       <AvatarPrimitive.Fallback
@@ -84,8 +83,7 @@ const AvatarFallback = React.memo(
         className={cn(
           "flex h-full w-full items-center justify-center bg-amber-100 text-amber-900 dark:bg-lime-800 dark:text-lime-100",
           className,
-          bgColorClass,
-          textColorClass
+          colorClass
         )}
         {...props}
       >

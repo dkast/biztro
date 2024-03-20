@@ -29,12 +29,14 @@ export default function ProfileMenu() {
 
   if (!user) return null
 
+  console.log(user)
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button type="button" className="focus:outline-none">
           <Avatar>
-            {user.image && <AvatarImage src={user.image} />}
+            <AvatarImage src={user?.image ?? undefined} />
             <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
           </Avatar>
           <span className="sr-only">Tu Perfil</span>

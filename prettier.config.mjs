@@ -15,6 +15,7 @@ const config = {
     "<THIRD_PARTY_MODULES>",
     "",
     "^@/components/(.*)$",
+    "^@/app/(.*)$",
     "^@/server/(.*)$",
     "^@/lib/(.*)$",
     "^@/styles/(.*)$",

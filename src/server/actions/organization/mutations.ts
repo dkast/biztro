@@ -1,44 +1,13 @@
 "use server"
 
-import { appConfig } from "@/app/config"
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 
+import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { action } from "@/lib/safe-actions"
 import { getCurrentUser } from "@/lib/session"
 import { orgSchema } from "@/lib/types"
-
-export const createOrg = action(
-  orgSchema,
-  async ({ name, description, subdomain }) => {
-    try {
-      const org = await prisma.organization.create({
-        data: {
-          name,
-          description,
-          subdomain
-        }
-      })
-
-      revalidateTag(`organization-${org.id}`)
-
-      return { success: true }
-    } catch (error) {
-      let message
-      if (typeof error === "string") {
-        message = error
-      } else if (error instanceof Error) {
-        message = error.message
-      }
-      return {
-        failure: {
-          reason: message
-        }
-      }
-    }
-  }
-)
 
 export const bootstrapOrg = action(
   orgSchema,
@@ -77,6 +46,71 @@ export const bootstrapOrg = action(
 
       revalidateTag(`organization-${org.id}`)
       revalidateTag(`memberships-${org.id}`)
+
+      return { success: true }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const createOrg = action(
+  orgSchema,
+  async ({ name, description, subdomain }) => {
+    try {
+      const org = await prisma.organization.create({
+        data: {
+          name,
+          description,
+          subdomain
+        }
+      })
+
+      revalidateTag(`organization-${org.id}`)
+
+      return { success: true }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const updateOrg = action(
+  orgSchema,
+  async ({ id, name, description, subdomain }) => {
+    try {
+      await prisma.organization.update({
+        where: {
+          id
+        },
+        data: {
+          name,
+          description,
+          subdomain
+        }
+      })
+
+      revalidateTag(`organization-${id}`)
 
       return { success: true }
     } catch (error) {

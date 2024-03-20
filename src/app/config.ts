@@ -1,3 +1,3 @@
 export const appConfig = {
-  cookieOrg: "currentOrganization"
+  cookieOrg: "current-organization"
 } as const
