@@ -89,6 +89,25 @@ model Organization {
   memberships  Membership[]
   menus        Menu[]
   menuItems    MenuItem[]
+  Location     Location[]
+}
+
+model Location {
+  id             String       @id @default(cuid())
+  name           String
+  description    String?
+  address        String
+  phone          String
+  facebook       String
+  instagram      String
+  twitter        String
+  tiktok         String
+  whatsapp       String
+  website        String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String
 }
 
 model Menu {
