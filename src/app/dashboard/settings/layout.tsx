@@ -3,15 +3,15 @@ import SecondaryNav from "@/components/dashboard/secondary-nav"
 const SecondaryNavItems = [
   {
     title: "General",
-    href: "/dashboard/settings"
+    href: "dashboard/settings"
   },
   {
-    title: "Sucursales",
-    href: "/dashboard/settings/locations"
+    title: "Sucursal",
+    href: "dashboard/settings/locations"
   },
   {
     title: "Miembros",
-    href: "/dashboard/settings/members"
+    href: "dashboard/settings/members"
   }
 ]
 

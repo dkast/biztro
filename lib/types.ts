@@ -93,6 +93,31 @@ export const orgSchema = z.object({
     })
 })
 
+export const locationSchema = z.object({
+  id: z.string().cuid().optional(),
+  name: z
+    .string({
+      required_error: "Nombre es requerido"
+    })
+    .min(3, { message: "Nombre muy corto" })
+    .max(100),
+  description: z.string().optional(),
+  address: z.string().optional(),
+  phone: z
+    .string()
+    .regex(/^\d{10}$/, {
+      message: "Número de teléfono inválido"
+    })
+    .optional(),
+  facebook: z.string().optional(),
+  instagram: z.string().optional(),
+  twitter: z.string().optional(),
+  tiktok: z.string().optional(),
+  whatsapp: z.string().optional(),
+  website: z.string().url().optional(),
+  organization: z.string().cuid().optional()
+})
+
 export const enum Status {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",

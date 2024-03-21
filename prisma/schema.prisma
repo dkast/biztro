@@ -94,16 +94,16 @@ model Organization {
 
 model Location {
   id             String       @id @default(cuid())
-  name           String
+  name           String       @default("Main")
   description    String?
-  address        String
-  phone          String
-  facebook       String
-  instagram      String
-  twitter        String
-  tiktok         String
-  whatsapp       String
-  website        String
+  address        String?
+  phone          String?
+  facebook       String?
+  instagram      String?
+  twitter        String?
+  tiktok         String?
+  whatsapp       String?
+  website        String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
