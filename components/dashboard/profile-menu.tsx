@@ -29,7 +29,7 @@ export default function ProfileMenu() {
 
   if (!user) return null
 
-  console.log(user)
+  // console.log(user)
 
   return (
     <DropdownMenu>
