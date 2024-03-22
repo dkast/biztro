@@ -108,7 +108,7 @@ export function DataTable<TData, TValue>({
         />
         {toolbar}
       </div>
-      <div className="mb-4 rounded-md border dark:border-gray-800">
+      <div className="mb-4 overflow-hidden rounded-lg border dark:border-gray-800">
         <Table>
           <TableHeader className="bg-gray-50 dark:bg-gray-900/50">
             {table.getHeaderGroups().map(headerGroup => (
