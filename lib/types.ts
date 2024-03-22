@@ -102,7 +102,11 @@ export const locationSchema = z.object({
     .min(3, { message: "Nombre muy corto" })
     .max(100),
   description: z.string().optional(),
-  address: z.string().optional(),
+  address: z
+    .string({
+      required_error: "Dirección es requerida"
+    })
+    .min(3, { message: "Dirección no es válida" }),
   phone: z
     .string()
     .regex(/^\d{10}$/, {
@@ -115,7 +119,7 @@ export const locationSchema = z.object({
   tiktok: z.string().optional(),
   whatsapp: z.string().optional(),
   website: z.string().url().optional(),
-  organization: z.string().cuid().optional()
+  organizationId: z.string().cuid().optional()
 })
 
 export const enum Status {

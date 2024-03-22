@@ -1,5 +1,3 @@
-import { notFound } from "next/navigation"
-
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import LocationForm from "@/app/dashboard/settings/locations/location-form"
 import { getDefaultLocation } from "@/server/actions/location/queries"

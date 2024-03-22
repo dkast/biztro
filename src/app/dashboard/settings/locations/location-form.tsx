@@ -48,7 +48,7 @@ export default function LocationForm({
       tiktok: data?.tiktok ?? undefined,
       whatsapp: data?.whatsapp ?? undefined,
       website: data?.website ?? undefined,
-      organization: data?.organizationId ?? undefined
+      organizationId: data?.organizationId ?? undefined
     }
   })
 
@@ -113,7 +113,8 @@ export default function LocationForm({
                   <Input {...field} id="name" placeholder="Nombre" />
                 </FormControl>
                 <FormDescription>
-                  Nombre de referencia, Ej. Principal
+                  Nombre de referencia para la sucursal, no será visible para
+                  los clientes
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -124,17 +125,14 @@ export default function LocationForm({
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="description">
-                  Descripción (opcional)
-                </FormLabel>
+                <FormLabel htmlFor="description">Descripción</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     id="description"
-                    placeholder="Descripción"
+                    placeholder="Descripción (opcional)"
                   />
                 </FormControl>
-                <FormDescription>Descripción de la sucursal</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

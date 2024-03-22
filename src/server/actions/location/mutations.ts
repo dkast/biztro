@@ -1,5 +1,6 @@
 "use server"
 
+import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 
 import { appConfig } from "@/app/config"
@@ -21,9 +22,9 @@ export const createLocation = action(
     whatsapp
   }) => {
     try {
-      const orgId = cookies().get(appConfig.cookieOrg)?.value
+      const currentOrg = cookies().get(appConfig.cookieOrg)?.value
 
-      if (!orgId) {
+      if (!currentOrg) {
         return {
           failure: {
             reason: "No se pudo obtener la organización actual"
@@ -44,11 +45,13 @@ export const createLocation = action(
           whatsapp,
           organization: {
             connect: {
-              id: orgId
+              id: currentOrg
             }
           }
         }
       })
+
+      revalidateTag(`default-location-${currentOrg}`)
 
       return { success: location }
     } catch (error) {
@@ -98,6 +101,8 @@ export const updateLocation = action(
           whatsapp
         }
       })
+
+      revalidateTag(`default-location-${id}`)
 
       return { success: location }
     } catch (error) {

@@ -96,7 +96,7 @@ model Location {
   id             String       @id @default(cuid())
   name           String       @default("Main")
   description    String?
-  address        String?
+  address        String
   phone          String?
   facebook       String?
   instagram      String?
