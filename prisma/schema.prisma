@@ -132,6 +132,8 @@ model MenuItem {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String
   variants       Variant[]
+
+  @@unique([organizationId, name])
 }
 
 model Variant {

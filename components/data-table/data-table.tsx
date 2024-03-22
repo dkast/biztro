@@ -153,7 +153,10 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  <EmptyState icon={<SearchX />} title="No hay resultados" />
+                  <EmptyState
+                    icon={<SearchX />}
+                    title="No se encontraron datos"
+                  />
                 </TableCell>
               </TableRow>
             )}

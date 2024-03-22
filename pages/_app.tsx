@@ -1,25 +1,24 @@
-import { SessionProvider, signIn, useSession } from "next-auth/react"
-import { DefaultSeo } from "next-seo"
-import { AppProps } from "next/app"
-import Head from "next/head"
 import React from "react"
 import { Toaster } from "react-hot-toast"
+import { SessionProvider, signIn, useSession } from "next-auth/react"
+import { DefaultSeo } from "next-seo"
+import { type AppProps } from "next/app"
+import Head from "next/head"
 import { RecoilRoot } from "recoil"
 
 import "../styles/globals.css"
 
-import SEO from "next-seo-config"
+// import SEO from "next-seo-config"
 
 import ConfirmModal from "@/components/ConfirmModal"
 import BlogLayout from "@/components/layouts/BlogLayout"
-
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 
 type AppPropsWithAuthAndLayout = AppProps & {
   Component: NextPageWithAuthAndLayout
 }
 
-export { reportWebVitals } from "next-axiom"
+// export { reportWebVitals } from "next-axiom"
 
 function MyApp({
   Component,
@@ -36,7 +35,7 @@ function MyApp({
             content="width=device-width, initial-scale=1.0, viewport-fit=cover"
           />
         </Head>
-        <DefaultSeo {...SEO} />
+        {/* <DefaultSeo {...SEO} /> */}
         {Component.auth ? (
           <Auth>{getLayout(<Component {...pageProps} />)}</Auth>
         ) : "markdoc" in pageProps ? (
