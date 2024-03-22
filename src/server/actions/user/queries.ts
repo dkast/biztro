@@ -88,3 +88,31 @@ export async function getCurrentOrganization() {
     return membership.organization
   }
 }
+
+export const getMembers = async () => {
+  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+
+  if (!currentOrg) {
+    return []
+  }
+
+  return await cache(
+    async () => {
+      const members = await prisma.membership.findMany({
+        where: {
+          organizationId: currentOrg
+        },
+        include: {
+          user: true
+        }
+      })
+
+      return members
+    },
+    [`members-${currentOrg}`],
+    {
+      revalidate: 900,
+      tags: [`members-${currentOrg}`]
+    }
+  )()
+}

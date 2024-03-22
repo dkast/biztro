@@ -138,3 +138,9 @@ export const enum ImageType {
   BANNER = "BANNER",
   MENUITEM = "MENUITEM"
 }
+
+export const enum MembershipRole {
+  ADMIN = "ADMIN",
+  MEMBER = "MEMBER",
+  OWNER = "OWNER"
+}

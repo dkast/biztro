@@ -63,7 +63,7 @@ model Membership {
   id             String       @id @default(cuid())
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  role           String       @default("MEMBER")
+  role           String       @default("OWNER")
   user           User         @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
   userId         String
   isActive       Boolean      @default(true)
