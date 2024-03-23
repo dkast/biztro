@@ -60,6 +60,7 @@ export default function Panel({
           <SheetContent
             className={className}
             onInteractOutside={event => event.preventDefault()}
+            side="bottom"
           >
             <SheetHeader>
               <SheetTitle>{title}</SheetTitle>

@@ -23,7 +23,7 @@ const navigation: NavigationItem[] = [
   { name: "Menú", href: "dashboard", icon: LayoutTemplate },
   {
     name: "Productos",
-    href: "dashboard/items",
+    href: "dashboard/menu-items",
     icon: LayoutList
   },
   {

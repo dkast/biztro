@@ -3,7 +3,7 @@ import Link from "next/link"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { DataTable } from "@/components/data-table/data-table"
 import { Button } from "@/components/ui/button"
-import { columns } from "@/app/dashboard/items/columns"
+import { columns } from "@/app/dashboard/menu-items/columns"
 import { getMenuItems } from "@/server/actions/item/queries"
 
 export default async function ItemsPage() {
@@ -15,7 +15,7 @@ export default async function ItemsPage() {
         title="Productos"
         description="Administra los productos de tu menú"
       >
-        <Link href="/dashboard/items/new">
+        <Link href="/dashboard/menu-items/item/new">
           <Button className="ml-auto">Nuevo producto</Button>
         </Link>
       </PageSubtitle>
