@@ -11,3 +11,14 @@ export async function getMenuItems() {
     }
   })
 }
+
+export async function getMenuItemById(id: string) {
+  return await prisma.menuItem.findUnique({
+    where: {
+      id
+    },
+    include: {
+      category: true
+    }
+  })
+}

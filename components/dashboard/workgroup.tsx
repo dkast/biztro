@@ -13,8 +13,6 @@ export default function Workgroup({ className }: { className?: string }) {
     queryFn: () => getCurrentOrganization()
   })
 
-  console.dir(data)
-
   if (!data)
     return (
       <div className="flex flex-row items-center gap-2">
