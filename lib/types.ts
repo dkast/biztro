@@ -136,6 +136,17 @@ export const menuItemSchema = z.object({
   organizationId: z.string().cuid().optional()
 })
 
+export const categorySchema = z.object({
+  id: z.string().cuid().optional(),
+  name: z
+    .string({
+      required_error: "Nombre es requerido"
+    })
+    .min(3, { message: "Nombre muy corto" })
+    .max(100, { message: "Nombre muy largo" }),
+  organizationId: z.string().cuid().optional()
+})
+
 export const enum Status {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",

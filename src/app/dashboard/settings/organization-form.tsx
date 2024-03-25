@@ -5,12 +5,14 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Organization } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
-import { ImageIcon, ImageUp, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import type { z } from "zod"
 
+import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { FileUploader } from "@/components/dashboard/file-uploader"
+import { ImageField } from "@/components/dashboard/image-field"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -183,9 +185,18 @@ export default function OrganizationForm({
           <div className="space-y-2">
             <FormLabel>Imágen de portada</FormLabel>
             {data.banner ? (
-              <ImageState src={data.banner} organizationId={data.id} />
+              <ImageField
+                src={data.banner}
+                organizationId={data.id}
+                imageType={ImageType.BANNER}
+                objectId={ImageType.BANNER}
+              />
             ) : (
-              <EmptyImageState organizationId={data.id} />
+              <EmptyImageField
+                organizationId={data.id}
+                imageType={ImageType.BANNER}
+                objectId={ImageType.BANNER}
+              />
             )}
             <FormDescription>
               La imágen de portada se mostrará en tu sitio web de manera
@@ -205,80 +216,5 @@ export default function OrganizationForm({
         </fieldset>
       </form>
     </Form>
-  )
-}
-
-function EmptyImageState({ organizationId }: { organizationId: string }) {
-  const router = useRouter()
-  return (
-    <div className="flex flex-col items-center justify-center space-y-2 rounded-lg border border-dashed border-gray-300 px-6 py-10">
-      <ImageIcon className="size-10 text-gray-300" />
-      <Dialog>
-        <DialogTrigger>
-          <Button type="button" variant="outline" size="sm">
-            Subir imágen
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-xl">
-          <DialogHeader>Subir imágen</DialogHeader>
-          <FileUploader
-            organizationId={organizationId}
-            imageType={ImageType.BANNER}
-            objectId={ImageType.BANNER}
-            onUploadSuccess={() => {
-              router.refresh()
-            }}
-          />
-        </DialogContent>
-      </Dialog>
-    </div>
-  )
-}
-
-function ImageState({
-  organizationId,
-  src
-}: {
-  organizationId: string
-  src: string
-}) {
-  const router = useRouter()
-  return (
-    <div className="group relative h-60 w-full overflow-hidden rounded-lg">
-      <img
-        src={src}
-        alt="Banner"
-        className="h-full w-full object-cover"
-        loading="lazy"
-      />
-      <div className="absolute inset-0 hidden bg-black bg-opacity-50 group-hover:block">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Dialog>
-            <DialogTrigger>
-              <Button
-                type="button"
-                variant="default"
-                size="sm"
-                className="border border-white/50 bg-transparent hover:bg-white/10"
-              >
-                <ImageUp className="mr-2 size-4" />
-                Cambiar imágen
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-xl">
-              <DialogHeader>Subir imágen</DialogHeader>
-              <FileUploader
-                organizationId={organizationId}
-                imageType={ImageType.BANNER}
-                objectId={ImageType.BANNER}
-                onUploadSuccess={() => {
-                  router.refresh()
-                }}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
-    </div>
   )
 }

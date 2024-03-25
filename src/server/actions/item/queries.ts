@@ -1,3 +1,4 @@
+import { unstable_cache as cache } from "next/cache"
 import { cookies } from "next/headers"
 
 import { appConfig } from "@/app/config"
@@ -21,4 +22,22 @@ export async function getMenuItemById(id: string) {
       category: true
     }
   })
+}
+
+export async function getCategories() {
+  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  return await cache(
+    async () => {
+      return await prisma.category.findMany({
+        where: {
+          organizationId: currentOrg
+        }
+      })
+    },
+    [`categories-${currentOrg}`],
+    {
+      revalidate: 900,
+      tags: [`categories-${currentOrg}`]
+    }
+  )()
 }
