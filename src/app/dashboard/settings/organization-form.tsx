@@ -108,6 +108,9 @@ export default function OrganizationForm({
                     imageType={ImageType.LOGO}
                     objectId={ImageType.LOGO}
                     onUploadSuccess={() => {
+                      queryClient.invalidateQueries({
+                        queryKey: ["workgroup", "current"]
+                      })
                       router.refresh()
                     }}
                   />

@@ -1,7 +1,6 @@
 "use client"
 
 import { ImageIcon } from "lucide-react"
-import { useRouter } from "next/navigation"
 
 import { FileUploader } from "@/components/dashboard/file-uploader"
 import { Button } from "@/components/ui/button"
@@ -18,14 +17,15 @@ export function EmptyImageField({
   organizationId,
   imageType,
   objectId,
+  onUploadSuccess,
   className
 }: {
   organizationId: string
   imageType: ImageType
   objectId: string
+  onUploadSuccess?: () => void
   className?: string
 }) {
-  const router = useRouter()
   return (
     <div
       className={cn(
@@ -47,7 +47,7 @@ export function EmptyImageField({
             imageType={imageType}
             objectId={objectId}
             onUploadSuccess={() => {
-              router.refresh()
+              onUploadSuccess?.()
             }}
           />
         </DialogContent>
