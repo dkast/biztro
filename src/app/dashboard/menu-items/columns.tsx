@@ -1,12 +1,15 @@
 "use client"
 
+import { useState } from "react"
 import type { MenuItem } from "@prisma/client"
 import type { ColumnDef, Row } from "@tanstack/react-table"
 import {
   ChevronDown,
   ChevronsUpDown,
   ChevronUp,
-  MoreHorizontal
+  Edit,
+  MoreHorizontal,
+  Trash2
 } from "lucide-react"
 import Link from "next/link"
 
@@ -19,6 +22,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import ItemDelete from "@/app/dashboard/menu-items/item-delete"
 
 export const columns: ColumnDef<MenuItem>[] = [
   {
@@ -53,19 +57,33 @@ export const columns: ColumnDef<MenuItem>[] = [
 
 function ActionsColumn({ row }: { row: Row<MenuItem> }) {
   const item = row.original
+  const [openDelete, setOpenDelete] = useState<boolean>(false)
+
   return (
-    <AlertDialog>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <MoreHorizontal className="size-4" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-          <DropdownMenuItem asChild>
-            <Link href={`/dashboard/menu-items/edit/${item.id}`}>Editar</Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </AlertDialog>
+    <>
+      <AlertDialog>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <MoreHorizontal className="size-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+            <DropdownMenuItem asChild>
+              <Link href={`/dashboard/menu-items/edit/${item.id}`}>
+                <>
+                  <Edit className="mr-2 size-4" />
+                  <span>Editar</span>
+                </>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setOpenDelete(true)}>
+              <Trash2 className="mr-2 size-4 text-red-500" />
+              <span className="text-red-500">Eliminar</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </AlertDialog>
+      <ItemDelete data={item} open={openDelete} setOpen={setOpenDelete} />
+    </>
   )
 }

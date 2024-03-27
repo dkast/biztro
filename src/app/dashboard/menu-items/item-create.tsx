@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { createItem } from "@/server/actions/item/mutations"
 
-export default function CreateItem() {
+export default function ItemCreate() {
   const router = useRouter()
   const { execute, status, reset } = useAction(createItem, {
     onSuccess: data => {

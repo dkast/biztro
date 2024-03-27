@@ -19,35 +19,53 @@ const R2 = new S3Client({
 
 export async function getMenuItems() {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
-  return await prisma.menuItem.findMany({
-    where: {
-      organizationId: currentOrg
+  return cache(
+    async () => {
+      return await prisma.menuItem.findMany({
+        where: {
+          organizationId: currentOrg
+        }
+      })
+    },
+    [`menuItems-${currentOrg}`],
+    {
+      revalidate: 900,
+      tags: [`menuItems-${currentOrg}`]
     }
-  })
+  )()
 }
 
 export async function getMenuItemById(id: string) {
-  const item = await prisma.menuItem.findUnique({
-    where: {
-      id
+  return cache(
+    async () => {
+      const item = await prisma.menuItem.findUnique({
+        where: {
+          id
+        },
+        include: {
+          category: true
+        }
+      })
+
+      if (item?.image) {
+        item.image = await getSignedUrl(
+          R2,
+          new GetObjectCommand({
+            Bucket: env.R2_BUCKET_NAME,
+            Key: item.image
+          }),
+          { expiresIn: 3600 * 24 }
+        )
+      }
+
+      return item
     },
-    include: {
-      category: true
+    [`menuItem-${id}`],
+    {
+      revalidate: 900,
+      tags: [`menuItem-${id}`]
     }
-  })
-
-  if (item?.image) {
-    item.image = await getSignedUrl(
-      R2,
-      new GetObjectCommand({
-        Bucket: env.R2_BUCKET_NAME,
-        Key: item.image
-      }),
-      { expiresIn: 3600 * 24 }
-    )
-  }
-
-  return item
+  )()
 }
 
 export async function getCategories() {

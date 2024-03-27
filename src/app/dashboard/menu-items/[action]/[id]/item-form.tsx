@@ -13,6 +13,7 @@ import {
   TriangleAlert
 } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
+import { useRouter } from "next/navigation"
 import type { z } from "zod"
 
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
@@ -62,13 +63,16 @@ export default function ItemForm({
       name: item?.name,
       description: item?.description ?? undefined,
       image: item?.image ?? undefined,
-      categoryId: item?.category?.id ?? undefined
+      categoryId: item?.category?.id ?? undefined,
+      organizationId: item?.organizationId
     }
   })
   const [openCategory, setOpenCategory] = useState<boolean>(false)
   const [searchCategory, setSearchCategory] = useState<string>("")
 
   const title = (action === "new" ? "Crear" : "Editar") + " Producto"
+
+  const router = useRouter()
 
   const {
     execute: executeCategory,
@@ -100,6 +104,7 @@ export default function ItemForm({
     onSuccess: data => {
       if (data?.success) {
         toast.success("Producto actualizado")
+        router.push("/dashboard/menu-items")
       } else if (data?.failure.reason) {
         toast.error(data?.failure.reason)
       }
@@ -175,6 +180,9 @@ export default function ItemForm({
                 imageType={ImageType.MENUITEM}
                 objectId={item.id}
                 className="sm:w-1/2"
+                onUploadSuccess={() => {
+                  router.refresh()
+                }}
               />
             ) : (
               <EmptyImageField
@@ -182,6 +190,9 @@ export default function ItemForm({
                 imageType={ImageType.MENUITEM}
                 objectId={item.id}
                 className="sm:w-1/2"
+                onUploadSuccess={() => {
+                  router.refresh()
+                }}
               />
             )}
           </div>
