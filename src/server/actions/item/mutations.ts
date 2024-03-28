@@ -9,7 +9,7 @@ import { z } from "zod"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { action } from "@/lib/safe-actions"
-import { categorySchema, menuItemSchema } from "@/lib/types"
+import { categorySchema, menuItemSchema, variantSchema } from "@/lib/types"
 import { env } from "@/env.mjs"
 
 // Create an Cloudflare R2 service client object
@@ -308,6 +308,49 @@ export const deleteCategory = action(
       revalidateTag(`categories-${organizationId}`)
 
       return { success: true }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        console.error(error)
+        message = error.message
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const createVariant = action(
+  variantSchema,
+  async ({ name, price, menuItemId }) => {
+    if (!menuItemId) {
+      return {
+        failure: {
+          reason: "No se pudo obtener el producto asociado"
+        }
+      }
+    }
+
+    try {
+      const variant = await prisma.variant.create({
+        data: {
+          name,
+          price,
+          menuItemId
+        }
+      })
+
+      revalidateTag(`variants-${menuItemId}`)
+      revalidateTag(`menuItem-${menuItemId}`)
+
+      return { success: variant }
     } catch (error) {
       let message
       if (typeof error === "string") {

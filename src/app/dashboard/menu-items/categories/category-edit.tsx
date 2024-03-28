@@ -55,7 +55,7 @@ export default function CategoryEdit({
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>{children}</DrawerTrigger>
         <DrawerContent>
-          <DrawerHeader>
+          <DrawerHeader className="text-left">
             <DrawerTitle>Categoría</DrawerTitle>
             <DrawerDescription>
               {action === ActionType.CREATE ? "Agregar" : "Editar"} categoría

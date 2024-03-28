@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
 import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
 import { createCategory, updateItem } from "@/server/actions/item/mutations"
 import type {
@@ -75,6 +76,7 @@ export default function ItemForm({
   })
   const [openCategory, setOpenCategory] = useState<boolean>(false)
   const [searchCategory, setSearchCategory] = useState<string>("")
+  const [openVariant, setOpenVariant] = useState<boolean>(false)
 
   const title = (action === "new" ? "Crear" : "Editar") + " Producto"
 
@@ -187,6 +189,13 @@ export default function ItemForm({
             )}
           />
           <VariantForm fieldArray={fields} control={form.control} />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpenVariant(true)}
+          >
+            Crear variante
+          </Button>
           <div className="space-y-2">
             <FormLabel>Imágen del producto</FormLabel>
             {item?.image ? (
@@ -299,7 +308,7 @@ export default function ItemForm({
           <Button disabled={status === "executing"} type="submit">
             {status === "executing" ? (
               <>
-                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                <Loader className="mr-2 size-4 animate-spin" />
                 {"Guardando..."}
               </>
             ) : (
@@ -308,6 +317,11 @@ export default function ItemForm({
           </Button>
         </form>
       </Form>
+      <VariantCreate
+        menuItemId={item.id}
+        open={openVariant}
+        setOpen={setOpenVariant}
+      />
     </div>
   )
 }

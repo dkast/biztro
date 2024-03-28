@@ -1,6 +1,6 @@
 "use client"
 
-import type { Control, FieldArrayWithId } from "react-hook-form"
+import { type Control, type FieldArrayWithId } from "react-hook-form"
 import type { z } from "zod"
 
 import {
@@ -12,9 +12,27 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import type { menuItemSchema } from "@/lib/types"
+import { type menuItemSchema } from "@/lib/types"
 
 export default function VariantForm({
+  fieldArray,
+  control
+}: {
+  fieldArray: FieldArrayWithId<z.infer<typeof menuItemSchema>>[]
+  control: Control<z.infer<typeof menuItemSchema>>
+}) {
+  return (
+    <>
+      {fieldArray.length > 1 ? (
+        <MultiVariantForm fieldArray={fieldArray} control={control} />
+      ) : (
+        <SingleVariantForm control={control} />
+      )}
+    </>
+  )
+}
+
+function MultiVariantForm({
   fieldArray,
   control
 }: {
@@ -84,5 +102,33 @@ export default function VariantForm({
         </div>
       ))}
     </div>
+  )
+}
+
+function SingleVariantForm({
+  control
+}: {
+  control: Control<z.infer<typeof menuItemSchema>>
+}) {
+  return (
+    <FormField
+      control={control}
+      name={`variants.0.price`}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel htmlFor={`variants.0.price`}>Precio</FormLabel>
+          <FormControl>
+            <Input
+              {...field}
+              id={`variants.0.price`}
+              type="number"
+              placeholder="Precio"
+              className="w-1/3"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   )
 }
