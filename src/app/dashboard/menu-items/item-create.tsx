@@ -1,7 +1,7 @@
 "use client"
 
 import toast from "react-hot-toast"
-import { Loader2 } from "lucide-react"
+import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 
@@ -38,7 +38,7 @@ export default function ItemCreate() {
       }
     >
       {status === "executing" && (
-        <Loader2 className="mr-2 size-4 animate-spin" />
+        <Loader className="mr-2 size-4 animate-spin" />
       )}
       Nuevo producto
     </Button>

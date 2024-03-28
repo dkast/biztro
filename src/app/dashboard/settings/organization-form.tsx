@@ -5,7 +5,7 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Organization } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
-import { Loader2 } from "lucide-react"
+import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import type { z } from "zod"
@@ -209,7 +209,7 @@ export default function OrganizationForm({
           <Button disabled={status === "executing"} type="submit">
             {status === "executing" ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader className="mr-2 size-4 animate-spin" />
                 {"Guardando..."}
               </>
             ) : (

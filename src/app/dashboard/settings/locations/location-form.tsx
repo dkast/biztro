@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Location } from "@prisma/client"
-import { Loader2 } from "lucide-react"
+import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
 import type { z } from "zod"
@@ -325,7 +325,7 @@ export default function LocationForm({
           >
             {statusUpdate === "executing" || statusCreate === "executing" ? (
               <>
-                <Loader2 className="mr-2 size-4 animate-spin" />
+                <Loader className="mr-2 size-4 animate-spin" />
                 {"Guardando..."}
               </>
             ) : data ? (

@@ -145,7 +145,7 @@ export const deleteItem = action(
 
       if (item?.image) {
         // Delete the image from the storage
-        const deleted = await R2.send(
+        await R2.send(
           new DeleteObjectCommand({
             Bucket: env.R2_BUCKET_NAME,
             Key: item.image
@@ -222,3 +222,87 @@ export const createCategory = action(categorySchema, async ({ name }) => {
     }
   }
 })
+
+export const updateCategory = action(
+  categorySchema,
+  async ({ id, name, organizationId }) => {
+    try {
+      const category = await prisma.category.update({
+        where: { id },
+        data: {
+          name
+        }
+      })
+
+      revalidateTag(`categories-${organizationId}`)
+
+      return { success: category }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        console.error(error)
+        if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
+          message = "Ya existe una categoría con ese nombre"
+        } else {
+          message = error.message
+        }
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const deleteCategory = action(
+  z.object({
+    id: z.string().cuid(),
+    organizationId: z.string().cuid()
+  }),
+  async ({ id, organizationId }) => {
+    try {
+      // Check if the category is being used by any item
+      const items = await prisma.menuItem.findMany({
+        where: { categoryId: id }
+      })
+
+      if (items.length > 0) {
+        return {
+          failure: {
+            reason:
+              "No se puede eliminar una categoría que tiene productos asociados"
+          }
+        }
+      }
+
+      await prisma.category.delete({
+        where: { id }
+      })
+
+      revalidateTag(`categories-${organizationId}`)
+
+      return { success: true }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        console.error(error)
+        message = error.message
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)

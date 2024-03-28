@@ -83,7 +83,7 @@ function ActionsColumn({ row }: { row: Row<MenuItem> }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </AlertDialog>
-      <ItemDelete data={item} open={openDelete} setOpen={setOpenDelete} />
+      <ItemDelete item={item} open={openDelete} setOpen={setOpenDelete} />
     </>
   )
 }

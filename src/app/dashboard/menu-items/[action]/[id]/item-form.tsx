@@ -8,7 +8,7 @@ import type { Prisma } from "@prisma/client"
 import {
   Check,
   ChevronsUpDown,
-  Loader2,
+  Loader,
   PlusIcon,
   TriangleAlert
 } from "lucide-react"
@@ -148,7 +148,11 @@ export default function ItemForm({
               <FormItem>
                 <FormLabel htmlFor="name">Nombre</FormLabel>
                 <FormControl>
-                  <Input {...field} id="name" className="Nombre del producto" />
+                  <Input
+                    {...field}
+                    id="name"
+                    placeholder="Nombre del producto"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -240,7 +244,7 @@ export default function ItemForm({
                         onClick={handleAddCategory}
                       >
                         {statusCategory === "executing" ? (
-                          <Loader2 className="mr-2 size-4 animate-spin" />
+                          <Loader className="mr-2 size-4 animate-spin" />
                         ) : (
                           <PlusIcon className="mr-2 size-4" />
                         )}
@@ -283,7 +287,7 @@ export default function ItemForm({
           <Button disabled={status === "executing"} type="submit">
             {status === "executing" ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
                 {"Guardando..."}
               </>
             ) : (

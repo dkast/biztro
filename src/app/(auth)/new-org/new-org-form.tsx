@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import slugify from "@sindresorhus/slugify"
-import { Loader2 } from "lucide-react"
+import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import type { z } from "zod"
@@ -147,7 +147,7 @@ export default function NewOrgForm() {
               className="w-full"
             >
               {status === "executing" ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 "Continuar"
               )}

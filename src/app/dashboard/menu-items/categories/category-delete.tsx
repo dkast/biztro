@@ -1,7 +1,7 @@
 "use client"
 
 import toast from "react-hot-toast"
-import type { MenuItem } from "@prisma/client"
+import type { Category, MenuItem } from "@prisma/client"
 import { useAction } from "next-safe-action/hooks"
 
 import {
@@ -12,22 +12,21 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle
+  AlertDialogTitle,
+  AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
-import { deleteItem } from "@/server/actions/item/mutations"
+import { deleteCategory } from "@/server/actions/item/mutations"
 
 export default function ItemDelete({
-  item,
-  open,
-  setOpen
+  category,
+  children
 }: {
-  item: MenuItem
-  open: boolean
-  setOpen: (open: boolean) => void
+  category: Category
+  children: React.ReactNode
 }) {
-  const { execute, reset } = useAction(deleteItem, {
+  const { execute, reset } = useAction(deleteCategory, {
     onExecute: () => {
-      toast.loading("Eliminando Producto...")
+      toast.loading("Eliminando Categoría...")
     },
     onSuccess: data => {
       if (data?.failure?.reason) {
@@ -44,17 +43,18 @@ export default function ItemDelete({
     }
   })
 
-  const onDeleteItem = () => {
-    execute(item)
+  const onDeleteCategory = () => {
+    execute(category)
   }
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Eliminar Producto</AlertDialogTitle>
+          <AlertDialogTitle>Eliminar Categoría</AlertDialogTitle>
           <AlertDialogDescription>
-            ¿Estás seguro de eliminar este producto? Esta acción no se puede
+            ¿Estás seguro de eliminar esta categoría? Esta acción no se puede
             deshacer
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -62,7 +62,7 @@ export default function ItemDelete({
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            onClick={() => onDeleteItem()}
+            onClick={() => onDeleteCategory()}
           >
             Eliminar
           </AlertDialogAction>

@@ -169,3 +169,9 @@ export const enum MembershipRole {
   MEMBER = "MEMBER",
   OWNER = "OWNER"
 }
+
+export const enum ActionType {
+  CREATE = "CREATE",
+  UPDATE = "UPDATE",
+  DELETE = "DELETE"
+}
