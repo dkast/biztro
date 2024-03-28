@@ -100,22 +100,13 @@ export const createItem = action(
 
 export const updateItem = action(
   menuItemSchema,
-  async ({
-    id,
-    name,
-    description,
-    image,
-    categoryId,
-    organizationId,
-    variants
-  }) => {
+  async ({ id, name, description, categoryId, organizationId, variants }) => {
     try {
       const item = await prisma.menuItem.update({
         where: { id },
         data: {
           name,
           description,
-          image,
           categoryId,
           variants: {
             upsert: variants.map(variant => ({
