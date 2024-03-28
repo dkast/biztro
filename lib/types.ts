@@ -122,6 +122,21 @@ export const locationSchema = z.object({
   organizationId: z.string().cuid().optional()
 })
 
+export const variantSchema = z.object({
+  id: z.string().cuid().optional(),
+  name: z
+    .string({
+      required_error: "Nombre es requerido"
+    })
+    .min(3, { message: "Nombre muy corto" })
+    .max(100, { message: "Nombre muy largo" }),
+  description: z.string().optional(),
+  price: z.coerce.number().min(0, {
+    message: "Precio no puede ser negativo"
+  }),
+  menuItemId: z.string().cuid().optional()
+})
+
 export const menuItemSchema = z.object({
   id: z.string().cuid().optional(),
   name: z
@@ -133,7 +148,8 @@ export const menuItemSchema = z.object({
   description: z.string().optional(),
   image: z.string().url().optional(),
   categoryId: z.string().cuid().optional(),
-  organizationId: z.string().cuid().optional()
+  organizationId: z.string().cuid().optional(),
+  variants: z.array(variantSchema).nonempty()
 })
 
 export const categorySchema = z.object({

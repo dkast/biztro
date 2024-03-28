@@ -30,7 +30,7 @@ const R2 = new S3Client({
  */
 export const createItem = action(
   menuItemSchema,
-  async ({ name, description, image, categoryId }) => {
+  async ({ name, description, image, categoryId, variants }) => {
     const currentOrg = cookies().get(appConfig.cookieOrg)?.value
 
     if (!currentOrg) {
@@ -59,7 +59,15 @@ export const createItem = action(
           description,
           image,
           categoryId,
-          organizationId: currentOrg
+          organizationId: currentOrg,
+          variants: {
+            create: [
+              {
+                name: variants[0].name,
+                price: variants[0].price
+              }
+            ]
+          }
         }
       })
 
@@ -68,11 +76,11 @@ export const createItem = action(
 
       return { success: item }
     } catch (error) {
+      console.error(error)
       let message
       if (typeof error === "string") {
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        console.error(error)
         if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
           message = "Ya existe un producto con ese nombre"
         } else {
@@ -92,7 +100,15 @@ export const createItem = action(
 
 export const updateItem = action(
   menuItemSchema,
-  async ({ id, name, description, image, categoryId, organizationId }) => {
+  async ({
+    id,
+    name,
+    description,
+    image,
+    categoryId,
+    organizationId,
+    variants
+  }) => {
     try {
       const item = await prisma.menuItem.update({
         where: { id },
@@ -100,7 +116,20 @@ export const updateItem = action(
           name,
           description,
           image,
-          categoryId
+          categoryId,
+          variants: {
+            upsert: variants.map(variant => ({
+              where: { id: variant.id },
+              create: {
+                name: variant.name,
+                price: variant.price
+              },
+              update: {
+                name: variant.name,
+                price: variant.price
+              }
+            }))
+          }
         }
       })
 

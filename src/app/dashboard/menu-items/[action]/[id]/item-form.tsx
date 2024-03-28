@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
 import { createCategory, updateItem } from "@/server/actions/item/mutations"
 import type {
   getCategories,
@@ -64,7 +65,12 @@ export default function ItemForm({
       description: item?.description ?? undefined,
       image: item?.image ?? undefined,
       categoryId: item?.category?.id ?? undefined,
-      organizationId: item?.organizationId
+      organizationId: item?.organizationId,
+      variants:
+        item?.variants.map(variant => ({
+          ...variant,
+          description: variant.description ?? undefined
+        })) ?? []
     }
   })
   const [openCategory, setOpenCategory] = useState<boolean>(false)
@@ -73,6 +79,11 @@ export default function ItemForm({
   const title = (action === "new" ? "Crear" : "Editar") + " Producto"
 
   const router = useRouter()
+
+  const { fields } = useFieldArray({
+    control: form.control,
+    name: "variants"
+  })
 
   const {
     execute: executeCategory,
@@ -175,6 +186,7 @@ export default function ItemForm({
               </FormItem>
             )}
           />
+          <VariantForm fieldArray={fields} control={form.control} />
           <div className="space-y-2">
             <FormLabel>Imágen del producto</FormLabel>
             {item?.image ? (

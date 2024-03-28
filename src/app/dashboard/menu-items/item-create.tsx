@@ -33,7 +33,13 @@ export default function ItemCreate() {
       onClick={() =>
         execute({
           name: "Nuevo producto",
-          description: ""
+          description: "",
+          variants: [
+            {
+              name: "Regular",
+              price: 0
+            }
+          ]
         })
       }
     >

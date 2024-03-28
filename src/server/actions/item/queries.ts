@@ -24,6 +24,10 @@ export async function getMenuItems() {
       return await prisma.menuItem.findMany({
         where: {
           organizationId: currentOrg
+        },
+        include: {
+          category: true,
+          variants: true
         }
       })
     },
@@ -43,7 +47,8 @@ export async function getMenuItemById(id: string) {
           id
         },
         include: {
-          category: true
+          category: true,
+          variants: true
         }
       })
 
