@@ -9,6 +9,7 @@ import {
   Check,
   ChevronsUpDown,
   Loader,
+  PlusCircle,
   PlusIcon,
   TriangleAlert
 } from "lucide-react"
@@ -188,14 +189,18 @@ export default function ItemForm({
               </FormItem>
             )}
           />
-          <VariantForm fieldArray={fields} control={form.control} />
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setOpenVariant(true)}
-          >
-            Crear variante
-          </Button>
+          <div className="space-y-2">
+            <VariantForm fieldArray={fields} control={form.control} />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpenVariant(true)}
+              className="gap-1"
+            >
+              <PlusCircle className="size-3.5" />
+              Crear variante
+            </Button>
+          </div>
           <div className="space-y-2">
             <FormLabel>Imágen del producto</FormLabel>
             {item?.image ? (

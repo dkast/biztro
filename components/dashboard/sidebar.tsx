@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion"
 import {
-  LayoutList,
   LayoutTemplate,
   Settings,
+  ShoppingBag,
   type LucideIcon
 } from "lucide-react"
 import Link from "next/link"
@@ -24,7 +24,7 @@ const navigation: NavigationItem[] = [
   {
     name: "Productos",
     href: "dashboard/menu-items",
-    icon: LayoutList
+    icon: ShoppingBag
   },
   {
     name: "Configuración",

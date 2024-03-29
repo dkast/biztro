@@ -1,8 +1,10 @@
 "use client"
 
 import { type Control, type FieldArrayWithId } from "react-hook-form"
+import { Trash } from "lucide-react"
 import type { z } from "zod"
 
+import { Button } from "@/components/ui/button"
 import {
   FormControl,
   FormField,
@@ -11,7 +13,14 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table"
 import { type menuItemSchema } from "@/lib/types"
 
 export default function VariantForm({
@@ -41,66 +50,78 @@ function MultiVariantForm({
 }) {
   return (
     <div>
-      {fieldArray.map((field, index) => (
-        <div key={field.id} className="space-y-2">
-          <FormField
-            control={control}
-            name={`variants.${index}.name`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor={`variants.${index}.name`}>Nombre</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    id={`variants.${index}.name`}
-                    placeholder="Nombre de la variante"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name={`variants.${index}.description`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor={`variants.${index}.description`}>
-                  Descripción
-                </FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    id={`variants.${index}.description`}
-                    placeholder="Agrega una descripción. Describe detalles como ingredientes, sabor, etc."
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name={`variants.${index}.price`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor={`variants.${index}.price`}>
-                  Precio
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    id={`variants.${index}.price`}
-                    type="number"
-                    placeholder="Precio"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      ))}
+      <h3 className="text-base font-semibold leading-7 text-gray-900 dark:text-gray-100">
+        Variantes
+      </h3>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Nombre</TableHead>
+            <TableHead>Precio</TableHead>
+            <TableHead>Acciones</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {fieldArray.map((field, index) => (
+            <TableRow key={field.id}>
+              <TableCell>
+                <FormField
+                  control={control}
+                  name={`variants.${index}.name`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        htmlFor={`variants.${index}.name`}
+                        className="sr-only"
+                      >
+                        Nombre
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          id={`variants.${index}.name`}
+                          placeholder="Nombre de la variante"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </TableCell>
+              <TableCell>
+                <FormField
+                  control={control}
+                  name={`variants.${index}.price`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        htmlFor={`variants.${index}.price`}
+                        className="sr-only"
+                      >
+                        Precio
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          id={`variants.${index}.price`}
+                          type="number"
+                          placeholder="Precio"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </TableCell>
+              <TableCell>
+                <Button type="button" variant="ghost">
+                  <Trash className="size-4" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }

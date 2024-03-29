@@ -7,9 +7,7 @@ import {
   ChevronDown,
   ChevronsUpDown,
   ChevronUp,
-  Edit,
-  MoreHorizontal,
-  Trash2
+  MoreHorizontal
 } from "lucide-react"
 import Link from "next/link"
 
@@ -64,20 +62,20 @@ function ActionsColumn({ row }: { row: Row<MenuItem> }) {
       <AlertDialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <MoreHorizontal className="size-4" />
+            <Button variant="ghost" size="icon">
+              <MoreHorizontal className="size-4" />
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
             <DropdownMenuItem asChild>
               <Link href={`/dashboard/menu-items/edit/${item.id}`}>
                 <>
-                  <Edit className="mr-2 size-4" />
                   <span>Editar</span>
                 </>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setOpenDelete(true)}>
-              <Trash2 className="mr-2 size-4 text-red-500" />
               <span className="text-red-500">Eliminar</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
