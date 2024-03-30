@@ -1,7 +1,6 @@
 "use client"
 
 import toast from "react-hot-toast"
-import type { Category } from "@prisma/client"
 import { useAction } from "next-safe-action/hooks"
 
 import {
@@ -15,18 +14,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
-import { deleteCategory } from "@/server/actions/item/mutations"
+import { deleteVariant } from "@/server/actions/item/mutations"
 
-export default function ItemDelete({
-  category,
-  children
+export default function VariantDelete({
+  children,
+  variantId,
+  menuItemId
 }: {
-  category: Category
   children: React.ReactNode
+  variantId: string | undefined
+  menuItemId: string | undefined
 }) {
-  const { execute, reset } = useAction(deleteCategory, {
+  const { execute, reset } = useAction(deleteVariant, {
     onExecute: () => {
-      toast.loading("Eliminando Categoría...")
+      toast.loading("Eliminando Variante...")
     },
     onSuccess: data => {
       if (data?.failure?.reason) {
@@ -37,15 +38,19 @@ export default function ItemDelete({
       }
       reset()
     },
-    onError: () => {
+    onError: error => {
+      console.error(error)
       toast.dismiss()
       toast.error("Algo salió mal")
       reset()
     }
   })
 
-  const onDeleteCategory = () => {
-    execute(category)
+  const onDeleteVariant = () => {
+    execute({
+      id: variantId ?? "",
+      menuItemId: menuItemId ?? ""
+    })
   }
 
   return (
@@ -53,9 +58,9 @@ export default function ItemDelete({
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Eliminar Categoría</AlertDialogTitle>
+          <AlertDialogTitle>Eliminar Variante</AlertDialogTitle>
           <AlertDialogDescription>
-            ¿Estás seguro de eliminar esta categoría? Esta acción no se puede
+            ¿Estás seguro de eliminar esta variante? Esta acción no se puede
             deshacer
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -63,7 +68,7 @@ export default function ItemDelete({
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            onClick={() => onDeleteCategory()}
+            onClick={() => onDeleteVariant()}
           >
             Eliminar
           </AlertDialogAction>

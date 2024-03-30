@@ -1,6 +1,10 @@
 "use client"
 
-import { type Control, type FieldArrayWithId } from "react-hook-form"
+import {
+  type Control,
+  type FieldArrayWithId,
+  type UseFormReturn
+} from "react-hook-form"
 import { Trash } from "lucide-react"
 import type { z } from "zod"
 
@@ -21,21 +25,22 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
+import VariantDelete from "@/app/dashboard/menu-items/[action]/[id]/variant-delete"
 import { type menuItemSchema } from "@/lib/types"
 
 export default function VariantForm({
   fieldArray,
-  control
+  parentForm
 }: {
   fieldArray: FieldArrayWithId<z.infer<typeof menuItemSchema>>[]
-  control: Control<z.infer<typeof menuItemSchema>>
+  parentForm: UseFormReturn<z.infer<typeof menuItemSchema>>
 }) {
   return (
     <>
       {fieldArray.length > 1 ? (
-        <MultiVariantForm fieldArray={fieldArray} control={control} />
+        <MultiVariantForm fieldArray={fieldArray} parentForm={parentForm} />
       ) : (
-        <SingleVariantForm control={control} />
+        <SingleVariantForm control={parentForm.control} />
       )}
     </>
   )
@@ -43,86 +48,88 @@ export default function VariantForm({
 
 function MultiVariantForm({
   fieldArray,
-  control
+  parentForm
 }: {
   fieldArray: FieldArrayWithId<z.infer<typeof menuItemSchema>>[]
-  control: Control<z.infer<typeof menuItemSchema>>
+  parentForm: UseFormReturn<z.infer<typeof menuItemSchema>>
 }) {
   return (
-    <div>
-      <h3 className="text-base font-semibold leading-7 text-gray-900 dark:text-gray-100">
-        Variantes
-      </h3>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Nombre</TableHead>
-            <TableHead>Precio</TableHead>
-            <TableHead>Acciones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {fieldArray.map((field, index) => (
-            <TableRow key={field.id}>
-              <TableCell>
-                <FormField
-                  control={control}
-                  name={`variants.${index}.name`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel
-                        htmlFor={`variants.${index}.name`}
-                        className="sr-only"
-                      >
-                        Nombre
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          id={`variants.${index}.name`}
-                          placeholder="Nombre de la variante"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </TableCell>
-              <TableCell>
-                <FormField
-                  control={control}
-                  name={`variants.${index}.price`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel
-                        htmlFor={`variants.${index}.price`}
-                        className="sr-only"
-                      >
-                        Precio
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          id={`variants.${index}.price`}
-                          type="number"
-                          placeholder="Precio"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </TableCell>
-              <TableCell>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Nombre</TableHead>
+          <TableHead>Precio</TableHead>
+          <TableHead>Acciones</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {fieldArray.map((field, index) => (
+          <TableRow key={field.id}>
+            <TableCell>
+              <FormField
+                control={parentForm.control}
+                name={`variants.${index}.name`}
+                render={({ field }) => (
+                  <FormItem className="space-y-0">
+                    <FormLabel
+                      htmlFor={`variants.${index}.name`}
+                      className="sr-only"
+                    >
+                      Nombre
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        id={`variants.${index}.name`}
+                        placeholder="Nombre de la variante"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <FormField
+                control={parentForm.control}
+                name={`variants.${index}.price`}
+                render={({ field }) => (
+                  <FormItem className="space-y-0">
+                    <FormLabel
+                      htmlFor={`variants.${index}.price`}
+                      className="sr-only"
+                    >
+                      Precio
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        id={`variants.${index}.price`}
+                        type="number"
+                        placeholder="Precio"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </TableCell>
+            <TableCell className="flex justify-center">
+              <VariantDelete
+                variantId={parentForm.getValues(`variants.${index}.id`)}
+                menuItemId={parentForm.getValues(
+                  `variants.${index}.menuItemId`
+                )}
+              >
                 <Button type="button" variant="ghost">
-                  <Trash className="size-4" />
+                  <Trash className="size-3.5 text-red-500" />
                 </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+              </VariantDelete>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
 

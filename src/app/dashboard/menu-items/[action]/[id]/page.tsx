@@ -27,7 +27,7 @@ export default async function ItemPage({
   }
 
   return (
-    <div className="mx-auto max-w-2xl grow px-4 sm:px-6">
+    <div className="mx-auto max-w-[59rem] grow px-4 sm:px-6">
       <ItemForm action={params.action} item={item} categories={categories} />
     </div>
   )

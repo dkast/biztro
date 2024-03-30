@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { ImageIcon } from "lucide-react"
 
 import { FileUploader } from "@/components/dashboard/file-uploader"
@@ -8,6 +9,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
 import type { ImageType } from "@/lib/types"
@@ -26,6 +28,7 @@ export function EmptyImageField({
   onUploadSuccess?: () => void
   className?: string
 }) {
+  const [open, setOpen] = useState(false)
   return (
     <div
       className={cn(
@@ -34,20 +37,23 @@ export function EmptyImageField({
       )}
     >
       <ImageIcon className="size-10 text-gray-300" />
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger>
           <Button type="button" variant="outline" size="sm">
             Subir imágen
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-xl">
-          <DialogHeader>Subir imágen</DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Subir imágen</DialogTitle>
+          </DialogHeader>
           <FileUploader
             organizationId={organizationId}
             imageType={imageType}
             objectId={objectId}
             onUploadSuccess={() => {
               onUploadSuccess?.()
+              setOpen(false)
             }}
           />
         </DialogContent>

@@ -69,7 +69,10 @@ function ActionsColumn({ row }: { row: Row<MenuItem> }) {
           <DropdownMenuContent align="end" className="w-32">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href={`/dashboard/menu-items/edit/${item.id}`}>
+              <Link
+                href={`/dashboard/menu-items/edit/${item.id}`}
+                prefetch={false}
+              >
                 <>
                   <span>Editar</span>
                 </>

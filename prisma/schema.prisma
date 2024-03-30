@@ -128,6 +128,7 @@ model MenuItem {
   name           String
   description    String?
   image          String?
+  status         String       @default("DRAFT")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   variants       Variant[]
@@ -166,32 +167,3 @@ model Invite {
 
   @@index([email])
 }
-
-// Deprecated
-// enum Role {
-//   USER
-//   PRO
-//   ADMIN
-// }
-
-// enum OrganizationStatus {
-//   ACTIVE
-//   DUE
-//   INACTIVE
-// }
-
-// enum OrganizationPlan {
-//   BASIC
-//   PRO
-// }
-
-// enum MembershipRole {
-//   ADMIN
-//   SUPER_ADMIN
-//   MEMBER
-// }
-
-// enum MenuStatus {
-//   DRAFT
-//   PUBLISHED
-// }

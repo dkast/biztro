@@ -42,13 +42,13 @@ export const columns: ColumnDef<Category>[] = [
       return (
         <div className="flex justify-end gap-2">
           <CategoryEdit action={ActionType.UPDATE} category={category}>
-            <Button variant="ghost" size="icon" className="group">
-              <Edit className="size-4 opacity-70 group-hover:opacity-100" />
+            <Button variant="ghost" size="icon">
+              <Edit className="size-4" />
             </Button>
           </CategoryEdit>
           <CategoryDelete category={category}>
-            <Button variant="ghost" size="icon" className="group">
-              <Trash2 className="size-4 text-red-500 opacity-70 group-hover:opacity-100" />
+            <Button variant="ghost" size="icon">
+              <Trash2 className="size-4 text-red-500" />
             </Button>
           </CategoryDelete>
         </div>

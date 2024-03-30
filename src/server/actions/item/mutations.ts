@@ -100,13 +100,22 @@ export const createItem = action(
 
 export const updateItem = action(
   menuItemSchema,
-  async ({ id, name, description, categoryId, organizationId, variants }) => {
+  async ({
+    id,
+    name,
+    description,
+    status,
+    categoryId,
+    organizationId,
+    variants
+  }) => {
     try {
       const item = await prisma.menuItem.update({
         where: { id },
         data: {
           name,
           description,
+          status,
           categoryId,
           variants: {
             upsert: variants.map(variant => ({
@@ -347,10 +356,44 @@ export const createVariant = action(
         }
       })
 
-      revalidateTag(`variants-${menuItemId}`)
+      // revalidateTag(`variants-${menuItemId}`)
       revalidateTag(`menuItem-${menuItemId}`)
 
       return { success: variant }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        console.error(error)
+        message = error.message
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const deleteVariant = action(
+  z.object({
+    id: z.string().cuid(),
+    menuItemId: z.string().cuid()
+  }),
+  async ({ id, menuItemId }) => {
+    try {
+      await prisma.variant.delete({
+        where: { id }
+      })
+
+      // revalidateTag(`variants-${menuItemId}`)
+      revalidateTag(`menuItem-${menuItemId}`)
+
+      return { success: true }
     } catch (error) {
       let message
       if (typeof error === "string") {

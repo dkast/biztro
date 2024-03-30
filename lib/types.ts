@@ -145,6 +145,7 @@ export const menuItemSchema = z.object({
     })
     .min(3, { message: "Nombre muy corto" })
     .max(100, { message: "Nombre muy largo" }),
+  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]),
   description: z.string().optional(),
   image: z.string().url().optional(),
   categoryId: z.string().cuid().optional(),
@@ -190,4 +191,10 @@ export const enum ActionType {
   CREATE = "CREATE",
   UPDATE = "UPDATE",
   DELETE = "DELETE"
+}
+
+export const enum MenuStatus {
+  ACTIVE = "ACTIVE",
+  DRAFT = "DRAFT",
+  ARCHIVED = "ARCHIVED"
 }
