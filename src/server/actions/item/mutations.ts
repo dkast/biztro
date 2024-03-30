@@ -30,7 +30,7 @@ const R2 = new S3Client({
  */
 export const createItem = action(
   menuItemSchema,
-  async ({ name, description, image, categoryId, variants }) => {
+  async ({ name, description, status, image, categoryId, variants }) => {
     const currentOrg = cookies().get(appConfig.cookieOrg)?.value
 
     if (!currentOrg) {
@@ -57,6 +57,7 @@ export const createItem = action(
         data: {
           name,
           description,
+          status,
           image,
           categoryId,
           organizationId: currentOrg,

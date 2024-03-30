@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import type { MenuItem } from "@prisma/client"
+import type { MenuItem, Prisma } from "@prisma/client"
 import type { ColumnDef, Row } from "@tanstack/react-table"
 import {
   ChevronDown,
@@ -12,6 +12,7 @@ import {
 import Link from "next/link"
 
 import { AlertDialog } from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -21,8 +22,12 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import ItemDelete from "@/app/dashboard/menu-items/item-delete"
+import type { getMenuItemById } from "@/server/actions/item/queries"
+import { MenuStatus } from "@/lib/types"
 
-export const columns: ColumnDef<MenuItem>[] = [
+export const columns: ColumnDef<
+  Prisma.PromiseReturnType<typeof getMenuItemById>
+>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -48,14 +53,98 @@ export const columns: ColumnDef<MenuItem>[] = [
     enableHiding: true
   },
   {
+    accessorKey: "category.name",
+    header: "Categoría",
+    enableHiding: true
+  },
+  {
+    accessorKey: "status",
+    header: "Estatus",
+    cell: ({ row }) => {
+      const item = row.original
+      return (
+        <>
+          {(() => {
+            switch (item?.status) {
+              case MenuStatus.ACTIVE:
+                return (
+                  <Badge variant="green" className="rounded-full">
+                    Activo
+                  </Badge>
+                )
+              case MenuStatus.DRAFT:
+                return (
+                  <Badge variant="violet" className="rounded-full">
+                    Borrador
+                  </Badge>
+                )
+              case MenuStatus.ARCHIVED:
+                return (
+                  <Badge variant="secondary" className="rounded-full">
+                    Archivado
+                  </Badge>
+                )
+              default:
+                return null
+            }
+          })()}
+        </>
+      )
+    }
+  },
+  {
+    accessorKey: "variants",
+    header: "Precio",
+    cell: ({ row }) => {
+      const item = row.original
+      if (!item?.variants) return null
+
+      if (item?.variants.length > 1) {
+        const prices = item.variants.map(variant => variant.price)
+        const minPrice = Math.min(...prices)
+        const maxPrice = Math.max(...prices)
+        return (
+          <>
+            {minPrice.toLocaleString("es-MX", {
+              style: "currency",
+              currency: "MXN"
+            })}{" "}
+            -{" "}
+            {maxPrice.toLocaleString("es-MX", {
+              style: "currency",
+              currency: "MXN"
+            })}
+          </>
+        )
+      } else if (item?.variants[0]?.price) {
+        return (
+          <>
+            {item.variants[0].price.toLocaleString("es-MX", {
+              style: "currency",
+              currency: "MXN"
+            })}
+          </>
+        )
+      } else {
+        return null
+      }
+    }
+  },
+  {
     id: "actions",
     cell: ActionsColumn
   }
 ]
 
-function ActionsColumn({ row }: { row: Row<MenuItem> }) {
+function ActionsColumn({
+  row
+}: {
+  row: Row<Prisma.PromiseReturnType<typeof getMenuItemById>>
+}) {
   const item = row.original
   const [openDelete, setOpenDelete] = useState<boolean>(false)
+
+  if (!item) return null
 
   return (
     <>

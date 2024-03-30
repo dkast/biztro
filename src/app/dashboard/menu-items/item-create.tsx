@@ -1,12 +1,13 @@
 "use client"
 
 import toast from "react-hot-toast"
-import { Loader } from "lucide-react"
+import { Loader, PlusCircle } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { createItem } from "@/server/actions/item/mutations"
+import { MenuStatus } from "@/lib/types"
 
 export default function ItemCreate() {
   const router = useRouter()
@@ -27,12 +28,12 @@ export default function ItemCreate() {
 
   return (
     <Button
-      className="ml-auto"
+      className="ml-auto gap-2"
       disabled={status === "executing"}
-      variant={status === "executing" ? "secondary" : "default"}
       onClick={() =>
         execute({
           name: "Nuevo producto",
+          status: MenuStatus.DRAFT,
           description: "",
           variants: [
             {
@@ -43,8 +44,10 @@ export default function ItemCreate() {
         })
       }
     >
-      {status === "executing" && (
-        <Loader className="mr-2 size-4 animate-spin" />
+      {status === "executing" ? (
+        <Loader className="size-4 animate-spin" />
+      ) : (
+        <PlusCircle className="size-4" />
       )}
       Nuevo producto
     </Button>
