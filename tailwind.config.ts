@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+import colors from "tailwindcss/colors"
 import { fontFamily } from "tailwindcss/defaultTheme"
 
 const config = {
@@ -15,6 +16,7 @@ const config = {
       display: ["var(--font-sora)"],
       sans: ["var(--font-inter)", ...fontFamily.sans]
     },
+
     transparent: "transparent",
     current: "currentColor",
     container: {
@@ -25,6 +27,9 @@ const config = {
       }
     },
     extend: {
+      colors: {
+        gray: colors.stone
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
