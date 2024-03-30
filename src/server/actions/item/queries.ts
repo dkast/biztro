@@ -1,3 +1,5 @@
+"use server"
+
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { unstable_cache as cache } from "next/cache"
@@ -5,6 +7,7 @@ import { cookies } from "next/headers"
 
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
+import type { MenuItemQueryFilter } from "@/lib/types"
 import { env } from "@/env.mjs"
 
 // Create an Cloudflare R2 service client object
@@ -17,26 +20,31 @@ const R2 = new S3Client({
   }
 })
 
-export async function getMenuItems() {
+export async function getMenuItems(filter: MenuItemQueryFilter) {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
-  return cache(
-    async () => {
-      return await prisma.menuItem.findMany({
-        where: {
-          organizationId: currentOrg
-        },
-        include: {
-          category: true,
-          variants: true
-        }
-      })
+  // return cache(
+  //   async () => {
+  console.dir(filter)
+  return await prisma.menuItem.findMany({
+    where: {
+      organizationId: currentOrg,
+      status: filter?.status ? { in: filter.status.split(",") } : undefined,
+      categoryId: filter?.category
+        ? { in: filter.category.split(",") }
+        : undefined
     },
-    [`menuItems-${currentOrg}`],
-    {
-      revalidate: 900,
-      tags: [`menuItems-${currentOrg}`]
+    include: {
+      category: true,
+      variants: true
     }
-  )()
+  })
+  //   },
+  //   [`menuItems-${currentOrg}`],
+  //   {
+  //     revalidate: 900,
+  //     tags: [`menuItems-${currentOrg}`]
+  //   }
+  // )()
 }
 
 export async function getMenuItemById(id: string) {

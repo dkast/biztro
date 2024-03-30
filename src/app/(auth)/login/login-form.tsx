@@ -26,7 +26,8 @@ export default function LoginForm({
               callbackUrl: callbackUrl ? callbackUrl : "/home"
             })
           }
-          className="mt-4 w-full"
+          className="mt-4 w-full shadow-sm"
+          variant="outline"
         >
           <Image
             src={`/${provider.name.toLowerCase()}.svg`}

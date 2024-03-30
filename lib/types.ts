@@ -1,3 +1,4 @@
+import type { type } from "os"
 import { z } from "zod"
 
 export enum HttpMethod {
@@ -163,6 +164,14 @@ export const categorySchema = z.object({
     .max(100, { message: "Nombre muy largo" }),
   organizationId: z.string().cuid().optional()
 })
+
+export type MenuItemQueryFilter = {
+  status?: string
+  category?: string
+  start?: string
+  end?: string
+  take?: number
+}
 
 export const enum Status {
   ACTIVE = "ACTIVE",
