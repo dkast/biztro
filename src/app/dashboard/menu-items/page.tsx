@@ -21,7 +21,6 @@ export default async function ItemsPage({
     filter.category = searchParams.category as string
   }
 
-  console.log(searchParams)
   const data = await getMenuItems(filter)
 
   return (

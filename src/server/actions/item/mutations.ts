@@ -77,7 +77,6 @@ export const createItem = action(
 
       return { success: item }
     } catch (error) {
-      console.error(error)
       let message
       if (typeof error === "string") {
         message = error

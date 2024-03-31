@@ -43,6 +43,10 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out"
+      },
+      gridTemplateColumns: {
+        // Add your custom value here
+        "300": "repeat(auto-fill, 300px)"
       }
     }
   },

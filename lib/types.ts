@@ -1,5 +1,6 @@
 import type { type } from "os"
-import { z } from "zod"
+import { id } from "date-fns/locale"
+import { string, z } from "zod"
 
 export enum HttpMethod {
   CONNECT = "CONNECT",
@@ -163,6 +164,20 @@ export const categorySchema = z.object({
     .min(3, { message: "Nombre muy corto" })
     .max(100, { message: "Nombre muy largo" }),
   organizationId: z.string().cuid().optional()
+})
+
+export const menuSchema = z.object({
+  id: z.string().cuid().optional(),
+  name: z
+    .string({
+      required_error: "Nombre es requerido"
+    })
+    .min(3, { message: "Nombre muy corto" })
+    .max(100, { message: "Nombre muy largo" }),
+  description: z.string().optional(),
+  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]),
+  organizationId: z.string().cuid().optional(),
+  data: string().optional()
 })
 
 export type MenuItemQueryFilter = {

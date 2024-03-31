@@ -22,29 +22,29 @@ const R2 = new S3Client({
 
 export async function getMenuItems(filter: MenuItemQueryFilter) {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
-  // return cache(
-  //   async () => {
-  console.dir(filter)
-  return await prisma.menuItem.findMany({
-    where: {
-      organizationId: currentOrg,
-      status: filter?.status ? { in: filter.status.split(",") } : undefined,
-      categoryId: filter?.category
-        ? { in: filter.category.split(",") }
-        : undefined
+  return cache(
+    async () => {
+      console.dir(filter)
+      return await prisma.menuItem.findMany({
+        where: {
+          organizationId: currentOrg,
+          status: filter?.status ? { in: filter.status.split(",") } : undefined,
+          categoryId: filter?.category
+            ? { in: filter.category.split(",") }
+            : undefined
+        },
+        include: {
+          category: true,
+          variants: true
+        }
+      })
     },
-    include: {
-      category: true,
-      variants: true
+    [`menuItems-${currentOrg}`],
+    {
+      revalidate: 900,
+      tags: [`menuItems-${currentOrg}`]
     }
-  })
-  //   },
-  //   [`menuItems-${currentOrg}`],
-  //   {
-  //     revalidate: 900,
-  //     tags: [`menuItems-${currentOrg}`]
-  //   }
-  // )()
+  )()
 }
 
 export async function getMenuItemById(id: string) {
