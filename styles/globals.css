@@ -8,6 +8,6 @@
   }
 
   .component-hovered {
-    @apply bg-violet-300/10;
+    @apply bg-gray-300/10;
   }
 }

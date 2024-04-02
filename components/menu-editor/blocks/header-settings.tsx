@@ -1,15 +1,8 @@
-import { useState } from "react"
 import { useNode } from "@craftjs/core"
 import { rgbaToHsva, Sketch } from "@uiw/react-color"
-import { ChevronDown, ChevronUp } from "lucide-react"
 
 import type { HeaderBlockProps } from "@/components/menu-editor/blocks/header-block"
-import SettingsSection from "@/components/menu-editor/settings-section"
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger
-} from "@/components/ui/collapsible"
+import SideSection from "@/components/menu-editor/side-section"
 import {
   Popover,
   PopoverContent,
@@ -28,10 +21,9 @@ export default function HeaderSettings() {
     showBanner: node.data.props.showBanner,
     showLogo: node.data.props.showLogo
   }))
-  const [open, setOpen] = useState(true)
   return (
     <>
-      <SettingsSection title="Título">
+      <SideSection title="Título">
         <div className="grid grid-cols-2 items-center gap-y-2">
           <dt>Color</dt>
           <dd className="flex items-center">
@@ -59,8 +51,8 @@ export default function HeaderSettings() {
             </Popover>
           </dd>
         </div>
-      </SettingsSection>
-      <SettingsSection title="Imágenes">
+      </SideSection>
+      <SideSection title="Imágenes">
         <div className="grid grid-cols-2 items-center gap-y-2">
           <dt>Logo</dt>
           <dd className="flex items-center">
@@ -89,7 +81,7 @@ export default function HeaderSettings() {
             />
           </dd>
         </div>
-      </SettingsSection>
+      </SideSection>
     </>
   )
 }

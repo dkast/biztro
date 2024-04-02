@@ -7,6 +7,7 @@ import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
+import ToolboxPanel from "@/components/menu-editor/toolbox-panel"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -22,7 +23,7 @@ export default function Workbench({
     <Editor resolver={{ ContainerBlock, HeaderBlock }} onRender={RenderNode}>
       <ResizablePanelGroup className="grow" direction="horizontal">
         <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
-          <div className="bg-red-50">Sidebar</div>
+          <ToolboxPanel />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={70}>

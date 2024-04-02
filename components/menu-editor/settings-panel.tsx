@@ -1,6 +1,7 @@
 import React from "react"
 import { useEditor } from "@craftjs/core"
 
+import SideSection from "@/components/menu-editor/side-section"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -34,7 +35,7 @@ export default function SettingsPanel() {
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
-        <div>Estructura</div>
+        <SideSection title="Estructura"></SideSection>
       </ResizablePanel>
     </ResizablePanelGroup>
   )

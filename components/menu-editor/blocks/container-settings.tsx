@@ -2,7 +2,7 @@ import { useNode } from "@craftjs/core"
 import { rgbaToHsva, Sketch } from "@uiw/react-color"
 
 import type { ContainerBlockProps } from "@/components/menu-editor/blocks/container-block"
-import SettingsSection from "@/components/menu-editor/settings-section"
+import SideSection from "@/components/menu-editor/side-section"
 import {
   Popover,
   PopoverContent,
@@ -15,7 +15,7 @@ export default function ContainerSettings() {
     backgroundColor
   } = useNode(node => ({ backgroundColor: node.data.props.backgroundColor }))
   return (
-    <SettingsSection title="Sitio">
+    <SideSection title="Sitio">
       <div className="grid grid-cols-3">
         <dt>Fondo</dt>
         <dd className="col-span-2">
@@ -43,6 +43,6 @@ export default function ContainerSettings() {
           </Popover>
         </dd>
       </div>
-    </SettingsSection>
+    </SideSection>
   )
 }

@@ -7,12 +7,12 @@ import {
   CollapsibleTrigger
 } from "@/components/ui/collapsible"
 
-export default function SettingsSection({
+export default function SideSection({
   title,
   children
 }: {
   title: string
-  children: React.ReactNode
+  children?: React.ReactNode
 }) {
   const [open, setOpen] = useState(true)
   return (
