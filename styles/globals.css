@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .component-selected {
+    @apply outline outline-1 outline-violet-500;
+  }
+
+  .component-hovered {
+    @apply bg-violet-300/10;
+  }
+}

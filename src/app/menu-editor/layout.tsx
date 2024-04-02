@@ -7,7 +7,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="flex grow flex-col">
       <Header />
       {/* <Sidebar /> */}
-      <div className="flex grow flex-col pt-16 lg:pl-60">{children}</div>
+      <div className="flex grow flex-col pt-16">{children}</div>
     </div>
   )
 }
