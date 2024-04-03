@@ -24,7 +24,6 @@ export async function getMenuItems(filter: MenuItemQueryFilter) {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
   return cache(
     async () => {
-      console.dir(filter)
       return await prisma.menuItem.findMany({
         where: {
           organizationId: currentOrg,

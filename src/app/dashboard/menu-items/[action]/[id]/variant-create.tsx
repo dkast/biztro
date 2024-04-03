@@ -114,7 +114,6 @@ export function VariantCreateForm({
   })
 
   const onSubmit = async (data: z.infer<typeof variantSchema>) => {
-    console.log(data)
     execute(data)
   }
 

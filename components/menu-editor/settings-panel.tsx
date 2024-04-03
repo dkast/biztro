@@ -18,8 +18,6 @@ export default function SettingsPanel() {
     }
   })
 
-  console.log(active, related)
-
   return (
     <ResizablePanelGroup direction="vertical">
       <ResizablePanel defaultSize={50} minSize={50} maxSize={70}>

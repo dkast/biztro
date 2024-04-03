@@ -77,7 +77,6 @@ export default function OrganizationForm({
   })
 
   const onSubmit = async (values: z.infer<typeof orgSchema>) => {
-    console.log(values)
     execute(values)
   }
 

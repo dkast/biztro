@@ -159,7 +159,6 @@ export default function ItemForm({
   }, [item])
 
   const onSubmit = async (data: z.infer<typeof menuItemSchema>) => {
-    console.log(data)
     execute(data)
   }
 

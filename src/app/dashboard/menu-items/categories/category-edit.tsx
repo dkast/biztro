@@ -153,7 +153,6 @@ function CategoryEditForm({
   })
 
   const onSubmit = async (data: z.infer<typeof categorySchema>) => {
-    console.log(data)
     if (action === ActionType.CREATE) {
       executeInsert(data)
     } else if (ActionType.UPDATE) {
