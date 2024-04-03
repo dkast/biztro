@@ -22,28 +22,28 @@ const R2 = new S3Client({
 
 export async function getMenuItems(filter: MenuItemQueryFilter) {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
-  return cache(
-    async () => {
-      return await prisma.menuItem.findMany({
-        where: {
-          organizationId: currentOrg,
-          status: filter?.status ? { in: filter.status.split(",") } : undefined,
-          categoryId: filter?.category
-            ? { in: filter.category.split(",") }
-            : undefined
-        },
-        include: {
-          category: true,
-          variants: true
-        }
-      })
+  // return cache(
+  //   async () => {
+  return await prisma.menuItem.findMany({
+    where: {
+      organizationId: currentOrg,
+      status: filter?.status ? { in: filter.status.split(",") } : undefined,
+      categoryId: filter?.category
+        ? { in: filter.category.split(",") }
+        : undefined
     },
-    [`menuItems-${currentOrg}`],
-    {
-      revalidate: 900,
-      tags: [`menuItems-${currentOrg}`]
+    include: {
+      category: true,
+      variants: true
     }
-  )()
+  })
+  //   },
+  //   [`menuItems-${currentOrg}`],
+  //   {
+  //     revalidate: 900,
+  //     tags: [`menuItems-${currentOrg}`]
+  //   }
+  // )()
 }
 
 export async function getMenuItemById(id: string) {
@@ -94,6 +94,50 @@ export async function getCategories() {
     {
       revalidate: 900,
       tags: [`categories-${currentOrg}`]
+    }
+  )()
+}
+
+export async function getCategoriesWithItems() {
+  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  return await cache(
+    async () => {
+      const data = await prisma.category.findMany({
+        where: {
+          organizationId: currentOrg,
+          menuItems: {
+            some: {
+              status: "ACTIVE"
+            }
+          }
+        },
+        include: {
+          menuItems: true
+        }
+      })
+
+      // Get the image URL for each item
+      for (const category of data) {
+        for (const item of category.menuItems) {
+          if (item.image) {
+            item.image = await getSignedUrl(
+              R2,
+              new GetObjectCommand({
+                Bucket: env.R2_BUCKET_NAME,
+                Key: item.image
+              }),
+              { expiresIn: 3600 * 24 }
+            )
+          }
+        }
+      }
+
+      return data
+    },
+    [`categoriesWithItems-${currentOrg}`],
+    {
+      revalidate: 900,
+      tags: [`categoriesWithItems-${currentOrg}`]
     }
   )()
 }

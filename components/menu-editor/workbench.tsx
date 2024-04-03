@@ -1,8 +1,9 @@
 "use client"
 
 import { Editor, Element, Frame } from "@craftjs/core"
-import type { Organization } from "@prisma/client"
+import type { Organization, Prisma } from "@prisma/client"
 
+import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
@@ -14,20 +15,23 @@ import {
   ResizablePanel,
   ResizablePanelGroup
 } from "@/components/ui/resizable"
+import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 
 export default function Workbench({
-  organization
+  organization,
+  categoryData
 }: {
   organization: Organization
+  categoryData: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
   return (
     <Editor
-      resolver={{ ContainerBlock, HeaderBlock, TextElement }}
+      resolver={{ ContainerBlock, HeaderBlock, TextElement, CategoryBlock }}
       onRender={RenderNode}
     >
       <ResizablePanelGroup className="grow" direction="horizontal">
         <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
-          <ToolboxPanel />
+          <ToolboxPanel categoryData={categoryData} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={70}>
