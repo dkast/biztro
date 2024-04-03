@@ -3,6 +3,7 @@ import { rgbaToHsva, Sketch } from "@uiw/react-color"
 
 import type { HeaderBlockProps } from "@/components/menu-editor/blocks/header-block"
 import SideSection from "@/components/menu-editor/side-section"
+import { Label } from "@/components/ui/label"
 import {
   Popover,
   PopoverContent,
@@ -24,13 +25,15 @@ export default function HeaderSettings() {
   return (
     <>
       <SideSection title="Título">
-        <div className="grid grid-cols-2 items-center gap-y-2">
-          <dt>Color</dt>
-          <dd className="flex items-center">
+        <div className="grid grid-cols-3 items-center gap-2">
+          <dt>
+            <Label>Color</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
             <Popover>
               <PopoverTrigger>
                 <div
-                  className="h-5 w-12 rounded border border-black/10"
+                  className="h-6 w-12 rounded border border-black/20"
                   style={{
                     backgroundColor: `rgb(${Object.values(titleColor)})`
                   }}
@@ -52,10 +55,12 @@ export default function HeaderSettings() {
           </dd>
         </div>
       </SideSection>
-      <SideSection title="Imágenes">
-        <div className="grid grid-cols-2 items-center gap-y-2">
-          <dt>Logo</dt>
-          <dd className="flex items-center">
+      <SideSection title="Mostrar Imágenes">
+        <div className="grid grid-cols-3 items-center gap-y-2">
+          <dt>
+            <Label>Logo</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
             <Switch
               className="scale-75"
               checked={showLogo}
@@ -67,8 +72,10 @@ export default function HeaderSettings() {
               }}
             />
           </dd>
-          <dt>Portada</dt>
-          <dd className="flex items-center">
+          <dt>
+            <Label>Portada</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
             <Switch
               className="scale-75"
               checked={showBanner}

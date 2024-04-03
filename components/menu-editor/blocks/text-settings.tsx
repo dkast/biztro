@@ -1,0 +1,164 @@
+import { useNode } from "@craftjs/core"
+import { rgbaToHsva, Sketch } from "@uiw/react-color"
+import { AlignCenter, AlignLeft, AlignRight } from "lucide-react"
+
+import type { TextElementProps } from "@/components/menu-editor/blocks/text-element"
+import SettingsSection from "@/components/menu-editor/side-section"
+import { Label } from "@/components/ui/label"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+export default function TextSettings() {
+  const {
+    actions: { setProp },
+    fontSize,
+    color,
+    textAlign,
+    fontWeight,
+    fontFamily
+  } = useNode(node => ({
+    fontSize: node.data.props.fontSize,
+    color: node.data.props.color,
+    textAlign: node.data.props.textAlign,
+    fontWeight: node.data.props.fontWeight,
+    fontFamily: node.data.props.fontFamily
+  }))
+
+  return (
+    <>
+      <SettingsSection title="Texto">
+        <div className="grid grid-cols-3 items-center gap-2">
+          <dt>
+            <Label>Estilo</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={fontWeight}
+              onValueChange={value =>
+                setProp((props: TextElementProps) => (props.fontWeight = value))
+              }
+            >
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="200">Light</SelectItem>
+                <SelectItem value="400">Regular</SelectItem>
+                <SelectItem value="600">Negrita</SelectItem>
+              </SelectContent>
+            </Select>
+          </dd>
+          <dt>
+            <Label>Tamaño</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={fontSize.toString()}
+              onValueChange={value =>
+                setProp(
+                  (props: TextElementProps) =>
+                    (props.fontSize = parseInt(value))
+                )
+              }
+            >
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="12">12</SelectItem>
+                <SelectItem value="16">16</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="24">24</SelectItem>
+                <SelectItem value="28">28</SelectItem>
+                <SelectItem value="32">32</SelectItem>
+              </SelectContent>
+            </Select>
+          </dd>
+          <dt>
+            <Label>Color</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Popover>
+              <PopoverTrigger>
+                <div
+                  className="h-6 w-12 rounded border border-black/10"
+                  style={{
+                    backgroundColor: `rgb(${Object.values(color)})`
+                  }}
+                ></div>
+              </PopoverTrigger>
+              <PopoverContent className="border-0 p-0 shadow-none">
+                <Sketch
+                  disableAlpha
+                  color={rgbaToHsva(color)}
+                  onChange={color =>
+                    setProp(
+                      (props: TextElementProps) => (props.color = color.rgba)
+                    )
+                  }
+                />
+              </PopoverContent>
+            </Popover>
+          </dd>
+          <dt>
+            <Label>Alineación</Label>
+          </dt>
+          <dd className="col-span-2">
+            <Tabs
+              value={textAlign}
+              onValueChange={value =>
+                setProp((props: TextElementProps) => (props.textAlign = value))
+              }
+              // className="text-center"
+            >
+              <TabsList className="h-8 p-0.5">
+                <TabsTrigger value="left">
+                  <AlignLeft className="size-4" />
+                </TabsTrigger>
+                <TabsTrigger value="center">
+                  <AlignCenter className="size-4" />
+                </TabsTrigger>
+                <TabsTrigger value="right">
+                  <AlignRight className="size-4" />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </dd>
+        </div>
+        {/* <div className="space-y-2">
+          <Label>Alineación</Label>
+          <Tabs
+            value={textAlign}
+            onValueChange={value =>
+              setProp((props: TextElementProps) => (props.textAlign = value))
+            }
+            className="text-center"
+          >
+            <TabsList className="h-8 p-0.5">
+              <TabsTrigger value="left">
+                <AlignLeft className="size-4" />
+              </TabsTrigger>
+              <TabsTrigger value="center">
+                <AlignCenter className="size-4" />
+              </TabsTrigger>
+              <TabsTrigger value="right">
+                <AlignRight className="size-4" />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div> */}
+      </SettingsSection>
+    </>
+  )
+}

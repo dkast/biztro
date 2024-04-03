@@ -10,7 +10,6 @@ import {
 
 export default function SettingsPanel() {
   const { active, related } = useEditor((state, query) => {
-    console.log(state, query)
     const currentlySelectedNodeId = query.getEvent("selected").first()
     return {
       active: currentlySelectedNodeId,

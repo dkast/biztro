@@ -5,6 +5,7 @@ import type { Organization } from "@prisma/client"
 
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
+import TextElement from "@/components/menu-editor/blocks/text-element"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
 import ToolboxPanel from "@/components/menu-editor/toolbox-panel"
@@ -20,7 +21,10 @@ export default function Workbench({
   organization: Organization
 }) {
   return (
-    <Editor resolver={{ ContainerBlock, HeaderBlock }} onRender={RenderNode}>
+    <Editor
+      resolver={{ ContainerBlock, HeaderBlock, TextElement }}
+      onRender={RenderNode}
+    >
       <ResizablePanelGroup className="grow" direction="horizontal">
         <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
           <ToolboxPanel />

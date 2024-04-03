@@ -3,6 +3,7 @@ import { rgbaToHsva, Sketch } from "@uiw/react-color"
 
 import type { ContainerBlockProps } from "@/components/menu-editor/blocks/container-block"
 import SideSection from "@/components/menu-editor/side-section"
+import { Label } from "@/components/ui/label"
 import {
   Popover,
   PopoverContent,
@@ -16,13 +17,15 @@ export default function ContainerSettings() {
   } = useNode(node => ({ backgroundColor: node.data.props.backgroundColor }))
   return (
     <SideSection title="Sitio">
-      <div className="grid grid-cols-3">
-        <dt>Fondo</dt>
-        <dd className="col-span-2">
+      <div className="grid grid-cols-3 items-center gap-2">
+        <dt>
+          <Label>Fondo</Label>
+        </dt>
+        <dd className="col-span-2 flex items-center">
           <Popover>
             <PopoverTrigger>
               <div
-                className="h-5 w-12 rounded border border-black/10"
+                className="h-6 w-12 rounded border border-black/20"
                 style={{
                   backgroundColor: `rgb(${Object.values(backgroundColor)})`
                 }}
