@@ -112,7 +112,18 @@ export async function getCategoriesWithItems() {
           }
         },
         include: {
-          menuItems: true
+          menuItems: {
+            where: {
+              status: "ACTIVE"
+            },
+            include: {
+              variants: {
+                orderBy: {
+                  price: "asc"
+                }
+              }
+            }
+          }
         }
       })
 

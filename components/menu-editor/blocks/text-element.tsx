@@ -45,7 +45,7 @@ export default function TextElement({
         textAlign,
         outline: "none"
       }}
-      className="px-4"
+      className="px-4 py-2"
     />
   )
 }
