@@ -1,5 +1,6 @@
 import ContentEditable from "react-contenteditable"
 import { useEditor, useNode } from "@craftjs/core"
+import type { RgbaColor } from "@uiw/react-color"
 
 import TextSettings from "@/components/menu-editor/blocks/text-settings"
 
@@ -8,7 +9,7 @@ export type TextElementProps = {
   textAlign?: string
   fontWeight?: string
   fontFamily?: string
-  color?: Record<"r" | "g" | "b" | "a", number>
+  color?: RgbaColor
   text: string
 }
 

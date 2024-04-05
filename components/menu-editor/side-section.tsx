@@ -6,6 +6,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger
 } from "@/components/ui/collapsible"
+import { cn } from "@/lib/utils"
 
 export default function SideSection({
   title,
@@ -25,7 +26,9 @@ export default function SideSection({
           <ChevronDown className="size-3.5 text-gray-500" />
         )}
       </CollapsibleTrigger>
-      <CollapsibleContent className="flex flex-col gap-y-2 p-4">
+      <CollapsibleContent
+        className={cn("flex flex-col gap-y-2", open && "p-4")}
+      >
         {children}
       </CollapsibleContent>
     </Collapsible>

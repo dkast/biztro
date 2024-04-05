@@ -1,12 +1,28 @@
 import { useNode } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
+import type { RgbaColor } from "@uiw/react-color"
 import Image from "next/image"
 
+import CategorySettings from "@/components/menu-editor/blocks/category-settings"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 import { cn } from "@/lib/utils"
 
 export type CategoryBlockProps = {
   data: Prisma.PromiseReturnType<typeof getCategoriesWithItems>[0]
+  categoryFontSize?: number
+  categoryColor?: RgbaColor
+  categoryFontWeight?: string
+  categoryFontFamily?: string
+  categoryTextAlign?: string
+  itemFontSize?: number
+  itemColor?: RgbaColor
+  itemFontWeight?: string
+  itemFontFamily?: string
+  priceFontSize?: number
+  priceColor?: RgbaColor
+  priceFontWeight?: string
+  priceFontFamily?: string
+  showImage?: boolean
 }
 
 export default function CategoryBlock({ data }: CategoryBlockProps) {
@@ -86,5 +102,24 @@ export default function CategoryBlock({ data }: CategoryBlockProps) {
 }
 
 CategoryBlock.craft = {
-  displayName: "Categoría"
+  displayName: "Categoría",
+  props: {
+    categoryFontSize: 16,
+    categoryColor: { r: 38, g: 50, b: 56, a: 1 },
+    categoryFontWeight: "400",
+    categoryFontFamily: "Inter",
+    categoryTextAlign: "left",
+    itemFontSize: 16,
+    itemColor: { r: 38, g: 50, b: 56, a: 1 },
+    itemFontWeight: "400",
+    itemFontFamily: "Inter",
+    priceFontSize: 16,
+    priceColor: { r: 38, g: 50, b: 56, a: 1 },
+    priceFontWeight: "400",
+    priceFontFamily: "Inter",
+    showImage: true
+  },
+  related: {
+    settings: CategorySettings
+  }
 }

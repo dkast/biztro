@@ -3,7 +3,7 @@ import { rgbaToHsva, Sketch } from "@uiw/react-color"
 import { AlignCenter, AlignLeft, AlignRight } from "lucide-react"
 
 import type { TextElementProps } from "@/components/menu-editor/blocks/text-element"
-import SettingsSection from "@/components/menu-editor/side-section"
+import SideSection from "@/components/menu-editor/side-section"
 import { Label } from "@/components/ui/label"
 import {
   Popover,
@@ -37,28 +37,8 @@ export default function TextSettings() {
 
   return (
     <>
-      <SettingsSection title="Texto">
+      <SideSection title="Texto">
         <div className="grid grid-cols-3 items-center gap-2">
-          <dt>
-            <Label>Estilo</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={fontWeight}
-              onValueChange={value =>
-                setProp((props: TextElementProps) => (props.fontWeight = value))
-              }
-            >
-              <SelectTrigger className="h-8 text-sm">
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="200">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="600">Negrita</SelectItem>
-              </SelectContent>
-            </Select>
-          </dd>
           <dt>
             <Label>Tamaño</Label>
           </dt>
@@ -112,6 +92,26 @@ export default function TextSettings() {
             </Popover>
           </dd>
           <dt>
+            <Label>Estilo</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={fontWeight}
+              onValueChange={value =>
+                setProp((props: TextElementProps) => (props.fontWeight = value))
+              }
+            >
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="200">Light</SelectItem>
+                <SelectItem value="400">Regular</SelectItem>
+                <SelectItem value="600">Negrita</SelectItem>
+              </SelectContent>
+            </Select>
+          </dd>
+          <dt>
             <Label>Alineación</Label>
           </dt>
           <dd className="col-span-2">
@@ -136,29 +136,7 @@ export default function TextSettings() {
             </Tabs>
           </dd>
         </div>
-        {/* <div className="space-y-2">
-          <Label>Alineación</Label>
-          <Tabs
-            value={textAlign}
-            onValueChange={value =>
-              setProp((props: TextElementProps) => (props.textAlign = value))
-            }
-            className="text-center"
-          >
-            <TabsList className="h-8 p-0.5">
-              <TabsTrigger value="left">
-                <AlignLeft className="size-4" />
-              </TabsTrigger>
-              <TabsTrigger value="center">
-                <AlignCenter className="size-4" />
-              </TabsTrigger>
-              <TabsTrigger value="right">
-                <AlignRight className="size-4" />
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div> */}
-      </SettingsSection>
+      </SideSection>
     </>
   )
 }
