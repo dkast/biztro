@@ -18,6 +18,7 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { FONT_SIZES } from "@/lib/types"
 
 export default function TextSettings() {
   const {
@@ -56,12 +57,11 @@ export default function TextSettings() {
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="12">12</SelectItem>
-                <SelectItem value="16">16</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="24">24</SelectItem>
-                <SelectItem value="28">28</SelectItem>
-                <SelectItem value="32">32</SelectItem>
+                {FONT_SIZES.map(size => (
+                  <SelectItem key={size} value={size.toString()}>
+                    {size}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </dd>
@@ -107,6 +107,7 @@ export default function TextSettings() {
               <SelectContent>
                 <SelectItem value="200">Light</SelectItem>
                 <SelectItem value="400">Regular</SelectItem>
+                <SelectItem value="500">Medium</SelectItem>
                 <SelectItem value="600">Negrita</SelectItem>
               </SelectContent>
             </Select>

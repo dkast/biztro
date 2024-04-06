@@ -12,7 +12,5 @@ export default async function MenuEditorPage() {
     return notFound()
   }
 
-  console.dir(categoryData)
-
   return <Workbench organization={currentOrg} categoryData={categoryData} />
 }

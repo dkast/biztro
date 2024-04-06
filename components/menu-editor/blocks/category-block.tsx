@@ -25,7 +25,23 @@ export type CategoryBlockProps = {
   showImage?: boolean
 }
 
-export default function CategoryBlock({ data }: CategoryBlockProps) {
+export default function CategoryBlock({
+  data,
+  categoryFontSize,
+  categoryColor,
+  categoryFontWeight,
+  categoryFontFamily,
+  categoryTextAlign,
+  itemFontSize,
+  itemColor,
+  itemFontWeight,
+  itemFontFamily,
+  priceFontSize,
+  priceColor,
+  priceFontWeight,
+  priceFontFamily,
+  showImage
+}: CategoryBlockProps) {
   const {
     connectors: { connect }
   } = useNode()
@@ -38,7 +54,17 @@ export default function CategoryBlock({ data }: CategoryBlockProps) {
       }}
       className="px-4"
     >
-      <h2 className="text-lg font-bold leading-10">{data.name}</h2>
+      <h2
+        className="leading-10"
+        style={{
+          fontSize: `${categoryFontSize}px`,
+          color: `rgba(${Object.values(categoryColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+          fontWeight: categoryFontWeight,
+          textAlign: categoryTextAlign as "right" | "left" | "center"
+        }}
+      >
+        {data.name}
+      </h2>
       <div className="space-y-4">
         {data.menuItems.map(item => {
           const hasVariants = item.variants.length > 1
@@ -63,7 +89,15 @@ export default function CategoryBlock({ data }: CategoryBlockProps) {
                     ></Image>
                   )}
                   <div>
-                    <h3 className="font-medium">{item.name}</h3>
+                    <h3
+                      style={{
+                        fontSize: `${itemFontSize}px`,
+                        color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                        fontWeight: itemFontWeight
+                      }}
+                    >
+                      {item.name}
+                    </h3>
                     <span className="line-clamp-3 text-sm">
                       {item.description}
                     </span>
@@ -79,7 +113,11 @@ export default function CategoryBlock({ data }: CategoryBlockProps) {
                           </span>
                           <span
                             key={variant.id}
-                            className="text-sm font-medium"
+                            style={{
+                              fontSize: `${priceFontSize}px`,
+                              color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                              fontWeight: priceFontWeight
+                            }}
                           >
                             {variant.price}
                           </span>
@@ -88,7 +126,13 @@ export default function CategoryBlock({ data }: CategoryBlockProps) {
                     </div>
                   </div>
                 ) : (
-                  <span className="text-sm font-medium">
+                  <span
+                    style={{
+                      fontSize: `${priceFontSize}px`,
+                      color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                      fontWeight: priceFontWeight
+                    }}
+                  >
                     {item.variants[0]?.price}
                   </span>
                 )}
@@ -104,18 +148,18 @@ export default function CategoryBlock({ data }: CategoryBlockProps) {
 CategoryBlock.craft = {
   displayName: "Categoría",
   props: {
-    categoryFontSize: 16,
+    categoryFontSize: 18,
     categoryColor: { r: 38, g: 50, b: 56, a: 1 },
-    categoryFontWeight: "400",
+    categoryFontWeight: "600",
     categoryFontFamily: "Inter",
     categoryTextAlign: "left",
     itemFontSize: 16,
     itemColor: { r: 38, g: 50, b: 56, a: 1 },
-    itemFontWeight: "400",
+    itemFontWeight: "500",
     itemFontFamily: "Inter",
-    priceFontSize: 16,
+    priceFontSize: 14,
     priceColor: { r: 38, g: 50, b: 56, a: 1 },
-    priceFontWeight: "400",
+    priceFontWeight: "500",
     priceFontFamily: "Inter",
     showImage: true
   },

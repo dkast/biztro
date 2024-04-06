@@ -75,6 +75,8 @@ export const COLORS = [
   "#ffffff"
 ]
 
+export const FONT_SIZES = [12, 14, 16, 18, 20, 24, 30, 36]
+
 export const orgSchema = z.object({
   id: z.string().cuid().optional(),
   name: z

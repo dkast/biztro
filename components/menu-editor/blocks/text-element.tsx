@@ -43,8 +43,7 @@ export default function TextElement({
         fontSize: `${fontSize}px`,
         color: `rgba(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })}`,
         fontWeight,
-        textAlign,
-        outline: "none"
+        textAlign
       }}
       className="px-4 py-2"
     />
