@@ -3,6 +3,7 @@ import { useEditor, useNode } from "@craftjs/core"
 import type { RgbaColor } from "@uiw/react-color"
 
 import TextSettings from "@/components/menu-editor/blocks/text-settings"
+import FontWrapper from "@/components/menu-editor/font-wrapper"
 
 export type TextElementProps = {
   fontSize?: number
@@ -31,22 +32,24 @@ export default function TextElement({
   }))
 
   return (
-    <ContentEditable
-      disabled={!enabled}
-      innerRef={connect}
-      html={text}
-      onChange={e => {
-        setProp((prop: TextElementProps) => (prop.text = e.target.value), 500)
-      }}
-      tagName="span"
-      style={{
-        fontSize: `${fontSize}px`,
-        color: `rgba(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })}`,
-        fontWeight,
-        textAlign
-      }}
-      className="px-4 py-2"
-    />
+    <FontWrapper fontFamily={fontFamily}>
+      <ContentEditable
+        disabled={!enabled}
+        innerRef={connect}
+        html={text}
+        onChange={e => {
+          setProp((prop: TextElementProps) => (prop.text = e.target.value), 500)
+        }}
+        tagName="span"
+        style={{
+          fontSize: `${fontSize}px`,
+          color: `rgba(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+          fontWeight,
+          textAlign
+        }}
+        className="px-4 py-2"
+      />
+    </FontWrapper>
   )
 }
 

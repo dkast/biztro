@@ -18,7 +18,7 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FONT_SIZES } from "@/lib/types"
+import { FONT_SIZES, FONTS } from "@/lib/types"
 
 export default function TextSettings() {
   const {
@@ -135,6 +135,28 @@ export default function TextSettings() {
                 </TabsTrigger>
               </TabsList>
             </Tabs>
+          </dd>
+          <dt>
+            <Label>Fuente</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={fontFamily}
+              onValueChange={value =>
+                setProp((props: TextElementProps) => (props.fontFamily = value))
+              }
+            >
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                {FONTS.map(font => (
+                  <SelectItem key={font} value={font}>
+                    {font}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </dd>
         </div>
       </SideSection>
