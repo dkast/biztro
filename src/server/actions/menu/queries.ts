@@ -8,20 +8,20 @@ import prisma from "@/lib/prisma"
 
 export async function getMenus() {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
-  return await cache(
-    async () => {
-      return await prisma.menu.findMany({
-        where: {
-          organizationId: currentOrg
-        }
-      })
-    },
-    [`menus-${currentOrg}`],
-    {
-      revalidate: 900,
-      tags: [`menus-${currentOrg}`]
+  // return await cache(
+  //   async () => {
+  return await prisma.menu.findMany({
+    where: {
+      organizationId: currentOrg
     }
-  )()
+  })
+  // },
+  //   [`menus-${currentOrg}`],
+  //   {
+  //     revalidate: 900,
+  //     tags: [`menus-${currentOrg}`]
+  //   }
+  // )()
 }
 
 export async function getMenuById(id: string) {

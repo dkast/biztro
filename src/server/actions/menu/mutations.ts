@@ -72,7 +72,7 @@ export const updateMenuName = action(
         data: { name }
       })
 
-      revalidateTag(`menus-${menu.organizationId}`)
+      // revalidateTag(`menus-${menu.organizationId}`)
       revalidateTag(`menu-${id}`)
 
       return {
