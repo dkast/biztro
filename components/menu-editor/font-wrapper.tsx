@@ -13,19 +13,17 @@ export default function FontWrapper({
   useEffect(() => {
     if (!fontFamily) return
 
-    // // Usage
-    // const isLoaded = isFontLoaded(fontFamily)
-
-    // if (isLoaded) {
-    //   console.log(
-    //     `Font ${fontFamily} is ${isLoaded ? "loaded" : "not loaded"}.`
-    //   )
-    //   return
-    // }
+    const isLoaded = hasFontLoaded(fontFamily)
+    if (isLoaded) {
+      console.log(
+        `Font ${fontFamily} is ${isLoaded ? "loaded" : "not loaded"}.`
+      )
+      return
+    }
 
     WebFont.load({
       google: {
-        families: [fontFamily]
+        families: [`${fontFamily}:200,400,500,600`]
       },
       fontactive: function (familyName, fvd) {
         console.log(familyName + " has loaded.")
@@ -46,6 +44,9 @@ export default function FontWrapper({
     </div>
   )
 }
-const isFontLoaded = (fontFamily: string): boolean => {
-  return document.fonts.check(`1em ${fontFamily}`)
+
+export function hasFontLoaded(fontFamily: string): boolean {
+  const className = `wf-${fontFamily.toLowerCase().replace(/ /g, "")}-n4-active`
+  console.log("Checking for class", className)
+  return document.documentElement.classList.contains(className)
 }

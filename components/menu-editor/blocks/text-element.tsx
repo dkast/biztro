@@ -40,7 +40,7 @@ export default function TextElement({
         onChange={e => {
           setProp((prop: TextElementProps) => (prop.text = e.target.value), 500)
         }}
-        tagName="span"
+        tagName="p"
         style={{
           fontSize: `${fontSize}px`,
           color: `rgba(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })}`,
