@@ -77,7 +77,7 @@ export default function CategoryBlock({
                 )}
               >
                 <div className="flex flex-row gap-2">
-                  {item.image && (
+                  {item.image && showImage && (
                     <Image
                       src={item.image}
                       width={128}

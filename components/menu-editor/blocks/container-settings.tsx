@@ -13,8 +13,12 @@ import {
 export default function ContainerSettings() {
   const {
     actions: { setProp },
-    backgroundColor
-  } = useNode(node => ({ backgroundColor: node.data.props.backgroundColor }))
+    backgroundColor,
+    color
+  } = useNode(node => ({
+    backgroundColor: node.data.props.backgroundColor,
+    color: node.data.props.color
+  }))
   return (
     <SideSection title="Sitio">
       <div className="grid grid-cols-3 items-center gap-2">
@@ -39,6 +43,33 @@ export default function ContainerSettings() {
                   setProp(
                     (props: Required<ContainerBlockProps>) =>
                       (props.backgroundColor = color.rgba)
+                  )
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+        </dd>
+        <dt>
+          <Label>Texto</Label>
+        </dt>
+        <dd className="col-span-2 flex items-center">
+          <Popover>
+            <PopoverTrigger>
+              <div
+                className="h-6 w-12 rounded border border-black/20"
+                style={{
+                  backgroundColor: `rgb(${Object.values(color)})`
+                }}
+              ></div>
+            </PopoverTrigger>
+            <PopoverContent className="border-0 p-0 shadow-none">
+              <Sketch
+                disableAlpha
+                color={rgbaToHsva(color)}
+                onChange={color => {
+                  setProp(
+                    (props: Required<ContainerBlockProps>) =>
+                      (props.color = color.rgba)
                   )
                 }}
               />

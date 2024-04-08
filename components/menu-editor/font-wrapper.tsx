@@ -20,18 +20,19 @@ export default function FontWrapper({
       )
       return
     }
-
-    WebFont.load({
-      google: {
-        families: [`${fontFamily}:200,400,500,600`]
-      },
-      fontactive: function (familyName, fvd) {
-        console.log(familyName + " has loaded.")
-      },
-      fontinactive: function (familyName, fvd) {
-        console.log(familyName + " failed to load.")
-      }
-    })
+    if (typeof window !== "undefined") {
+      WebFont.load({
+        google: {
+          families: [`${fontFamily}:200,400,500,600`]
+        },
+        fontactive: function (familyName, _fvd) {
+          console.log(familyName + " has loaded.")
+        },
+        fontinactive: function (familyName, _fvd) {
+          console.log(familyName + " failed to load.")
+        }
+      })
+    }
   }, [fontFamily])
 
   return (

@@ -3,6 +3,7 @@
 import { Prisma } from "@prisma/client"
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
+import { z } from "zod"
 
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
@@ -44,6 +45,46 @@ export const createMenu = action(
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
           message = "Ya existe un producto con ese nombre"
+        } else {
+          message = error.message
+        }
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const updateMenuName = action(
+  z.object({
+    id: z.string(),
+    name: z.string()
+  }),
+  async ({ id, name }) => {
+    try {
+      const menu = await prisma.menu.update({
+        where: { id },
+        data: { name }
+      })
+
+      revalidateTag(`menus-${menu.organizationId}`)
+      revalidateTag(`menu-${id}`)
+
+      return {
+        name: menu.name
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
+          message = "Ya existe un menú con ese nombre"
         } else {
           message = error.message
         }

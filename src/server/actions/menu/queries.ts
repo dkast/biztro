@@ -1,3 +1,5 @@
+"use server"
+
 import { unstable_cache as cache } from "next/cache"
 import { cookies } from "next/headers"
 
@@ -18,6 +20,23 @@ export async function getMenus() {
     {
       revalidate: 900,
       tags: [`menus-${currentOrg}`]
+    }
+  )()
+}
+
+export async function getMenuById(id: string) {
+  return await cache(
+    async () => {
+      return await prisma.menu.findUnique({
+        where: {
+          id
+        }
+      })
+    },
+    [`menu-${id}`],
+    {
+      revalidate: 900,
+      tags: [`menu-${id}`]
     }
   )()
 }
