@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import type { MenuItem, Prisma } from "@prisma/client"
+import type { Prisma } from "@prisma/client"
 import type { ColumnDef, Row } from "@tanstack/react-table"
 import {
   ChevronDown,
@@ -11,7 +11,6 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-import { AlertDialog } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -148,31 +147,29 @@ function ActionsColumn({
 
   return (
     <>
-      <AlertDialog>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreHorizontal className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32">
-            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <Link
-                href={`/dashboard/menu-items/edit/${item.id}`}
-                prefetch={false}
-              >
-                <>
-                  <span>Editar</span>
-                </>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setOpenDelete(true)}>
-              <span className="text-red-500">Eliminar</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </AlertDialog>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <MoreHorizontal className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-32">
+          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link
+              href={`/dashboard/menu-items/edit/${item.id}`}
+              prefetch={false}
+            >
+              <>
+                <span>Editar</span>
+              </>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setOpenDelete(true)}>
+            <span className="text-red-500">Eliminar</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <ItemDelete item={item} open={openDelete} setOpen={setOpenDelete} />
     </>
   )

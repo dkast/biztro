@@ -112,7 +112,7 @@ export default function MenuPublish({ menu }: { menu: Menu }) {
                   </Button>
                 </TooltipHelper>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Button
                   size="xs"
                   className="mt-2 w-full"

@@ -135,3 +135,37 @@ export const updateMenuStatus = action(
     }
   }
 )
+
+export const deleteMenu = action(
+  z.object({
+    id: z.string(),
+    organizationId: z.string()
+  }),
+  async ({ id, organizationId }) => {
+    try {
+      await prisma.menu.delete({
+        where: { id, organizationId }
+      })
+
+      revalidateTag(`menu-${id}`)
+
+      return {
+        success: true
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        message = error.message
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
