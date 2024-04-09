@@ -7,7 +7,8 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    DATABASE_URL: z.string().url(),
+    TURSO_DATABASE_URL: z.string().url(),
+    TURSO_AUTH_TOKEN: z.string().min(1),
     NODE_ENV: z.enum(["development", "test", "production"]),
     NEXTAUTH_SECRET:
       process.env.NODE_ENV === "production"
@@ -25,7 +26,6 @@ export const env = createEnv({
     R2_ACCESS_KEY_ID: z.string().min(1),
     R2_SECRET_KEY_ID: z.string().min(1),
     R2_BUCKET_NAME: z.string().min(1),
-    TURSO_AUTH_TOKEN: z.string().min(1),
     GOOGLE_SECRET: z.string().min(1),
     GOOGLE_ID: z.string().min(1)
   },
@@ -44,7 +44,8 @@ export const env = createEnv({
    * middlewares) or client-side so we need to destruct manually.
    */
   runtimeEnv: {
-    DATABASE_URL: process.env.DATABASE_URL,
+    TURSO_DATABASE_URL: process.env.DATABASE_URL,
+    TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
@@ -52,7 +53,6 @@ export const env = createEnv({
     R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
     R2_SECRET_KEY_ID: process.env.R2_SECRET_KEY_ID,
     R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
-    TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
     GOOGLE_SECRET: process.env.GOOGLE_SECRET,
     GOOGLE_ID: process.env.GOOGLE_ID
   },

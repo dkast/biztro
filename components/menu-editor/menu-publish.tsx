@@ -2,7 +2,7 @@
 
 import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
-import type { Menu } from "@prisma/client"
+import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { Copy, Globe, Loader } from "lucide-react"
 import lz from "lzutf8"
@@ -16,11 +16,15 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import { Separator } from "@/components/ui/separator"
 import { updateMenuStatus } from "@/server/actions/menu/mutations"
+import type { getMenuById } from "@/server/actions/menu/queries"
 import { MenuStatus } from "@/lib/types"
 
-export default function MenuPublish({ menu }: { menu: Menu }) {
+export default function MenuPublish({
+  menu
+}: {
+  menu: Prisma.PromiseReturnType<typeof getMenuById>
+}) {
   const { query } = useEditor()
   const queryClient = useQueryClient()
 
@@ -29,7 +33,7 @@ export default function MenuPublish({ menu }: { menu: Menu }) {
       if (data.success) {
         toast.success("Menú actualizado")
         queryClient.invalidateQueries({
-          queryKey: ["menu", menu.id]
+          queryKey: ["menu", menu?.id]
         })
       } else if (data.failure.reason) {
         toast.error(data.failure.reason)
@@ -42,33 +46,21 @@ export default function MenuPublish({ menu }: { menu: Menu }) {
     }
   })
 
+  if (!menu) return null
+
   const handleSave = (status: MenuStatus) => {
     const json = query.serialize()
     const serialData = lz.encodeBase64(lz.compress(json))
-    execute({ id: menu.id, status, serialData })
+    execute({
+      id: menu?.id,
+      subdomain: menu.organization.subdomain,
+      status,
+      serialData
+    })
   }
 
   return (
     <div className="flex justify-end gap-1">
-      {/* {menu.status === MenuStatus.DRAFT ? (
-        <Button
-          size="xs"
-          className="min-w-20"
-          onClick={() => handleSave(MenuStatus.PUBLISHED)}
-        >
-          {status === "executing" ? (
-            <Loader className="size-4 animate-spin" />
-          ) : (
-            "Publicar"
-          )}
-        </Button>
-      ) : (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="xs">Publicado</Button>
-          </DropdownMenuTrigger>
-        </DropdownMenu>
-      )} */}
       <Popover>
         <PopoverTrigger asChild>
           <Button size="xs">Publicar</Button>
@@ -104,7 +96,7 @@ export default function MenuPublish({ menu }: { menu: Menu }) {
                   placeholder="https://example.com/menu"
                   className="h-8 w-full"
                   readOnly
-                  value={`https://biztro.co/${menu.id}`}
+                  value={`https://biztro.co/${menu.organization.subdomain}`}
                 />
                 <TooltipHelper content="Copiar">
                   <Button size="icon" variant="outline" className="size-8">

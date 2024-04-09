@@ -103,10 +103,11 @@ export const updateMenuName = action(
 export const updateMenuStatus = action(
   z.object({
     id: z.string(),
+    subdomain: z.string(),
     status: z.enum(["PUBLISHED", "DRAFT"]),
     serialData: z.string()
   }),
-  async ({ id, status, serialData }) => {
+  async ({ id, subdomain, status, serialData }) => {
     try {
       const menu = await prisma.menu.update({
         where: { id },
@@ -114,6 +115,7 @@ export const updateMenuStatus = action(
       })
 
       revalidateTag(`menu-${id}`)
+      revalidateTag(`site-${subdomain}`)
 
       return {
         success: menu
