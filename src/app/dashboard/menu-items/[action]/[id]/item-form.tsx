@@ -62,7 +62,7 @@ import type {
   getCategories,
   getMenuItemById
 } from "@/server/actions/item/queries"
-import { ImageType, menuItemSchema, MenuStatus } from "@/lib/types"
+import { ImageType, menuItemSchema, MenuItemStatus } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 export default function ItemForm({
@@ -80,7 +80,7 @@ export default function ItemForm({
       id: item?.id,
       name: item?.name,
       description: item?.description ?? undefined,
-      status: item?.status as MenuStatus,
+      status: item?.status as MenuItemStatus,
       image: item?.image ?? undefined,
       categoryId: item?.category?.id ?? undefined,
       organizationId: item?.organizationId,
@@ -410,13 +410,13 @@ export default function ItemForm({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value={MenuStatus.ACTIVE}>
+                            <SelectItem value={MenuItemStatus.ACTIVE}>
                               Activo
                             </SelectItem>
-                            <SelectItem value={MenuStatus.DRAFT}>
+                            <SelectItem value={MenuItemStatus.DRAFT}>
                               Borrador
                             </SelectItem>
-                            <SelectItem value={MenuStatus.ARCHIVED}>
+                            <SelectItem value={MenuItemStatus.ARCHIVED}>
                               Archivado
                             </SelectItem>
                           </SelectContent>

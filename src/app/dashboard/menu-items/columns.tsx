@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import ItemDelete from "@/app/dashboard/menu-items/item-delete"
 import type { getMenuItemById } from "@/server/actions/item/queries"
-import { MenuStatus } from "@/lib/types"
+import { MenuItemStatus } from "@/lib/types"
 
 export const columns: ColumnDef<
   Prisma.PromiseReturnType<typeof getMenuItemById>
@@ -66,19 +66,19 @@ export const columns: ColumnDef<
         <>
           {(() => {
             switch (item?.status) {
-              case MenuStatus.ACTIVE:
+              case MenuItemStatus.ACTIVE:
                 return (
                   <Badge variant="green" className="rounded-full">
                     Activo
                   </Badge>
                 )
-              case MenuStatus.DRAFT:
+              case MenuItemStatus.DRAFT:
                 return (
                   <Badge variant="violet" className="rounded-full">
                     Borrador
                   </Badge>
                 )
-              case MenuStatus.ARCHIVED:
+              case MenuItemStatus.ARCHIVED:
                 return (
                   <Badge variant="secondary" className="rounded-full">
                     Archivado

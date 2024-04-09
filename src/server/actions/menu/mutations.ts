@@ -99,3 +99,39 @@ export const updateMenuName = action(
     }
   }
 )
+
+export const updateMenuStatus = action(
+  z.object({
+    id: z.string(),
+    status: z.enum(["PUBLISHED", "DRAFT"]),
+    serialData: z.string()
+  }),
+  async ({ id, status, serialData }) => {
+    try {
+      const menu = await prisma.menu.update({
+        where: { id },
+        data: { status, serialData }
+      })
+
+      revalidateTag(`menu-${id}`)
+
+      return {
+        success: menu
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        message = error.message
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)

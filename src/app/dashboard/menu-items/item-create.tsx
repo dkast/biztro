@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { createItem } from "@/server/actions/item/mutations"
-import { MenuStatus } from "@/lib/types"
+import { MenuItemStatus } from "@/lib/types"
 
 export default function ItemCreate() {
   const router = useRouter()
@@ -33,7 +33,7 @@ export default function ItemCreate() {
       onClick={() =>
         execute({
           name: "Nuevo producto",
-          status: MenuStatus.DRAFT,
+          status: MenuItemStatus.DRAFT,
           description: "",
           variants: [
             {

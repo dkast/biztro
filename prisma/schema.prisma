@@ -120,7 +120,7 @@ model Menu {
   updatedAt      DateTime     @updatedAt
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String
-  data           String?
+  serialData     String?
 }
 
 model MenuItem {

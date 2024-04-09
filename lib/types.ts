@@ -177,9 +177,9 @@ export const menuSchema = z.object({
     .min(3, { message: "Nombre muy corto" })
     .max(100, { message: "Nombre muy largo" }),
   description: z.string().optional(),
-  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]),
+  status: z.enum(["PUBLISHED", "DRAFT"]),
   organizationId: z.string().cuid().optional(),
-  data: string().optional()
+  serialData: string().optional()
 })
 
 export type MenuItemQueryFilter = {
@@ -219,8 +219,13 @@ export const enum ActionType {
   DELETE = "DELETE"
 }
 
-export const enum MenuStatus {
+export const enum MenuItemStatus {
   ACTIVE = "ACTIVE",
   DRAFT = "DRAFT",
   ARCHIVED = "ARCHIVED"
+}
+
+export const enum MenuStatus {
+  PUBLISHED = "PUBLISHED",
+  DRAFT = "DRAFT"
 }

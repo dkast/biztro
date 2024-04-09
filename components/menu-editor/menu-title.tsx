@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Menu } from "@prisma/client"
+import { useQueryClient } from "@tanstack/react-query"
 import { ChevronDown } from "lucide-react"
 import { useOptimisticAction } from "next-safe-action/hooks"
 import { z } from "zod"
@@ -29,18 +30,19 @@ const nameSchema = z.object({
   name: z.string().min(1, "El nombre es requerido")
 })
 
-export default function ToolbarTitle({ menu }: { menu: Menu }) {
+export default function MenuTitle({ menu }: { menu: Menu }) {
   const form = useForm<z.infer<typeof nameSchema>>({
     resolver: zodResolver(nameSchema),
     defaultValues: { name: menu.name },
     mode: "onBlur"
   })
   const [name, setName] = useState(menu.name)
-  const { execute, result, optimisticData } = useOptimisticAction(
+  const { execute, optimisticData } = useOptimisticAction(
     updateMenuName,
     { name },
     (state, input) => ({ name: input.name })
   )
+  const queryClient = useQueryClient()
 
   const onClose = (open: boolean) => {
     if (!open) {
@@ -48,6 +50,9 @@ export default function ToolbarTitle({ menu }: { menu: Menu }) {
         console.log("onClose", form.getValues())
         execute({ id: menu.id, name: data.name })
         setName(data.name)
+        queryClient.invalidateQueries({
+          queryKey: ["menu", menu.id]
+        })
       })()
     }
   }

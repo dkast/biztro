@@ -5,19 +5,19 @@ import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
 
 import { DataTableFilter } from "@/components/data-table/data-table-filter"
 import { getCategories } from "@/server/actions/item/queries"
-import { MenuStatus } from "@/lib/types"
+import { MenuItemStatus } from "@/lib/types"
 
 const status = [
   {
-    value: MenuStatus.ACTIVE,
+    value: MenuItemStatus.ACTIVE,
     label: "Activo"
   },
   {
-    value: MenuStatus.DRAFT,
+    value: MenuItemStatus.DRAFT,
     label: "Borrador"
   },
   {
-    value: MenuStatus.ARCHIVED,
+    value: MenuItemStatus.ARCHIVED,
     label: "Archivado"
   }
 ]

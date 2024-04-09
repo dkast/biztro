@@ -1,16 +1,16 @@
-import ToolbarTitle from "@/components/menu-editor/toolbar-title"
-import { getMenuById } from "@/server/actions/menu/queries"
+"use client"
 
-export default async function Toolbar({ menuId }: { menuId: string }) {
-  const menu = await getMenuById(menuId)
+import type { Menu } from "@prisma/client"
 
-  if (!menu) {
-    return null
-  }
+import MenuPublish from "@/components/menu-editor/menu-publish"
+import MenuTitle from "@/components/menu-editor/menu-title"
 
+export default function Toolbar({ menu }: { menu: Menu }) {
   return (
-    <div className="mx-10 flex grow justify-around">
-      <ToolbarTitle menu={menu} />
+    <div className="mx-10 grid grow grid-cols-3 items-center">
+      <div></div>
+      <MenuTitle menu={menu} />
+      <MenuPublish menu={menu} />
     </div>
   )
 }
