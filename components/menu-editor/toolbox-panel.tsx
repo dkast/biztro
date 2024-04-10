@@ -1,6 +1,6 @@
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
-import { Diamond, Layers, Type, type LucideIcon } from "lucide-react"
+import { Layers, Type, type LucideIcon } from "lucide-react"
 
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
@@ -8,15 +8,15 @@ import SideSection from "@/components/menu-editor/side-section"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 
 export default function ToolboxPanel({
-  categoryData
+  categories
 }: {
-  categoryData: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
+  categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
   const { connectors } = useEditor()
   return (
     <>
       <SideSection title="Categorías">
-        {categoryData.map(category => (
+        {categories.map(category => (
           <div
             key={category.id}
             ref={ref => {
@@ -45,21 +45,6 @@ export default function ToolboxPanel({
 }
 
 function ToolboxElement({ title, Icon }: { title: string; Icon: LucideIcon }) {
-  return (
-    <div className="group flex cursor-move items-center gap-2 rounded-lg border p-2 text-sm shadow-sm hover:border-violet-500 ">
-      <Icon className="size-3.5 text-gray-400 group-hover:text-current" />
-      <span>{title}</span>
-    </div>
-  )
-}
-
-function ToolboxComponent({
-  title,
-  Icon
-}: {
-  title: string
-  Icon: LucideIcon
-}) {
   return (
     <div className="group flex cursor-move items-center gap-2 rounded-lg border p-2 text-sm shadow-sm hover:border-violet-500 ">
       <Icon className="size-3.5 text-gray-400 group-hover:text-current" />

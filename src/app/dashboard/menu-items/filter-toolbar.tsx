@@ -1,10 +1,9 @@
 "use client"
 
-import { useSuspenseQuery } from "@tanstack/react-query"
+import type { Category } from "@prisma/client"
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
 
 import { DataTableFilter } from "@/components/data-table/data-table-filter"
-import { getCategories } from "@/server/actions/item/queries"
 import { MenuItemStatus } from "@/lib/types"
 
 const status = [
@@ -22,12 +21,11 @@ const status = [
   }
 ]
 
-export default function FilterToolbar() {
-  const { data } = useSuspenseQuery({
-    queryKey: ["categories"],
-    queryFn: () => getCategories()
-  })
-
+export default function FilterToolbar({
+  categories
+}: {
+  categories: Category[]
+}) {
   const [categoryValue, setCategoryValue] = useQueryState(
     "category",
     parseAsArrayOf(parseAsString)
@@ -57,7 +55,7 @@ export default function FilterToolbar() {
         />
         <DataTableFilter
           title="Categoría"
-          options={data?.map(d => ({ value: d.id, label: d.name })) ?? []}
+          options={categories?.map(d => ({ value: d.id, label: d.name })) ?? []}
           value={categoryValue}
           onChange={setCategoryValue}
         />

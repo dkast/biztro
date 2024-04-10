@@ -1,8 +1,7 @@
 "use client"
 
 import { Editor, Element, Frame } from "@craftjs/core"
-import type { Organization, Prisma } from "@prisma/client"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import type { Menu, Organization, Prisma } from "@prisma/client"
 import lz from "lzutf8"
 
 import Header from "@/components/dashboard/header"
@@ -20,27 +19,18 @@ import {
   ResizablePanelGroup
 } from "@/components/ui/resizable"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
-import { getMenuById } from "@/server/actions/menu/queries"
 
 export default function Workbench({
-  menuId,
+  menu,
   organization,
-  categoryData
+  categories
 }: {
-  menuId: string
+  menu: Menu
   organization: Organization
-  categoryData: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
+  categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
-  // Get the menu data
-  const { data } = useSuspenseQuery({
-    queryKey: ["menu", menuId],
-    queryFn: () => getMenuById(menuId)
-  })
-
-  if (!data) return null
-
   // Extract the serialized data from the menu
-  const { serialData } = data
+  const { serialData } = menu
   let json = undefined
   if (serialData) json = lz.decompress(lz.decodeBase64(serialData))
 
@@ -50,11 +40,11 @@ export default function Workbench({
       onRender={RenderNode}
     >
       <Header>
-        <Toolbar menu={data} />
+        <Toolbar menu={menu} />
       </Header>
       <ResizablePanelGroup className="grow pt-16" direction="horizontal">
         <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
-          <ToolboxPanel categoryData={categoryData} />
+          <ToolboxPanel categories={categories} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel defaultSize={70}>

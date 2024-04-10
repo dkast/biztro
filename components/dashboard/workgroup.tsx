@@ -1,6 +1,6 @@
 "use client"
 
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -8,9 +8,9 @@ import { getCurrentOrganization } from "@/server/actions/user/queries"
 import { cn, getInitials } from "@/lib/utils"
 
 export default function Workgroup({ className }: { className?: string }) {
-  const { data } = useSuspenseQuery({
+  const { data } = useQuery({
     queryKey: ["workgroup", "current"],
-    queryFn: () => getCurrentOrganization()
+    queryFn: getCurrentOrganization
   })
 
   if (!data)

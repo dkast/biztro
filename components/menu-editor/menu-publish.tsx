@@ -4,13 +4,12 @@ import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
-import { Copy, Globe, Loader } from "lucide-react"
+import { ExternalLink, Globe, Loader } from "lucide-react"
 import lz from "lzutf8"
 import { useAction } from "next-safe-action/hooks"
+import Link from "next/link"
 
-import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Popover,
   PopoverContent,
@@ -19,6 +18,7 @@ import {
 import { updateMenuStatus } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import { MenuStatus } from "@/lib/types"
+import { getBaseUrl } from "@/lib/utils"
 
 export default function MenuPublish({
   menu
@@ -91,18 +91,16 @@ export default function MenuPublish({
             <div className="flex flex-col gap-2">
               <span className="text-sm font-medium">Liga Menú</span>
               <div className="flex flex-row items-center gap-1">
-                <Input
-                  type="text"
-                  placeholder="https://example.com/menu"
-                  className="h-8 w-full"
-                  readOnly
-                  value={`https://biztro.co/${menu.organization.subdomain}`}
-                />
-                <TooltipHelper content="Copiar">
-                  <Button size="icon" variant="outline" className="size-8">
-                    <Copy className="size-3.5" />
-                  </Button>
-                </TooltipHelper>
+                <Link
+                  href={`/${menu.organization.subdomain}`}
+                  className="flex flex-row items-center justify-center gap-2"
+                  target="_blank"
+                >
+                  <span className="text-xs">
+                    {getBaseUrl()}/{menu.organization.subdomain}
+                  </span>
+                  <ExternalLink className="size-3.5 text-gray-500" />
+                </Link>
               </div>
               <div className="space-y-1">
                 <Button
