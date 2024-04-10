@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
@@ -94,6 +94,7 @@
     "lodash.transform": "^4.6.0",
     "lucide-react": "^0.366.0",
     "lzutf8": "^0.6.3",
+    "mdxts": "^0.14.0",
     "next": "14.1.4",
     "next-absolute-url": "^1.2.2",
     "next-auth": "^4.24.7",
