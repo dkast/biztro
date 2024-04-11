@@ -1,7 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
 
-import ProfileMenu from "@/components/dashboard/profile-menu"
 import { Button } from "@/components/ui/button"
 
 export default function Navbar({ children }: { children?: React.ReactNode }) {

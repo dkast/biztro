@@ -2,6 +2,7 @@
 
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
+import { z } from "zod"
 
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
@@ -119,6 +120,52 @@ export const updateOrg = action(
         message = error
       } else if (error instanceof Error) {
         message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const joinWaitlist = action(
+  z.object({
+    email: z.string().email()
+  }),
+
+  async ({ email }) => {
+    try {
+      const invite = await prisma.invite.findUnique({
+        where: {
+          email: email
+        }
+      })
+
+      if (invite) {
+        throw new Error("Ya estás en la lista de espera")
+      }
+
+      await prisma.invite.create({
+        data: {
+          email: email
+        }
+      })
+
+      return {
+        success: {
+          email: email
+        }
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Error) {
+        message = error.message
+      } else {
+        message = "Unknown error"
       }
       return {
         failure: {

@@ -1,3 +1,4 @@
+import { QRCode } from "react-qrcode-logo"
 import {
   ArrowSmRightIcon,
   AtSymbolIcon,
@@ -14,14 +15,12 @@ import { motion } from "framer-motion"
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
-import { QRCode } from "react-qrcode-logo"
 
 // import Spline from "@splinetool/react-spline"
 // import { BrowserView, MobileView } from "react-device-detect"
 
 import Footer from "@/components/blog/Footer"
 import MainMenu from "@/components/blog/MainMenu"
-
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 
 const FAQ = [
@@ -138,7 +137,7 @@ const Home: NextPageWithAuthAndLayout = () => {
           <HomeHero />
         </div>
         {/* Main */}
-        <div className="flex w-full flex-col justify-center gap-8 bg-gradient-to-br from-gray-100 to-red-100 py-12 px-4 md:gap-24 md:px-12 lg:p-16">
+        <div className="flex w-full flex-col justify-center gap-8 bg-gradient-to-br from-gray-100 to-red-100 px-4 py-12 md:gap-24 md:px-12 lg:p-16">
           {/* QR */}
           <HomeSection>
             <HomeSectionText eyebrow="Acceso por QR" title="Obtén tu Código QR">
@@ -182,7 +181,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   amount: "all",
                   margin: "-200px"
                 }}
-                className="absolute top-0 left-1/2 z-20 flex items-center gap-1 rounded-full bg-gradient-to-b from-yellow-300 to-yellow-400 px-3 py-1 text-yellow-900 shadow-lg md:top-1/4"
+                className="absolute left-1/2 top-0 z-20 flex items-center gap-1 rounded-full bg-gradient-to-b from-yellow-300 to-yellow-400 px-3 py-1 text-yellow-900 shadow-lg md:top-1/4"
               >
                 <span>https://biztro.co/menu</span>
                 <ChevronRightIcon className="h-4 w-4 text-current" />
@@ -257,7 +256,7 @@ const Home: NextPageWithAuthAndLayout = () => {
                   once: true,
                   amount: "all"
                 }}
-                className="absolute left-9 bottom-0 h-full w-2/3 -rotate-3 rounded-lg bg-emerald-300/25 md:bottom-1/4 md:h-1/2"
+                className="absolute bottom-0 left-9 h-full w-2/3 -rotate-3 rounded-lg bg-emerald-300/25 md:bottom-1/4 md:h-1/2"
               ></motion.div>
               <div className="z-10 m-auto flex w-2/3 justify-center rounded-lg bg-gradient-to-b from-emerald-200 to-emerald-300 px-4 py-4 shadow-lg shadow-emerald-500/50">
                 <motion.div
@@ -339,7 +338,7 @@ const HomeHero = (): JSX.Element => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="absolute top-0 right-0 translate-x-16 translate-y-32 scale-125 sm:translate-y-0 md:scale-100"
+          className="absolute right-0 top-0 translate-x-16 translate-y-32 scale-125 sm:translate-y-0 md:scale-100"
         >
           <Image
             src="/biztro-hero.png"
@@ -349,7 +348,7 @@ const HomeHero = (): JSX.Element => {
           />
         </motion.div>
         {/* </MobileView> */}
-        <div className="absolute top-0 left-0 mt-8 w-full sm:mt-32 sm:w-1/2">
+        <div className="absolute left-0 top-0 mt-8 w-full sm:mt-32 sm:w-1/2">
           <h1 className="font-display text-4xl tracking-tight text-white md:text-5xl lg:text-6xl">
             Tu menú digital en minutos
           </h1>
@@ -385,7 +384,7 @@ const HomeBanner = (): JSX.Element => {
           <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white shadow-lg shadow-orange-700/50">
             <Image src="/logo-bistro.svg" alt="Logo" width={40} height={40} />
           </div>
-          <p className="mt-4 mb-1 text-lg text-orange-200">
+          <p className="mb-1 mt-4 text-lg text-orange-200">
             Inicia con una cuenta gratis
           </p>
           <h3 className="mb-12 text-center text-3xl text-white">
@@ -449,12 +448,12 @@ const FaqItem = ({ question, answer }): JSX.Element => {
         >
           <span className="text-left text-lg font-semibold">{question}</span>
           <div>
-            <ChevronDownIcon className="h-radix-accordion h-4 w-4 transform text-gray-500 group-radix-state-open:rotate-180" />
+            <ChevronDownIcon className="h-radix-accordion group-radix-state-open:rotate-180 h-4 w-4 transform text-gray-500" />
           </div>
         </button>
       </Accordion.Trigger>
       <Accordion.Content asChild>
-        <span className="block py-4 px-2 text-gray-600">{answer}</span>
+        <span className="block px-2 py-4 text-gray-600">{answer}</span>
       </Accordion.Content>
     </Accordion.Item>
   )
@@ -500,7 +499,7 @@ const HomeBenefit = (): JSX.Element => {
       <h3 className="font-display text-3xl text-gray-900 md:text-4xl">
         Obtén los beneficions de tú menu en digital
       </h3>
-      <div className="mt-12 grid gap-y-8 gap-x-4 sm:grid-cols-2 md:grid-cols-3">
+      <div className="mt-12 grid gap-x-4 gap-y-8 sm:grid-cols-2 md:grid-cols-3">
         {BENEFITS.map((item, index) => {
           return (
             <BenefitItem
@@ -524,7 +523,7 @@ const BenefitItem = ({ icon, title, description, soon }): JSX.Element => {
       <p className="text-lg font-semibold text-orange-600">
         {title}
         {soon && (
-          <span className="ml-3 rounded-full bg-purple-100 py-1 px-2 text-xs uppercase tracking-wide text-purple-400">
+          <span className="ml-3 rounded-full bg-purple-100 px-2 py-1 text-xs uppercase tracking-wide text-purple-400">
             Pronto
           </span>
         )}
