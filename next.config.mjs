@@ -1,16 +1,11 @@
-import { createMdxtsPlugin } from "mdxts/next"
 import { withAxiom } from "next-axiom"
+import { withContentlayer } from "next-contentlayer2"
 
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
  */
 await import("./src/env.mjs")
-
-const withMdxts = createMdxtsPlugin({
-  theme: "nord",
-  gitSource: "https://github.com/souporserious/mdxts"
-})
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -65,4 +60,4 @@ const config = {
   }
 }
 
-export default withMdxts(config)
+export default withContentlayer(config)

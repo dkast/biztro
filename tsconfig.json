@@ -21,7 +21,8 @@
       "@/*": ["./src/*"],
       "@/lib/*": ["lib/*"],
       "@/hooks/*": ["hooks/*"],
-      "@/components/*": ["components/*"]
+      "@/components/*": ["components/*"],
+      "contentlayer/generated": ["./.contentlayer/generated"]
     },
     "plugins": [
       {
