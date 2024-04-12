@@ -11,7 +11,6 @@
 # database
 /prisma/dev.db
 /prisma/dev.db-journal
-/prisma/migrations/
 local.db*
 
 # next.js

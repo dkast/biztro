@@ -47,8 +47,8 @@ model User {
   emailVerified DateTime?
   image         String?
   accounts      Account[]
-  sessions      Session[]
   memberships   Membership[] @relation("Memberships")
+  sessions      Session[]
 }
 
 model VerificationToken {
@@ -64,11 +64,11 @@ model Membership {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   role           String       @default("OWNER")
-  user           User         @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
   userId         String
   isActive       Boolean      @default(true)
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, userId])
   @@index([userId])
@@ -86,11 +86,11 @@ model Organization {
   updatedAt    DateTime     @updatedAt
   subdomain    String       @unique
   customDomain String?      @unique
+  categories   Category[]
+  location     Location[]
   memberships  Membership[]
   menus        Menu[]
   menuItems    MenuItem[]
-  location     Location[]
-  categories   Category[]
 }
 
 model Location {
@@ -107,8 +107,8 @@ model Location {
   website        String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 model Menu {
@@ -118,9 +118,9 @@ model Menu {
   status         String       @default("DRAFT")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String
   serialData     String?
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 model MenuItem {
@@ -131,11 +131,11 @@ model MenuItem {
   status         String       @default("DRAFT")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  variants       Variant[]
-  category       Category?    @relation(fields: [categoryId], references: [id])
   categoryId     String?
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category       Category?    @relation(fields: [categoryId], references: [id])
+  variants       Variant[]
 
   @@unique([organizationId, name])
 }
@@ -145,8 +145,8 @@ model Category {
   name           String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   menuItems      MenuItem[]
 }
 
@@ -157,8 +157,8 @@ model Variant {
   price       Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
   menuItemId  String
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
 }
 
 model Invite {
