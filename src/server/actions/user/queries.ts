@@ -33,26 +33,12 @@ export async function getCurrentOrganization() {
           }
         })
 
-        if (org?.logo) {
-          org.logo = await getSignedUrl(
-            R2,
-            new GetObjectCommand({
-              Bucket: env.R2_BUCKET_NAME,
-              Key: org.logo
-            }),
-            { expiresIn: 3600 * 24 }
-          )
+        if (org?.banner) {
+          org.banner = env.R2_CUSTOM_DOMAIN + "/" + org.banner
         }
 
-        if (org?.banner) {
-          org.banner = await getSignedUrl(
-            R2,
-            new GetObjectCommand({
-              Bucket: env.R2_BUCKET_NAME,
-              Key: org.banner
-            }),
-            { expiresIn: 3600 * 24 }
-          )
+        if (org?.logo) {
+          org.logo = env.R2_CUSTOM_DOMAIN + "/" + org.logo
         }
 
         return org

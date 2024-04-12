@@ -60,14 +60,7 @@ export async function getMenuItemById(id: string) {
       })
 
       if (item?.image) {
-        item.image = await getSignedUrl(
-          R2,
-          new GetObjectCommand({
-            Bucket: env.R2_BUCKET_NAME,
-            Key: item.image
-          }),
-          { expiresIn: 3600 * 24 }
-        )
+        item.image = env.R2_CUSTOM_DOMAIN + "/" + item.image
       }
 
       return item
@@ -131,14 +124,7 @@ export async function getCategoriesWithItems() {
       for (const category of data) {
         for (const item of category.menuItems) {
           if (item.image) {
-            item.image = await getSignedUrl(
-              R2,
-              new GetObjectCommand({
-                Bucket: env.R2_BUCKET_NAME,
-                Key: item.image
-              }),
-              { expiresIn: 3600 * 24 }
-            )
+            item.image = env.R2_CUSTOM_DOMAIN + "/" + item.image
           }
         }
       }

@@ -35,34 +35,38 @@ export default function Workbench({
   if (serialData) json = lz.decompress(lz.decodeBase64(serialData))
 
   return (
-    <Editor
-      resolver={{ ContainerBlock, HeaderBlock, TextElement, CategoryBlock }}
-      onRender={RenderNode}
-    >
-      <Header>
-        <Toolbar menu={menu} />
-      </Header>
-      <ResizablePanelGroup className="grow pt-16" direction="horizontal">
-        <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
-          <ToolboxPanel categories={categories} />
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel defaultSize={70}>
-          <div className="flex h-full grow items-center justify-center bg-gray-50">
-            <div className="flex h-[600px] w-[390px] flex-col border bg-white">
-              <Frame data={json}>
-                <Element is={ContainerBlock} canvas>
-                  <HeaderBlock organization={organization} />
-                </Element>
-              </Frame>
+    <div className="absolute inset-0">
+      <Editor
+        resolver={{ ContainerBlock, HeaderBlock, TextElement, CategoryBlock }}
+        onRender={RenderNode}
+      >
+        <Header>
+          <Toolbar menu={menu} />
+        </Header>
+        <ResizablePanelGroup className="grow pt-16" direction="horizontal">
+          <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
+            <ToolboxPanel categories={categories} />
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={70}>
+            <div className="relative h-full w-full overflow-y-auto bg-gray-50">
+              <div className="mx-auto w-[390px] py-10">
+                <div className="flex min-h-[600px] w-[390px] flex-col border bg-white">
+                  <Frame data={json}>
+                    <Element is={ContainerBlock} canvas>
+                      <HeaderBlock organization={organization} />
+                    </Element>
+                  </Frame>
+                </div>
+              </div>
             </div>
-          </div>
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
-          <SettingsPanel />
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </Editor>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
+            <SettingsPanel />
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </Editor>
+    </div>
   )
 }

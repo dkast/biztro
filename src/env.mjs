@@ -26,6 +26,7 @@ export const env = createEnv({
     R2_ACCESS_KEY_ID: z.string().min(1),
     R2_SECRET_KEY_ID: z.string().min(1),
     R2_BUCKET_NAME: z.string().min(1),
+    R2_CUSTOM_DOMAIN: z.string().min(1),
     GOOGLE_SECRET: z.string().min(1),
     GOOGLE_ID: z.string().min(1)
   },
@@ -53,6 +54,7 @@ export const env = createEnv({
     R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
     R2_SECRET_KEY_ID: process.env.R2_SECRET_KEY_ID,
     R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
+    R2_CUSTOM_DOMAIN: process.env.R2_CUSTOM_DOMAIN,
     GOOGLE_SECRET: process.env.GOOGLE_SECRET,
     GOOGLE_ID: process.env.GOOGLE_ID
   },
