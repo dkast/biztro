@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { Menu } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { ChevronDown } from "lucide-react"
 import { useOptimisticAction } from "next-safe-action/hooks"
@@ -30,7 +29,11 @@ const nameSchema = z.object({
   name: z.string().min(1, "El nombre es requerido")
 })
 
-export default function MenuTitle({ menu }: { menu: Menu }) {
+export default function MenuTitle({
+  menu
+}: {
+  menu: Prisma.PromiseReturnType<typeof getMenuById>
+}) {
   const form = useForm<z.infer<typeof nameSchema>>({
     resolver: zodResolver(nameSchema),
     defaultValues: { name: menu.name },

@@ -55,12 +55,12 @@ export default function CategoryBlock({
       className="px-4"
     >
       <h2
-        className="leading-10"
         style={{
           fontSize: `${categoryFontSize}px`,
           color: `rgba(${Object.values(categoryColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
           fontWeight: categoryFontWeight,
-          textAlign: categoryTextAlign as "right" | "left" | "center"
+          textAlign: categoryTextAlign as "right" | "left" | "center",
+          lineHeight: `${(categoryFontSize ?? 12) * 1.8}px`
         }}
       >
         {data.name}
