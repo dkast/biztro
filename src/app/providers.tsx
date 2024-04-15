@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast"
 // import { PhotoProvider } from "react-photo-view"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental"
-// import { Provider } from "jotai"
+import { Provider } from "jotai"
 import { SessionProvider } from "next-auth/react"
 import { AppProgressBar as ProgressBar } from "next-nprogress-bar"
 
@@ -69,28 +69,28 @@ function Providers({ children }: { children: React.ReactNode }) {
         forcedTheme={forcedTheme}
       > */}
       <QueryClientProvider client={queryClient}>
-        {/* <Provider> */}
-        {/* <PhotoProvider> */}
-        <Suspense fallback={null}>
-          <ProgressBar
-            color="#FF6500"
-            options={{ showSpinner: false }}
-            shallowRouting
-            delay={200}
+        <Provider>
+          {/* <PhotoProvider> */}
+          <Suspense fallback={null}>
+            <ProgressBar
+              color="#FF6500"
+              options={{ showSpinner: false }}
+              shallowRouting
+              delay={200}
+            />
+          </Suspense>
+          <ReactQueryStreamedHydration>{children}</ReactQueryStreamedHydration>
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              style: {
+                background: "#333",
+                color: "#fff"
+              }
+            }}
           />
-        </Suspense>
-        <ReactQueryStreamedHydration>{children}</ReactQueryStreamedHydration>
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            style: {
-              background: "#333",
-              color: "#fff"
-            }
-          }}
-        />
-        {/* </PhotoProvider> */}
-        {/* </Provider> */}
+          {/* </PhotoProvider> */}
+        </Provider>
       </QueryClientProvider>
       {/* </ThemeProvider> */}
     </SessionProvider>

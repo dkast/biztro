@@ -1,5 +1,5 @@
-import { useState } from "react"
 import { useEditor } from "@craftjs/core"
+import { useAtom } from "jotai"
 import {
   Clipboard,
   ClipboardPaste,
@@ -13,6 +13,7 @@ import {
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { elementPropsAtom } from "@/lib/atoms"
 
 export default function FloatingBar() {
   const { enabled, canUndo, canRedo, actions, query, selectedNodeId } =
@@ -22,9 +23,7 @@ export default function FloatingBar() {
       canRedo: query.history.canRedo(),
       selectedNodeId: state.events.selected
     }))
-  const [propsCopy, setPropsCopy] = useState<{ [x: string]: unknown } | null>(
-    null
-  )
+  const [propsCopy, setPropsCopy] = useAtom(elementPropsAtom)
 
   const onPasteProps = (clonedProps: unknown) => {
     const values = selectedNodeId.values()
@@ -88,7 +87,7 @@ export default function FloatingBar() {
       </TooltipHelper>
       <TooltipHelper content="Pegar estilo">
         <Button
-          disabled={!propsCopy}
+          disabled={Object.keys(propsCopy).length === 0}
           variant="ghost"
           size="icon"
           className="rounded-full"

@@ -4,7 +4,6 @@ import {
   type ComputedFields,
   type LocalDocument
 } from "contentlayer2/source-files"
-import { ca } from "date-fns/locale"
 import rehypePrettyCode, { type LineElement } from "rehype-pretty-code"
 import remarkGfm from "remark-gfm"
 

@@ -1,17 +1,11 @@
-import React, { useCallback, useEffect, useRef } from "react"
+import React, { useCallback, useEffect } from "react"
 import ReactDOM from "react-dom"
 import { useRect } from "@/hooks/use-rect"
 import { ROOT_NODE, useEditor, useNode } from "@craftjs/core"
-import {
-  ArrowUpIcon,
-  ClipboardCopyIcon,
-  CopyIcon,
-  MoveIcon,
-  TrashIcon
-} from "@radix-ui/react-icons"
-import { useRecoilState } from "recoil"
+import { useAtom } from "jotai"
+import { ArrowUp, Clipboard, ClipboardPaste, Move, Trash } from "lucide-react"
 
-import { propState } from "@/lib/store"
+import { elementPropsAtom } from "@/lib/atoms"
 
 export const RenderNode = ({ render }: { render: unknown }) => {
   const { id } = useNode()
@@ -41,6 +35,7 @@ export const RenderNode = ({ render }: { render: unknown }) => {
   // const currentRef = useRef<HTMLDivElement>()
   const rect = useRect(dom)
   // const [propsCopy, setPropsCopy] = useRecoilState(propState)
+  const [propsCopy, setPropsCopy] = useAtom(elementPropsAtom)
 
   useEffect(() => {
     if (dom) {
@@ -62,16 +57,16 @@ export const RenderNode = ({ render }: { render: unknown }) => {
     }
   }, [dom, rect])
 
-  // const onPasteProps = (clonedProps: unknown) => {
-  //   actions.setProp(id, props => {
-  //     props = Object.assign(props, clonedProps)
-  //   })
-  // }
+  const onPasteProps = (clonedProps: unknown) => {
+    actions.setProp(id, props => {
+      props = Object.assign(props, clonedProps)
+    })
+  }
 
-  // const onCopyProps = (props: Record<string, unknown>) => {
-  //   const { item, text, ...propsCopy } = props
-  //   setPropsCopy(propsCopy)
-  // }
+  const onCopyProps = (props: Record<string, unknown>) => {
+    const { data, text, ...propsCopy } = props
+    setPropsCopy(propsCopy)
+  }
 
   return (
     <>
@@ -79,7 +74,7 @@ export const RenderNode = ({ render }: { render: unknown }) => {
         ? ReactDOM.createPortal(
             <div
               // ref={currentRef}
-              className="fixed z-40 -mt-7 flex h-6 items-center gap-2 rounded bg-violet-600 px-2 py-2 text-xs text-white"
+              className="fixed z-40 -mt-7 flex h-6 items-center gap-3 rounded bg-violet-600 px-2 py-2 text-xs text-white"
               style={{
                 left: getPos().left,
                 top: getPos().top
@@ -95,7 +90,7 @@ export const RenderNode = ({ render }: { render: unknown }) => {
                     }
                   }}
                 >
-                  <MoveIcon />
+                  <Move className="size-3" />
                 </a>
               ) : null}
               {id !== ROOT_NODE && (
@@ -105,7 +100,7 @@ export const RenderNode = ({ render }: { render: unknown }) => {
                     actions.selectNode(parent ?? undefined)
                   }}
                 >
-                  <ArrowUpIcon />
+                  <ArrowUp className="size-3.5" />
                 </a>
               )}
               {deletable ? (
@@ -116,25 +111,25 @@ export const RenderNode = ({ render }: { render: unknown }) => {
                     actions.delete(id)
                   }}
                 >
-                  <TrashIcon />
+                  <Trash className="size-3.5" />
                 </a>
               ) : null}
-              {/* <a
+              <a
                 className="cursor-pointer active:scale-90"
                 onClick={() => {
                   onCopyProps(props)
                 }}
               >
-                <CopyIcon />
+                <Clipboard className="size-3.5" />
               </a>
-              {propsCopy ? (
+              {Object.keys(propsCopy).length !== 0 ? (
                 <a
-                  className="ml-2 cursor-pointer active:scale-90"
+                  className="cursor-pointer active:scale-90"
                   onClick={() => onPasteProps(propsCopy)}
                 >
-                  <ClipboardCopyIcon />
+                  <ClipboardPaste className="size-3.5" />
                 </a>
-              ) : null} */}
+              ) : null}
             </div>,
             document.querySelector(".page-container") ?? document.body
           )

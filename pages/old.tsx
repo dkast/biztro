@@ -19,8 +19,6 @@ import Link from "next/link"
 // import Spline from "@splinetool/react-spline"
 // import { BrowserView, MobileView } from "react-device-detect"
 
-import Footer from "@/components/blog/Footer"
-import MainMenu from "@/components/blog/MainMenu"
 import type { NextPageWithAuthAndLayout } from "@/lib/types"
 
 const FAQ = [
@@ -133,7 +131,6 @@ const Home: NextPageWithAuthAndLayout = () => {
       <div className="flex h-screen flex-col items-center overflow-y-auto overflow-x-hidden">
         <div className="flex w-full flex-col items-center bg-violet-900">
           <HomeMessage />
-          <MainMenu variant="dark" />
           <HomeHero />
         </div>
         {/* Main */}
@@ -316,7 +313,6 @@ const Home: NextPageWithAuthAndLayout = () => {
         <HomeBenefit />
         <HomeFaq />
         <HomeBanner />
-        <Footer />
       </div>
     </>
   )
