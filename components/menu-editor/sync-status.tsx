@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { useEditor } from "@craftjs/core"
 import type { Organization, Prisma } from "@prisma/client"
 import { RefreshCcw } from "lucide-react"
 import lz from "lzutf8"
@@ -17,6 +19,7 @@ export default function SyncStatus({
   menu: Prisma.PromiseReturnType<typeof getMenuById>
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
+  const { actions } = useEditor()
   const [syncReq, setSyncReq] = useState(false)
 
   useEffect(() => {
@@ -86,6 +89,27 @@ export default function SyncStatus({
         })
       })
 
+      // Search for items not currently present in the menu
+      equalData = categories.every(dbCategory => {
+        const menuCategory = menuCategories.filter(
+          menuCategory => menuCategory.id === dbCategory.id
+        )
+
+        if (menuCategory.length === 0) {
+          return false
+        }
+
+        return dbCategory.menuItems.every(dbItem => {
+          const menuItem = menuCategory[0]?.menuItems.filter(
+            menuItem => menuItem.id === dbItem.id
+          )
+
+          if (menuItem?.length === 0) {
+            return false
+          }
+        })
+      })
+
       // Check changed properties, exclude serialData and updatedAt
       let equalMenu = true
       if (organization) {
@@ -110,6 +134,37 @@ export default function SyncStatus({
     }
   }, [menu, categories, setSyncReq])
 
+  const syncState = () => {
+    if (menu && menu?.serialData) {
+      const serial = lz.decompress(lz.decodeBase64(menu?.serialData))
+      const objectData = JSON.parse(serial)
+
+      for (const property in objectData) {
+        const component = objectData[property]
+        if (component?.type?.resolvedName === "CategoryBlock") {
+          const dbCategory = categories.filter(
+            dbCategory => dbCategory.id === component?.props?.data.id
+          )
+          if (dbCategory[0]) {
+            actions.setProp(property, props => {
+              props.data = dbCategory[0]
+            })
+          }
+        }
+
+        if (component?.type?.resolvedName === "HeaderBlock") {
+          // organization = component?.props?.organization
+          actions.setProp(property, props => {
+            props.organization = menu?.organization
+          })
+        }
+      }
+
+      toast.success("Información actualizada")
+      setSyncReq(false)
+    }
+  }
+
   return (
     <>
       {syncReq && (
@@ -122,8 +177,13 @@ export default function SyncStatus({
                 cambios
               </span>
             </div>
-            <Button variant="link" size="xs" className="text-violet-700">
-              Actualizar
+            <Button
+              variant="link"
+              size="xs"
+              className="text-violet-700"
+              onClick={() => syncState()}
+            >
+              Sincronizar
             </Button>
           </div>
         </div>
