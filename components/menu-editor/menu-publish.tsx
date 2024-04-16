@@ -1,15 +1,26 @@
 "use client"
 
+import { useRef } from "react"
 import toast from "react-hot-toast"
+import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
-import { ExternalLink, Globe, Loader } from "lucide-react"
+import { Download, ExternalLink, Globe, Loader, QrCodeIcon } from "lucide-react"
 import lz from "lzutf8"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 
+import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog"
 import {
   Popover,
   PopoverContent,
@@ -17,6 +28,7 @@ import {
 } from "@/components/ui/popover"
 import { updateMenuStatus } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
+import exportAsImage from "@/lib/export-as-image"
 import { MenuStatus } from "@/lib/types"
 import { getBaseUrl } from "@/lib/utils"
 
@@ -60,7 +72,37 @@ export default function MenuPublish({
   }
 
   return (
-    <div className="flex justify-end gap-1">
+    <div className="flex justify-end gap-2">
+      <Dialog>
+        <TooltipHelper content="Generar código QR">
+          <DialogTrigger asChild>
+            <Button size="xs" variant="outline">
+              <QrCodeIcon className="size-4" />
+            </Button>
+          </DialogTrigger>
+        </TooltipHelper>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Generar código QR</DialogTitle>
+            <DialogDescription>
+              Al escanear el código con la cámara de tu móvil o aplicación QR te
+              llevará a la siguiente dirección:{" "}
+              <Link
+                href={`${getBaseUrl()}/${menu.organization.subdomain}`}
+                className="text-violet-500 hover:text-violet-700"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {`${getBaseUrl()}/${menu.organization.subdomain}`}
+              </Link>
+            </DialogDescription>
+          </DialogHeader>
+          <QrCodeEditor
+            value={`${getBaseUrl()}/${menu.organization.subdomain}`}
+            logoURL={menu.organization.logo ?? undefined}
+          />
+        </DialogContent>
+      </Dialog>
       <Popover>
         <PopoverTrigger asChild>
           <Button size="xs">Publicar</Button>
@@ -127,6 +169,30 @@ export default function MenuPublish({
           )}
         </PopoverContent>
       </Popover>
+    </div>
+  )
+}
+
+function QrCodeEditor({ value, logoURL }: { value: string; logoURL?: string }) {
+  const exportRef = useRef<HTMLDivElement | null>(null)
+  return (
+    <div>
+      <div className="flex justify-center">
+        <div ref={exportRef} className="p-1">
+          <QRCode value={value} size={200} />
+        </div>
+      </div>
+      <div className="flex justify-center">
+        <Button
+          className="mt-4 w-full space-x-2"
+          onClick={() =>
+            exportRef.current && exportAsImage(exportRef.current, "imagen_qr")
+          }
+        >
+          <Download className="size-4" />
+          <span>Descargar</span>
+        </Button>
+      </div>
     </div>
   )
 }
