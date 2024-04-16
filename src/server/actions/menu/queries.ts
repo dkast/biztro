@@ -6,6 +6,7 @@ import { cookies } from "next/headers"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { MenuStatus } from "@/lib/types"
+import { env } from "@/env.mjs"
 
 export async function getMenus() {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
@@ -28,7 +29,7 @@ export async function getMenus() {
 export async function getMenuById(id: string) {
   return await cache(
     async () => {
-      return await prisma.menu.findUnique({
+      const menu = await prisma.menu.findUnique({
         where: {
           id
         },
@@ -36,6 +37,18 @@ export async function getMenuById(id: string) {
           organization: true
         }
       })
+
+      if (menu?.organization?.banner) {
+        menu.organization.banner =
+          env.R2_CUSTOM_DOMAIN + "/" + menu.organization.banner
+      }
+
+      if (menu?.organization?.logo) {
+        menu.organization.logo =
+          env.R2_CUSTOM_DOMAIN + "/" + menu.organization.logo
+      }
+
+      return menu
     },
     [`menu-${id}`],
     {

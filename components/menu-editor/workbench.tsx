@@ -12,6 +12,7 @@ import TextElement from "@/components/menu-editor/blocks/text-element"
 import FloatingBar from "@/components/menu-editor/floating-bar"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
+import SyncStatus from "@/components/menu-editor/sync-status"
 import Toolbar from "@/components/menu-editor/toolbar"
 import ToolboxPanel from "@/components/menu-editor/toolbox-panel"
 import {
@@ -31,7 +32,7 @@ export default function Workbench({
   organization: Organization
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
-  if (!menu) return null
+  if (!menu || !categories) return null
 
   // Extract the serialized data from the menu
   let json = undefined
@@ -53,6 +54,7 @@ export default function Workbench({
           <ResizableHandle />
           <ResizablePanel defaultSize={70}>
             <div className="relative h-full w-full overflow-y-auto bg-gray-50">
+              <SyncStatus menu={menu} categories={categories} />
               <div className="mx-auto w-[390px] pb-24 pt-10">
                 <div className="flex min-h-[600px] w-[390px] flex-col border bg-white">
                   <Frame data={json}>
