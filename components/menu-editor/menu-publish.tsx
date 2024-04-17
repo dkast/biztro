@@ -6,7 +6,14 @@ import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
-import { Download, ExternalLink, Globe, Loader, QrCodeIcon } from "lucide-react"
+import {
+  Download,
+  ExternalLink,
+  Globe,
+  Loader,
+  QrCodeIcon,
+  Save
+} from "lucide-react"
 import lz from "lzutf8"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
@@ -75,6 +82,11 @@ export default function MenuPublish({
 
   return (
     <div className="flex justify-end gap-2">
+      <TooltipHelper content="Guardar cambios">
+        <Button size="xs" variant="outline">
+          <Save className="size-4" />
+        </Button>
+      </TooltipHelper>
       <Dialog>
         <TooltipHelper content="Generar código QR">
           <DialogTrigger asChild>
@@ -192,7 +204,7 @@ function QrCodeEditor({ value, logoURL }: { value: string; logoURL?: string }) {
           }
         >
           <Download className="size-4" />
-          <span>Descargar</span>
+          <span>Descargar imágen QR</span>
         </Button>
       </div>
     </div>

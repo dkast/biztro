@@ -47,7 +47,9 @@ export default function HeaderBlock({
       <div
         className={cn(
           "flex flex-row p-4",
-          showBanner ? "-mt-12 items-end" : "my-2 items-center"
+          organization.banner && showBanner
+            ? "-mt-12 items-end"
+            : "my-2 items-center"
         )}
       >
         {showLogo ? (
@@ -64,7 +66,7 @@ export default function HeaderBlock({
           className={cn(
             "z-10 text-xl font-semibold",
             showLogo && "ml-4",
-            showBanner && "mt-12"
+            organization.banner && showBanner && "mt-12"
           )}
           style={{
             color: `rgb(${Object.values(titleColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
