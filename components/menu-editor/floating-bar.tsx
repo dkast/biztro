@@ -53,7 +53,7 @@ export default function FloatingBar() {
     if (canUndo) {
       setUnsavedChanges({
         message:
-          "Tienes cambios sin guardar - ¿Estás seguro de salir del Editor?",
+          "Tienes cambios sin guardar ¿Estás seguro de salir del Editor?",
         dismissButtonLabel: "Cancelar",
         proceedLinkLabel: "Descartar cambios"
       })

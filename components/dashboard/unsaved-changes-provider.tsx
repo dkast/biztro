@@ -18,15 +18,16 @@ import type { LinkProps as NextLinkProps } from "next/link"
 import NextLink from "next/link"
 import { useRouter } from "next/navigation"
 
-import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog"
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog"
 
 export interface UnsavedChangesModalContent {
   message?: string
@@ -50,28 +51,27 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesContext> = ({
   showModal,
   setShowModal
 }) => (
-  <Dialog
+  <AlertDialog
     open={showModal}
     onOpenChange={() => {
       setShowModal(false)
     }}
   >
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Cambios sin guardar</DialogTitle>
-        <DialogDescription>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Cambios sin guardar</AlertDialogTitle>
+        <AlertDialogDescription>
           {modalContent?.message ?? "Tienes cambios sin guardar"}
-        </DialogDescription>
-      </DialogHeader>
-      <DialogFooter>
-        <Button
-          variant="outline"
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel
           onClick={() => {
             setShowModal(false)
           }}
         >
           {modalContent?.dismissButtonLabel ?? "Regresar"}
-        </Button>
+        </AlertDialogCancel>
         <Link
           href={modalContent?.proceedLinkHref ?? "/"}
           onClick={() => {
@@ -79,13 +79,13 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesContext> = ({
             setModalContent(undefined)
           }}
         >
-          <Button>
+          <AlertDialogAction>
             {modalContent?.proceedLinkLabel ?? "Descartar cambios"}
-          </Button>
+          </AlertDialogAction>
         </Link>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 )
 
 const UnsavedChangesContext = createContext<UnsavedChangesContext | undefined>(
