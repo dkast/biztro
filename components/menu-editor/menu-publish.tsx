@@ -37,7 +37,7 @@ export default function MenuPublish({
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
 }) {
-  const { query } = useEditor()
+  const { query, actions } = useEditor()
   const queryClient = useQueryClient()
 
   const { execute, status, reset } = useAction(updateMenuStatus, {
@@ -47,6 +47,8 @@ export default function MenuPublish({
         queryClient.invalidateQueries({
           queryKey: ["menu", menu?.id]
         })
+        // Reset history to avoid undoing the update
+        actions.history.clear()
       } else if (data.failure.reason) {
         toast.error(data.failure.reason)
       }

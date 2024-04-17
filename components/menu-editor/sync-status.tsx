@@ -60,6 +60,12 @@ export default function SyncStatus({
           new Date(menuCategory.updatedAt).getTime()
         )
       })
+      // console.log("categories", equalData)
+
+      if (!equalData) {
+        setSyncReq(true)
+        return
+      }
 
       // Compare items
       equalData = menuCategories.every(menuCategory => {
@@ -88,6 +94,12 @@ export default function SyncStatus({
           )
         })
       })
+      // console.log("items", equalData)
+
+      if (!equalData) {
+        setSyncReq(true)
+        return
+      }
 
       // Search for items not currently present in the menu
       equalData = categories.every(dbCategory => {
@@ -95,27 +107,31 @@ export default function SyncStatus({
           menuCategory => menuCategory.id === dbCategory.id
         )
 
-        if (menuCategory.length === 0) {
-          return false
+        // If the category is present in the menu, check if all items are present
+        if (menuCategory.length > 0) {
+          return dbCategory.menuItems.every(dbItem => {
+            const menuItem = menuCategory[0]?.menuItems.filter(
+              menuItem => menuItem.id === dbItem.id
+            )
+
+            return menuItem?.length ?? 0 > 0
+          })
+        } else {
+          // If the category is not present in the menu, return true so it can be added to the menu
+          return true
         }
-
-        return dbCategory.menuItems.every(dbItem => {
-          const menuItem = menuCategory[0]?.menuItems.filter(
-            menuItem => menuItem.id === dbItem.id
-          )
-
-          if (menuItem?.length === 0) {
-            return false
-          }
-        })
       })
+      // console.log("new items", equalData)
+
+      if (!equalData) {
+        setSyncReq(true)
+        return
+      }
 
       // Check changed properties, exclude serialData and updatedAt
       let equalMenu = true
       if (organization) {
         const diff = difference(organization, menu.organization)
-        // console.log("organization", organization)
-        // console.log("menu.organization", menu.organization)
         console.log("diff", diff)
         Object.getOwnPropertyNames(diff).forEach(propName => {
           if (
@@ -128,8 +144,8 @@ export default function SyncStatus({
         })
       }
 
-      console.log("equalData", equalData)
-      console.log("equalMenu", equalMenu)
+      // console.log("equalData", equalData)
+      // console.log("equalMenu", equalMenu)
       setSyncReq(!equalData || !equalMenu)
     }
   }, [menu, categories, setSyncReq])
@@ -173,8 +189,8 @@ export default function SyncStatus({
             <div className="flex items-center gap-x-3">
               <RefreshCcw className="size-4 text-violet-400" />
               <span className="text-sm text-violet-700">
-                La información del menú fue actualizada, puedes sincronizar los
-                cambios
+                La información del negocio o productos ha cambiado, puedes
+                sincronizar para aplicar los últimos cambios
               </span>
             </div>
             <Button
