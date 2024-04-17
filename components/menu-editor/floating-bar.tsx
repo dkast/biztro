@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { useEditor } from "@craftjs/core"
 import { useAtom } from "jotai"
 import {
@@ -11,6 +12,7 @@ import {
 } from "lucide-react"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
+import { useSetUnsavedChanges } from "@/components/dashboard/unsaved-changes-provider"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { elementPropsAtom } from "@/lib/atoms"
@@ -43,6 +45,22 @@ export default function FloatingBar() {
       setPropsCopy(props)
     }
   }
+
+  const { setUnsavedChanges, clearUnsavedChanges } = useSetUnsavedChanges()
+
+  useEffect(() => {
+    console.log("canUndo", canUndo)
+    if (canUndo) {
+      setUnsavedChanges({
+        message:
+          "Tienes cambios sin guardar - ¿Estás seguro de salir del Editor?",
+        dismissButtonLabel: "Cancelar",
+        proceedLinkLabel: "Descartar cambios"
+      })
+    } else {
+      clearUnsavedChanges()
+    }
+  }, [setUnsavedChanges, clearUnsavedChanges, canUndo])
 
   return (
     <div className="fixed bottom-8 left-1/2 flex h-12 min-w-[200px] -translate-x-1/2 flex-row items-center justify-between rounded-full bg-gray-800 px-1 text-white shadow-lg">

@@ -1,7 +1,7 @@
 import Image from "next/image"
-import Link from "next/link"
 
 import ProfileMenu from "@/components/dashboard/profile-menu"
+import { GuardLink as Link } from "@/components/dashboard/unsaved-changes-provider"
 
 export default function Header({ children }: { children?: React.ReactNode }) {
   return (

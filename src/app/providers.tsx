@@ -9,6 +9,8 @@ import { Provider } from "jotai"
 import { SessionProvider } from "next-auth/react"
 import { AppProgressBar as ProgressBar } from "next-nprogress-bar"
 
+import { UnsavedChangesProvider } from "@/components/dashboard/unsaved-changes-provider"
+
 // import { ThemeProvider } from "next-themes"
 // import { usePathname } from "next/navigation"
 
@@ -71,15 +73,19 @@ function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <Provider>
           {/* <PhotoProvider> */}
-          <Suspense fallback={null}>
+          {/* <Suspense fallback={null}>
             <ProgressBar
               color="#FF6500"
               options={{ showSpinner: false }}
               shallowRouting
               delay={200}
             />
-          </Suspense>
-          <ReactQueryStreamedHydration>{children}</ReactQueryStreamedHydration>
+          </Suspense> */}
+          <UnsavedChangesProvider>
+            <ReactQueryStreamedHydration>
+              {children}
+            </ReactQueryStreamedHydration>
+          </UnsavedChangesProvider>
           <Toaster
             position="top-center"
             toastOptions={{

@@ -104,26 +104,24 @@ export default function CategoryBlock({
                   </div>
                 </div>
                 {item.variants.length > 1 ? (
-                  <div className="flex flex-row justify-end">
-                    <div className="grid grid-cols-2 gap-1 text-right">
-                      {item.variants.map(variant => (
-                        <>
-                          <span key={variant.id} className="text-sm">
-                            {variant.name}
-                          </span>
-                          <span
-                            key={variant.id}
-                            style={{
-                              fontSize: `${priceFontSize}px`,
-                              color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
-                              fontWeight: priceFontWeight
-                            }}
-                          >
-                            {variant.price}
-                          </span>
-                        </>
-                      ))}
-                    </div>
+                  <div className="flex flex-col justify-end gap-1">
+                    {item.variants.map(variant => (
+                      <div
+                        key={variant.id}
+                        className="grid grid-cols-2 gap-1 text-right"
+                      >
+                        <span className="text-sm">{variant.name}</span>
+                        <span
+                          style={{
+                            fontSize: `${priceFontSize}px`,
+                            color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                            fontWeight: priceFontWeight
+                          }}
+                        >
+                          {variant.price}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <span
