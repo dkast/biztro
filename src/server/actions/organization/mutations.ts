@@ -34,7 +34,7 @@ export const bootstrapOrg = action(
 
       await prisma.membership.create({
         data: {
-          userId: user.id,
+          userId: user.id!,
           organizationId: org.id,
           role: "OWNER"
         }

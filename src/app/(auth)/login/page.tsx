@@ -1,13 +1,14 @@
 import { Suspense } from "react"
-import LoginForm from "@/app/(auth)/login/login-form"
 import { type Metadata } from "next"
-import { getProviders } from "next-auth/react"
+// import { getProviders } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link"
-import { notFound } from "next/navigation"
+
+// import { notFound } from "next/navigation"
 
 // import Logo from "@/components/logo"
 import Spinner from "@/components/ui/spinner"
+import LoginForm from "@/app/(auth)/login/login-form"
 
 export const metadata: Metadata = {
   title: "Iniciar sesión",
@@ -15,23 +16,24 @@ export const metadata: Metadata = {
 }
 
 export default async function LoginPage() {
-  const providers = await getProviders()
+  // const providers = await getProviders()
 
-  if (!providers) {
-    return notFound()
+  // if (!providers) {
+  //   return notFound()
+  // }
+
+  const providers = {
+    google: { id: "google", name: "Google" }
   }
 
   return (
     <div className="flex min-h-full flex-1">
       <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">
-          <div className="text-center">
-            {/* <Link href="/" className="flex items-center gap-x-3">
-              <Logo className="size-10 dark:fill-white" />
-              <span className="font-display text-4xl font-medium tracking-tight">
-                cargo
-              </span>
-            </Link> */}
+          <div className="flex flex-col items-center">
+            <Link href="/">
+              <Image src="/logo-bistro.svg" alt="Logo" width={32} height={32} />
+            </Link>
             <h2 className="mt-8 font-display text-3xl font-medium leading-9 tracking-tight text-gray-900 dark:text-gray-400">
               Bienvenido
             </h2>

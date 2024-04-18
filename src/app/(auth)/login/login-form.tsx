@@ -23,7 +23,7 @@ export default function LoginForm({
           key={provider.name}
           onClick={() =>
             signIn(provider.id, {
-              callbackUrl: callbackUrl ? callbackUrl : "/home"
+              callbackUrl: callbackUrl ? callbackUrl : "/"
             })
           }
           className="mt-4 w-full shadow-sm"

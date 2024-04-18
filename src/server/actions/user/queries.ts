@@ -4,6 +4,7 @@ import { unstable_cache as cache } from "next/cache"
 import { cookies } from "next/headers"
 
 import { appConfig } from "@/app/config"
+import { assignOrganization } from "@/server/actions/user/mutations"
 import prisma from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/session"
 import { env } from "@/env.mjs"
@@ -41,7 +42,7 @@ export async function getCurrentOrganization() {
     // Return first organization for the user
     const user = await getCurrentUser()
 
-    // console.log("user", user)
+    console.log("user", user)
     const membership = await prisma.membership.findFirst({
       where: {
         userId: user?.id
@@ -54,10 +55,8 @@ export async function getCurrentOrganization() {
     if (!membership) {
       return null
     }
-    // Set the current organization
-    cookies().set(appConfig.cookieOrg, membership.organizationId, {
-      maxAge: 60 * 60 * 24 * 365
-    })
+
+    assignOrganization(appConfig.cookieOrg, membership.organizationId)
 
     return membership.organization
   }
