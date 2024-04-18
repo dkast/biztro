@@ -1,7 +1,8 @@
-import Link from "next/link"
 import { useRef } from "react"
 import { SketchPicker } from "react-color"
 import { QRCode } from "react-qrcode-logo"
+import useLocalStorage from "@/hooks/use-local-storage"
+import Link from "next/link"
 import { useRecoilValue } from "recoil"
 
 import Button from "@/components/Button"
@@ -14,9 +15,6 @@ import {
   ToolbarSwitch,
   ToolbarSwitchThumb
 } from "@/components/editor/ToolbarSwitch"
-
-import useLocalStorage from "@/hooks/useLocalStorage"
-
 import exportAsImage from "@/lib/export-as-image"
 import rgbToHex from "@/lib/rgba-to-hex"
 import { hostState } from "@/lib/store"

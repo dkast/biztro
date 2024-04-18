@@ -3,9 +3,11 @@
 import { useRef } from "react"
 import toast from "react-hot-toast"
 import { QRCode } from "react-qrcode-logo"
+import useLocalStorage from "@/hooks/use-local-storage"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
+import { rgbaToHex, rgbaToHsva, Sketch, type RgbaColor } from "@uiw/react-color"
 import {
   Download,
   ExternalLink,
@@ -28,11 +30,13 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
+import { Switch } from "@/components/ui/switch"
 import { updateMenuStatus } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import exportAsImage from "@/lib/export-as-image"
@@ -187,13 +191,78 @@ export default function MenuPublish({
   )
 }
 
-function QrCodeEditor({ value, logoURL }: { value: string; logoURL?: string }) {
+function QrCodeEditor({
+  value,
+  logoURL,
+  fgColor = { r: 0, g: 0, b: 0, a: 1 }
+}: {
+  value: string
+  logoURL?: string
+  fgColor?: RgbaColor
+}) {
   const exportRef = useRef<HTMLDivElement | null>(null)
+  const [color, setColor] = useLocalStorage<
+    Record<"r" | "g" | "b" | "a", number>
+  >("color", fgColor)
+  const [showLogo, setShowLogo] = useLocalStorage<boolean>("logo", false)
   return (
     <div>
-      <div className="flex justify-center">
-        <div ref={exportRef} className="p-1">
-          <QRCode value={value} size={200} />
+      <div className="my-6 flex flex-row items-start justify-between">
+        <div className="flex grow items-center justify-center">
+          <div className="rounded-lg border-2 border-dashed border-gray-300">
+            <div ref={exportRef} className="p-1">
+              <QRCode
+                value={value}
+                size={200}
+                ecLevel={showLogo ? "H" : "M"}
+                logoImage={showLogo ? logoURL : ""}
+                logoWidth={showLogo ? 80 : 0}
+                removeQrCodeBehindLogo={showLogo}
+                enableCORS
+                fgColor={rgbaToHex(color)}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="min-w-40">
+          <form className="grid w-full items-start gap-6">
+            <fieldset className="grid gap-6 rounded-lg border p-4">
+              <legend className="-ml-1 px-1 text-sm font-medium">
+                Ajustes
+              </legend>
+              <div className="grid gap-3">
+                <Label htmlFor="color">Color</Label>
+                <Popover>
+                  <PopoverTrigger>
+                    <div
+                      className="h-6 w-12 rounded border border-black/20"
+                      style={{
+                        backgroundColor: `rgb(${Object.values(color)})`
+                      }}
+                    ></div>
+                  </PopoverTrigger>
+                  <PopoverContent className="border-0 p-0 shadow-none">
+                    <Sketch
+                      disableAlpha
+                      color={rgbaToHsva(color)}
+                      onChange={color => {
+                        setColor(color.rgba)
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="grid gap-3">
+                <Label htmlFor="logo">Mostrar Logo</Label>
+                <Switch
+                  checked={showLogo}
+                  onCheckedChange={checked => {
+                    setShowLogo(checked)
+                  }}
+                />
+              </div>
+            </fieldset>
+          </form>
         </div>
       </div>
       <div className="flex justify-center">
