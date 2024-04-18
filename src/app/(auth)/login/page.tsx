@@ -32,9 +32,9 @@ export default async function LoginPage() {
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div className="flex flex-col items-center">
             <Link href="/">
-              <Image src="/logo-bistro.svg" alt="Logo" width={32} height={32} />
+              <Image src="/logo-bistro.svg" alt="Logo" width={44} height={44} />
             </Link>
-            <h2 className="mt-8 font-display text-3xl font-medium leading-9 tracking-tight text-gray-900 dark:text-gray-400">
+            <h2 className="mt-4 font-display text-3xl font-medium leading-9 tracking-tight text-gray-900 dark:text-gray-400">
               Bienvenido
             </h2>
             <span className="mt-2 block text-sm text-gray-600 dark:text-gray-400">
