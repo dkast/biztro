@@ -24,7 +24,7 @@ export const { handlers, auth } = NextAuth({
         return false
       }
     },
-    async session({ session, token }) {
+    session({ session, token }) {
       if (session.user) {
         if (token.sub) {
           session.user.id = token.sub
@@ -37,7 +37,7 @@ export const { handlers, auth } = NextAuth({
 
       return session
     },
-    async jwt({ token, user }) {
+    jwt({ token, user }) {
       if (user) {
         token.user = {
           id: user.id,

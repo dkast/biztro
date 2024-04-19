@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -158,7 +158,7 @@ export default function ItemForm({
     }
   }, [item])
 
-  const onSubmit = async (data: z.infer<typeof menuItemSchema>) => {
+  const onSubmit = (data: z.infer<typeof menuItemSchema>) => {
     execute(data)
   }
 

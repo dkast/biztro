@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   description: "Iniciar sesión en Biztro"
 }
 
-export default async function LoginPage() {
+export default function LoginPage() {
   // const providers = await getProviders()
 
   // if (!providers) {

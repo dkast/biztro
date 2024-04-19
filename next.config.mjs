@@ -52,4 +52,4 @@ const config = {
   }
 }
 
-export default withContentlayer(config)
+export default withAxiom(withContentlayer(config))

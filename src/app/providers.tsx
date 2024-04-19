@@ -1,13 +1,14 @@
 "use client"
 
-import React, { Suspense } from "react"
+import React from "react"
 import { Toaster } from "react-hot-toast"
 // import { PhotoProvider } from "react-photo-view"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental"
 import { Provider } from "jotai"
 import { SessionProvider } from "next-auth/react"
-import { AppProgressBar as ProgressBar } from "next-nprogress-bar"
+
+// import { AppProgressBar as ProgressBar } from "next-nprogress-bar"
 
 import { UnsavedChangesProvider } from "@/components/dashboard/unsaved-changes-provider"
 

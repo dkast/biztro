@@ -4,12 +4,13 @@ import { notFound } from "next/navigation"
 
 import Mdx from "@/components/marketing/mdx"
 
+// skipcq: JS-0116
 export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
   return allPosts.map(post => ({
     slug: post.slugAsParams.split("/")
   }))
 }
-export default async function Page({ params }: { params: { slug: string[] } }) {
+export default function Page({ params }: { params: { slug: string[] } }) {
   const slug = params?.slug?.join("/")
   const post = allPosts.find(post => post.slugAsParams === slug)
 

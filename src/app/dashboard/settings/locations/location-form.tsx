@@ -90,7 +90,7 @@ export default function LocationForm({
     }
   })
 
-  const onSubmit = async (values: z.infer<typeof locationSchema>) => {
+  const onSubmit = (values: z.infer<typeof locationSchema>) => {
     if (data) {
       executeUpdate(values)
     } else {

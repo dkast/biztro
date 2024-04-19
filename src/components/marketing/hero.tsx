@@ -2,10 +2,8 @@
 
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
-import { ChevronRight } from "lucide-react"
 
 import Waitlist from "@/components/marketing/waitlist"
-import { cn } from "@/lib/utils"
 
 export default function Hero() {
   const fadeInRef = useRef(null)

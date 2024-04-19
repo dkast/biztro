@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react"
 import ReactDOM from "react-dom"
-import { useRect } from "@/hooks/use-rect"
+// import { useRect } from "@/hooks/use-rect"
 import { ROOT_NODE, useEditor, useNode } from "@craftjs/core"
 import { useAtom } from "jotai"
 import { ArrowUp, Clipboard, ClipboardPaste, Move, Trash } from "lucide-react"
@@ -33,7 +33,7 @@ export const RenderNode = ({ render }: { render: unknown }) => {
   }))
 
   // const currentRef = useRef<HTMLDivElement>()
-  const rect = useRect(dom)
+  // const rect = useRect(dom)
   // const [propsCopy, setPropsCopy] = useRecoilState(propState)
   const [propsCopy, setPropsCopy] = useAtom(elementPropsAtom)
 
@@ -55,16 +55,18 @@ export const RenderNode = ({ render }: { render: unknown }) => {
       top: `${top > 0 ? top : bottom}px`,
       left: `${left}px`
     }
-  }, [dom, rect])
+  }, [dom])
 
   const onPasteProps = (clonedProps: unknown) => {
     actions.setProp(id, props => {
-      props = Object.assign(props, clonedProps)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      props = Object.assign(props, clonedProps) // skipcq: JS-0356
     })
   }
 
   const onCopyProps = (props: Record<string, unknown>) => {
-    const { data, text, ...propsCopy } = props
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { data, text, ...propsCopy } = props // skipcq: JS-0356
     setPropsCopy(propsCopy)
   }
 

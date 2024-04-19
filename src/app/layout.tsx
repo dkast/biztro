@@ -3,12 +3,12 @@ import { Inter, Sora } from "next/font/google"
 
 import "../../styles/globals.css"
 
+// import { SpeedInsights } from "@vercel/speed-insights/next"
+import { AxiomWebVitals } from "next-axiom"
+
 // import "react-photo-view/dist/react-photo-view.css"
 
 import Providers from "@/app/providers"
-
-// import { SpeedInsights } from "@vercel/speed-insights/next"
-// import { AxiomWebVitals } from "next-axiom"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://biztro.co"),
@@ -55,7 +55,7 @@ export default function RootLayout({
       className={`${inter.variable} ${sora.variable}`}
       suppressHydrationWarning
     >
-      {/* <AxiomWebVitals /> */}
+      <AxiomWebVitals />
       <body className="bg-white text-gray-950 antialiased dark:bg-gray-900 dark:text-white">
         <Providers>
           <div className="flex min-h-dvh flex-col">{children}</div>

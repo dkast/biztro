@@ -20,7 +20,8 @@ export default async function SitePage({
   if (siteMenu.serialData)
     json = lz.decompress(lz.decodeBase64(siteMenu.serialData))
 
-  let backgroundColor: RgbaColor
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let backgroundColor: RgbaColor // skipcq: JS-0356
 
   // Search container style (color)
   const data = JSON.parse(json)
