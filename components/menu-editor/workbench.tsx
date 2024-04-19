@@ -1,6 +1,7 @@
 "use client"
 
 import { Editor, Element, Frame } from "@craftjs/core"
+import { Layers } from "@craftjs/layers"
 import type { Organization, Prisma } from "@prisma/client"
 import lz from "lzutf8"
 
@@ -10,6 +11,7 @@ import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import FloatingBar from "@/components/menu-editor/floating-bar"
+import DefaultLayer from "@/components/menu-editor/layers/default-layer"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
 import SyncStatus from "@/components/menu-editor/sync-status"
@@ -49,7 +51,18 @@ export default function Workbench({
         </Header>
         <ResizablePanelGroup className="grow pt-16" direction="horizontal">
           <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
-            <ToolboxPanel categories={categories} />
+            <ResizablePanelGroup direction="vertical">
+              <ResizablePanel defaultSize={60}>
+                <ToolboxPanel
+                  organization={organization}
+                  categories={categories}
+                />
+              </ResizablePanel>
+              <ResizableHandle />
+              <ResizablePanel defaultSize={40} minSize={10}>
+                <Layers renderLayer={DefaultLayer} />
+              </ResizablePanel>
+            </ResizablePanelGroup>
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={70}>

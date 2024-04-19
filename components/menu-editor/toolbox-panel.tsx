@@ -1,15 +1,18 @@
 import { useEditor } from "@craftjs/core"
-import type { Prisma } from "@prisma/client"
-import { Layers, Type, type LucideIcon } from "lucide-react"
+import type { Organization, Prisma } from "@prisma/client"
+import { Layers, PanelTop, Type, type LucideIcon } from "lucide-react"
 
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
+import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import SideSection from "@/components/menu-editor/side-section"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 
 export default function ToolboxPanel({
+  organization,
   categories
 }: {
+  organization: Organization
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
   const { connectors } = useEditor()
@@ -30,6 +33,18 @@ export default function ToolboxPanel({
         ))}
       </SideSection>
       <SideSection title="Elementos">
+        <div
+          ref={ref => {
+            if (ref) {
+              connectors.create(
+                ref,
+                <HeaderBlock organization={organization} />
+              )
+            }
+          }}
+        >
+          <ToolboxElement title="Encabezado" Icon={PanelTop} />
+        </div>
         <div
           ref={ref => {
             if (ref) {
