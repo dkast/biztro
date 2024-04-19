@@ -37,14 +37,6 @@ const config = {
       }
     ]
   },
-  // LEGACY: This is for the old image optimization provider
-  images: {
-    domains: [
-      "lh3.googleusercontent.com",
-      "images.unsplash.com",
-      "res.cloudinary.com"
-    ]
-  },
   // pageExtensions: ["md", "mdx", "js", "jsx", "ts", "tsx"],
   typescript: {
     // !! WARN !!

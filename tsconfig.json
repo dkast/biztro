@@ -19,9 +19,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/lib/*": ["lib/*"],
-      "@/hooks/*": ["hooks/*"],
-      "@/components/*": ["components/*"],
       "contentlayer/generated": ["./.contentlayer/generated"]
     },
     "plugins": [
