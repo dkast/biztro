@@ -1,5 +1,3 @@
-import type { type } from "os"
-import { id } from "date-fns/locale"
 import { string, z } from "zod"
 
 export enum HttpMethod {
@@ -14,7 +12,7 @@ export enum HttpMethod {
   TRACE = "TRACE"
 }
 
-export enum frameSize {
+export enum FrameSize {
   MOBILE = "MOBILE",
   DESKTOP = "DESKTOP"
 }

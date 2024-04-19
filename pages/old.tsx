@@ -19,8 +19,6 @@ import Link from "next/link"
 // import Spline from "@splinetool/react-spline"
 // import { BrowserView, MobileView } from "react-device-detect"
 
-import type { NextPageWithAuthAndLayout } from "@/lib/types"
-
 const FAQ = [
   {
     question: "¿Qué es un menú QR?",
@@ -122,7 +120,7 @@ const text = {
   }
 }
 
-const Home: NextPageWithAuthAndLayout = () => {
+const Home = () => {
   return (
     <>
       <Head>
@@ -542,7 +540,5 @@ const HomeMessage = (): JSX.Element => {
     </div>
   )
 }
-
-Home.auth = false
 
 export default Home

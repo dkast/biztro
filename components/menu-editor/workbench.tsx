@@ -3,6 +3,7 @@
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Organization, Prisma } from "@prisma/client"
+import { useAtom } from "jotai"
 import lz from "lzutf8"
 
 import Header from "@/components/dashboard/header"
@@ -24,6 +25,9 @@ import {
 } from "@/components/ui/resizable"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
+import { frameSizeAtom } from "@/lib/atoms"
+import { FrameSize } from "@/lib/types"
+import { cn } from "@/lib/utils"
 
 export default function Workbench({
   menu,
@@ -34,6 +38,8 @@ export default function Workbench({
   organization: Organization
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
+  const [frameSize] = useAtom(frameSizeAtom)
+
   if (!menu || !categories) return null
 
   // Extract the serialized data from the menu
@@ -68,8 +74,20 @@ export default function Workbench({
           <ResizablePanel defaultSize={70}>
             <div className="relative h-full w-full overflow-y-auto bg-gray-50">
               <SyncStatus menu={menu} categories={categories} />
-              <div className="mx-auto w-[390px] pb-24 pt-10">
-                <div className="flex min-h-[600px] w-[390px] flex-col border bg-white">
+              <div
+                className={cn(
+                  frameSize === FrameSize.DESKTOP ? "w-[1024px]" : "w-[390px]",
+                  "mx-auto pb-24 pt-10"
+                )}
+              >
+                <div
+                  className={cn(
+                    frameSize === FrameSize.DESKTOP
+                      ? "w-[1024px]"
+                      : "w-[390px]",
+                    "flex min-h-[600px] flex-col border bg-white"
+                  )}
+                >
                   <Frame data={json}>
                     <Element is={ContainerBlock} canvas>
                       <HeaderBlock organization={organization} />

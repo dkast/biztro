@@ -4,7 +4,7 @@ import { useLayer } from "@craftjs/layers"
 import { ChevronDown, ChevronUp, Eye, EyeOff, Link } from "lucide-react"
 
 import { LayerName } from "@/components/menu-editor/layers/layer-name"
-import classNames from "@/lib/classnames"
+import { cn } from "@/lib/utils"
 
 export default function LayerHeader() {
   const {
@@ -49,13 +49,13 @@ export default function LayerHeader() {
   return (
     <div
       ref={divRef}
-      className={classNames(
+      className={cn(
         selected ? "bg-violet-600 text-white" : "bg-transparent text-gray-700",
         "flex flex-row items-center px-2 py-2"
       )}
     >
       <a
-        className={classNames("relative mx-3 flex size-3 cursor-pointer")}
+        className={cn("relative mx-3 flex size-3 cursor-pointer")}
         onClick={() => actions.setHidden(id, !hidden)}
       >
         {hidden ? <EyeOff className="size-3" /> : <Eye className="size-3" />}

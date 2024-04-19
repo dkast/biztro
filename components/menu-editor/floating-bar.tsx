@@ -6,6 +6,7 @@ import {
   ClipboardPaste,
   Lock,
   LockOpen,
+  Monitor,
   Redo2,
   TabletSmartphone,
   Undo2
@@ -15,7 +16,8 @@ import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import { useSetUnsavedChanges } from "@/components/dashboard/unsaved-changes-provider"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { elementPropsAtom } from "@/lib/atoms"
+import { elementPropsAtom, frameSizeAtom } from "@/lib/atoms"
+import { FrameSize } from "@/lib/types"
 
 export default function FloatingBar() {
   const { enabled, canUndo, canRedo, actions, query, selectedNodeId } =
@@ -62,6 +64,8 @@ export default function FloatingBar() {
     }
   }, [setUnsavedChanges, clearUnsavedChanges, canUndo])
 
+  const [frameSize, setFrameSize] = useAtom(frameSizeAtom)
+
   return (
     <div className="fixed bottom-8 left-1/2 flex h-12 min-w-[200px] -translate-x-1/2 flex-row items-center justify-between rounded-full bg-gray-800 px-1 text-white shadow-lg">
       <TooltipHelper content="Deshacer">
@@ -88,8 +92,23 @@ export default function FloatingBar() {
       </TooltipHelper>
       <Separator orientation="vertical" className="mx-1 h-6 bg-gray-500" />
       <TooltipHelper content="Tamaño vista previa">
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <TabletSmartphone className="size-4" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          onClick={() =>
+            setFrameSize(
+              FrameSize.DESKTOP === frameSize
+                ? FrameSize.MOBILE
+                : FrameSize.DESKTOP
+            )
+          }
+        >
+          {frameSize === FrameSize.MOBILE ? (
+            <TabletSmartphone className="size-4" />
+          ) : (
+            <Monitor className="size-4" />
+          )}
         </Button>
       </TooltipHelper>
       <Separator orientation="vertical" className="mx-1 h-6 bg-gray-500" />
