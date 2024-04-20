@@ -146,7 +146,7 @@
     "autoprefixer": "^10.4.19",
     "commitlint": "19.2.2",
     "eslint": "8.57.0",
-    "eslint-config-next": "14.2.1",
+    "eslint-config-next": "14.2.2",
     "eslint-plugin-react": "^7.34.1",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
