@@ -16,7 +16,7 @@ export const bootstrapOrg = action(
     try {
       const user = await getCurrentUser()
 
-      if (!user) {
+      if (user?.id === undefined) {
         return {
           failure: {
             reason: "No se pudo obtener el usuario actual"
@@ -34,7 +34,7 @@ export const bootstrapOrg = action(
 
       await prisma.membership.create({
         data: {
-          userId: user.id!,
+          userId: user.id,
           organizationId: org.id,
           role: "OWNER"
         }

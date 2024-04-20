@@ -144,11 +144,11 @@ function SingleVariantForm({
       name={`variants.0.price`}
       render={({ field }) => (
         <FormItem>
-          <FormLabel htmlFor={`variants.0.price`}>Precio</FormLabel>
+          <FormLabel htmlFor={"variants.0.price"}>Precio</FormLabel>
           <FormControl>
             <Input
               {...field}
-              id={`variants.0.price`}
+              id={"variants.0.price"}
               type="number"
               placeholder="Precio"
               className="w-1/3"

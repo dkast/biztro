@@ -54,12 +54,12 @@ export default function LayerHeader() {
         "flex flex-row items-center px-2 py-2"
       )}
     >
-      <a
+      <button
         className={cn("relative mx-3 flex size-3 cursor-pointer")}
         onClick={() => actions.setHidden(id, !hidden)}
       >
         {hidden ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
-      </a>
+      </button>
       <div ref={headerRef} className="flex grow flex-row items-center">
         {topLevel ? (
           <div className="-ml-6 mr-3">
@@ -71,13 +71,13 @@ export default function LayerHeader() {
           <LayerName />
         </div>
         {children.length ? (
-          <div onMouseDown={() => toggleLayer()} className="mr-2">
+          <button onMouseDown={() => toggleLayer()} className="mr-2">
             {expanded ? (
               <ChevronUp className="size-3.5" />
             ) : (
               <ChevronDown className="size-3.5" />
             )}
-          </div>
+          </button>
         ) : null}
       </div>
     </div>

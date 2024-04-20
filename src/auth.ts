@@ -18,11 +18,7 @@ export const { handlers, auth } = NextAuth({
       })
 
       // If found invite then allow to continue
-      if (found) {
-        return true
-      } else {
-        return false
-      }
+      return found > 0
     },
     session({ session, token }) {
       if (session.user) {
