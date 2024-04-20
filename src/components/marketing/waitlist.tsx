@@ -96,11 +96,9 @@ export default function Waitlist() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <Alert className="max-w-xl space-y-2 border-gray-800 bg-gray-900">
-              <AlertTitle className="text-white">
-                ¡Gracias por tu interés!
-              </AlertTitle>
-              <AlertDescription className="text-gray-400">
+            <Alert className="max-w-xl space-y-2">
+              <AlertTitle>¡Gracias por tu interés!</AlertTitle>
+              <AlertDescription className="text-gray-600">
                 Te enviaremos un correo electrónico cuando estemos listos para
                 que puedas probar la aplicación.
               </AlertDescription>
