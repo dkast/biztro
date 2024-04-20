@@ -96,17 +96,17 @@ export const RenderNode = ({ render }: { render: unknown }) => {
                 </a>
               ) : null}
               {id !== ROOT_NODE && (
-                <a
+                <button
                   className="cursor-pointer active:scale-90"
                   onClick={() => {
                     actions.selectNode(parent ?? undefined)
                   }}
                 >
                   <ArrowUp className="size-3.5" />
-                </a>
+                </button>
               )}
               {deletable ? (
-                <a
+                <button
                   className="cursor-pointer active:scale-90"
                   onMouseDown={(e: React.MouseEvent) => {
                     e.stopPropagation()
@@ -114,23 +114,23 @@ export const RenderNode = ({ render }: { render: unknown }) => {
                   }}
                 >
                   <Trash className="size-3.5" />
-                </a>
+                </button>
               ) : null}
-              <a
+              <button
                 className="cursor-pointer active:scale-90"
                 onClick={() => {
                   onCopyProps(props)
                 }}
               >
                 <Clipboard className="size-3.5" />
-              </a>
+              </button>
               {Object.keys(propsCopy).length !== 0 ? (
-                <a
+                <button
                   className="cursor-pointer active:scale-90"
                   onClick={() => onPasteProps(propsCopy)}
                 >
                   <ClipboardPaste className="size-3.5" />
-                </a>
+                </button>
               ) : null}
             </div>,
             document.querySelector(".page-container") ?? document.body
