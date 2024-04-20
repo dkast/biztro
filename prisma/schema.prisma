@@ -1,12 +1,11 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["referentialIntegrity"]
+  previewFeatures = ["driverAdapters", "relationJoins"]
 }
 
 datasource db {
-  provider             = "mysql"
-  url                  = env("DATABASE_URL")
-  referentialIntegrity = "prisma"
+  provider = "sqlite"
+  url      = "file:../local.db"
 }
 
 model Account {
@@ -15,16 +14,16 @@ model Account {
   type                     String
   provider                 String
   providerAccountId        String
-  refresh_token            String? @db.VarChar(2000)
+  refresh_token            String?
   refresh_token_expires_in Int?
-  access_token             String? @db.VarChar(2000)
+  access_token             String?
   expires_at               Int?
   token_type               String?
   scope                    String?
-  id_token                 String? @db.VarChar(2000)
-  session_state            String? @db.VarChar(2000)
-  oauth_token_secret       String? @db.VarChar(2000)
-  oauth_token              String? @db.VarChar(2000)
+  id_token                 String?
+  session_state            String?
+  oauth_token_secret       String?
+  oauth_token              String?
   user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -42,16 +41,14 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
+  id            String       @id @default(cuid())
+  name          String
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
-  title         String?
   accounts      Account[]
+  memberships   Membership[] @relation("Memberships")
   sessions      Session[]
-  role          Role      @default(USER)
-  sites         Site[]
 }
 
 model VerificationToken {
@@ -62,40 +59,107 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Site {
-  id            String   @id @default(cuid())
-  name          String?
-  description   String?  @db.Text
-  logo          String?
-  image         String?  @db.Text
-  imageBlurhash String?  @db.LongText
-  phone         String?
-  subdomain     String?  @unique
-  customDomain  String?  @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  user          User?    @relation(fields: [userId], references: [id])
-  userId        String?
-  serialData    String?  @db.LongText
-  published     Boolean  @default(false)
-  items         Item[]
+model Membership {
+  id             String       @id @default(cuid())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  role           String       @default("OWNER")
+  userId         String
+  isActive       Boolean      @default(true)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([userId])
 }
 
-model Item {
-  id            String   @id @default(cuid())
-  title         String?
-  description   String?  @db.Text
-  extras        String?  @db.Text
-  price         Float?
-  image         String?  @db.Text
-  imageBlurhash String?  @db.LongText
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  site          Site?    @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  siteId        String?
+model Organization {
+  id           String       @id @default(cuid())
+  name         String       @unique
+  description  String?
+  logo         String?
+  banner       String?
+  status       String       @default("ACTIVE")
+  plan         String       @default("BASIC")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  subdomain    String       @unique
+  customDomain String?      @unique
+  categories   Category[]
+  location     Location[]
+  memberships  Membership[]
+  menus        Menu[]
+  menuItems    MenuItem[]
+}
 
-  @@unique([id, siteId], name: "post_site_constraint")
-  @@index([siteId])
+model Location {
+  id             String       @id @default(cuid())
+  name           String       @default("Main")
+  description    String?
+  address        String
+  phone          String?
+  facebook       String?
+  instagram      String?
+  twitter        String?
+  tiktok         String?
+  whatsapp       String?
+  website        String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model Menu {
+  id             String       @id @default(cuid())
+  name           String
+  description    String?
+  status         String       @default("DRAFT")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String
+  serialData     String?
+  publishedData  String?
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model MenuItem {
+  id             String       @id @default(cuid())
+  name           String
+  description    String?
+  image          String?
+  status         String       @default("DRAFT")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  categoryId     String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category       Category?    @relation(fields: [categoryId], references: [id])
+  variants       Variant[]
+
+  @@unique([organizationId, name])
+}
+
+model Category {
+  id             String       @id @default(cuid())
+  name           String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  menuItems      MenuItem[]
+}
+
+model Variant {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  menuItemId  String
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
 }
 
 model Invite {
@@ -103,10 +167,4 @@ model Invite {
   email String @unique
 
   @@index([email])
-}
-
-enum Role {
-  USER
-  PRO
-  ADMIN
 }

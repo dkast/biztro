@@ -8,9 +8,15 @@
 # testing
 /coverage
 
+# database
+/prisma/dev.db
+/prisma/dev.db-journal
+local.db*
+
 # next.js
 /.next/
 /out/
+next-env.d.ts
 
 # production
 /build
@@ -18,7 +24,6 @@
 # misc
 .DS_Store
 *.pem
-tsconfig.tsbuildinfo
 
 # debug
 npm-debug.log*
@@ -27,11 +32,18 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# do not commit any .env files to git, except for the .env.example file. https://create.t3.gg/en/usage/env-variables#using-environment-variables
 .env
+.env*.local
 
 # vercel
 .vercel
+
+# typescript
+*.tsbuildinfo
+
+# ESLint cache
+.eslintcache
+
+# Contentlayer
+.contentlayer

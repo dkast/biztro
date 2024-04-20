@@ -1,3 +1,4 @@
-# Ignore dist files
+dist
+node_modules
 .next
-.vercel
+build

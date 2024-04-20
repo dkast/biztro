@@ -2,21 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* @layer components {
-  a {
-    @apply text-indigo-600;
+@layer components {
+  .component-selected {
+    @apply outline outline-1 outline-violet-500;
   }
 
-  a:hover {
-    @apply text-indigo-500;
-    @apply cursor-pointer;
+  .component-hovered {
+    @apply outline outline-1 outline-violet-500;
   }
-} */
-
-.component-selected {
-  @apply relative;
-}
-.component-selected::after {
-  content: " ";
-  @apply pointer-events-none absolute left-0 top-0 block h-full w-full border border-violet-500;
 }
