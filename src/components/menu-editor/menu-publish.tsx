@@ -37,7 +37,10 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover"
 import { Switch } from "@/components/ui/switch"
-import { updateMenuStatus } from "@/server/actions/menu/mutations"
+import {
+  updateMenuSerialData,
+  updateMenuStatus
+} from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import exportAsImage from "@/lib/export-as-image"
 import { MenuStatus } from "@/lib/types"
@@ -71,9 +74,33 @@ export default function MenuPublish({
     }
   })
 
+  const {
+    execute: updateSerialData,
+    status: statusSerialData,
+    reset: resetSerialData
+  } = useAction(updateMenuSerialData, {
+    onSuccess: data => {
+      if (data.success) {
+        toast.success("Menú actualizado")
+        queryClient.invalidateQueries({
+          queryKey: ["menu", menu?.id]
+        })
+        // Reset history to avoid undoing the update
+        actions.history.clear()
+      } else if (data.failure.reason) {
+        toast.error(data.failure.reason)
+      }
+      resetSerialData()
+    },
+    onError: () => {
+      toast.error("Ocurrió un error")
+      resetSerialData()
+    }
+  })
+
   if (!menu) return null
 
-  const handleSave = (status: MenuStatus) => {
+  const handleUpdateStatus = (status: MenuStatus) => {
     const json = query.serialize()
     const serialData = lz.encodeBase64(lz.compress(json))
     execute({
@@ -84,11 +111,29 @@ export default function MenuPublish({
     })
   }
 
+  const handleUpdateSerialData = () => {
+    const json = query.serialize()
+    const serialData = lz.encodeBase64(lz.compress(json))
+    updateSerialData({
+      id: menu?.id,
+      serialData
+    })
+  }
+
   return (
     <div className="flex justify-end gap-2">
       <TooltipHelper content="Guardar cambios">
-        <Button size="xs" variant="outline">
-          <Save className="size-4" />
+        <Button
+          size="xs"
+          variant="outline"
+          disabled={statusSerialData === "executing"}
+          onClick={() => handleUpdateSerialData()}
+        >
+          {statusSerialData === "executing" ? (
+            <Loader className="size-4 animate-spin" />
+          ) : (
+            <Save className="size-4" />
+          )}
         </Button>
       </TooltipHelper>
       <Dialog>
@@ -138,7 +183,7 @@ export default function MenuPublish({
               <Button
                 size="xs"
                 className="mt-2 w-full"
-                onClick={() => handleSave(MenuStatus.PUBLISHED)}
+                onClick={() => handleUpdateStatus(MenuStatus.PUBLISHED)}
               >
                 {status === "executing" ? (
                   <Loader className="size-4 animate-spin" />
@@ -166,7 +211,7 @@ export default function MenuPublish({
                 <Button
                   size="xs"
                   className="mt-2 w-full"
-                  onClick={() => handleSave(menu.status as MenuStatus)}
+                  onClick={() => handleUpdateStatus(menu.status as MenuStatus)}
                 >
                   {status === "executing" ? (
                     <Loader className="size-4 animate-spin" />
@@ -178,7 +223,7 @@ export default function MenuPublish({
                   size="xs"
                   className="w-full"
                   variant="outline"
-                  onClick={() => handleSave(MenuStatus.DRAFT)}
+                  onClick={() => handleUpdateStatus(MenuStatus.DRAFT)}
                 >
                   Cambiar a borrador
                 </Button>

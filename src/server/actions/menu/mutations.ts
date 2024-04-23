@@ -111,11 +111,46 @@ export const updateMenuStatus = action(
     try {
       const menu = await prisma.menu.update({
         where: { id },
-        data: { status, serialData }
+        data: { status, serialData, publishedData: serialData }
       })
 
       revalidateTag(`menu-${id}`)
       revalidateTag(`site-${subdomain}`)
+
+      return {
+        success: menu
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        message = error.message
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const updateMenuSerialData = action(
+  z.object({
+    id: z.string(),
+    serialData: z.string()
+  }),
+  async ({ id, serialData }) => {
+    try {
+      const menu = await prisma.menu.update({
+        where: { id },
+        data: { serialData }
+      })
+
+      revalidateTag(`menu-${id}`)
 
       return {
         success: menu
