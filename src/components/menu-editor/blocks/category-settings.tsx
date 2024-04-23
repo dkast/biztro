@@ -60,7 +60,7 @@ export default function CategorySettings() {
       <SideSection title="Categoría">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label>Tamaño</Label>
+            <Label size="sm">Tamaño</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -72,7 +72,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-8 text-sm">
+              <SelectTrigger className="h-7 text-xs focus:ring-0">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -85,13 +85,13 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label>Color</Label>
+            <Label size="sm">Color</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Popover>
               <PopoverTrigger>
                 <div
-                  className="h-6 w-12 rounded border border-black/10"
+                  className="h-5 w-12 rounded border border-black/10"
                   style={{
                     backgroundColor: `rgb(${Object.values(categoryColor)})`
                   }}
@@ -112,7 +112,7 @@ export default function CategorySettings() {
             </Popover>
           </dd>
           <dt>
-            <Label>Estilo</Label>
+            <Label size="sm">Estilo</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -124,7 +124,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-8 text-sm">
+              <SelectTrigger className="h-7 text-xs focus:ring-0">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -136,7 +136,7 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label>Alineación</Label>
+            <Label size="sm">Alineación</Label>
           </dt>
           <dd className="col-span-2">
             <Tabs
@@ -150,13 +150,13 @@ export default function CategorySettings() {
             >
               <TabsList className="h-8 p-0.5">
                 <TabsTrigger value="left">
-                  <AlignLeft className="size-4" />
+                  <AlignLeft className="size-3.5" />
                 </TabsTrigger>
                 <TabsTrigger value="center">
-                  <AlignCenter className="size-4" />
+                  <AlignCenter className="size-3.5" />
                 </TabsTrigger>
                 <TabsTrigger value="right">
-                  <AlignRight className="size-4" />
+                  <AlignRight className="size-3.5" />
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -166,7 +166,7 @@ export default function CategorySettings() {
       <SideSection title="Producto">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label>Tamaño</Label>
+            <Label size="sm">Tamaño</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -178,7 +178,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-8 text-sm">
+              <SelectTrigger className="h-7 text-xs focus:ring-0">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -191,13 +191,13 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label>Color</Label>
+            <Label size="sm">Color</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Popover>
               <PopoverTrigger>
                 <div
-                  className="h-6 w-12 rounded border border-black/10"
+                  className="h-5 w-12 rounded border border-black/10"
                   style={{
                     backgroundColor: `rgb(${Object.values(itemColor)})`
                   }}
@@ -218,7 +218,7 @@ export default function CategorySettings() {
             </Popover>
           </dd>
           <dt>
-            <Label>Estilo</Label>
+            <Label size="sm">Estilo</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -229,7 +229,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-8 text-sm">
+              <SelectTrigger className="h-7 text-xs focus:ring-0">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -245,7 +245,7 @@ export default function CategorySettings() {
       <SideSection title="Precio">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label>Tamaño</Label>
+            <Label size="sm">Tamaño</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -257,7 +257,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-8 text-sm">
+              <SelectTrigger className="h-7 text-xs focus:ring-0">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -270,13 +270,13 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label>Color</Label>
+            <Label size="sm">Color</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Popover>
               <PopoverTrigger>
                 <div
-                  className="h-6 w-12 rounded border border-black/10"
+                  className="h-5 w-12 rounded border border-black/10"
                   style={{
                     backgroundColor: `rgb(${Object.values(priceColor)})`
                   }}
@@ -297,7 +297,7 @@ export default function CategorySettings() {
             </Popover>
           </dd>
           <dt>
-            <Label>Estilo</Label>
+            <Label size="sm">Estilo</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -308,7 +308,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-8 text-sm">
+              <SelectTrigger className="h-7 text-xs focus:ring-0">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -324,7 +324,7 @@ export default function CategorySettings() {
       <SideSection title="Imágen">
         <div className="grid grid-cols-3 items-center gap-y-2">
           <dt>
-            <Label>Mostrar</Label>
+            <Label size="sm">Mostrar</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Switch

@@ -27,13 +27,13 @@ export default function HeaderSettings() {
       <SideSection title="Título">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label>Color</Label>
+            <Label size="sm">Color</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Popover>
               <PopoverTrigger>
                 <div
-                  className="h-6 w-12 rounded border border-black/20"
+                  className="h-5 w-12 rounded border border-black/20"
                   style={{
                     backgroundColor: `rgb(${Object.values(titleColor)})`
                   }}
@@ -58,7 +58,7 @@ export default function HeaderSettings() {
       <SideSection title="Mostrar Imágenes">
         <div className="grid grid-cols-3 items-center gap-y-2">
           <dt>
-            <Label>Logo</Label>
+            <Label size="sm">Logo</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Switch
@@ -73,7 +73,7 @@ export default function HeaderSettings() {
             />
           </dd>
           <dt>
-            <Label>Portada</Label>
+            <Label size="sm">Portada</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Switch

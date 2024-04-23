@@ -23,13 +23,13 @@ export default function ContainerSettings() {
     <SideSection title="Sitio">
       <div className="grid grid-cols-3 items-center gap-2">
         <dt>
-          <Label>Fondo</Label>
+          <Label size="sm">Fondo</Label>
         </dt>
         <dd className="col-span-2 flex items-center">
           <Popover>
             <PopoverTrigger>
               <div
-                className="h-6 w-12 rounded border border-black/20"
+                className="h-5 w-12 rounded border border-black/20"
                 style={{
                   backgroundColor: `rgb(${Object.values(backgroundColor)})`
                 }}
@@ -50,13 +50,13 @@ export default function ContainerSettings() {
           </Popover>
         </dd>
         <dt>
-          <Label>Texto</Label>
+          <Label size="sm">Texto</Label>
         </dt>
         <dd className="col-span-2 flex items-center">
           <Popover>
             <PopoverTrigger>
               <div
-                className="h-6 w-12 rounded border border-black/20"
+                className="h-5 w-12 rounded border border-black/20"
                 style={{
                   backgroundColor: `rgb(${Object.values(color)})`
                 }}

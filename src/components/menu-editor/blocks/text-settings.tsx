@@ -41,7 +41,7 @@ export default function TextSettings() {
       <SideSection title="Texto">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label>Tamaño</Label>
+            <Label size="sm">Tamaño</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -53,7 +53,7 @@ export default function TextSettings() {
                 )
               }
             >
-              <SelectTrigger className="h-8 text-sm">
+              <SelectTrigger className="h-7 text-xs focus:ring-0">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -66,13 +66,13 @@ export default function TextSettings() {
             </Select>
           </dd>
           <dt>
-            <Label>Color</Label>
+            <Label size="sm">Color</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Popover>
               <PopoverTrigger>
                 <div
-                  className="h-6 w-12 rounded border border-black/10"
+                  className="h-5 w-12 rounded border border-black/10"
                   style={{
                     backgroundColor: `rgb(${Object.values(color)})`
                   }}
@@ -92,7 +92,7 @@ export default function TextSettings() {
             </Popover>
           </dd>
           <dt>
-            <Label>Estilo</Label>
+            <Label size="sm">Estilo</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -101,7 +101,7 @@ export default function TextSettings() {
                 setProp((props: TextElementProps) => (props.fontWeight = value))
               }
             >
-              <SelectTrigger className="h-8 text-sm">
+              <SelectTrigger className="h-7 text-xs focus:ring-0">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -113,7 +113,7 @@ export default function TextSettings() {
             </Select>
           </dd>
           <dt>
-            <Label>Alineación</Label>
+            <Label size="sm">Alineación</Label>
           </dt>
           <dd className="col-span-2">
             <Tabs
@@ -125,19 +125,19 @@ export default function TextSettings() {
             >
               <TabsList className="h-8 p-0.5">
                 <TabsTrigger value="left">
-                  <AlignLeft className="size-4" />
+                  <AlignLeft className="size-3.5" />
                 </TabsTrigger>
                 <TabsTrigger value="center">
-                  <AlignCenter className="size-4" />
+                  <AlignCenter className="size-3.5" />
                 </TabsTrigger>
                 <TabsTrigger value="right">
-                  <AlignRight className="size-4" />
+                  <AlignRight className="size-3.5" />
                 </TabsTrigger>
               </TabsList>
             </Tabs>
           </dd>
           <dt>
-            <Label>Fuente</Label>
+            <Label size="sm">Fuente</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -146,7 +146,7 @@ export default function TextSettings() {
                 setProp((props: TextElementProps) => (props.fontFamily = value))
               }
             >
-              <SelectTrigger className="h-8 text-sm">
+              <SelectTrigger className="h-7 text-xs focus:ring-0">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
