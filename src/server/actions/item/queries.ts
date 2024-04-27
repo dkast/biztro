@@ -90,52 +90,52 @@ export async function getCategories() {
 
 export async function getCategoriesWithItems() {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
-  return await cache(
-    async () => {
-      if (!currentOrg) {
-        return []
-      }
+  // return await cache(
+  //   async () => {
+  if (!currentOrg) {
+    return []
+  }
 
-      const data = await prisma.category.findMany({
+  const data = await prisma.category.findMany({
+    where: {
+      organizationId: currentOrg,
+      menuItems: {
+        some: {
+          status: "ACTIVE"
+        }
+      }
+    },
+    include: {
+      menuItems: {
         where: {
-          organizationId: currentOrg,
-          menuItems: {
-            some: {
-              status: "ACTIVE"
-            }
-          }
+          status: "ACTIVE"
         },
         include: {
-          menuItems: {
-            where: {
-              status: "ACTIVE"
-            },
-            include: {
-              variants: {
-                orderBy: {
-                  price: "asc"
-                }
-              }
+          variants: {
+            orderBy: {
+              price: "asc"
             }
           }
         }
-      })
-
-      // Get the image URL for each item
-      for (const category of data) {
-        for (const item of category.menuItems) {
-          if (item.image) {
-            item.image = env.R2_CUSTOM_DOMAIN + "/" + item.image
-          }
-        }
       }
-
-      return data
-    },
-    [`categoriesWithItems-${currentOrg}`],
-    {
-      revalidate: 900,
-      tags: [`categoriesWithItems-${currentOrg}`]
     }
-  )()
+  })
+
+  // Get the image URL for each item
+  for (const category of data) {
+    for (const item of category.menuItems) {
+      if (item.image) {
+        item.image = env.R2_CUSTOM_DOMAIN + "/" + item.image
+      }
+    }
+  }
+
+  return data
+  //   },
+  //   [`categoriesWithItems-${currentOrg}`],
+  //   {
+  //     revalidate: 900,
+  //     tags: [`categoriesWithItems-${currentOrg}`]
+  //   }
+  // )()
 }
