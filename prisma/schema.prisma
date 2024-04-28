@@ -163,8 +163,9 @@ model Variant {
 }
 
 model Invite {
-  id    String @id @default(cuid())
-  email String @unique
+  id      String  @id @default(cuid())
+  email   String  @unique
+  enabled Boolean @default(false)
 
   @@index([email])
 }

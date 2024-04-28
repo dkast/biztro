@@ -13,7 +13,8 @@ export const { handlers, auth } = NextAuth({
     async signIn({ user }) {
       const found = await prisma.invite.count({
         where: {
-          email: user.email ?? ""
+          email: user.email ?? "",
+          enabled: true
         }
       })
 
