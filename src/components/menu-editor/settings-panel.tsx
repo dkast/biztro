@@ -1,5 +1,6 @@
 import React from "react"
 import { useEditor } from "@craftjs/core"
+import { Settings2 } from "lucide-react"
 
 export default function SettingsPanel() {
   const { active, related } = useEditor((state, query) => {
@@ -15,7 +16,10 @@ export default function SettingsPanel() {
     <>
       {active && related?.settings && React.createElement(related.settings)}
       {!active && (
-        <div className="flex flex-col items-center justify-center px-5 py-12 text-center">
+        <div className="flex flex-col items-center justify-center gap-2 px-5 py-12 text-center">
+          <div className="rounded-full bg-violet-50 p-2 text-violet-500">
+            <Settings2 className="size-6" />
+          </div>
           <span className="text-sm text-gray-500">
             Selecciona un componente para editar
           </span>

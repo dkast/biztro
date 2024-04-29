@@ -16,6 +16,7 @@ import DefaultLayer from "@/components/menu-editor/layers/default-layer"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
 import SyncStatus from "@/components/menu-editor/sync-status"
+import ThemeSelector from "@/components/menu-editor/theme-selector"
 import Toolbar from "@/components/menu-editor/toolbar"
 import ToolboxPanel from "@/components/menu-editor/toolbox-panel"
 import {
@@ -23,6 +24,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup
 } from "@/components/ui/resizable"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import { frameSizeAtom } from "@/lib/atoms"
@@ -65,7 +67,7 @@ export default function Workbench({
                 />
               </ResizablePanel>
               <ResizableHandle />
-              <ResizablePanel defaultSize={40} minSize={10}>
+              <ResizablePanel defaultSize={35} minSize={10}>
                 <Layers renderLayer={DefaultLayer} />
               </ResizablePanel>
             </ResizablePanelGroup>
@@ -99,8 +101,19 @@ export default function Workbench({
             </div>
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
-            <SettingsPanel />
+          <ResizablePanel defaultSize={20} minSize={15} maxSize={25}>
+            <Tabs defaultValue="theme">
+              <TabsList className="m-2 grid grid-cols-2">
+                <TabsTrigger value="theme">Tema</TabsTrigger>
+                <TabsTrigger value="settings">Ajustes</TabsTrigger>
+              </TabsList>
+              <TabsContent value="theme">
+                <ThemeSelector />
+              </TabsContent>
+              <TabsContent value="settings">
+                <SettingsPanel />
+              </TabsContent>
+            </Tabs>
           </ResizablePanel>
         </ResizablePanelGroup>
       </Editor>
