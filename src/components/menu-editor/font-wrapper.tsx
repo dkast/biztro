@@ -23,7 +23,7 @@ export default function FontWrapper({
     if (typeof window !== "undefined") {
       WebFont.load({
         google: {
-          families: [`${fontFamily}:200,400,500,600`]
+          families: [`${fontFamily}:300,400,500,700`]
         },
         fontactive: function (familyName, _fvd) {
           console.log(familyName + " has loaded.")

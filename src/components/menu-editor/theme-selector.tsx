@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react"
 import { useEditor } from "@craftjs/core"
 import { hexToRgba } from "@uiw/react-color"
+import { useAtom } from "jotai"
 
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { themeAtom } from "@/lib/atoms"
 
 // Define an array of themes with two font names and two color names, background and foreground
 const themes = [
@@ -13,22 +15,94 @@ const themes = [
     name: "Default",
     fontDisplay: "Inter",
     fontText: "Inter",
-    accentColor: "#000000",
-    color: "#999999",
+    accentColor: "#333333",
+    color: "#666666",
     backgroundColor: "#ffffff"
   },
   {
-    name: "Ukraine",
+    name: "Monaco",
     fontDisplay: "DM Serif Display",
     fontText: "DM Sans",
-    accentColor: "#0033ff",
-    color: "#0033ff",
-    backgroundColor: "#ffcc00"
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Alamo",
+    fontDisplay: "Ultra",
+    fontText: "PT Serif",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Berlin",
+    fontDisplay: "Work Sans",
+    fontText: "Merriweather",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Amsterdam",
+    fontDisplay: "Playfair Display",
+    fontText: "Lato",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Gaza",
+    fontDisplay: "Yeseva One",
+    fontText: "Josefin Sans",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Oslo",
+    fontDisplay: "Syne",
+    fontText: "Inter",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Roma",
+    fontDisplay: "Cinzel",
+    fontText: "Fauna One",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Paris",
+    fontDisplay: "Poiret One",
+    fontText: "Montserrat",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Kiev",
+    fontDisplay: "Anton",
+    fontText: "Roboto",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Tucson",
+    fontDisplay: "Outfit",
+    fontText: "Outfit",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
   }
 ]
 
 export default function ThemeSelector() {
-  const [theme, setTheme] = useState("Default")
+  const [theme, setTheme] = useAtom(themeAtom)
   const { nodes, actions } = useEditor(state => ({
     nodes: state.nodes
   }))
@@ -63,6 +137,7 @@ export default function ThemeSelector() {
           case "HeaderBlock":
             actions.setProp(key, props => {
               return (props = Object.assign(props, {
+                fontFamily: selectedTheme.fontDisplay,
                 accentColor: hexToRgba(selectedTheme.accentColor)
               }))
             })
@@ -75,7 +150,8 @@ export default function ThemeSelector() {
                 itemColor: hexToRgba(selectedTheme.accentColor),
                 itemFontFamily: selectedTheme.fontDisplay,
                 priceColor: hexToRgba(selectedTheme.accentColor),
-                priceFontFamily: selectedTheme.fontText
+                priceFontFamily: selectedTheme.fontText,
+                descriptionFontFamily: selectedTheme.fontText
               }))
             })
             break
@@ -96,13 +172,8 @@ export default function ThemeSelector() {
 
   return (
     <div className="flex flex-col px-2">
-      {/* <h2 className="py-3 text-sm font-medium">Temas</h2> */}
       <div className="flex flex-col items-center gap-2">
-        <RadioGroup
-          defaultValue={theme}
-          onValueChange={setTheme}
-          className="w-full"
-        >
+        <RadioGroup value={theme} onValueChange={setTheme} className="w-full">
           {themes.map(theme => (
             <label
               key={theme.name}
@@ -118,7 +189,7 @@ export default function ThemeSelector() {
               >
                 <FontWrapper fontFamily={theme.fontDisplay}>
                   <span
-                    className="text-base"
+                    className="text-base font-medium"
                     style={{
                       color: theme.accentColor
                     }}

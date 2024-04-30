@@ -6,3 +6,5 @@ import { FrameSize } from "@/lib/types"
 export const elementPropsAtom = atom<{ [x: string]: unknown }>({})
 
 export const frameSizeAtom = atomWithStorage("frameSize", FrameSize.MOBILE)
+
+export const themeAtom = atomWithStorage("theme", "Default")

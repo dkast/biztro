@@ -4,11 +4,13 @@ import type { RgbaColor } from "@uiw/react-color"
 import Image from "next/image"
 
 import HeaderSettings from "@/components/menu-editor/blocks/header-settings"
+import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn, getInitials } from "@/lib/utils"
 
 export type HeaderBlockProps = {
   organization: Organization
+  fontFamily?: string
   accentColor?: RgbaColor
   showBanner?: boolean
   showLogo?: boolean
@@ -16,6 +18,7 @@ export type HeaderBlockProps = {
 
 export default function HeaderBlock({
   organization,
+  fontFamily,
   accentColor,
   showBanner,
   showLogo
@@ -62,18 +65,20 @@ export default function HeaderBlock({
             </AvatarFallback>
           </Avatar>
         ) : null}
-        <h1
-          className={cn(
-            "z-10 text-xl font-semibold",
-            showLogo && "ml-4",
-            organization.banner && showBanner && "mt-12"
-          )}
-          style={{
-            color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-          }}
-        >
-          {organization?.name}
-        </h1>
+        <FontWrapper fontFamily={fontFamily}>
+          <h1
+            className={cn(
+              "z-10 text-xl font-semibold",
+              showLogo && "ml-4",
+              organization.banner && showBanner && "mt-12"
+            )}
+            style={{
+              color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+            }}
+          >
+            {organization?.name}
+          </h1>
+        </FontWrapper>
       </div>
     </div>
   )

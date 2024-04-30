@@ -24,7 +24,7 @@ export default function HeaderSettings() {
   }))
   return (
     <>
-      <SideSection title="Título">
+      {/* <SideSection title="Título">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
             <Label size="sm">Color</Label>
@@ -54,7 +54,7 @@ export default function HeaderSettings() {
             </Popover>
           </dd>
         </div>
-      </SideSection>
+      </SideSection> */}
       <SideSection title="Mostrar Imágenes">
         <div className="grid grid-cols-3 items-center gap-y-2">
           <dt>

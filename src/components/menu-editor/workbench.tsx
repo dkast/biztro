@@ -107,7 +107,10 @@ export default function Workbench({
                 <TabsTrigger value="theme">Tema</TabsTrigger>
                 <TabsTrigger value="settings">Ajustes</TabsTrigger>
               </TabsList>
-              <TabsContent value="theme">
+              <TabsContent
+                value="theme"
+                className="relative overflow-y-scroll overscroll-contain"
+              >
                 <ThemeSelector />
               </TabsContent>
               <TabsContent value="settings">

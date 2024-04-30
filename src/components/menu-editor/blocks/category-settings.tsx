@@ -28,31 +28,25 @@ export default function CategorySettings() {
     categoryFontSize,
     categoryColor,
     categoryFontWeight,
-    categoryFontFamily,
     categoryTextAlign,
     itemFontSize,
     itemColor,
     itemFontWeight,
-    itemFontFamily,
     priceFontSize,
     priceColor,
     priceFontWeight,
-    priceFontFamily,
     showImage
   } = useNode(node => ({
     categoryFontSize: node.data.props.categoryFontSize,
     categoryColor: node.data.props.categoryColor,
     categoryFontWeight: node.data.props.categoryFontWeight,
-    categoryFontFamily: node.data.props.categoryFontFamily,
     categoryTextAlign: node.data.props.categoryTextAlign,
     itemFontSize: node.data.props.itemFontSize,
     itemColor: node.data.props.itemColor,
     itemFontWeight: node.data.props.itemFontWeight,
-    itemFontFamily: node.data.props.itemFontFamily,
     priceFontSize: node.data.props.priceFontSize,
     priceColor: node.data.props.priceColor,
     priceFontWeight: node.data.props.priceFontWeight,
-    priceFontFamily: node.data.props.priceFontFamily,
     showImage: node.data.props.showImage
   }))
   return (
@@ -72,7 +66,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -84,7 +78,7 @@ export default function CategorySettings() {
               </SelectContent>
             </Select>
           </dd>
-          <dt>
+          {/* <dt>
             <Label size="sm">Color</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
@@ -110,7 +104,7 @@ export default function CategorySettings() {
                 />
               </PopoverContent>
             </Popover>
-          </dd>
+          </dd> */}
           <dt>
             <Label size="sm">Estilo</Label>
           </dt>
@@ -124,14 +118,14 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="200">Light</SelectItem>
+                <SelectItem value="300">Light</SelectItem>
                 <SelectItem value="400">Regular</SelectItem>
                 <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="600">Negrita</SelectItem>
+                <SelectItem value="700">Negrita</SelectItem>
               </SelectContent>
             </Select>
           </dd>
@@ -178,7 +172,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -190,7 +184,7 @@ export default function CategorySettings() {
               </SelectContent>
             </Select>
           </dd>
-          <dt>
+          {/* <dt>
             <Label size="sm">Color</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
@@ -216,7 +210,7 @@ export default function CategorySettings() {
                 />
               </PopoverContent>
             </Popover>
-          </dd>
+          </dd> */}
           <dt>
             <Label size="sm">Estilo</Label>
           </dt>
@@ -229,14 +223,14 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="200">Light</SelectItem>
+                <SelectItem value="300">Light</SelectItem>
                 <SelectItem value="400">Regular</SelectItem>
                 <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="600">Negrita</SelectItem>
+                <SelectItem value="700">Negrita</SelectItem>
               </SelectContent>
             </Select>
           </dd>
@@ -257,7 +251,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -269,7 +263,7 @@ export default function CategorySettings() {
               </SelectContent>
             </Select>
           </dd>
-          <dt>
+          {/* <dt>
             <Label size="sm">Color</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
@@ -295,7 +289,7 @@ export default function CategorySettings() {
                 />
               </PopoverContent>
             </Popover>
-          </dd>
+          </dd> */}
           <dt>
             <Label size="sm">Estilo</Label>
           </dt>
@@ -308,14 +302,14 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="200">Light</SelectItem>
+                <SelectItem value="300">Light</SelectItem>
                 <SelectItem value="400">Regular</SelectItem>
                 <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="600">Negrita</SelectItem>
+                <SelectItem value="700">Negrita</SelectItem>
               </SelectContent>
             </Select>
           </dd>

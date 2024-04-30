@@ -53,7 +53,7 @@ export default function TextSettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -65,7 +65,7 @@ export default function TextSettings() {
               </SelectContent>
             </Select>
           </dd>
-          <dt>
+          {/* <dt>
             <Label size="sm">Color</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
@@ -90,7 +90,7 @@ export default function TextSettings() {
                 />
               </PopoverContent>
             </Popover>
-          </dd>
+          </dd> */}
           <dt>
             <Label size="sm">Estilo</Label>
           </dt>
@@ -101,14 +101,14 @@ export default function TextSettings() {
                 setProp((props: TextElementProps) => (props.fontWeight = value))
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="200">Light</SelectItem>
+                <SelectItem value="300">Light</SelectItem>
                 <SelectItem value="400">Regular</SelectItem>
                 <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="600">Negrita</SelectItem>
+                <SelectItem value="700">Negrita</SelectItem>
               </SelectContent>
             </Select>
           </dd>
@@ -136,7 +136,7 @@ export default function TextSettings() {
               </TabsList>
             </Tabs>
           </dd>
-          <dt>
+          {/* <dt>
             <Label size="sm">Fuente</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
@@ -157,7 +157,7 @@ export default function TextSettings() {
                 ))}
               </SelectContent>
             </Select>
-          </dd>
+          </dd> */}
         </div>
       </SideSection>
     </>
