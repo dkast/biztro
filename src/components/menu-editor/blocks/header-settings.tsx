@@ -14,11 +14,11 @@ import { Switch } from "@/components/ui/switch"
 export default function HeaderSettings() {
   const {
     actions: { setProp },
-    titleColor,
+    accentColor,
     showBanner,
     showLogo
   } = useNode(node => ({
-    titleColor: node.data.props.titleColor,
+    accentColor: node.data.props.accentColor,
     showBanner: node.data.props.showBanner,
     showLogo: node.data.props.showLogo
   }))
@@ -35,18 +35,18 @@ export default function HeaderSettings() {
                 <div
                   className="h-5 w-12 rounded border border-black/20"
                   style={{
-                    backgroundColor: `rgb(${Object.values(titleColor)})`
+                    backgroundColor: `rgb(${Object.values(accentColor)})`
                   }}
                 ></div>
               </PopoverTrigger>
               <PopoverContent className="border-0 p-0 shadow-none">
                 <Sketch
                   disableAlpha
-                  color={rgbaToHsva(titleColor)}
+                  color={rgbaToHsva(accentColor)}
                   onChange={color => {
                     setProp(
                       (props: Required<HeaderBlockProps>) =>
-                        (props.titleColor = color.rgba)
+                        (props.accentColor = color.rgba)
                     )
                   }}
                 />

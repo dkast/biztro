@@ -9,14 +9,14 @@ import { cn, getInitials } from "@/lib/utils"
 
 export type HeaderBlockProps = {
   organization: Organization
-  titleColor?: RgbaColor
+  accentColor?: RgbaColor
   showBanner?: boolean
   showLogo?: boolean
 }
 
 export default function HeaderBlock({
   organization,
-  titleColor,
+  accentColor,
   showBanner,
   showLogo
 }: HeaderBlockProps) {
@@ -69,7 +69,7 @@ export default function HeaderBlock({
             organization.banner && showBanner && "mt-12"
           )}
           style={{
-            color: `rgb(${Object.values(titleColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+            color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
           }}
         >
           {organization?.name}
@@ -82,7 +82,7 @@ export default function HeaderBlock({
 HeaderBlock.craft = {
   displayName: "Encabezado",
   props: {
-    titleColor: { r: 38, g: 50, b: 56, a: 1 },
+    accentColor: { r: 38, g: 50, b: 56, a: 1 },
     showBanner: true,
     showLogo: true
   },

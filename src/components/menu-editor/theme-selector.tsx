@@ -1,6 +1,8 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import { useEditor } from "@craftjs/core"
+import { hexToRgba } from "@uiw/react-color"
 
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -27,12 +29,69 @@ const themes = [
 
 export default function ThemeSelector() {
   const [theme, setTheme] = useState("Default")
+  const { nodes, actions } = useEditor(state => ({
+    nodes: state.nodes
+  }))
 
   useEffect(() => {
     // When the theme changes, set the CSS variables to the new theme
     const selectedTheme = themes.find(t => t.name === theme)
     if (!selectedTheme) return
+
     console.log("selectedTheme", selectedTheme)
+    console.dir(nodes)
+
+    // traverse each node and update the theme
+    if (!nodes) return
+
+    for (const [key, value] of Object.entries(nodes)) {
+      if (value.data?.props) {
+        const props = value.data.props
+
+        // update the theme for the node
+        // props.theme = selectedTheme
+        console.log("props", props)
+        switch (value.data.name) {
+          case "ContainerBlock":
+            actions.setProp(key, props => {
+              return (props = Object.assign(props, {
+                color: hexToRgba(selectedTheme.color),
+                backgroundColor: hexToRgba(selectedTheme.backgroundColor)
+              }))
+            })
+            break
+          case "HeaderBlock":
+            actions.setProp(key, props => {
+              return (props = Object.assign(props, {
+                accentColor: hexToRgba(selectedTheme.accentColor)
+              }))
+            })
+            break
+          case "CategoryBlock":
+            actions.setProp(key, props => {
+              return (props = Object.assign(props, {
+                categoryColor: hexToRgba(selectedTheme.accentColor),
+                categoryFontFamily: selectedTheme.fontDisplay,
+                itemColor: hexToRgba(selectedTheme.accentColor),
+                itemFontFamily: selectedTheme.fontDisplay,
+                priceColor: hexToRgba(selectedTheme.accentColor),
+                priceFontFamily: selectedTheme.fontText
+              }))
+            })
+            break
+          case "TextElement":
+            actions.setProp(key, props => {
+              return (props = Object.assign(props, {
+                color: hexToRgba(selectedTheme.color),
+                fontFamily: selectedTheme.fontText
+              }))
+            })
+            break
+          default:
+            break
+        }
+      }
+    }
   }, [theme])
 
   return (

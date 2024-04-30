@@ -56,6 +56,7 @@ export default function CategoryBlock({
     >
       <h2
         style={{
+          fontFamily: categoryFontFamily,
           fontSize: `${categoryFontSize}px`,
           color: `rgba(${Object.values(categoryColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
           fontWeight: categoryFontWeight,
@@ -91,6 +92,7 @@ export default function CategoryBlock({
                   <div>
                     <h3
                       style={{
+                        fontFamily: itemFontFamily,
                         fontSize: `${itemFontSize}px`,
                         color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
                         fontWeight: itemFontWeight
@@ -113,6 +115,7 @@ export default function CategoryBlock({
                         <span className="text-sm">{variant.name}</span>
                         <span
                           style={{
+                            fontFamily: priceFontFamily,
                             fontSize: `${priceFontSize}px`,
                             color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
                             fontWeight: priceFontWeight
@@ -126,6 +129,7 @@ export default function CategoryBlock({
                 ) : (
                   <span
                     style={{
+                      fontFamily: priceFontFamily,
                       fontSize: `${priceFontSize}px`,
                       color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
                       fontWeight: priceFontWeight
