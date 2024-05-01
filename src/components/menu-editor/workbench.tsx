@@ -101,16 +101,18 @@ export default function Workbench({
             </div>
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel defaultSize={20} minSize={15} maxSize={25}>
-            <Tabs defaultValue="theme">
+          <ResizablePanel
+            defaultSize={20}
+            minSize={15}
+            maxSize={25}
+            className="flex"
+          >
+            <Tabs defaultValue="theme" className="flex grow flex-col">
               <TabsList className="m-2 grid grid-cols-2">
                 <TabsTrigger value="theme">Tema</TabsTrigger>
                 <TabsTrigger value="settings">Ajustes</TabsTrigger>
               </TabsList>
-              <TabsContent
-                value="theme"
-                className="relative overflow-y-scroll overscroll-contain"
-              >
+              <TabsContent value="theme" className="grow">
                 <ThemeSelector />
               </TabsContent>
               <TabsContent value="settings">

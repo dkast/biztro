@@ -227,3 +227,95 @@ export const enum MenuStatus {
   PUBLISHED = "PUBLISHED",
   DRAFT = "DRAFT"
 }
+
+export // Define an array of themes with two font names and two color names, background and foreground
+const themes = [
+  {
+    name: "Default",
+    fontDisplay: "Inter",
+    fontText: "Inter",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Monaco",
+    fontDisplay: "DM Serif Display",
+    fontText: "DM Sans",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Alamo",
+    fontDisplay: "Ultra",
+    fontText: "PT Serif",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Berlin",
+    fontDisplay: "Work Sans",
+    fontText: "Merriweather",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Amsterdam",
+    fontDisplay: "Playfair Display",
+    fontText: "Lato",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Gaza",
+    fontDisplay: "Yeseva One",
+    fontText: "Josefin Sans",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Oslo",
+    fontDisplay: "Syne",
+    fontText: "Inter",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Roma",
+    fontDisplay: "Cinzel",
+    fontText: "Fauna One",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Paris",
+    fontDisplay: "Poiret One",
+    fontText: "Montserrat",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Kiev",
+    fontDisplay: "Anton",
+    fontText: "Roboto",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  },
+  {
+    name: "Tucson",
+    fontDisplay: "Outfit",
+    fontText: "Outfit",
+    accentColor: "#333333",
+    color: "#666666",
+    backgroundColor: "#ffffff"
+  }
+]
