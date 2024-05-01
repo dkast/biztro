@@ -15,9 +15,9 @@ export default function FontWrapper({
 
     const isLoaded = hasFontLoaded(fontFamily)
     if (isLoaded) {
-      console.log(
-        `Font ${fontFamily} is ${isLoaded ? "loaded" : "not loaded"}.`
-      )
+      // console.log(
+      //   `Font ${fontFamily} is ${isLoaded ? "loaded" : "not loaded"}.`
+      // )
       return
     }
     if (typeof window !== "undefined") {
@@ -26,10 +26,10 @@ export default function FontWrapper({
           families: [`${fontFamily}:300,400,500,700`]
         },
         fontactive: function (familyName, _fvd) {
-          console.log(familyName + " has loaded.")
+          // console.log(familyName + " has loaded.")
         },
         fontinactive: function (familyName, _fvd) {
-          console.log(familyName + " failed to load.")
+          // console.log(familyName + " failed to load.")
         }
       })
     }
@@ -48,6 +48,6 @@ export default function FontWrapper({
 
 export function hasFontLoaded(fontFamily: string): boolean {
   const className = `wf-${fontFamily.toLowerCase().replace(/ /g, "")}-n4-active`
-  console.log("Checking for class", className)
+  // console.log("Checking for class", className)
   return document.documentElement.classList.contains(className)
 }

@@ -60,7 +60,6 @@ export default function SyncStatus({
           new Date(menuCategory.updatedAt).getTime()
         )
       })
-      // console.log("categories", equalData)
 
       if (!equalData) {
         setSyncReq(true)
@@ -94,7 +93,6 @@ export default function SyncStatus({
           )
         })
       })
-      // console.log("items", equalData)
 
       if (!equalData) {
         setSyncReq(true)
@@ -121,7 +119,6 @@ export default function SyncStatus({
           return true
         }
       })
-      // console.log("new items", equalData)
 
       if (!equalData) {
         setSyncReq(true)
@@ -132,7 +129,6 @@ export default function SyncStatus({
       let equalMenu = true
       if (organization) {
         const diff = difference(organization, menu.organization)
-        console.log("diff", diff)
         Object.getOwnPropertyNames(diff).forEach(propName => {
           if (
             propName === "banner" ||
@@ -144,8 +140,6 @@ export default function SyncStatus({
         })
       }
 
-      // console.log("equalData", equalData)
-      // console.log("equalMenu", equalMenu)
       setSyncReq(!equalData || !equalMenu)
     }
   }, [menu, categories, setSyncReq])
