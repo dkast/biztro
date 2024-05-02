@@ -228,94 +228,103 @@ export const enum MenuStatus {
   DRAFT = "DRAFT"
 }
 
-export // Define an array of themes with two font names and two color names, background and foreground
-const themes = [
+export const fontThemes = [
   {
     name: "Default",
     fontDisplay: "Inter",
-    fontText: "Inter",
-    accentColor: "#333333",
-    color: "#666666",
-    backgroundColor: "#ffffff"
+    fontText: "Inter"
   },
   {
     name: "Monaco",
     fontDisplay: "DM Serif Display",
-    fontText: "DM Sans",
-    accentColor: "#333333",
-    color: "#666666",
-    backgroundColor: "#ffffff"
+    fontText: "DM Sans"
   },
   {
     name: "Alamo",
     fontDisplay: "Ultra",
-    fontText: "PT Serif",
-    accentColor: "#333333",
-    color: "#666666",
-    backgroundColor: "#ffffff"
+    fontText: "PT Serif"
   },
   {
     name: "Berlin",
     fontDisplay: "Work Sans",
-    fontText: "Merriweather",
-    accentColor: "#333333",
-    color: "#666666",
-    backgroundColor: "#ffffff"
+    fontText: "Merriweather"
   },
   {
     name: "Amsterdam",
     fontDisplay: "Playfair Display",
-    fontText: "Lato",
-    accentColor: "#333333",
-    color: "#666666",
-    backgroundColor: "#ffffff"
+    fontText: "Lato"
   },
   {
     name: "Gaza",
     fontDisplay: "Yeseva One",
-    fontText: "Josefin Sans",
-    accentColor: "#333333",
-    color: "#666666",
-    backgroundColor: "#ffffff"
+    fontText: "Josefin Sans"
   },
   {
     name: "Oslo",
     fontDisplay: "Syne",
-    fontText: "Inter",
-    accentColor: "#333333",
-    color: "#666666",
-    backgroundColor: "#ffffff"
+    fontText: "Inter"
   },
   {
     name: "Roma",
     fontDisplay: "Cinzel",
-    fontText: "Fauna One",
-    accentColor: "#333333",
-    color: "#666666",
-    backgroundColor: "#ffffff"
+    fontText: "Fauna One"
   },
   {
     name: "Paris",
     fontDisplay: "Poiret One",
-    fontText: "Montserrat",
-    accentColor: "#333333",
-    color: "#666666",
-    backgroundColor: "#ffffff"
+    fontText: "Montserrat"
   },
   {
     name: "Kiev",
     fontDisplay: "Anton",
-    fontText: "Roboto",
-    accentColor: "#333333",
-    color: "#666666",
-    backgroundColor: "#ffffff"
+    fontText: "Roboto"
   },
   {
     name: "Tucson",
     fontDisplay: "Outfit",
-    fontText: "Outfit",
-    accentColor: "#333333",
-    color: "#666666",
-    backgroundColor: "#ffffff"
+    fontText: "Outfit"
+  }
+]
+
+export const colorThemes = [
+  {
+    name: "Default",
+    surfaceColor: "#ffffff",
+    brandColor: "#131313",
+    accentColor: "#424242",
+    textColor: "#131313",
+    mutedColor: "#636363"
+  },
+  {
+    name: "Terra",
+    surfaceColor: "##fff8f6",
+    brandColor: "#231917",
+    accentColor: "#8f4c38",
+    textColor: "#231917",
+    mutedColor: "#6f5600"
+  },
+  {
+    name: "Flora",
+    surfaceColor: "#f9faef",
+    brandColor: "#1a1c16",
+    accentColor: "#4c662b",
+    textColor: "#1a1c16",
+    mutedColor: "#006c65"
+  },
+  {
+    name: "Azure",
+    surfaceColor: "#f9f9ff",
+    brandColor: "#191c20",
+    accentColor: "#415f91",
+    textColor: "#191c20",
+    mutedColor: "#6a327a"
+  },
+  {
+    name: "Helios",
+    surfaceColor: "#fff9ee",
+    brandColor: "#1e1b13",
+    accentColor: "#6d5e0f",
+    textColor: "#1e1b13",
+    mutedColor: "#365944"
   }
 ]

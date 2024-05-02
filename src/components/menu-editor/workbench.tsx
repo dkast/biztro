@@ -74,7 +74,7 @@ export default function Workbench({
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={70}>
-            <div className="relative h-full w-full overflow-y-auto bg-gray-50">
+            <div className="no-scrollbar relative h-full w-full overflow-y-auto bg-gray-50">
               <SyncStatus menu={menu} categories={categories} />
               <div
                 className={cn(
@@ -102,7 +102,7 @@ export default function Workbench({
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel
-            defaultSize={20}
+            defaultSize={15}
             minSize={15}
             maxSize={25}
             className="flex"

@@ -23,6 +23,7 @@ export type CategoryBlockProps = {
   priceFontWeight?: string
   priceFontFamily?: string
   descriptionFontFamily?: string
+  descriptionColor?: RgbaColor
   showImage?: boolean
 }
 
@@ -42,6 +43,7 @@ export default function CategoryBlock({
   priceFontWeight,
   priceFontFamily,
   descriptionFontFamily,
+  descriptionColor,
   showImage
 }: CategoryBlockProps) {
   const {
@@ -105,7 +107,8 @@ export default function CategoryBlock({
                     <span
                       className="line-clamp-3 text-sm"
                       style={{
-                        fontFamily: descriptionFontFamily
+                        fontFamily: descriptionFontFamily,
+                        color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
                       }}
                     >
                       {item.description}
@@ -171,6 +174,7 @@ CategoryBlock.craft = {
     priceFontWeight: "500",
     priceFontFamily: "Inter",
     descriptionFontFamily: "Inter",
+    descriptionColor: { r: 38, g: 50, b: 56, a: 1 },
     showImage: true
   },
   related: {
