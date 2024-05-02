@@ -4,6 +4,7 @@ import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Organization, Prisma } from "@prisma/client"
 import { useAtom } from "jotai"
+import { Palette, Settings2 } from "lucide-react"
 import lz from "lzutf8"
 
 import Header from "@/components/dashboard/header"
@@ -109,8 +110,20 @@ export default function Workbench({
           >
             <Tabs defaultValue="theme" className="flex grow flex-col">
               <TabsList className="m-2 grid grid-cols-2">
-                <TabsTrigger value="theme">Tema</TabsTrigger>
-                <TabsTrigger value="settings">Ajustes</TabsTrigger>
+                <TabsTrigger
+                  value="theme"
+                  className="flex flex-row items-center gap-1"
+                >
+                  <Palette className="hidden size-3.5 lg:block" />
+                  <span>Tema</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="settings"
+                  className="flex flex-row items-center gap-1"
+                >
+                  <Settings2 className="hidden size-3.5 lg:block" />
+                  <span>Ajustes</span>
+                </TabsTrigger>
               </TabsList>
               <TabsContent value="theme" className="grow">
                 <ThemeSelector />

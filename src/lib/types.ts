@@ -304,12 +304,28 @@ export const colorThemes = [
     mutedColor: "#6f5600"
   },
   {
+    name: "Terra - Dark",
+    surfaceColor: "#271d1b",
+    brandColor: "#f1dfda",
+    accentColor: "#ffb5a0",
+    textColor: "#f1dfda",
+    mutedColor: "#f5e1a7"
+  },
+  {
     name: "Flora",
     surfaceColor: "#f9faef",
     brandColor: "#1a1c16",
     accentColor: "#4c662b",
     textColor: "#1a1c16",
     mutedColor: "#006c65"
+  },
+  {
+    name: "Flora - Dark",
+    surfaceColor: "#1e201a",
+    brandColor: "#e2e3d8",
+    accentColor: "#b1d18a",
+    textColor: "#e2e3d8",
+    mutedColor: "#bcece7"
   },
   {
     name: "Azure",
@@ -320,11 +336,27 @@ export const colorThemes = [
     mutedColor: "#6a327a"
   },
   {
+    name: "Azure - Dark",
+    surfaceColor: "#1d2024",
+    brandColor: "#dedee4",
+    accentColor: "#aac7ff",
+    textColor: "#dedee4",
+    mutedColor: "#fad8fd"
+  },
+  {
     name: "Helios",
     surfaceColor: "#fff9ee",
     brandColor: "#1e1b13",
     accentColor: "#6d5e0f",
     textColor: "#1e1b13",
     mutedColor: "#365944"
+  },
+  {
+    name: "Helios - Dark",
+    surfaceColor: "#222017",
+    brandColor: "#e8e2d4",
+    accentColor: "#dbc66e",
+    textColor: "#e8e2d4",
+    mutedColor: "#bce3c6"
   }
 ]
