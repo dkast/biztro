@@ -278,7 +278,7 @@ export default function ThemeSelector({
                 <ChevronsUpDown className="size-4 text-gray-500" />
               </button>
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent className="max-w-[200px]">
               <Label className="mb-4 block">Colores</Label>
               <div className="relative h-[300px]">
                 <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
@@ -297,7 +297,7 @@ export default function ThemeSelector({
                             value={theme.name}
                             className="sr-only"
                           />
-                          <div className="w-full space-y-1 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500">
+                          <div className="flex w-full flex-row justify-center space-y-1 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500">
                             {/* <span className="text-sm font-medium">
                               {theme.name}
                             </span> */}
