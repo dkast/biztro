@@ -151,7 +151,10 @@ export default function ThemeSelector({
 
   useEffect(() => {
     if (menu) {
-      if (menu?.fontTheme !== fontThemeId) {
+      if (
+        menu?.fontTheme !== fontThemeId ||
+        menu?.colorTheme !== colorThemeId
+      ) {
         setUnsavedChanges({
           message:
             "Tienes cambios sin guardar ¿Estás seguro de salir del Editor?",
@@ -159,19 +162,6 @@ export default function ThemeSelector({
           proceedLinkLabel: "Descartar cambios",
           proceedAction: () => {
             setFontThemeId(menu.fontTheme)
-          }
-        })
-      } else {
-        clearUnsavedChanges()
-      }
-
-      if (menu?.colorTheme !== colorThemeId) {
-        setUnsavedChanges({
-          message:
-            "Tienes cambios sin guardar ¿Estás seguro de salir del Editor?",
-          dismissButtonLabel: "Cancelar",
-          proceedLinkLabel: "Descartar cambios",
-          proceedAction: () => {
             setColorThemeId(menu.colorTheme)
           }
         })
@@ -179,7 +169,15 @@ export default function ThemeSelector({
         clearUnsavedChanges()
       }
     }
-  }, [menu, fontThemeId, colorThemeId, setUnsavedChanges, clearUnsavedChanges])
+  }, [
+    menu,
+    fontThemeId,
+    colorThemeId,
+    setUnsavedChanges,
+    setFontThemeId,
+    setColorThemeId,
+    clearUnsavedChanges
+  ])
 
   return (
     <div className="flex flex-col gap-4 p-3">
