@@ -230,57 +230,57 @@ export const enum MenuStatus {
 
 export const fontThemes = [
   {
-    name: "Default",
+    name: "DEFAULT",
     fontDisplay: "Inter",
     fontText: "Inter"
   },
   {
-    name: "Monaco",
+    name: "MONACO",
     fontDisplay: "DM Serif Display",
     fontText: "DM Sans"
   },
   {
-    name: "Alamo",
+    name: "ALAMO",
     fontDisplay: "Ultra",
     fontText: "PT Serif"
   },
   {
-    name: "Berlin",
+    name: "BERLIN",
     fontDisplay: "Work Sans",
     fontText: "Merriweather"
   },
   {
-    name: "Amsterdam",
+    name: "AMSTERDAM",
     fontDisplay: "Playfair Display",
     fontText: "Lato"
   },
   {
-    name: "Gaza",
+    name: "GAZA",
     fontDisplay: "Yeseva One",
     fontText: "Josefin Sans"
   },
   {
-    name: "Oslo",
+    name: "OSLO",
     fontDisplay: "Syne",
     fontText: "Inter"
   },
   {
-    name: "Roma",
+    name: "ROMA",
     fontDisplay: "Cinzel",
     fontText: "Fauna One"
   },
   {
-    name: "Paris",
+    name: "PARIS",
     fontDisplay: "Poiret One",
     fontText: "Montserrat"
   },
   {
-    name: "Kiev",
+    name: "KIEV",
     fontDisplay: "Anton",
     fontText: "Roboto"
   },
   {
-    name: "Tucson",
+    name: "TUCSON",
     fontDisplay: "Outfit",
     fontText: "Outfit"
   }
@@ -288,7 +288,7 @@ export const fontThemes = [
 
 export const colorThemes = [
   {
-    name: "Default",
+    name: "DEFAULT",
     surfaceColor: "#ffffff",
     brandColor: "#131313",
     accentColor: "#424242",
@@ -296,7 +296,7 @@ export const colorThemes = [
     mutedColor: "#636363"
   },
   {
-    name: "Terra",
+    name: "TERRA",
     surfaceColor: "##fff8f6",
     brandColor: "#231917",
     accentColor: "#8f4c38",
@@ -304,7 +304,7 @@ export const colorThemes = [
     mutedColor: "#6f5600"
   },
   {
-    name: "Terra - Dark",
+    name: "TERRA_DARK",
     surfaceColor: "#271d1b",
     brandColor: "#f1dfda",
     accentColor: "#ffb5a0",
@@ -312,7 +312,7 @@ export const colorThemes = [
     mutedColor: "#f5e1a7"
   },
   {
-    name: "Flora",
+    name: "FLORA",
     surfaceColor: "#f9faef",
     brandColor: "#1a1c16",
     accentColor: "#4c662b",
@@ -320,7 +320,7 @@ export const colorThemes = [
     mutedColor: "#006c65"
   },
   {
-    name: "Flora - Dark",
+    name: "FLORA_DARK",
     surfaceColor: "#1e201a",
     brandColor: "#e2e3d8",
     accentColor: "#b1d18a",
@@ -328,7 +328,7 @@ export const colorThemes = [
     mutedColor: "#bcece7"
   },
   {
-    name: "Azure",
+    name: "AZURE",
     surfaceColor: "#f9f9ff",
     brandColor: "#191c20",
     accentColor: "#415f91",
@@ -336,7 +336,7 @@ export const colorThemes = [
     mutedColor: "#6a327a"
   },
   {
-    name: "Azure - Dark",
+    name: "AZURE_DARK",
     surfaceColor: "#1d2024",
     brandColor: "#dedee4",
     accentColor: "#aac7ff",
@@ -344,7 +344,7 @@ export const colorThemes = [
     mutedColor: "#fad8fd"
   },
   {
-    name: "Helios",
+    name: "HELIOS",
     surfaceColor: "#fff9ee",
     brandColor: "#1e1b13",
     accentColor: "#6d5e0f",
@@ -352,7 +352,7 @@ export const colorThemes = [
     mutedColor: "#365944"
   },
   {
-    name: "Helios - Dark",
+    name: "HELIOS_DARK",
     surfaceColor: "#222017",
     brandColor: "#e8e2d4",
     accentColor: "#dbc66e",

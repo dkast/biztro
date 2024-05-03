@@ -4,6 +4,7 @@ import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Organization, Prisma } from "@prisma/client"
 import { useAtom } from "jotai"
+import { useHydrateAtoms } from "jotai/utils"
 import { Palette, Settings2 } from "lucide-react"
 import lz from "lzutf8"
 
@@ -28,7 +29,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
-import { frameSizeAtom } from "@/lib/atoms"
+import { colorThemeAtom, fontThemeAtom, frameSizeAtom } from "@/lib/atoms"
 import { FrameSize } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
@@ -41,7 +42,10 @@ export default function Workbench({
   organization: Organization
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
+  // Initialize the atoms for the editor
   const [frameSize] = useAtom(frameSizeAtom)
+  useHydrateAtoms([[fontThemeAtom, menu?.fontTheme ?? "DEFAULT"]])
+  useHydrateAtoms([[colorThemeAtom, menu?.colorTheme ?? "DEFAULT"]])
 
   if (!menu || !categories) return null
 
@@ -126,7 +130,7 @@ export default function Workbench({
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="theme" className="grow">
-                <ThemeSelector />
+                <ThemeSelector menu={menu} />
               </TabsContent>
               <TabsContent value="settings">
                 <SettingsPanel />

@@ -105,13 +105,21 @@ export const updateMenuStatus = action(
     id: z.string(),
     subdomain: z.string(),
     status: z.enum(["PUBLISHED", "DRAFT"]),
+    fontTheme: z.string(),
+    colorTheme: z.string(),
     serialData: z.string()
   }),
-  async ({ id, subdomain, status, serialData }) => {
+  async ({ id, subdomain, status, fontTheme, colorTheme, serialData }) => {
     try {
       const menu = await prisma.menu.update({
         where: { id },
-        data: { status, serialData, publishedData: serialData }
+        data: {
+          status,
+          fontTheme,
+          colorTheme,
+          serialData,
+          publishedData: serialData
+        }
       })
 
       revalidateTag(`menu-${id}`)
@@ -141,13 +149,15 @@ export const updateMenuStatus = action(
 export const updateMenuSerialData = action(
   z.object({
     id: z.string(),
+    fontTheme: z.string(),
+    colorTheme: z.string(),
     serialData: z.string()
   }),
-  async ({ id, serialData }) => {
+  async ({ id, fontTheme, colorTheme, serialData }) => {
     try {
       const menu = await prisma.menu.update({
         where: { id },
-        data: { serialData }
+        data: { fontTheme, colorTheme, serialData }
       })
 
       revalidateTag(`menu-${id}`)

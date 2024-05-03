@@ -8,6 +8,7 @@ import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { rgbaToHex, rgbaToHsva, Sketch, type RgbaColor } from "@uiw/react-color"
+import { useAtomValue } from "jotai"
 import {
   Download,
   ExternalLink,
@@ -42,6 +43,7 @@ import {
   updateMenuStatus
 } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
+import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import exportAsImage from "@/lib/export-as-image"
 import { MenuStatus } from "@/lib/types"
 import { getBaseUrl } from "@/lib/utils"
@@ -53,6 +55,8 @@ export default function MenuPublish({
 }) {
   const { query, actions } = useEditor()
   const queryClient = useQueryClient()
+  const fontTheme = useAtomValue(fontThemeAtom)
+  const colorTheme = useAtomValue(colorThemeAtom)
 
   const { execute, status, reset } = useAction(updateMenuStatus, {
     onSuccess: data => {
@@ -107,6 +111,8 @@ export default function MenuPublish({
       id: menu?.id,
       subdomain: menu.organization.subdomain,
       status,
+      fontTheme,
+      colorTheme,
       serialData
     })
   }
@@ -116,6 +122,8 @@ export default function MenuPublish({
     const serialData = lz.encodeBase64(lz.compress(json))
     updateSerialData({
       id: menu?.id,
+      fontTheme,
+      colorTheme,
       serialData
     })
   }
