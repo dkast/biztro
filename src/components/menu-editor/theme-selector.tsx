@@ -86,6 +86,12 @@ export default function ThemeSelector({
                 fontFamily: selectedTheme.fontText
               }))
             })
+          case "HeadingElement":
+            setIgnoreProp(key, props => {
+              return (props = Object.assign(props, {
+                fontFamily: selectedTheme.fontDisplay
+              }))
+            })
             break
           default:
             break
@@ -136,6 +142,13 @@ export default function ThemeSelector({
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {
                 color: hexToRgba(selectedTheme.textColor)
+              }))
+            })
+            break
+          case "HeadingElement":
+            setIgnoreProp(key, props => {
+              return (props = Object.assign(props, {
+                color: hexToRgba(selectedTheme.accentColor)
               }))
             })
             break

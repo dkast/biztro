@@ -12,6 +12,7 @@ import Header from "@/components/dashboard/header"
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
+import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import FloatingBar from "@/components/menu-editor/floating-bar"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
@@ -56,7 +57,13 @@ export default function Workbench({
   return (
     <div className="absolute inset-0">
       <Editor
-        resolver={{ ContainerBlock, HeaderBlock, TextElement, CategoryBlock }}
+        resolver={{
+          ContainerBlock,
+          HeaderBlock,
+          HeadingElement,
+          TextElement,
+          CategoryBlock
+        }}
         onRender={RenderNode}
       >
         <Header>
@@ -116,14 +123,14 @@ export default function Workbench({
               <TabsList className="m-2 grid grid-cols-2">
                 <TabsTrigger
                   value="theme"
-                  className="flex flex-row items-center gap-1"
+                  className="flex flex-row items-center gap-1 rounded"
                 >
                   <Palette className="hidden size-3.5 lg:block" />
                   <span>Tema</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="settings"
-                  className="flex flex-row items-center gap-1"
+                  className="flex flex-row items-center gap-1 rounded"
                 >
                   <Settings2 className="hidden size-3.5 lg:block" />
                   <span>Ajustes</span>

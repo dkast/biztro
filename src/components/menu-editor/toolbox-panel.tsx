@@ -1,12 +1,19 @@
+"use client"
+
 import { useEditor } from "@craftjs/core"
 import type { Organization, Prisma } from "@prisma/client"
-import { Layers, PanelTop, Type, type LucideIcon } from "lucide-react"
+import { hexToRgba } from "@uiw/react-color"
+import { useAtomValue } from "jotai"
+import { Layers, PanelTop, Text, Type, type LucideIcon } from "lucide-react"
 
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
+import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import SideSection from "@/components/menu-editor/side-section"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
+import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
+import { colorThemes, fontThemes } from "@/lib/types"
 
 export default function ToolboxPanel({
   organization,
@@ -16,6 +23,16 @@ export default function ToolboxPanel({
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
   const { connectors } = useEditor()
+  const fontThemeId = useAtomValue(fontThemeAtom)
+  const colorThemeId = useAtomValue(colorThemeAtom)
+
+  const selectedFontTheme = fontThemes.find(theme => theme.name === fontThemeId)
+  const selectedColorTheme = colorThemes.find(
+    theme => theme.name === colorThemeId
+  )
+
+  if (!selectedFontTheme || !selectedColorTheme) return null
+
   return (
     <>
       <SideSection title="Categorías">
@@ -24,7 +41,20 @@ export default function ToolboxPanel({
             key={category.id}
             ref={ref => {
               if (ref) {
-                connectors.create(ref, <CategoryBlock data={category} />)
+                connectors.create(
+                  ref,
+                  <CategoryBlock
+                    data={category}
+                    categoryFontFamily={selectedFontTheme.fontDisplay}
+                    itemFontFamily={selectedFontTheme.fontDisplay}
+                    priceFontFamily={selectedFontTheme.fontText}
+                    descriptionFontFamily={selectedFontTheme.fontText}
+                    categoryColor={hexToRgba(selectedColorTheme.accentColor)}
+                    itemColor={hexToRgba(selectedColorTheme.textColor)}
+                    priceColor={hexToRgba(selectedColorTheme.brandColor)}
+                    descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
+                  />
+                )
               }
             }}
           >
@@ -38,21 +68,48 @@ export default function ToolboxPanel({
             if (ref) {
               connectors.create(
                 ref,
-                <HeaderBlock organization={organization} />
+                <HeaderBlock
+                  organization={organization}
+                  accentColor={hexToRgba(selectedColorTheme.brandColor)}
+                  fontFamily={selectedFontTheme.fontDisplay}
+                />
               )
             }
           }}
         >
-          <ToolboxElement title="Encabezado" Icon={PanelTop} />
+          <ToolboxElement title="Cabecera" Icon={PanelTop} />
         </div>
         <div
           ref={ref => {
             if (ref) {
-              connectors.create(ref, <TextElement text="Texto" />)
+              connectors.create(
+                ref,
+                <HeadingElement
+                  text="Encabezado"
+                  color={hexToRgba(selectedColorTheme.accentColor)}
+                  fontFamily={selectedFontTheme.fontDisplay}
+                />
+              )
             }
           }}
         >
-          <ToolboxElement title="Texto" Icon={Type} />
+          <ToolboxElement title="Encabezado" Icon={Type} />
+        </div>
+        <div
+          ref={ref => {
+            if (ref) {
+              connectors.create(
+                ref,
+                <TextElement
+                  text="Texto"
+                  color={hexToRgba(selectedColorTheme.textColor)}
+                  fontFamily={selectedFontTheme.fontText}
+                />
+              )
+            }
+          }}
+        >
+          <ToolboxElement title="Texto" Icon={Text} />
         </div>
       </SideSection>
     </>

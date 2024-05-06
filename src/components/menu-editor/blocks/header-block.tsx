@@ -85,7 +85,7 @@ export default function HeaderBlock({
 }
 
 HeaderBlock.craft = {
-  displayName: "Encabezado",
+  displayName: "Cabecera",
   props: {
     accentColor: { r: 38, g: 50, b: 56, a: 1 },
     showBanner: true,
