@@ -1,7 +1,7 @@
 "use client"
 
 import { useEditor } from "@craftjs/core"
-import type { Organization, Prisma } from "@prisma/client"
+import type { Location, Organization, Prisma } from "@prisma/client"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtomValue } from "jotai"
 import { Layers, PanelTop, Text, Type, type LucideIcon } from "lucide-react"
@@ -17,9 +17,11 @@ import { colorThemes, fontThemes } from "@/lib/types"
 
 export default function ToolboxPanel({
   organization,
+  location,
   categories
 }: {
   organization: Organization
+  location: Location | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
   const { connectors } = useEditor()
@@ -70,6 +72,7 @@ export default function ToolboxPanel({
                 ref,
                 <HeaderBlock
                   organization={organization}
+                  location={location ?? undefined}
                   accentColor={hexToRgba(selectedColorTheme.brandColor)}
                   fontFamily={selectedFontTheme.fontDisplay}
                 />

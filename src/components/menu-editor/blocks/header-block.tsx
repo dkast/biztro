@@ -1,5 +1,5 @@
 import { useNode } from "@craftjs/core"
-import type { Organization } from "@prisma/client"
+import type { Location, Organization } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
 import Image from "next/image"
 
@@ -10,6 +10,7 @@ import { cn, getInitials } from "@/lib/utils"
 
 export type HeaderBlockProps = {
   organization: Organization
+  location?: Location
   fontFamily?: string
   accentColor?: RgbaColor
   showBanner?: boolean
@@ -18,6 +19,7 @@ export type HeaderBlockProps = {
 
 export default function HeaderBlock({
   organization,
+  location,
   fontFamily,
   accentColor,
   showBanner,
@@ -33,6 +35,7 @@ export default function HeaderBlock({
           connect(ref)
         }
       }}
+      className="relative"
     >
       <div className="relative flex flex-col">
         {organization?.banner && showBanner ? (
@@ -79,6 +82,81 @@ export default function HeaderBlock({
             {organization?.name}
           </h1>
         </FontWrapper>
+      </div>
+      <div className="absolute right-0 top-0 rounded-bl bg-white opacity-75">
+        <div className="flex flex-row items-center gap-3 p-2">
+          {/* Show location social media */}
+          {location?.facebook && (
+            <a
+              href={`https://facebook.com/${location.facebook}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                alt="Facebook"
+                height={24}
+                width={24}
+                src="/facebook-mono.svg"
+              />
+            </a>
+          )}
+          {location?.instagram && (
+            <a
+              href={`https://instagram.com/${location.instagram}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                alt="Instagram"
+                height={24}
+                width={24}
+                src="/instagram-mono.svg"
+              />
+            </a>
+          )}
+          {location?.twitter && (
+            <a
+              href={`https://twitter.com/${location.twitter}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                alt="Twitter"
+                height={24}
+                width={24}
+                src="/twitter-mono.svg"
+              />
+            </a>
+          )}
+          {location?.tiktok && (
+            <a
+              href={`https://tiktok.com/${location.tiktok}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                alt="Youtube"
+                height={24}
+                width={24}
+                src="/tiktok-mono.svg"
+              />
+            </a>
+          )}
+          {location?.whatsapp && (
+            <a
+              href={`https://wa.me/${location.whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                alt="Youtube"
+                height={24}
+                width={24}
+                src="/whatsapp-mono.svg"
+              />
+            </a>
+          )}
+        </div>
       </div>
     </div>
   )

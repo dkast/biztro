@@ -2,7 +2,7 @@
 
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
-import type { Organization, Prisma } from "@prisma/client"
+import type { Location, Organization, Prisma } from "@prisma/client"
 import { useAtom } from "jotai"
 import { useHydrateAtoms } from "jotai/utils"
 import { Palette, Settings2 } from "lucide-react"
@@ -37,10 +37,12 @@ import { cn } from "@/lib/utils"
 export default function Workbench({
   menu,
   organization,
+  location,
   categories
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
   organization: Organization
+  location: Location | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
   // Initialize the atoms for the editor
@@ -75,6 +77,7 @@ export default function Workbench({
               <ResizablePanel defaultSize={60}>
                 <ToolboxPanel
                   organization={organization}
+                  location={location}
                   categories={categories}
                 />
               </ResizablePanel>

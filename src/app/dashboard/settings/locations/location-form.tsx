@@ -164,6 +164,9 @@ export default function LocationForm({
                     placeholder="Teléfono"
                   />
                 </FormControl>
+                <FormDescription>
+                  Número de teléfono de la sucursal sin espacios ni guiones
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
