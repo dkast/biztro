@@ -240,9 +240,9 @@ export const fontThemes = [
     fontText: "DM Sans"
   },
   {
-    name: "ALAMO",
-    fontDisplay: "Ultra",
-    fontText: "PT Serif"
+    name: "PORTLAND",
+    fontDisplay: "Quicksand",
+    fontText: "Quicksand"
   },
   {
     name: "BERLIN",
@@ -261,8 +261,8 @@ export const fontThemes = [
   },
   {
     name: "OSLO",
-    fontDisplay: "Syne",
-    fontText: "Inter"
+    fontDisplay: "Raleway",
+    fontText: "Libre Baskerville"
   },
   {
     name: "ROMA",
@@ -276,13 +276,78 @@ export const fontThemes = [
   },
   {
     name: "KIEV",
-    fontDisplay: "Anton",
-    fontText: "Roboto"
+    fontDisplay: "Montserrat",
+    fontText: "Open Sans"
   },
   {
     name: "TUCSON",
     fontDisplay: "Outfit",
     fontText: "Outfit"
+  },
+  {
+    name: "CHICAGO",
+    fontDisplay: "Oswald",
+    fontText: "Merriweather"
+  },
+  {
+    name: "ORLANDO",
+    fontDisplay: "Bubblegum Sans",
+    fontText: "Open Sans"
+  },
+  {
+    name: "MADRID",
+    fontDisplay: "Bungee",
+    fontText: "Outfit"
+  },
+  {
+    name: "FLORENCIA",
+    fontDisplay: "Caveat",
+    fontText: "Montserrat"
+  },
+  {
+    name: "LISBOA",
+    fontDisplay: "Pacifico",
+    fontText: "QuickSand"
+  },
+  {
+    name: "MILAN",
+    fontDisplay: "Orelega One",
+    fontText: "Merriweather"
+  },
+  {
+    name: "ALAMO",
+    fontDisplay: "Rye",
+    fontText: "Lora"
+  },
+  {
+    name: "SACRAMENTO",
+    fontDisplay: "Sacramento",
+    fontText: "Playfair Display"
+  },
+  {
+    name: "MICHIGAN",
+    fontDisplay: "Arvo",
+    fontText: "Montserrat"
+  },
+  {
+    name: "GOTHAM",
+    fontDisplay: "Satisfy",
+    fontText: "Open Sans"
+  },
+  {
+    name: "AUSTIN",
+    fontDisplay: "Unica One",
+    fontText: "Crimson Text"
+  },
+  {
+    name: "SEATTLE",
+    fontDisplay: "Mulish",
+    fontText: "Space Mono"
+  },
+  {
+    name: "OAKLAND",
+    fontDisplay: "Teko",
+    fontText: "Montserrat"
   }
 ]
 

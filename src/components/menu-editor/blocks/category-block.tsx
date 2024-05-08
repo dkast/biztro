@@ -172,7 +172,7 @@ CategoryBlock.craft = {
     categoryTextAlign: "left",
     itemFontSize: 16,
     itemColor: { r: 38, g: 50, b: 56, a: 1 },
-    itemFontWeight: "500",
+    itemFontWeight: "600",
     itemFontFamily: "Inter",
     priceFontSize: 14,
     priceColor: { r: 38, g: 50, b: 56, a: 1 },
