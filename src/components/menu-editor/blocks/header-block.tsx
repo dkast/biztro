@@ -1,6 +1,7 @@
 import { useNode } from "@craftjs/core"
 import type { Location, Organization } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
+import { Phone } from "lucide-react"
 import Image from "next/image"
 
 import HeaderSettings from "@/components/menu-editor/blocks/header-settings"
@@ -12,6 +13,7 @@ export type HeaderBlockProps = {
   organization: Organization
   location?: Location
   fontFamily?: string
+  color?: RgbaColor
   accentColor?: RgbaColor
   showBanner?: boolean
   showLogo?: boolean
@@ -21,6 +23,7 @@ export default function HeaderBlock({
   organization,
   location,
   fontFamily,
+  color,
   accentColor,
   showBanner,
   showLogo
@@ -39,7 +42,7 @@ export default function HeaderBlock({
     >
       <div className="relative flex flex-col">
         {organization?.banner && showBanner ? (
-          <div className="h-40">
+          <div className="h-32">
             <Image
               alt="Banner"
               className="object-cover"
@@ -50,40 +53,63 @@ export default function HeaderBlock({
           </div>
         ) : null}
       </div>
-      <div
-        className={cn(
-          "flex flex-row p-4",
-          organization.banner && showBanner
-            ? "-mt-12 items-end"
-            : "my-2 items-center"
-        )}
-      >
-        {showLogo ? (
-          <Avatar className="h-16 w-16 rounded-xl">
-            {organization.logo && (
-              <AvatarImage src={organization.logo} className="rounded-xl" />
-            )}
-            <AvatarFallback className="text-xl">
-              {getInitials(organization.name)}
-            </AvatarFallback>
-          </Avatar>
-        ) : null}
-        <FontWrapper fontFamily={fontFamily}>
-          <h1
-            className={cn(
-              "z-10 text-xl font-semibold",
-              showLogo && "ml-4",
-              organization.banner && showBanner && "mt-12"
-            )}
-            style={{
-              color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-            }}
-          >
-            {organization?.name}
-          </h1>
-        </FontWrapper>
+      <div className="p-4">
+        <div
+          className={cn(
+            "flex flex-row",
+            organization.banner && showBanner
+              ? "-mt-12 items-end"
+              : "my-2 items-center"
+          )}
+        >
+          {showLogo ? (
+            <Avatar className="h-16 w-16 rounded-xl">
+              {organization.logo && (
+                <AvatarImage src={organization.logo} className="rounded-xl" />
+              )}
+              <AvatarFallback className="text-xl">
+                {getInitials(organization.name)}
+              </AvatarFallback>
+            </Avatar>
+          ) : null}
+          <FontWrapper fontFamily={fontFamily}>
+            <h1
+              className={cn(
+                "z-10 text-xl font-semibold",
+                showLogo && "ml-4",
+                organization.banner && showBanner && "mt-10"
+              )}
+              style={{
+                color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+              }}
+            >
+              {organization?.name}
+            </h1>
+          </FontWrapper>
+        </div>
+        <div
+          className={cn(
+            "flex flex-col gap-1 text-xs opacity-75",
+            showLogo ? "ml-20" : "pt-3",
+            organization.banner && showBanner ? "" : "-mt-5"
+          )}
+          style={{
+            color: `rgb(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })})`
+          }}
+        >
+          <span>{location?.address}</span>
+          <div className="flex flex-row items-center gap-1">
+            <Phone className="inline-block size-2.5" />
+            <span>
+              Tel:&nbsp;
+              <a href={`tel:${location?.phone}`} className="underline">
+                {location?.phone}
+              </a>
+            </span>
+          </div>
+        </div>
       </div>
-      <div className="absolute right-0 top-0 rounded-bl bg-white opacity-75">
+      <div className="absolute right-0 top-0 rounded-bl opacity-75 has-[a]:bg-white">
         <div className="flex flex-row items-center gap-3 p-2">
           {/* Show location social media */}
           {location?.facebook && (
@@ -165,6 +191,7 @@ export default function HeaderBlock({
 HeaderBlock.craft = {
   displayName: "Cabecera",
   props: {
+    color: { r: 38, g: 50, b: 56, a: 1 },
     accentColor: { r: 38, g: 50, b: 56, a: 1 },
     showBanner: true,
     showLogo: true

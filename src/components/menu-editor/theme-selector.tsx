@@ -124,6 +124,7 @@ export default function ThemeSelector({
           case "HeaderBlock":
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {
+                color: hexToRgba(selectedTheme.textColor),
                 accentColor: hexToRgba(selectedTheme.brandColor)
               }))
             })
