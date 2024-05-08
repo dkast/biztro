@@ -63,7 +63,7 @@ export default function HeaderBlock({
           )}
         >
           {showLogo ? (
-            <Avatar className="h-16 w-16 rounded-xl">
+            <Avatar className="h-16 w-16 rounded-xl shadow">
               {organization.logo && (
                 <AvatarImage src={organization.logo} className="rounded-xl" />
               )}
@@ -98,15 +98,17 @@ export default function HeaderBlock({
           }}
         >
           <span>{location?.address}</span>
-          <div className="flex flex-row items-center gap-1">
-            <Phone className="inline-block size-2.5" />
-            <span>
-              Tel:&nbsp;
-              <a href={`tel:${location?.phone}`} className="underline">
-                {location?.phone}
-              </a>
-            </span>
-          </div>
+          {location?.phone && (
+            <div className="flex flex-row items-center gap-1">
+              <Phone className="inline-block size-2.5" />
+              <span>
+                Tel:&nbsp;
+                <a href={`tel:${location?.phone}`} className="underline">
+                  {location?.phone}
+                </a>
+              </span>
+            </div>
+          )}
         </div>
       </div>
       <div className="absolute right-0 top-0 rounded-bl opacity-75 has-[a]:bg-white">

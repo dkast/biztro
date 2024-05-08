@@ -116,6 +116,9 @@ export async function getCategoriesWithItems() {
               price: "asc"
             }
           }
+        },
+        orderBy: {
+          name: "asc"
         }
       }
     }

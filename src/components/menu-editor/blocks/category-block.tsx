@@ -56,7 +56,7 @@ export default function CategoryBlock({
           connect(ref)
         }
       }}
-      className="px-4"
+      className="px-4 pb-4"
     >
       <h2
         style={{
@@ -77,7 +77,7 @@ export default function CategoryBlock({
             <div key={item.id}>
               <div
                 className={cn(
-                  "flex flex-row justify-between",
+                  "flex flex-row justify-between gap-2",
                   hasVariants ? "items-start" : "items-center"
                 )}
               >
@@ -131,7 +131,9 @@ export default function CategoryBlock({
                             fontWeight: priceFontWeight
                           }}
                         >
-                          {variant.price}
+                          {variant.price % 1 === 0
+                            ? variant.price
+                            : variant.price.toFixed(2)}
                         </span>
                       </div>
                     ))}
@@ -145,7 +147,10 @@ export default function CategoryBlock({
                       fontWeight: priceFontWeight
                     }}
                   >
-                    {item.variants[0]?.price}
+                    {/* If it has decimal values, show them in the price as well with 2 decimal places */}
+                    {(item.variants[0]?.price ?? 0) % 1 === 0
+                      ? item.variants[0]?.price
+                      : item.variants[0]?.price.toFixed(2)}
                   </span>
                 )}
               </div>

@@ -133,6 +133,7 @@ export default function SyncStatus({
       let equalMenu = true
       if (organization) {
         const diff = difference(organization, menu.organization)
+        console.log(diff)
         Object.getOwnPropertyNames(diff).forEach(propName => {
           if (
             propName === "banner" ||
@@ -142,6 +143,14 @@ export default function SyncStatus({
             equalMenu = false
           }
         })
+      }
+
+      if (defaultLocation && !location) {
+        equalMenu = false
+      }
+
+      if (!defaultLocation && location) {
+        equalMenu = false
       }
 
       if (defaultLocation && location) {
