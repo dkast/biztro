@@ -5,13 +5,13 @@ import ContainerSettings from "@/components/menu-editor/blocks/container-setting
 
 export type ContainerBlockProps = {
   backgroundColor?: RgbaColor
-  color?: RgbaColor
+  backgroundImage?: string
   children?: React.ReactNode
 }
 
 export default function ContainerBlock({
   backgroundColor,
-  color,
+  backgroundImage,
   children
 }: ContainerBlockProps) {
   const {
@@ -28,7 +28,8 @@ export default function ContainerBlock({
       }}
       style={{
         backgroundColor: `rgb(${Object.values(backgroundColor ?? { r: 255, g: 255, b: 255, a: 1 })})`,
-        color: `rgb(${Object.values(color ?? { r: 128, g: 128, b: 128, a: 1 })})`
+        backgroundImage:
+          backgroundImage === "none" ? "none" : `url(/${backgroundImage}.svg)`
       }}
     >
       <main className="mx-auto flex h-full max-w-screen-md flex-col">
@@ -42,7 +43,7 @@ ContainerBlock.craft = {
   displayName: "Sitio",
   props: {
     backgroundColor: { r: 255, g: 255, b: 255, a: 1 },
-    color: { r: 100, g: 100, b: 100, a: 1 }
+    backgroundImage: "none"
   },
   related: {
     settings: ContainerSettings

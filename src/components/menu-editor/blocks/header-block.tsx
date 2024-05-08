@@ -17,6 +17,8 @@ export type HeaderBlockProps = {
   accentColor?: RgbaColor
   showBanner?: boolean
   showLogo?: boolean
+  showAddress?: boolean
+  showSocialMedia?: boolean
 }
 
 export default function HeaderBlock({
@@ -26,7 +28,9 @@ export default function HeaderBlock({
   color,
   accentColor,
   showBanner,
-  showLogo
+  showLogo,
+  showAddress,
+  showSocialMedia
 }: HeaderBlockProps) {
   const {
     connectors: { connect }
@@ -87,105 +91,109 @@ export default function HeaderBlock({
             </h1>
           </FontWrapper>
         </div>
-        <div
-          className={cn(
-            "flex flex-col gap-1 text-xs opacity-75",
-            showLogo ? "ml-20" : "pt-3",
-            organization.banner && showBanner ? "" : "-mt-5"
-          )}
-          style={{
-            color: `rgb(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })})`
-          }}
-        >
-          <span>{location?.address}</span>
-          {location?.phone && (
-            <div className="flex flex-row items-center gap-1">
-              <Phone className="inline-block size-2.5" />
-              <span>
-                Tel:&nbsp;
-                <a href={`tel:${location?.phone}`} className="underline">
-                  {location?.phone}
-                </a>
-              </span>
-            </div>
-          )}
-        </div>
+        {showAddress && (
+          <div
+            className={cn(
+              "flex flex-col gap-1 text-xs opacity-75",
+              showLogo ? "ml-20" : "pt-3",
+              organization.banner && showBanner ? "" : "-mt-5"
+            )}
+            style={{
+              color: `rgb(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })})`
+            }}
+          >
+            <span>{location?.address}</span>
+            {location?.phone && (
+              <div className="flex flex-row items-center gap-1">
+                <Phone className="inline-block size-2.5" />
+                <span>
+                  Tel:&nbsp;
+                  <a href={`tel:${location?.phone}`} className="underline">
+                    {location?.phone}
+                  </a>
+                </span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-      <div className="absolute right-0 top-0 rounded-bl opacity-75 has-[a]:bg-white">
-        <div className="flex flex-row items-center gap-3 p-2">
-          {/* Show location social media */}
-          {location?.facebook && (
-            <a
-              href={`https://facebook.com/${location.facebook}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                alt="Facebook"
-                height={24}
-                width={24}
-                src="/facebook-mono.svg"
-              />
-            </a>
-          )}
-          {location?.instagram && (
-            <a
-              href={`https://instagram.com/${location.instagram}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                alt="Instagram"
-                height={24}
-                width={24}
-                src="/instagram-mono.svg"
-              />
-            </a>
-          )}
-          {location?.twitter && (
-            <a
-              href={`https://twitter.com/${location.twitter}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                alt="Twitter"
-                height={24}
-                width={24}
-                src="/twitter-mono.svg"
-              />
-            </a>
-          )}
-          {location?.tiktok && (
-            <a
-              href={`https://tiktok.com/${location.tiktok}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                alt="Youtube"
-                height={24}
-                width={24}
-                src="/tiktok-mono.svg"
-              />
-            </a>
-          )}
-          {location?.whatsapp && (
-            <a
-              href={`https://wa.me/${location.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                alt="Youtube"
-                height={24}
-                width={24}
-                src="/whatsapp-mono.svg"
-              />
-            </a>
-          )}
+      {/* Show location social media */}
+      {showSocialMedia && (
+        <div className="absolute right-0 top-0 rounded-bl opacity-75 has-[a]:bg-white">
+          <div className="flex flex-row items-center gap-3 p-2">
+            {location?.facebook && (
+              <a
+                href={`https://facebook.com/${location.facebook}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  alt="Facebook"
+                  height={24}
+                  width={24}
+                  src="/facebook-mono.svg"
+                />
+              </a>
+            )}
+            {location?.instagram && (
+              <a
+                href={`https://instagram.com/${location.instagram}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  alt="Instagram"
+                  height={24}
+                  width={24}
+                  src="/instagram-mono.svg"
+                />
+              </a>
+            )}
+            {location?.twitter && (
+              <a
+                href={`https://twitter.com/${location.twitter}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  alt="Twitter"
+                  height={24}
+                  width={24}
+                  src="/twitter-mono.svg"
+                />
+              </a>
+            )}
+            {location?.tiktok && (
+              <a
+                href={`https://tiktok.com/${location.tiktok}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  alt="Youtube"
+                  height={24}
+                  width={24}
+                  src="/tiktok-mono.svg"
+                />
+              </a>
+            )}
+            {location?.whatsapp && (
+              <a
+                href={`https://wa.me/${location.whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  alt="Youtube"
+                  height={24}
+                  width={24}
+                  src="/whatsapp-mono.svg"
+                />
+              </a>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
@@ -196,7 +204,9 @@ HeaderBlock.craft = {
     color: { r: 38, g: 50, b: 56, a: 1 },
     accentColor: { r: 38, g: 50, b: 56, a: 1 },
     showBanner: true,
-    showLogo: true
+    showLogo: true,
+    showAddress: true,
+    showSocialMedia: true
   },
   related: {
     settings: HeaderSettings

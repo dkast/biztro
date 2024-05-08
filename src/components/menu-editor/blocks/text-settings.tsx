@@ -1,15 +1,9 @@
 import { useNode } from "@craftjs/core"
-import { rgbaToHsva, Sketch } from "@uiw/react-color"
 import { AlignCenter, AlignLeft, AlignRight } from "lucide-react"
 
 import type { TextElementProps } from "@/components/menu-editor/blocks/text-element"
 import SideSection from "@/components/menu-editor/side-section"
 import { Label } from "@/components/ui/label"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover"
 import {
   Select,
   SelectContent,
