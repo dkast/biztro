@@ -55,14 +55,6 @@ export default function ThemeSelector({
       if (value.data?.props) {
         const { setProp: setIgnoreProp } = actions.history.ignore()
         switch (value.data.name) {
-          // case "ContainerBlock":
-          //   setProp(key, props => {
-          //     return (props = Object.assign(props, {
-          //       color: hexToRgba(selectedTheme.color),
-          //       backgroundColor: hexToRgba(selectedTheme.backgroundColor)
-          //     }))
-          //   })
-          //   break
           case "HeaderBlock":
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {
@@ -86,6 +78,7 @@ export default function ThemeSelector({
                 fontFamily: selectedTheme.fontText
               }))
             })
+            break
           case "HeadingElement":
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {

@@ -18,16 +18,14 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FONT_SIZES, FONTS } from "@/lib/types"
+import { FONT_SIZES } from "@/lib/types"
 
 export default function TextSettings() {
   const {
     actions: { setProp },
     fontSize,
-    color,
     textAlign,
-    fontWeight,
-    fontFamily
+    fontWeight
   } = useNode(node => ({
     fontSize: node.data.props.fontSize,
     color: node.data.props.color,
@@ -65,32 +63,6 @@ export default function TextSettings() {
               </SelectContent>
             </Select>
           </dd>
-          {/* <dt>
-            <Label size="sm">Color</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Popover>
-              <PopoverTrigger>
-                <div
-                  className="h-5 w-12 rounded border border-black/10"
-                  style={{
-                    backgroundColor: `rgb(${Object.values(color)})`
-                  }}
-                ></div>
-              </PopoverTrigger>
-              <PopoverContent className="border-0 p-0 shadow-none">
-                <Sketch
-                  disableAlpha
-                  color={rgbaToHsva(color)}
-                  onChange={color =>
-                    setProp(
-                      (props: TextElementProps) => (props.color = color.rgba)
-                    )
-                  }
-                />
-              </PopoverContent>
-            </Popover>
-          </dd> */}
           <dt>
             <Label size="sm">Estilo</Label>
           </dt>
@@ -136,28 +108,6 @@ export default function TextSettings() {
               </TabsList>
             </Tabs>
           </dd>
-          {/* <dt>
-            <Label size="sm">Fuente</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={fontFamily}
-              onValueChange={value =>
-                setProp((props: TextElementProps) => (props.fontFamily = value))
-              }
-            >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                {FONTS.map(font => (
-                  <SelectItem key={font} value={font}>
-                    {font}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </dd> */}
         </div>
       </SideSection>
     </>

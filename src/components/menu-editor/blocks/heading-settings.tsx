@@ -1,7 +1,7 @@
 import { useNode } from "@craftjs/core"
 import { AlignCenter, AlignLeft, AlignRight } from "lucide-react"
 
-import type { TextElementProps } from "@/components/menu-editor/blocks/text-element"
+import type { HeadingElementProps } from "@/components/menu-editor/blocks/heading-element"
 import SideSection from "@/components/menu-editor/side-section"
 import { Label } from "@/components/ui/label"
 import {
@@ -14,7 +14,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FONT_SIZES } from "@/lib/types"
 
-export default function TextSettings() {
+export default function HeadingSettings() {
   const {
     actions: { setProp },
     fontSize,
@@ -40,7 +40,7 @@ export default function TextSettings() {
               value={fontSize.toString()}
               onValueChange={value =>
                 setProp(
-                  (props: TextElementProps) =>
+                  (props: HeadingElementProps) =>
                     (props.fontSize = parseInt(value))
                 )
               }
@@ -64,7 +64,9 @@ export default function TextSettings() {
             <Select
               value={fontWeight}
               onValueChange={value =>
-                setProp((props: TextElementProps) => (props.fontWeight = value))
+                setProp(
+                  (props: HeadingElementProps) => (props.fontWeight = value)
+                )
               }
             >
               <SelectTrigger className="h-7 text-xs focus:ring-transparent">
@@ -85,7 +87,9 @@ export default function TextSettings() {
             <Tabs
               value={textAlign}
               onValueChange={value =>
-                setProp((props: TextElementProps) => (props.textAlign = value))
+                setProp(
+                  (props: HeadingElementProps) => (props.textAlign = value)
+                )
               }
             >
               <TabsList className="h-8 p-0.5">
