@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
-import { hexToRgba } from "@uiw/react-color"
+import { PopoverAnchor } from "@radix-ui/react-popover"
+import { hexToHsva, hexToRgba, Sketch } from "@uiw/react-color"
 import { useAtom } from "jotai"
 import { ChevronsUpDown } from "lucide-react"
 
 import { useSetUnsavedChanges } from "@/components/dashboard/unsaved-changes-provider"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
+import SideSection from "@/components/menu-editor/side-section"
+import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import {
   Popover,
@@ -187,9 +190,8 @@ export default function ThemeSelector({
   ])
 
   return (
-    <div className="flex flex-col gap-4 p-3">
-      <div>
-        <Label className="mb-3 block">Tipografía</Label>
+    <div className="flex flex-col py-3">
+      <SideSection title="Tipografía">
         <Popover>
           <PopoverTrigger asChild>
             <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-violet-500">
@@ -206,9 +208,12 @@ export default function ThemeSelector({
               <ChevronsUpDown className="size-4 text-gray-500" />
             </button>
           </PopoverTrigger>
-          <PopoverContent>
+          <PopoverAnchor asChild>
+            <div className="-ml-44 size-4" />
+          </PopoverAnchor>
+          <PopoverContent className="-mt-20">
             <Label className="mb-4 block">Tipografías</Label>
-            <div className="relative h-[500px]">
+            <div className="relative min-h-[400px]">
               <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
                 <div className="flex flex-col items-center gap-2">
                   <RadioGroup
@@ -243,49 +248,26 @@ export default function ThemeSelector({
             </div>
           </PopoverContent>
         </Popover>
-      </div>
-      <div>
-        <Label className="mb-3 block">Colores</Label>
+      </SideSection>
+      <SideSection title="Colores">
         <div>
           <Popover>
             <PopoverTrigger asChild>
               <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-violet-500">
                 <div className="isolate flex -space-x-1 overflow-hidden">
-                  <div
-                    className="h-6 w-6 rounded-full border border-black/10"
-                    style={{
-                      backgroundColor: selectedColorTheme?.surfaceColor
-                    }}
-                  />
-                  <div
-                    className="h-6 w-6 rounded-full border border-black/10"
-                    style={{
-                      backgroundColor: selectedColorTheme?.brandColor
-                    }}
-                  />
-                  <div
-                    className="h-6 w-6 rounded-full border border-black/10"
-                    style={{
-                      backgroundColor: selectedColorTheme?.accentColor
-                    }}
-                  />
-                  <div
-                    className="h-6 w-6 rounded-full border border-black/10"
-                    style={{
-                      backgroundColor: selectedColorTheme?.textColor
-                    }}
-                  />
-                  <div
-                    className="h-6 w-6 rounded-full border border-black/10"
-                    style={{
-                      backgroundColor: selectedColorTheme?.mutedColor
-                    }}
-                  />
+                  <ColorChip color={selectedColorTheme?.surfaceColor} />
+                  <ColorChip color={selectedColorTheme?.brandColor} />
+                  <ColorChip color={selectedColorTheme?.accentColor} />
+                  <ColorChip color={selectedColorTheme?.textColor} />
+                  <ColorChip color={selectedColorTheme?.mutedColor} />
                 </div>
                 <ChevronsUpDown className="size-4 text-gray-500" />
               </button>
             </PopoverTrigger>
-            <PopoverContent className="max-w-[200px]">
+            <PopoverAnchor asChild>
+              <div className="-ml-32 size-4" />
+            </PopoverAnchor>
+            <PopoverContent className="-mt-20 max-w-[200px]">
               <Label className="mb-4 block">Colores</Label>
               <div className="relative h-[300px]">
                 <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
@@ -309,36 +291,11 @@ export default function ThemeSelector({
                               {theme.name}
                             </span> */}
                             <div className="isolate flex -space-x-1 overflow-hidden">
-                              <div
-                                className="h-6 w-6 rounded-full border border-black/10"
-                                style={{
-                                  backgroundColor: theme?.surfaceColor
-                                }}
-                              />
-                              <div
-                                className="h-6 w-6 rounded-full border border-black/10"
-                                style={{
-                                  backgroundColor: theme?.brandColor
-                                }}
-                              />
-                              <div
-                                className="h-6 w-6 rounded-full border border-black/10"
-                                style={{
-                                  backgroundColor: theme?.accentColor
-                                }}
-                              />
-                              <div
-                                className="h-6 w-6 rounded-full border border-black/10"
-                                style={{
-                                  backgroundColor: theme?.textColor
-                                }}
-                              />
-                              <div
-                                className="h-6 w-6 rounded-full border border-black/10"
-                                style={{
-                                  backgroundColor: theme?.mutedColor
-                                }}
-                              />
+                              <ColorChip color={theme.surfaceColor} />
+                              <ColorChip color={theme.brandColor} />
+                              <ColorChip color={theme.accentColor} />
+                              <ColorChip color={theme.textColor} />
+                              <ColorChip color={theme.mutedColor} />
                             </div>
                           </div>
                         </label>
@@ -350,6 +307,215 @@ export default function ThemeSelector({
             </PopoverContent>
           </Popover>
         </div>
+        <div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="secondary" className="w-full">
+                Personalizar colores
+              </Button>
+            </PopoverTrigger>
+            <PopoverAnchor asChild>
+              <div className="-ml-44 size-4" />
+            </PopoverAnchor>
+            <PopoverContent className="-mt-20">
+              <Label className="mb-4 block">Personalizar colores</Label>
+              {selectedColorTheme && (
+                <ColorThemeEditor
+                  theme={selectedColorTheme}
+                  setTheme={(theme: (typeof colorThemes)[0]) => {
+                    const randomId = Math.random().toString(36).substring(7)
+                    theme.name = "CUSTOM-" + randomId
+                    // If custom theme already exists, remove it
+                    const customThemeIndex = colorThemes.findIndex(theme =>
+                      theme.name.startsWith("CUSTOM")
+                    )
+                    if (customThemeIndex !== -1) {
+                      colorThemes.splice(customThemeIndex, 1)
+                    }
+                    colorThemes.push(theme)
+                    // setSelectedColorTheme(theme)
+                    setColorThemeId(theme.name)
+                  }}
+                />
+              )}
+            </PopoverContent>
+          </Popover>
+        </div>
+      </SideSection>
+    </div>
+  )
+}
+
+function ColorChip({ color }: { color: string | undefined }) {
+  return (
+    <div
+      className="h-6 w-6 rounded-full border border-black/10"
+      style={{
+        backgroundColor: color
+      }}
+    />
+  )
+}
+
+function ColorThemeEditor({
+  theme,
+  setTheme
+}: {
+  theme: (typeof colorThemes)[0]
+  setTheme: (theme: (typeof colorThemes)[0]) => void
+}) {
+  const [themeState, setThemeState] = useState(theme)
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-4 items-center gap-2">
+        <dt>
+          <Label size="sm">Fondo</Label>
+        </dt>
+        <dd className="flex items-center">
+          <Popover>
+            <PopoverTrigger>
+              <div
+                className="h-5 w-12 rounded border border-black/20"
+                style={{
+                  backgroundColor: themeState.surfaceColor
+                }}
+              ></div>
+            </PopoverTrigger>
+            <PopoverContent className="border-0 bg-transparent p-0 shadow-none">
+              <Sketch
+                disableAlpha
+                color={hexToHsva(themeState.surfaceColor)}
+                onChange={color => {
+                  setThemeState(prev => ({
+                    ...prev,
+                    surfaceColor: color.hex
+                  }))
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+        </dd>
+        <dt>
+          <Label size="sm">Marca</Label>
+        </dt>
+        <dd className="flex items-center">
+          <Popover>
+            <PopoverTrigger>
+              <div
+                className="h-5 w-12 rounded border border-black/20"
+                style={{
+                  backgroundColor: themeState.brandColor
+                }}
+              ></div>
+            </PopoverTrigger>
+            <PopoverContent className="border-0 bg-transparent p-0 shadow-none">
+              <Sketch
+                disableAlpha
+                color={hexToHsva(themeState.brandColor)}
+                onChange={color => {
+                  setThemeState(prev => ({
+                    ...prev,
+                    brandColor: color.hex
+                  }))
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+        </dd>
+        <dt>
+          <Label size="sm">Acento</Label>
+        </dt>
+        <dd className="flex items-center">
+          <Popover>
+            <PopoverTrigger>
+              <div
+                className="h-5 w-12 rounded border border-black/20"
+                style={{
+                  backgroundColor: themeState.accentColor
+                }}
+              ></div>
+            </PopoverTrigger>
+            <PopoverContent className="border-0 bg-transparent p-0 shadow-none">
+              <Sketch
+                disableAlpha
+                color={hexToHsva(themeState.accentColor)}
+                onChange={color => {
+                  setThemeState(prev => ({
+                    ...prev,
+                    accentColor: color.hex
+                  }))
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+        </dd>
+        <dt>
+          <Label size="sm">Texto</Label>
+        </dt>
+        <dd className="flex items-center">
+          <Popover>
+            <PopoverTrigger>
+              <div
+                className="h-5 w-12 rounded border border-black/20"
+                style={{
+                  backgroundColor: themeState.textColor
+                }}
+              ></div>
+            </PopoverTrigger>
+            <PopoverContent className="border-0 bg-transparent p-0 shadow-none">
+              <Sketch
+                disableAlpha
+                color={hexToHsva(themeState.textColor)}
+                onChange={color => {
+                  setThemeState(prev => ({
+                    ...prev,
+                    textColor: color.hex
+                  }))
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+        </dd>
+        <dt>
+          <Label size="sm">Tenue</Label>
+        </dt>
+        <dd className="flex items-center">
+          <Popover>
+            <PopoverTrigger>
+              <div
+                className="h-5 w-12 rounded border border-black/20"
+                style={{
+                  backgroundColor: themeState.mutedColor
+                }}
+              ></div>
+            </PopoverTrigger>
+            <PopoverContent className="border-0 bg-transparent p-0 shadow-none">
+              <Sketch
+                disableAlpha
+                color={hexToHsva(themeState.mutedColor)}
+                onChange={color => {
+                  setThemeState(prev => ({
+                    ...prev,
+                    mutedColor: color.hex
+                  }))
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+        </dd>
+      </div>
+      <div>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="w-full"
+          onClick={() => {
+            setTheme(themeState)
+          }}
+        >
+          Aplicar
+        </Button>
       </div>
     </div>
   )

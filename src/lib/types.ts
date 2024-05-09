@@ -302,7 +302,7 @@ export const fontThemes = [
   {
     name: "FLORENCIA",
     fontDisplay: "Caveat",
-    fontText: "Montserrat"
+    fontText: "Lato"
   },
   {
     name: "LISBOA",
