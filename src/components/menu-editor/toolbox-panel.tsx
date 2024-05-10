@@ -11,6 +11,7 @@ import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import SideSection from "@/components/menu-editor/side-section"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import { colorThemes, fontThemes } from "@/lib/types"
@@ -30,10 +31,18 @@ export default function ToolboxPanel({
 
   const selectedFontTheme = fontThemes.find(theme => theme.name === fontThemeId)
   const selectedColorTheme = colorThemes.find(
-    theme => theme.name === colorThemeId
+    theme => theme.id === colorThemeId
   )
 
-  if (!selectedFontTheme || !selectedColorTheme) return null
+  if (!selectedFontTheme || !selectedColorTheme)
+    return (
+      <Alert variant="destructive" className="m-2 w-auto">
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          No se pudo encontrar el tema de fuente o color seleccionado.
+        </AlertDescription>
+      </Alert>
+    )
 
   return (
     <>

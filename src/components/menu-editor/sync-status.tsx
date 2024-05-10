@@ -133,7 +133,7 @@ export default function SyncStatus({
       let equalMenu = true
       if (organization) {
         const diff = difference(organization, menu.organization)
-        console.log(diff)
+        // console.log(diff)
         Object.getOwnPropertyNames(diff).forEach(propName => {
           if (
             propName === "banner" ||

@@ -57,7 +57,6 @@ export default function ThemeSelector({
     const selectedTheme = fontThemes.find(theme => theme.name === fontThemeId)
     if (!selectedTheme) return
 
-    console.log("selectedTheme", selectedTheme)
     setSelectedFontTheme(selectedTheme)
 
     // traverse each node and update the theme
@@ -106,7 +105,7 @@ export default function ThemeSelector({
   }, [fontThemeId])
 
   useEffect(() => {
-    const selectedTheme = colorThemes.find(theme => theme.name === colorThemeId)
+    const selectedTheme = colorThemes.find(theme => theme.id === colorThemeId)
     if (!selectedTheme) return
 
     setSelectedColorTheme(selectedTheme)
@@ -263,14 +262,19 @@ export default function ThemeSelector({
           <Popover>
             <PopoverTrigger asChild>
               <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-violet-500">
-                <div className="isolate flex -space-x-1 overflow-hidden">
-                  <ColorChip color={selectedColorTheme?.surfaceColor} />
-                  <ColorChip color={selectedColorTheme?.brandColor} />
-                  <ColorChip color={selectedColorTheme?.accentColor} />
-                  <ColorChip color={selectedColorTheme?.textColor} />
-                  <ColorChip color={selectedColorTheme?.mutedColor} />
+                <span className="text-sm font-medium">
+                  {selectedColorTheme?.name}
+                </span>
+                <div className="flex flex-row items-center gap-2">
+                  <div className="isolate flex -space-x-1.5 overflow-hidden">
+                    <ColorChip color={selectedColorTheme?.surfaceColor} />
+                    <ColorChip color={selectedColorTheme?.brandColor} />
+                    <ColorChip color={selectedColorTheme?.accentColor} />
+                    <ColorChip color={selectedColorTheme?.textColor} />
+                    <ColorChip color={selectedColorTheme?.mutedColor} />
+                  </div>
+                  <ChevronsUpDown className="size-4 text-gray-500" />
                 </div>
-                <ChevronsUpDown className="size-4 text-gray-500" />
               </button>
             </PopoverTrigger>
             <PopoverAnchor asChild>
@@ -292,13 +296,13 @@ export default function ThemeSelector({
                           className="cursor-pointer [&:has([data-state=checked])>div]:border-violet-500"
                         >
                           <RadioGroupItem
-                            value={theme.name}
+                            value={theme.id}
                             className="sr-only"
                           />
-                          <div className="flex w-full flex-row justify-center space-y-1 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500">
-                            {/* <span className="text-sm font-medium">
+                          <div className="flex w-full flex-col justify-center gap-1 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500">
+                            <span className="text-sm font-medium">
                               {theme.name}
-                            </span> */}
+                            </span>
                             <div className="isolate flex -space-x-1 overflow-hidden">
                               <ColorChip color={theme.surfaceColor} />
                               <ColorChip color={theme.brandColor} />
@@ -338,17 +342,27 @@ export default function ThemeSelector({
                   theme={selectedColorTheme}
                   setTheme={(theme: (typeof colorThemes)[0]) => {
                     const randomId = Math.random().toString(36).substring(7)
-                    theme.name = "CUSTOM-" + randomId
+                    if (theme.scope === "GLOBAL") {
+                      // Copy the theme to avoid modifying the original
+                      theme = { ...theme }
+                      theme.id = "CUSTOM-" + randomId
+                      theme.name = "Personalizado"
+                      theme.scope = "CUSTOM"
+                    } else {
+                      theme.id = "CUSTOM-" + randomId
+                    }
+
                     // If custom theme already exists, remove it
-                    const customThemeIndex = colorThemes.findIndex(theme =>
-                      theme.name.startsWith("CUSTOM")
+                    const customThemeIndex = colorThemes.findIndex(
+                      t => t.id === theme.id
                     )
                     if (customThemeIndex !== -1) {
                       colorThemes.splice(customThemeIndex, 1)
                     }
                     colorThemes.push(theme)
+                    console.log("colorThemes", colorThemes)
                     // setSelectedColorTheme(theme)
-                    setColorThemeId(theme.name)
+                    setColorThemeId(theme.id)
                   }}
                 />
               </SheetContent>

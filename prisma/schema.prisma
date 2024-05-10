@@ -130,7 +130,7 @@ model Menu {
 model Theme {
   id             String        @id @default(cuid())
   name           String
-  scope          String        @default("GLOBAL")
+  scope          String        @default("CUSTOM")
   themeType      String        @default("FONT")
   themeJSON      String        @default("{}")
   createdAt      DateTime      @default(now())

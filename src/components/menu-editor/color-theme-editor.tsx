@@ -2,11 +2,11 @@ import { useState } from "react"
 import toast from "react-hot-toast"
 import type { Prisma } from "@prisma/client"
 import { hexToHsva, Sketch } from "@uiw/react-color"
+import { Loader } from "lucide-react"
+// import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { useAction } from "next-safe-action/hooks"
 
 import FontWrapper from "@/components/menu-editor/font-wrapper"
-// import { Avatar, AvatarImage } from "@/components/ui/avatar"
-// import { useAction } from "next-safe-action/hooks"
-
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import {
@@ -14,8 +14,8 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
+import { createColorTheme } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
-// import { createColorTheme } from "@/server/actions/menu/mutations"
 import { type colorThemes } from "@/lib/types"
 
 export function ColorThemeEditor({
@@ -30,28 +30,36 @@ export function ColorThemeEditor({
   fontText?: string
   theme: (typeof colorThemes)[0]
   setTheme: (theme: (typeof colorThemes)[0]) => void
+  open?: boolean
+  onClose?: () => void
 }) {
   const [themeState, setThemeState] = useState(theme)
-  // const { execute, status, reset } = useAction(createColorTheme, {
-  //   onSuccess: () => {
-  //     setTheme(themeState)
-  //     alert("Tema creado")
-  //     reset()
-  //   },
-  //   onError: error => {
-  //     alert(error)
-  //     reset()
-  //   }
-  // })
+  const { execute, status, reset } = useAction(createColorTheme, {
+    onSuccess: () => {
+      setTheme(themeState)
+      toast.success("Tema guardado")
+      reset()
+    },
+    onError: () => {
+      toast.error("Algo salió mal al guardar el tema")
+      reset()
+    }
+  })
 
-  // const handleCreateTheme = (name: string) => {
-  //   execute({
-  //     name,
-  //     scope: "GLOBAL",
-  //     themeType: "COLOR",
-  //     themeJSON: JSON.stringify(themeState)
-  //   })
-  // }
+  const handleCreateTheme = () => {
+    const name = "Personalizado"
+    const id = Math.random().toString(36).substring(7)
+    execute({
+      name,
+      scope: "CUSTOM",
+      themeType: "COLOR",
+      themeJSON: JSON.stringify(
+        // replace id in themeState
+        { ...themeState, id }
+      ),
+      organizationId: menu?.organizationId
+    })
+  }
 
   return (
     <div className="flex flex-col gap-6 py-4">
@@ -206,11 +214,13 @@ export function ColorThemeEditor({
           variant="default"
           size="sm"
           className="w-full"
-          onClick={() => {
-            setTheme(themeState)
-          }}
+          onClick={handleCreateTheme}
         >
-          Guardar
+          {status === "executing" ? (
+            <Loader className="size-5 animate-spin" />
+          ) : (
+            "Guardar"
+          )}
         </Button>
         <Button
           variant="secondary"
