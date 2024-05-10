@@ -91,6 +91,7 @@ model Organization {
   memberships  Membership[]
   menus        Menu[]
   menuItems    MenuItem[]
+  themes       Theme[]
 }
 
 model Location {
@@ -124,6 +125,20 @@ model Menu {
   fontTheme      String       @default("DEFAULT")
   colorTheme     String       @default("DEFAULT")
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model Theme {
+  id             String        @id @default(cuid())
+  name           String
+  scope          String        @default("GLOBAL")
+  themeType      String        @default("FONT")
+  themeJSON      String        @default("{}")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, name, scope])
 }
 
 model MenuItem {

@@ -216,3 +216,44 @@ export const deleteMenu = action(
     }
   }
 )
+
+export const createColorTheme = action(
+  z.object({
+    name: z.string(),
+    scope: z.string(),
+    themeType: z.string(),
+    themeJSON: z.string(),
+    organizationId: z.string().optional()
+  }),
+  async ({ name, scope, themeType, themeJSON, organizationId }) => {
+    try {
+      const colorTheme = await prisma.theme.create({
+        data: {
+          name,
+          scope,
+          themeType,
+          themeJSON,
+          organizationId
+        }
+      })
+
+      return {
+        success: colorTheme
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        message = error.message
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)

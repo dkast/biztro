@@ -228,6 +228,11 @@ export const enum MenuStatus {
   DRAFT = "DRAFT"
 }
 
+export const enum ThemeType {
+  FONT = "FONT",
+  COLOR = "COLOR"
+}
+
 export const fontThemes = [
   {
     name: "DEFAULT",
@@ -353,75 +358,84 @@ export const fontThemes = [
 
 export const colorThemes = [
   {
-    name: "DEFAULT",
+    name: "Default",
     surfaceColor: "#ffffff",
     brandColor: "#131313",
     accentColor: "#424242",
     textColor: "#131313",
-    mutedColor: "#636363"
+    mutedColor: "#636363",
+    scope: "GLOBAL"
   },
   {
-    name: "TERRA",
+    name: "Terra",
     surfaceColor: "##fff8f6",
     brandColor: "#231917",
     accentColor: "#8f4c38",
     textColor: "#231917",
-    mutedColor: "#6f5600"
+    mutedColor: "#6f5600",
+    scope: "GLOBAL"
   },
   {
-    name: "TERRA_DARK",
+    name: "Terra oscuro",
     surfaceColor: "#271d1b",
     brandColor: "#f1dfda",
     accentColor: "#ffb5a0",
     textColor: "#f1dfda",
-    mutedColor: "#f5e1a7"
+    mutedColor: "#f5e1a7",
+    scope: "GLOBAL"
   },
   {
-    name: "FLORA",
+    name: "Flora",
     surfaceColor: "#f9faef",
     brandColor: "#1a1c16",
     accentColor: "#4c662b",
     textColor: "#1a1c16",
-    mutedColor: "#006c65"
+    mutedColor: "#006c65",
+    scope: "GLOBAL"
   },
   {
-    name: "FLORA_DARK",
+    name: "Flora oscuro",
     surfaceColor: "#1e201a",
     brandColor: "#e2e3d8",
     accentColor: "#b1d18a",
     textColor: "#e2e3d8",
-    mutedColor: "#bcece7"
+    mutedColor: "#bcece7",
+    scope: "GLOBAL"
   },
   {
-    name: "AZURE",
+    name: "Azure",
     surfaceColor: "#f9f9ff",
     brandColor: "#191c20",
     accentColor: "#415f91",
     textColor: "#191c20",
-    mutedColor: "#6a327a"
+    mutedColor: "#6a327a",
+    scope: "GLOBAL"
   },
   {
-    name: "AZURE_DARK",
+    name: "Azure oscuro",
     surfaceColor: "#1d2024",
     brandColor: "#dedee4",
     accentColor: "#aac7ff",
     textColor: "#dedee4",
-    mutedColor: "#fad8fd"
+    mutedColor: "#fad8fd",
+    scope: "GLOBAL"
   },
   {
-    name: "HELIOS",
+    name: "Helios",
     surfaceColor: "#fff9ee",
     brandColor: "#1e1b13",
     accentColor: "#6d5e0f",
     textColor: "#1e1b13",
-    mutedColor: "#365944"
+    mutedColor: "#365944",
+    scope: "GLOBAL"
   },
   {
-    name: "HELIOS_DARK",
+    name: "Helios oscuro",
     surfaceColor: "#222017",
     brandColor: "#e8e2d4",
     accentColor: "#dbc66e",
     textColor: "#e8e2d4",
-    mutedColor: "#bce3c6"
+    mutedColor: "#bce3c6",
+    scope: "GLOBAL"
   }
 ]
