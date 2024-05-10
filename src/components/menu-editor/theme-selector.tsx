@@ -333,6 +333,8 @@ export default function ThemeSelector({
                 </SheetHeader>
                 <ColorThemeEditor
                   menu={menu}
+                  fontDisplay={selectedFontTheme?.fontDisplay}
+                  fontText={selectedFontTheme?.fontText}
                   theme={selectedColorTheme}
                   setTheme={(theme: (typeof colorThemes)[0]) => {
                     const randomId = Math.random().toString(36).substring(7)

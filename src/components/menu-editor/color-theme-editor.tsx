@@ -3,6 +3,8 @@ import toast from "react-hot-toast"
 import type { Prisma } from "@prisma/client"
 import { hexToHsva, Sketch } from "@uiw/react-color"
 
+import FontWrapper from "@/components/menu-editor/font-wrapper"
+// import { Avatar, AvatarImage } from "@/components/ui/avatar"
 // import { useAction } from "next-safe-action/hooks"
 
 import { Button } from "@/components/ui/button"
@@ -18,10 +20,14 @@ import { type colorThemes } from "@/lib/types"
 
 export function ColorThemeEditor({
   menu,
+  fontDisplay,
+  fontText,
   theme,
   setTheme
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
+  fontDisplay?: string
+  fontText?: string
   theme: (typeof colorThemes)[0]
   setTheme: (theme: (typeof colorThemes)[0]) => void
 }) {
@@ -49,144 +55,152 @@ export function ColorThemeEditor({
 
   return (
     <div className="flex flex-col gap-6 py-4">
-      <ThemePreview menu={menu} theme={themeState} />
-      <div className="grid grid-cols-4 items-center gap-2">
-        <dt>
-          <Label size="sm">Fondo</Label>
-        </dt>
-        <dd className="flex items-center">
-          <Popover>
-            <PopoverTrigger>
-              <div
-                className="h-5 w-12 rounded border border-black/20"
-                style={{
-                  backgroundColor: themeState.surfaceColor
-                }}
-              ></div>
-            </PopoverTrigger>
-            <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-              <Sketch
-                disableAlpha
-                color={hexToHsva(themeState.surfaceColor)}
-                onChange={color => {
-                  setThemeState(prev => ({
-                    ...prev,
-                    surfaceColor: color.hex
-                  }))
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-        </dd>
-        <dt>
-          <Label size="sm">Marca</Label>
-        </dt>
-        <dd className="flex items-center">
-          <Popover>
-            <PopoverTrigger>
-              <div
-                className="h-5 w-12 rounded border border-black/20"
-                style={{
-                  backgroundColor: themeState.brandColor
-                }}
-              ></div>
-            </PopoverTrigger>
-            <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-              <Sketch
-                disableAlpha
-                color={hexToHsva(themeState.brandColor)}
-                onChange={color => {
-                  setThemeState(prev => ({
-                    ...prev,
-                    brandColor: color.hex
-                  }))
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-        </dd>
-        <dt>
-          <Label size="sm">Acento</Label>
-        </dt>
-        <dd className="flex items-center">
-          <Popover>
-            <PopoverTrigger>
-              <div
-                className="h-5 w-12 rounded border border-black/20"
-                style={{
-                  backgroundColor: themeState.accentColor
-                }}
-              ></div>
-            </PopoverTrigger>
-            <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-              <Sketch
-                disableAlpha
-                color={hexToHsva(themeState.accentColor)}
-                onChange={color => {
-                  setThemeState(prev => ({
-                    ...prev,
-                    accentColor: color.hex
-                  }))
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-        </dd>
-        <dt>
-          <Label size="sm">Texto</Label>
-        </dt>
-        <dd className="flex items-center">
-          <Popover>
-            <PopoverTrigger>
-              <div
-                className="h-5 w-12 rounded border border-black/20"
-                style={{
-                  backgroundColor: themeState.textColor
-                }}
-              ></div>
-            </PopoverTrigger>
-            <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-              <Sketch
-                disableAlpha
-                color={hexToHsva(themeState.textColor)}
-                onChange={color => {
-                  setThemeState(prev => ({
-                    ...prev,
-                    textColor: color.hex
-                  }))
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-        </dd>
-        <dt>
-          <Label size="sm">Tenue</Label>
-        </dt>
-        <dd className="flex items-center">
-          <Popover>
-            <PopoverTrigger>
-              <div
-                className="h-5 w-12 rounded border border-black/20"
-                style={{
-                  backgroundColor: themeState.mutedColor
-                }}
-              ></div>
-            </PopoverTrigger>
-            <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-              <Sketch
-                disableAlpha
-                color={hexToHsva(themeState.mutedColor)}
-                onChange={color => {
-                  setThemeState(prev => ({
-                    ...prev,
-                    mutedColor: color.hex
-                  }))
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-        </dd>
-      </div>
+      <ThemePreview
+        menu={menu}
+        fontDisplay={fontDisplay}
+        fontText={fontText}
+        theme={themeState}
+      />
+      <fieldset className="rounded-lg border p-4">
+        <legend className="-ml-1 px-1 text-sm font-medium">Colores</legend>
+        <div className="grid grid-cols-4 items-center gap-2">
+          <dt>
+            <Label size="sm">Fondo</Label>
+          </dt>
+          <dd className="flex items-center">
+            <Popover>
+              <PopoverTrigger>
+                <div
+                  className="h-5 w-12 rounded border border-black/20"
+                  style={{
+                    backgroundColor: themeState.surfaceColor
+                  }}
+                ></div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                <Sketch
+                  disableAlpha
+                  color={hexToHsva(themeState.surfaceColor)}
+                  onChange={color => {
+                    setThemeState(prev => ({
+                      ...prev,
+                      surfaceColor: color.hex
+                    }))
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </dd>
+          <dt>
+            <Label size="sm">Marca</Label>
+          </dt>
+          <dd className="flex items-center">
+            <Popover>
+              <PopoverTrigger>
+                <div
+                  className="h-5 w-12 rounded border border-black/20"
+                  style={{
+                    backgroundColor: themeState.brandColor
+                  }}
+                ></div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                <Sketch
+                  disableAlpha
+                  color={hexToHsva(themeState.brandColor)}
+                  onChange={color => {
+                    setThemeState(prev => ({
+                      ...prev,
+                      brandColor: color.hex
+                    }))
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </dd>
+          <dt>
+            <Label size="sm">Acento</Label>
+          </dt>
+          <dd className="flex items-center">
+            <Popover>
+              <PopoverTrigger>
+                <div
+                  className="h-5 w-12 rounded border border-black/20"
+                  style={{
+                    backgroundColor: themeState.accentColor
+                  }}
+                ></div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                <Sketch
+                  disableAlpha
+                  color={hexToHsva(themeState.accentColor)}
+                  onChange={color => {
+                    setThemeState(prev => ({
+                      ...prev,
+                      accentColor: color.hex
+                    }))
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </dd>
+          <dt>
+            <Label size="sm">Texto</Label>
+          </dt>
+          <dd className="flex items-center">
+            <Popover>
+              <PopoverTrigger>
+                <div
+                  className="h-5 w-12 rounded border border-black/20"
+                  style={{
+                    backgroundColor: themeState.textColor
+                  }}
+                ></div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                <Sketch
+                  disableAlpha
+                  color={hexToHsva(themeState.textColor)}
+                  onChange={color => {
+                    setThemeState(prev => ({
+                      ...prev,
+                      textColor: color.hex
+                    }))
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </dd>
+          <dt>
+            <Label size="sm">Tenue</Label>
+          </dt>
+          <dd className="flex items-center">
+            <Popover>
+              <PopoverTrigger>
+                <div
+                  className="h-5 w-12 rounded border border-black/20"
+                  style={{
+                    backgroundColor: themeState.mutedColor
+                  }}
+                ></div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                <Sketch
+                  disableAlpha
+                  color={hexToHsva(themeState.mutedColor)}
+                  onChange={color => {
+                    setThemeState(prev => ({
+                      ...prev,
+                      mutedColor: color.hex
+                    }))
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </dd>
+        </div>
+      </fieldset>
       <div>
         <Button
           variant="default"
@@ -196,7 +210,7 @@ export function ColorThemeEditor({
             setTheme(themeState)
           }}
         >
-          Aplicar
+          Guardar
         </Button>
         <Button
           variant="secondary"
@@ -216,9 +230,13 @@ export function ColorThemeEditor({
 
 function ThemePreview({
   menu,
+  fontDisplay,
+  fontText,
   theme
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
+  fontDisplay?: string
+  fontText?: string
   theme: (typeof colorThemes)[0]
 }) {
   return (
@@ -229,43 +247,63 @@ function ThemePreview({
         color: theme.brandColor
       }}
     >
-      <h1 className="text-xl font-semibold">
-        {menu?.organization?.name || "Negocio"}
-      </h1>
+      <div className="flex flex-row items-center gap-4">
+        {/* {menu?.organization?.logo && (
+          <Avatar className="h-16 w-16 rounded-xl shadow">
+            <AvatarImage
+              src={menu?.organization?.logo}
+              className="rounded-xl"
+            />
+          </Avatar>
+        )} */}
+        <FontWrapper fontFamily={fontDisplay}>
+          <h1 className="text-xl font-semibold">
+            {menu?.organization?.name || "Negocio"}
+          </h1>
+        </FontWrapper>
+      </div>
       <div className="space-y-2">
-        <h3
-          className="text-lg font-semibold"
-          style={{
-            color: theme.accentColor
-          }}
-        >
-          Categoría
-        </h3>
-        <div className="flex flex-row justify-between gap-2">
-          <div className="flex flex-col gap-1">
-            <span
-              style={{
-                color: theme.textColor
-              }}
-            >
-              Producto
-            </span>
-            <span
-              className="text-sm"
-              style={{
-                color: theme.mutedColor
-              }}
-            >
-              Descripción del producto...
-            </span>
-          </div>
-          <span
+        <FontWrapper fontFamily={fontDisplay}>
+          <h3
+            className="text-lg font-semibold"
             style={{
-              color: theme.brandColor
+              color: theme.accentColor
             }}
           >
-            0.00
-          </span>
+            Categoría
+          </h3>
+        </FontWrapper>
+        <div className="flex flex-row justify-between gap-2">
+          <div className="flex flex-col gap-1">
+            <FontWrapper fontFamily={fontDisplay}>
+              <span
+                style={{
+                  color: theme.textColor
+                }}
+              >
+                Producto
+              </span>
+            </FontWrapper>
+            <FontWrapper fontFamily={fontText}>
+              <span
+                className="text-sm"
+                style={{
+                  color: theme.mutedColor
+                }}
+              >
+                Descripción del producto...
+              </span>
+            </FontWrapper>
+          </div>
+          <FontWrapper fontFamily={fontText}>
+            <span
+              style={{
+                color: theme.brandColor
+              }}
+            >
+              0.00
+            </span>
+          </FontWrapper>
         </div>
       </div>
     </div>
