@@ -219,16 +219,18 @@ export const deleteMenu = action(
 
 export const createColorTheme = action(
   z.object({
+    id: z.string(),
     name: z.string(),
     scope: z.string(),
     themeType: z.string(),
     themeJSON: z.string(),
     organizationId: z.string().optional()
   }),
-  async ({ name, scope, themeType, themeJSON, organizationId }) => {
+  async ({ id, name, scope, themeType, themeJSON, organizationId }) => {
     try {
       const colorTheme = await prisma.theme.create({
         data: {
+          id,
           name,
           scope,
           themeType,
@@ -245,7 +247,45 @@ export const createColorTheme = action(
       if (typeof error === "string") {
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
+          message = "Ya existe un tema con ese nombre"
+        }
+      } else if (error instanceof Error) {
         message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const updateColorTheme = action(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    themeJSON: z.string()
+  }),
+  async ({ id, name, themeJSON }) => {
+    try {
+      const colorTheme = await prisma.theme.update({
+        where: { id },
+        data: { name, themeJSON }
+      })
+
+      return {
+        success: colorTheme
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
+          message = "Ya existe un tema con ese nombre"
+        }
       } else if (error instanceof Error) {
         message = error.message
       }

@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { PopoverAnchor } from "@radix-ui/react-popover"
+import { useQuery } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtom } from "jotai"
 import { ChevronsUpDown } from "lucide-react"
@@ -27,7 +28,7 @@ import {
   SheetTitle,
   SheetTrigger
 } from "@/components/ui/sheet"
-import type { getMenuById } from "@/server/actions/menu/queries"
+import { getThemes, type getMenuById } from "@/server/actions/menu/queries"
 import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import { colorThemes, fontThemes } from "@/lib/types"
 import { ColorThemeEditor } from "./color-theme-editor"
@@ -40,6 +41,28 @@ export default function ThemeSelector({
   const { nodes, actions } = useEditor(state => ({
     nodes: state.nodes
   }))
+
+  const { data: userColorThemes } = useQuery({
+    queryKey: ["themes"],
+    queryFn: () => getThemes({ themeType: "COLOR" })
+  })
+
+  console.log("userColorThemes", userColorThemes)
+
+  useEffect(() => {
+    if (userColorThemes) {
+      for (const theme of userColorThemes) {
+        const parsedTheme = JSON.parse(theme.themeJSON)
+        // If custom theme doesnt already exists, add it
+        const customThemeIndex = colorThemes.findIndex(
+          t => t.id === parsedTheme.id
+        )
+        if (customThemeIndex === -1) {
+          colorThemes.push(parsedTheme)
+        }
+      }
+    }
+  }, [userColorThemes])
 
   const [fontThemeId, setFontThemeId] = useAtom(fontThemeAtom)
 
@@ -292,7 +315,7 @@ export default function ThemeSelector({
                     >
                       {colorThemes.map(theme => (
                         <label
-                          key={theme.name}
+                          key={theme.id}
                           className="cursor-pointer [&:has([data-state=checked])>div]:border-violet-500"
                         >
                           <RadioGroupItem
@@ -325,12 +348,12 @@ export default function ThemeSelector({
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="secondary" className="w-full">
-                  Crear nuevo tema
+                  Personalizar tema
                 </Button>
               </SheetTrigger>
               <SheetContent className="sm:max-w-md">
                 <SheetHeader>
-                  <SheetTitle>Crear nuevo tema</SheetTitle>
+                  <SheetTitle>Personalizar tema</SheetTitle>
                   <SheetDescription>
                     Personaliza los colores de tu menú
                   </SheetDescription>
@@ -341,25 +364,25 @@ export default function ThemeSelector({
                   fontText={selectedFontTheme?.fontText}
                   theme={selectedColorTheme}
                   setTheme={(theme: (typeof colorThemes)[0]) => {
-                    const randomId = Math.random().toString(36).substring(7)
-                    if (theme.scope === "GLOBAL") {
-                      // Copy the theme to avoid modifying the original
-                      theme = { ...theme }
-                      theme.id = "CUSTOM-" + randomId
-                      theme.name = "Personalizado"
-                      theme.scope = "CUSTOM"
-                    } else {
-                      theme.id = "CUSTOM-" + randomId
-                    }
+                    // const randomId = Math.random().toString(36).substring(7)
+                    // if (theme.scope === "GLOBAL") {
+                    //   // Copy the theme to avoid modifying the original
+                    //   theme = { ...theme }
+                    //   theme.id = "CUSTOM-" + randomId
+                    //   theme.name = "Personalizado"
+                    //   theme.scope = "CUSTOM"
+                    // } else {
+                    //   theme.id = "CUSTOM-" + randomId
+                    // }
 
-                    // If custom theme already exists, remove it
-                    const customThemeIndex = colorThemes.findIndex(
-                      t => t.id === theme.id
-                    )
-                    if (customThemeIndex !== -1) {
-                      colorThemes.splice(customThemeIndex, 1)
-                    }
-                    colorThemes.push(theme)
+                    // // If custom theme already exists, remove it
+                    // const customThemeIndex = colorThemes.findIndex(
+                    //   t => t.id === theme.id
+                    // )
+                    // if (customThemeIndex !== -1) {
+                    //   colorThemes.splice(customThemeIndex, 1)
+                    // }
+                    // colorThemes.push(theme)
                     console.log("colorThemes", colorThemes)
                     // setSelectedColorTheme(theme)
                     setColorThemeId(theme.id)

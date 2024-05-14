@@ -1,8 +1,10 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import type { Prisma } from "@prisma/client"
+import { useQueryClient } from "@tanstack/react-query"
 import { hexToHsva, Sketch } from "@uiw/react-color"
 import { Loader } from "lucide-react"
+import { nanoid } from "nanoid"
 // import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { useAction } from "next-safe-action/hooks"
 
@@ -14,9 +16,12 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import { createColorTheme } from "@/server/actions/menu/mutations"
+import {
+  createColorTheme,
+  updateColorTheme
+} from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
-import { type colorThemes } from "@/lib/types"
+import { ThemeScope, type colorThemes } from "@/lib/types"
 
 export function ColorThemeEditor({
   menu,
@@ -33,10 +38,18 @@ export function ColorThemeEditor({
   open?: boolean
   onClose?: () => void
 }) {
+  const queryClient = useQueryClient()
   const [themeState, setThemeState] = useState(theme)
   const { execute, status, reset } = useAction(createColorTheme, {
-    onSuccess: () => {
+    onSuccess: data => {
+      if (data.failure?.reason) {
+        toast.error(data.failure?.reason)
+        return
+      }
       setTheme(themeState)
+      queryClient.invalidateQueries({
+        queryKey: ["themes"]
+      })
       toast.success("Tema guardado")
       reset()
     },
@@ -46,18 +59,56 @@ export function ColorThemeEditor({
     }
   })
 
+  const {
+    execute: updateTheme,
+    status: updateStatus,
+    reset: resetStatus
+  } = useAction(updateColorTheme, {
+    onSuccess: data => {
+      if (data.failure?.reason) {
+        toast.error(data.failure?.reason)
+        return
+      }
+      setTheme(themeState)
+      queryClient.invalidateQueries({
+        queryKey: ["themes"]
+      })
+      toast.success("Tema guardado")
+      resetStatus()
+    },
+    onError: () => {
+      toast.error("Algo salió mal al guardar el tema")
+      resetStatus()
+    }
+  })
+
   const handleCreateTheme = () => {
     const name = "Personalizado"
-    const id = Math.random().toString(36).substring(7)
+    const id = nanoid(7)
+    const scope = ThemeScope.USER
+    setThemeState(prev => ({ ...prev, id, name }))
     execute({
+      id,
       name,
-      scope: "CUSTOM",
+      scope,
       themeType: "COLOR",
       themeJSON: JSON.stringify(
         // replace id in themeState
-        { ...themeState, id }
+        { ...themeState, id, name, scope }
       ),
       organizationId: menu?.organizationId
+    })
+  }
+
+  const handleUpdateTheme = () => {
+    if (themeState.scope === "GLOBAL") {
+      handleCreateTheme()
+      return
+    }
+    updateTheme({
+      id: themeState.id,
+      name: themeState.name,
+      themeJSON: JSON.stringify(themeState)
     })
   }
 
@@ -209,20 +260,22 @@ export function ColorThemeEditor({
           </dd>
         </div>
       </fieldset>
-      <div>
-        <Button
-          variant="default"
-          size="sm"
-          className="w-full"
-          onClick={handleCreateTheme}
-        >
-          {status === "executing" ? (
+      <div className="flex flex-row justify-end gap-1">
+        <Button variant="outline" size="sm" onClick={handleUpdateTheme}>
+          {updateStatus === "executing" ? (
             <Loader className="size-5 animate-spin" />
           ) : (
             "Guardar"
           )}
         </Button>
-        <Button
+        <Button variant="outline" size="sm" onClick={handleCreateTheme}>
+          {status === "executing" ? (
+            <Loader className="size-5 animate-spin" />
+          ) : (
+            "Duplicar"
+          )}
+        </Button>
+        {/* <Button
           variant="secondary"
           size="sm"
           className="mt-2 w-full"
@@ -232,7 +285,7 @@ export function ColorThemeEditor({
           }}
         >
           Copiar JSON
-        </Button>
+        </Button> */}
       </div>
     </div>
   )
