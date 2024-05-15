@@ -1,9 +1,7 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import type { Prisma } from "@prisma/client"
-import { useQueryClient } from "@tanstack/react-query"
 import { hexToHsva, Sketch } from "@uiw/react-color"
-import { Loader } from "lucide-react"
 import { nanoid } from "nanoid"
 // import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { useAction } from "next-safe-action/hooks"
@@ -18,6 +16,7 @@ import {
 } from "@/components/ui/popover"
 import {
   createColorTheme,
+  deleteColorTheme,
   updateColorTheme
 } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
@@ -28,17 +27,16 @@ export function ColorThemeEditor({
   fontDisplay,
   fontText,
   theme,
-  setTheme
+  setTheme,
+  removeTheme
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
   fontDisplay?: string
   fontText?: string
   theme: (typeof colorThemes)[0]
   setTheme: (theme: (typeof colorThemes)[0]) => void
-  open?: boolean
-  onClose?: () => void
+  removeTheme: (themeId: string) => void
 }) {
-  const queryClient = useQueryClient()
   const [themeState, setThemeState] = useState(theme)
   const { execute, status, reset } = useAction(createColorTheme, {
     onSuccess: data => {
@@ -46,11 +44,10 @@ export function ColorThemeEditor({
         toast.error(data.failure?.reason)
         return
       }
-      setTheme(themeState)
-      queryClient.invalidateQueries({
-        queryKey: ["themes"]
-      })
-      toast.success("Tema guardado")
+      if (data.success) {
+        setTheme(JSON.parse(data.success.themeJSON))
+        toast.success("Tema guardado")
+      }
       reset()
     },
     onError: () => {
@@ -69,11 +66,11 @@ export function ColorThemeEditor({
         toast.error(data.failure?.reason)
         return
       }
-      setTheme(themeState)
-      queryClient.invalidateQueries({
-        queryKey: ["themes"]
-      })
-      toast.success("Tema guardado")
+
+      if (data.success) {
+        setTheme(JSON.parse(data.success.themeJSON))
+        toast.success("Tema guardado")
+      }
       resetStatus()
     },
     onError: () => {
@@ -82,11 +79,31 @@ export function ColorThemeEditor({
     }
   })
 
+  const {
+    execute: deleteTheme,
+    status: deleteStatus,
+    reset: resetDeleteStatus
+  } = useAction(deleteColorTheme, {
+    onSuccess: data => {
+      if (data.failure?.reason) {
+        toast.error(data.failure?.reason)
+        return
+      }
+      removeTheme(themeState.id)
+      toast.success("Tema eliminado")
+      resetDeleteStatus()
+    },
+    onError: () => {
+      toast.error("Algo salió mal al eliminar el tema")
+      resetDeleteStatus()
+    }
+  })
+
   const handleCreateTheme = () => {
     const name = "Personalizado"
-    const id = nanoid(7)
+    const id = nanoid(10)
     const scope = ThemeScope.USER
-    setThemeState(prev => ({ ...prev, id, name }))
+    setThemeState(prev => ({ ...prev, id, name, scope }))
     execute({
       id,
       name,
@@ -261,19 +278,43 @@ export function ColorThemeEditor({
         </div>
       </fieldset>
       <div className="flex flex-row justify-end gap-1">
-        <Button variant="outline" size="sm" onClick={handleUpdateTheme}>
-          {updateStatus === "executing" ? (
-            <Loader className="size-5 animate-spin" />
-          ) : (
-            "Guardar"
-          )}
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={
+            status === "executing" ||
+            updateStatus === "executing" ||
+            deleteStatus === "executing"
+          }
+          onClick={handleUpdateTheme}
+        >
+          Guardar
         </Button>
-        <Button variant="outline" size="sm" onClick={handleCreateTheme}>
-          {status === "executing" ? (
-            <Loader className="size-5 animate-spin" />
-          ) : (
-            "Duplicar"
-          )}
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={
+            status === "executing" ||
+            updateStatus === "executing" ||
+            deleteStatus === "executing"
+          }
+          onClick={handleCreateTheme}
+        >
+          Duplicar
+        </Button>
+        <Button
+          variant="destructive"
+          size="sm"
+          disabled={
+            status === "executing" ||
+            updateStatus === "executing" ||
+            deleteStatus === "executing"
+          }
+          onClick={() => {
+            deleteTheme({ id: themeState.id })
+          }}
+        >
+          Eliminar
         </Button>
         {/* <Button
           variant="secondary"
@@ -364,7 +405,7 @@ function ThemePreview({
                 color: theme.brandColor
               }}
             >
-              0.00
+              99.00
             </span>
           </FontWrapper>
         </div>

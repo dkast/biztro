@@ -239,6 +239,8 @@ export const createColorTheme = action(
         }
       })
 
+      revalidateTag(`themes-${themeType}-${organizationId}`)
+
       return {
         success: colorTheme
       }
@@ -275,6 +277,10 @@ export const updateColorTheme = action(
         data: { name, themeJSON }
       })
 
+      revalidateTag(
+        `themes-${colorTheme.themeType}-${colorTheme.organizationId}`
+      )
+
       return {
         success: colorTheme
       }
@@ -286,6 +292,40 @@ export const updateColorTheme = action(
         if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
           message = "Ya existe un tema con ese nombre"
         }
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const deleteColorTheme = action(
+  z.object({
+    id: z.string()
+  }),
+  async ({ id }) => {
+    const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+    try {
+      await prisma.theme.delete({
+        where: { id, organizationId: currentOrg }
+      })
+
+      revalidateTag(`themes-${id}-${currentOrg}`)
+
+      return {
+        success: true
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        message = error.message
       } else if (error instanceof Error) {
         message = error.message
       }

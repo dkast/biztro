@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { PopoverAnchor } from "@radix-ui/react-popover"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtom } from "jotai"
 import { ChevronsUpDown } from "lucide-react"
@@ -42,12 +42,15 @@ export default function ThemeSelector({
     nodes: state.nodes
   }))
 
+  const queryClient = useQueryClient()
   const { data: userColorThemes } = useQuery({
     queryKey: ["themes"],
     queryFn: () => getThemes({ themeType: "COLOR" })
   })
 
-  console.log("userColorThemes", userColorThemes)
+  const [openColorThemeEditor, setOpenColorThemeEditor] = useState(false)
+
+  // console.log("userColorThemes", userColorThemes)
 
   useEffect(() => {
     if (userColorThemes) {
@@ -128,8 +131,15 @@ export default function ThemeSelector({
   }, [fontThemeId])
 
   useEffect(() => {
+    updateColorTheme(colorThemeId)
+  }, [colorThemeId])
+
+  const updateColorTheme = (colorThemeId: string) => {
     const selectedTheme = colorThemes.find(theme => theme.id === colorThemeId)
-    if (!selectedTheme) return
+    if (!selectedTheme) {
+      console.error("Theme not found")
+      return
+    }
 
     setSelectedColorTheme(selectedTheme)
 
@@ -185,7 +195,7 @@ export default function ThemeSelector({
         }
       }
     }
-  }, [colorThemeId])
+  }
 
   // Verify if the menu theme has changed
   const { setUnsavedChanges, clearUnsavedChanges } = useSetUnsavedChanges()
@@ -345,7 +355,10 @@ export default function ThemeSelector({
         </div>
         <div>
           {selectedColorTheme && (
-            <Sheet>
+            <Sheet
+              open={openColorThemeEditor}
+              onOpenChange={setOpenColorThemeEditor}
+            >
               <SheetTrigger asChild>
                 <Button variant="secondary" className="w-full">
                   Personalizar tema
@@ -364,28 +377,38 @@ export default function ThemeSelector({
                   fontText={selectedFontTheme?.fontText}
                   theme={selectedColorTheme}
                   setTheme={(theme: (typeof colorThemes)[0]) => {
-                    // const randomId = Math.random().toString(36).substring(7)
-                    // if (theme.scope === "GLOBAL") {
-                    //   // Copy the theme to avoid modifying the original
-                    //   theme = { ...theme }
-                    //   theme.id = "CUSTOM-" + randomId
-                    //   theme.name = "Personalizado"
-                    //   theme.scope = "CUSTOM"
-                    // } else {
-                    //   theme.id = "CUSTOM-" + randomId
-                    // }
-
-                    // // If custom theme already exists, remove it
-                    // const customThemeIndex = colorThemes.findIndex(
-                    //   t => t.id === theme.id
-                    // )
-                    // if (customThemeIndex !== -1) {
-                    //   colorThemes.splice(customThemeIndex, 1)
-                    // }
-                    // colorThemes.push(theme)
-                    console.log("colorThemes", colorThemes)
-                    // setSelectedColorTheme(theme)
-                    setColorThemeId(theme.id)
+                    // console.log("theme", theme)
+                    // console.log("colorThemes", colorThemes)
+                    const selectedTheme = colorThemes.find(
+                      t => t.id === theme.id
+                    )
+                    if (!selectedTheme) {
+                      // If the theme is not found, add it to the list
+                      colorThemes.push(theme)
+                      setColorThemeId(theme.id)
+                    } else {
+                      const index = colorThemes.findIndex(
+                        t => t.id === theme.id
+                      )
+                      colorThemes[index] = theme
+                      // Manually update the theme
+                      updateColorTheme(theme.id)
+                    }
+                    queryClient.invalidateQueries({
+                      queryKey: ["themes"]
+                    })
+                    setOpenColorThemeEditor(false)
+                  }}
+                  removeTheme={(themeId: string) => {
+                    const index = colorThemes.findIndex(t => t.id === themeId)
+                    colorThemes.splice(index, 1)
+                    if (colorThemes[0]) {
+                      setColorThemeId(colorThemes[0].id)
+                    }
+                    queryClient.invalidateQueries({
+                      queryKey: ["themes"]
+                    })
+                    setOpenColorThemeEditor(false)
                   }}
                 />
               </SheetContent>
