@@ -50,12 +50,12 @@ export default function LayerHeader() {
     <div
       ref={divRef}
       className={cn(
-        selected ? "bg-violet-600 text-white" : "bg-transparent text-gray-700",
+        selected ? "bg-lime-600 text-white" : "bg-transparent text-gray-700",
         "flex flex-row items-center px-2 py-2"
       )}
     >
       <button
-        className={cn("relative mx-3 flex size-3 cursor-pointer")}
+        className={cn("relative mx-3 flex size-3 cursor-pointer opacity-50")}
         onClick={() => actions.setHidden(id, !hidden)}
       >
         {hidden ? <EyeOff className="size-3" /> : <Eye className="size-3" />}

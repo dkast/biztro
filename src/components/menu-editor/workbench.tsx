@@ -127,17 +127,17 @@ export default function Workbench({
             className="flex"
           >
             <Tabs defaultValue="theme" className="flex grow flex-col">
-              <TabsList className="m-2 grid grid-cols-2">
+              <TabsList className="m-2 grid grid-cols-2 rounded-lg">
                 <TabsTrigger
                   value="theme"
-                  className="flex flex-row items-center gap-1 rounded"
+                  className="flex flex-row items-center gap-1 rounded-md"
                 >
                   <Palette className="hidden size-3.5 lg:block" />
                   <span>Tema</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="settings"
-                  className="flex flex-row items-center gap-1 rounded"
+                  className="flex flex-row items-center gap-1 rounded-md"
                 >
                   <Settings2 className="hidden size-3.5 lg:block" />
                   <span>Ajustes</span>

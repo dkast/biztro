@@ -1,6 +1,7 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { PopoverAnchor } from "@radix-ui/react-popover"
@@ -8,6 +9,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtom } from "jotai"
 import { ChevronsUpDown } from "lucide-react"
+import lz from "lzutf8"
+import { useAction } from "next-safe-action/hooks"
 
 import { useSetUnsavedChanges } from "@/components/dashboard/unsaved-changes-provider"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
@@ -28,6 +31,7 @@ import {
   SheetTitle,
   SheetTrigger
 } from "@/components/ui/sheet"
+import { updateMenuSerialData } from "@/server/actions/menu/mutations"
 import { getThemes, type getMenuById } from "@/server/actions/menu/queries"
 import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import { colorThemes, fontThemes } from "@/lib/types"
@@ -38,7 +42,7 @@ export default function ThemeSelector({
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
 }) {
-  const { nodes, actions } = useEditor(state => ({
+  const { nodes, actions, query } = useEditor(state => ({
     nodes: state.nodes
   }))
 
@@ -49,8 +53,6 @@ export default function ThemeSelector({
   })
 
   const [openColorThemeEditor, setOpenColorThemeEditor] = useState(false)
-
-  // console.log("userColorThemes", userColorThemes)
 
   useEffect(() => {
     if (userColorThemes) {
@@ -197,6 +199,31 @@ export default function ThemeSelector({
     }
   }
 
+  // Update the menu theme
+  const {
+    execute: updateSerialData,
+    // status: statusSerialData,
+    reset: resetSerialData
+  } = useAction(updateMenuSerialData, {
+    onSuccess: data => {
+      if (data.success) {
+        toast.success("Menú actualizado")
+        queryClient.invalidateQueries({
+          queryKey: ["menu", menu?.id]
+        })
+        // Reset history to avoid undoing the update
+        actions.history.clear()
+      } else if (data.failure.reason) {
+        toast.error(data.failure.reason)
+      }
+      resetSerialData()
+    },
+    onError: () => {
+      toast.error("Ocurrió un error")
+      resetSerialData()
+    }
+  })
+
   // Verify if the menu theme has changed
   const { setUnsavedChanges, clearUnsavedChanges } = useSetUnsavedChanges()
 
@@ -230,12 +257,26 @@ export default function ThemeSelector({
     clearUnsavedChanges
   ])
 
+  if (!menu) return null
+
+  const onUpdateSerialData = (colorThemeId: string) => {
+    updateColorTheme(colorThemeId)
+    const json = query.serialize()
+    const serialData = lz.encodeBase64(lz.compress(json))
+    updateSerialData({
+      id: menu?.id,
+      fontTheme: fontThemeId,
+      colorTheme: colorThemeId,
+      serialData
+    })
+  }
+
   return (
     <div className="flex flex-col py-3">
       <SideSection title="Tipografía">
         <Popover>
           <PopoverTrigger asChild>
-            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-violet-500">
+            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100">
               <div>
                 <FontWrapper fontFamily={selectedFontTheme?.fontDisplay}>
                   <span className="text-base font-medium">
@@ -250,7 +291,7 @@ export default function ThemeSelector({
             </button>
           </PopoverTrigger>
           <PopoverAnchor asChild>
-            <div className="-ml-44 size-4" />
+            <div className="-ml-44 size-0" />
           </PopoverAnchor>
           <PopoverContent className="-mt-20">
             <Label className="mb-4 block">Tipografías</Label>
@@ -265,7 +306,7 @@ export default function ThemeSelector({
                     {fontThemes.map(theme => (
                       <label
                         key={theme.name}
-                        className="cursor-pointer [&:has([data-state=checked])>div]:border-violet-500"
+                        className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50"
                       >
                         <RadioGroupItem
                           value={theme.name}
@@ -294,24 +335,26 @@ export default function ThemeSelector({
         <div>
           <Popover>
             <PopoverTrigger asChild>
-              <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-violet-500">
-                <span className="text-sm font-medium">
-                  {selectedColorTheme?.name}
-                </span>
-                <div className="flex flex-row items-center gap-2">
-                  <div className="isolate flex -space-x-1.5 overflow-hidden">
-                    <ColorChip color={selectedColorTheme?.surfaceColor} />
-                    <ColorChip color={selectedColorTheme?.brandColor} />
-                    <ColorChip color={selectedColorTheme?.accentColor} />
-                    <ColorChip color={selectedColorTheme?.textColor} />
-                    <ColorChip color={selectedColorTheme?.mutedColor} />
+              <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100">
+                <div className="space-y-1">
+                  <span className="text-sm font-medium">
+                    {selectedColorTheme?.name}
+                  </span>
+                  <div className="flex flex-row items-center gap-2">
+                    <div className="isolate flex -space-x-1.5 overflow-hidden">
+                      <ColorChip color={selectedColorTheme?.surfaceColor} />
+                      <ColorChip color={selectedColorTheme?.brandColor} />
+                      <ColorChip color={selectedColorTheme?.accentColor} />
+                      <ColorChip color={selectedColorTheme?.textColor} />
+                      <ColorChip color={selectedColorTheme?.mutedColor} />
+                    </div>
                   </div>
-                  <ChevronsUpDown className="size-4 text-gray-500" />
                 </div>
+                <ChevronsUpDown className="size-4 text-gray-500" />
               </button>
             </PopoverTrigger>
             <PopoverAnchor asChild>
-              <div className="-ml-32 size-4" />
+              <div className="-ml-32 size-0" />
             </PopoverAnchor>
             <PopoverContent className="-mt-20 max-w-[200px]">
               <Label className="mb-4 block">Colores</Label>
@@ -326,7 +369,7 @@ export default function ThemeSelector({
                       {colorThemes.map(theme => (
                         <label
                           key={theme.id}
-                          className="cursor-pointer [&:has([data-state=checked])>div]:border-violet-500"
+                          className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50"
                         >
                           <RadioGroupItem
                             value={theme.id}
@@ -404,6 +447,7 @@ export default function ThemeSelector({
                     colorThemes.splice(index, 1)
                     if (colorThemes[0]) {
                       setColorThemeId(colorThemes[0].id)
+                      onUpdateSerialData(colorThemes[0].id)
                     }
                     queryClient.invalidateQueries({
                       queryKey: ["themes"]

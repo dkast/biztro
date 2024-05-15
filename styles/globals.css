@@ -4,11 +4,11 @@
 
 @layer components {
   .component-selected {
-    @apply outline outline-1 outline-violet-500;
+    @apply outline outline-1 outline-lime-500;
   }
 
   .component-hovered {
-    @apply outline outline-1 outline-violet-500;
+    @apply outline outline-1 outline-lime-500;
   }
 }
 

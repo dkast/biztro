@@ -160,7 +160,7 @@ export default function MenuPublish({
               llevará a la siguiente dirección:{" "}
               <Link
                 href={`${getBaseUrl()}/${menu.organization.subdomain}`}
-                className="text-violet-500 hover:text-violet-700"
+                className="text-blue-600 hover:text-blue-800"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -181,8 +181,8 @@ export default function MenuPublish({
         <PopoverContent className="w-80">
           {menu.status === MenuStatus.DRAFT ? (
             <div className="flex flex-col items-center gap-2">
-              <span className="rounded-full bg-green-50 p-1 text-green-700">
-                <Globe className="size-5" />
+              <span className="rounded-full bg-lime-100 p-1 text-lime-600">
+                <Globe className="size-6" />
               </span>
               <span className="text-sm font-medium">Publicar Menú</span>
               <span className="text-xs text-gray-600">

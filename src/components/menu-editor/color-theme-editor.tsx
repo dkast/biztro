@@ -277,7 +277,7 @@ export function ColorThemeEditor({
           </dd>
         </div>
       </fieldset>
-      <div className="flex flex-row justify-end gap-1">
+      <div className="grid grid-cols-3 gap-1">
         <Button
           variant="outline"
           size="sm"
@@ -308,7 +308,8 @@ export function ColorThemeEditor({
           disabled={
             status === "executing" ||
             updateStatus === "executing" ||
-            deleteStatus === "executing"
+            deleteStatus === "executing" ||
+            themeState.scope === "GLOBAL"
           }
           onClick={() => {
             deleteTheme({ id: themeState.id })
