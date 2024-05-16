@@ -1,15 +1,9 @@
 import { useNode } from "@craftjs/core"
-import { rgbaToHsva, Sketch } from "@uiw/react-color"
 import { AlignCenter, AlignLeft, AlignRight } from "lucide-react"
 
 import type { CategoryBlockProps } from "@/components/menu-editor/blocks/category-block"
 import SideSection from "@/components/menu-editor/side-section"
 import { Label } from "@/components/ui/label"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Select,
@@ -26,14 +20,11 @@ export default function CategorySettings() {
   const {
     actions: { setProp },
     categoryFontSize,
-    categoryColor,
     categoryFontWeight,
     categoryTextAlign,
     itemFontSize,
-    itemColor,
     itemFontWeight,
     priceFontSize,
-    priceColor,
     priceFontWeight,
     showImage
   } = useNode(node => ({
@@ -78,33 +69,6 @@ export default function CategorySettings() {
               </SelectContent>
             </Select>
           </dd>
-          {/* <dt>
-            <Label size="sm">Color</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Popover>
-              <PopoverTrigger>
-                <div
-                  className="h-5 w-12 rounded border border-black/10"
-                  style={{
-                    backgroundColor: `rgb(${Object.values(categoryColor)})`
-                  }}
-                ></div>
-              </PopoverTrigger>
-              <PopoverContent className="border-0 p-0 shadow-none">
-                <Sketch
-                  disableAlpha
-                  color={rgbaToHsva(categoryColor)}
-                  onChange={color =>
-                    setProp(
-                      (props: CategoryBlockProps) =>
-                        (props.categoryColor = color.rgba)
-                    )
-                  }
-                />
-              </PopoverContent>
-            </Popover>
-          </dd> */}
           <dt>
             <Label size="sm">Estilo</Label>
           </dt>
@@ -184,33 +148,6 @@ export default function CategorySettings() {
               </SelectContent>
             </Select>
           </dd>
-          {/* <dt>
-            <Label size="sm">Color</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Popover>
-              <PopoverTrigger>
-                <div
-                  className="h-5 w-12 rounded border border-black/10"
-                  style={{
-                    backgroundColor: `rgb(${Object.values(itemColor)})`
-                  }}
-                ></div>
-              </PopoverTrigger>
-              <PopoverContent className="border-0 p-0 shadow-none">
-                <Sketch
-                  disableAlpha
-                  color={rgbaToHsva(itemColor)}
-                  onChange={color =>
-                    setProp(
-                      (props: CategoryBlockProps) =>
-                        (props.itemColor = color.rgba)
-                    )
-                  }
-                />
-              </PopoverContent>
-            </Popover>
-          </dd> */}
           <dt>
             <Label size="sm">Estilo</Label>
           </dt>
@@ -263,33 +200,6 @@ export default function CategorySettings() {
               </SelectContent>
             </Select>
           </dd>
-          {/* <dt>
-            <Label size="sm">Color</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Popover>
-              <PopoverTrigger>
-                <div
-                  className="h-5 w-12 rounded border border-black/10"
-                  style={{
-                    backgroundColor: `rgb(${Object.values(priceColor)})`
-                  }}
-                ></div>
-              </PopoverTrigger>
-              <PopoverContent className="border-0 p-0 shadow-none">
-                <Sketch
-                  disableAlpha
-                  color={rgbaToHsva(priceColor)}
-                  onChange={color =>
-                    setProp(
-                      (props: CategoryBlockProps) =>
-                        (props.priceColor = color.rgba)
-                    )
-                  }
-                />
-              </PopoverContent>
-            </Popover>
-          </dd> */}
           <dt>
             <Label size="sm">Estilo</Label>
           </dt>

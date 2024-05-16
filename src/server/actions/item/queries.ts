@@ -53,7 +53,7 @@ export async function getMenuItemById(id: string) {
   })
 
   if (item?.image) {
-    item.image = env.R2_CUSTOM_DOMAIN + "/" + item.image
+    item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}`
   }
 
   return item
@@ -128,7 +128,7 @@ export async function getCategoriesWithItems() {
   for (const category of data) {
     for (const item of category.menuItems) {
       if (item.image) {
-        item.image = env.R2_CUSTOM_DOMAIN + "/" + item.image
+        item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}`
       }
     }
   }

@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect } from "react"
 import { useEditor } from "@craftjs/core"
 import type { Location, Organization, Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"

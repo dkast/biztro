@@ -25,10 +25,10 @@ export default function FontWrapper({
         google: {
           families: [`${fontFamily}:300,400,500,700`]
         },
-        fontactive: function (familyName, _fvd) {
+        fontactive: function (_familyName, _fvd) {
           // console.log(familyName + " has loaded.")
         },
-        fontinactive: function (familyName, _fvd) {
+        fontinactive: function (_familyName, _fvd) {
           // console.log(familyName + " failed to load.")
         }
       })
