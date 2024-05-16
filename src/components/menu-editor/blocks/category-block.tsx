@@ -22,6 +22,8 @@ export type CategoryBlockProps = {
   priceColor?: RgbaColor
   priceFontWeight?: string
   priceFontFamily?: string
+  descriptionFontFamily?: string
+  descriptionColor?: RgbaColor
   showImage?: boolean
 }
 
@@ -40,6 +42,8 @@ export default function CategoryBlock({
   priceColor,
   priceFontWeight,
   priceFontFamily,
+  descriptionFontFamily,
+  descriptionColor,
   showImage
 }: CategoryBlockProps) {
   const {
@@ -52,10 +56,11 @@ export default function CategoryBlock({
           connect(ref)
         }
       }}
-      className="px-4"
+      className="px-4 pb-4"
     >
       <h2
         style={{
+          fontFamily: categoryFontFamily,
           fontSize: `${categoryFontSize}px`,
           color: `rgba(${Object.values(categoryColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
           fontWeight: categoryFontWeight,
@@ -72,7 +77,7 @@ export default function CategoryBlock({
             <div key={item.id}>
               <div
                 className={cn(
-                  "flex flex-row justify-between",
+                  "flex flex-row justify-between gap-2",
                   hasVariants ? "items-start" : "items-center"
                 )}
               >
@@ -91,6 +96,7 @@ export default function CategoryBlock({
                   <div>
                     <h3
                       style={{
+                        fontFamily: itemFontFamily,
                         fontSize: `${itemFontSize}px`,
                         color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
                         fontWeight: itemFontWeight
@@ -98,7 +104,13 @@ export default function CategoryBlock({
                     >
                       {item.name}
                     </h3>
-                    <span className="line-clamp-3 text-sm">
+                    <span
+                      className="line-clamp-3 text-sm"
+                      style={{
+                        fontFamily: descriptionFontFamily,
+                        color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                      }}
+                    >
                       {item.description}
                     </span>
                   </div>
@@ -113,12 +125,15 @@ export default function CategoryBlock({
                         <span className="text-sm">{variant.name}</span>
                         <span
                           style={{
+                            fontFamily: priceFontFamily,
                             fontSize: `${priceFontSize}px`,
                             color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
                             fontWeight: priceFontWeight
                           }}
                         >
-                          {variant.price}
+                          {variant.price % 1 === 0
+                            ? variant.price
+                            : variant.price.toFixed(2)}
                         </span>
                       </div>
                     ))}
@@ -126,12 +141,16 @@ export default function CategoryBlock({
                 ) : (
                   <span
                     style={{
+                      fontFamily: priceFontFamily,
                       fontSize: `${priceFontSize}px`,
                       color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
                       fontWeight: priceFontWeight
                     }}
                   >
-                    {item.variants[0]?.price}
+                    {/* If it has decimal values, show them in the price as well with 2 decimal places */}
+                    {(item.variants[0]?.price ?? 0) % 1 === 0
+                      ? item.variants[0]?.price
+                      : item.variants[0]?.price.toFixed(2)}
                   </span>
                 )}
               </div>
@@ -146,19 +165,21 @@ export default function CategoryBlock({
 CategoryBlock.craft = {
   displayName: "Categoría",
   props: {
-    categoryFontSize: 18,
+    categoryFontSize: 20,
     categoryColor: { r: 38, g: 50, b: 56, a: 1 },
-    categoryFontWeight: "600",
+    categoryFontWeight: "700",
     categoryFontFamily: "Inter",
     categoryTextAlign: "left",
     itemFontSize: 16,
     itemColor: { r: 38, g: 50, b: 56, a: 1 },
-    itemFontWeight: "500",
+    itemFontWeight: "600",
     itemFontFamily: "Inter",
     priceFontSize: 14,
     priceColor: { r: 38, g: 50, b: 56, a: 1 },
     priceFontWeight: "500",
     priceFontFamily: "Inter",
+    descriptionFontFamily: "Inter",
+    descriptionColor: { r: 38, g: 50, b: 56, a: 1 },
     showImage: true
   },
   related: {

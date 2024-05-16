@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
-import type { Organization, Prisma } from "@prisma/client"
+import type { Location, Organization, Prisma } from "@prisma/client"
 import { RefreshCcw } from "lucide-react"
 import lz from "lzutf8"
 
@@ -14,9 +14,11 @@ import difference from "@/lib/difference"
 
 export default function SyncStatus({
   menu,
+  location,
   categories
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
+  location: Location | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
   const { actions } = useEditor()
@@ -31,6 +33,7 @@ export default function SyncStatus({
         typeof getCategoriesWithItems
       > = []
       let organization: Organization | null = null
+      let defaultLocation: Location | null = null
 
       for (const property in objectData) {
         const component = objectData[property]
@@ -40,6 +43,7 @@ export default function SyncStatus({
 
         if (component?.type?.resolvedName === "HeaderBlock") {
           organization = component?.props?.organization
+          defaultLocation = component?.props?.location
         }
       }
 
@@ -60,7 +64,6 @@ export default function SyncStatus({
           new Date(menuCategory.updatedAt).getTime()
         )
       })
-      // console.log("categories", equalData)
 
       if (!equalData) {
         setSyncReq(true)
@@ -94,7 +97,6 @@ export default function SyncStatus({
           )
         })
       })
-      // console.log("items", equalData)
 
       if (!equalData) {
         setSyncReq(true)
@@ -121,7 +123,6 @@ export default function SyncStatus({
           return true
         }
       })
-      // console.log("new items", equalData)
 
       if (!equalData) {
         setSyncReq(true)
@@ -132,7 +133,7 @@ export default function SyncStatus({
       let equalMenu = true
       if (organization) {
         const diff = difference(organization, menu.organization)
-        console.log("diff", diff)
+        // console.log(diff)
         Object.getOwnPropertyNames(diff).forEach(propName => {
           if (
             propName === "banner" ||
@@ -144,11 +145,35 @@ export default function SyncStatus({
         })
       }
 
-      // console.log("equalData", equalData)
-      // console.log("equalMenu", equalMenu)
+      if (defaultLocation && !location) {
+        equalMenu = false
+      }
+
+      if (!defaultLocation && location) {
+        equalMenu = false
+      }
+
+      if (defaultLocation && location) {
+        const diff = difference(defaultLocation, location)
+        Object.getOwnPropertyNames(diff).forEach(propName => {
+          if (
+            propName === "address" ||
+            propName === "phone" ||
+            propName === "facebook" ||
+            propName === "instagram" ||
+            propName === "twitter" ||
+            propName === "tiktok" ||
+            propName === "whatsapp" ||
+            propName === "website"
+          ) {
+            equalMenu = false
+          }
+        })
+      }
+
       setSyncReq(!equalData || !equalMenu)
     }
-  }, [menu, categories, setSyncReq])
+  }, [menu, categories, location, setSyncReq])
 
   const syncState = () => {
     if (menu && menu?.serialData) {
@@ -172,6 +197,7 @@ export default function SyncStatus({
           // organization = component?.props?.organization
           actions.setProp(property, props => {
             props.organization = menu?.organization
+            props.location = location
           })
         }
       }

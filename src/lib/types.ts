@@ -227,3 +227,229 @@ export const enum MenuStatus {
   PUBLISHED = "PUBLISHED",
   DRAFT = "DRAFT"
 }
+
+export const enum ThemeType {
+  FONT = "FONT",
+  COLOR = "COLOR"
+}
+
+export const enum ThemeScope {
+  GLOBAL = "GLOBAL",
+  USER = "USER"
+}
+
+export const fontThemes = [
+  {
+    name: "DEFAULT",
+    fontDisplay: "Inter",
+    fontText: "Inter"
+  },
+  {
+    name: "MONACO",
+    fontDisplay: "DM Serif Display",
+    fontText: "DM Sans"
+  },
+  {
+    name: "PORTLAND",
+    fontDisplay: "Quicksand",
+    fontText: "Quicksand"
+  },
+  {
+    name: "BERLIN",
+    fontDisplay: "Work Sans",
+    fontText: "Merriweather"
+  },
+  {
+    name: "AMSTERDAM",
+    fontDisplay: "Playfair Display",
+    fontText: "Lato"
+  },
+  {
+    name: "GAZA",
+    fontDisplay: "Yeseva One",
+    fontText: "Josefin Sans"
+  },
+  {
+    name: "OSLO",
+    fontDisplay: "Raleway",
+    fontText: "Libre Baskerville"
+  },
+  {
+    name: "ROMA",
+    fontDisplay: "Cinzel",
+    fontText: "Fauna One"
+  },
+  {
+    name: "PARIS",
+    fontDisplay: "Poiret One",
+    fontText: "Montserrat"
+  },
+  {
+    name: "KIEV",
+    fontDisplay: "Montserrat",
+    fontText: "Open Sans"
+  },
+  {
+    name: "TUCSON",
+    fontDisplay: "Outfit",
+    fontText: "Outfit"
+  },
+  {
+    name: "CHICAGO",
+    fontDisplay: "Oswald",
+    fontText: "Merriweather"
+  },
+  {
+    name: "ORLANDO",
+    fontDisplay: "Bubblegum Sans",
+    fontText: "Open Sans"
+  },
+  {
+    name: "MADRID",
+    fontDisplay: "Bungee",
+    fontText: "Outfit"
+  },
+  {
+    name: "FLORENCIA",
+    fontDisplay: "Caveat",
+    fontText: "Lato"
+  },
+  {
+    name: "LISBOA",
+    fontDisplay: "Pacifico",
+    fontText: "QuickSand"
+  },
+  {
+    name: "MILAN",
+    fontDisplay: "Orelega One",
+    fontText: "Merriweather"
+  },
+  {
+    name: "ALAMO",
+    fontDisplay: "Rye",
+    fontText: "Lora"
+  },
+  {
+    name: "SACRAMENTO",
+    fontDisplay: "Sacramento",
+    fontText: "Playfair Display"
+  },
+  {
+    name: "MICHIGAN",
+    fontDisplay: "Arvo",
+    fontText: "Montserrat"
+  },
+  {
+    name: "GOTHAM",
+    fontDisplay: "Satisfy",
+    fontText: "Open Sans"
+  },
+  {
+    name: "AUSTIN",
+    fontDisplay: "Unica One",
+    fontText: "Crimson Text"
+  },
+  {
+    name: "SEATTLE",
+    fontDisplay: "Mulish",
+    fontText: "Space Mono"
+  },
+  {
+    name: "OAKLAND",
+    fontDisplay: "Teko",
+    fontText: "Montserrat"
+  }
+]
+
+export const colorThemes = [
+  {
+    id: "default",
+    name: "Default",
+    surfaceColor: "#ffffff",
+    brandColor: "#131313",
+    accentColor: "#424242",
+    textColor: "#131313",
+    mutedColor: "#636363",
+    scope: "GLOBAL"
+  },
+  {
+    id: "terra_light",
+    name: "Terra",
+    surfaceColor: "##fff8f6",
+    brandColor: "#231917",
+    accentColor: "#8f4c38",
+    textColor: "#231917",
+    mutedColor: "#6f5600",
+    scope: "GLOBAL"
+  },
+  {
+    id: "terra_dark",
+    name: "Terra oscuro",
+    surfaceColor: "#271d1b",
+    brandColor: "#f1dfda",
+    accentColor: "#ffb5a0",
+    textColor: "#f1dfda",
+    mutedColor: "#f5e1a7",
+    scope: "GLOBAL"
+  },
+  {
+    id: "flora_light",
+    name: "Flora",
+    surfaceColor: "#f9faef",
+    brandColor: "#1a1c16",
+    accentColor: "#4c662b",
+    textColor: "#1a1c16",
+    mutedColor: "#006c65",
+    scope: "GLOBAL"
+  },
+  {
+    id: "flora_dark",
+    name: "Flora oscuro",
+    surfaceColor: "#1e201a",
+    brandColor: "#e2e3d8",
+    accentColor: "#b1d18a",
+    textColor: "#e2e3d8",
+    mutedColor: "#bcece7",
+    scope: "GLOBAL"
+  },
+  {
+    id: "azure_light",
+    name: "Azure",
+    surfaceColor: "#f9f9ff",
+    brandColor: "#191c20",
+    accentColor: "#415f91",
+    textColor: "#191c20",
+    mutedColor: "#6a327a",
+    scope: "GLOBAL"
+  },
+  {
+    id: "azure_dark",
+    name: "Azure oscuro",
+    surfaceColor: "#1d2024",
+    brandColor: "#dedee4",
+    accentColor: "#aac7ff",
+    textColor: "#dedee4",
+    mutedColor: "#fad8fd",
+    scope: "GLOBAL"
+  },
+  {
+    id: "helios_light",
+    name: "Helios",
+    surfaceColor: "#fff9ee",
+    brandColor: "#1e1b13",
+    accentColor: "#6d5e0f",
+    textColor: "#1e1b13",
+    mutedColor: "#365944",
+    scope: "GLOBAL"
+  },
+  {
+    id: "helios_dark",
+    name: "Helios oscuro",
+    surfaceColor: "#222017",
+    brandColor: "#e8e2d4",
+    accentColor: "#dbc66e",
+    textColor: "#e8e2d4",
+    mutedColor: "#bce3c6",
+    scope: "GLOBAL"
+  }
+]

@@ -91,6 +91,7 @@ model Organization {
   memberships  Membership[]
   menus        Menu[]
   menuItems    MenuItem[]
+  themes       Theme[]
 }
 
 model Location {
@@ -121,7 +122,23 @@ model Menu {
   organizationId String
   serialData     String?
   publishedData  String?
+  fontTheme      String       @default("DEFAULT")
+  colorTheme     String       @default("DEFAULT")
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model Theme {
+  id             String        @id @default(cuid())
+  name           String
+  scope          String        @default("CUSTOM")
+  themeType      String        @default("FONT")
+  themeJSON      String        @default("{}")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, name, scope])
 }
 
 model MenuItem {
@@ -163,8 +180,9 @@ model Variant {
 }
 
 model Invite {
-  id    String @id @default(cuid())
-  email String @unique
+  id      String  @id @default(cuid())
+  email   String  @unique
+  enabled Boolean @default(false)
 
   @@index([email])
 }

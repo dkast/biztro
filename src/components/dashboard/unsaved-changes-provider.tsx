@@ -34,6 +34,7 @@ export interface UnsavedChangesModalContent {
   dismissButtonLabel?: string
   proceedLinkLabel?: string
   proceedLinkHref?: string
+  proceedAction?: () => void
 }
 
 export interface UnsavedChangesContext {
@@ -76,6 +77,7 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesContext> = ({
           href={modalContent?.proceedLinkHref ?? "/"}
           onClick={() => {
             setShowModal(false)
+            modalContent?.proceedAction?.()
             setModalContent(undefined)
           }}
         >

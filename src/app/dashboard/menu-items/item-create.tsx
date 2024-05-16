@@ -1,5 +1,6 @@
 "use client"
 
+import { useTransition } from "react"
 import toast from "react-hot-toast"
 import { Loader, PlusCircle } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
@@ -10,6 +11,7 @@ import { createItem } from "@/server/actions/item/mutations"
 import { MenuItemStatus } from "@/lib/types"
 
 export default function ItemCreate() {
+  const [isPending, startTransition] = useTransition()
   const router = useRouter()
   const { execute, status, reset } = useAction(createItem, {
     onSuccess: data => {
@@ -17,8 +19,10 @@ export default function ItemCreate() {
         toast.error(data.failure.reason)
         return
       }
-      router.push(`/dashboard/menu-items/new/${data.success?.id}`)
-      reset()
+      startTransition(() => {
+        router.push(`/dashboard/menu-items/new/${data.success?.id}`)
+        reset()
+      })
     },
     onError: error => {
       console.error(error)
@@ -29,7 +33,7 @@ export default function ItemCreate() {
   return (
     <Button
       className="ml-auto gap-2"
-      disabled={status === "executing"}
+      disabled={status === "executing" || isPending}
       onClick={() =>
         execute({
           name: "Nuevo producto",
@@ -44,7 +48,7 @@ export default function ItemCreate() {
         })
       }
     >
-      {status === "executing" ? (
+      {status === "executing" || isPending ? (
         <Loader className="size-4 animate-spin" />
       ) : (
         <PlusCircle className="size-4" />

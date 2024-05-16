@@ -192,7 +192,7 @@ export default function ItemForm({
                 {status === "executing" ? (
                   <>
                     <Loader className="mr-2 size-4 animate-spin" />
-                    {"Guardando..."}
+                    {"Guardando"}
                   </>
                 ) : (
                   "Guardar"

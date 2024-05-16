@@ -51,7 +51,7 @@ export default function FloatingBar() {
   const { setUnsavedChanges, clearUnsavedChanges } = useSetUnsavedChanges()
 
   useEffect(() => {
-    console.log("canUndo", canUndo)
+    // console.log("canUndo", canUndo)
     if (canUndo) {
       setUnsavedChanges({
         message:

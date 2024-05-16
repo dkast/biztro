@@ -1,15 +1,9 @@
 import { useNode } from "@craftjs/core"
-import { rgbaToHsva, Sketch } from "@uiw/react-color"
 import { AlignCenter, AlignLeft, AlignRight } from "lucide-react"
 
 import type { CategoryBlockProps } from "@/components/menu-editor/blocks/category-block"
 import SideSection from "@/components/menu-editor/side-section"
 import { Label } from "@/components/ui/label"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Select,
@@ -26,33 +20,24 @@ export default function CategorySettings() {
   const {
     actions: { setProp },
     categoryFontSize,
-    categoryColor,
     categoryFontWeight,
-    categoryFontFamily,
     categoryTextAlign,
     itemFontSize,
-    itemColor,
     itemFontWeight,
-    itemFontFamily,
     priceFontSize,
-    priceColor,
     priceFontWeight,
-    priceFontFamily,
     showImage
   } = useNode(node => ({
     categoryFontSize: node.data.props.categoryFontSize,
     categoryColor: node.data.props.categoryColor,
     categoryFontWeight: node.data.props.categoryFontWeight,
-    categoryFontFamily: node.data.props.categoryFontFamily,
     categoryTextAlign: node.data.props.categoryTextAlign,
     itemFontSize: node.data.props.itemFontSize,
     itemColor: node.data.props.itemColor,
     itemFontWeight: node.data.props.itemFontWeight,
-    itemFontFamily: node.data.props.itemFontFamily,
     priceFontSize: node.data.props.priceFontSize,
     priceColor: node.data.props.priceColor,
     priceFontWeight: node.data.props.priceFontWeight,
-    priceFontFamily: node.data.props.priceFontFamily,
     showImage: node.data.props.showImage
   }))
   return (
@@ -72,7 +57,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -83,33 +68,6 @@ export default function CategorySettings() {
                 ))}
               </SelectContent>
             </Select>
-          </dd>
-          <dt>
-            <Label size="sm">Color</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Popover>
-              <PopoverTrigger>
-                <div
-                  className="h-5 w-12 rounded border border-black/10"
-                  style={{
-                    backgroundColor: `rgb(${Object.values(categoryColor)})`
-                  }}
-                ></div>
-              </PopoverTrigger>
-              <PopoverContent className="border-0 p-0 shadow-none">
-                <Sketch
-                  disableAlpha
-                  color={rgbaToHsva(categoryColor)}
-                  onChange={color =>
-                    setProp(
-                      (props: CategoryBlockProps) =>
-                        (props.categoryColor = color.rgba)
-                    )
-                  }
-                />
-              </PopoverContent>
-            </Popover>
           </dd>
           <dt>
             <Label size="sm">Estilo</Label>
@@ -124,14 +82,14 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="200">Light</SelectItem>
+                <SelectItem value="300">Light</SelectItem>
                 <SelectItem value="400">Regular</SelectItem>
                 <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="600">Negrita</SelectItem>
+                <SelectItem value="700">Negrita</SelectItem>
               </SelectContent>
             </Select>
           </dd>
@@ -178,7 +136,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -189,33 +147,6 @@ export default function CategorySettings() {
                 ))}
               </SelectContent>
             </Select>
-          </dd>
-          <dt>
-            <Label size="sm">Color</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Popover>
-              <PopoverTrigger>
-                <div
-                  className="h-5 w-12 rounded border border-black/10"
-                  style={{
-                    backgroundColor: `rgb(${Object.values(itemColor)})`
-                  }}
-                ></div>
-              </PopoverTrigger>
-              <PopoverContent className="border-0 p-0 shadow-none">
-                <Sketch
-                  disableAlpha
-                  color={rgbaToHsva(itemColor)}
-                  onChange={color =>
-                    setProp(
-                      (props: CategoryBlockProps) =>
-                        (props.itemColor = color.rgba)
-                    )
-                  }
-                />
-              </PopoverContent>
-            </Popover>
           </dd>
           <dt>
             <Label size="sm">Estilo</Label>
@@ -229,14 +160,14 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="200">Light</SelectItem>
+                <SelectItem value="300">Light</SelectItem>
                 <SelectItem value="400">Regular</SelectItem>
                 <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="600">Negrita</SelectItem>
+                <SelectItem value="700">Negrita</SelectItem>
               </SelectContent>
             </Select>
           </dd>
@@ -257,7 +188,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -268,33 +199,6 @@ export default function CategorySettings() {
                 ))}
               </SelectContent>
             </Select>
-          </dd>
-          <dt>
-            <Label size="sm">Color</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Popover>
-              <PopoverTrigger>
-                <div
-                  className="h-5 w-12 rounded border border-black/10"
-                  style={{
-                    backgroundColor: `rgb(${Object.values(priceColor)})`
-                  }}
-                ></div>
-              </PopoverTrigger>
-              <PopoverContent className="border-0 p-0 shadow-none">
-                <Sketch
-                  disableAlpha
-                  color={rgbaToHsva(priceColor)}
-                  onChange={color =>
-                    setProp(
-                      (props: CategoryBlockProps) =>
-                        (props.priceColor = color.rgba)
-                    )
-                  }
-                />
-              </PopoverContent>
-            </Popover>
           </dd>
           <dt>
             <Label size="sm">Estilo</Label>
@@ -308,14 +212,14 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-0">
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="200">Light</SelectItem>
+                <SelectItem value="300">Light</SelectItem>
                 <SelectItem value="400">Regular</SelectItem>
                 <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="600">Negrita</SelectItem>
+                <SelectItem value="700">Negrita</SelectItem>
               </SelectContent>
             </Select>
           </dd>

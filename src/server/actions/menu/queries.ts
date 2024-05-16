@@ -77,3 +77,30 @@ export async function getMenuByOrgSubdomain(subdomain: string) {
     }
   )()
 }
+
+export async function getThemes({ themeType }: { themeType: string }) {
+  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  return await cache(
+    async () => {
+      return await prisma.theme.findMany({
+        where: {
+          themeType,
+          OR: [
+            {
+              organizationId: currentOrg
+            },
+            {
+              scope: "GLOBAL",
+              organizationId: null
+            }
+          ]
+        }
+      })
+    },
+    [`themes-${themeType}-${currentOrg}`],
+    {
+      revalidate: 900,
+      tags: [`themes-${themeType}-${currentOrg}`]
+    }
+  )()
+}

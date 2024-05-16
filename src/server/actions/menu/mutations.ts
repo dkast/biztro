@@ -105,13 +105,21 @@ export const updateMenuStatus = action(
     id: z.string(),
     subdomain: z.string(),
     status: z.enum(["PUBLISHED", "DRAFT"]),
+    fontTheme: z.string(),
+    colorTheme: z.string(),
     serialData: z.string()
   }),
-  async ({ id, subdomain, status, serialData }) => {
+  async ({ id, subdomain, status, fontTheme, colorTheme, serialData }) => {
     try {
       const menu = await prisma.menu.update({
         where: { id },
-        data: { status, serialData, publishedData: serialData }
+        data: {
+          status,
+          fontTheme,
+          colorTheme,
+          serialData,
+          publishedData: serialData
+        }
       })
 
       revalidateTag(`menu-${id}`)
@@ -141,13 +149,15 @@ export const updateMenuStatus = action(
 export const updateMenuSerialData = action(
   z.object({
     id: z.string(),
+    fontTheme: z.string(),
+    colorTheme: z.string(),
     serialData: z.string()
   }),
-  async ({ id, serialData }) => {
+  async ({ id, fontTheme, colorTheme, serialData }) => {
     try {
       const menu = await prisma.menu.update({
         where: { id },
-        data: { serialData }
+        data: { fontTheme, colorTheme, serialData }
       })
 
       revalidateTag(`menu-${id}`)
@@ -185,6 +195,127 @@ export const deleteMenu = action(
       })
 
       revalidateTag(`menu-${id}`)
+
+      return {
+        success: true
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        message = error.message
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const createColorTheme = action(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    scope: z.string(),
+    themeType: z.string(),
+    themeJSON: z.string(),
+    organizationId: z.string().optional()
+  }),
+  async ({ id, name, scope, themeType, themeJSON, organizationId }) => {
+    try {
+      const colorTheme = await prisma.theme.create({
+        data: {
+          id,
+          name,
+          scope,
+          themeType,
+          themeJSON,
+          organizationId
+        }
+      })
+
+      revalidateTag(`themes-${themeType}-${organizationId}`)
+
+      return {
+        success: colorTheme
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
+          message = "Ya existe un tema con ese nombre"
+        }
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const updateColorTheme = action(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    themeJSON: z.string()
+  }),
+  async ({ id, name, themeJSON }) => {
+    try {
+      const colorTheme = await prisma.theme.update({
+        where: { id },
+        data: { name, themeJSON }
+      })
+
+      revalidateTag(
+        `themes-${colorTheme.themeType}-${colorTheme.organizationId}`
+      )
+
+      return {
+        success: colorTheme
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
+          message = "Ya existe un tema con ese nombre"
+        }
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const deleteColorTheme = action(
+  z.object({
+    id: z.string()
+  }),
+  async ({ id }) => {
+    const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+    try {
+      await prisma.theme.delete({
+        where: { id, organizationId: currentOrg }
+      })
+
+      revalidateTag(`themes-${id}-${currentOrg}`)
 
       return {
         success: true
