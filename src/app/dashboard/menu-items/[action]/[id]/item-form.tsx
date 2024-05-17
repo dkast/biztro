@@ -156,7 +156,7 @@ export default function ItemForm({
         }))
       })
     }
-  }, [item])
+  }, [item]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = (data: z.infer<typeof menuItemSchema>) => {
     execute(data)

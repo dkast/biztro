@@ -5,9 +5,9 @@ import OrganizationForm from "@/app/dashboard/settings/organization-form"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 
 export default async function SettingsPage() {
-  const data = await getCurrentOrganization()
+  const currentOrg = await getCurrentOrganization()
 
-  if (!data) {
+  if (!currentOrg) {
     return notFound()
   }
 
@@ -17,7 +17,7 @@ export default async function SettingsPage() {
         title="Mi Negocio"
         description="Información general del negocio"
       />
-      <OrganizationForm data={data} enabled />
+      <OrganizationForm data={currentOrg} enabled />
     </div>
   )
 }

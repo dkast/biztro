@@ -10,6 +10,10 @@ import { env } from "@/env.mjs"
 
 export async function getMenus() {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+
+  if (!currentOrg) {
+    return []
+  }
   // return await cache(
   //   async () => {
   return await prisma.menu.findMany({
@@ -27,35 +31,33 @@ export async function getMenus() {
 }
 
 export async function getMenuById(id: string) {
-  return await cache(
-    async () => {
-      const menu = await prisma.menu.findUnique({
-        where: {
-          id
-        },
-        include: {
-          organization: true
-        }
-      })
-
-      if (menu?.organization?.banner) {
-        menu.organization.banner =
-          env.R2_CUSTOM_DOMAIN + "/" + menu.organization.banner
-      }
-
-      if (menu?.organization?.logo) {
-        menu.organization.logo =
-          env.R2_CUSTOM_DOMAIN + "/" + menu.organization.logo
-      }
-
-      return menu
+  // return await cache(
+  //   async () => {
+  const menu = await prisma.menu.findUnique({
+    where: {
+      id
     },
-    [`menu-${id}`],
-    {
-      revalidate: 900,
-      tags: [`menu-${id}`]
+    include: {
+      organization: true
     }
-  )()
+  })
+
+  if (menu?.organization?.banner) {
+    menu.organization.banner = `${env.R2_CUSTOM_DOMAIN}/${menu.organization.banner}`
+  }
+
+  if (menu?.organization?.logo) {
+    menu.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${menu.organization.logo}`
+  }
+
+  return menu
+  //   },
+  //   [`menu-${id}`],
+  //   {
+  //     revalidate: 900,
+  //     tags: [`menu-${id}`]
+  //   }
+  // )()
 }
 
 export async function getMenuByOrgSubdomain(subdomain: string) {
@@ -80,27 +82,27 @@ export async function getMenuByOrgSubdomain(subdomain: string) {
 
 export async function getThemes({ themeType }: { themeType: string }) {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
-  return await cache(
-    async () => {
-      return await prisma.theme.findMany({
-        where: {
-          themeType,
-          OR: [
-            {
-              organizationId: currentOrg
-            },
-            {
-              scope: "GLOBAL",
-              organizationId: null
-            }
-          ]
+  // return await cache(
+  //   async () => {
+  return await prisma.theme.findMany({
+    where: {
+      themeType,
+      OR: [
+        {
+          organizationId: currentOrg
+        },
+        {
+          scope: "GLOBAL",
+          organizationId: null
         }
-      })
-    },
-    [`themes-${themeType}-${currentOrg}`],
-    {
-      revalidate: 900,
-      tags: [`themes-${themeType}-${currentOrg}`]
+      ]
     }
-  )()
+  })
+  //   },
+  //   [`themes-${themeType}-${currentOrg}`],
+  //   {
+  //     revalidate: 900,
+  //     tags: [`themes-${themeType}-${currentOrg}`]
+  //   }
+  // )()
 }

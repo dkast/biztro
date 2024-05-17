@@ -1,9 +1,12 @@
+import { notFound } from "next/navigation"
+
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { DataTable } from "@/components/data-table/data-table"
 import { columns } from "@/app/dashboard/menu-items/columns"
 import FilterToolbar from "@/app/dashboard/menu-items/filter-toolbar"
 import ItemCreate from "@/app/dashboard/menu-items/item-create"
 import { getCategories, getMenuItems } from "@/server/actions/item/queries"
+import { getCurrentOrganization } from "@/server/actions/user/queries"
 import type { MenuItemQueryFilter } from "@/lib/types"
 
 export default async function ItemsPage({
@@ -11,6 +14,12 @@ export default async function ItemsPage({
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
+  const currentOrg = await getCurrentOrganization()
+
+  if (!currentOrg) {
+    notFound()
+  }
+
   const categories = await getCategories()
   const filter: MenuItemQueryFilter = {}
 

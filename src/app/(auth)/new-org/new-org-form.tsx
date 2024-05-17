@@ -49,7 +49,7 @@ export default function NewOrgForm() {
 
   useEffect(() => {
     form.setValue("subdomain", slugify(subdomain))
-  }, [subdomain])
+  }, [subdomain]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { execute, status, reset } = useAction(bootstrapOrg, {
     onSuccess: () => {
