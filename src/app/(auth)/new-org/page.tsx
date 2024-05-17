@@ -1,6 +1,15 @@
-import NewOrgForm from "@/app/(auth)/new-org/new-org-form"
+import { redirect } from "next/navigation"
 
-export default function NewOrgPage() {
+import NewOrgForm from "@/app/(auth)/new-org/new-org-form"
+import { getCurrentOrganization } from "@/server/actions/user/queries"
+
+export default async function NewOrgPage() {
+  const currentOrg = await getCurrentOrganization()
+
+  if (currentOrg) {
+    redirect("/dashboard")
+  }
+
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center">
       <h1 className="font-display text-3xl font-semibold">
