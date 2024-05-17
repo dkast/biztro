@@ -3,8 +3,7 @@
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Location, Organization, Prisma } from "@prisma/client"
-import { useAtom } from "jotai"
-import { useHydrateAtoms } from "jotai/utils"
+import { useAtom, useSetAtom } from "jotai"
 import { Palette, Settings2 } from "lucide-react"
 import lz from "lzutf8"
 
@@ -47,8 +46,10 @@ export default function Workbench({
 }) {
   // Initialize the atoms for the editor
   const [frameSize] = useAtom(frameSizeAtom)
-  useHydrateAtoms([[fontThemeAtom, menu?.fontTheme ?? "DEFAULT"]])
-  useHydrateAtoms([[colorThemeAtom, menu?.colorTheme ?? "DEFAULT"]])
+  const setFontThemeId = useSetAtom(fontThemeAtom)
+  const setColorThemeId = useSetAtom(colorThemeAtom)
+  setFontThemeId(menu?.fontTheme ?? "DEFAULT")
+  setColorThemeId(menu?.colorTheme ?? "DEFAULT")
 
   if (!menu || !categories) return null
 
