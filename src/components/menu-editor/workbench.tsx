@@ -111,7 +111,10 @@ export default function Workbench({
                 >
                   <Frame data={json}>
                     <Element is={ContainerBlock} canvas>
-                      <HeaderBlock organization={organization} />
+                      <HeaderBlock
+                        organization={organization}
+                        location={location ?? undefined}
+                      />
                     </Element>
                   </Frame>
                 </div>

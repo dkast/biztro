@@ -27,14 +27,13 @@ export default function MenuDelete({
 }) {
   const { execute, reset } = useAction(deleteMenu, {
     onExecute: () => {
-      toast.loading("Eliminando Menú...")
+      // toast.loading("Eliminando Menú...")
     },
     onSuccess: data => {
       if (data?.failure?.reason) {
-        toast.dismiss()
         toast.error(data.failure.reason)
       } else if (data?.success) {
-        toast.dismiss()
+        toast.success("Menú eliminado")
       }
       reset()
     },

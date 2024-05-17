@@ -1,6 +1,7 @@
 import { useNode } from "@craftjs/core"
 import type { Location, Organization } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
+import { fontFamily } from "html2canvas/dist/types/css/property-descriptors/font-family"
 import { Phone } from "lucide-react"
 import Image from "next/image"
 
@@ -201,6 +202,7 @@ export default function HeaderBlock({
 HeaderBlock.craft = {
   displayName: "Cabecera",
   props: {
+    fontFamily: "Inter",
     color: { r: 38, g: 50, b: 56, a: 1 },
     accentColor: { r: 38, g: 50, b: 56, a: 1 },
     showBanner: true,

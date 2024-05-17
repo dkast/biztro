@@ -8,20 +8,23 @@ import prisma from "@/lib/prisma"
 
 export async function getDefaultLocation() {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
-  return await cache(
-    async () => {
-      const location = await prisma.location.findFirst({
-        orderBy: {
-          createdAt: "asc"
-        }
-      })
-
-      return location
+  // return await cache(
+  //   async () => {
+  const location = await prisma.location.findFirst({
+    where: {
+      organizationId: currentOrg
     },
-    [`default-location-${currentOrg}`],
-    {
-      revalidate: 900,
-      tags: [`default-location-${currentOrg}`]
+    orderBy: {
+      createdAt: "asc"
     }
-  )()
+  })
+
+  return location
+  //   },
+  //   [`default-location-${currentOrg}`],
+  //   {
+  //     revalidate: 900,
+  //     tags: [`default-location-${currentOrg}`]
+  //   }
+  // )()
 }
