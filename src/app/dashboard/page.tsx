@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
-import MenuCreate from "@/app/dashboard/menu-create"
 import MenuList from "@/app/dashboard/menu-list"
 import { getMenus } from "@/server/actions/menu/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
@@ -22,7 +21,6 @@ export default async function DashboardPage() {
           <PageSubtitle title="Menús" description="Todos los menús" />
         </div>
         <MenuList menus={data} />
-        <MenuCreate />
       </div>
     </div>
   )

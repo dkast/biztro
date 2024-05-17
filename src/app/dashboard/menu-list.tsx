@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import type { Menu } from "@prisma/client"
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { MoreHorizontal } from "lucide-react"
 import Link from "next/link"
 
@@ -16,23 +16,37 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import MenuCreate from "@/app/dashboard/menu-create"
 import MenuDelete from "@/app/dashboard/menu-delete"
 import { MenuStatus } from "@/lib/types"
 
 export default function MenuList({ menus }: { menus: Menu[] }) {
   return (
-    <>
+    <AnimatePresence mode="popLayout">
       {menus.map(menu => (
         <MenuCard key={menu.id} menu={menu} />
       ))}
-    </>
+      <motion.div
+        layout
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        transition={{ type: "spring", damping: 13, stiffness: 100 }}
+      >
+        <MenuCreate />
+      </motion.div>
+    </AnimatePresence>
   )
 }
 
 function MenuCard({ menu }: { menu: Menu }) {
   const [openDelete, setOpenDelete] = useState<boolean>(false)
   return (
-    <div>
+    <motion.div
+      layout
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.8, opacity: 0 }}
+      transition={{ type: "spring" }}
+    >
       <Link href={`/menu-editor/${menu.id}`} prefetch={false}>
         <motion.div
           whileHover={{ y: -6 }}
@@ -95,6 +109,6 @@ function MenuCard({ menu }: { menu: Menu }) {
           <MenuDelete menu={menu} open={openDelete} setOpen={setOpenDelete} />
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
