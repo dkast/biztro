@@ -40,6 +40,7 @@ export const { handlers, auth } = NextAuth({
       // If found invite then allow to continue
       return found > 0
     },
+    // skipcq: JS-0116
     async redirect({ url, baseUrl }) {
       console.log("redirect", url, baseUrl)
 
@@ -88,6 +89,7 @@ export const { handlers, auth } = NextAuth({
     // error: "/app/auth/error"
   },
   events: {
+    // skipcq: JS-0116
     async signOut() {
       cookies().delete(appConfig.cookieOrg)
     }

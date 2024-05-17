@@ -43,12 +43,11 @@ export async function getMenuById(id: string) {
   })
 
   if (menu?.organization?.banner) {
-    menu.organization.banner =
-      env.R2_CUSTOM_DOMAIN + "/" + menu.organization.banner
+    menu.organization.banner = `${env.R2_CUSTOM_DOMAIN}/${menu.organization.banner}`
   }
 
   if (menu?.organization?.logo) {
-    menu.organization.logo = env.R2_CUSTOM_DOMAIN + "/" + menu.organization.logo
+    menu.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${menu.organization.logo}`
   }
 
   return menu

@@ -2,10 +2,8 @@
 
 import { unstable_cache as cache } from "next/cache"
 import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
 
 import { appConfig } from "@/app/config"
-import { assignOrganization } from "@/server/actions/user/mutations"
 import prisma from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/session"
 import { env } from "@/env.mjs"
@@ -28,7 +26,7 @@ export async function getCurrentOrganization() {
     }
 
     if (org?.logo) {
-      org.logo = env.R2_CUSTOM_DOMAIN + "/" + org.logo
+      org.logo = `${env.R2_CUSTOM_DOMAIN}/${org.logo}`
     }
 
     return org

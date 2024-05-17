@@ -130,11 +130,11 @@ export default function ThemeSelector({
         }
       }
     }
-  }, [fontThemeId])
+  }, [fontThemeId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     updateColorTheme(colorThemeId)
-  }, [colorThemeId])
+  }, [colorThemeId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateColorTheme = (colorThemeId: string) => {
     const selectedTheme = colorThemes.find(theme => theme.id === colorThemeId)
