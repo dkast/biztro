@@ -8,6 +8,8 @@ import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { rgbaToHex, rgbaToHsva, Sketch, type RgbaColor } from "@uiw/react-color"
+import { formatDate } from "date-fns"
+import { es } from "date-fns/locale"
 import { useAtomValue } from "jotai"
 import {
   Download,
@@ -235,6 +237,15 @@ export default function MenuPublish({
                 >
                   Cambiar a borrador
                 </Button>
+
+                <p className="pt-2 text-center text-xs text-gray-500">
+                  Última actualiazión:{" "}
+                  {menu.publishedAt
+                    ? formatDate(menu.publishedAt, "PPpp", {
+                        locale: es
+                      })
+                    : ""}
+                </p>
               </div>
             </div>
           )}

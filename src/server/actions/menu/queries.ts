@@ -19,6 +19,9 @@ export async function getMenus() {
   return await prisma.menu.findMany({
     where: {
       organizationId: currentOrg
+    },
+    orderBy: {
+      publishedAt: "desc"
     }
   })
   // },
@@ -69,6 +72,9 @@ export async function getMenuByOrgSubdomain(subdomain: string) {
           organization: {
             subdomain
           }
+        },
+        orderBy: {
+          publishedAt: "desc"
         }
       })
     },

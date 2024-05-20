@@ -122,6 +122,7 @@ model Menu {
   organizationId String
   serialData     String?
   publishedData  String?
+  publishedAt    DateTime?
   fontTheme      String       @default("DEFAULT")
   colorTheme     String       @default("DEFAULT")
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)

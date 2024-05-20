@@ -3,9 +3,11 @@
 import { useState } from "react"
 import type { Menu } from "@prisma/client"
 import { AnimatePresence, motion } from "framer-motion"
-import { MoreHorizontal } from "lucide-react"
+import { CircleCheck, MoreHorizontal } from "lucide-react"
 import Link from "next/link"
 
+import InfoHelper from "@/components/dashboard/info-helper"
+import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import { AlertDialog } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -23,8 +25,8 @@ import { MenuStatus } from "@/lib/types"
 export default function MenuList({ menus }: { menus: Menu[] }) {
   return (
     <AnimatePresence mode="popLayout">
-      {menus.map(menu => (
-        <MenuCard key={menu.id} menu={menu} />
+      {menus.map((menu, index) => (
+        <MenuCard key={menu.id} menu={menu} index={index} />
       ))}
       <motion.div
         layout
@@ -38,7 +40,7 @@ export default function MenuList({ menus }: { menus: Menu[] }) {
   )
 }
 
-function MenuCard({ menu }: { menu: Menu }) {
+function MenuCard({ menu, index }: { menu: Menu; index: number }) {
   const [openDelete, setOpenDelete] = useState<boolean>(false)
   return (
     <motion.div
@@ -67,13 +69,13 @@ function MenuCard({ menu }: { menu: Menu }) {
             switch (menu.status) {
               case MenuStatus.PUBLISHED:
                 return (
-                  <Badge variant="green" className="rounded-full">
-                    Activo
+                  <Badge variant="blue" className="rounded-full">
+                    Publicado
                   </Badge>
                 )
               case MenuStatus.DRAFT:
                 return (
-                  <Badge variant="violet" className="rounded-full">
+                  <Badge variant="secondary" className="rounded-full">
                     Borrador
                   </Badge>
                 )
@@ -81,6 +83,16 @@ function MenuCard({ menu }: { menu: Menu }) {
                 return null
             }
           })()}
+
+          {index === 0 && menu.status === MenuStatus.PUBLISHED && (
+            <Badge
+              variant="green"
+              className="flex items-center justify-between gap-1 rounded-full px-1.5"
+            >
+              <CircleCheck className="size-3" />
+              Activo
+            </Badge>
+          )}
 
           <AlertDialog>
             <DropdownMenu>
