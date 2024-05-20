@@ -24,6 +24,7 @@ import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -39,6 +40,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
+import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import {
   updateMenuSerialData,
@@ -132,24 +134,10 @@ export default function MenuPublish({
 
   return (
     <div className="flex justify-end gap-2">
-      <TooltipHelper content="Guardar cambios">
-        <Button
-          size="xs"
-          variant="outline"
-          disabled={statusSerialData === "executing"}
-          onClick={() => handleUpdateSerialData()}
-        >
-          {statusSerialData === "executing" ? (
-            <Loader className="size-4 animate-spin" />
-          ) : (
-            <Save className="size-4" />
-          )}
-        </Button>
-      </TooltipHelper>
       <Dialog>
         <TooltipHelper content="Generar código QR">
           <DialogTrigger asChild>
-            <Button size="xs" variant="outline">
+            <Button size="xs" variant="ghost">
               <QrCodeIcon className="size-4" />
             </Button>
           </DialogTrigger>
@@ -174,8 +162,31 @@ export default function MenuPublish({
             value={`${getBaseUrl()}/${menu.organization.subdomain}`}
             logoURL={menu.organization.logo ?? undefined}
           />
+          {menu.status === MenuStatus.DRAFT && (
+            <Alert variant="warning">
+              <AlertDescription className="flex flex-row items-center gap-3">
+                No olvides publicar tu menú para que sea accesible a través del
+                código QR.
+              </AlertDescription>
+            </Alert>
+          )}
         </DialogContent>
       </Dialog>
+      <Separator orientation="vertical" className="h-100 border-l" />
+      <TooltipHelper content="Guardar cambios">
+        <Button
+          size="xs"
+          variant="ghost"
+          disabled={statusSerialData === "executing"}
+          onClick={() => handleUpdateSerialData()}
+        >
+          {statusSerialData === "executing" ? (
+            <Loader className="size-4 animate-spin" />
+          ) : (
+            <Save className="size-4" />
+          )}
+        </Button>
+      </TooltipHelper>
       <Popover>
         <PopoverTrigger asChild>
           <Button size="xs">Publicar</Button>
