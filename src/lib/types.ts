@@ -363,7 +363,7 @@ export const fontThemes = [
 
 export const colorThemes = [
   {
-    id: "default",
+    id: "DEFAULT",
     name: "Default",
     surfaceColor: "#ffffff",
     brandColor: "#131313",
@@ -373,7 +373,7 @@ export const colorThemes = [
     scope: "GLOBAL"
   },
   {
-    id: "terra_light",
+    id: "TERRA_LIGHT",
     name: "Terra",
     surfaceColor: "##fff8f6",
     brandColor: "#231917",
@@ -383,7 +383,7 @@ export const colorThemes = [
     scope: "GLOBAL"
   },
   {
-    id: "terra_dark",
+    id: "TERRA_DARK",
     name: "Terra oscuro",
     surfaceColor: "#271d1b",
     brandColor: "#f1dfda",
@@ -393,7 +393,7 @@ export const colorThemes = [
     scope: "GLOBAL"
   },
   {
-    id: "flora_light",
+    id: "FLORA_LIGHT",
     name: "Flora",
     surfaceColor: "#f9faef",
     brandColor: "#1a1c16",
@@ -403,7 +403,7 @@ export const colorThemes = [
     scope: "GLOBAL"
   },
   {
-    id: "flora_dark",
+    id: "FLORA_DARK",
     name: "Flora oscuro",
     surfaceColor: "#1e201a",
     brandColor: "#e2e3d8",
@@ -413,7 +413,7 @@ export const colorThemes = [
     scope: "GLOBAL"
   },
   {
-    id: "azure_light",
+    id: "AZURE_LIGHT",
     name: "Azure",
     surfaceColor: "#f9f9ff",
     brandColor: "#191c20",
@@ -423,7 +423,7 @@ export const colorThemes = [
     scope: "GLOBAL"
   },
   {
-    id: "azure_dark",
+    id: "AZURE_DARK",
     name: "Azure oscuro",
     surfaceColor: "#1d2024",
     brandColor: "#dedee4",
@@ -433,7 +433,7 @@ export const colorThemes = [
     scope: "GLOBAL"
   },
   {
-    id: "helios_light",
+    id: "HELIOS_LIGHT",
     name: "Helios",
     surfaceColor: "#fff9ee",
     brandColor: "#1e1b13",
@@ -443,7 +443,7 @@ export const colorThemes = [
     scope: "GLOBAL"
   },
   {
-    id: "helios_dark",
+    id: "HELIOS_DARK",
     name: "Helios oscuro",
     surfaceColor: "#222017",
     brandColor: "#e8e2d4",

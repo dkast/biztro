@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 
+import InfoHelper from "@/components/dashboard/info-helper"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
-import MenuCreate from "@/app/dashboard/menu-create"
 import MenuList from "@/app/dashboard/menu-list"
 import { getMenus } from "@/server/actions/menu/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
@@ -19,10 +19,15 @@ export default async function DashboardPage() {
     <div className="flex grow bg-gray-50 pb-4">
       <div className="mx-auto grid grow auto-rows-min grid-cols-300 justify-center gap-10 px-4 py-10 sm:px-6 sm:py-12">
         <div className="col-span-full">
-          <PageSubtitle title="Menús" description="Todos los menús" />
+          <PageSubtitle title="Menús" description="Todos los menús.">
+            <InfoHelper>
+              Aquí puedes ver todos los menús de tu organización. El menú activo
+              es público para tus clientes. Solo puede haber un menú activo a la
+              vez.
+            </InfoHelper>
+          </PageSubtitle>
         </div>
         <MenuList menus={data} />
-        <MenuCreate />
       </div>
     </div>
   )

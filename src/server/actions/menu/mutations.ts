@@ -1,7 +1,7 @@
 "use server"
 
 import { Prisma } from "@prisma/client"
-import { revalidateTag } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 import { z } from "zod"
 
@@ -118,12 +118,14 @@ export const updateMenuStatus = action(
           fontTheme,
           colorTheme,
           serialData,
-          publishedData: serialData
+          publishedData: serialData,
+          publishedAt: status === "PUBLISHED" ? new Date() : null
         }
       })
 
       revalidateTag(`menu-${id}`)
       revalidateTag(`site-${subdomain}`)
+      revalidatePath(`/${subdomain}`)
 
       return {
         success: menu

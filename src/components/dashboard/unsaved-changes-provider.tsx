@@ -73,18 +73,18 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesContext> = ({
         >
           {modalContent?.dismissButtonLabel ?? "Regresar"}
         </AlertDialogCancel>
-        <Link
-          href={modalContent?.proceedLinkHref ?? "/"}
-          onClick={() => {
-            setShowModal(false)
-            modalContent?.proceedAction?.()
-            setModalContent(undefined)
-          }}
-        >
-          <AlertDialogAction>
+        <AlertDialogAction>
+          <Link
+            href={modalContent?.proceedLinkHref ?? "/"}
+            onClick={() => {
+              setShowModal(false)
+              modalContent?.proceedAction?.()
+              setModalContent(undefined)
+            }}
+          >
             {modalContent?.proceedLinkLabel ?? "Descartar cambios"}
-          </AlertDialogAction>
-        </Link>
+          </Link>
+        </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>

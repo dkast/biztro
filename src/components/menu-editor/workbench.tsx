@@ -3,8 +3,7 @@
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Location, Organization, Prisma } from "@prisma/client"
-import { useAtom } from "jotai"
-import { useHydrateAtoms } from "jotai/utils"
+import { useAtom, useSetAtom } from "jotai"
 import { Palette, Settings2 } from "lucide-react"
 import lz from "lzutf8"
 
@@ -47,8 +46,10 @@ export default function Workbench({
 }) {
   // Initialize the atoms for the editor
   const [frameSize] = useAtom(frameSizeAtom)
-  useHydrateAtoms([[fontThemeAtom, menu?.fontTheme ?? "DEFAULT"]])
-  useHydrateAtoms([[colorThemeAtom, menu?.colorTheme ?? "DEFAULT"]])
+  const setFontThemeId = useSetAtom(fontThemeAtom)
+  const setColorThemeId = useSetAtom(colorThemeAtom)
+  setFontThemeId(menu?.fontTheme ?? "DEFAULT")
+  setColorThemeId(menu?.colorTheme ?? "DEFAULT")
 
   if (!menu || !categories) return null
 
@@ -98,7 +99,7 @@ export default function Workbench({
               <div
                 className={cn(
                   frameSize === FrameSize.DESKTOP ? "w-[1024px]" : "w-[390px]",
-                  "mx-auto pb-24 pt-10"
+                  "mx-auto pb-24 pt-10 transition-all duration-300 ease-in-out"
                 )}
               >
                 <div
@@ -106,15 +107,21 @@ export default function Workbench({
                     frameSize === FrameSize.DESKTOP
                       ? "w-[1024px]"
                       : "w-[390px]",
-                    "flex min-h-[600px] flex-col border bg-white"
+                    "flex min-h-[600px] flex-col border bg-white transition-all duration-300 ease-in-out"
                   )}
                 >
                   <Frame data={json}>
                     <Element is={ContainerBlock} canvas>
-                      <HeaderBlock organization={organization} />
+                      <HeaderBlock
+                        organization={organization}
+                        location={location ?? undefined}
+                      />
                     </Element>
                   </Frame>
                 </div>
+                <span className="block p-2 text-center text-sm text-gray-400">
+                  {frameSize === FrameSize.DESKTOP ? "Escritorio" : "Móvil"}
+                </span>
               </div>
               <FloatingBar />
             </div>
