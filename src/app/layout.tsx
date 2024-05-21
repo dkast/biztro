@@ -52,7 +52,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      className={`${inter.variable} ${sora.variable}`}
+      className={`${inter.variable} ${sora.variable} antialiased`}
       suppressHydrationWarning
     >
       <AxiomWebVitals />

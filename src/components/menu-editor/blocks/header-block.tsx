@@ -1,7 +1,6 @@
 import { useNode } from "@craftjs/core"
 import type { Location, Organization } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
-import { fontFamily } from "html2canvas/dist/types/css/property-descriptors/font-family"
 import { Phone } from "lucide-react"
 import Image from "next/image"
 

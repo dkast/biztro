@@ -4,6 +4,7 @@ import type { RgbaColor } from "@uiw/react-color"
 import Image from "next/image"
 
 import CategorySettings from "@/components/menu-editor/blocks/category-settings"
+import FontWrapper from "@/components/menu-editor/font-wrapper"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 import { cn } from "@/lib/utils"
 
@@ -94,25 +95,27 @@ export default function CategoryBlock({
                     ></Image>
                   )}
                   <div>
-                    <h3
-                      style={{
-                        fontFamily: itemFontFamily,
-                        fontSize: `${itemFontSize}px`,
-                        color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
-                        fontWeight: itemFontWeight
-                      }}
-                    >
-                      {item.name}
-                    </h3>
-                    <span
-                      className="line-clamp-3 text-sm"
-                      style={{
-                        fontFamily: descriptionFontFamily,
-                        color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
-                      }}
-                    >
-                      {item.description}
-                    </span>
+                    <FontWrapper fontFamily={itemFontFamily}>
+                      <h3
+                        style={{
+                          fontSize: `${itemFontSize}px`,
+                          color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                          fontWeight: itemFontWeight
+                        }}
+                      >
+                        {item.name}
+                      </h3>
+                    </FontWrapper>
+                    <FontWrapper fontFamily={descriptionFontFamily}>
+                      <span
+                        className="line-clamp-3 text-sm"
+                        style={{
+                          color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                        }}
+                      >
+                        {item.description}
+                      </span>
+                    </FontWrapper>
                   </div>
                 </div>
                 {item.variants.length > 1 ? (
@@ -123,35 +126,39 @@ export default function CategoryBlock({
                         className="grid grid-cols-2 gap-1 text-right"
                       >
                         <span className="text-sm">{variant.name}</span>
-                        <span
-                          style={{
-                            fontFamily: priceFontFamily,
-                            fontSize: `${priceFontSize}px`,
-                            color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
-                            fontWeight: priceFontWeight
-                          }}
-                        >
-                          {variant.price % 1 === 0
-                            ? variant.price
-                            : variant.price.toFixed(2)}
-                        </span>
+                        <FontWrapper fontFamily={priceFontFamily}>
+                          <span
+                            style={{
+                              fontFamily: priceFontFamily,
+                              fontSize: `${priceFontSize}px`,
+                              color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                              fontWeight: priceFontWeight
+                            }}
+                          >
+                            {variant.price % 1 === 0
+                              ? variant.price
+                              : variant.price.toFixed(2)}
+                          </span>
+                        </FontWrapper>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <span
-                    style={{
-                      fontFamily: priceFontFamily,
-                      fontSize: `${priceFontSize}px`,
-                      color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
-                      fontWeight: priceFontWeight
-                    }}
-                  >
-                    {/* If it has decimal values, show them in the price as well with 2 decimal places */}
-                    {(item.variants[0]?.price ?? 0) % 1 === 0
-                      ? item.variants[0]?.price
-                      : item.variants[0]?.price.toFixed(2)}
-                  </span>
+                  <FontWrapper fontFamily={priceFontFamily}>
+                    <span
+                      style={{
+                        fontFamily: priceFontFamily,
+                        fontSize: `${priceFontSize}px`,
+                        color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                        fontWeight: priceFontWeight
+                      }}
+                    >
+                      {/* If it has decimal values, show them in the price as well with 2 decimal places */}
+                      {(item.variants[0]?.price ?? 0) % 1 === 0
+                        ? item.variants[0]?.price
+                        : item.variants[0]?.price.toFixed(2)}
+                    </span>
+                  </FontWrapper>
                 )}
               </div>
             </div>
