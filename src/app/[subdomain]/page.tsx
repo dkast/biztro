@@ -47,7 +47,7 @@ export default async function SitePage({
     >
       <ResolveEditor json={json} />
       <p
-        className="py-2 text-center text-xs"
+        className="fixed bottom-0 left-0 w-full py-2 text-center text-xs"
         style={{
           color: `${rgbaToHex(textColor)}`
         }}

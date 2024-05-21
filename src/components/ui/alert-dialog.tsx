@@ -110,6 +110,7 @@ const AlertDialogAction = React.forwardRef<
     className={cn(
       buttonVariants(),
       props.variant && buttonVariants({ variant: props.variant }),
+      "mt-2 sm:mt-0",
       className
     )}
     {...props}
