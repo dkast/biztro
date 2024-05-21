@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { rgbaToHex, rgbaToHsva, Sketch, type RgbaColor } from "@uiw/react-color"
 import { formatDate } from "date-fns"
 import { es } from "date-fns/locale"
+import { AnimatePresence, motion } from "framer-motion"
 import { useAtomValue } from "jotai"
 import {
   Download,
@@ -192,74 +193,90 @@ export default function MenuPublish({
           <Button size="xs">Publicar</Button>
         </PopoverTrigger>
         <PopoverContent className="w-80">
-          {menu.status === MenuStatus.DRAFT ? (
-            <div className="flex flex-col items-center gap-2">
-              <span className="rounded-full bg-lime-100 p-1 text-lime-600">
-                <Globe className="size-6" />
-              </span>
-              <span className="text-sm font-medium">Publicar Menú</span>
-              <span className="text-xs text-gray-600">
-                Publica tu menú a una URL pública que puedes compartir.
-              </span>
-              <Button
-                size="xs"
-                className="mt-2 w-full"
-                onClick={() => handleUpdateStatus(MenuStatus.PUBLISHED)}
+          <AnimatePresence initial={false} mode="wait">
+            {menu.status === MenuStatus.DRAFT ? (
+              <motion.div
+                key={menu.status}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="flex flex-col items-center gap-2"
               >
-                {status === "executing" ? (
-                  <Loader className="size-4 animate-spin" />
-                ) : (
-                  "Publicar"
-                )}
-              </Button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium">Liga Menú</span>
-              <div className="flex flex-row items-center gap-1">
-                <Link
-                  href={`/${menu.organization.subdomain}`}
-                  className="flex flex-row items-center justify-center gap-2"
-                  target="_blank"
-                >
-                  <span className="text-xs">
-                    {getBaseUrl()}/{menu.organization.subdomain}
-                  </span>
-                  <ExternalLink className="size-3.5 text-gray-500" />
-                </Link>
-              </div>
-              <div className="space-y-1">
+                <span className="rounded-full bg-lime-100 p-1 text-lime-600">
+                  <Globe className="size-6" />
+                </span>
+                <span className="text-sm font-medium">Publicar Menú</span>
+                <span className="text-xs text-gray-600">
+                  Publica tu menú a una URL pública que puedes compartir.
+                </span>
                 <Button
                   size="xs"
                   className="mt-2 w-full"
-                  onClick={() => handleUpdateStatus(menu.status as MenuStatus)}
+                  onClick={() => handleUpdateStatus(MenuStatus.PUBLISHED)}
                 >
                   {status === "executing" ? (
                     <Loader className="size-4 animate-spin" />
                   ) : (
-                    "Actualizar"
+                    "Publicar"
                   )}
                 </Button>
-                <Button
-                  size="xs"
-                  className="w-full"
-                  variant="outline"
-                  onClick={() => handleUpdateStatus(MenuStatus.DRAFT)}
-                >
-                  Cambiar a borrador
-                </Button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={menu.status}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="flex flex-col gap-2"
+              >
+                <span className="text-sm font-medium">Liga Menú</span>
+                <div className="flex flex-row items-center gap-1">
+                  <Link
+                    href={`/${menu.organization.subdomain}`}
+                    className="flex flex-row items-center justify-center gap-2"
+                    target="_blank"
+                  >
+                    <span className="text-xs">
+                      {getBaseUrl()}/{menu.organization.subdomain}
+                    </span>
+                    <ExternalLink className="size-3.5 text-gray-500" />
+                  </Link>
+                </div>
+                <div className="space-y-1">
+                  <Button
+                    size="xs"
+                    className="mt-2 w-full"
+                    onClick={() =>
+                      handleUpdateStatus(menu.status as MenuStatus)
+                    }
+                  >
+                    {status === "executing" ? (
+                      <Loader className="size-4 animate-spin" />
+                    ) : (
+                      "Actualizar"
+                    )}
+                  </Button>
+                  <Button
+                    size="xs"
+                    className="w-full"
+                    variant="outline"
+                    onClick={() => handleUpdateStatus(MenuStatus.DRAFT)}
+                  >
+                    Cambiar a borrador
+                  </Button>
 
-                <p className="pt-2 text-center text-xs text-gray-500">
-                  Última actualiazión:{" "}
-                  {menu.publishedAt
-                    ? formatDate(menu.publishedAt, "PPpp", {
-                        locale: es
-                      })
-                    : ""}
-                </p>
-              </div>
-            </div>
-          )}
+                  <p className="pt-2 text-center text-xs text-gray-500">
+                    Última actualiazión:{" "}
+                    {menu.publishedAt
+                      ? formatDate(menu.publishedAt, "PPpp", {
+                          locale: es
+                        })
+                      : ""}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </PopoverContent>
       </Popover>
     </div>
