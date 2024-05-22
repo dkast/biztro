@@ -1,5 +1,4 @@
 import { ArrowSmRightIcon } from "@heroicons/react/outline"
-import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -12,7 +11,7 @@ const AuthError = () => {
   if (error) {
     return (
       <div className="flex min-h-screen bg-white">
-        <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+        <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
             <div className="flex flex-col gap-4">
               <Image

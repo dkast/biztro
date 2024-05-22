@@ -54,7 +54,7 @@ export default function Workbench({
   if (!menu || !categories) return null
 
   // Extract the serialized data from the menu
-  let json = undefined
+  let json
   if (menu.serialData) json = lz.decompress(lz.decodeBase64(menu.serialData))
 
   return (

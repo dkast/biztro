@@ -141,7 +141,7 @@ function SingleVariantForm({
   return (
     <FormField
       control={control}
-      name={`variants.0.price`}
+      name={"variants.0.price"}
       render={({ field }) => (
         <FormItem>
           <FormLabel htmlFor={"variants.0.price"}>Precio</FormLabel>

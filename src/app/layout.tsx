@@ -54,6 +54,7 @@ export default function RootLayout({
     <html
       className={`${inter.variable} ${sora.variable} antialiased`}
       suppressHydrationWarning
+      lang="es-MX"
     >
       <AxiomWebVitals />
       <body className="bg-white text-gray-950 antialiased dark:bg-gray-900 dark:text-white">

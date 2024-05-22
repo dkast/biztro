@@ -16,7 +16,7 @@ export default function Toolbar({
 }) {
   return (
     <div className="mx-10 grid grow grid-cols-3 items-center">
-      <GuardLink href={`/dashboard`}>
+      <GuardLink href={"/dashboard"}>
         <Button variant="ghost" size="sm">
           <ChevronLeft className="size-5" />
           Regresar
