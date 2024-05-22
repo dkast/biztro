@@ -1,3 +1,4 @@
+import { ShoppingBag } from "lucide-react"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -38,6 +39,7 @@ export default async function ItemsPage({
       <PageSubtitle
         title="Productos"
         description="Administra los productos de tu menú"
+        Icon={ShoppingBag}
       >
         <ItemCreate />
       </PageSubtitle>

@@ -108,7 +108,7 @@ export default function CategoryBlock({
                     </FontWrapper>
                     <FontWrapper fontFamily={descriptionFontFamily}>
                       <span
-                        className="line-clamp-3 text-sm"
+                        className="line-clamp-3 text-pretty text-sm"
                         style={{
                           color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
                         }}

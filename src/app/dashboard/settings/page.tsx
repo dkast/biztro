@@ -1,3 +1,4 @@
+import { Building } from "lucide-react"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -16,6 +17,7 @@ export default async function SettingsPage() {
       <PageSubtitle
         title="Mi Negocio"
         description="Información general del negocio"
+        Icon={Building}
       />
       <OrganizationForm data={currentOrg} enabled />
     </div>
