@@ -84,7 +84,7 @@ export const RenderNode = ({ render }: { render: unknown }) => {
             >
               <h2 className="flex">{name}</h2>
               {moveable ? (
-                <a
+                <span
                   className="cursor-move"
                   ref={ref => {
                     if (ref) {
@@ -93,7 +93,7 @@ export const RenderNode = ({ render }: { render: unknown }) => {
                   }}
                 >
                   <Move className="size-3" />
-                </a>
+                </span>
               ) : null}
               {id !== ROOT_NODE && (
                 <button

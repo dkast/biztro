@@ -33,9 +33,9 @@ export default function MenuCreate() {
 
   return (
     <motion.button
-      whileHover={{ y: -6 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className="flex h-[370px] w-full flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-gray-300 text-gray-400"
+      className="flex h-[250px] w-full flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-gray-300 text-gray-400"
       disabled={status === "executing"}
       onClick={() =>
         execute({

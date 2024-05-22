@@ -43,11 +43,13 @@ export default async function SitePage({
       style={{
         backgroundColor: `${rgbaToHex(backgroundColor)}`
       }}
-      className="min-h-screen"
+      className="flex min-h-screen flex-col"
     >
-      <ResolveEditor json={json} />
+      <div className="grow">
+        <ResolveEditor json={json} />
+      </div>
       <p
-        className="fixed bottom-0 left-0 w-full py-2 text-center text-xs"
+        className="py-4 text-center text-xs"
         style={{
           color: `${rgbaToHex(textColor)}`
         }}
