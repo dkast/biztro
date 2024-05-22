@@ -23,7 +23,7 @@
     "@aws-sdk/s3-request-presigner": "^3.577.0",
     "@craftjs/core": "0.2.6",
     "@craftjs/layers": "0.2.2",
-    "@heroicons/react": "^2.1.3",
+    "@heroicons/react": "1.0.6",
     "@hookform/resolvers": "^3.4.2",
     "@libsql/client": "^0.6.0",
     "@prisma/adapter-libsql": "^5.14.0",
