@@ -25,7 +25,7 @@ export default function PageSubtitle({
           {title}
         </h2>
         {description && (
-          <p className="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-400">
+          <p className="mt-1 text-sm leading-6 text-gray-500 dark:text-gray-400">
             {description}
           </p>
         )}

@@ -1,6 +1,8 @@
-import { MapPin } from "lucide-react"
+import { Clock, MapPin } from "lucide-react"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
+import { Separator } from "@/components/ui/separator"
+import HoursForm from "@/app/dashboard/settings/locations/hours-form"
 import LocationForm from "@/app/dashboard/settings/locations/location-form"
 import { getDefaultLocation } from "@/server/actions/location/queries"
 
@@ -15,6 +17,13 @@ export default async function LocationPage() {
         Icon={MapPin}
       />
       <LocationForm data={data} enabled />
+      <Separator className="my-8" />
+      <PageSubtitle
+        title="Horarios de atención"
+        description="Horarios de atención al público"
+        Icon={Clock}
+      />
+      <HoursForm />
     </div>
   )
 }
