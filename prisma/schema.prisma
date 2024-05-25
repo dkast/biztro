@@ -116,8 +116,8 @@ model Location {
 model OpeningHours {
   id         String   @id @default(cuid())
   day        String
-  startTime  String
-  endTime    String
+  startTime  String?
+  endTime    String?
   allDay     Boolean
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

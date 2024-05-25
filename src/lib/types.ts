@@ -124,6 +124,41 @@ export const locationSchema = z.object({
   organizationId: z.string().cuid().optional()
 })
 
+export const hoursSchema = z.object({
+  locationId: z.string().cuid().optional(),
+  items: z.array(
+    z
+      .object({
+        id: z.string().cuid().optional(),
+        day: z.enum([
+          "MONDAY",
+          "TUESDAY",
+          "WEDNESDAY",
+          "THURSDAY",
+          "FRIDAY",
+          "SATURDAY",
+          "SUNDAY"
+        ]),
+        startTime: z.string().optional(),
+        endTime: z.string().optional(),
+        allDay: z.boolean()
+      })
+      .refine(
+        data => {
+          if (data.allDay) {
+            return data.startTime && data.endTime
+          } else {
+            return true
+          }
+        },
+        {
+          message: "Ingresa la hora",
+          path: ["allDay"]
+        }
+      )
+  )
+})
+
 export const variantSchema = z.object({
   id: z.string().cuid().optional(),
   name: z

@@ -14,6 +14,9 @@ export async function getDefaultLocation() {
     where: {
       organizationId: currentOrg
     },
+    include: {
+      openingHours: true
+    },
     orderBy: {
       createdAt: "asc"
     }

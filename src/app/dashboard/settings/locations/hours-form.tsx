@@ -3,10 +3,14 @@
 import { Fragment } from "react"
 import type { TimeValue } from "react-aria"
 import { useFieldArray, useForm } from "react-hook-form"
+import toast from "react-hot-toast"
 // import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { parseTime } from "@internationalized/date"
-import { z } from "zod"
+import type { Prisma } from "@prisma/client"
+import { Loader } from "lucide-react"
+import { useAction } from "next-safe-action/hooks"
+import type { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import { TimeField } from "@/components/ui/date-time-picker/time-field"
@@ -19,77 +23,81 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Switch } from "@/components/ui/switch"
+import { updateHours } from "@/server/actions/location/mutations"
+import type { getDefaultLocation } from "@/server/actions/location/queries"
+import { hoursSchema } from "@/lib/types"
 
-const hoursSchema = z.object({
-  locationId: z.string().cuid().optional(),
-  items: z.array(
-    z
-      .object({
-        id: z.string().cuid().optional(),
-        day: z.enum([
-          "MONDAY",
-          "TUESDAY",
-          "WEDNESDAY",
-          "THURSDAY",
-          "FRIDAY",
-          "SATURDAY",
-          "SUNDAY"
-        ]),
-        startTime: z.string().optional(),
-        endTime: z.string().optional(),
-        allDay: z.boolean()
-      })
-      .refine(
-        data => {
-          if (data.allDay) {
-            return data.startTime && data.endTime
-          } else {
-            return true
-          }
-        },
-        {
-          message: "Ingresa la hora",
-          path: ["allDay"]
-        }
-      )
-  )
-})
-
-export default function HoursForm() {
+export default function HoursForm({
+  data
+}: {
+  data: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
+}) {
   const form = useForm<z.infer<typeof hoursSchema>>({
     resolver: zodResolver(hoursSchema),
     mode: "onSubmit",
     defaultValues: {
-      items: [
-        {
-          day: "MONDAY",
-          allDay: false
-        },
-        {
-          day: "TUESDAY",
-          allDay: false
-        },
-        {
-          day: "WEDNESDAY",
-          allDay: false
-        },
-        {
-          day: "THURSDAY",
-          allDay: false
-        },
-        {
-          day: "FRIDAY",
-          allDay: false
-        },
-        {
-          day: "SATURDAY",
-          allDay: false
-        },
-        {
-          day: "SUNDAY",
-          allDay: false
-        }
-      ]
+      locationId: data?.id,
+      items:
+        data?.openingHours?.length ?? 0 > 0
+          ? data?.openingHours.map(item => ({
+              id: item.id,
+              day: item.day as
+                | "MONDAY"
+                | "TUESDAY"
+                | "WEDNESDAY"
+                | "THURSDAY"
+                | "FRIDAY"
+                | "SATURDAY"
+                | "SUNDAY",
+              startTime: item.startTime ?? undefined,
+              endTime: item.endTime ?? undefined,
+              allDay: item.allDay
+            }))
+          : [
+              {
+                day: "MONDAY",
+                allDay: false
+              },
+              {
+                day: "TUESDAY",
+                allDay: false
+              },
+              {
+                day: "WEDNESDAY",
+                allDay: false
+              },
+              {
+                day: "THURSDAY",
+                allDay: false
+              },
+              {
+                day: "FRIDAY",
+                allDay: false
+              },
+              {
+                day: "SATURDAY",
+                allDay: false
+              },
+              {
+                day: "SUNDAY",
+                allDay: false
+              }
+            ]
+    }
+  })
+
+  const { execute, status, reset } = useAction(updateHours, {
+    onSuccess: data => {
+      if (data?.success) {
+        toast.success("Horario actualizado")
+      } else if (data?.failure.reason) {
+        toast.error(data.failure.reason)
+      }
+      reset()
+    },
+    onError: () => {
+      toast.error("No se pudo actualizar el horario")
+      reset()
     }
   })
 
@@ -99,7 +107,15 @@ export default function HoursForm() {
   })
 
   const onSubmit = (values: z.infer<typeof hoursSchema>) => {
-    console.log(values)
+    execute({
+      locationId: values.locationId,
+      items: values.items.map(item => ({
+        day: item.day,
+        startTime: item.startTime,
+        endTime: item.endTime,
+        allDay: item.allDay
+      }))
+    })
   }
 
   return (
@@ -177,7 +193,16 @@ export default function HoursForm() {
             </Fragment>
           ))}
         </div>
-        <Button type="submit">Actualizar Horario</Button>
+        <Button type="submit" disabled={status === "executing"}>
+          {status === "executing" ? (
+            <>
+              <Loader className="mr-2 size-4 animate-spin" />
+              {"Guardando..."}
+            </>
+          ) : (
+            "Actualizar Horario"
+          )}
+        </Button>
       </form>
       {/* <DevTool control={form.control} /> */}
     </Form>

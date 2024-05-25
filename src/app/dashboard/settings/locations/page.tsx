@@ -23,7 +23,7 @@ export default async function LocationPage() {
         description="Horarios de atención al público"
         Icon={Clock}
       />
-      <HoursForm />
+      <HoursForm data={data} />
     </div>
   )
 }
