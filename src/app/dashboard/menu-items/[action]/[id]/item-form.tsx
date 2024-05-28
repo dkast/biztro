@@ -182,7 +182,7 @@ export default function ItemForm({
             <div className="flex gap-2">
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={() => router.push("/dashboard/menu-items")}
               >

@@ -309,9 +309,28 @@ function QrCodeEditor({
                 ecLevel={showLogo ? "H" : "M"}
                 logoImage={showLogo ? logoURL : ""}
                 logoWidth={showLogo ? 80 : 0}
+                logoPadding={showLogo ? 4 : 0}
                 removeQrCodeBehindLogo={showLogo}
                 enableCORS
                 fgColor={rgbaToHex(color)}
+                qrStyle="fluid"
+                eyeRadius={[
+                  {
+                    // top/left eye
+                    outer: [10, 10, 10, 10],
+                    inner: [3, 3, 3, 3]
+                  },
+                  {
+                    // top/right eye
+                    outer: [10, 10, 10, 10],
+                    inner: [3, 3, 3, 3]
+                  },
+                  {
+                    // bottom/left eye
+                    outer: [10, 10, 10, 10],
+                    inner: [3, 3, 3, 3]
+                  }
+                ]}
               />
             </div>
           </div>
