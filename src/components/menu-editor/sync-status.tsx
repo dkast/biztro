@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
-import type { Location, Organization, Prisma } from "@prisma/client"
+import type { Organization, Prisma } from "@prisma/client"
 import { RefreshCcw } from "lucide-react"
 import lz from "lzutf8"
 
 import { Button } from "@/components/ui/button"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
+import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import difference from "@/lib/difference"
 
@@ -18,7 +19,7 @@ export default function SyncStatus({
   categories
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
-  location: Location | null
+  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
   const { actions } = useEditor()
@@ -33,7 +34,9 @@ export default function SyncStatus({
         typeof getCategoriesWithItems
       > = []
       let organization: Organization | null = null
-      let defaultLocation: Location | null = null
+      let defaultLocation: Prisma.PromiseReturnType<
+        typeof getDefaultLocation
+      > | null = null
 
       for (const property in objectData) {
         const component = objectData[property]
@@ -155,6 +158,7 @@ export default function SyncStatus({
 
       if (defaultLocation && location) {
         const diff = difference(defaultLocation, location)
+        console.log(diff)
         Object.getOwnPropertyNames(diff).forEach(propName => {
           if (
             propName === "address" ||
@@ -164,7 +168,8 @@ export default function SyncStatus({
             propName === "twitter" ||
             propName === "tiktok" ||
             propName === "whatsapp" ||
-            propName === "website"
+            propName === "website" ||
+            propName === "openingHours"
           ) {
             equalMenu = false
           }

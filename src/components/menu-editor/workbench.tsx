@@ -2,7 +2,7 @@
 
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
-import type { Location, Organization, Prisma } from "@prisma/client"
+import type { Organization, Prisma } from "@prisma/client"
 import { useAtom, useSetAtom } from "jotai"
 import { Palette, Settings2 } from "lucide-react"
 import lz from "lzutf8"
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/resizable"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
+import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import { colorThemeAtom, fontThemeAtom, frameSizeAtom } from "@/lib/atoms"
 import { FrameSize } from "@/lib/types"
@@ -41,7 +42,7 @@ export default function Workbench({
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
   organization: Organization
-  location: Location | null
+  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
   // Initialize the atoms for the editor

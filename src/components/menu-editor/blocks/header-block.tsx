@@ -1,5 +1,6 @@
 import { useNode } from "@craftjs/core"
-import type { Location, Organization } from "@prisma/client"
+import { parseTime } from "@internationalized/date"
+import type { OpeningHours, Organization, Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
 import { Phone } from "lucide-react"
 import Image from "next/image"
@@ -7,11 +8,12 @@ import Image from "next/image"
 import HeaderSettings from "@/components/menu-editor/blocks/header-settings"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { cn, getInitials } from "@/lib/utils"
 
 export type HeaderBlockProps = {
   organization: Organization
-  location?: Location
+  location?: Prisma.PromiseReturnType<typeof getDefaultLocation>
   fontFamily?: string
   color?: RgbaColor
   accentColor?: RgbaColor
@@ -45,19 +47,13 @@ export default function HeaderBlock({
       className="relative"
     >
       <div className="relative flex flex-col">
-        {organization?.banner && showBanner ? (
-          <div className="h-32">
-            <Image
-              alt="Banner"
-              className="object-cover"
-              src={organization.banner}
-              fill
-              unoptimized
-            />
-          </div>
-        ) : null}
+        <Banner
+          banner={organization.banner}
+          isBannerVisible={showBanner ?? false}
+        />
       </div>
       <div className="p-4">
+        {/* Logo and organization name */}
         <div
           className={cn(
             "flex flex-row",
@@ -66,16 +62,11 @@ export default function HeaderBlock({
               : "my-2 items-center"
           )}
         >
-          {showLogo ? (
-            <Avatar className="h-16 w-16 rounded-xl shadow">
-              {organization.logo && (
-                <AvatarImage src={organization.logo} className="rounded-xl" />
-              )}
-              <AvatarFallback className="text-xl">
-                {getInitials(organization.name)}
-              </AvatarFallback>
-            </Avatar>
-          ) : null}
+          <Logo
+            logo={organization.logo}
+            name={organization.name}
+            isLogoVisible={showLogo ?? false}
+          />
           <FontWrapper fontFamily={fontFamily}>
             <h1
               className={cn(
@@ -91,31 +82,25 @@ export default function HeaderBlock({
             </h1>
           </FontWrapper>
         </div>
-        {showAddress && (
-          <div
-            className={cn(
-              "flex flex-col gap-1 text-xs opacity-75",
-              showLogo ? "ml-20" : "pt-3",
-              organization.banner && showBanner ? "" : "-mt-5"
-            )}
-            style={{
-              color: `rgb(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })})`
-            }}
-          >
-            <span>{location?.address}</span>
-            {location?.phone && (
-              <div className="flex flex-row items-center gap-1">
-                <Phone className="inline-block size-2.5" />
-                <span>
-                  Tel:&nbsp;
-                  <a href={`tel:${location?.phone}`} className="underline">
-                    {location?.phone}
-                  </a>
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Location data */}
+        <div
+          className={cn(
+            "flex flex-col gap-1 text-xs opacity-75",
+            showLogo ? "ml-20" : "pt-3",
+            organization.banner && showBanner ? "" : "-mt-5"
+          )}
+          style={{
+            color: `rgb(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })})`
+          }}
+        >
+          {location && (
+            <LocationData
+              isAddressVisible={showAddress ?? false}
+              isOpenHoursVisible={showAddress ?? false}
+              location={location}
+            />
+          )}
+        </div>
       </div>
       {/* Show location social media */}
       {showSocialMedia && (
@@ -196,6 +181,110 @@ export default function HeaderBlock({
       )}
     </div>
   )
+}
+
+function Banner({
+  banner,
+  isBannerVisible
+}: {
+  banner: string | null | undefined
+  isBannerVisible: boolean
+}) {
+  return (
+    banner &&
+    isBannerVisible && (
+      <div className="h-32">
+        <Image
+          alt="Banner"
+          className="object-cover"
+          src={banner}
+          fill
+          unoptimized
+        />
+      </div>
+    )
+  )
+}
+
+function Logo({
+  logo,
+  name,
+  isLogoVisible
+}: {
+  logo: string | null | undefined
+  name: string
+  isLogoVisible: boolean
+}) {
+  return (
+    isLogoVisible && (
+      <Avatar className="h-16 w-16 rounded-xl shadow">
+        <AvatarImage src={logo ?? undefined} className="rounded-xl" />
+        <AvatarFallback className="text-xl">{getInitials(name)}</AvatarFallback>
+      </Avatar>
+    )
+  )
+}
+
+function LocationData({
+  isAddressVisible,
+  isOpenHoursVisible,
+  location
+}: {
+  isAddressVisible: boolean
+  isOpenHoursVisible: boolean
+  location: NonNullable<Prisma.PromiseReturnType<typeof getDefaultLocation>>
+}) {
+  return (
+    <div className="flex flex-col">
+      <span>{location.address}</span>
+      <div>
+        {location.phone && (
+          <div className="flex flex-row items-center gap-1">
+            <Phone className="inline-block size-2.5" />
+            <span>
+              Tel:&nbsp;
+              <a href={`tel:${location.phone}`} className="underline">
+                {location.phone}
+              </a>
+            </span>
+          </div>
+        )}
+        {isOpenHoursVisible && location.openingHours && (
+          <span>{getOpenHoursStatus(location.openingHours)}</span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function getOpenHoursStatus(openingHours: OpeningHours[]) {
+  const now = new Date()
+  const dayOfWeek = now.getDay()
+
+  // get the current day's opening hours configuration
+  const currentDay = openingHours[dayOfWeek - 1]
+  console.log(currentDay)
+
+  if (!currentDay) {
+    return null
+  }
+
+  // check if the location is open today
+  if (!currentDay?.allDay) {
+    return "Cerrado hoy"
+  }
+
+  // check if the location is open now
+  const currentHour = now.getHours()
+  const currentMinute = now.getMinutes()
+  const openHour = parseTime(currentDay?.startTime ?? "")
+  const closeHour = parseTime(currentDay?.endTime ?? "")
+
+  if (currentHour < openHour.hour || currentHour > closeHour.hour) {
+    return "Cerrado"
+  } else {
+    return `Abierto hasta las ${currentDay.endTime} hoy`
+  }
 }
 
 HeaderBlock.craft = {
