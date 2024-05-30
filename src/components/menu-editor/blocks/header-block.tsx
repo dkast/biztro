@@ -1,8 +1,17 @@
+import { start } from "repl"
 import { useNode } from "@craftjs/core"
-import { parseTime } from "@internationalized/date"
+import {
+  CalendarDateTime,
+  getLocalTimeZone,
+  parseTime,
+  startOfWeek,
+  Time,
+  toCalendarDateTime,
+  today
+} from "@internationalized/date"
 import type { OpeningHours, Organization, Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
-import { Phone } from "lucide-react"
+import { Clock, Phone } from "lucide-react"
 import Image from "next/image"
 
 import HeaderSettings from "@/components/menu-editor/blocks/header-settings"
@@ -235,56 +244,102 @@ function LocationData({
   location: NonNullable<Prisma.PromiseReturnType<typeof getDefaultLocation>>
 }) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-1">
       <span>{location.address}</span>
-      <div>
-        {location.phone && (
-          <div className="flex flex-row items-center gap-1">
-            <Phone className="inline-block size-2.5" />
-            <span>
-              Tel:&nbsp;
-              <a href={`tel:${location.phone}`} className="underline">
-                {location.phone}
-              </a>
-            </span>
-          </div>
-        )}
-        {isOpenHoursVisible && location.openingHours && (
+      {location.phone && (
+        <div className="flex flex-row items-center gap-1">
+          <Phone className="inline-block size-2.5" />
+          <span>
+            Tel:&nbsp;
+            <a href={`tel:${location.phone}`} className="underline">
+              {location.phone}
+            </a>
+          </span>
+        </div>
+      )}
+      {isOpenHoursVisible && location.openingHours && (
+        <div className="flex flex-row items-center gap-1">
+          <Clock className="inline-block size-2.5" />
           <span>{getOpenHoursStatus(location.openingHours)}</span>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
 
 function getOpenHoursStatus(openingHours: OpeningHours[]) {
+  let status = "Cerrado"
+
+  const currentDate = today(getLocalTimeZone())
   const now = new Date()
-  const dayOfWeek = now.getDay()
+  const currentTime = toCalendarDateTime(
+    currentDate,
+    new Time(now.getHours(), now.getMinutes())
+  )
+  console.log(currentTime)
+  const startWeek = startOfWeek(currentDate, "es-MX")
 
-  // get the current day's opening hours configuration
-  const currentDay = openingHours[dayOfWeek - 1]
-  console.log(currentDay)
+  for (const day of openingHours) {
+    // convert day to date based on the week start
+    let weekDayNbr = 0
+    switch (day.day) {
+      case "MONDAY":
+        weekDayNbr = 1
+        break
+      case "TUESDAY":
+        weekDayNbr = 2
+        break
+      case "WEDNESDAY":
+        weekDayNbr = 3
+        break
+      case "THURSDAY":
+        weekDayNbr = 4
+        break
+      case "FRIDAY":
+        weekDayNbr = 5
+        break
+      case "SATURDAY":
+        weekDayNbr = 6
+        break
+      case "SUNDAY":
+        weekDayNbr = 7
+        break
+    }
 
-  if (!currentDay) {
-    return null
+    if (!day.allDay) {
+      continue
+    }
+
+    const dayDate = startWeek.add({ days: weekDayNbr })
+    const startTime = parseTime(day.startTime ?? "")
+    const endTime = parseTime(day.endTime ?? "")
+
+    const openDateTime = toCalendarDateTime(dayDate, startTime)
+
+    let closeDateTime
+    if (endTime.hour < startTime.hour) {
+      closeDateTime = toCalendarDateTime(dayDate.add({ days: 1 }), endTime)
+    } else {
+      closeDateTime = toCalendarDateTime(currentDate, endTime)
+    }
+
+    const formatClosed = closeDateTime
+      .toDate(getLocalTimeZone())
+      .toLocaleTimeString("es-MX", {
+        hour: "2-digit",
+        minute: "2-digit"
+      })
+
+    if (
+      currentTime.compare(openDateTime) >= 0 &&
+      currentTime.compare(closeDateTime) <= 0
+    ) {
+      status = `Abierto - Hasta ${endTime.hour === 1 ? "la" : "las"} ${formatClosed}`
+      break
+    }
   }
 
-  // check if the location is open today
-  if (!currentDay?.allDay) {
-    return "Cerrado hoy"
-  }
-
-  // check if the location is open now
-  const currentHour = now.getHours()
-  const currentMinute = now.getMinutes()
-  const openHour = parseTime(currentDay?.startTime ?? "")
-  const closeHour = parseTime(currentDay?.endTime ?? "")
-
-  if (currentHour < openHour.hour || currentHour > closeHour.hour) {
-    return "Cerrado"
-  } else {
-    return `Abierto hasta las ${currentDay.endTime} hoy`
-  }
+  return status
 }
 
 HeaderBlock.craft = {
