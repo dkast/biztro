@@ -276,7 +276,6 @@ function getOpenHoursStatus(openingHours: OpeningHours[]) {
     currentDate,
     new Time(now.getHours(), now.getMinutes())
   )
-  console.log(currentTime)
   const startWeek = startOfWeek(currentDate, "es-MX")
 
   for (const day of openingHours) {
@@ -311,6 +310,7 @@ function getOpenHoursStatus(openingHours: OpeningHours[]) {
     }
 
     const dayDate = startWeek.add({ days: weekDayNbr })
+    // console.log(startWeek, weekDayNbr, dayDate)
     const startTime = parseTime(day.startTime ?? "")
     const endTime = parseTime(day.endTime ?? "")
 
@@ -320,7 +320,7 @@ function getOpenHoursStatus(openingHours: OpeningHours[]) {
     if (endTime.hour < startTime.hour) {
       closeDateTime = toCalendarDateTime(dayDate.add({ days: 1 }), endTime)
     } else {
-      closeDateTime = toCalendarDateTime(currentDate, endTime)
+      closeDateTime = toCalendarDateTime(dayDate, endTime)
     }
 
     const formatClosed = closeDateTime
@@ -330,6 +330,7 @@ function getOpenHoursStatus(openingHours: OpeningHours[]) {
         minute: "2-digit"
       })
 
+    // console.log(currentTime, openDateTime, closeDateTime)
     if (
       currentTime.compare(openDateTime) >= 0 &&
       currentTime.compare(closeDateTime) <= 0
