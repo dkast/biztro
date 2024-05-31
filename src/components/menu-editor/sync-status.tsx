@@ -159,7 +159,7 @@ export default function SyncStatus({
       if (defaultLocation && location) {
         const diff = difference(defaultLocation, location)
         console.log(location.openingHours)
-        console.log(diff)
+        // console.log(diff)
         Object.getOwnPropertyNames(diff).forEach(propName => {
           if (
             propName === "address" ||
@@ -169,12 +169,28 @@ export default function SyncStatus({
             propName === "twitter" ||
             propName === "tiktok" ||
             propName === "whatsapp" ||
-            propName === "website" ||
-            propName === "openingHours"
+            propName === "website"
           ) {
             equalMenu = false
           }
         })
+
+        for (const day in location.openingHours) {
+          const diff = difference(
+            defaultLocation.openingHours[day] ?? {},
+            location.openingHours[day] ?? {}
+          )
+          console.log(diff)
+          Object.getOwnPropertyNames(diff).forEach(propName => {
+            if (
+              propName === "allDay" ||
+              propName === "startTime" ||
+              propName === "endTime"
+            ) {
+              equalMenu = false
+            }
+          })
+        }
       }
 
       console.log(equalData, equalMenu)
