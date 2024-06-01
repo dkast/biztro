@@ -1,7 +1,5 @@
-import { start } from "repl"
 import { useNode } from "@craftjs/core"
 import {
-  CalendarDateTime,
   getLocalTimeZone,
   parseTime,
   startOfWeek,
@@ -11,12 +9,17 @@ import {
 } from "@internationalized/date"
 import type { OpeningHours, Organization, Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
-import { Clock, Phone } from "lucide-react"
+import { ChevronDown, Clock, Phone } from "lucide-react"
 import Image from "next/image"
 
 import HeaderSettings from "@/components/menu-editor/blocks/header-settings"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { cn, getInitials } from "@/lib/utils"
 
@@ -94,7 +97,7 @@ export default function HeaderBlock({
         {/* Location data */}
         <div
           className={cn(
-            "flex flex-col gap-1 text-xs opacity-75",
+            "flex flex-col gap-1 text-xs",
             showLogo ? "ml-20" : "pt-3",
             organization.banner && showBanner ? "" : "-mt-5"
           )}
@@ -113,7 +116,7 @@ export default function HeaderBlock({
       </div>
       {/* Show location social media */}
       {showSocialMedia && (
-        <div className="absolute right-0 top-0 rounded-bl opacity-75 has-[a]:bg-white">
+        <div className="absolute right-0 top-0 rounded-bl has-[a]:bg-white">
           <div className="flex flex-row items-center gap-3 p-2">
             {location?.facebook && (
               <a
@@ -258,10 +261,44 @@ function LocationData({
         </div>
       )}
       {isOpenHoursVisible && location.openingHours && (
-        <div className="flex flex-row items-center gap-1">
-          <Clock className="inline-block size-2.5" />
-          <span>{getOpenHoursStatus(location.openingHours)}</span>
-        </div>
+        <Popover>
+          <PopoverTrigger>
+            <div className="flex flex-row items-center gap-1">
+              <Clock className="inline-block size-2.5" />
+              <span>{getOpenHoursStatus(location.openingHours)}</span>
+              <ChevronDown className="inline-block size-2.5" />
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="min-w-72">
+            <div className="flex flex-col divide-y">
+              {location.openingHours.map(day => {
+                return (
+                  <div key={day.day} className="grid grid-cols-3 py-2 text-xs">
+                    <span className="font-medium">
+                      {day.day === "MONDAY" && "Lunes"}
+                      {day.day === "TUESDAY" && "Martes"}
+                      {day.day === "WEDNESDAY" && "Miércoles"}
+                      {day.day === "THURSDAY" && "Jueves"}
+                      {day.day === "FRIDAY" && "Viernes"}
+                      {day.day === "SATURDAY" && "Sábado"}
+                      {day.day === "SUNDAY" && "Domingo"}
+                    </span>
+                    <span
+                      className={cn(
+                        day.allDay ? "text-gray-600" : "text-gray-400",
+                        "col-span-2 tabular-nums"
+                      )}
+                    >
+                      {day.allDay
+                        ? `${getFormattedTime(day.startTime)} - ${getFormattedTime(day.endTime)}`
+                        : "Cerrado"}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </PopoverContent>
+        </Popover>
       )}
     </div>
   )
@@ -341,6 +378,18 @@ function getOpenHoursStatus(openingHours: OpeningHours[]) {
   }
 
   return status
+}
+
+function getFormattedTime(time: string | null | undefined) {
+  if (!time) {
+    return "NA"
+  }
+  const parsedTime = parseTime(time)
+  const currentDate = today(getLocalTimeZone())
+  const timeDate = toCalendarDateTime(currentDate, parsedTime)
+  return timeDate
+    .toDate(getLocalTimeZone())
+    .toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })
 }
 
 HeaderBlock.craft = {
