@@ -297,6 +297,7 @@ function QrCodeEditor({
     Record<"r" | "g" | "b" | "a", number>
   >("color", fgColor)
   const [showLogo, setShowLogo] = useLocalStorage<boolean>("logo", false)
+  console.log(logoURL)
   return (
     <div>
       <div className="my-6 flex flex-row items-start justify-between">

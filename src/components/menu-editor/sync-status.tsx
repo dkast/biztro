@@ -158,7 +158,7 @@ export default function SyncStatus({
 
       if (defaultLocation && location) {
         const diff = difference(defaultLocation, location)
-        console.log(location.openingHours)
+        // console.log(location.openingHours)
         // console.log(diff)
         Object.getOwnPropertyNames(diff).forEach(propName => {
           if (
@@ -180,7 +180,7 @@ export default function SyncStatus({
             defaultLocation.openingHours[day] ?? {},
             location.openingHours[day] ?? {}
           )
-          console.log(diff)
+          // console.log(diff)
           Object.getOwnPropertyNames(diff).forEach(propName => {
             if (
               propName === "allDay" ||
@@ -193,7 +193,7 @@ export default function SyncStatus({
         }
       }
 
-      console.log(equalData, equalMenu)
+      // console.log(equalData, equalMenu)
       setSyncReq(!equalData || !equalMenu)
     }
   }, [menu, categories, location, setSyncReq])
@@ -217,10 +217,8 @@ export default function SyncStatus({
         }
 
         if (component?.type?.resolvedName === "HeaderBlock") {
-          const prevLocation = component?.props?.location
           actions.setProp(property, props => {
             props.organization = menu?.organization
-            console.log(prevLocation, location)
             props.location = location
           })
         }

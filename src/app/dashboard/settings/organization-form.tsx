@@ -192,12 +192,18 @@ export default function OrganizationForm({
                 organizationId={data.id}
                 imageType={ImageType.BANNER}
                 objectId={ImageType.BANNER}
+                onUploadSuccess={() => {
+                  router.refresh()
+                }}
               />
             ) : (
               <EmptyImageField
                 organizationId={data.id}
                 imageType={ImageType.BANNER}
                 objectId={ImageType.BANNER}
+                onUploadSuccess={() => {
+                  router.refresh()
+                }}
               />
             )}
             <FormDescription>
