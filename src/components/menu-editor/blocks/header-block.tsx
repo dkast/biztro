@@ -107,7 +107,7 @@ export default function HeaderBlock({
         >
           {location && (
             <LocationData
-              isAddressVisible={showAddress ?? false}
+              isBusinessInfoVisible={showAddress ?? false}
               isOpenHoursVisible={showAddress ?? false}
               location={location}
             />
@@ -238,27 +238,31 @@ function Logo({
 }
 
 function LocationData({
-  isAddressVisible,
+  isBusinessInfoVisible,
   isOpenHoursVisible,
   location
 }: {
-  isAddressVisible: boolean
+  isBusinessInfoVisible: boolean
   isOpenHoursVisible: boolean
   location: NonNullable<Prisma.PromiseReturnType<typeof getDefaultLocation>>
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <span>{location.address}</span>
-      {location.phone && (
-        <div className="flex flex-row items-center gap-1">
-          <Phone className="inline-block size-2.5" />
-          <span>
-            Tel:&nbsp;
-            <a href={`tel:${location.phone}`} className="underline">
-              {location.phone}
-            </a>
-          </span>
-        </div>
+      {isBusinessInfoVisible && (
+        <>
+          <span>{location.address}</span>
+          {location.phone && (
+            <div className="flex flex-row items-center gap-1">
+              <Phone className="inline-block size-2.5" />
+              <span>
+                Tel:&nbsp;
+                <a href={`tel:${location.phone}`} className="underline">
+                  {location.phone}
+                </a>
+              </span>
+            </div>
+          )}
+        </>
       )}
       {isOpenHoursVisible && location.openingHours && (
         <Popover>
