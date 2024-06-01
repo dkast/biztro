@@ -1,10 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   Check,
   ChevronsUpDown,
@@ -58,20 +59,20 @@ import { Textarea } from "@/components/ui/textarea"
 import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
 import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
 import { createCategory, updateItem } from "@/server/actions/item/mutations"
-import type {
+import {
   getCategories,
-  getMenuItemById
+  type getMenuItemById
 } from "@/server/actions/item/queries"
 import { ImageType, menuItemSchema, MenuItemStatus } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 export default function ItemForm({
   item,
-  categories,
+  // categories,
   action
 }: {
   item: Prisma.PromiseReturnType<typeof getMenuItemById>
-  categories: Prisma.PromiseReturnType<typeof getCategories>
+  // categories: Prisma.PromiseReturnType<typeof getCategories>
   action: string
 }) {
   const form = useForm<z.infer<typeof menuItemSchema>>({
@@ -94,6 +95,13 @@ export default function ItemForm({
   const [openCategory, setOpenCategory] = useState<boolean>(false)
   const [searchCategory, setSearchCategory] = useState<string>("")
   const [openVariant, setOpenVariant] = useState<boolean>(false)
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories(),
+    initialData: [] // default value
+  })
+  const queryClient = useQueryClient()
 
   const title = (action === "new" ? "Crear" : "Editar") + " Producto"
 
@@ -127,6 +135,9 @@ export default function ItemForm({
   const handleAddCategory = () => {
     if (searchCategory) {
       executeCategory({ name: searchCategory })
+      queryClient.invalidateQueries({
+        queryKey: ["categories"]
+      })
     }
   }
 
@@ -162,6 +173,8 @@ export default function ItemForm({
     execute(data)
   }
 
+  const saveRef = React.useRef<HTMLButtonElement>(null)
+
   if (!item) {
     return (
       <Alert variant="warning">
@@ -185,6 +198,7 @@ export default function ItemForm({
                 variant="secondary"
                 size="sm"
                 onClick={() => router.push("/dashboard/menu-items")}
+                ref={saveRef}
               >
                 Cancelar
               </Button>
@@ -404,7 +418,16 @@ export default function ItemForm({
                           onValueChange={field.onChange}
                           value={field.value}
                         >
-                          <FormControl>
+                          <FormControl
+                            onKeyDown={e => {
+                              console.log(e.key)
+                              // If is tab, go to save button
+                              if (e.key === "Tab") {
+                                e.preventDefault()
+                                saveRef.current?.focus()
+                              }
+                            }}
+                          >
                             <SelectTrigger>
                               <SelectValue placeholder="Seleccionar estado" />
                             </SelectTrigger>

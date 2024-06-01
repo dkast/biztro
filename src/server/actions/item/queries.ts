@@ -68,24 +68,24 @@ export async function getMenuItemById(id: string) {
 
 export async function getCategories() {
   const currentOrg = cookies().get(appConfig.cookieOrg)?.value
-  return await cache(
-    async () => {
-      if (!currentOrg) {
-        return []
-      }
+  // return await cache(
+  //   async () => {
+  if (!currentOrg) {
+    return []
+  }
 
-      return await prisma.category.findMany({
-        where: {
-          organizationId: currentOrg
-        }
-      })
-    },
-    [`categories-${currentOrg}`],
-    {
-      revalidate: 900,
-      tags: [`categories-${currentOrg}`]
+  return await prisma.category.findMany({
+    where: {
+      organizationId: currentOrg
     }
-  )()
+  })
+  //   },
+  //   [`categories-${currentOrg}`],
+  //   {
+  //     revalidate: 900,
+  //     tags: [`categories-${currentOrg}`]
+  //   }
+  // )()
 }
 
 export async function getCategoriesWithItems() {

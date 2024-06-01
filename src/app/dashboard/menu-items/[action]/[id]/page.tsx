@@ -1,3 +1,8 @@
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient
+} from "@tanstack/react-query"
 import { TriangleAlert } from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -10,7 +15,14 @@ export default async function ItemPage({
   params: { action: string; id: string }
 }) {
   const item = await getMenuItemById(params.id)
-  const categories = await getCategories()
+  // const categories = await getCategories()
+
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories()
+  })
 
   if (!item) {
     return (
@@ -27,8 +39,10 @@ export default async function ItemPage({
   }
 
   return (
-    <div className="mx-auto max-w-[59rem] grow px-4 sm:px-6">
-      <ItemForm action={params.action} item={item} categories={categories} />
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <div className="mx-auto max-w-[59rem] grow px-4 sm:px-6">
+        <ItemForm action={params.action} item={item} />
+      </div>
+    </HydrationBoundary>
   )
 }

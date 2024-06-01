@@ -227,7 +227,7 @@ export const createCategory = action(categorySchema, async ({ name }) => {
       }
     })
 
-    revalidateTag(`categories-${currentOrg}`)
+    // revalidateTag(`categories-${currentOrg}`)
 
     return { success: category }
   } catch (error) {
