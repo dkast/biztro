@@ -1,17 +1,31 @@
 import { useNode } from "@craftjs/core"
-import type { Location, Organization } from "@prisma/client"
+import {
+  getLocalTimeZone,
+  parseTime,
+  startOfWeek,
+  Time,
+  toCalendarDateTime,
+  today
+} from "@internationalized/date"
+import type { OpeningHours, Organization, Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
-import { Phone } from "lucide-react"
+import { ChevronDown, Clock, Phone } from "lucide-react"
 import Image from "next/image"
 
 import HeaderSettings from "@/components/menu-editor/blocks/header-settings"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover"
+import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { cn, getInitials } from "@/lib/utils"
 
 export type HeaderBlockProps = {
   organization: Organization
-  location?: Location
+  location?: Prisma.PromiseReturnType<typeof getDefaultLocation>
   fontFamily?: string
   color?: RgbaColor
   accentColor?: RgbaColor
@@ -45,19 +59,13 @@ export default function HeaderBlock({
       className="relative"
     >
       <div className="relative flex flex-col">
-        {organization?.banner && showBanner ? (
-          <div className="h-32">
-            <Image
-              alt="Banner"
-              className="object-cover"
-              src={organization.banner}
-              fill
-              unoptimized
-            />
-          </div>
-        ) : null}
+        <Banner
+          banner={organization.banner}
+          isBannerVisible={showBanner ?? false}
+        />
       </div>
       <div className="p-4">
+        {/* Logo and organization name */}
         <div
           className={cn(
             "flex flex-row",
@@ -66,16 +74,11 @@ export default function HeaderBlock({
               : "my-2 items-center"
           )}
         >
-          {showLogo ? (
-            <Avatar className="h-16 w-16 rounded-xl shadow">
-              {organization.logo && (
-                <AvatarImage src={organization.logo} className="rounded-xl" />
-              )}
-              <AvatarFallback className="text-xl">
-                {getInitials(organization.name)}
-              </AvatarFallback>
-            </Avatar>
-          ) : null}
+          <Logo
+            logo={organization.logo}
+            name={organization.name}
+            isLogoVisible={showLogo ?? false}
+          />
           <FontWrapper fontFamily={fontFamily}>
             <h1
               className={cn(
@@ -91,35 +94,29 @@ export default function HeaderBlock({
             </h1>
           </FontWrapper>
         </div>
-        {showAddress && (
-          <div
-            className={cn(
-              "flex flex-col gap-1 text-xs opacity-75",
-              showLogo ? "ml-20" : "pt-3",
-              organization.banner && showBanner ? "" : "-mt-5"
-            )}
-            style={{
-              color: `rgb(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })})`
-            }}
-          >
-            <span>{location?.address}</span>
-            {location?.phone && (
-              <div className="flex flex-row items-center gap-1">
-                <Phone className="inline-block size-2.5" />
-                <span>
-                  Tel:&nbsp;
-                  <a href={`tel:${location?.phone}`} className="underline">
-                    {location?.phone}
-                  </a>
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Location data */}
+        <div
+          className={cn(
+            "flex flex-col gap-1 text-xs",
+            showLogo ? "ml-20" : "pt-3",
+            organization.banner && showBanner ? "" : "-mt-5"
+          )}
+          style={{
+            color: `rgb(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })})`
+          }}
+        >
+          {location && (
+            <LocationData
+              isBusinessInfoVisible={showAddress ?? false}
+              isOpenHoursVisible={showAddress ?? false}
+              location={location}
+            />
+          )}
+        </div>
       </div>
       {/* Show location social media */}
       {showSocialMedia && (
-        <div className="absolute right-0 top-0 rounded-bl opacity-75 has-[a]:bg-white">
+        <div className="absolute right-0 top-0 rounded-bl has-[a]:bg-white">
           <div className="flex flex-row items-center gap-3 p-2">
             {location?.facebook && (
               <a
@@ -196,6 +193,207 @@ export default function HeaderBlock({
       )}
     </div>
   )
+}
+
+function Banner({
+  banner,
+  isBannerVisible
+}: {
+  banner: string | null | undefined
+  isBannerVisible: boolean
+}) {
+  return (
+    banner &&
+    isBannerVisible && (
+      <div className="h-32">
+        <Image
+          alt="Banner"
+          className="object-cover"
+          src={banner}
+          fill
+          unoptimized
+        />
+      </div>
+    )
+  )
+}
+
+function Logo({
+  logo,
+  name,
+  isLogoVisible
+}: {
+  logo: string | null | undefined
+  name: string
+  isLogoVisible: boolean
+}) {
+  return (
+    isLogoVisible && (
+      <Avatar className="h-16 w-16 rounded-xl shadow">
+        <AvatarImage src={logo ?? undefined} className="rounded-xl" />
+        <AvatarFallback className="text-xl">{getInitials(name)}</AvatarFallback>
+      </Avatar>
+    )
+  )
+}
+
+function LocationData({
+  isBusinessInfoVisible,
+  isOpenHoursVisible,
+  location
+}: {
+  isBusinessInfoVisible: boolean
+  isOpenHoursVisible: boolean
+  location: NonNullable<Prisma.PromiseReturnType<typeof getDefaultLocation>>
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      {isBusinessInfoVisible && (
+        <>
+          <span>{location.address}</span>
+          {location.phone && (
+            <div className="flex flex-row items-center gap-1">
+              <Phone className="inline-block size-2.5" />
+              <span>
+                Tel:&nbsp;
+                <a href={`tel:${location.phone}`} className="underline">
+                  {location.phone}
+                </a>
+              </span>
+            </div>
+          )}
+        </>
+      )}
+      {isOpenHoursVisible && location.openingHours && (
+        <Popover>
+          <PopoverTrigger>
+            <div className="flex flex-row items-center gap-1">
+              <Clock className="inline-block size-2.5" />
+              <span>{getOpenHoursStatus(location.openingHours)}</span>
+              <ChevronDown className="inline-block size-2.5" />
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="min-w-72">
+            <div className="flex flex-col divide-y">
+              {location.openingHours.map(day => {
+                return (
+                  <div key={day.day} className="grid grid-cols-3 py-2 text-xs">
+                    <span className="font-medium">
+                      {day.day === "MONDAY" && "Lunes"}
+                      {day.day === "TUESDAY" && "Martes"}
+                      {day.day === "WEDNESDAY" && "Miércoles"}
+                      {day.day === "THURSDAY" && "Jueves"}
+                      {day.day === "FRIDAY" && "Viernes"}
+                      {day.day === "SATURDAY" && "Sábado"}
+                      {day.day === "SUNDAY" && "Domingo"}
+                    </span>
+                    <span
+                      className={cn(
+                        day.allDay ? "text-gray-600" : "text-gray-400",
+                        "col-span-2 tabular-nums"
+                      )}
+                    >
+                      {day.allDay
+                        ? `${getFormattedTime(day.startTime)} - ${getFormattedTime(day.endTime)}`
+                        : "Cerrado"}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </PopoverContent>
+        </Popover>
+      )}
+    </div>
+  )
+}
+
+function getOpenHoursStatus(openingHours: OpeningHours[]) {
+  let status = "Cerrado"
+
+  const currentDate = today(getLocalTimeZone())
+  const now = new Date()
+  const currentTime = toCalendarDateTime(
+    currentDate,
+    new Time(now.getHours(), now.getMinutes())
+  )
+  const startWeek = startOfWeek(currentDate, "es-MX")
+
+  for (const day of openingHours) {
+    // convert day to date based on the week start
+    let weekDayNbr = 0
+    switch (day.day) {
+      case "MONDAY":
+        weekDayNbr = 1
+        break
+      case "TUESDAY":
+        weekDayNbr = 2
+        break
+      case "WEDNESDAY":
+        weekDayNbr = 3
+        break
+      case "THURSDAY":
+        weekDayNbr = 4
+        break
+      case "FRIDAY":
+        weekDayNbr = 5
+        break
+      case "SATURDAY":
+        weekDayNbr = 6
+        break
+      case "SUNDAY":
+        weekDayNbr = 7
+        break
+    }
+
+    if (!day.allDay) {
+      continue
+    }
+
+    const dayDate = startWeek.add({ days: weekDayNbr })
+    // console.log(startWeek, weekDayNbr, dayDate)
+    const startTime = parseTime(day.startTime ?? "")
+    const endTime = parseTime(day.endTime ?? "")
+
+    const openDateTime = toCalendarDateTime(dayDate, startTime)
+
+    let closeDateTime
+    if (endTime.hour < startTime.hour) {
+      closeDateTime = toCalendarDateTime(dayDate.add({ days: 1 }), endTime)
+    } else {
+      closeDateTime = toCalendarDateTime(dayDate, endTime)
+    }
+
+    const formatClosed = closeDateTime
+      .toDate(getLocalTimeZone())
+      .toLocaleTimeString("es-MX", {
+        hour: "2-digit",
+        minute: "2-digit"
+      })
+
+    // console.log(currentTime, openDateTime, closeDateTime)
+    if (
+      currentTime.compare(openDateTime) >= 0 &&
+      currentTime.compare(closeDateTime) <= 0
+    ) {
+      status = `Abierto - Hasta ${endTime.hour === 1 ? "la" : "las"} ${formatClosed}`
+      break
+    }
+  }
+
+  return status
+}
+
+function getFormattedTime(time: string | null | undefined) {
+  if (!time) {
+    return "NA"
+  }
+  const parsedTime = parseTime(time)
+  const currentDate = today(getLocalTimeZone())
+  const timeDate = toCalendarDateTime(currentDate, parsedTime)
+  return timeDate
+    .toDate(getLocalTimeZone())
+    .toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })
 }
 
 HeaderBlock.craft = {

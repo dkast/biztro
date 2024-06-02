@@ -1,3 +1,5 @@
+import { Layers } from "lucide-react"
+
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { DataTable } from "@/components/data-table/data-table"
 import { Button } from "@/components/ui/button"
@@ -13,6 +15,7 @@ export default async function CategoriesPage() {
       <PageSubtitle
         title="Categorías"
         description="Administra las categorías de tu menú"
+        Icon={Layers}
       >
         <CategoryEdit action={ActionType.CREATE}>
           <Button>Agregar categoría</Button>

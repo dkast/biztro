@@ -1,7 +1,7 @@
 "use client"
 
 import { useEditor } from "@craftjs/core"
-import type { Location, Organization, Prisma } from "@prisma/client"
+import type { Organization, Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtomValue } from "jotai"
@@ -14,6 +14,7 @@ import TextElement from "@/components/menu-editor/blocks/text-element"
 import SideSection from "@/components/menu-editor/side-section"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
+import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { getThemes } from "@/server/actions/menu/queries"
 import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import { colorThemes, fontThemes } from "@/lib/types"
@@ -24,7 +25,7 @@ export default function ToolboxPanel({
   categories
 }: {
   organization: Organization
-  location: Location | null
+  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
   const { connectors } = useEditor()

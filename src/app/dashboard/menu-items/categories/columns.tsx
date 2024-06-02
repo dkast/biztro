@@ -43,7 +43,7 @@ export const columns: ColumnDef<Category>[] = [
         <div className="flex justify-end gap-2">
           <CategoryEdit action={ActionType.UPDATE} category={category}>
             <Button variant="ghost" size="icon">
-              <Edit className="size-4" />
+              <Edit className="size-4 text-gray-700" />
             </Button>
           </CategoryEdit>
           <CategoryDelete category={category}>

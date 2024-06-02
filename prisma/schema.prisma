@@ -95,8 +95,8 @@ model Organization {
 }
 
 model Location {
-  id             String       @id @default(cuid())
-  name           String       @default("Main")
+  id             String         @id @default(cuid())
+  name           String         @default("Main")
   description    String?
   address        String
   phone          String?
@@ -106,10 +106,23 @@ model Location {
   tiktok         String?
   whatsapp       String?
   website        String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  openingHours   OpeningHours[]
+}
+
+model OpeningHours {
+  id         String   @id @default(cuid())
+  day        String
+  startTime  String?
+  endTime    String?
+  allDay     Boolean
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
 }
 
 model Menu {

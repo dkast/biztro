@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
-import type { Location, Organization, Prisma } from "@prisma/client"
+import type { Organization, Prisma } from "@prisma/client"
 import { RefreshCcw } from "lucide-react"
 import lz from "lzutf8"
 
 import { Button } from "@/components/ui/button"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
+import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import difference from "@/lib/difference"
 
@@ -18,7 +19,7 @@ export default function SyncStatus({
   categories
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
-  location: Location | null
+  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
 }) {
   const { actions } = useEditor()
@@ -33,7 +34,9 @@ export default function SyncStatus({
         typeof getCategoriesWithItems
       > = []
       let organization: Organization | null = null
-      let defaultLocation: Location | null = null
+      let defaultLocation: Prisma.PromiseReturnType<
+        typeof getDefaultLocation
+      > | null = null
 
       for (const property in objectData) {
         const component = objectData[property]
@@ -155,6 +158,8 @@ export default function SyncStatus({
 
       if (defaultLocation && location) {
         const diff = difference(defaultLocation, location)
+        // console.log(location.openingHours)
+        // console.log(diff)
         Object.getOwnPropertyNames(diff).forEach(propName => {
           if (
             propName === "address" ||
@@ -169,8 +174,39 @@ export default function SyncStatus({
             equalMenu = false
           }
         })
+
+        if (
+          !defaultLocation.openingHours &&
+          location.openingHours &&
+          location.openingHours.length > 0
+        ) {
+          equalMenu = false
+        }
+
+        if (
+          defaultLocation.openingHours &&
+          defaultLocation.openingHours.length > 0
+        ) {
+          location.openingHours.forEach((entry, index) => {
+            const diff = difference(
+              defaultLocation.openingHours[index] ?? {},
+              entry ?? {}
+            )
+            console.log(diff)
+            Object.getOwnPropertyNames(diff).forEach(propName => {
+              if (
+                propName === "allDay" ||
+                propName === "startTime" ||
+                propName === "endTime"
+              ) {
+                equalMenu = false
+              }
+            })
+          })
+        }
       }
 
+      // console.log(equalData, equalMenu)
       setSyncReq(!equalData || !equalMenu)
     }
   }, [menu, categories, location, setSyncReq])
@@ -194,7 +230,6 @@ export default function SyncStatus({
         }
 
         if (component?.type?.resolvedName === "HeaderBlock") {
-          // organization = component?.props?.organization
           actions.setProp(property, props => {
             props.organization = menu?.organization
             props.location = location

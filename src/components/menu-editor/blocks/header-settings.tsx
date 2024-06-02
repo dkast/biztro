@@ -58,7 +58,7 @@ export default function HeaderSettings() {
       <SideSection title="Negocio">
         <div className="grid grid-cols-2 items-center gap-y-2">
           <dt>
-            <Label size="sm">Dirección</Label>
+            <Label size="sm">Datos del negocio</Label>
           </dt>
           <dd className="flex items-center">
             <Switch

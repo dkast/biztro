@@ -6,7 +6,7 @@ import { cookies } from "next/headers"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { action } from "@/lib/safe-actions"
-import { locationSchema } from "@/lib/types"
+import { hoursSchema, locationSchema } from "@/lib/types"
 
 export const createLocation = action(
   locationSchema,
@@ -105,6 +105,79 @@ export const updateLocation = action(
       revalidateTag(`default-location-${id}`)
 
       return { success: location }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  }
+)
+
+export const deleteLocation = action(locationSchema, async ({ id }) => {
+  try {
+    await prisma.location.delete({
+      where: {
+        id
+      }
+    })
+
+    revalidateTag(`default-location-${id}`)
+
+    return { success: true }
+  } catch (error) {
+    let message
+    if (typeof error === "string") {
+      message = error
+    } else if (error instanceof Error) {
+      message = error.message
+    }
+    return {
+      failure: {
+        reason: message
+      }
+    }
+  }
+})
+
+export const updateHours = action(
+  hoursSchema,
+  async ({ locationId, items }) => {
+    if (!locationId) {
+      return {
+        failure: {
+          reason: "No se pudo obtener la ubicación actual"
+        }
+      }
+    }
+
+    try {
+      await prisma.openingHours.deleteMany({
+        where: {
+          locationId
+        }
+      })
+
+      const hours = await prisma.openingHours.createMany({
+        data: items.map(item => ({
+          locationId: locationId,
+          day: item.day,
+          startTime: item.startTime,
+          endTime: item.endTime,
+          allDay: item.allDay
+        }))
+      })
+
+      revalidateTag(`default-location-${locationId}`)
+
+      return { success: hours }
     } catch (error) {
       let message
       if (typeof error === "string") {

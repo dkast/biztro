@@ -202,7 +202,7 @@ export default function MenuPublish({
                 exit={{ opacity: 0, y: 10 }}
                 className="flex flex-col items-center gap-2"
               >
-                <span className="rounded-full bg-lime-100 p-1 text-lime-600">
+                <span className="rounded-full bg-lime-50 p-2 text-lime-700 ring-1 ring-inset ring-lime-600/20">
                   <Globe className="size-6" />
                 </span>
                 <span className="text-sm font-medium">Publicar Menú</span>
@@ -297,6 +297,7 @@ function QrCodeEditor({
     Record<"r" | "g" | "b" | "a", number>
   >("color", fgColor)
   const [showLogo, setShowLogo] = useLocalStorage<boolean>("logo", false)
+  console.log(logoURL)
   return (
     <div>
       <div className="my-6 flex flex-row items-start justify-between">
@@ -309,9 +310,28 @@ function QrCodeEditor({
                 ecLevel={showLogo ? "H" : "M"}
                 logoImage={showLogo ? logoURL : ""}
                 logoWidth={showLogo ? 80 : 0}
+                logoPadding={showLogo ? 4 : 0}
                 removeQrCodeBehindLogo={showLogo}
                 enableCORS
                 fgColor={rgbaToHex(color)}
+                qrStyle="fluid"
+                eyeRadius={[
+                  {
+                    // top/left eye
+                    outer: [10, 10, 10, 10],
+                    inner: [3, 3, 3, 3]
+                  },
+                  {
+                    // top/right eye
+                    outer: [10, 10, 10, 10],
+                    inner: [3, 3, 3, 3]
+                  },
+                  {
+                    // bottom/left eye
+                    outer: [10, 10, 10, 10],
+                    inner: [3, 3, 3, 3]
+                  }
+                ]}
               />
             </div>
           </div>
