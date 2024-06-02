@@ -175,20 +175,33 @@ export default function SyncStatus({
           }
         })
 
-        for (const day in location.openingHours) {
-          const diff = difference(
-            defaultLocation.openingHours[day] ?? {},
-            location.openingHours[day] ?? {}
-          )
-          // console.log(diff)
-          Object.getOwnPropertyNames(diff).forEach(propName => {
-            if (
-              propName === "allDay" ||
-              propName === "startTime" ||
-              propName === "endTime"
-            ) {
-              equalMenu = false
-            }
+        if (
+          !defaultLocation.openingHours &&
+          location.openingHours &&
+          location.openingHours.length > 0
+        ) {
+          equalMenu = false
+        }
+
+        if (
+          defaultLocation.openingHours &&
+          defaultLocation.openingHours.length > 0
+        ) {
+          location.openingHours.forEach((entry, index) => {
+            const diff = difference(
+              defaultLocation.openingHours[index] ?? {},
+              entry ?? {}
+            )
+            console.log(diff)
+            Object.getOwnPropertyNames(diff).forEach(propName => {
+              if (
+                propName === "allDay" ||
+                propName === "startTime" ||
+                propName === "endTime"
+              ) {
+                equalMenu = false
+              }
+            })
           })
         }
       }
