@@ -1,10 +1,15 @@
 import { Clock, MapPin } from "lucide-react"
+import type { Metadata } from "next"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Separator } from "@/components/ui/separator"
 import HoursForm from "@/app/dashboard/settings/locations/hours-form"
 import LocationForm from "@/app/dashboard/settings/locations/location-form"
 import { getDefaultLocation } from "@/server/actions/location/queries"
+
+export const metadata: Metadata = {
+  title: "Sucursal"
+}
 
 export default async function LocationPage() {
   const data = await getDefaultLocation()

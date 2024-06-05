@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import InfoHelper from "@/components/dashboard/info-helper"
@@ -5,6 +6,10 @@ import PageSubtitle from "@/components/dashboard/page-subtitle"
 import MenuList from "@/app/dashboard/menu-list"
 import { getMenus } from "@/server/actions/menu/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
+
+export const metadata: Metadata = {
+  title: "Inicio"
+}
 
 export default async function DashboardPage() {
   const currentOrg = await getCurrentOrganization()

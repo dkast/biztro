@@ -31,3 +31,30 @@ export async function getOrganization(id: string) {
     }
   )()
 }
+
+export async function getOrganizationBySubdomain(subdomain: string) {
+  return await cache(
+    async () => {
+      const org = await prisma.organization.findFirst({
+        where: {
+          subdomain
+        }
+      })
+
+      if (org?.banner) {
+        org.banner = env.R2_CUSTOM_DOMAIN + "/" + org.banner
+      }
+
+      if (org?.logo) {
+        org.logo = env.R2_CUSTOM_DOMAIN + "/" + org.logo
+      }
+
+      return org
+    },
+    [`organization-${subdomain}`],
+    {
+      revalidate: 900,
+      tags: [`organization-${subdomain}`]
+    }
+  )()
+}

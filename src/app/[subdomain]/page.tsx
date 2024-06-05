@@ -1,9 +1,40 @@
 import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 import lz from "lzutf8"
+import type { Metadata, ResolvingMetadata } from "next"
 import { notFound } from "next/navigation"
 
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { getMenuByOrgSubdomain } from "@/server/actions/menu/queries"
+import { getOrganizationBySubdomain } from "@/server/actions/organization/queries"
+
+export async function generateMetadata(
+  {
+    params
+  }: {
+    params: { subdomain: string }
+  },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const org = await getOrganizationBySubdomain(params.subdomain)
+
+  if (org) {
+    const description =
+      org.description && org.description.length > 0
+        ? org.description
+        : (await parent).description
+    return {
+      title: org.name,
+      description: description,
+      openGraph: {
+        images: [org.banner ?? "og-image.jpg"]
+      }
+    }
+  } else {
+    return {
+      title: "No encontrado"
+    }
+  }
+}
 
 export default async function SitePage({
   params

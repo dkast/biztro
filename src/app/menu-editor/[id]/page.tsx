@@ -3,6 +3,7 @@ import {
   HydrationBoundary,
   QueryClient
 } from "@tanstack/react-query"
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import Workbench from "@/components/menu-editor/workbench"
@@ -10,6 +11,24 @@ import { getCategoriesWithItems } from "@/server/actions/item/queries"
 import { getDefaultLocation } from "@/server/actions/location/queries"
 import { getMenuById, getThemes } from "@/server/actions/menu/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
+
+export async function generateMetadata({
+  params
+}: {
+  params: { id: string }
+}): Promise<Metadata> {
+  const menu = await getMenuById(params.id)
+
+  if (menu) {
+    return {
+      title: menu.name
+    }
+  } else {
+    return {
+      title: "Menú no encontrado"
+    }
+  }
+}
 
 export default async function MenuEditorPage({
   params
