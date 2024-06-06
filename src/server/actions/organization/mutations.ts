@@ -46,6 +46,7 @@ export const bootstrapOrg = action(
       })
 
       revalidateTag(`organization-${org.id}`)
+      revalidateTag(`organization-${org.subdomain}`)
       revalidateTag(`memberships-${org.id}`)
 
       return { success: true }
@@ -78,6 +79,7 @@ export const createOrg = action(
       })
 
       revalidateTag(`organization-${org.id}`)
+      revalidateTag(`organization-${org.subdomain}`)
 
       return { success: true }
     } catch (error) {
@@ -100,7 +102,7 @@ export const updateOrg = action(
   orgSchema,
   async ({ id, name, description, subdomain }) => {
     try {
-      await prisma.organization.update({
+      const org = await prisma.organization.update({
         where: {
           id
         },
@@ -112,6 +114,7 @@ export const updateOrg = action(
       })
 
       revalidateTag(`organization-${id}`)
+      revalidateTag(`organization-${org.subdomain}`)
 
       return { success: true }
     } catch (error) {

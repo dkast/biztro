@@ -62,7 +62,8 @@ export async function getUploadParameters(
 const uppy = new Uppy({
   autoProceed: false,
   restrictions: {
-    maxNumberOfFiles: 1
+    maxNumberOfFiles: 1,
+    allowedFileTypes: [".jpg", ".jpeg", ".png"]
   },
   locale: Spanish
 })
@@ -114,6 +115,7 @@ export function FileUploader({
       waitForThumbnailsBeforeUpload
       proudlyDisplayPoweredByUppy={false}
       theme={theme === "dark" ? "dark" : theme === "system" ? "auto" : "light"}
+      fileManagerSelectionType="files"
     />
   )
 }

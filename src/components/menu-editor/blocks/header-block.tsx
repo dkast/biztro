@@ -116,7 +116,7 @@ export default function HeaderBlock({
       </div>
       {/* Show location social media */}
       {showSocialMedia && (
-        <div className="absolute right-0 top-0 rounded-bl has-[a]:bg-white">
+        <div className="absolute right-0 top-0 rounded-bl backdrop-blur-sm has-[a]:bg-white/75">
           <div className="flex flex-row items-center gap-3 p-2">
             {location?.facebook && (
               <a

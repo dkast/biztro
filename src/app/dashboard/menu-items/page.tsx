@@ -1,4 +1,5 @@
 import { ShoppingBag } from "lucide-react"
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -9,6 +10,10 @@ import ItemCreate from "@/app/dashboard/menu-items/item-create"
 import { getCategories, getMenuItems } from "@/server/actions/item/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import type { MenuItemQueryFilter } from "@/lib/types"
+
+export const metadata: Metadata = {
+  title: "Productos"
+}
 
 export default async function ItemsPage({
   searchParams
