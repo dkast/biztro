@@ -53,7 +53,7 @@ export default async function Image({
             }}
           >
             {/* skipcq: JS-0455 */}
-            <div tw="flex flex-col md:flex-row w-full py-12 px-4 md:items-center justify-start p-8">
+            <div tw="flex flex-col md:flex-row w-full py-12 px-24 md:items-center justify-start">
               {org?.logo && (
                 <img
                   tw="w-24 h-24 md:w-30 md:h-30 rounded-full mr-8"
