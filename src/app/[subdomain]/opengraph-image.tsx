@@ -1,25 +1,18 @@
-import fs from "fs"
-import path from "path"
-import { fileURLToPath } from "url"
+import type { Organization } from "@prisma/client"
 import { ImageResponse } from "next/og"
 
-import { getOrganizationBySubdomain } from "@/server/actions/organization/queries"
+import { getBaseUrl } from "@/lib/utils"
+
+// Route segment config
+export const runtime = "edge"
 
 // Image metadata
-export const alt = "Open Graph Image"
 export const size = {
   width: 1200,
   height: 630
 }
 
 export const contentType = "image/png"
-
-const font = fs.promises.readFile(
-  path.join(
-    fileURLToPath(import.meta.url),
-    "../../../../public/Inter-SemiBold.ttf"
-  )
-)
 
 // Image generation
 export default async function Image({
@@ -28,8 +21,17 @@ export default async function Image({
   params: { subdomain: string }
 }) {
   try {
-    const org = await getOrganizationBySubdomain(params.subdomain)
-    const fontData = await font
+    const org: Organization = await fetch(
+      `${getBaseUrl()}/api/org?subdomain=${params.subdomain}`
+    ).then(res => res.json())
+
+    console.log(`${getBaseUrl()}/api/org?subdomain=${params.subdomain}`)
+    console.dir(org)
+
+    // Font
+    const inter = fetch(
+      new URL("../../../public/Inter-SemiBold.ttf", import.meta.url)
+    ).then(res => res.arrayBuffer())
 
     return new ImageResponse(
       (
@@ -72,7 +74,7 @@ export default async function Image({
         fonts: [
           {
             name: "Inter",
-            data: fontData,
+            data: await inter,
             style: "normal",
             weight: 400
           }
