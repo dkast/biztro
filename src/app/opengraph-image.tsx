@@ -19,6 +19,10 @@ export default async function Image() {
       new URL("../../public/Inter-SemiBold.ttf", import.meta.url)
     ).then(res => res.arrayBuffer())
 
+    const sora = fetch(
+      new URL("../../public/Sora-Medium.ttf", import.meta.url)
+    ).then(res => res.arrayBuffer())
+
     return new ImageResponse(
       (
         // ImageResponse JSX element
@@ -80,10 +84,13 @@ export default async function Image() {
           </div>
           <h2
             tw="text-6xl mt-12 mb-6" // skipcq: JS-0455
+            style={{
+              fontFamily: "Sora"
+            }}
           >
             Tu menú digital en minutos
           </h2>
-          <p tw="text-4xl text-zinc-600 text-center px-24">
+          <p tw="text-3xl text-zinc-600 text-center px-24">
             {" "}
             {/* skipcq: JS-0455 */}
             Biztro te permite crea tu menú digital y QR para compartirlo con tus
@@ -100,6 +107,12 @@ export default async function Image() {
           {
             name: "Inter",
             data: await inter,
+            style: "normal",
+            weight: 400
+          },
+          {
+            name: "Sora",
+            data: await sora,
             style: "normal",
             weight: 400
           }
