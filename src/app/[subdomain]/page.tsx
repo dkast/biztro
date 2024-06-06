@@ -25,7 +25,7 @@ export async function generateMetadata(
         : (await parent).description
     return {
       title: org.name,
-      description: description,
+      description,
       openGraph: {
         images: [org.banner ?? "og-image.jpg"]
       }
