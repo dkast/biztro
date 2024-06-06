@@ -50,9 +50,8 @@ export default async function Image({
                 "linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.8))"
             }}
           >
+            {/* skipcq: JS-0455 */}
             <div tw="flex flex-col md:flex-row w-full py-12 px-4 md:items-center justify-start p-8">
-              {" "}
-              {/* skipcq: JS-0455 */}
               {org?.logo && (
                 <img
                   tw="w-24 h-24 md:w-30 md:h-30 rounded-full mr-8"
@@ -60,9 +59,8 @@ export default async function Image({
                   alt={org?.name}
                 />
               )}
+              {/* skipcq: JS-0455 */}
               <h2 tw="flex flex-col text-5xl sm:text-6xl font-semibold tracking-tight text-gray-50 text-left">
-                {" "}
-                {/* skipcq: JS-0455 */}
                 <span>{org?.name}</span>
               </h2>
             </div>
