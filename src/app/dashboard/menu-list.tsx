@@ -52,7 +52,7 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
       <motion.div
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="grid h-[250px] grid-rows-5 overflow-hidden rounded-lg shadow-lg"
+        className="grid h-[250px] grid-rows-5 overflow-hidden rounded-lg shadow-lg dark:border dark:border-gray-800 dark:bg-gray-800"
       >
         <Link
           href={`/menu-editor/${menu.id}`}
@@ -66,7 +66,7 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
             className="size-16 opacity-10"
           />
         </Link>
-        <div className="row-span-2 flex flex-col justify-between gap-2 rounded-b-lg bg-white px-4 py-3">
+        <div className="row-span-2 flex flex-col justify-between gap-2 rounded-b-lg bg-white px-4 py-3 dark:bg-gray-900">
           <Link href={`/menu-editor/${menu.id}`} prefetch={false}>
             <h2 className="font-medium">{menu.name}</h2>
           </Link>
