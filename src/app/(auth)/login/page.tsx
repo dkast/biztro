@@ -34,7 +34,7 @@ export default function LoginPage() {
             <Link href="/">
               <Image src="/logo-bistro.svg" alt="Logo" width={44} height={44} />
             </Link>
-            <h2 className="mt-4 font-display text-3xl font-medium leading-9 tracking-tight text-gray-900 dark:text-gray-400">
+            <h2 className="mt-4 font-display text-3xl font-medium leading-9 tracking-tight text-gray-900 dark:text-gray-200">
               Bienvenido
             </h2>
             <span className="mt-2 block text-sm text-gray-600 dark:text-gray-400">

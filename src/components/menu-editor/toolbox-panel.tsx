@@ -151,7 +151,7 @@ export default function ToolboxPanel({
 
 function ToolboxElement({ title, Icon }: { title: string; Icon: LucideIcon }) {
   return (
-    <div className="group flex cursor-move items-center gap-2 rounded-lg border p-2 text-sm shadow-sm hover:border-lime-400 hover:ring-1 hover:ring-lime-100">
+    <div className="group flex cursor-move items-center gap-2 rounded-lg border p-2 text-sm shadow-sm hover:border-lime-400 hover:ring-1 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-lime-600 dark:hover:ring-lime-900">
       <Icon className="size-3.5 text-gray-400 group-hover:text-current" />
       <span>{title}</span>
     </div>

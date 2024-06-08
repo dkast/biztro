@@ -137,7 +137,7 @@ export function ColorThemeEditor({
         fontText={fontText}
         theme={themeState}
       />
-      <fieldset className="rounded-lg border p-4">
+      <fieldset className="rounded-lg border p-4 dark:border-gray-700">
         <legend className="-ml-1 px-1 text-sm font-medium">Colores</legend>
         <div className="grid grid-cols-4 items-center gap-2">
           <dt>
@@ -147,7 +147,7 @@ export function ColorThemeEditor({
             <Popover>
               <PopoverTrigger>
                 <div
-                  className="h-5 w-12 rounded border border-black/20"
+                  className="h-5 w-12 rounded border border-black/20 dark:border-white/20"
                   style={{
                     backgroundColor: themeState.surfaceColor
                   }}
@@ -174,7 +174,7 @@ export function ColorThemeEditor({
             <Popover>
               <PopoverTrigger>
                 <div
-                  className="h-5 w-12 rounded border border-black/20"
+                  className="h-5 w-12 rounded border border-black/20 dark:border-white/20"
                   style={{
                     backgroundColor: themeState.brandColor
                   }}
@@ -201,7 +201,7 @@ export function ColorThemeEditor({
             <Popover>
               <PopoverTrigger>
                 <div
-                  className="h-5 w-12 rounded border border-black/20"
+                  className="h-5 w-12 rounded border border-black/20 dark:border-white/20"
                   style={{
                     backgroundColor: themeState.accentColor
                   }}
@@ -228,7 +228,7 @@ export function ColorThemeEditor({
             <Popover>
               <PopoverTrigger>
                 <div
-                  className="h-5 w-12 rounded border border-black/20"
+                  className="h-5 w-12 rounded border border-black/20 dark:border-white/20"
                   style={{
                     backgroundColor: themeState.textColor
                   }}
@@ -255,7 +255,7 @@ export function ColorThemeEditor({
             <Popover>
               <PopoverTrigger>
                 <div
-                  className="h-5 w-12 rounded border border-black/20"
+                  className="h-5 w-12 rounded border border-black/20 dark:border-white/20"
                   style={{
                     backgroundColor: themeState.mutedColor
                   }}
@@ -346,7 +346,7 @@ function ThemePreview({
 }) {
   return (
     <div
-      className="flex flex-col gap-4 rounded-lg border-2 border-black/10 p-4"
+      className="flex flex-col gap-4 rounded-lg border-2 border-black/10 p-4 dark:border-white/20"
       style={{
         backgroundColor: theme.surfaceColor,
         color: theme.brandColor

@@ -274,7 +274,7 @@ function LocationData({
             </div>
           </PopoverTrigger>
           <PopoverContent className="min-w-72">
-            <div className="flex flex-col divide-y">
+            <div className="flex flex-col divide-y divide-gray-800">
               {location.openingHours.map(day => {
                 return (
                   <div key={day.day} className="grid grid-cols-3 py-2 text-xs">
@@ -289,7 +289,9 @@ function LocationData({
                     </span>
                     <span
                       className={cn(
-                        day.allDay ? "text-gray-600" : "text-gray-400",
+                        day.allDay
+                          ? "text-gray-600 dark:text-gray-400"
+                          : "text-gray-400 dark:text-gray-600",
                         "col-span-2 tabular-nums"
                       )}
                     >

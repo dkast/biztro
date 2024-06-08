@@ -276,7 +276,7 @@ export default function ThemeSelector({
       <SideSection title="Tipografía">
         <Popover>
           <PopoverTrigger asChild>
-            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100">
+            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-lime-600 dark:hover:ring-lime-900">
               <div>
                 <FontWrapper fontFamily={selectedFontTheme?.fontDisplay}>
                   <span className="text-base font-medium">
@@ -306,13 +306,13 @@ export default function ThemeSelector({
                     {fontThemes.map(theme => (
                       <label
                         key={theme.name}
-                        className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50"
+                        className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-lime-600 dark:[&:has([data-state=checked])>div]:bg-lime-900/70"
                       >
                         <RadioGroupItem
                           value={theme.name}
                           className="sr-only"
                         />
-                        <div className="w-full rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500">
+                        <div className="w-full rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
                           <FontWrapper fontFamily={theme.fontDisplay}>
                             <span className="text-base font-medium">
                               {theme.fontDisplay}
@@ -335,7 +335,7 @@ export default function ThemeSelector({
         <div>
           <Popover>
             <PopoverTrigger asChild>
-              <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100">
+              <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-lime-600 dark:hover:ring-lime-900">
                 <div className="space-y-1">
                   <span className="text-sm font-medium">
                     {selectedColorTheme?.name}
@@ -369,13 +369,13 @@ export default function ThemeSelector({
                       {colorThemes.map(theme => (
                         <label
                           key={theme.id}
-                          className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50"
+                          className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-lime-600 dark:[&:has([data-state=checked])>div]:bg-lime-900/70"
                         >
                           <RadioGroupItem
                             value={theme.id}
                             className="sr-only"
                           />
-                          <div className="flex w-full flex-col justify-center gap-1 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500">
+                          <div className="flex w-full flex-col justify-center gap-1 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
                             <span className="text-sm font-medium">
                               {theme.name}
                             </span>
