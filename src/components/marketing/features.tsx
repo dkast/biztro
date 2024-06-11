@@ -4,7 +4,6 @@ import { QRCode } from "react-qrcode-logo"
 import { MousePointerClick, Paintbrush, QrCodeIcon } from "lucide-react"
 
 import { BentoCard, BentoGrid } from "@/components/marketing/bento-grid"
-import ShinyButton from "@/components/marketing/shiny-button"
 
 const features = [
   {
@@ -35,7 +34,7 @@ const features = [
     cta: "Ver más",
     background: (
       <div className="absolte inset-0 flex origin-top items-center justify-center pt-8 transition-all duration-300 ease-out group-hover:scale-95">
-        <div className="overflow-hidden rounded-lg shadow-xl shadow-violet-700">
+        <div className="overflow-hidden rounded-lg shadow-xl shadow-violet-800">
           <QRCode
             value="https://biztro.co/menu"
             logoImage="/logo-bistro.svg"
@@ -56,10 +55,10 @@ const features = [
     href: undefined,
     cta: "Ver más",
     background: (
-      <div className="absolute right-8 top-4 flex items-start justify-center py-2 transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-95">
+      <div className="absolute inset-x-0 top-1/3 flex items-start justify-center py-2 transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-95 sm:inset-auto sm:right-8 sm:top-4">
         <div className="relative flex items-center justify-center">
           <span className="absolute inline-flex h-8 w-16 rounded-full bg-green-500 group-hover:animate-ping"></span>
-          <button className="relative inline-flex rounded-full bg-green-500 px-4 py-2 font-medium text-green-50 shadow-lg shadow-green-500/20">
+          <button className="relative inline-flex rounded-full bg-green-500 px-4 py-2 font-medium text-green-50 shadow-lg shadow-green-400/30">
             Publicar
           </button>
         </div>
@@ -73,8 +72,8 @@ const features = [
 export default function Features() {
   return (
     <>
-      <section className="xl:max-w-nonetext-center max-w-2xl md:mx-auto md:text-center">
-        <h2 className="text-balance font-display text-3xl tracking-tight text-gray-950 dark:text-white sm:text-4xl md:text-5xl">
+      <section className="max-w-2xl text-center md:mx-auto md:text-center xl:max-w-none">
+        <h2 className="text-balance font-display text-3xl tracking-tight sm:text-4xl md:text-5xl">
           Publica tú menú en Internet, fácil y rápido
         </h2>
         <p className="mt-6 text-balance text-lg tracking-tight text-gray-400">
@@ -82,8 +81,8 @@ export default function Features() {
           interfaz intuitiva y amigable, solo necesitas tu navegador web
         </p>
       </section>
-      <section className="mx-auto mt-16 max-w-4xl">
-        <BentoGrid className="auto-rows-[14rem] sm:grid-cols-2 sm:grid-rows-4">
+      <section className="mx-auto my-16 max-w-4xl px-4 sm:my-32 sm:px-6 lg:px-8">
+        <BentoGrid className="sm:grid-cols-2 sm:grid-rows-3">
           {features.map(feature => (
             <BentoCard key={feature.name} {...feature} />
           ))}

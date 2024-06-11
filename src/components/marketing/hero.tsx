@@ -64,7 +64,7 @@ export default function Hero() {
               <motion.div
                 animate={fadeInInView ? "animate" : "initial"}
                 variants={fadeUpVariants}
-                className="mt-10 flex flex-col gap-4 lg:flex-row"
+                className="mt-10 flex flex-col gap-4"
                 initial={false}
                 transition={{
                   duration: 0.6,
@@ -73,6 +73,9 @@ export default function Hero() {
                   type: "spring"
                 }}
               >
+                <span className="text-gray-500">
+                  Unirse a la lista de espera
+                </span>
                 <Waitlist />
               </motion.div>
             </div>

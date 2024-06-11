@@ -55,7 +55,7 @@ export default function Waitlist() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col items-center space-y-4"
       >
-        <span className="text-gray-500">Unirse a la lista de espera</span>
+        {/* <span className="text-gray-500">Unirse a la lista de espera</span> */}
         {!isSubmitted ? (
           <div className="flex flex-row items-center justify-center gap-x-2 rounded-full bg-gray-800 p-1 shadow-lg">
             <FormField

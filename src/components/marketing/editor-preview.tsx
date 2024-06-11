@@ -23,7 +23,11 @@ export default function EditorPreview() {
     }
   }
   return (
-    <section ref={fadeInRef} className="container z-10 max-w-7xl dark:bg-black">
+    <section
+      id="editor-preview"
+      ref={fadeInRef}
+      className="mx-auto max-w-5xl px-4 dark:bg-black sm:px-6 lg:px-8"
+    >
       <motion.div
         animate={fadeInInView ? "animate" : "initial"}
         variants={fadeUpVariants}
@@ -34,7 +38,7 @@ export default function EditorPreview() {
           ease: [0.21, 0.47, 0.32, 0.98],
           type: "spring"
         }}
-        className="relative mt-24 h-full w-full rounded-xl after:absolute after:inset-0 after:z-10 after:[background:linear-gradient(to_top,#fff_10%,transparent)] dark:after:[background:linear-gradient(to_top,#000000_10%,transparent)]"
+        className="relative mb-10 mt-0 h-full w-full rounded-xl after:absolute after:inset-0 after:z-10 after:[background:linear-gradient(to_top,#fff_10%,transparent)] dark:after:[background:linear-gradient(to_top,#000000_10%,transparent)] sm:mb-0 sm:mt-24"
       >
         <div
           className={cn(
