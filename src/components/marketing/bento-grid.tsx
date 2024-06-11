@@ -43,7 +43,7 @@ const BentoCard = ({
   <div
     key={name}
     className={cn(
-      "group relative col-span-3 flex flex-col justify-between overflow-hidden rounded-xl",
+      "group relative col-span-3 flex flex-col justify-between overflow-hidden rounded-xl text-gray-700 dark:text-gray-300",
       // light styles
       "bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]",
       // dark styles
@@ -58,11 +58,9 @@ const BentoCard = ({
         href ? "group-hover:-translate-y-10" : "group-hover:-translate-y-3"
       )}
     >
-      <Icon className="size-8 origin-left transform-gpu text-gray-700 transition-all duration-300 ease-in-out group-hover:scale-75" />
-      <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-        {name}
-      </h3>
-      <p className="text-sm text-gray-500 sm:max-w-lg">{description}</p>
+      <Icon className="size-8 origin-left transform-gpu text-current transition-all duration-300 ease-in-out group-hover:scale-75" />
+      <h3 className="text-lg font-semibold text-current">{name}</h3>
+      <p className="text-current/70 text-sm sm:max-w-lg">{description}</p>
     </div>
 
     {href && (

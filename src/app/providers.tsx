@@ -8,12 +8,11 @@ import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experime
 import { Provider } from "jotai"
 import { SessionProvider } from "next-auth/react"
 import { ThemeProvider } from "next-themes"
+import { usePathname } from "next/navigation"
 
 // import { AppProgressBar as ProgressBar } from "next-nprogress-bar"
 
 import { UnsavedChangesProvider } from "@/components/dashboard/unsaved-changes-provider"
-
-// import { usePathname } from "next/navigation"
 
 function makeQueryClient() {
   return new QueryClient({
@@ -43,8 +42,7 @@ function getQueryClient() {
   }
 }
 
-/*
-const getForcedTheme = (pathname: string) => {
+const getForcedTheme = (pathname: string | null) => {
   if (pathname === "/") {
     return "light"
   }
@@ -56,11 +54,10 @@ const getForcedTheme = (pathname: string) => {
   }
   return undefined
 }
-*/
 
 function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient()
-  // const forcedTheme = getForcedTheme(usePathname())
+  const forcedTheme = getForcedTheme(usePathname())
 
   return (
     <SessionProvider>
@@ -69,7 +66,7 @@ function Providers({ children }: { children: React.ReactNode }) {
         defaultTheme="system"
         enableSystem
         disableTransitionOnChange
-        // forcedTheme={forcedTheme}
+        forcedTheme={forcedTheme}
       >
         <QueryClientProvider client={queryClient}>
           <Provider>

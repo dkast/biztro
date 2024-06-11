@@ -23,7 +23,7 @@ export default function EditorPreview() {
     }
   }
   return (
-    <section ref={fadeInRef} className="container z-10 dark:bg-black">
+    <section ref={fadeInRef} className="container z-10 max-w-7xl dark:bg-black">
       <motion.div
         animate={fadeInInView ? "animate" : "initial"}
         variants={fadeUpVariants}
@@ -34,7 +34,7 @@ export default function EditorPreview() {
           ease: [0.21, 0.47, 0.32, 0.98],
           type: "spring"
         }}
-        className="relative mt-24 h-full w-full rounded-xl after:absolute after:inset-0 after:z-10 after:[background:linear-gradient(to_top,#fff_30%,transparent)] dark:after:[background:linear-gradient(to_top,#000000_30%,transparent)]"
+        className="relative mt-24 h-full w-full rounded-xl after:absolute after:inset-0 after:z-10 after:[background:linear-gradient(to_top,#fff_10%,transparent)] dark:after:[background:linear-gradient(to_top,#000000_10%,transparent)]"
       >
         <div
           className={cn(
@@ -57,8 +57,8 @@ export default function EditorPreview() {
           className="relative hidden h-full w-full rounded-xl border border-gray-700/70 dark:block"
         />
 
-        <BorderBeam size={250} />
-        <BorderBeam size={250} delay={7} />
+        <BorderBeam size={150} />
+        <BorderBeam size={150} delay={7} />
       </motion.div>
     </section>
   )
