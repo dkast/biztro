@@ -12,7 +12,7 @@ export default function TermsPage() {
     <section className="prose mt-10">
       <h1>Términos de uso</h1>
       <h2 className="font-medium text-gray-500">
-        A partir del 12 de febrero de 2024
+        A partir del 1 de junio de 2024
       </h2>
       <ol>
         <li>

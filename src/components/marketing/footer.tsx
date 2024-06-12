@@ -27,7 +27,7 @@ export default function Footer() {
           </p>
         </div>
 
-        <ul className="flex items-center justify-center gap-x-10">
+        <ul className="flex items-center justify-center gap-x-5 sm:gap-x-10">
           <a
             href="mailto:hola@biztro.co"
             className="text-[15px]/normal font-medium text-gray-500 transition-all duration-100 ease-linear hover:text-gray-900 hover:underline hover:underline-offset-4 dark:font-medium dark:text-gray-400 hover:dark:text-gray-100"

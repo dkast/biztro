@@ -43,10 +43,14 @@ export default function Page({ params }: { params: { slug: string[] } }) {
         <Separator className="my-10 w-20 bg-gray-300" />
         <div className="flex flex-col items-center gap-4">
           <h3 className="text-xl font-medium sm:text-2xl">
-            ¿Quieres participar en nuestro programa de Early Access?
+            ¿Quieres participar en nuestro programa Beta?
           </h3>
-          <span className="text-gray-500">Unirse a la lista de espera</span>
-          <Waitlist />
+          <span className="text-gray-500">
+            Únete a nuestra lista de espera para recibir una invitación
+          </span>
+          <div className="my-5">
+            <Waitlist />
+          </div>
         </div>
       </section>
     </>
@@ -71,7 +75,7 @@ function Header({
   return (
     <div className="mt-20">
       <div className="space-y-6">
-        <div className="flex flex-row gap-2 text-xs font-medium text-gray-400 md:text-sm">
+        <div className="flex flex-row items-center gap-2 text-xs font-medium text-gray-400 md:text-sm">
           <time>{formattedDate},</time>
           <div className="flex flex-row items-center gap-2">
             <span>por</span>
@@ -91,7 +95,9 @@ function Header({
             {category}
           </span>
         </div>
-        <h1 className="font-display text-5xl font-medium">{title}</h1>
+        <h1 className="font-display text-3xl font-medium sm:text-5xl">
+          {title}
+        </h1>
         {description && (
           <p className="font-medium leading-relaxed text-gray-500 sm:text-lg md:text-xl">
             {description}
