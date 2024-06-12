@@ -55,10 +55,12 @@ export default function EditorPreview() {
         <img
           src="/editor-light.png"
           className="relative block h-full w-full rounded-xl border dark:hidden"
+          alt="Imagen del editor de menús en web"
         />
         <img
           src="/editor-dark.png"
           className="relative hidden h-full w-full rounded-xl border border-gray-700/70 dark:block"
+          alt="Imagen del editor de menús en web"
         />
 
         <BorderBeam size={150} />
