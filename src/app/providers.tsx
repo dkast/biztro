@@ -52,6 +52,9 @@ const getForcedTheme = (pathname: string | null) => {
   if (pathname === "/privacy") {
     return "light"
   }
+  if (pathname?.startsWith("/blog")) {
+    return "light"
+  }
   return undefined
 }
 
