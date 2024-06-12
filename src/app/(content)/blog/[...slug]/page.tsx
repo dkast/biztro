@@ -43,7 +43,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
         <Separator className="my-10 w-20 bg-gray-300" />
         <div className="flex flex-col items-center gap-4">
           <h3 className="text-xl font-medium sm:text-2xl">
-            ¿Quieres participar en nuestro programa Beta?
+            ¿Quieres participar en nuestro programa beta?
           </h3>
           <span className="text-gray-500">
             Únete a nuestra lista de espera para recibir una invitación

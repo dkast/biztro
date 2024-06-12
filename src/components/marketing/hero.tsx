@@ -32,6 +32,7 @@ export default function Hero() {
         <div className="container z-10 flex flex-col">
           <div className="mt-20 grid grid-cols-1">
             <div className="flex flex-col items-center gap-6 pb-8 text-center">
+              {/* Top announcement */}
               <div
                 className={cn(
                   "group rounded-full border border-black/10 bg-gray-50 text-base transition-all ease-in hover:cursor-pointer hover:bg-gray-100 dark:border-white/5 dark:bg-gray-900 dark:hover:bg-gray-800"
@@ -39,7 +40,7 @@ export default function Hero() {
               >
                 <Link href="/blog/beta-biztro">
                   <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-gray-600 hover:duration-300 hover:dark:text-gray-400">
-                    <span>🚀 Introduciendo Biztro</span>
+                    <span>🚀 Biztro esta en beta</span>
                     <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
                   </AnimatedShinyText>
                 </Link>

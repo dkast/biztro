@@ -72,7 +72,7 @@ const features = [
 export default function Features() {
   return (
     <>
-      <section className="max-w-2xl text-center md:mx-auto md:text-center xl:max-w-none">
+      <section className="mt-10 max-w-2xl text-center md:mx-auto md:mt-20 md:text-center xl:max-w-none">
         <h2 className="text-balance font-display text-3xl tracking-tight sm:text-4xl md:text-5xl">
           Publica tú menú en Internet, fácil y rápido
         </h2>
