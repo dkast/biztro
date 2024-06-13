@@ -39,7 +39,7 @@ export default function Sidebar() {
       {/* Sidebar for desktop */}
       <div className="hidden transition-all duration-300 ease-in-out lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-60 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pt-20 dark:border-gray-800 dark:bg-gray-900/50">
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pt-20 dark:border-gray-800 dark:bg-gray-900">
           {/* <div className="justify-betweenflex h-16 shrink-0 items-center">
             <Workgroup className={cn(isSidebarOpen ? "visible" : "hidden")} />
           </div> */}
@@ -95,7 +95,7 @@ function NavigationLink({ item }: { item: NavigationItem }) {
         className={cn(
           isActive
             ? "bg-gray-100/70 text-gray-700 dark:bg-gray-800/70 dark:text-gray-300"
-            : "text-gray-500 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-600",
+            : "text-gray-500 hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500",
           "group flex grow gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
         )}
       >

@@ -7,13 +7,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental"
 import { Provider } from "jotai"
 import { SessionProvider } from "next-auth/react"
+import { ThemeProvider } from "next-themes"
+import { usePathname } from "next/navigation"
 
 // import { AppProgressBar as ProgressBar } from "next-nprogress-bar"
 
 import { UnsavedChangesProvider } from "@/components/dashboard/unsaved-changes-provider"
-
-// import { ThemeProvider } from "next-themes"
-// import { usePathname } from "next/navigation"
 
 function makeQueryClient() {
   return new QueryClient({
@@ -43,8 +42,7 @@ function getQueryClient() {
   }
 }
 
-/*
-const getForcedTheme = (pathname: string) => {
+const getForcedTheme = (pathname: string | null) => {
   if (pathname === "/") {
     return "light"
   }
@@ -54,27 +52,29 @@ const getForcedTheme = (pathname: string) => {
   if (pathname === "/privacy") {
     return "light"
   }
+  if (pathname?.startsWith("/blog")) {
+    return "light"
+  }
   return undefined
 }
-*/
 
 function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient()
-  // const forcedTheme = getForcedTheme(usePathname())
+  const forcedTheme = getForcedTheme(usePathname())
 
   return (
     <SessionProvider>
-      {/* <ThemeProvider
+      <ThemeProvider
         attribute="class"
         defaultTheme="system"
         enableSystem
         disableTransitionOnChange
         forcedTheme={forcedTheme}
-      > */}
-      <QueryClientProvider client={queryClient}>
-        <Provider>
-          {/* <PhotoProvider> */}
-          {/* <Suspense fallback={null}>
+      >
+        <QueryClientProvider client={queryClient}>
+          <Provider>
+            {/* <PhotoProvider> */}
+            {/* <Suspense fallback={null}>
             <ProgressBar
               color="#FF6500"
               options={{ showSpinner: false }}
@@ -82,24 +82,24 @@ function Providers({ children }: { children: React.ReactNode }) {
               delay={200}
             />
           </Suspense> */}
-          <UnsavedChangesProvider>
-            <ReactQueryStreamedHydration>
-              {children}
-            </ReactQueryStreamedHydration>
-          </UnsavedChangesProvider>
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              style: {
-                background: "#333",
-                color: "#fff"
-              }
-            }}
-          />
-          {/* </PhotoProvider> */}
-        </Provider>
-      </QueryClientProvider>
-      {/* </ThemeProvider> */}
+            <UnsavedChangesProvider>
+              <ReactQueryStreamedHydration>
+                {children}
+              </ReactQueryStreamedHydration>
+            </UnsavedChangesProvider>
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                style: {
+                  background: "#333",
+                  color: "#fff"
+                }
+              }}
+            />
+            {/* </PhotoProvider> */}
+          </Provider>
+        </QueryClientProvider>
+      </ThemeProvider>
     </SessionProvider>
   )
 }

@@ -50,7 +50,9 @@ export default function LayerHeader() {
     <div
       ref={divRef}
       className={cn(
-        selected ? "bg-lime-600 text-white" : "bg-transparent text-gray-700",
+        selected
+          ? "bg-lime-600 text-white"
+          : "bg-transparent text-gray-700 dark:text-gray-100",
         "flex flex-row items-center px-2 py-2"
       )}
     >

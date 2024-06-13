@@ -37,7 +37,7 @@ export default function DefaultLayer({
     <div
       ref={divRef}
       className={cn(
-        hovered ? "bg-gray-100" : "bg-transparent",
+        hovered ? "bg-gray-100 dark:bg-gray-800/70" : "bg-transparent",
         hasChildCanvases && expanded ? "pb-1" : "pb-0",
         "block"
       )}
@@ -46,7 +46,9 @@ export default function DefaultLayer({
       {children ? (
         <div
           className={cn(
-            hasChildCanvases ? "ml-9 bg-gray-50" : "m-0 bg-transparent",
+            hasChildCanvases
+              ? "ml-9 bg-gray-50 dark:bg-gray-800/70"
+              : "m-0 bg-transparent",
             "craft-layer-children relative"
           )}
         >

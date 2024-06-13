@@ -173,7 +173,10 @@ export default function MenuPublish({
           )}
         </DialogContent>
       </Dialog>
-      <Separator orientation="vertical" className="h-100 border-l" />
+      <Separator
+        orientation="vertical"
+        className="h-100 border-l dark:border-gray-700"
+      />
       <TooltipHelper content="Guardar cambios">
         <Button
           size="xs"
@@ -202,11 +205,11 @@ export default function MenuPublish({
                 exit={{ opacity: 0, y: 10 }}
                 className="flex flex-col items-center gap-2"
               >
-                <span className="rounded-full bg-lime-50 p-2 text-lime-700 ring-1 ring-inset ring-lime-600/20">
+                <span className="rounded-full bg-lime-50 p-2 text-lime-700 ring-1 ring-inset ring-lime-600/20 dark:bg-lime-900/70 dark:text-lime-500">
                   <Globe className="size-6" />
                 </span>
                 <span className="text-sm font-medium">Publicar Menú</span>
-                <span className="text-xs text-gray-600">
+                <span className="text-xs text-gray-600 dark:text-gray-400">
                   Publica tu menú a una URL pública que puedes compartir.
                 </span>
                 <Button
@@ -242,7 +245,7 @@ export default function MenuPublish({
                     <ExternalLink className="size-3.5 text-gray-500" />
                   </Link>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <Button
                     size="xs"
                     className="mt-2 w-full"
@@ -265,7 +268,7 @@ export default function MenuPublish({
                     Cambiar a borrador
                   </Button>
 
-                  <p className="pt-2 text-center text-xs text-gray-500">
+                  <p className="pt-2 text-center text-xs text-gray-500 dark:text-gray-400">
                     Última actualiazión:{" "}
                     {menu.publishedAt
                       ? formatDate(menu.publishedAt, "PPpp", {
@@ -302,7 +305,7 @@ function QrCodeEditor({
     <div>
       <div className="my-6 flex flex-row items-start justify-between">
         <div className="flex grow items-center justify-center">
-          <div className="rounded-lg border-2 border-dashed border-gray-300">
+          <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-500">
             <div ref={exportRef} className="p-1">
               <QRCode
                 value={value}
@@ -338,7 +341,7 @@ function QrCodeEditor({
         </div>
         <div className="min-w-40">
           <form className="grid w-full items-start gap-6">
-            <fieldset className="grid gap-6 rounded-lg border p-4">
+            <fieldset className="grid gap-6 rounded-lg border p-4 dark:border-gray-800">
               <legend className="-ml-1 px-1 text-sm font-medium">
                 Ajustes
               </legend>
@@ -347,7 +350,7 @@ function QrCodeEditor({
                 <Popover>
                   <PopoverTrigger>
                     <div
-                      className="h-6 w-12 rounded border border-black/20"
+                      className="h-6 w-12 rounded border border-black/20 dark:border-white/20"
                       style={{
                         backgroundColor: `rgb(${Object.values(color)})`
                       }}

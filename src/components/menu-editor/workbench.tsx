@@ -73,7 +73,10 @@ export default function Workbench({
         <Header>
           <Toolbar menu={menu} />
         </Header>
-        <ResizablePanelGroup className="grow pt-16" direction="horizontal">
+        <ResizablePanelGroup
+          className="grow pt-16 dark:bg-gray-900"
+          direction="horizontal"
+        >
           <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={60}>
@@ -91,7 +94,7 @@ export default function Workbench({
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={70}>
-            <div className="no-scrollbar relative h-full w-full overflow-y-auto bg-gray-50">
+            <div className="no-scrollbar relative h-full w-full overflow-y-auto bg-gray-50 dark:bg-gray-800">
               <SyncStatus
                 menu={menu}
                 location={location}
@@ -108,7 +111,7 @@ export default function Workbench({
                     frameSize === FrameSize.DESKTOP
                       ? "w-[1024px]"
                       : "w-[390px]",
-                    "flex min-h-[600px] flex-col border bg-white transition-all duration-300 ease-in-out"
+                    "flex min-h-[600px] flex-col border bg-white transition-all duration-300 ease-in-out dark:border-gray-700"
                   )}
                 >
                   <Frame data={json}>

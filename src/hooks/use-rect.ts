@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-export const useRect = <T extends Element>(
+export const useRect = <T extends Element>( // skipcq: JS-0356
   dom: HTMLElement | null
 ): DOMRect | undefined => {
   // const ref = useRef<T>(null)
@@ -16,7 +16,7 @@ export const useRect = <T extends Element>(
       set()
       window.addEventListener(event, set, useCapture)
       return () => window.removeEventListener(event, set, useCapture)
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
   }
 
   useEffectInEvent("resize")

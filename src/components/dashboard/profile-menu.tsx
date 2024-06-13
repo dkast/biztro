@@ -2,7 +2,7 @@
 
 import { LogOut, SunMoon, User } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
-// import { useTheme } from "next-themes"
+import { useTheme } from "next-themes"
 import Link from "next/link"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -25,7 +25,7 @@ import { getInitials } from "@/lib/utils"
 export default function ProfileMenu() {
   const { data: session } = useSession()
   const user = session?.user
-  // const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
 
   if (!user) return null
 
@@ -58,7 +58,7 @@ export default function ProfileMenu() {
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
-              <DropdownMenuRadioGroup>
+              <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
                 <DropdownMenuRadioItem value="system">
                   Sistema
                 </DropdownMenuRadioItem>

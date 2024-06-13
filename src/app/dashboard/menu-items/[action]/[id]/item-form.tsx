@@ -268,7 +268,7 @@ export default function ItemForm({
                 <CardContent>
                   <VariantForm fieldArray={fields} parentForm={form} />
                 </CardContent>
-                <CardFooter className="justify-center border-t p-2">
+                <CardFooter className="justify-center border-t p-2 dark:border-gray-800">
                   <Button
                     type="button"
                     variant="ghost"
