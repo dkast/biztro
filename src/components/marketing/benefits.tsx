@@ -2,7 +2,7 @@ import {
   BadgeCheck,
   Gem,
   Group,
-  HandCoins,
+  Handshake,
   QrCodeIcon,
   RefreshCcw,
   type LucideIcon
@@ -12,45 +12,45 @@ import { Badge } from "@/components/ui/badge"
 
 const BENEFITS = [
   {
-    title: "Comparte en tus Redes Sociales",
+    title: "Comparte en Redes Sociales",
     Icon: BadgeCheck,
     description:
-      "Diseñado especialmente para dispositivos móviles, puedes compartir la liga a tu menú en tus redes sociales.",
+      "Nuestro diseño optimizado para dispositivos móviles te permite compartir fácilmente el enlace de tu menú en todas tus redes sociales.",
     soon: false
   },
   {
     title: "Menú actualizado",
     Icon: RefreshCcw,
     description:
-      "A diferencia de una imagen o un PDF, puedes hacer cambios a tú menú en minutos. Mantén tu menú siempre actualizado.",
+      "Olvídate de las imágenes o PDFs estáticos. Con Biztro, puedes actualizar tu menú en minutos y mantenerlo siempre al día.",
     soon: false
   },
   {
     title: "Sin contratos",
-    Icon: HandCoins,
+    Icon: Handshake,
     description:
-      "Puedes usar el servicio el tiempo que lo necesites y cancelar en cualquier momento, sin restricciones o penalizaciones.",
+      "Disfruta de nuestro servicio el tiempo que necesites y cancela en cualquier momento, sin restricciones ni penalizaciones.",
     soon: false
   },
   {
     title: "Ofertas y Promociones",
     Icon: Gem,
     description:
-      "Muestra las promociones directamente en tú menú de forma dinámica y atractiva.",
+      "Destaca tus promociones directamente en tu menú de forma dinámica y atractiva.",
     soon: true
   },
   {
     title: "Multiples menús",
     Icon: Group,
     description:
-      "Crea diferentes menús, prueba otro estilo o menú de temporada.",
+      "Crea diferentes menús para probar nuevos estilos o lanzar menús de temporada.",
     soon: false
   },
   {
     title: "Personaliza tu código QR",
     Icon: QrCodeIcon,
     description:
-      "Agrega tu logo, personaliza sus colores y adapta tu código QR para reflejar mejor la imágen de tu negocio.",
+      "Añade tu logo, personaliza los colores y adapta tu código QR para reflejar la imagen de tu negocio.",
     soon: false
   }
 ]

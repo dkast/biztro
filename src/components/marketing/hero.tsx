@@ -39,7 +39,7 @@ export default function Hero() {
                 )}
               >
                 <Link href="/blog/beta-biztro">
-                  <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 transition ease-out hover:text-gray-600 hover:duration-300 hover:dark:text-gray-400">
+                  <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 text-xs transition ease-out hover:text-gray-600 hover:duration-300 hover:dark:text-gray-400 sm:text-base">
                     <span>🚀 Biztro esta en beta</span>
                     <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
                   </AnimatedShinyText>

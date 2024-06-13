@@ -41,7 +41,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
       </section>
       <section>
         <Separator className="my-10 w-20 bg-gray-300" />
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 text-center">
           <h3 className="text-xl font-medium sm:text-2xl">
             ¿Quieres participar en nuestro programa beta?
           </h3>
@@ -95,7 +95,7 @@ function Header({
             {category}
           </span>
         </div>
-        <h1 className="font-display text-3xl font-medium sm:text-5xl">
+        <h1 className="font-display text-4xl font-medium sm:text-5xl">
           {title}
         </h1>
         {description && (
