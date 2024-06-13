@@ -2,6 +2,7 @@ import type { Organization } from "@prisma/client"
 import { ImageResponse } from "next/og"
 
 import { getBaseUrl } from "@/lib/utils"
+import { env } from "@/env.mjs"
 
 // Route segment config
 export const runtime = "edge"
@@ -25,7 +26,9 @@ export default async function Image({
       `${getBaseUrl()}/api/org?subdomain=${params.subdomain}`
     ).then(res => res.json())
 
-    console.log(`${getBaseUrl()}/api/org?subdomain=${params.subdomain}`)
+    console.log(
+      `${getBaseUrl()}/api/org?subdomain=${params.subdomain}&secret=${env.AUTH_SECRET}`
+    )
     console.dir(org)
 
     // Font
