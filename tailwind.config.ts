@@ -28,7 +28,7 @@ const config = {
     },
     extend: {
       colors: {
-        gray: colors.stone
+        gray: colors.neutral
       },
       keyframes: {
         "accordion-down": {

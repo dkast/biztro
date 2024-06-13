@@ -276,7 +276,7 @@ export default function ThemeSelector({
       <SideSection title="Tipografía">
         <Popover>
           <PopoverTrigger asChild>
-            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-lime-600 dark:hover:ring-lime-900">
+            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
               <div>
                 <FontWrapper fontFamily={selectedFontTheme?.fontDisplay}>
                   <span className="text-base font-medium">
@@ -306,7 +306,7 @@ export default function ThemeSelector({
                     {fontThemes.map(theme => (
                       <label
                         key={theme.name}
-                        className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-lime-600 dark:[&:has([data-state=checked])>div]:bg-lime-900/70"
+                        className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-green-600 dark:[&:has([data-state=checked])>div]:bg-green-900/70"
                       >
                         <RadioGroupItem
                           value={theme.name}
@@ -335,7 +335,7 @@ export default function ThemeSelector({
         <div>
           <Popover>
             <PopoverTrigger asChild>
-              <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-lime-600 dark:hover:ring-lime-900">
+              <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
                 <div className="space-y-1">
                   <span className="text-sm font-medium">
                     {selectedColorTheme?.name}
@@ -369,7 +369,7 @@ export default function ThemeSelector({
                       {colorThemes.map(theme => (
                         <label
                           key={theme.id}
-                          className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-lime-600 dark:[&:has([data-state=checked])>div]:bg-lime-900/70"
+                          className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-green-600 dark:[&:has([data-state=checked])>div]:bg-green-900/70"
                         >
                           <RadioGroupItem
                             value={theme.id}

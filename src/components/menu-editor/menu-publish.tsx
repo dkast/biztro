@@ -205,7 +205,7 @@ export default function MenuPublish({
                 exit={{ opacity: 0, y: 10 }}
                 className="flex flex-col items-center gap-2"
               >
-                <span className="rounded-full bg-lime-50 p-2 text-lime-700 ring-1 ring-inset ring-lime-600/20 dark:bg-lime-900/70 dark:text-lime-500">
+                <span className="rounded-full bg-lime-50 p-2 text-lime-700 ring-1 ring-inset ring-lime-600/20 dark:bg-green-900/70 dark:text-green-500">
                   <Globe className="size-6" />
                 </span>
                 <span className="text-sm font-medium">Publicar Menú</span>
