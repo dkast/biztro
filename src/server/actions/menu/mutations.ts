@@ -317,7 +317,7 @@ export const deleteColorTheme = action(
         where: { id, organizationId: currentOrg }
       })
 
-      revalidateTag(`themes-${id}-${currentOrg}`)
+      // revalidateTag(`themes-${id}-${currentOrg}`)
 
       return {
         success: true

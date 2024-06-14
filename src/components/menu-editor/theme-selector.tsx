@@ -54,20 +54,21 @@ export default function ThemeSelector({
 
   const [openColorThemeEditor, setOpenColorThemeEditor] = useState(false)
 
-  useEffect(() => {
-    if (userColorThemes) {
-      for (const theme of userColorThemes) {
-        const parsedTheme = JSON.parse(theme.themeJSON)
-        // If custom theme doesnt already exists, add it
-        const customThemeIndex = colorThemes.findIndex(
-          t => t.id === parsedTheme.id
-        )
-        if (customThemeIndex === -1) {
-          colorThemes.push(parsedTheme)
-        }
-      }
-    }
-  }, [userColorThemes])
+  // useEffect(() => {
+  //   if (userColorThemes) {
+  //     for (const theme of userColorThemes) {
+  //       const parsedTheme = JSON.parse(theme.themeJSON)
+  //       // If custom theme doesnt already exists, add it
+  //       const customThemeIndex = colorThemes.findIndex(
+  //         t => t.id === parsedTheme.id
+  //       )
+  //       if (customThemeIndex === -1) {
+  //         console.log("add theme", theme)
+  //         colorThemes.push(parsedTheme)
+  //       }
+  //     }
+  //   }
+  // }, [userColorThemes])
 
   const [fontThemeId, setFontThemeId] = useAtom(fontThemeAtom)
 

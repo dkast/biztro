@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useEditor } from "@craftjs/core"
 import type { Organization, Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
@@ -37,18 +38,21 @@ export default function ToolboxPanel({
     queryFn: () => getThemes({ themeType: "COLOR" })
   })
 
-  if (userColorThemes) {
-    for (const theme of userColorThemes) {
-      const parsedTheme = JSON.parse(theme.themeJSON)
-      // If custom theme doesnt already exists, add it
-      const customThemeIndex = colorThemes.findIndex(
-        t => t.id === parsedTheme.id
-      )
-      if (customThemeIndex === -1) {
-        colorThemes.push(parsedTheme)
+  useEffect(() => {
+    if (userColorThemes) {
+      for (const theme of userColorThemes) {
+        const parsedTheme = JSON.parse(theme.themeJSON)
+        // If custom theme doesnt already exists, add it
+        const customThemeIndex = colorThemes.findIndex(
+          t => t.id === parsedTheme.id
+        )
+        if (customThemeIndex === -1) {
+          console.log("add theme", theme)
+          colorThemes.push(parsedTheme)
+        }
       }
     }
-  }
+  }, [userColorThemes])
 
   const selectedFontTheme = fontThemes.find(theme => theme.name === fontThemeId)
   const selectedColorTheme = colorThemes.find(
