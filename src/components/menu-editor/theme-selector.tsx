@@ -306,7 +306,7 @@ export default function ThemeSelector({
                     {fontThemes.map(theme => (
                       <label
                         key={theme.name}
-                        className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-green-600 dark:[&:has([data-state=checked])>div]:bg-green-900/70"
+                        className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-green-700 dark:[&:has([data-state=checked])>div]:bg-green-900/30"
                       >
                         <RadioGroupItem
                           value={theme.name}
@@ -369,7 +369,7 @@ export default function ThemeSelector({
                       {colorThemes.map(theme => (
                         <label
                           key={theme.id}
-                          className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-green-600 dark:[&:has([data-state=checked])>div]:bg-green-900/70"
+                          className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-green-700 dark:[&:has([data-state=checked])>div]:bg-green-900/30"
                         >
                           <RadioGroupItem
                             value={theme.id}
@@ -435,6 +435,7 @@ export default function ThemeSelector({
                       )
                       colorThemes[index] = theme
                       // Manually update the theme
+                      setColorThemeId(colorThemeId)
                       updateColorTheme(theme.id)
                     }
                     queryClient.invalidateQueries({
@@ -443,8 +444,6 @@ export default function ThemeSelector({
                     setOpenColorThemeEditor(false)
                   }}
                   removeTheme={(themeId: string) => {
-                    const index = colorThemes.findIndex(t => t.id === themeId)
-                    colorThemes.splice(index, 1)
                     if (colorThemes[0]) {
                       setColorThemeId(colorThemes[0].id)
                       onUpdateSerialData(colorThemes[0].id)
@@ -452,6 +451,15 @@ export default function ThemeSelector({
                     queryClient.invalidateQueries({
                       queryKey: ["themes"]
                     })
+
+                    console.log("colorThemes", colorThemes)
+                    const index = colorThemes.findIndex(t => t.id === themeId)
+                    console.log("index", index)
+                    // Remove the theme from the list
+                    colorThemes.splice(index, 1)
+                    console.log("themeId", themeId)
+                    console.log("colorThemes", colorThemes)
+
                     setOpenColorThemeEditor(false)
                   }}
                 />
