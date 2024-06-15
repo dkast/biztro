@@ -88,12 +88,14 @@ export function FileUploader({
   organizationId,
   imageType,
   objectId,
-  onUploadSuccess
+  onUploadSuccess,
+  limitDimension = 1200
 }: {
   organizationId: string
   imageType: ImageType
   objectId: string
   onUploadSuccess: (result: UploadResult) => void
+  limitDimension?: number
 }) {
   const { theme } = useTheme()
   useEffect(() => {
@@ -104,10 +106,44 @@ export function FileUploader({
           getUploadParameters(file, organizationId, imageType, objectId)
       })
     }
+    uppy.on("file-added", async file => {
+      // If the file is an image, get the dimensions
+      if (file.type?.startsWith("image/")) {
+        console.log("Loading image")
+        // const image = new Image()
+        // image.src = URL.createObjectURL(file.data)
+        // image.onload = () => {
+        //   URL.revokeObjectURL(image.src)
+        //   file.meta.width = image.width
+        //   file.meta.height = image.height
+        // }
+        const image = await getImageDimensions(file)
+        console.log(image.width, image.height)
+
+        // If the image dimensions are too big, show an error
+        if (
+          (image.width as number) > limitDimension ||
+          (image.height as number) > limitDimension
+        ) {
+          console.error("Image too big")
+          uppy.info(
+            `La imagen es demasiado grande, el tamaño máximo es de ${limitDimension}x${limitDimension} píxeles`,
+            "error",
+            5000
+          )
+          uppy.removeFile(file.id)
+        }
+      } else {
+        // If the file is not an image, show an error
+        console.error("Not an image")
+        uppy.info("El archivo no es una imagen", "error", 5000)
+        uppy.removeFile(file.id)
+      }
+    })
     uppy.on("complete", result => {
       onUploadSuccess(result)
     })
-  }, [imageType, objectId, onUploadSuccess, organizationId])
+  }, [imageType, objectId, onUploadSuccess, organizationId, limitDimension])
   return (
     <Dashboard
       className="mx-auto max-w-[320px] sm:max-w-[520px]"
@@ -118,4 +154,21 @@ export function FileUploader({
       fileManagerSelectionType="files"
     />
   )
+}
+
+async function getImageDimensions(
+  imgFile: UppyFile
+): Promise<{ width: number; height: number }> {
+  return new Promise(resolve => {
+    const url = URL.createObjectURL(imgFile.data)
+    const img = new Image()
+    img.onload = function () {
+      URL.revokeObjectURL(img.src)
+      resolve({
+        width: img.width,
+        height: img.height
+      })
+    }
+    img.src = url
+  })
 }

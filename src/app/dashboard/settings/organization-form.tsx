@@ -106,6 +106,7 @@ export default function OrganizationForm({
                     organizationId={data.id}
                     imageType={ImageType.LOGO}
                     objectId={ImageType.LOGO}
+                    limitDimension={500}
                     onUploadSuccess={() => {
                       queryClient.invalidateQueries({
                         queryKey: ["workgroup", "current"]
