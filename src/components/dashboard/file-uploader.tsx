@@ -120,14 +120,14 @@ export function FileUploader({
           uppy.info(
             `La imagen es demasiado grande, el tamaño máximo es de ${limitDimension}x${limitDimension} píxeles`,
             "error",
-            5000
+            3000
           )
           uppy.removeFile(file.id)
         }
       } else {
         // If the file is not an image, show an error
         console.error("Not an image")
-        uppy.info("El archivo no es una imagen", "error", 5000)
+        uppy.info("El archivo no es una imagen", "error", 3000)
         uppy.removeFile(file.id)
       }
     })
