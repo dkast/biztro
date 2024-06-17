@@ -20,7 +20,7 @@ export default function Footer() {
             alt="Logo"
             width={24}
             height={24}
-            className="opacity-30"
+            className="opacity-30 dark:opacity-100"
           />
           <p className="text-sm font-medium text-gray-500 dark:text-white">
             Biztro © {new Date().getFullYear()}

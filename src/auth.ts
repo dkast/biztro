@@ -85,8 +85,8 @@ export const { handlers, auth } = NextAuth({
   },
   pages: {
     signIn: "/login",
-    newUser: "/new-org"
-    // error: "/app/auth/error"
+    newUser: "/new-org",
+    error: "/auth-error"
   },
   events: {
     // skipcq: JS-0116

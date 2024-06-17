@@ -14,7 +14,7 @@ export default function NotFound() {
         </h1>
         <div className="space-y-2 text-center text-gray-500">
           <h2 className="text-2xl sm:text-3xl">Página no encontrada</h2>
-          <p>No encontramos la página que estas buscando</p>
+          <p>No encontramos la página que estas buscando.</p>
         </div>
         <Link href="/">
           <Button>Volver al inicio</Button>
