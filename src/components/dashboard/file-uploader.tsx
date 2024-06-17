@@ -1,5 +1,3 @@
-"use client"
-
 import React, { useEffect } from "react"
 import AwsS3, { type AwsS3UploadParameters } from "@uppy/aws-s3"
 import Compressor from "@uppy/compressor"
@@ -109,16 +107,9 @@ export function FileUploader({
     uppy.on("file-added", async file => {
       // If the file is an image, get the dimensions
       if (file.type?.startsWith("image/")) {
-        console.log("Loading image")
-        // const image = new Image()
-        // image.src = URL.createObjectURL(file.data)
-        // image.onload = () => {
-        //   URL.revokeObjectURL(image.src)
-        //   file.meta.width = image.width
-        //   file.meta.height = image.height
-        // }
+        // console.log("Loading image")
         const image = await getImageDimensions(file)
-        console.log(image.width, image.height)
+        // console.log(image.width, image.height)
 
         // If the image dimensions are too big, show an error
         if (
@@ -156,7 +147,7 @@ export function FileUploader({
   )
 }
 
-async function getImageDimensions(
+function getImageDimensions(
   imgFile: UppyFile
 ): Promise<{ width: number; height: number }> {
   return new Promise(resolve => {

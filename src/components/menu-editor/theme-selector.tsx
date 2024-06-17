@@ -5,7 +5,7 @@ import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { PopoverAnchor } from "@radix-ui/react-popover"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtom } from "jotai"
 import { ChevronsUpDown } from "lucide-react"
@@ -32,7 +32,7 @@ import {
   SheetTrigger
 } from "@/components/ui/sheet"
 import { updateMenuSerialData } from "@/server/actions/menu/mutations"
-import { getThemes, type getMenuById } from "@/server/actions/menu/queries"
+import { type getMenuById } from "@/server/actions/menu/queries"
 import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import { colorThemes, fontThemes } from "@/lib/types"
 import { ColorThemeEditor } from "./color-theme-editor"
@@ -47,28 +47,8 @@ export default function ThemeSelector({
   }))
 
   const queryClient = useQueryClient()
-  const { data: userColorThemes } = useQuery({
-    queryKey: ["themes"],
-    queryFn: () => getThemes({ themeType: "COLOR" })
-  })
 
   const [openColorThemeEditor, setOpenColorThemeEditor] = useState(false)
-
-  // useEffect(() => {
-  //   if (userColorThemes) {
-  //     for (const theme of userColorThemes) {
-  //       const parsedTheme = JSON.parse(theme.themeJSON)
-  //       // If custom theme doesnt already exists, add it
-  //       const customThemeIndex = colorThemes.findIndex(
-  //         t => t.id === parsedTheme.id
-  //       )
-  //       if (customThemeIndex === -1) {
-  //         console.log("add theme", theme)
-  //         colorThemes.push(parsedTheme)
-  //       }
-  //     }
-  //   }
-  // }, [userColorThemes])
 
   const [fontThemeId, setFontThemeId] = useAtom(fontThemeAtom)
 
