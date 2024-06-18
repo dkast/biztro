@@ -2,6 +2,7 @@ import { type Metadata, type Viewport } from "next"
 import { Inter, Sora } from "next/font/google"
 
 import "../../styles/globals.css"
+import "../../styles/gradient-blur.css"
 
 // import { SpeedInsights } from "@vercel/speed-insights/next"
 import { AxiomWebVitals } from "next-axiom"

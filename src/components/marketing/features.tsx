@@ -3,7 +3,7 @@
 import { QRCode } from "react-qrcode-logo"
 import { MousePointerClick, Paintbrush, QrCodeIcon } from "lucide-react"
 
-import { BentoCard, BentoGrid } from "@/components/marketing/bento-grid"
+import { BentoCard, BentoGrid } from "@/components/flare-ui/bento-grid"
 
 const features = [
   {

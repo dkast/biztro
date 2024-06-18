@@ -5,7 +5,7 @@ import { motion, useInView } from "framer-motion"
 import { ArrowRightIcon } from "lucide-react"
 import Link from "next/link"
 
-import AnimatedShinyText from "@/components/marketing/animated-shiny-text"
+import AnimatedShinyText from "@/components/flare-ui/animated-shiny-text"
 import Waitlist from "@/components/marketing/waitlist"
 import { cn } from "@/lib/utils"
 

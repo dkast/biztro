@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 
-import { BorderBeam } from "@/components/marketing/border-beam"
+import { BorderBeam } from "@/components/flare-ui/border-beam"
 import { cn } from "@/lib/utils"
 
 export default function EditorPreview() {
