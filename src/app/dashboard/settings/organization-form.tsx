@@ -106,6 +106,7 @@ export default function OrganizationForm({
                     organizationId={data.id}
                     imageType={ImageType.LOGO}
                     objectId={ImageType.LOGO}
+                    limitDimension={500}
                     onUploadSuccess={() => {
                       queryClient.invalidateQueries({
                         queryKey: ["workgroup", "current"]
@@ -115,9 +116,9 @@ export default function OrganizationForm({
                   />
                 </DialogContent>
               </Dialog>
-              <p className="mt-2 text-xs leading-5 text-gray-500">
-                Se recomienda un tamaño de 400x400 en formato JPG o PNG.
-              </p>
+              <FormDescription className="mt-2 text-xs">
+                Se recomienda un tamaño de 500x500 en formato JPG o PNG.
+              </FormDescription>
             </div>
           </div>
           <FormField
@@ -208,7 +209,7 @@ export default function OrganizationForm({
             )}
             <FormDescription>
               La imágen de portada se mostrará en tu sitio web de manera
-              prominente
+              prominente. Se recomienda un tamaño de 1200x800 en formato JPG.
             </FormDescription>
           </div>
           <Button disabled={status === "executing"} type="submit">

@@ -241,7 +241,7 @@ export const createColorTheme = action(
         }
       })
 
-      revalidateTag(`themes-${themeType}-${organizationId}`)
+      // revalidateTag(`themes-${themeType}-${organizationId}`)
 
       return {
         success: colorTheme
@@ -279,9 +279,9 @@ export const updateColorTheme = action(
         data: { name, themeJSON }
       })
 
-      revalidateTag(
-        `themes-${colorTheme.themeType}-${colorTheme.organizationId}`
-      )
+      // revalidateTag(
+      //   `themes-${colorTheme.themeType}-${colorTheme.organizationId}`
+      // )
 
       return {
         success: colorTheme
@@ -317,7 +317,7 @@ export const deleteColorTheme = action(
         where: { id, organizationId: currentOrg }
       })
 
-      revalidateTag(`themes-${id}-${currentOrg}`)
+      // revalidateTag(`themes-${id}-${currentOrg}`)
 
       return {
         success: true

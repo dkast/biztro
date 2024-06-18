@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useEditor } from "@craftjs/core"
 import type { Organization, Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
@@ -37,18 +38,21 @@ export default function ToolboxPanel({
     queryFn: () => getThemes({ themeType: "COLOR" })
   })
 
-  if (userColorThemes) {
-    for (const theme of userColorThemes) {
-      const parsedTheme = JSON.parse(theme.themeJSON)
-      // If custom theme doesnt already exists, add it
-      const customThemeIndex = colorThemes.findIndex(
-        t => t.id === parsedTheme.id
-      )
-      if (customThemeIndex === -1) {
-        colorThemes.push(parsedTheme)
+  useEffect(() => {
+    if (userColorThemes) {
+      for (const theme of userColorThemes) {
+        const parsedTheme = JSON.parse(theme.themeJSON)
+        // If custom theme doesnt already exists, add it
+        const customThemeIndex = colorThemes.findIndex(
+          t => t.id === parsedTheme.id
+        )
+        if (customThemeIndex === -1) {
+          console.log("add theme", theme)
+          colorThemes.push(parsedTheme)
+        }
       }
     }
-  }
+  }, [userColorThemes])
 
   const selectedFontTheme = fontThemes.find(theme => theme.name === fontThemeId)
   const selectedColorTheme = colorThemes.find(
@@ -151,7 +155,7 @@ export default function ToolboxPanel({
 
 function ToolboxElement({ title, Icon }: { title: string; Icon: LucideIcon }) {
   return (
-    <div className="group flex cursor-move items-center gap-2 rounded-lg border p-2 text-sm shadow-sm hover:border-lime-400 hover:ring-1 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-lime-600 dark:hover:ring-lime-900">
+    <div className="group flex cursor-move items-center gap-2 rounded-lg border p-2 text-sm shadow-sm hover:border-lime-400 hover:ring-1 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
       <Icon className="size-3.5 text-gray-400 group-hover:text-current" />
       <span>{title}</span>
     </div>

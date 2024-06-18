@@ -5,7 +5,7 @@ import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { PopoverAnchor } from "@radix-ui/react-popover"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtom } from "jotai"
 import { ChevronsUpDown } from "lucide-react"
@@ -32,7 +32,7 @@ import {
   SheetTrigger
 } from "@/components/ui/sheet"
 import { updateMenuSerialData } from "@/server/actions/menu/mutations"
-import { getThemes, type getMenuById } from "@/server/actions/menu/queries"
+import { type getMenuById } from "@/server/actions/menu/queries"
 import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import { colorThemes, fontThemes } from "@/lib/types"
 import { ColorThemeEditor } from "./color-theme-editor"
@@ -47,27 +47,8 @@ export default function ThemeSelector({
   }))
 
   const queryClient = useQueryClient()
-  const { data: userColorThemes } = useQuery({
-    queryKey: ["themes"],
-    queryFn: () => getThemes({ themeType: "COLOR" })
-  })
 
   const [openColorThemeEditor, setOpenColorThemeEditor] = useState(false)
-
-  useEffect(() => {
-    if (userColorThemes) {
-      for (const theme of userColorThemes) {
-        const parsedTheme = JSON.parse(theme.themeJSON)
-        // If custom theme doesnt already exists, add it
-        const customThemeIndex = colorThemes.findIndex(
-          t => t.id === parsedTheme.id
-        )
-        if (customThemeIndex === -1) {
-          colorThemes.push(parsedTheme)
-        }
-      }
-    }
-  }, [userColorThemes])
 
   const [fontThemeId, setFontThemeId] = useAtom(fontThemeAtom)
 
@@ -276,7 +257,7 @@ export default function ThemeSelector({
       <SideSection title="Tipografía">
         <Popover>
           <PopoverTrigger asChild>
-            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-lime-600 dark:hover:ring-lime-900">
+            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
               <div>
                 <FontWrapper fontFamily={selectedFontTheme?.fontDisplay}>
                   <span className="text-base font-medium">
@@ -306,7 +287,7 @@ export default function ThemeSelector({
                     {fontThemes.map(theme => (
                       <label
                         key={theme.name}
-                        className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-lime-600 dark:[&:has([data-state=checked])>div]:bg-lime-900/70"
+                        className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-green-700 dark:[&:has([data-state=checked])>div]:bg-green-900/30"
                       >
                         <RadioGroupItem
                           value={theme.name}
@@ -335,7 +316,7 @@ export default function ThemeSelector({
         <div>
           <Popover>
             <PopoverTrigger asChild>
-              <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-lime-600 dark:hover:ring-lime-900">
+              <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
                 <div className="space-y-1">
                   <span className="text-sm font-medium">
                     {selectedColorTheme?.name}
@@ -369,7 +350,7 @@ export default function ThemeSelector({
                       {colorThemes.map(theme => (
                         <label
                           key={theme.id}
-                          className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-lime-600 dark:[&:has([data-state=checked])>div]:bg-lime-900/70"
+                          className="cursor-pointer [&:has([data-state=checked])>div]:border-lime-400 [&:has([data-state=checked])>div]:bg-lime-50 dark:[&:has([data-state=checked])>div]:border-green-700 dark:[&:has([data-state=checked])>div]:bg-green-900/30"
                         >
                           <RadioGroupItem
                             value={theme.id}
@@ -435,6 +416,7 @@ export default function ThemeSelector({
                       )
                       colorThemes[index] = theme
                       // Manually update the theme
+                      setColorThemeId(colorThemeId)
                       updateColorTheme(theme.id)
                     }
                     queryClient.invalidateQueries({
@@ -443,8 +425,6 @@ export default function ThemeSelector({
                     setOpenColorThemeEditor(false)
                   }}
                   removeTheme={(themeId: string) => {
-                    const index = colorThemes.findIndex(t => t.id === themeId)
-                    colorThemes.splice(index, 1)
                     if (colorThemes[0]) {
                       setColorThemeId(colorThemes[0].id)
                       onUpdateSerialData(colorThemes[0].id)
@@ -452,6 +432,15 @@ export default function ThemeSelector({
                     queryClient.invalidateQueries({
                       queryKey: ["themes"]
                     })
+
+                    console.log("colorThemes", colorThemes)
+                    const index = colorThemes.findIndex(t => t.id === themeId)
+                    console.log("index", index)
+                    // Remove the theme from the list
+                    colorThemes.splice(index, 1)
+                    console.log("themeId", themeId)
+                    console.log("colorThemes", colorThemes)
+
                     setOpenColorThemeEditor(false)
                   }}
                 />

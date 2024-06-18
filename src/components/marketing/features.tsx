@@ -3,7 +3,8 @@
 import { QRCode } from "react-qrcode-logo"
 import { MousePointerClick, Paintbrush, QrCodeIcon } from "lucide-react"
 
-import { BentoCard, BentoGrid } from "@/components/marketing/bento-grid"
+import { BentoCard, BentoGrid } from "@/components/flare-ui/bento-grid"
+import GradientBlur from "@/components/flare-ui/gradient-blur"
 
 const features = [
   {
@@ -18,8 +19,9 @@ const features = [
         <img
           src="iphone-hero.png"
           alt="Diseño"
-          className="w-full transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_30%,#000_80%)] group-hover:scale-105"
+          className="w-full transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_30%,#000_80%)] group-hover:scale-105 sm:[mask-image:linear-gradient(to_top,transparent_10%,#000_80%)]"
         />
+        <GradientBlur className="inset-x-0 bottom-0 h-2/3 sm:h-1/3" />
       </div>
     ),
     className:
@@ -72,7 +74,7 @@ const features = [
 export default function Features() {
   return (
     <>
-      <section className="mt-10 max-w-2xl text-center md:mx-auto md:mt-20 md:text-center xl:max-w-none">
+      <section className="mt-0 max-w-2xl text-center md:mx-auto md:mt-0 md:text-center xl:max-w-none">
         <h2 className="text-balance font-display text-3xl tracking-tight sm:text-4xl md:text-5xl">
           Publica tú menú en Internet, fácil y rápido
         </h2>

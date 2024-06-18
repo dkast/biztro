@@ -3,7 +3,6 @@
 import { useRef } from "react"
 import toast from "react-hot-toast"
 import { QRCode } from "react-qrcode-logo"
-import useLocalStorage from "@/hooks/use-local-storage"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
@@ -51,6 +50,7 @@ import type { getMenuById } from "@/server/actions/menu/queries"
 import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import exportAsImage from "@/lib/export-as-image"
 import { MenuStatus } from "@/lib/types"
+import useLocalStorage from "@/lib/use-local-storage"
 import { getBaseUrl } from "@/lib/utils"
 
 export default function MenuPublish({
@@ -205,7 +205,7 @@ export default function MenuPublish({
                 exit={{ opacity: 0, y: 10 }}
                 className="flex flex-col items-center gap-2"
               >
-                <span className="rounded-full bg-lime-50 p-2 text-lime-700 ring-1 ring-inset ring-lime-600/20 dark:bg-lime-900/70 dark:text-lime-500">
+                <span className="rounded-full bg-lime-50 p-2 text-lime-700 ring-1 ring-inset ring-lime-600/20 dark:bg-green-900/70 dark:text-green-500">
                   <Globe className="size-6" />
                 </span>
                 <span className="text-sm font-medium">Publicar Menú</span>

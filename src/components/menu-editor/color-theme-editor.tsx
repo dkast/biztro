@@ -2,6 +2,7 @@ import { useState } from "react"
 import toast from "react-hot-toast"
 import type { Prisma } from "@prisma/client"
 import { hexToHsva, Sketch } from "@uiw/react-color"
+import { Loader } from "lucide-react"
 import { nanoid } from "nanoid"
 // import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { useAction } from "next-safe-action/hooks"
@@ -38,7 +39,11 @@ export function ColorThemeEditor({
   removeTheme: (themeId: string) => void
 }) {
   const [themeState, setThemeState] = useState(theme)
-  const { execute, status, reset } = useAction(createColorTheme, {
+  const {
+    execute: createTheme,
+    status,
+    reset
+  } = useAction(createColorTheme, {
     onSuccess: data => {
       if (data.failure?.reason) {
         toast.error(data.failure?.reason)
@@ -104,7 +109,7 @@ export function ColorThemeEditor({
     const id = nanoid(10)
     const scope = ThemeScope.USER
     setThemeState(prev => ({ ...prev, id, name, scope }))
-    execute({
+    createTheme({
       id,
       name,
       scope,
@@ -277,7 +282,7 @@ export function ColorThemeEditor({
           </dd>
         </div>
       </fieldset>
-      <div className="grid grid-cols-3 gap-1">
+      <div className="grid grid-cols-2 gap-1">
         <Button
           variant="outline"
           size="sm"
@@ -288,9 +293,12 @@ export function ColorThemeEditor({
           }
           onClick={handleUpdateTheme}
         >
+          {status === "executing" || updateStatus === "executing" ? (
+            <Loader className="mr-2 size-4 animate-spin" />
+          ) : null}
           Guardar
         </Button>
-        <Button
+        {/* <Button
           variant="outline"
           size="sm"
           disabled={
@@ -301,7 +309,7 @@ export function ColorThemeEditor({
           onClick={handleCreateTheme}
         >
           Duplicar
-        </Button>
+        </Button> */}
         <Button
           variant="destructive"
           size="sm"
@@ -315,6 +323,9 @@ export function ColorThemeEditor({
             deleteTheme({ id: themeState.id })
           }}
         >
+          {deleteStatus === "executing" ? (
+            <Loader className="mr-2 size-4 animate-spin" />
+          ) : null}
           Eliminar
         </Button>
         {/* <Button

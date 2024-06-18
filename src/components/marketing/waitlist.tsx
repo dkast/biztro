@@ -67,7 +67,7 @@ export default function Waitlist() {
                     <Input
                       type="email"
                       placeholder="nombre@correo.com"
-                      className="placeholder:text-gray-340 h-8 max-w-[300px] rounded-full border-0 bg-transparent text-white focus-visible:ring-0 focus-visible:ring-offset-0"
+                      className="placeholder:text-gray-340 h-8 max-w-[300px] rounded-full border-0 bg-transparent text-white focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-transparent"
                       {...field}
                     />
                   </FormControl>
@@ -98,7 +98,7 @@ export default function Waitlist() {
           >
             <Alert className="max-w-xl space-y-2">
               <AlertTitle>¡Gracias por tu interés!</AlertTitle>
-              <AlertDescription className="text-gray-600">
+              <AlertDescription className="text-gray-600 dark:text-gray-400">
                 Te enviaremos un correo electrónico cuando estemos listos para
                 que puedas probar la aplicación.
               </AlertDescription>

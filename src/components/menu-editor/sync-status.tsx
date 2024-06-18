@@ -192,7 +192,7 @@ export default function SyncStatus({
               defaultLocation.openingHours[index] ?? {},
               entry ?? {}
             )
-            console.log(diff)
+            // console.log(diff)
             Object.getOwnPropertyNames(diff).forEach(propName => {
               if (
                 propName === "allDay" ||
