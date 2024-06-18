@@ -33,18 +33,18 @@ export default function Hero() {
           <div className="mt-20 grid grid-cols-1">
             <div className="flex flex-col items-center gap-6 pb-8 text-center">
               {/* Top announcement */}
-              <div
-                className={cn(
-                  "group rounded-full border border-black/10 bg-gray-50 text-base transition-all ease-in hover:cursor-pointer hover:bg-gray-100 dark:border-white/5 dark:bg-gray-900 dark:hover:bg-gray-800"
-                )}
-              >
-                <Link href="/blog/beta-biztro">
-                  <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 text-xs transition ease-out hover:text-gray-600 hover:duration-300 hover:dark:text-gray-400 sm:text-base">
+              <Link href="/blog/beta-biztro" className="hover:cursor-pointer">
+                <div
+                  className={cn(
+                    "group rounded-full border border-black/10 bg-gray-50 text-base transition-all ease-in hover:cursor-pointer hover:bg-gray-100 dark:border-white/5 dark:bg-gray-900 dark:hover:bg-gray-800"
+                  )}
+                >
+                  <AnimatedShinyText className="inline-flex items-center justify-center px-4 py-1 text-xs transition ease-out hover:cursor-pointer hover:text-gray-600 hover:duration-300 hover:dark:text-gray-400 sm:text-base">
                     <span>🚀 Biztro esta en beta</span>
                     <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
                   </AnimatedShinyText>
-                </Link>
-              </div>
+                </div>
+              </Link>
               <motion.h1
                 ref={fadeInRef}
                 className="text-balance bg-gradient-to-br from-black from-30% to-black/60 bg-clip-text py-6 font-display text-5xl font-medium leading-none tracking-tighter text-transparent dark:from-white dark:to-white/40 sm:text-6xl md:text-7xl lg:text-8xl"

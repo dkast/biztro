@@ -1,6 +1,38 @@
 import type { Config } from "tailwindcss"
 import colors from "tailwindcss/colors"
 import { fontFamily } from "tailwindcss/defaultTheme"
+import type { PluginCreator } from "tailwindcss/types/config"
+
+const glassPlugin: PluginCreator = ({ matchUtilities, theme }) => {
+  matchUtilities(
+    {
+      glass: (value, { modifier }) => {
+        const extendedBy = modifier || "6rem"
+        const cutoff = `calc(100% - ${extendedBy})`
+
+        return {
+          "&::after": {
+            content: "''",
+            position: "absolute",
+            inset: "0",
+            // Extend backdrop surface to the bottom
+            bottom: `calc(-1 * ${extendedBy})`,
+            // Mask out the part falling outside the nav
+            "-webkit-mask-image": `linear-gradient(to bottom, black 0, black ${cutoff}, transparent ${cutoff})`,
+            "backdrop-filter": `blur(${value || "1rem"})`
+          }
+        }
+      }
+    },
+    {
+      values: {
+        ...theme("spacing"),
+        DEFAULT: theme("spacing.4")
+      },
+      modifiers: theme("spacing")
+    }
+  )
+}
 
 const config = {
   darkMode: ["class"],
@@ -65,7 +97,11 @@ const config = {
       }
     }
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")]
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+    glassPlugin
+  ]
 } satisfies Config
 
 export default config
