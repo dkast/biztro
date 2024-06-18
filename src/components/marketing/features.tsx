@@ -19,9 +19,9 @@ const features = [
         <img
           src="iphone-hero.png"
           alt="Diseño"
-          className="w-full transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_10%,#000_80%)] group-hover:scale-105"
+          className="w-full transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_30%,#000_80%)] group-hover:scale-105 sm:[mask-image:linear-gradient(to_top,transparent_10%,#000_80%)]"
         />
-        <GradientBlur className="inset-x-0 bottom-0 h-1/3" />
+        <GradientBlur className="inset-x-0 bottom-0 h-2/3 sm:h-1/3" />
       </div>
     ),
     className:
