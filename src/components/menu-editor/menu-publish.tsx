@@ -3,7 +3,6 @@
 import { useRef } from "react"
 import toast from "react-hot-toast"
 import { QRCode } from "react-qrcode-logo"
-import useLocalStorage from "@/hooks/use-local-storage"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
@@ -51,6 +50,7 @@ import type { getMenuById } from "@/server/actions/menu/queries"
 import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import exportAsImage from "@/lib/export-as-image"
 import { MenuStatus } from "@/lib/types"
+import useLocalStorage from "@/lib/use-local-storage"
 import { getBaseUrl } from "@/lib/utils"
 
 export default function MenuPublish({

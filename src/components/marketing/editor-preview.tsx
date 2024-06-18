@@ -4,6 +4,8 @@ import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 
 import { BorderBeam } from "@/components/flare-ui/border-beam"
+import GradientBlur from "@/components/flare-ui/gradient-blur"
+import { useMobile } from "@/lib/use-mobile"
 import { cn } from "@/lib/utils"
 
 export default function EditorPreview() {
@@ -22,6 +24,9 @@ export default function EditorPreview() {
       y: 0
     }
   }
+
+  const isMobile = useMobile()
+
   return (
     <section
       id="editor-preview"
@@ -38,7 +43,13 @@ export default function EditorPreview() {
           ease: [0.21, 0.47, 0.32, 0.98],
           type: "spring"
         }}
-        className="relative mb-10 mt-0 h-full w-full rounded-xl after:absolute after:inset-0 after:z-10 after:[background:linear-gradient(to_top,#fff_10%,transparent)] dark:after:[background:linear-gradient(to_top,#000000_10%,transparent)] sm:mb-0 sm:mt-24"
+        className={cn(
+          "relative mt-0 h-full w-full rounded-md after:absolute after:inset-0 after:z-10 sm:mt-24 sm:rounded-xl",
+          // isMobile
+          isMobile
+            ? "after:[background:linear-gradient(to_top,#fff_10%,transparent)] dark:after:[background:linear-gradient(to_top,#000000_10%,transparent)]"
+            : "after:[background:linear-gradient(to_top,#fff_2%,transparent)] dark:after:[background:linear-gradient(to_top,#000000_2%,transparent)]"
+        )}
       >
         <div
           className={cn(
@@ -54,17 +65,22 @@ export default function EditorPreview() {
 
         <img
           src="/editor-light.png"
-          className="relative block h-full w-full rounded-xl border dark:hidden"
+          className="relative block h-full w-full rounded-md border dark:hidden sm:rounded-xl"
           alt="Imagen del editor de menús en web"
         />
         <img
           src="/editor-dark.png"
-          className="relative hidden h-full w-full rounded-xl border border-gray-700/70 dark:block"
+          className="relative hidden h-full w-full rounded-md border border-gray-700/70 dark:block sm:rounded-xl"
           alt="Imagen del editor de menús en web"
         />
 
-        <BorderBeam size={150} />
-        <BorderBeam size={150} delay={7} />
+        {!isMobile && (
+          <>
+            <GradientBlur className="inset-x-0 bottom-0 h-1/2" />
+            <BorderBeam size={150} />
+            <BorderBeam size={150} delay={7} />
+          </>
+        )}
       </motion.div>
     </section>
   )
