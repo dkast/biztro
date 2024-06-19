@@ -1,4 +1,4 @@
-import { Building } from "lucide-react"
+import { Store } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
@@ -22,7 +22,7 @@ export default async function SettingsPage() {
       <PageSubtitle
         title="Mi Negocio"
         description="Información general del negocio"
-        Icon={Building}
+        Icon={Store}
       />
       <OrganizationForm data={currentOrg} enabled />
     </div>
