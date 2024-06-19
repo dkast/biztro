@@ -1,9 +1,11 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import InfoHelper from "@/components/dashboard/info-helper"
 import OnboardingStatus from "@/components/dashboard/onboarding-status"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
+import { Skeleton } from "@/components/ui/skeleton"
 import MenuList from "@/app/dashboard/menu-list"
 import { getMenus } from "@/server/actions/menu/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
@@ -25,7 +27,9 @@ export default async function DashboardPage() {
     <div className="flex grow bg-gray-50 pb-4 dark:bg-gray-950">
       <div className="mx-auto grid grow auto-rows-min grid-cols-300 justify-center gap-10 px-4 py-10 sm:px-6 sm:py-12">
         <div className="col-span-full">
-          <OnboardingStatus />
+          <Suspense fallback={<OnboardingSkeleton />}>
+            <OnboardingStatus orgId={currentOrg.id} />
+          </Suspense>
         </div>
         <div className="col-span-full">
           <PageSubtitle title="Menús" description="Todos los menús.">
@@ -39,5 +43,18 @@ export default async function DashboardPage() {
         <MenuList menus={data} />
       </div>
     </div>
+  )
+}
+
+function OnboardingSkeleton() {
+  return (
+    <>
+      <Skeleton className="h-12 w-1/2" />
+      <div className="mt-8 grid grid-cols-3 gap-2">
+        <Skeleton className="h-28 w-full" />
+        <Skeleton className="h-28 w-full" />
+        <Skeleton className="h-28 w-full" />
+      </div>
+    </>
   )
 }
