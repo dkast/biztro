@@ -15,6 +15,7 @@ import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import FloatingBar from "@/components/menu-editor/floating-bar"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
+import MenuTour from "@/components/menu-editor/menu-tour"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
 import SyncStatus from "@/components/menu-editor/sync-status"
@@ -72,6 +73,7 @@ export default function Workbench({
       >
         <Header>
           <Toolbar menu={menu} />
+          <MenuTour />
         </Header>
         <ResizablePanelGroup
           className="grow pt-16 dark:bg-gray-900"
@@ -148,7 +150,7 @@ export default function Workbench({
                 </TabsTrigger>
                 <TabsTrigger
                   value="settings"
-                  className="flex flex-row items-center gap-1 rounded-md"
+                  className="editor-settings flex flex-row items-center gap-1 rounded-md"
                 >
                   <Settings2 className="hidden size-3.5 lg:block" />
                   <span>Ajustes</span>

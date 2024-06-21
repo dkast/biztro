@@ -253,7 +253,7 @@ export default function ThemeSelector({
   }
 
   return (
-    <div className="flex flex-col py-3">
+    <div className="editor-theme flex flex-col py-3">
       <SideSection title="Tipografía">
         <Popover>
           <PopoverTrigger asChild>

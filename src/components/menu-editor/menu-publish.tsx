@@ -134,7 +134,7 @@ export default function MenuPublish({
   }
 
   return (
-    <div className="flex justify-end gap-2">
+    <div className="editor-published flex justify-end gap-2">
       <Dialog>
         <TooltipHelper content="Generar código QR">
           <DialogTrigger asChild>

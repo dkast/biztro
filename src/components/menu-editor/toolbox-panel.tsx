@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtomValue } from "jotai"
 import { Layers, PanelTop, Text, Type, type LucideIcon } from "lucide-react"
+import Link from "next/link"
 
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
@@ -14,6 +15,7 @@ import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import SideSection from "@/components/menu-editor/side-section"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { getThemes } from "@/server/actions/menu/queries"
@@ -71,34 +73,54 @@ export default function ToolboxPanel({
 
   return (
     <>
-      <SideSection title="Categorías">
-        {categories.map(category => (
-          <div
-            key={category.id}
-            ref={ref => {
-              if (ref) {
-                connectors.create(
-                  ref,
-                  <CategoryBlock
-                    data={category}
-                    categoryFontFamily={selectedFontTheme.fontDisplay}
-                    itemFontFamily={selectedFontTheme.fontDisplay}
-                    priceFontFamily={selectedFontTheme.fontText}
-                    descriptionFontFamily={selectedFontTheme.fontText}
-                    categoryColor={hexToRgba(selectedColorTheme.accentColor)}
-                    itemColor={hexToRgba(selectedColorTheme.textColor)}
-                    priceColor={hexToRgba(selectedColorTheme.brandColor)}
-                    descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
-                  />
-                )
-              }
-            }}
-          >
-            <ToolboxElement title={category.name} Icon={Layers} />
-          </div>
-        ))}
+      <SideSection title="Categorías y Productos" className="editor-categories">
+        {categories.length > 0 ? (
+          categories.map(category => (
+            <div
+              key={category.id}
+              ref={ref => {
+                if (ref) {
+                  connectors.create(
+                    ref,
+                    <CategoryBlock
+                      data={category}
+                      categoryFontFamily={selectedFontTheme.fontDisplay}
+                      itemFontFamily={selectedFontTheme.fontDisplay}
+                      priceFontFamily={selectedFontTheme.fontText}
+                      descriptionFontFamily={selectedFontTheme.fontText}
+                      categoryColor={hexToRgba(selectedColorTheme.accentColor)}
+                      itemColor={hexToRgba(selectedColorTheme.textColor)}
+                      priceColor={hexToRgba(selectedColorTheme.brandColor)}
+                      descriptionColor={hexToRgba(
+                        selectedColorTheme.mutedColor
+                      )}
+                    />
+                  )
+                }
+              }}
+            >
+              <ToolboxElement title={category.name} Icon={Layers} />
+            </div>
+          ))
+        ) : (
+          <Alert variant="information" className="mx-0.5 my-2 w-auto text-sm">
+            <AlertTitle>Sin productos.</AlertTitle>
+            <AlertDescription className="text-xs">
+              Agrega productos y categorizalos para incluirlos en tu menú.
+            </AlertDescription>
+            <Link href="/dashboard/menu-items">
+              <Button
+                variant="outline"
+                size="xs"
+                className="mt-2 w-full border-blue-500 bg-transparent text-blue-500 hover:bg-blue-50 hover:text-blue-900 dark:border-blue-400 dark:bg-transparent dark:text-blue-400 dark:hover:bg-blue-900 dark:hover:bg-opacity-10"
+              >
+                Ver productos
+              </Button>
+            </Link>
+          </Alert>
+        )}
       </SideSection>
-      <SideSection title="Elementos">
+      <SideSection title="Elementos" className="editor-elements">
         <div
           ref={ref => {
             if (ref) {
