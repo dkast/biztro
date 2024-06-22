@@ -103,7 +103,10 @@ export default function ToolboxPanel({
             </div>
           ))
         ) : (
-          <Alert variant="information" className="mx-0.5 my-2 w-auto text-sm">
+          <Alert
+            variant="information"
+            className="mx-0.5 my-2 w-auto border-dashed text-sm"
+          >
             <AlertTitle>Sin productos.</AlertTitle>
             <AlertDescription className="text-xs">
               Agrega productos y categorizalos para incluirlos en tu menú.
