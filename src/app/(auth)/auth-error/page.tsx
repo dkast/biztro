@@ -32,10 +32,10 @@ export default function Page({
                 unoptimized
               />
               <div className="text-center">
-                <h2 className="text-3xl font-medium leading-9">
+                <h2 className="font-display text-3xl font-medium leading-9">
                   Estamos casi listos
                 </h2>
-                <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">
+                <p className="mt-4 text-balance text-gray-500 dark:text-gray-400">
                   Actualmente estamos en Beta. Nos encontramos afinando los
                   últimos detalles.
                 </p>

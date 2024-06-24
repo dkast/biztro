@@ -58,3 +58,39 @@ export async function getOrganizationBySubdomain(subdomain: string) {
     }
   )()
 }
+
+export async function getOrganizationOnboardingStatus(id: string) {
+  return await cache(
+    async () => {
+      const orgData = await prisma.organization.findUnique({
+        where: {
+          id
+        },
+        select: {
+          id: true,
+          name: true,
+          subdomain: true,
+          banner: true,
+          logo: true,
+          location: {
+            select: {
+              id: true
+            }
+          },
+          _count: {
+            select: {
+              menuItems: true
+            }
+          }
+        }
+      })
+
+      return orgData
+    },
+    [`organization-${id}-onboarding`],
+    {
+      revalidate: 900,
+      tags: [`organization-${id}-onboarding`]
+    }
+  )()
+}

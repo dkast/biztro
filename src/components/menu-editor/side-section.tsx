@@ -10,15 +10,21 @@ import { cn } from "@/lib/utils"
 
 export default function SideSection({
   title,
-  children
+  children,
+  className
 }: {
   title: string
   children?: React.ReactNode
+  className?: string
 }) {
   const [open, setOpen] = useState(true)
   return (
     <Collapsible className="w-full text-sm" open={open} onOpenChange={setOpen}>
-      <CollapsibleTrigger className="flex w-full items-center justify-between border-b px-4 py-2 text-left dark:border-gray-800">
+      <CollapsibleTrigger
+        className={cn(
+          "flex w-full items-center justify-between border-b px-4 py-2 text-left dark:border-gray-800"
+        )}
+      >
         <span className="text-sm font-medium">{title}</span>
         {open ? (
           <ChevronUp className="size-3.5 text-gray-500" />
@@ -27,7 +33,7 @@ export default function SideSection({
         )}
       </CollapsibleTrigger>
       <CollapsibleContent
-        className={cn("flex flex-col gap-y-2", open && "p-4")}
+        className={cn("flex flex-col gap-y-2", open && "p-4", className)}
       >
         {children}
       </CollapsibleContent>

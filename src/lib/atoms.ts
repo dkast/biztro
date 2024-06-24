@@ -10,3 +10,5 @@ export const frameSizeAtom = atomWithStorage("frameSize", FrameSize.MOBILE)
 export const fontThemeAtom = atom("DEFAULT")
 
 export const colorThemeAtom = atom("DEFAULT")
+
+export const tourModeAtom = atomWithStorage("tourMode", true)
