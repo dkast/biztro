@@ -284,9 +284,11 @@ export default function MenuPublish({
           </AnimatePresence>
         </PopoverContent>
       </Popover>
-      <Button size="xs" variant="ghost" onClick={() => setMenuTour(true)}>
-        <CircleHelp className="size-4" />
-      </Button>
+      <TooltipHelper content="Ayuda">
+        <Button size="xs" variant="ghost" onClick={() => setMenuTour(true)}>
+          <CircleHelp className="size-4" />
+        </Button>
+      </TooltipHelper>
     </div>
   )
 }
