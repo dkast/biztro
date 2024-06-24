@@ -1,11 +1,14 @@
 import React from "react"
 import JoyRide, {
   type BeaconRenderProps,
+  type CallBackProps,
   type Step,
   type TooltipRenderProps
 } from "react-joyride"
+import { useAtom } from "jotai"
 
 import { Button } from "@/components/ui/button"
+import { tourModeAtom } from "@/lib/atoms"
 
 const steps: Step[] = [
   {
@@ -51,8 +54,18 @@ const steps: Step[] = [
 ]
 
 export default function MenuTour() {
+  const [tourMode, setTourMode] = useAtom(tourModeAtom)
+
+  const handleCallback = (data: CallBackProps) => {
+    if (data.status === "finished" || data.status === "skipped") {
+      setTourMode(false)
+    }
+  }
+
   return (
     <JoyRide
+      run={tourMode}
+      callback={handleCallback}
       steps={steps}
       showProgress
       showSkipButton

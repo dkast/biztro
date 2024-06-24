@@ -10,8 +10,9 @@ import { rgbaToHex, rgbaToHsva, Sketch, type RgbaColor } from "@uiw/react-color"
 import { formatDate } from "date-fns"
 import { es } from "date-fns/locale"
 import { AnimatePresence, motion } from "framer-motion"
-import { useAtomValue } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import {
+  CircleHelp,
   Download,
   ExternalLink,
   Globe,
@@ -47,7 +48,7 @@ import {
   updateMenuStatus
 } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
-import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
+import { colorThemeAtom, fontThemeAtom, tourModeAtom } from "@/lib/atoms"
 import exportAsImage from "@/lib/export-as-image"
 import { MenuStatus } from "@/lib/types"
 import useLocalStorage from "@/lib/use-local-storage"
@@ -62,6 +63,7 @@ export default function MenuPublish({
   const queryClient = useQueryClient()
   const fontTheme = useAtomValue(fontThemeAtom)
   const colorTheme = useAtomValue(colorThemeAtom)
+  const setMenuTour = useSetAtom(tourModeAtom)
 
   const { execute, status, reset } = useAction(updateMenuStatus, {
     onSuccess: data => {
@@ -282,6 +284,9 @@ export default function MenuPublish({
           </AnimatePresence>
         </PopoverContent>
       </Popover>
+      <Button size="xs" variant="ghost" onClick={() => setMenuTour(true)}>
+        <CircleHelp className="size-4" />
+      </Button>
     </div>
   )
 }
