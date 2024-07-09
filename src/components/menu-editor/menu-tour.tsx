@@ -99,7 +99,7 @@ function Tooltip({
   return (
     <div
       {...tooltipProps}
-      className="max-w-96 rounded-lg border border-transparent bg-white p-4 shadow-lg dark:border-gray-800 dark:bg-gray-800/60"
+      className="max-w-96 rounded-lg border border-transparent bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
       <h3 className="mb-2 font-medium">{step.title}</h3>
       <p className="text-sm text-gray-600 dark:text-gray-400">{step.content}</p>

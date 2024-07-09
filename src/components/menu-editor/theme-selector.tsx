@@ -272,9 +272,9 @@ export default function ThemeSelector({
             </button>
           </PopoverTrigger>
           <PopoverAnchor asChild>
-            <div className="-ml-44 size-0" />
+            <div className="-ml-40 size-0" />
           </PopoverAnchor>
-          <PopoverContent className="-mt-20">
+          <PopoverContent className="-mt-20 max-w-[250px]">
             <Label className="mb-4 block">Tipografías</Label>
             <div className="relative min-h-[400px]">
               <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
@@ -317,12 +317,12 @@ export default function ThemeSelector({
           <Popover>
             <PopoverTrigger asChild>
               <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <span className="text-sm font-medium">
                     {selectedColorTheme?.name}
                   </span>
                   <div className="flex flex-row items-center gap-2">
-                    <div className="isolate flex -space-x-1.5 overflow-hidden">
+                    <div className="isolate flex overflow-hidden">
                       <ColorChip color={selectedColorTheme?.surfaceColor} />
                       <ColorChip color={selectedColorTheme?.brandColor} />
                       <ColorChip color={selectedColorTheme?.accentColor} />
@@ -335,9 +335,9 @@ export default function ThemeSelector({
               </button>
             </PopoverTrigger>
             <PopoverAnchor asChild>
-              <div className="-ml-32 size-0" />
+              <div className="-ml-28 size-0" />
             </PopoverAnchor>
-            <PopoverContent className="-mt-20 max-w-[200px]">
+            <PopoverContent className="-mt-20 max-w-[170px]">
               <Label className="mb-4 block">Colores</Label>
               <div className="relative h-[300px]">
                 <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
@@ -356,11 +356,11 @@ export default function ThemeSelector({
                             value={theme.id}
                             className="sr-only"
                           />
-                          <div className="flex w-full flex-col justify-center gap-1 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
-                            <span className="text-sm font-medium">
+                          <div className="flex w-full flex-col justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
+                            <span className="text-xs font-medium">
                               {theme.name}
                             </span>
-                            <div className="isolate flex -space-x-1 overflow-hidden">
+                            <div className="isolate mx-auto flex overflow-hidden">
                               <ColorChip color={theme.surfaceColor} />
                               <ColorChip color={theme.brandColor} />
                               <ColorChip color={theme.accentColor} />
@@ -456,7 +456,7 @@ export default function ThemeSelector({
 function ColorChip({ color }: { color: string | undefined }) {
   return (
     <div
-      className="h-6 w-6 rounded-full border border-black/10"
+      className="h-6 w-4 border-y border-black/20 first:rounded-l first:border-l last:rounded-r last:border-r dark:border-white/20"
       style={{
         backgroundColor: color
       }}
