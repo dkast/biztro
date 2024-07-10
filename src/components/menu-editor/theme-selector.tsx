@@ -456,7 +456,7 @@ export default function ThemeSelector({
 function ColorChip({ color }: { color: string | undefined }) {
   return (
     <div
-      className="h-6 w-4 border-y border-black/20 first:rounded-l first:border-l last:rounded-r last:border-r dark:border-white/20"
+      className="h-6 w-4 border-y border-black/20 first:rounded-l first:border-l last:rounded-r last:border-r dark:border-white/10"
       style={{
         backgroundColor: color
       }}
