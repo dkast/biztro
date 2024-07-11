@@ -108,6 +108,9 @@ export default function Workbench({
                   "mx-auto pb-24 pt-10 transition-all duration-300 ease-in-out"
                 )}
               >
+                <span className="block p-2 text-center text-sm text-gray-400">
+                  {frameSize === FrameSize.DESKTOP ? "Escritorio" : "Móvil"}
+                </span>
                 <div
                   className={cn(
                     frameSize === FrameSize.DESKTOP
@@ -125,9 +128,6 @@ export default function Workbench({
                     </Element>
                   </Frame>
                 </div>
-                <span className="block p-2 text-center text-sm text-gray-400">
-                  {frameSize === FrameSize.DESKTOP ? "Escritorio" : "Móvil"}
-                </span>
               </div>
               <FloatingBar />
             </div>

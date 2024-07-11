@@ -136,7 +136,8 @@ export default async function SitePage({
               month: "long",
               day: "numeric",
               hour: "numeric",
-              minute: "numeric"
+              minute: "numeric",
+              timeZone: "CST"
             }).format(new Date(siteMenu.publishedAt))
           : ""}
       </p>
