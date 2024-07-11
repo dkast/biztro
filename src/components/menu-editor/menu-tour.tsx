@@ -42,7 +42,9 @@ const steps: Step[] = [
     target: ".editor-settings",
     title: "Ajustes",
     content:
-      "En esta sección puedes cambiar la configuración de tu menú, como el tamaño del texto y la alineación de los elementos."
+      "En esta sección puedes cambiar la configuración de tu menú, como el tamaño del texto y la alineación de los elementos.",
+    placement: "left",
+    placementBeacon: "left-start"
   },
   {
     target: ".editor-published",

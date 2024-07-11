@@ -4,7 +4,6 @@ import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Organization, Prisma } from "@prisma/client"
 import { useAtom, useSetAtom } from "jotai"
-import { Palette, Settings2 } from "lucide-react"
 import lz from "lzutf8"
 
 import Header from "@/components/dashboard/header"
@@ -27,7 +26,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup
 } from "@/components/ui/resizable"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
@@ -122,6 +121,7 @@ export default function Workbench({
                   <Frame data={json}>
                     <Element is={ContainerBlock} canvas>
                       <HeaderBlock
+                        layout="classic"
                         organization={organization}
                         location={location ?? undefined}
                       />
@@ -139,30 +139,12 @@ export default function Workbench({
             maxSize={25}
             className="flex"
           >
-            <Tabs defaultValue="theme" className="flex grow flex-col">
-              <TabsList className="m-2 grid grid-cols-2 rounded-lg">
-                <TabsTrigger
-                  value="theme"
-                  className="flex flex-row items-center gap-1 rounded-md"
-                >
-                  <Palette className="hidden size-3.5 lg:block" />
-                  <span>Tema</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="settings"
-                  className="editor-settings flex flex-row items-center gap-1 rounded-md"
-                >
-                  <Settings2 className="hidden size-3.5 lg:block" />
-                  <span>Ajustes</span>
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="theme" className="grow">
+            <div className="flex w-full flex-col">
+              <ScrollArea className="h-full">
                 <ThemeSelector menu={menu} />
-              </TabsContent>
-              <TabsContent value="settings">
                 <SettingsPanel />
-              </TabsContent>
-            </Tabs>
+              </ScrollArea>
+            </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </Editor>

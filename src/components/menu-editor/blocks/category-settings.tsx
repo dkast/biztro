@@ -41,7 +41,7 @@ export default function CategorySettings() {
     showImage: node.data.props.showImage
   }))
   return (
-    <ScrollArea className="h-[98%]">
+    <>
       <SideSection title="Categoría">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
@@ -244,6 +244,6 @@ export default function CategorySettings() {
           </dd>
         </div>
       </SideSection>
-    </ScrollArea>
+    </>
   )
 }
