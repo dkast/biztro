@@ -252,7 +252,7 @@ export const createColorTheme = action(
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
-          message = "Ya existe un tema con ese nombre"
+          message = "Ya existe un tema personalizado"
         }
       } else if (error instanceof Error) {
         message = error.message
@@ -292,7 +292,7 @@ export const updateColorTheme = action(
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
-          message = "Ya existe un tema con ese nombre"
+          message = "Ya existe un tema personalizado"
         }
       } else if (error instanceof Error) {
         message = error.message
