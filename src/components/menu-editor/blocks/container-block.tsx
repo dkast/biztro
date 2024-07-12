@@ -20,7 +20,7 @@ export default function ContainerBlock({
 
   return (
     <div
-      className="relative h-dvh w-full grow"
+      className="relative w-full grow"
       ref={ref => {
         if (ref) {
           connect(ref)
@@ -41,7 +41,7 @@ export default function ContainerBlock({
             backgroundImage === "none" || !backgroundImage?.startsWith("bg")
               ? "none"
               : `url(/bg/${backgroundImage})`,
-          backgroundSize: "auto",
+          backgroundSize: "cover",
           backgroundPosition: backgroundImage?.split("-")[1]
         }}
       >

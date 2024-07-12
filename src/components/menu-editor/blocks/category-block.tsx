@@ -64,7 +64,7 @@ export default function CategoryBlock({
       <div
         className={cn(
           "rounded-xl p-3",
-          backgroundMode === "dark" && "bg-black/70 backdrop-blur-lg",
+          backgroundMode === "dark" && "bg-black/50 backdrop-blur-lg",
           backgroundMode === "light" && "bg-white/70 backdrop-blur-lg"
         )}
       >
@@ -183,7 +183,7 @@ export default function CategoryBlock({
 CategoryBlock.craft = {
   displayName: "Categoría",
   props: {
-    backgroundMode: "light",
+    backgroundMode: "none",
     categoryFontSize: 20,
     categoryColor: { r: 38, g: 50, b: 56, a: 1 },
     categoryFontWeight: "700",

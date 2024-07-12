@@ -309,7 +309,7 @@ function SocialMedia({
   if (!isVisible || !location) return null
 
   return (
-    <div className="absolute right-0 top-0 rounded-bl backdrop-blur-sm has-[a]:bg-white/75">
+    <div className="absolute right-0 top-0 rounded-bl-lg backdrop-blur-sm has-[a]:bg-white/75">
       <div className="flex flex-row items-center gap-3 p-2">
         {location?.facebook && (
           <a
