@@ -121,7 +121,7 @@ export default function HeaderBlock({
               isBannerVisible={showBanner ?? false}
             />
             {showBanner && (
-              <GradientBlur className="inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent to-black/50" />
+              <GradientBlur className="inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent to-black/30" />
             )}
           </div>
           <div className="z-20 flex flex-col items-center gap-2">

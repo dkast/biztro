@@ -20,7 +20,7 @@ export default function ContainerBlock({
 
   return (
     <div
-      className="w-full grow pb-4"
+      className="relative h-dvh w-full grow"
       ref={ref => {
         if (ref) {
           connect(ref)
@@ -29,10 +29,22 @@ export default function ContainerBlock({
       style={{
         backgroundColor: `rgb(${Object.values(backgroundColor ?? { r: 255, g: 255, b: 255, a: 1 })})`,
         backgroundImage:
-          backgroundImage === "none" ? "none" : `url(/${backgroundImage}.svg)`
+          backgroundImage === "none" || backgroundImage?.startsWith("bg")
+            ? "none"
+            : `url(/bg/${backgroundImage})`
       }}
     >
-      <main className="mx-auto flex h-full max-w-screen-md flex-col">
+      <main
+        className="mx-auto flex h-full max-w-screen-md flex-col"
+        style={{
+          backgroundImage:
+            backgroundImage === "none" || !backgroundImage?.startsWith("bg")
+              ? "none"
+              : `url(/bg/${backgroundImage})`,
+          backgroundSize: "auto",
+          backgroundPosition: backgroundImage?.split("-")[1]
+        }}
+      >
         {children}
       </main>
     </div>
