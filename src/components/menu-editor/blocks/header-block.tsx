@@ -58,7 +58,7 @@ export default function HeaderBlock({
           isBannerVisible={showBanner ?? false}
           className="relative"
         />
-        <div className="p-4">
+        <div className="px-4 pb-8 pt-4">
           {/* Logo and organization name */}
           <div
             className={cn(
@@ -114,7 +114,7 @@ export default function HeaderBlock({
   const renderModern = () => {
     return (
       <>
-        <div className="flex items-center justify-center pb-2 pt-8">
+        <div className="flex items-center justify-center pb-6 pt-8">
           <div className="absolute inset-0 origin-top">
             <Banner
               banner={organization.banner}
