@@ -61,15 +61,9 @@ export default function CategoryBlock({
       }}
       className="px-2 pb-2"
     >
-      <div
-        className={cn(
-          "rounded-xl p-3",
-          backgroundMode === "dark" && "bg-black/50 backdrop-blur-lg",
-          backgroundMode === "light" && "bg-white/70 backdrop-blur-lg"
-        )}
-      >
+      <div>
         <h2
-          className="mb-4"
+          className="mb-2"
           style={{
             fontFamily: categoryFontFamily,
             fontSize: `${categoryFontSize}px`,
@@ -85,7 +79,14 @@ export default function CategoryBlock({
           {data.menuItems.map(item => {
             const hasVariants = item.variants.length > 1
             return (
-              <div key={item.id}>
+              <div
+                key={item.id}
+                className={cn(
+                  "rounded-xl p-3",
+                  backgroundMode === "dark" && "bg-black/30 backdrop-blur-lg",
+                  backgroundMode === "light" && "bg-white/30 backdrop-blur-lg"
+                )}
+              >
                 <div
                   className={cn(
                     "flex flex-row justify-between gap-2",

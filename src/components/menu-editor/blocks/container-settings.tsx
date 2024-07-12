@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { BgImages } from "@/lib/types"
 
 export default function ContainerSettings() {
   const {
@@ -50,8 +51,11 @@ export default function ContainerSettings() {
               </SelectGroup>
               <SelectGroup>
                 <SelectLabel>Imágenes</SelectLabel>
-                <SelectItem value="bg-top-tacos-1.jpg">Tacos</SelectItem>
-                <SelectItem value="bg-center-pizza-1.jpg">Italiano</SelectItem>
+                {BgImages.map(image => (
+                  <SelectItem key={image.image} value={image.image}>
+                    {image.name}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>

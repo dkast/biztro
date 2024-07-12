@@ -4,7 +4,6 @@ import { AlignCenter, AlignLeft, AlignRight } from "lucide-react"
 import type { CategoryBlockProps } from "@/components/menu-editor/blocks/category-block"
 import SideSection from "@/components/menu-editor/side-section"
 import { Label } from "@/components/ui/label"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Select,
   SelectContent,
