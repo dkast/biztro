@@ -63,7 +63,7 @@ export default function CategoryBlock({
     >
       <div>
         <h2
-          className="mb-2"
+          className="p-2"
           style={{
             fontFamily: categoryFontFamily,
             fontSize: `${categoryFontSize}px`,

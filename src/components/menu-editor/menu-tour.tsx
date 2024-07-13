@@ -26,6 +26,13 @@ const steps: Step[] = [
     placement: "right"
   },
   {
+    target: ".editor-layers",
+    title: "Capas",
+    content:
+      "Las capas te permiten organizar los elementos de tu menú. Puedes cambiar el orden de las capas arrastrándolas arriba o abajo. Puedes renombrar las capas haciendo doble clic en el nombre.",
+    placement: "right"
+  },
+  {
     target: ".editor-theme",
     title: "Tema",
     content: (
