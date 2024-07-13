@@ -136,7 +136,16 @@ export default function CategoryBlock({
                           key={variant.id}
                           className="grid grid-cols-2 gap-1 text-right"
                         >
-                          <span className="text-sm">{variant.name}</span>
+                          <FontWrapper fontFamily={descriptionFontFamily}>
+                            <span
+                              className="text-sm"
+                              style={{
+                                color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                              }}
+                            >
+                              {variant.name}
+                            </span>
+                          </FontWrapper>
                           <FontWrapper fontFamily={priceFontFamily}>
                             <span
                               style={{

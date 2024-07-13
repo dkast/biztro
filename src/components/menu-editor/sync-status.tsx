@@ -245,11 +245,11 @@ export default function SyncStatus({
   return (
     <>
       {syncReq && (
-        <div className="m-2 rounded-lg bg-violet-100 px-4 py-2">
+        <div className="m-2 rounded-lg bg-violet-100 px-4 py-2 dark:bg-violet-900/50">
           <div className="flex justify-between">
             <div className="flex items-center gap-x-3">
               <RefreshCcw className="size-4 text-violet-400" />
-              <span className="text-sm text-violet-700">
+              <span className="text-sm text-violet-700 dark:text-violet-300">
                 La información del negocio o productos ha cambiado, puedes
                 sincronizar para aplicar los últimos cambios
               </span>
