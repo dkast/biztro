@@ -197,7 +197,7 @@ export default function ItemForm({
                 type="button"
                 variant="secondary"
                 size="sm"
-                onClick={() => router.push("/dashboard/menu-items")}
+                onClick={() => router.back()}
                 ref={saveRef}
               >
                 Cancelar

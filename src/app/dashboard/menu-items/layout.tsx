@@ -21,8 +21,8 @@ export default function Layout({
   return (
     <>
       <SecondaryNav items={SecondaryNavItems} />
+      <div className="relative w-full">{modal}</div>
       <div className="flex grow pb-4">{children}</div>
-      {modal}
     </>
   )
 }
