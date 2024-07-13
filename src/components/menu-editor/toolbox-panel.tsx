@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useEditor } from "@craftjs/core"
 import type { Organization, Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
@@ -40,6 +40,11 @@ export default function ToolboxPanel({
     queryFn: () => getThemes({ themeType: "COLOR" })
   })
 
+  const [selectedColorTheme, setSelectedColorTheme] =
+    useState<(typeof colorThemes)[0]>()
+  const [selectedFontTheme, setSelectedFontTheme] =
+    useState<(typeof fontThemes)[0]>()
+
   useEffect(() => {
     if (userColorThemes) {
       for (const theme of userColorThemes) {
@@ -54,14 +59,11 @@ export default function ToolboxPanel({
         }
       }
     }
-  }, [userColorThemes])
+    setSelectedColorTheme(colorThemes.find(theme => theme.id === colorThemeId))
+    setSelectedFontTheme(fontThemes.find(theme => theme.name === fontThemeId))
+  }, [colorThemeId, fontThemeId, userColorThemes])
 
-  const selectedFontTheme = fontThemes.find(theme => theme.name === fontThemeId)
-  const selectedColorTheme = colorThemes.find(
-    theme => theme.id === colorThemeId
-  )
-
-  if (!selectedFontTheme || !selectedColorTheme)
+  if (!selectedFontTheme || !selectedColorTheme) {
     return (
       <Alert variant="destructive" className="m-2 w-auto text-sm">
         <AlertTitle>Error</AlertTitle>
@@ -70,6 +72,7 @@ export default function ToolboxPanel({
         </AlertDescription>
       </Alert>
     )
+  }
 
   return (
     <>
@@ -84,6 +87,7 @@ export default function ToolboxPanel({
                     ref,
                     <CategoryBlock
                       data={category}
+                      backgroundMode="none"
                       categoryFontFamily={selectedFontTheme.fontDisplay}
                       itemFontFamily={selectedFontTheme.fontDisplay}
                       priceFontFamily={selectedFontTheme.fontText}
@@ -130,6 +134,7 @@ export default function ToolboxPanel({
               connectors.create(
                 ref,
                 <HeaderBlock
+                  layout="classic"
                   organization={organization}
                   location={location ?? undefined}
                   accentColor={hexToRgba(selectedColorTheme.brandColor)}
