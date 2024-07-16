@@ -76,7 +76,7 @@ export const RenderNode = ({ render }: { render: unknown }) => {
         ? ReactDOM.createPortal(
             <div
               // ref={currentRef}
-              className="fixed z-40 -mt-7 flex h-6 items-center gap-3 rounded bg-gray-800 px-2 py-2 text-xs text-white"
+              className="fixed z-40 -mt-7 flex h-6 items-center gap-3 rounded bg-gray-800 px-2 py-2 text-xs text-white dark:bg-gray-900"
               style={{
                 left: getPos().left,
                 top: getPos().top
