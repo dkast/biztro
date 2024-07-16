@@ -59,7 +59,7 @@ export default function CategoryBlock({
           connect(ref)
         }
       }}
-      className="px-2 pb-2"
+      className="p-2"
     >
       <div>
         <h2

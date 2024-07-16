@@ -11,6 +11,7 @@ import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
+import ItemBlock from "@/components/menu-editor/blocks/item-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import FloatingBar from "@/components/menu-editor/floating-bar"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
@@ -27,7 +28,10 @@ import {
   ResizablePanelGroup
 } from "@/components/ui/resizable"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import type { getCategoriesWithItems } from "@/server/actions/item/queries"
+import type {
+  getCategoriesWithItems,
+  getMenuItemsWithoutCategory
+} from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import { colorThemeAtom, fontThemeAtom, frameSizeAtom } from "@/lib/atoms"
@@ -38,12 +42,14 @@ export default function Workbench({
   menu,
   organization,
   location,
-  categories
+  categories,
+  soloItems
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
   organization: Organization
   location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
+  soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
 }) {
   // Initialize the atoms for the editor
   const [frameSize] = useAtom(frameSizeAtom)
@@ -66,7 +72,8 @@ export default function Workbench({
           HeaderBlock,
           HeadingElement,
           TextElement,
-          CategoryBlock
+          CategoryBlock,
+          ItemBlock
         }}
         onRender={RenderNode}
       >
@@ -85,6 +92,7 @@ export default function Workbench({
                   organization={organization}
                   location={location}
                   categories={categories}
+                  soloItems={soloItems}
                 />
               </ResizablePanel>
               <ResizableHandle />

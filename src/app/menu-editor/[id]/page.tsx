@@ -7,7 +7,10 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import Workbench from "@/components/menu-editor/workbench"
-import { getCategoriesWithItems } from "@/server/actions/item/queries"
+import {
+  getCategoriesWithItems,
+  getMenuItemsWithoutCategory
+} from "@/server/actions/item/queries"
 import { getDefaultLocation } from "@/server/actions/location/queries"
 import { getMenuById, getThemes } from "@/server/actions/menu/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
@@ -49,6 +52,7 @@ export default async function MenuEditorPage({
   }
 
   const categories = await getCategoriesWithItems()
+  const soloItems = await getMenuItemsWithoutCategory()
   const location = await getDefaultLocation()
   const menu = await getMenuById(params.id)
 
@@ -63,6 +67,7 @@ export default async function MenuEditorPage({
         organization={currentOrg}
         location={location}
         categories={categories}
+        soloItems={soloItems}
       />
     </HydrationBoundary>
   )

@@ -142,3 +142,28 @@ export async function getCategoriesWithItems() {
   //   }
   // )()
 }
+
+export async function getMenuItemsWithoutCategory() {
+  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  if (!currentOrg) {
+    return []
+  }
+
+  return await prisma.menuItem.findMany({
+    where: {
+      organizationId: currentOrg,
+      categoryId: null,
+      status: "ACTIVE"
+    },
+    include: {
+      variants: {
+        orderBy: {
+          price: "asc"
+        }
+      }
+    },
+    orderBy: {
+      name: "asc"
+    }
+  })
+}
