@@ -20,7 +20,7 @@ export default function ContainerBlock({
 
   return (
     <div
-      className="relative w-full grow"
+      className="relative flex grow"
       ref={ref => {
         if (ref) {
           connect(ref)
@@ -35,7 +35,7 @@ export default function ContainerBlock({
       }}
     >
       <main
-        className="mx-auto flex h-full max-w-screen-md flex-col"
+        className="mx-auto flex max-w-screen-md grow flex-col"
         style={{
           backgroundImage:
             backgroundImage === "none" || !backgroundImage?.startsWith("bg")

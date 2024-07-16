@@ -75,7 +75,9 @@ export default function CategoryBlock({
         >
           {data.name}
         </h2>
-        <div className="space-y-4">
+        <div
+          className={cn(backgroundMode === "none" ? "space-y-0" : "space-y-4")}
+        >
           {data.menuItems.map(item => {
             const hasVariants = item.variants.length > 1
             return (
@@ -84,7 +86,7 @@ export default function CategoryBlock({
                 className={cn(
                   "rounded-xl p-3",
                   backgroundMode === "dark" && "bg-black/30 backdrop-blur-lg",
-                  backgroundMode === "light" && "bg-white/30 backdrop-blur-lg"
+                  backgroundMode === "light" && "bg-white/50 backdrop-blur-lg"
                 )}
               >
                 <div
