@@ -13,7 +13,7 @@ export default function SettingsPanel() {
   })
 
   return (
-    <>
+    <div className="editor-settings">
       {active && related?.settings && React.createElement(related.settings)}
       {!active && (
         <div className="flex flex-col items-center justify-center gap-2 px-5 py-12 text-center">
@@ -25,6 +25,6 @@ export default function SettingsPanel() {
           </span>
         </div>
       )}
-    </>
+    </div>
   )
 }

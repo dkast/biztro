@@ -3,16 +3,25 @@ import { useNode } from "@craftjs/core"
 import type { HeaderBlockProps } from "@/components/menu-editor/blocks/header-block"
 import SideSection from "@/components/menu-editor/side-section"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 
 export default function HeaderSettings() {
   const {
     actions: { setProp },
+    layout,
     showBanner,
     showLogo,
     showAddress,
     showSocialMedia
   } = useNode(node => ({
+    layout: node.data.props.layout,
     accentColor: node.data.props.accentColor,
     showBanner: node.data.props.showBanner,
     showLogo: node.data.props.showLogo,
@@ -21,6 +30,25 @@ export default function HeaderSettings() {
   }))
   return (
     <>
+      <SideSection title="Diseño">
+        <Select
+          value={layout}
+          onValueChange={value =>
+            setProp(
+              (props: HeaderBlockProps) =>
+                (props.layout = value as "classic" | "modern")
+            )
+          }
+        >
+          <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+            <SelectValue placeholder="Selecciona" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="classic">Clásico</SelectItem>
+            <SelectItem value="modern">Moderno</SelectItem>
+          </SelectContent>
+        </Select>
+      </SideSection>
       <SideSection title="Imágenes">
         <div className="grid grid-cols-2 items-center gap-y-2">
           <dt>

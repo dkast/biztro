@@ -4,7 +4,6 @@ import { AlignCenter, AlignLeft, AlignRight } from "lucide-react"
 import type { CategoryBlockProps } from "@/components/menu-editor/blocks/category-block"
 import SideSection from "@/components/menu-editor/side-section"
 import { Label } from "@/components/ui/label"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Select,
   SelectContent,
@@ -19,6 +18,7 @@ import { FONT_SIZES } from "@/lib/types"
 export default function CategorySettings() {
   const {
     actions: { setProp },
+    backgroundMode,
     categoryFontSize,
     categoryFontWeight,
     categoryTextAlign,
@@ -28,6 +28,7 @@ export default function CategorySettings() {
     priceFontWeight,
     showImage
   } = useNode(node => ({
+    backgroundMode: node.data.props.backgroundMode,
     categoryFontSize: node.data.props.categoryFontSize,
     categoryColor: node.data.props.categoryColor,
     categoryFontWeight: node.data.props.categoryFontWeight,
@@ -41,7 +42,34 @@ export default function CategorySettings() {
     showImage: node.data.props.showImage
   }))
   return (
-    <ScrollArea className="h-[98%]">
+    <>
+      <SideSection title="General">
+        <div className="grid grid-cols-3 items-center gap-2">
+          <dt>
+            <Label size="sm">Fondo</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={backgroundMode}
+              onValueChange={value =>
+                setProp(
+                  (props: CategoryBlockProps) =>
+                    (props.backgroundMode = value as "dark" | "light" | "none")
+                )
+              }
+            >
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Ninguno</SelectItem>
+                <SelectItem value="light">Claro</SelectItem>
+                <SelectItem value="dark">Oscuro</SelectItem>
+              </SelectContent>
+            </Select>
+          </dd>
+        </div>
+      </SideSection>
       <SideSection title="Categoría">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
@@ -225,7 +253,7 @@ export default function CategorySettings() {
           </dd>
         </div>
       </SideSection>
-      <SideSection title="Imágen">
+      <SideSection title="Imágen Producto">
         <div className="grid grid-cols-3 items-center gap-y-2">
           <dt>
             <Label size="sm">Mostrar</Label>
@@ -244,6 +272,6 @@ export default function CategorySettings() {
           </dd>
         </div>
       </SideSection>
-    </ScrollArea>
+    </>
   )
 }

@@ -5,10 +5,12 @@ import WebFont from "webfontloader"
 
 export default function FontWrapper({
   fontFamily,
-  children
+  children,
+  className
 }: {
   fontFamily: string | undefined
   children: React.ReactNode
+  className?: string
 }) {
   useEffect(() => {
     if (!fontFamily) return
@@ -24,12 +26,6 @@ export default function FontWrapper({
       WebFont.load({
         google: {
           families: [`${fontFamily}:300,400,500,700`]
-        },
-        fontactive: function (_familyName, _fvd) {
-          // console.log(familyName + " has loaded.")
-        },
-        fontinactive: function (_familyName, _fvd) {
-          // console.log(familyName + " failed to load.")
         }
       })
     }
@@ -37,6 +33,7 @@ export default function FontWrapper({
 
   return (
     <div
+      className={className}
       style={{
         fontFamily: `'${fontFamily}'`
       }}

@@ -154,7 +154,16 @@ export default function ThemeSelector({
               return (props = Object.assign(props, {
                 categoryColor: hexToRgba(selectedTheme.accentColor),
                 itemColor: hexToRgba(selectedTheme.textColor),
-                priceColor: hexToRgba(selectedTheme.brandColor),
+                priceColor: hexToRgba(selectedTheme.accentColor),
+                descriptionColor: hexToRgba(selectedTheme.mutedColor)
+              }))
+            })
+            break
+          case "ItemBlock":
+            setIgnoreProp(key, props => {
+              return (props = Object.assign(props, {
+                itemColor: hexToRgba(selectedTheme.textColor),
+                priceColor: hexToRgba(selectedTheme.accentColor),
                 descriptionColor: hexToRgba(selectedTheme.mutedColor)
               }))
             })
@@ -253,7 +262,7 @@ export default function ThemeSelector({
   }
 
   return (
-    <div className="editor-theme flex flex-col py-3">
+    <div className="editor-theme flex flex-col">
       <SideSection title="Tipografía">
         <Popover>
           <PopoverTrigger asChild>
@@ -317,10 +326,7 @@ export default function ThemeSelector({
           <Popover>
             <PopoverTrigger asChild>
               <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
-                <div className="space-y-2">
-                  <span className="text-sm font-medium">
-                    {selectedColorTheme?.name}
-                  </span>
+                <div className="">
                   <div className="flex flex-row items-center gap-2">
                     <div className="isolate flex overflow-hidden">
                       <ColorChip color={selectedColorTheme?.surfaceColor} />
@@ -384,7 +390,7 @@ export default function ThemeSelector({
               onOpenChange={setOpenColorThemeEditor}
             >
               <SheetTrigger asChild>
-                <Button variant="secondary" className="w-full">
+                <Button variant="secondary" size="xs" className="w-full">
                   Personalizar tema
                 </Button>
               </SheetTrigger>

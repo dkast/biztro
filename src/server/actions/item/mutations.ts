@@ -1,7 +1,7 @@
 "use server"
 
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
-import { Prisma } from "@prisma/client"
+import { Prisma, type Variant } from "@prisma/client"
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 import { z } from "zod"
@@ -118,7 +118,7 @@ export const updateItem = action(
           status,
           categoryId,
           variants: {
-            upsert: variants.map(variant => ({
+            upsert: variants.map((variant: Variant) => ({
               where: { id: variant.id },
               create: {
                 name: variant.name,

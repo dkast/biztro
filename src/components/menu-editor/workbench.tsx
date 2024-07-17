@@ -4,7 +4,6 @@ import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Organization, Prisma } from "@prisma/client"
 import { useAtom, useSetAtom } from "jotai"
-import { Palette, Settings2 } from "lucide-react"
 import lz from "lzutf8"
 
 import Header from "@/components/dashboard/header"
@@ -12,6 +11,7 @@ import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
+import ItemBlock from "@/components/menu-editor/blocks/item-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import FloatingBar from "@/components/menu-editor/floating-bar"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
@@ -27,8 +27,11 @@ import {
   ResizablePanel,
   ResizablePanelGroup
 } from "@/components/ui/resizable"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { getCategoriesWithItems } from "@/server/actions/item/queries"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import type {
+  getCategoriesWithItems,
+  getMenuItemsWithoutCategory
+} from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import { colorThemeAtom, fontThemeAtom, frameSizeAtom } from "@/lib/atoms"
@@ -39,12 +42,14 @@ export default function Workbench({
   menu,
   organization,
   location,
-  categories
+  categories,
+  soloItems
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
   organization: Organization
   location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
+  soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
 }) {
   // Initialize the atoms for the editor
   const [frameSize] = useAtom(frameSizeAtom)
@@ -67,7 +72,8 @@ export default function Workbench({
           HeaderBlock,
           HeadingElement,
           TextElement,
-          CategoryBlock
+          CategoryBlock,
+          ItemBlock
         }}
         onRender={RenderNode}
       >
@@ -86,6 +92,7 @@ export default function Workbench({
                   organization={organization}
                   location={location}
                   categories={categories}
+                  soloItems={soloItems}
                 />
               </ResizablePanel>
               <ResizableHandle />
@@ -122,6 +129,7 @@ export default function Workbench({
                   <Frame data={json}>
                     <Element is={ContainerBlock} canvas>
                       <HeaderBlock
+                        layout="classic"
                         organization={organization}
                         location={location ?? undefined}
                       />
@@ -139,30 +147,12 @@ export default function Workbench({
             maxSize={25}
             className="flex"
           >
-            <Tabs defaultValue="theme" className="flex grow flex-col">
-              <TabsList className="m-2 grid grid-cols-2 rounded-lg">
-                <TabsTrigger
-                  value="theme"
-                  className="flex flex-row items-center gap-1 rounded-md"
-                >
-                  <Palette className="hidden size-3.5 lg:block" />
-                  <span>Tema</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="settings"
-                  className="editor-settings flex flex-row items-center gap-1 rounded-md"
-                >
-                  <Settings2 className="hidden size-3.5 lg:block" />
-                  <span>Ajustes</span>
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="theme" className="grow">
+            <div className="flex w-full flex-col">
+              <ScrollArea className="h-full">
                 <ThemeSelector menu={menu} />
-              </TabsContent>
-              <TabsContent value="settings">
                 <SettingsPanel />
-              </TabsContent>
-            </Tabs>
+              </ScrollArea>
+            </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </Editor>

@@ -26,6 +26,13 @@ const steps: Step[] = [
     placement: "right"
   },
   {
+    target: ".editor-layers",
+    title: "Capas",
+    content:
+      "Las capas te permiten organizar los elementos de tu menú. Puedes cambiar el orden de las capas arrastrándolas arriba o abajo. Puedes renombrar las capas haciendo doble clic en el nombre.",
+    placement: "right"
+  },
+  {
     target: ".editor-theme",
     title: "Tema",
     content: (
@@ -42,7 +49,9 @@ const steps: Step[] = [
     target: ".editor-settings",
     title: "Ajustes",
     content:
-      "En esta sección puedes cambiar la configuración de tu menú, como el tamaño del texto y la alineación de los elementos."
+      "En esta sección puedes cambiar la configuración de tu menú, como el tamaño del texto y la alineación de los elementos.",
+    placement: "left",
+    placementBeacon: "left-start"
   },
   {
     target: ".editor-published",

@@ -1,0 +1,193 @@
+import { useNode } from "@craftjs/core"
+
+import type { CategoryBlockProps } from "@/components/menu-editor/blocks/category-block"
+import SideSection from "@/components/menu-editor/side-section"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
+import { FONT_SIZES } from "@/lib/types"
+
+export default function ItemSettings() {
+  const {
+    actions: { setProp },
+    backgroundMode,
+    itemFontSize,
+    itemFontWeight,
+    priceFontSize,
+    priceFontWeight,
+    showImage
+  } = useNode(node => ({
+    backgroundMode: node.data.props.backgroundMode,
+    categoryFontSize: node.data.props.categoryFontSize,
+    categoryColor: node.data.props.categoryColor,
+    categoryFontWeight: node.data.props.categoryFontWeight,
+    categoryTextAlign: node.data.props.categoryTextAlign,
+    itemFontSize: node.data.props.itemFontSize,
+    itemColor: node.data.props.itemColor,
+    itemFontWeight: node.data.props.itemFontWeight,
+    priceFontSize: node.data.props.priceFontSize,
+    priceColor: node.data.props.priceColor,
+    priceFontWeight: node.data.props.priceFontWeight,
+    showImage: node.data.props.showImage
+  }))
+  return (
+    <>
+      <SideSection title="General">
+        <div className="grid grid-cols-3 items-center gap-2">
+          <dt>
+            <Label size="sm">Fondo</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={backgroundMode}
+              onValueChange={value =>
+                setProp(
+                  (props: CategoryBlockProps) =>
+                    (props.backgroundMode = value as "dark" | "light" | "none")
+                )
+              }
+            >
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Ninguno</SelectItem>
+                <SelectItem value="light">Claro</SelectItem>
+                <SelectItem value="dark">Oscuro</SelectItem>
+              </SelectContent>
+            </Select>
+          </dd>
+        </div>
+      </SideSection>
+      <SideSection title="Producto">
+        <div className="grid grid-cols-3 items-center gap-2">
+          <dt>
+            <Label size="sm">Tamaño</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={itemFontSize.toString()}
+              onValueChange={value =>
+                setProp(
+                  (props: CategoryBlockProps) =>
+                    (props.itemFontSize = parseInt(value))
+                )
+              }
+            >
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                {FONT_SIZES.map(size => (
+                  <SelectItem key={size} value={size.toString()}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </dd>
+          <dt>
+            <Label size="sm">Estilo</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={itemFontWeight}
+              onValueChange={value =>
+                setProp(
+                  (props: CategoryBlockProps) => (props.itemFontWeight = value)
+                )
+              }
+            >
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="300">Light</SelectItem>
+                <SelectItem value="400">Regular</SelectItem>
+                <SelectItem value="500">Medium</SelectItem>
+                <SelectItem value="700">Negrita</SelectItem>
+              </SelectContent>
+            </Select>
+          </dd>
+        </div>
+      </SideSection>
+      <SideSection title="Precio">
+        <div className="grid grid-cols-3 items-center gap-2">
+          <dt>
+            <Label size="sm">Tamaño</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={priceFontSize.toString()}
+              onValueChange={value =>
+                setProp(
+                  (props: CategoryBlockProps) =>
+                    (props.priceFontSize = parseInt(value))
+                )
+              }
+            >
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                {FONT_SIZES.map(size => (
+                  <SelectItem key={size} value={size.toString()}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </dd>
+          <dt>
+            <Label size="sm">Estilo</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={priceFontWeight}
+              onValueChange={value =>
+                setProp(
+                  (props: CategoryBlockProps) => (props.priceFontWeight = value)
+                )
+              }
+            >
+              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="300">Light</SelectItem>
+                <SelectItem value="400">Regular</SelectItem>
+                <SelectItem value="500">Medium</SelectItem>
+                <SelectItem value="700">Negrita</SelectItem>
+              </SelectContent>
+            </Select>
+          </dd>
+        </div>
+      </SideSection>
+      <SideSection title="Imágen Producto">
+        <div className="grid grid-cols-3 items-center gap-y-2">
+          <dt>
+            <Label size="sm">Mostrar</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Switch
+              className="scale-75"
+              checked={showImage}
+              onCheckedChange={checked => {
+                setProp(
+                  (props: Required<CategoryBlockProps>) =>
+                    (props.showImage = checked)
+                )
+              }}
+            />
+          </dd>
+        </div>
+      </SideSection>
+    </>
+  )
+}

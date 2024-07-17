@@ -6,10 +6,13 @@ import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { BgImages } from "@/lib/types"
 
 export default function ContainerSettings() {
   const {
@@ -37,12 +40,23 @@ export default function ContainerSettings() {
               <SelectValue placeholder="Selecciona" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">Sólido</SelectItem>
-              <SelectItem value="noise">Textura</SelectItem>
-              <SelectItem value="topography">Terreno</SelectItem>
-              <SelectItem value="food">Snacks</SelectItem>
-              <SelectItem value="clouds">Nubes</SelectItem>
-              <SelectItem value="leaf">Hojas</SelectItem>
+              <SelectGroup>
+                <SelectLabel>Patrones</SelectLabel>
+                <SelectItem value="none">Sólido</SelectItem>
+                <SelectItem value="noise.svg">Textura</SelectItem>
+                <SelectItem value="topography.svg">Terreno</SelectItem>
+                <SelectItem value="food.svg">Snacks</SelectItem>
+                <SelectItem value="clouds.svg">Nubes</SelectItem>
+                <SelectItem value="leaf.svg">Hojas</SelectItem>
+              </SelectGroup>
+              <SelectGroup>
+                <SelectLabel>Imágenes</SelectLabel>
+                {BgImages.map(image => (
+                  <SelectItem key={image.image} value={image.image}>
+                    {image.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
             </SelectContent>
           </Select>
         </dd>

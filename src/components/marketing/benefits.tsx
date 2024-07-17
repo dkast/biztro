@@ -93,7 +93,7 @@ const BenefitItem = ({
           <Icon className="size-10 rounded-xl bg-green-500 p-2 text-green-50" />
         )}
       </div>
-      <p className="space-x-1 text-lg font-semibold text-green-900">
+      <h4 className="space-x-1 text-lg font-semibold text-green-900">
         {title}
         {soon && (
           <div>
@@ -102,7 +102,7 @@ const BenefitItem = ({
             </Badge>
           </div>
         )}
-      </p>
+      </h4>
       <span className="text-balance text-gray-600">{description}</span>
     </div>
   )

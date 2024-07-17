@@ -141,11 +141,19 @@ export default function ItemForm({
     }
   }
 
+  const handleOpenVariant = () => {
+    if (form.formState.isDirty) {
+      toast("Guarda los cambios antes de agregar una variante")
+      return
+    }
+    setOpenVariant(true)
+  }
+
   const { execute, status, reset } = useAction(updateItem, {
     onSuccess: data => {
       if (data?.success) {
         toast.success("Producto actualizado")
-        router.push("/dashboard/menu-items")
+        // router.back()
       } else if (data?.failure.reason) {
         toast.error(data?.failure.reason)
       }
@@ -160,11 +168,18 @@ export default function ItemForm({
   useEffect(() => {
     if (item) {
       form.reset({
-        id: item.id,
-        variants: item.variants.map(variant => ({
-          ...variant,
-          description: variant.description ?? undefined
-        }))
+        id: item?.id,
+        name: item?.name,
+        description: item?.description ?? undefined,
+        status: item?.status as MenuItemStatus,
+        image: item?.image ?? undefined,
+        categoryId: item?.category?.id ?? undefined,
+        organizationId: item?.organizationId,
+        variants:
+          item?.variants.map(variant => ({
+            ...variant,
+            description: variant.description ?? undefined
+          })) ?? []
       })
     }
   }, [item]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -197,10 +212,10 @@ export default function ItemForm({
                 type="button"
                 variant="secondary"
                 size="sm"
-                onClick={() => router.push("/dashboard/menu-items")}
+                onClick={() => router.back()}
                 ref={saveRef}
               >
-                Cancelar
+                Cerrar
               </Button>
               <Button disabled={status === "executing"} size="sm" type="submit">
                 {status === "executing" ? (
@@ -272,7 +287,7 @@ export default function ItemForm({
                   <Button
                     type="button"
                     variant="ghost"
-                    onClick={() => setOpenVariant(true)}
+                    onClick={handleOpenVariant}
                     className="gap-1"
                   >
                     <PlusCircle className="size-3.5" />
@@ -420,7 +435,6 @@ export default function ItemForm({
                         >
                           <FormControl
                             onKeyDown={e => {
-                              console.log(e.key)
                               // If is tab, go to save button
                               if (e.key === "Tab") {
                                 e.preventDefault()

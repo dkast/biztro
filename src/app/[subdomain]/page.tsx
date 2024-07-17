@@ -2,6 +2,8 @@ import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 import lz from "lzutf8"
 import type { Metadata, ResolvingMetadata } from "next"
 import { type Viewport } from "next"
+import Image from "next/image"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
@@ -120,27 +122,43 @@ export default async function SitePage({
       }}
       className="flex min-h-screen flex-col"
     >
-      <div className="grow">
+      <div className="flex grow">
         <ResolveEditor json={json} />
       </div>
-      <p
-        className="py-4 text-center text-xs"
+      <div
+        className="flex items-center justify-between gap-x-4 p-2 text-xs"
         style={{
           color: `${rgbaToHex(textColor)}`
         }}
       >
-        Última actualiazión:{" "}
-        {siteMenu.publishedAt
-          ? new Intl.DateTimeFormat("es-MX", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour: "numeric",
-              minute: "numeric",
-              timeZone: "CST"
-            }).format(new Date(siteMenu.publishedAt))
-          : ""}
-      </p>
+        <div>
+          Últ. actualiazión:{" "}
+          {siteMenu.publishedAt
+            ? new Intl.DateTimeFormat("es-MX", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                timeZone: "CST"
+              }).format(new Date(siteMenu.publishedAt))
+            : ""}
+        </div>
+        <Link href={`https://biztro.co`} target="_blank">
+          <div className="flex items-center justify-center gap-x-2 rounded-full bg-black/50 px-3 py-1">
+            <Image
+              src="/safari-pinned-tab.svg"
+              alt="Logo"
+              width={12}
+              height={12}
+              className="opacity-90 invert"
+            />
+            <span className="text-xs text-gray-100">
+              <em className="hidden not-italic sm:inline">Powered by </em>Biztro
+            </span>
+          </div>
+        </Link>
+      </div>
     </div>
   )
 }

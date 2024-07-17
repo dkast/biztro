@@ -1,17 +1,10 @@
 import { useNode } from "@craftjs/core"
-import {
-  getLocalTimeZone,
-  parseTime,
-  startOfWeek,
-  Time,
-  toCalendarDateTime,
-  today
-} from "@internationalized/date"
-import type { OpeningHours, Organization, Prisma } from "@prisma/client"
+import type { Organization, Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
 import { ChevronDown, Clock, Phone } from "lucide-react"
 import Image from "next/image"
 
+import GradientBlur from "@/components/flare-ui/gradient-blur"
 import HeaderSettings from "@/components/menu-editor/blocks/header-settings"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -21,9 +14,15 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
-import { cn, getInitials } from "@/lib/utils"
+import {
+  cn,
+  getFormattedTime,
+  getInitials,
+  getOpenHoursStatus
+} from "@/lib/utils"
 
 export type HeaderBlockProps = {
+  layout: "classic" | "modern"
   organization: Organization
   location?: Prisma.PromiseReturnType<typeof getDefaultLocation>
   fontFamily?: string
@@ -38,6 +37,7 @@ export type HeaderBlockProps = {
 export default function HeaderBlock({
   organization,
   location,
+  layout,
   fontFamily,
   color,
   accentColor,
@@ -49,6 +49,117 @@ export default function HeaderBlock({
   const {
     connectors: { connect }
   } = useNode()
+
+  const renderClassic = () => {
+    return (
+      <>
+        <Banner
+          banner={organization.banner}
+          isBannerVisible={showBanner ?? false}
+          className="relative"
+        />
+        <div className="px-4 pb-8 pt-4">
+          {/* Logo and organization name */}
+          <div
+            className={cn(
+              "flex flex-row",
+              organization.banner && showBanner
+                ? "-mt-12 items-end"
+                : "my-2 items-center"
+            )}
+          >
+            <Logo
+              logo={organization.logo}
+              orgName={organization.name}
+              isLogoVisible={showLogo ?? false}
+            />
+            <FontWrapper fontFamily={fontFamily}>
+              <h1
+                className={cn(
+                  "z-10 text-xl font-semibold",
+                  showLogo && "ml-4",
+                  organization.banner && showBanner && "mt-10"
+                )}
+                style={{
+                  color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+                }}
+              >
+                {organization?.name}
+              </h1>
+            </FontWrapper>
+          </div>
+          {/* Location data */}
+          <div
+            className={cn(
+              "flex flex-col",
+              showLogo ? "ml-20" : "pt-5",
+              organization.banner && showBanner ? "" : "-mt-5"
+            )}
+            style={{
+              color: `rgb(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })})`
+            }}
+          >
+            <LocationData
+              isBusinessInfoVisible={showAddress ?? false}
+              isOpenHoursVisible={showAddress ?? false}
+              location={location}
+            />
+          </div>
+        </div>
+        <SocialMedia location={location} isVisible={showSocialMedia} />
+      </>
+    )
+  }
+
+  const renderModern = () => {
+    return (
+      <>
+        <div className="flex items-center justify-center pb-6 pt-8">
+          <div className="absolute inset-0 origin-top">
+            <Banner
+              banner={organization.banner}
+              isBannerVisible={showBanner ?? false}
+            />
+            {showBanner && (
+              <GradientBlur className="inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent to-black/30" />
+            )}
+          </div>
+          <div className="z-20 flex flex-col items-center gap-2">
+            <Logo
+              logo={organization.logo}
+              orgName={organization.name}
+              isLogoVisible={showLogo ?? false}
+              className="size-24 rounded-full shadow-lg"
+            />
+            <FontWrapper fontFamily={fontFamily}>
+              <h1
+                className={cn("text-xl font-semibold")}
+                style={{
+                  color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+                }}
+              >
+                {organization?.name}
+              </h1>
+            </FontWrapper>
+            <div
+              style={{
+                color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+              }}
+            >
+              <LocationData
+                isBusinessInfoVisible={showAddress ?? false}
+                isOpenHoursVisible={showAddress ?? false}
+                location={location}
+                className="items-center"
+              />
+            </div>
+          </div>
+        </div>
+        <SocialMedia location={location} isVisible={showSocialMedia} />
+      </>
+    )
+  }
+
   return (
     <div
       ref={ref => {
@@ -58,154 +169,24 @@ export default function HeaderBlock({
       }}
       className="relative"
     >
-      <div className="relative flex flex-col">
-        <Banner
-          banner={organization.banner}
-          isBannerVisible={showBanner ?? false}
-        />
-      </div>
-      <div className="p-4">
-        {/* Logo and organization name */}
-        <div
-          className={cn(
-            "flex flex-row",
-            organization.banner && showBanner
-              ? "-mt-12 items-end"
-              : "my-2 items-center"
-          )}
-        >
-          <Logo
-            logo={organization.logo}
-            name={organization.name}
-            isLogoVisible={showLogo ?? false}
-          />
-          <FontWrapper fontFamily={fontFamily}>
-            <h1
-              className={cn(
-                "z-10 text-xl font-semibold",
-                showLogo && "ml-4",
-                organization.banner && showBanner && "mt-10"
-              )}
-              style={{
-                color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-              }}
-            >
-              {organization?.name}
-            </h1>
-          </FontWrapper>
-        </div>
-        {/* Location data */}
-        <div
-          className={cn(
-            "flex flex-col gap-1 text-xs",
-            showLogo ? "ml-20" : "pt-3",
-            organization.banner && showBanner ? "" : "-mt-5"
-          )}
-          style={{
-            color: `rgb(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })})`
-          }}
-        >
-          {location && (
-            <LocationData
-              isBusinessInfoVisible={showAddress ?? false}
-              isOpenHoursVisible={showAddress ?? false}
-              location={location}
-            />
-          )}
-        </div>
-      </div>
-      {/* Show location social media */}
-      {showSocialMedia && (
-        <div className="absolute right-0 top-0 rounded-bl backdrop-blur-sm has-[a]:bg-white/75">
-          <div className="flex flex-row items-center gap-3 p-2">
-            {location?.facebook && (
-              <a
-                href={`https://facebook.com/${location.facebook}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  alt="Facebook"
-                  height={24}
-                  width={24}
-                  src="/facebook-mono.svg"
-                />
-              </a>
-            )}
-            {location?.instagram && (
-              <a
-                href={`https://instagram.com/${location.instagram}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  alt="Instagram"
-                  height={24}
-                  width={24}
-                  src="/instagram-mono.svg"
-                />
-              </a>
-            )}
-            {location?.twitter && (
-              <a
-                href={`https://twitter.com/${location.twitter}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  alt="Twitter"
-                  height={24}
-                  width={24}
-                  src="/twitter-mono.svg"
-                />
-              </a>
-            )}
-            {location?.tiktok && (
-              <a
-                href={`https://tiktok.com/${location.tiktok}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  alt="Youtube"
-                  height={24}
-                  width={24}
-                  src="/tiktok-mono.svg"
-                />
-              </a>
-            )}
-            {location?.whatsapp && (
-              <a
-                href={`https://wa.me/${location.whatsapp}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  alt="Youtube"
-                  height={24}
-                  width={24}
-                  src="/whatsapp-mono.svg"
-                />
-              </a>
-            )}
-          </div>
-        </div>
-      )}
+      {layout === "classic" ? renderClassic() : renderModern()}
     </div>
   )
 }
 
 function Banner({
   banner,
+  className,
   isBannerVisible
 }: {
   banner: string | null | undefined
+  className?: string
   isBannerVisible: boolean
 }) {
   return (
     banner &&
     isBannerVisible && (
-      <div className="h-32">
+      <div className={cn("h-32", className)}>
         <Image
           alt="Banner"
           className="object-cover"
@@ -220,18 +201,22 @@ function Banner({
 
 function Logo({
   logo,
-  name,
-  isLogoVisible
+  orgName,
+  isLogoVisible,
+  className
 }: {
   logo: string | null | undefined
-  name: string
+  orgName: string
   isLogoVisible: boolean
+  className?: string
 }) {
   return (
     isLogoVisible && (
-      <Avatar className="h-16 w-16 rounded-xl shadow">
+      <Avatar className={cn("size-16 rounded-xl shadow", className)}>
         <AvatarImage src={logo ?? undefined} className="rounded-xl" />
-        <AvatarFallback className="text-xl">{getInitials(name)}</AvatarFallback>
+        <AvatarFallback className="text-xl">
+          {getInitials(orgName)}
+        </AvatarFallback>
       </Avatar>
     )
   )
@@ -240,14 +225,18 @@ function Logo({
 function LocationData({
   isBusinessInfoVisible,
   isOpenHoursVisible,
-  location
+  location,
+  className
 }: {
   isBusinessInfoVisible: boolean
   isOpenHoursVisible: boolean
-  location: NonNullable<Prisma.PromiseReturnType<typeof getDefaultLocation>>
+  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | undefined
+  className?: string
 }) {
+  if (!location) return null
+
   return (
-    <div className="flex flex-col gap-1">
+    <div className={cn("flex flex-col gap-1 text-xs", className)}>
       {isBusinessInfoVisible && (
         <>
           <span>{location.address}</span>
@@ -310,97 +299,97 @@ function LocationData({
   )
 }
 
-function getOpenHoursStatus(openingHours: OpeningHours[]) {
-  let status = "Cerrado"
+function SocialMedia({
+  location,
+  isVisible
+}: {
+  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | undefined
+  isVisible: boolean | undefined
+}) {
+  if (!isVisible || !location) return null
 
-  const currentDate = today(getLocalTimeZone())
-  const now = new Date()
-  const currentTime = toCalendarDateTime(
-    currentDate,
-    new Time(now.getHours(), now.getMinutes())
+  return (
+    <div className="absolute right-0 top-0 rounded-bl-lg backdrop-blur-sm has-[a]:bg-white/75">
+      <div className="flex flex-row items-center gap-3 p-2">
+        {location?.facebook && (
+          <a
+            href={`https://facebook.com/${location.facebook}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              alt="Facebook"
+              height={24}
+              width={24}
+              src="/facebook-mono.svg"
+            />
+          </a>
+        )}
+        {location?.instagram && (
+          <a
+            href={`https://instagram.com/${location.instagram}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              alt="Instagram"
+              height={24}
+              width={24}
+              src="/instagram-mono.svg"
+            />
+          </a>
+        )}
+        {location?.twitter && (
+          <a
+            href={`https://twitter.com/${location.twitter}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              alt="Twitter"
+              height={24}
+              width={24}
+              src="/twitter-mono.svg"
+            />
+          </a>
+        )}
+        {location?.tiktok && (
+          <a
+            href={`https://tiktok.com/${location.tiktok}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              alt="Youtube"
+              height={24}
+              width={24}
+              src="/tiktok-mono.svg"
+            />
+          </a>
+        )}
+        {location?.whatsapp && (
+          <a
+            href={`https://wa.me/${location.whatsapp}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              alt="Youtube"
+              height={24}
+              width={24}
+              src="/whatsapp-mono.svg"
+            />
+          </a>
+        )}
+      </div>
+    </div>
   )
-  const startWeek = startOfWeek(currentDate, "es-MX")
-
-  for (const day of openingHours) {
-    // convert day to date based on the week start
-    let weekDayNbr = 0
-    switch (day.day) {
-      case "MONDAY":
-        weekDayNbr = 1
-        break
-      case "TUESDAY":
-        weekDayNbr = 2
-        break
-      case "WEDNESDAY":
-        weekDayNbr = 3
-        break
-      case "THURSDAY":
-        weekDayNbr = 4
-        break
-      case "FRIDAY":
-        weekDayNbr = 5
-        break
-      case "SATURDAY":
-        weekDayNbr = 6
-        break
-      case "SUNDAY":
-        weekDayNbr = 7
-        break
-    }
-
-    if (!day.allDay) {
-      continue
-    }
-
-    const dayDate = startWeek.add({ days: weekDayNbr })
-    // console.log(startWeek, weekDayNbr, dayDate)
-    const startTime = parseTime(day.startTime ?? "")
-    const endTime = parseTime(day.endTime ?? "")
-
-    const openDateTime = toCalendarDateTime(dayDate, startTime)
-
-    let closeDateTime
-    if (endTime.hour < startTime.hour) {
-      closeDateTime = toCalendarDateTime(dayDate.add({ days: 1 }), endTime)
-    } else {
-      closeDateTime = toCalendarDateTime(dayDate, endTime)
-    }
-
-    const formatClosed = closeDateTime
-      .toDate(getLocalTimeZone())
-      .toLocaleTimeString("es-MX", {
-        hour: "2-digit",
-        minute: "2-digit"
-      })
-
-    // console.log(currentTime, openDateTime, closeDateTime)
-    if (
-      currentTime.compare(openDateTime) >= 0 &&
-      currentTime.compare(closeDateTime) <= 0
-    ) {
-      status = `Abierto - Hasta ${endTime.hour === 1 ? "la" : "las"} ${formatClosed}`
-      break
-    }
-  }
-
-  return status
-}
-
-function getFormattedTime(time: string | null | undefined) {
-  if (!time) {
-    return "NA"
-  }
-  const parsedTime = parseTime(time)
-  const currentDate = today(getLocalTimeZone())
-  const timeDate = toCalendarDateTime(currentDate, parsedTime)
-  return timeDate
-    .toDate(getLocalTimeZone())
-    .toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })
 }
 
 HeaderBlock.craft = {
   displayName: "Cabecera",
   props: {
+    layout: "classic",
     fontFamily: "Inter",
     color: { r: 38, g: 50, b: 56, a: 1 },
     accentColor: { r: 38, g: 50, b: 56, a: 1 },

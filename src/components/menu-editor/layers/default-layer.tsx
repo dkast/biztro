@@ -39,7 +39,7 @@ export default function DefaultLayer({
       className={cn(
         hovered ? "bg-gray-100 dark:bg-gray-800/70" : "bg-transparent",
         hasChildCanvases && expanded ? "pb-1" : "pb-0",
-        "block"
+        "editor-layers block"
       )}
     >
       <LayerHeader />

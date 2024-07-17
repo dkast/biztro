@@ -10,6 +10,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import ItemForm from "@/app/dashboard/menu-items/[action]/[id]/item-form"
 import { getCategories, getMenuItemById } from "@/server/actions/item/queries"
 
+export const dynamic = "force-dynamic"
+
 export function generateMetadata({
   params
 }: {
@@ -27,7 +29,6 @@ export default async function ItemPage({
   params: { action: string; id: string }
 }) {
   const item = await getMenuItemById(params.id)
-  // const categories = await getCategories()
 
   const queryClient = new QueryClient()
 

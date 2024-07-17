@@ -1,3 +1,4 @@
+import { image } from "html2canvas/dist/types/css/types/image"
 import { string, z } from "zod"
 
 export enum HttpMethod {
@@ -17,39 +18,103 @@ export enum FrameSize {
   DESKTOP = "DESKTOP"
 }
 
-export const FONTS = [
-  "Alfa Slab One",
-  "Archivo Black",
-  "Arvo",
-  "Bebas Neue",
-  "Bitter",
-  "Comfortaa",
-  "Cookie",
-  "Creepster",
-  "Federo",
-  "Fugaz One",
-  "Homemade Apple",
-  "Inter",
-  "Merriweather",
-  "Montserrat",
-  "Neuton",
-  "Open Sans",
-  "Pacifico",
-  "Parisienne",
-  "Permanent Marker",
-  "Playfair Display",
-  "Poiriet One",
-  "Raleway",
-  "Roboto Slab",
-  "Roboto",
-  "Sacramento",
-  "Send Flowers",
-  "Source Sans Pro",
-  "Source Serif Pro",
-  "Space Grotesk",
-  "Space Mono",
-  "Special Elite",
-  "Square Peg"
+export const BgImages = [
+  {
+    image: "bg-top-bakery-1.jpg",
+    name: "Bakery"
+  },
+  {
+    image: "bg-top-bakery-2.jpg",
+    name: "Bakery 2"
+  },
+  {
+    image: "bg-top-breakfast-1.jpg",
+    name: "Breakfast"
+  },
+  {
+    image: "bg-top-breakfast-2.jpg",
+    name: "Breakfast 2"
+  },
+  {
+    image: "bg-top-burger-1.jpg",
+    name: "Burger"
+  },
+  {
+    image: "bg-center-cafe-1.jpg",
+    name: "Café"
+  },
+  {
+    image: "bg-center-cafe-2.jpg",
+    name: "Café 2"
+  },
+  {
+    image: "bg-top-tomates-1.jpg",
+    name: "Fresco"
+  },
+  {
+    image: "bg-top-salad-1.jpg",
+    name: "Fresco 2"
+  },
+  {
+    image: "bg-top-fusion-1.jpg",
+    name: "Fusión"
+  },
+  {
+    image: "bg-top-fusion-2.jpg",
+    name: "Fusión 2"
+  },
+  {
+    image: "bg-top-ice-cream-1.jpg",
+    name: "Ice Cream"
+  },
+  {
+    image: "bg-top-ice-cream-2.jpg",
+    name: "Ice Cream 2"
+  },
+  {
+    image: "bg-center-ice-cream-3.jpg",
+    name: "Ice Cream 3"
+  },
+  {
+    image: "bg-center-pizza-1.jpg",
+    name: "Italiano"
+  },
+  {
+    image: "bg-top-mariscos-1.jpg",
+    name: "Mariscos"
+  },
+  {
+    image: "bg-top-mariscos-2.jpg",
+    name: "Mariscos 2"
+  },
+  {
+    image: "bg-center-molcajete-1.jpg",
+    name: "Mexicano"
+  },
+  {
+    image: "bg-center-parrilla-1.jpg",
+    name: "Parrilla"
+  },
+  {
+    image: "bg-top-tacos-1.jpg",
+    name: "Pastor"
+  },
+  {
+    image: "bg-center-sushi-1.jpg",
+    name: "Sushi"
+  },
+  {
+    image: "bg-center-sushi-2.jpg",
+    name: "Sushi 2"
+  },
+  {
+    image: "bg-top-tacos-2.jpg",
+    name: "Tacos"
+  },
+  {
+    image: "bg-center-tacos-3.jpg",
+    name: "Tacos 2"
+  }
 ]
 
 export const COLORS = [
