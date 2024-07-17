@@ -53,7 +53,22 @@ export const columns: ColumnDef<
   },
   {
     accessorKey: "category.name",
-    header: "Categoría",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Categoría
+          {{
+            asc: <ChevronUp className="ml-2 h-4 w-4" />,
+            desc: <ChevronDown className="ml-2 h-4 w-4" />
+          }[column.getIsSorted() as string] ?? (
+            <ChevronsUpDown className="ml-2 h-4 w-4" />
+          )}
+        </Button>
+      )
+    },
     enableHiding: true
   },
   {

@@ -151,7 +151,7 @@ export default function ToolboxPanel({
           </div>
         ))}
 
-        {(categories.length > 0 && soloItems.length > 0) ?? (
+        {categories.length === 0 && soloItems.length === 0 ? (
           <Alert
             variant="information"
             className="mx-0.5 my-2 w-auto border-dashed text-sm"
@@ -170,7 +170,7 @@ export default function ToolboxPanel({
               </Button>
             </Link>
           </Alert>
-        )}
+        ) : null}
       </SideSection>
       <SideSection title="Elementos" className="editor-elements">
         <div

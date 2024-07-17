@@ -7,6 +7,7 @@ import { DataTable } from "@/components/data-table/data-table"
 import { columns } from "@/app/dashboard/menu-items/columns"
 import FilterToolbar from "@/app/dashboard/menu-items/filter-toolbar"
 import ItemCreate from "@/app/dashboard/menu-items/item-create"
+import ItemTable from "@/app/dashboard/menu-items/item-table"
 import { getCategories, getMenuItems } from "@/server/actions/item/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import type { MenuItemQueryFilter } from "@/lib/types"
@@ -49,11 +50,7 @@ export default async function ItemsPage({
         <ItemCreate />
       </PageSubtitle>
       <div className="mt-6">
-        <DataTable
-          columns={columns}
-          data={data}
-          toolbar={<FilterToolbar categories={categories} />}
-        />
+        <ItemTable data={data} categories={categories} />
       </div>
     </div>
   )
