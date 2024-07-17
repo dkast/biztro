@@ -154,7 +154,16 @@ export default function ThemeSelector({
               return (props = Object.assign(props, {
                 categoryColor: hexToRgba(selectedTheme.accentColor),
                 itemColor: hexToRgba(selectedTheme.textColor),
-                priceColor: hexToRgba(selectedTheme.brandColor),
+                priceColor: hexToRgba(selectedTheme.accentColor),
+                descriptionColor: hexToRgba(selectedTheme.mutedColor)
+              }))
+            })
+            break
+          case "ItemBlock":
+            setIgnoreProp(key, props => {
+              return (props = Object.assign(props, {
+                itemColor: hexToRgba(selectedTheme.textColor),
+                priceColor: hexToRgba(selectedTheme.accentColor),
                 descriptionColor: hexToRgba(selectedTheme.mutedColor)
               }))
             })

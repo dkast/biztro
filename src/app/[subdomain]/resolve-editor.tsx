@@ -6,6 +6,7 @@ import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
+import ItemBlock from "@/components/menu-editor/blocks/item-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 
 export default function ResolveEditor({ json }: { json: string }) {
@@ -16,7 +17,8 @@ export default function ResolveEditor({ json }: { json: string }) {
         HeaderBlock,
         HeadingElement,
         TextElement,
-        CategoryBlock
+        CategoryBlock,
+        ItemBlock
       }}
       enabled={false}
     >
