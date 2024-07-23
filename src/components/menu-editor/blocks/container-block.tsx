@@ -34,18 +34,19 @@ export default function ContainerBlock({
             : `url(/bg/${backgroundImage})`
       }}
     >
-      <main
-        className="mx-auto flex max-w-screen-md grow flex-col"
-        style={{
-          backgroundImage:
-            backgroundImage === "none" || !backgroundImage?.startsWith("bg")
-              ? "none"
-              : `url(/bg/${backgroundImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: backgroundImage?.split("-")[1]
-        }}
-      >
-        {children}
+      <main className="relative mx-auto flex max-w-screen-md grow flex-col @container">
+        <div
+          className="grow bg-cover bg-fixed bg-no-repeat group-[.editor-preview]:bg-contain @3xl:bg-[50%_auto]"
+          style={{
+            backgroundImage:
+              backgroundImage === "none" || !backgroundImage?.startsWith("bg")
+                ? "none"
+                : `url(/bg/${backgroundImage})`,
+            backgroundPosition: backgroundImage?.split("-")[1]
+          }}
+        >
+          {children}
+        </div>
       </main>
     </div>
   )
