@@ -33,6 +33,22 @@ const steps: Step[] = [
     placement: "right"
   },
   {
+    target: ".editor-preview",
+    title: "Vista previa",
+    content:
+      "Aquí puedes ver cómo se verá tu menú en un dispositivo móvil o escritorio. Puedes hacer clic en los elementos para editarlos.",
+    placement: "left",
+    placementBeacon: "top"
+  },
+  {
+    target: ".editor-toolbar",
+    title: "Herramientas",
+    content:
+      "Aquí encontrarás herramientas para editar tu menú, como deshacer y rehacer cambios, copiar y pegar estilos, y más.",
+    placement: "top-end",
+    placementBeacon: "top"
+  },
+  {
     target: ".editor-theme",
     title: "Tema",
     content: (
@@ -76,6 +92,7 @@ export default function MenuTour() {
       run={tourMode}
       callback={handleCallback}
       steps={steps}
+      continuous
       showProgress
       showSkipButton
       beaconComponent={Beacon}
@@ -128,7 +145,7 @@ function Tooltip({
             </Button>
           )}
           <Button {...primaryProps} size="xs">
-            {isLastStep ? "Terminar" : "Cerrar"}
+            {isLastStep ? "Terminar" : "Siguiente"}
           </Button>
         </div>
       </div>
@@ -144,7 +161,7 @@ const Beacon = React.forwardRef<HTMLButtonElement, BeaconRenderProps>(
         <button
           ref={ref}
           {...props}
-          className="absolute inset-auto inline-block size-6 rounded-full bg-blue-500 ring-4 ring-blue-300"
+          className="absolute inset-auto inline-block size-6 rounded-full bg-blue-500 ring-4 ring-blue-400"
         />
       </div>
     )

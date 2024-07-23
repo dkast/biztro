@@ -258,7 +258,7 @@ export default function MenuPublish({
                     {status === "executing" ? (
                       <Loader className="size-4 animate-spin" />
                     ) : (
-                      "Actualizar"
+                      "Publicar cambios"
                     )}
                   </Button>
                   <Button
