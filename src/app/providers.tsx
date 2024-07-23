@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation"
 // import { AppProgressBar as ProgressBar } from "next-nprogress-bar"
 
 import { UnsavedChangesProvider } from "@/components/dashboard/unsaved-changes-provider"
+import { TailwindIndicator } from "@/components/tailwind-indicator"
 
 function makeQueryClient() {
   return new QueryClient({
@@ -96,6 +97,7 @@ function Providers({ children }: { children: React.ReactNode }) {
                 }
               }}
             />
+            <TailwindIndicator />
             {/* </PhotoProvider> */}
           </Provider>
         </QueryClientProvider>

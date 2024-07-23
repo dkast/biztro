@@ -38,7 +38,7 @@ export default function HoursForm({
     defaultValues: {
       locationId: data?.id,
       items:
-        data?.openingHours?.length ?? 0 > 0
+        (data?.openingHours?.length ?? 0 > 0)
           ? data?.openingHours.map(item => ({
               id: item.id,
               day: item.day as
@@ -159,7 +159,7 @@ export default function HoursForm({
                 name={`items.${index}.startTime`}
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                    <FormLabel>Desde</FormLabel>
+                    <FormLabel className="hidden sm:inline">Desde</FormLabel>
                     <FormControl>
                       <TimeField
                         value={field.value ? parseTime(field.value) : undefined}
@@ -177,7 +177,7 @@ export default function HoursForm({
                 name={`items.${index}.endTime`}
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center gap-2 space-y-0">
-                    <FormLabel>Hasta</FormLabel>
+                    <FormLabel className="hidden sm:inline">Hasta</FormLabel>
                     <FormControl>
                       <TimeField
                         value={field.value ? parseTime(field.value) : undefined}

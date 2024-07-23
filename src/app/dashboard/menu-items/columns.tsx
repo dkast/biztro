@@ -175,9 +175,7 @@ function ActionsColumn({
               href={`/dashboard/menu-items/edit/${item.id}`}
               prefetch={false}
             >
-              <>
-                <span>Editar</span>
-              </>
+              <span>Editar</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpenDelete(true)}>

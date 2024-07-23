@@ -144,7 +144,7 @@ export default async function SitePage({
               }).format(new Date(siteMenu.publishedAt))
             : ""}
         </div>
-        <Link href={`https://biztro.co`} target="_blank">
+        <Link href="https://biztro.co" target="_blank">
           <div className="flex items-center justify-center gap-x-2 rounded-full bg-black/50 px-3 py-1">
             <Image
               src="/safari-pinned-tab.svg"

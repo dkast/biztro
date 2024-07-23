@@ -1,4 +1,3 @@
-import { image } from "html2canvas/dist/types/css/types/image"
 import { string, z } from "zod"
 
 export enum HttpMethod {

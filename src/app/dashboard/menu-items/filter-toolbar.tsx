@@ -45,21 +45,19 @@ export default function FilterToolbar({
   )
 
   return (
-    <>
-      <div className="flex grow flex-row items-center gap-x-2">
-        <DataTableFilter
-          title="Estatus"
-          options={status}
-          value={statusValue}
-          onChange={setStatusValue}
-        />
-        <DataTableFilter
-          title="Categoría"
-          options={categories?.map(d => ({ value: d.id, label: d.name })) ?? []}
-          value={categoryValue}
-          onChange={setCategoryValue}
-        />
-      </div>
-    </>
+    <div className="flex grow flex-row items-center gap-x-2">
+      <DataTableFilter
+        title="Estatus"
+        options={status}
+        value={statusValue}
+        onChange={setStatusValue}
+      />
+      <DataTableFilter
+        title="Categoría"
+        options={categories?.map(d => ({ value: d.id, label: d.name })) ?? []}
+        value={categoryValue}
+        onChange={setCategoryValue}
+      />
+    </div>
   )
 }

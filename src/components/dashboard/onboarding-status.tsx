@@ -44,7 +44,7 @@ export default async function OnboardingStatus({ orgId }: { orgId: string }) {
       >
         <OnboardingProgress progres={progress} />
       </PageSubtitle>
-      <div className="mt-5 grid grid-cols-3 gap-2">
+      <div className="mt-5 grid grid-cols-1 gap-2 md:grid-cols-3">
         <Card className="rounded-xl p-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-1 pb-2">
             <div className="flex flex-row items-center gap-2">
@@ -62,11 +62,11 @@ export default async function OnboardingStatus({ orgId }: { orgId: string }) {
                 {orgReady ? (
                   <>
                     <CheckCircle className="size-4" />
-                    {"Listo"}
+                    <span className="hidden xl:inline">Listo</span>
                   </>
                 ) : (
                   <>
-                    {"Ver"}
+                    <span className="hidden xl:inline">Ver</span>
                     <ArrowRight className="size-4" />
                   </>
                 )}
@@ -96,11 +96,11 @@ export default async function OnboardingStatus({ orgId }: { orgId: string }) {
                 {locationReady ? (
                   <>
                     <CheckCircle className="size-4" />
-                    {"Listo"}
+                    <span className="hidden xl:inline">Listo</span>
                   </>
                 ) : (
                   <>
-                    {"Ver"}
+                    <span className="hidden xl:inline">Ver</span>
                     <ArrowRight className="size-4" />
                   </>
                 )}
@@ -130,11 +130,11 @@ export default async function OnboardingStatus({ orgId }: { orgId: string }) {
                 {menuItemsReady ? (
                   <>
                     <CheckCircle className="size-4" />
-                    {"Listo"}
+                    <span className="hidden xl:inline">Listo</span>
                   </>
                 ) : (
                   <>
-                    {"Ver"}
+                    <span className="hidden xl:inline">Ver</span>
                     <ArrowRight className="size-4" />
                   </>
                 )}
