@@ -112,7 +112,7 @@ export default function Workbench({
               <div
                 className={cn(
                   frameSize === FrameSize.DESKTOP ? "w-[1024px]" : "w-[390px]",
-                  "mx-auto pb-24 pt-10 transition-all duration-300 ease-in-out"
+                  "editor-preview group mx-auto pb-24 pt-10 transition-all duration-300 ease-in-out"
                 )}
               >
                 <span className="block p-2 text-center text-sm text-gray-400">

@@ -177,7 +177,7 @@ export default function LocationForm({
               control={form.control}
               name="facebook"
               render={({ field }) => (
-                <FormItem className="sm:grid sm:grid-cols-3 sm:items-center sm:gap-4">
+                <FormItem className="grid grid-cols-3 items-center sm:gap-4">
                   <FormLabel
                     htmlFor="facebook"
                     className="flex items-center gap-3"
@@ -195,7 +195,7 @@ export default function LocationForm({
                       {...field}
                       id="facebook"
                       placeholder="usuario"
-                      className="sm:col-span-2"
+                      className="col-span-2"
                     />
                   </FormControl>
                   <FormMessage />
@@ -206,7 +206,7 @@ export default function LocationForm({
               control={form.control}
               name="instagram"
               render={({ field }) => (
-                <FormItem className="sm:grid sm:grid-cols-3 sm:items-center sm:gap-4">
+                <FormItem className="grid grid-cols-3 items-center sm:gap-4">
                   <FormLabel
                     htmlFor="instagram"
                     className="flex items-center gap-3"
@@ -224,7 +224,7 @@ export default function LocationForm({
                       {...field}
                       id="instagram"
                       placeholder="usuario"
-                      className="sm:col-span-2"
+                      className="col-span-2"
                     />
                   </FormControl>
                   <FormMessage />
@@ -235,7 +235,7 @@ export default function LocationForm({
               control={form.control}
               name="twitter"
               render={({ field }) => (
-                <FormItem className="sm:grid sm:grid-cols-3 sm:items-center sm:gap-4">
+                <FormItem className="grid grid-cols-3 items-center sm:gap-4">
                   <FormLabel
                     htmlFor="twitter"
                     className="flex items-center gap-3"
@@ -253,7 +253,7 @@ export default function LocationForm({
                       {...field}
                       id="twitter"
                       placeholder="usuario"
-                      className="sm:col-span-2"
+                      className="col-span-2"
                     />
                   </FormControl>
                   <FormMessage />
@@ -264,7 +264,7 @@ export default function LocationForm({
               control={form.control}
               name="tiktok"
               render={({ field }) => (
-                <FormItem className="sm:grid sm:grid-cols-3 sm:items-center sm:gap-4">
+                <FormItem className="grid grid-cols-3 items-center sm:gap-4">
                   <FormLabel
                     htmlFor="tiktok"
                     className="flex items-center gap-3"
@@ -282,7 +282,7 @@ export default function LocationForm({
                       {...field}
                       id="tiktok"
                       placeholder="usuario"
-                      className="sm:col-span-2"
+                      className="col-span-2"
                     />
                   </FormControl>
                   <FormMessage />
@@ -293,7 +293,7 @@ export default function LocationForm({
               control={form.control}
               name="whatsapp"
               render={({ field }) => (
-                <FormItem className="sm:grid sm:grid-cols-3 sm:items-center sm:gap-4">
+                <FormItem className="grid grid-cols-3 items-center sm:gap-4">
                   <FormLabel
                     htmlFor="whatsapp"
                     className="flex items-center gap-3"
@@ -311,7 +311,7 @@ export default function LocationForm({
                       {...field}
                       id="whatsapp"
                       placeholder="Número de teléfono"
-                      className="sm:col-span-2"
+                      className="col-span-2"
                     />
                   </FormControl>
                   <FormMessage />

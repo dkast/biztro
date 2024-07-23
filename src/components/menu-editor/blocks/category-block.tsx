@@ -1,11 +1,9 @@
 import { useNode } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
-import Image from "next/image"
 
 import CategorySettings from "@/components/menu-editor/blocks/category-settings"
 import { ItemView } from "@/components/menu-editor/blocks/item-block"
-import FontWrapper from "@/components/menu-editor/font-wrapper"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 import { cn } from "@/lib/utils"
 

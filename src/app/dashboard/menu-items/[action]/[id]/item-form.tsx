@@ -103,7 +103,7 @@ export default function ItemForm({
   })
   const queryClient = useQueryClient()
 
-  const title = (action === "new" ? "Crear" : "Editar") + " Producto"
+  const title = `${action === "new" ? "Crear" : "Editar"} Producto`
 
   const router = useRouter()
 

@@ -9,8 +9,8 @@ import { useAtomValue } from "jotai"
 import {
   Diamond,
   Layers,
+  LetterText,
   PanelTop,
-  Text,
   Type,
   type LucideIcon
 } from "lucide-react"
@@ -221,7 +221,7 @@ export default function ToolboxPanel({
             }
           }}
         >
-          <ToolboxElement title="Texto" Icon={Text} />
+          <ToolboxElement title="Texto" Icon={LetterText} />
         </div>
       </SideSection>
     </>

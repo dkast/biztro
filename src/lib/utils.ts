@@ -67,6 +67,8 @@ export function getOpenHoursStatus(openingHours: OpeningHours[]) {
       case "SUNDAY":
         weekDayNbr = 7
         break
+      default:
+        break
     }
 
     if (!day.allDay) {
