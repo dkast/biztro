@@ -183,6 +183,7 @@ export default function ToolboxPanel({
                   organization={organization}
                   location={location ?? undefined}
                   accentColor={hexToRgba(selectedColorTheme.brandColor)}
+                  backgroundColor={hexToRgba(selectedColorTheme.surfaceColor)}
                   fontFamily={selectedFontTheme.fontDisplay}
                 />
               )

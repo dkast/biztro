@@ -36,7 +36,7 @@ export default function ContainerBlock({
     >
       <main className="relative mx-auto flex max-w-screen-md grow flex-col @container">
         <div
-          className="grow bg-cover bg-fixed bg-no-repeat group-[.editor-preview]:bg-contain @3xl:bg-[50%_auto]"
+          className="grow bg-cover bg-fixed bg-no-repeat pb-8 group-[.editor-preview]:bg-contain @3xl:bg-[50%_auto]"
           style={{
             backgroundImage:
               backgroundImage === "none" || !backgroundImage?.startsWith("bg")

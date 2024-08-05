@@ -1,6 +1,6 @@
 import { useNode } from "@craftjs/core"
 import type { Organization, Prisma } from "@prisma/client"
-import type { RgbaColor } from "@uiw/react-color"
+import { type RgbaColor } from "@uiw/react-color"
 import { ChevronDown, Clock, Phone } from "lucide-react"
 import Image from "next/image"
 
@@ -28,6 +28,7 @@ export type HeaderBlockProps = {
   fontFamily?: string
   color?: RgbaColor
   accentColor?: RgbaColor
+  backgroundColor?: RgbaColor
   showBanner?: boolean
   showLogo?: boolean
   showAddress?: boolean
@@ -41,6 +42,7 @@ export default function HeaderBlock({
   fontFamily,
   color,
   accentColor,
+  backgroundColor,
   showBanner,
   showLogo,
   showAddress,
@@ -121,7 +123,15 @@ export default function HeaderBlock({
               isBannerVisible={showBanner ?? false}
             />
             {showBanner && (
-              <GradientBlur className="inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent to-black/30" />
+              <>
+                <GradientBlur className="inset-x-0 bottom-0 h-2/3" />
+                <div
+                  className="absolute inset-x-0 bottom-0 z-20 h-2/3"
+                  style={{
+                    background: `linear-gradient(180deg, rgba(0,0,0,0), rgba(${Object.values(backgroundColor ?? { r: 0, g: 0, b: 0, a: 1 })}))`
+                  }}
+                ></div>
+              </>
             )}
           </div>
           <div className="z-20 flex flex-col items-center gap-2">
@@ -263,7 +273,7 @@ function LocationData({
             </div>
           </PopoverTrigger>
           <PopoverContent className="min-w-72">
-            <div className="flex flex-col divide-y divide-gray-800">
+            <div className="flex flex-col divide-y dark:divide-gray-800">
               {location.openingHours.map(day => {
                 return (
                   <div key={day.day} className="grid grid-cols-3 py-2 text-xs">
@@ -393,6 +403,7 @@ HeaderBlock.craft = {
     fontFamily: "Inter",
     color: { r: 38, g: 50, b: 56, a: 1 },
     accentColor: { r: 38, g: 50, b: 56, a: 1 },
+    backgroundColor: { r: 255, g: 255, b: 255, a: 1 },
     showBanner: true,
     showLogo: true,
     showAddress: true,
