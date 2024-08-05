@@ -1,7 +1,6 @@
 import { useNode } from "@craftjs/core"
 import type { Organization, Prisma } from "@prisma/client"
-import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
-import { lineBreak } from "html2canvas/dist/types/css/property-descriptors/line-break"
+import { type RgbaColor } from "@uiw/react-color"
 import { ChevronDown, Clock, Phone } from "lucide-react"
 import Image from "next/image"
 
