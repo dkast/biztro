@@ -145,7 +145,8 @@ export default function ThemeSelector({
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {
                 color: hexToRgba(selectedTheme.textColor),
-                accentColor: hexToRgba(selectedTheme.brandColor)
+                accentColor: hexToRgba(selectedTheme.brandColor),
+                backgroundColor: hexToRgba(selectedTheme.surfaceColor)
               }))
             })
             break

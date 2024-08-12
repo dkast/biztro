@@ -88,12 +88,14 @@ export default function Workbench({
           <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
             <ResizablePanelGroup direction="vertical">
               <ResizablePanel defaultSize={60}>
-                <ToolboxPanel
-                  organization={organization}
-                  location={location}
-                  categories={categories}
-                  soloItems={soloItems}
-                />
+                <ScrollArea className="h-full">
+                  <ToolboxPanel
+                    organization={organization}
+                    location={location}
+                    categories={categories}
+                    soloItems={soloItems}
+                  />
+                </ScrollArea>
               </ResizablePanel>
               <ResizableHandle />
               <ResizablePanel defaultSize={35} minSize={10}>
