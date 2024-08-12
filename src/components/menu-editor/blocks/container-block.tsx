@@ -20,7 +20,7 @@ export default function ContainerBlock({
 
   return (
     <div
-      className="relative flex grow"
+      className="relative flex grow overflow-hidden"
       ref={ref => {
         if (ref) {
           connect(ref)
@@ -34,19 +34,19 @@ export default function ContainerBlock({
             : `url(/bg/${backgroundImage})`
       }}
     >
-      <main className="relative mx-auto flex max-w-screen-md grow flex-col @container">
-        <div
-          className="grow bg-cover bg-fixed bg-no-repeat pb-8 group-[.editor-preview]:bg-contain @3xl:bg-[50%_auto]"
-          style={{
-            backgroundImage:
-              backgroundImage === "none" || !backgroundImage?.startsWith("bg")
-                ? "none"
-                : `url(/bg/${backgroundImage})`,
-            backgroundPosition: backgroundImage?.split("-")[1]
-          }}
-        >
-          {children}
-        </div>
+      <div
+        // className="grow bg-cover bg-fixed bg-no-repeat group-[.editor-preview]:bg-contain @3xl:bg-[50%_auto]"
+        className="fixed inset-0 mx-auto h-screen w-screen max-w-screen-md bg-cover bg-no-repeat group-[.editor-preview]:absolute group-[.editor-preview]:w-full"
+        style={{
+          backgroundImage:
+            backgroundImage === "none" || !backgroundImage?.startsWith("bg")
+              ? "none"
+              : `url(/bg/${backgroundImage})`,
+          backgroundPosition: backgroundImage?.split("-")[1]
+        }}
+      ></div>
+      <main className="mx-auto flex max-w-screen-md grow flex-col @container">
+        <div className="relative flex grow flex-col pb-8">{children}</div>
       </main>
     </div>
   )
