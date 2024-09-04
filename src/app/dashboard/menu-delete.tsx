@@ -29,7 +29,7 @@ export default function MenuDelete({
     onExecute: () => {
       // toast.loading("Eliminando Menú...")
     },
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
         toast.error(data.failure.reason)
       } else if (data?.success) {

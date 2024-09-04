@@ -44,12 +44,12 @@ export function ColorThemeEditor({
     status,
     reset
   } = useAction(createColorTheme, {
-    onSuccess: data => {
-      if (data.failure?.reason) {
+    onSuccess: ({ data }) => {
+      if (data?.failure?.reason) {
         toast.error(data.failure?.reason)
         return
       }
-      if (data.success) {
+      if (data?.success) {
         setTheme(JSON.parse(data.success.themeJSON))
         toast.success("Tema guardado")
       }
@@ -66,13 +66,13 @@ export function ColorThemeEditor({
     status: updateStatus,
     reset: resetStatus
   } = useAction(updateColorTheme, {
-    onSuccess: data => {
-      if (data.failure?.reason) {
+    onSuccess: ({ data }) => {
+      if (data?.failure?.reason) {
         toast.error(data.failure?.reason)
         return
       }
 
-      if (data.success) {
+      if (data?.success) {
         setTheme(JSON.parse(data.success.themeJSON))
         toast.success("Tema guardado")
       }
@@ -89,8 +89,8 @@ export function ColorThemeEditor({
     status: deleteStatus,
     reset: resetDeleteStatus
   } = useAction(deleteColorTheme, {
-    onSuccess: data => {
-      if (data.failure?.reason) {
+    onSuccess: ({ data }) => {
+      if (data?.failure?.reason) {
         toast.error(data.failure?.reason)
         return
       }

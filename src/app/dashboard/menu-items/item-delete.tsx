@@ -59,10 +59,15 @@ export default function ItemDelete({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel onClick={event => event.stopPropagation()}>
+            Cancelar
+          </AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
-            onClick={() => onDeleteItem()}
+            onClick={event => {
+              event.stopPropagation()
+              onDeleteItem()
+            }}
           >
             Eliminar
           </AlertDialogAction>

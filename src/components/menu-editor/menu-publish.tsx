@@ -66,15 +66,15 @@ export default function MenuPublish({
   const setMenuTour = useSetAtom(tourModeAtom)
 
   const { execute, status, reset } = useAction(updateMenuStatus, {
-    onSuccess: data => {
-      if (data.success) {
+    onSuccess: ({ data }) => {
+      if (data?.success) {
         toast.success("Menú actualizado")
         queryClient.invalidateQueries({
           queryKey: ["menu", menu?.id]
         })
         // Reset history to avoid undoing the update
         actions.history.clear()
-      } else if (data.failure.reason) {
+      } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
       reset()
@@ -90,15 +90,15 @@ export default function MenuPublish({
     status: statusSerialData,
     reset: resetSerialData
   } = useAction(updateMenuSerialData, {
-    onSuccess: data => {
-      if (data.success) {
+    onSuccess: ({ data }) => {
+      if (data?.success) {
         toast.success("Menú actualizado")
         queryClient.invalidateQueries({
           queryKey: ["menu", menu?.id]
         })
         // Reset history to avoid undoing the update
         actions.history.clear()
-      } else if (data.failure.reason) {
+      } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
       resetSerialData()

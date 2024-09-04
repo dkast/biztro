@@ -178,7 +178,12 @@ function ActionsColumn({
               <span>Editar</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpenDelete(true)}>
+          <DropdownMenuItem
+            onClick={event => {
+              event.stopPropagation()
+              setOpenDelete(true)
+            }}
+          >
             <span className="text-red-500">Eliminar</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

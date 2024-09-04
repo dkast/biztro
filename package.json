@@ -108,6 +108,7 @@
     "react-hook-form": "^7.53.0",
     "react-hot-toast": "^2.4.1",
     "react-joyride": "^2.8.2",
+    "react-photo-view": "^1.2.6",
     "react-qrcode-logo": "^3.0.0",
     "react-resizable-panels": "^2.1.2",
     "react-stately": "^3.32.2",

@@ -14,14 +14,14 @@ export default function MenuCreate() {
     onExecute: () => {
       // toast.loading("Creando menú...")
     },
-    onSuccess: data => {
-      if (data.failure?.reason) {
+    onSuccess: ({ data }) => {
+      if (data?.failure?.reason) {
         // toast.dismiss()
         toast.error(data.failure.reason)
         return
       }
       // toast.dismiss()
-      router.push(`/menu-editor/${data.success?.id}`)
+      router.push(`/menu-editor/${data?.success?.id}`)
       reset()
     },
     onError: error => {

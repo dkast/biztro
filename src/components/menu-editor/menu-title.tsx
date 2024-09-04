@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { ChevronDown } from "lucide-react"
 import { useOptimisticAction } from "next-safe-action/hooks"
@@ -24,6 +25,7 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover"
 import { updateMenuName } from "@/server/actions/menu/mutations"
+import type { getMenuById } from "@/server/actions/menu/queries"
 
 const nameSchema = z.object({
   name: z.string().min(1, "El nombre es requerido")
@@ -32,20 +34,25 @@ const nameSchema = z.object({
 export default function MenuTitle({
   menu
 }: {
-  menu: Prisma.PromiseReturnType<typeof getMenuById>
+  menu: NonNullable<Prisma.PromiseReturnType<typeof getMenuById>>
 }) {
   const form = useForm<z.infer<typeof nameSchema>>({
     resolver: zodResolver(nameSchema),
-    defaultValues: { name: menu.name },
+    defaultValues: { name: menu.name ?? "Sin nombre" },
     mode: "onBlur"
   })
-  const [name, setName] = useState(menu.name)
-  const { execute, optimisticData } = useOptimisticAction(
-    updateMenuName,
-    { name },
-    (state, input) => ({ name: input.name })
-  )
   const queryClient = useQueryClient()
+  const [name, setName] = useState(menu.name)
+  const { execute, result } = useOptimisticAction(updateMenuName, {
+    currentState: { name },
+    updateFn: (prev, next) => {
+      // setName(next.name)
+      // queryClient.invalidateQueries({
+      //   queryKey: ["menu", menu.id]
+      // })
+      return { ...prev, name: next.name }
+    }
+  })
 
   const onClose = (open: boolean) => {
     if (!open) {
@@ -69,7 +76,7 @@ export default function MenuTitle({
     <Popover onOpenChange={open => onClose(open)}>
       <PopoverTrigger asChild>
         <Button type="button" variant="ghost" size="xs">
-          {optimisticData?.name ?? name}
+          {result.data?.name ?? name}
           <ChevronDown className="ml-1 size-3.5" />
         </Button>
       </PopoverTrigger>
