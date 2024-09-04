@@ -98,7 +98,7 @@ export function VariantCreateForm({
   })
 
   const { execute, status, reset } = useAction(createVariant, {
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.success) {
         onClose(false)
       } else if (data?.failure.reason) {

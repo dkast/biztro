@@ -7,12 +7,22 @@ import { z } from "zod"
 
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
-import { action } from "@/lib/safe-actions"
+import { authActionClient } from "@/lib/safe-actions"
 import { menuSchema } from "@/lib/types"
 
-export const createMenu = action(
-  menuSchema,
-  async ({ name, description, status }) => {
+/**
+ * Creates a menu.
+ *
+ * @param name - The name of the menu.
+ * @param description - The description of the menu.
+ * @param status - The status of the menu.
+ * @returns An object with either a success or failure property.
+ *          - If successful, the success property contains the created menu.
+ *          - If failed, the failure property contains the reason for the failure.
+ */
+export const createMenu = authActionClient
+  .schema(menuSchema)
+  .action(async ({ parsedInput: { name, description, status } }) => {
     const currentOrg = cookies().get(appConfig.cookieOrg)?.value
 
     if (!currentOrg) {
@@ -57,15 +67,23 @@ export const createMenu = action(
         }
       }
     }
-  }
-)
+  })
 
-export const updateMenuName = action(
-  z.object({
-    id: z.string(),
-    name: z.string()
-  }),
-  async ({ id, name }) => {
+/**
+ * Updates the name of a menu.
+ *
+ * @param id - The ID of the menu to update.
+ * @param name - The new name for the menu.
+ * @returns An object with the updated menu name, or a failure object with a reason if an error occurs.
+ */
+export const updateMenuName = authActionClient
+  .schema(
+    z.object({
+      id: z.string(),
+      name: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { id, name } }) => {
     try {
       const menu = await prisma.menu.update({
         where: { id },
@@ -97,100 +115,136 @@ export const updateMenuName = action(
         }
       }
     }
-  }
-)
+  })
 
-export const updateMenuStatus = action(
-  z.object({
-    id: z.string(),
-    subdomain: z.string(),
-    status: z.enum(["PUBLISHED", "DRAFT"]),
-    fontTheme: z.string(),
-    colorTheme: z.string(),
-    serialData: z.string()
-  }),
-  async ({ id, subdomain, status, fontTheme, colorTheme, serialData }) => {
-    try {
-      const menu = await prisma.menu.update({
-        where: { id },
-        data: {
-          status,
-          fontTheme,
-          colorTheme,
-          serialData,
-          publishedData: serialData,
-          publishedAt: status === "PUBLISHED" ? new Date() : null
+/**
+ * Updates the status, font theme, color theme, and serial data of a menu.
+ *
+ * @param id - The ID of the menu.
+ * @param subdomain - The subdomain of the site.
+ * @param status - The status of the menu. Must be either "PUBLISHED" or "DRAFT".
+ * @param fontTheme - The font theme of the menu.
+ * @param colorTheme - The color theme of the menu.
+ * @param serialData - The serial data of the menu.
+ * @returns An object with the updated menu if successful, or an object with the failure reason if unsuccessful.
+ */
+export const updateMenuStatus = authActionClient
+  .schema(
+    z.object({
+      id: z.string(),
+      subdomain: z.string(),
+      status: z.enum(["PUBLISHED", "DRAFT"]),
+      fontTheme: z.string(),
+      colorTheme: z.string(),
+      serialData: z.string()
+    })
+  )
+  .action(
+    async ({
+      parsedInput: { id, subdomain, status, fontTheme, colorTheme, serialData }
+    }) => {
+      try {
+        const menu = await prisma.menu.update({
+          where: { id },
+          data: {
+            status,
+            fontTheme,
+            colorTheme,
+            serialData,
+            publishedData: serialData,
+            publishedAt: status === "PUBLISHED" ? new Date() : null
+          }
+        })
+
+        revalidateTag(`menu-${id}`)
+        revalidateTag(`site-${subdomain}`)
+        revalidatePath(`/${subdomain}`)
+
+        return {
+          success: menu
         }
-      })
-
-      revalidateTag(`menu-${id}`)
-      revalidateTag(`site-${subdomain}`)
-      revalidatePath(`/${subdomain}`)
-
-      return {
-        success: menu
-      }
-    } catch (error) {
-      let message
-      if (typeof error === "string") {
-        message = error
-      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        message = error.message
-      } else if (error instanceof Error) {
-        message = error.message
-      }
-      return {
-        failure: {
-          reason: message
+      } catch (error) {
+        let message
+        if (typeof error === "string") {
+          message = error
+        } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          message = error.message
+        } else if (error instanceof Error) {
+          message = error.message
         }
-      }
-    }
-  }
-)
-
-export const updateMenuSerialData = action(
-  z.object({
-    id: z.string(),
-    fontTheme: z.string(),
-    colorTheme: z.string(),
-    serialData: z.string()
-  }),
-  async ({ id, fontTheme, colorTheme, serialData }) => {
-    try {
-      const menu = await prisma.menu.update({
-        where: { id },
-        data: { fontTheme, colorTheme, serialData }
-      })
-
-      revalidateTag(`menu-${id}`)
-
-      return {
-        success: menu
-      }
-    } catch (error) {
-      let message
-      if (typeof error === "string") {
-        message = error
-      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        message = error.message
-      } else if (error instanceof Error) {
-        message = error.message
-      }
-      return {
-        failure: {
-          reason: message
+        return {
+          failure: {
+            reason: message
+          }
         }
       }
     }
-  }
-)
+  )
 
-export const deleteMenu = action(
-  z.object({
-    id: z.string(),
-    organizationId: z.string()
-  }),
-  async ({ id, organizationId }) => {
+/**
+ * Updates the menu serial data.
+ *
+ * @param id - The ID of the menu.
+ * @param fontTheme - The font theme of the menu.
+ * @param colorTheme - The color theme of the menu.
+ * @param serialData - The serial data of the menu.
+ * @returns An object with the updated menu if successful, or an object with the failure reason if unsuccessful.
+ */
+export const updateMenuSerialData = authActionClient
+  .schema(
+    z.object({
+      id: z.string(),
+      fontTheme: z.string(),
+      colorTheme: z.string(),
+      serialData: z.string()
+    })
+  )
+  .action(
+    async ({ parsedInput: { id, fontTheme, colorTheme, serialData } }) => {
+      try {
+        const menu = await prisma.menu.update({
+          where: { id },
+          data: { fontTheme, colorTheme, serialData }
+        })
+
+        revalidateTag(`menu-${id}`)
+
+        return {
+          success: menu
+        }
+      } catch (error) {
+        let message
+        if (typeof error === "string") {
+          message = error
+        } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          message = error.message
+        } else if (error instanceof Error) {
+          message = error.message
+        }
+        return {
+          failure: {
+            reason: message
+          }
+        }
+      }
+    }
+  )
+
+/**
+ * Deletes a menu based on the provided ID and organization ID.
+ *
+ * @param id - The ID of the menu to delete.
+ * @param organizationId - The ID of the organization that the menu belongs to.
+ * @returns An object indicating the success or failure of the deletion operation.
+ */
+export const deleteMenu = authActionClient
+  .schema(
+    z.object({
+      id: z.string(),
+      organizationId: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { id, organizationId } }) => {
     try {
       await prisma.menu.delete({
         where: { id, organizationId }
@@ -216,63 +270,88 @@ export const deleteMenu = action(
         }
       }
     }
-  }
-)
+  })
 
-export const createColorTheme = action(
-  z.object({
-    id: z.string(),
-    name: z.string(),
-    scope: z.string(),
-    themeType: z.string(),
-    themeJSON: z.string(),
-    organizationId: z.string().optional()
-  }),
-  async ({ id, name, scope, themeType, themeJSON, organizationId }) => {
-    try {
-      const colorTheme = await prisma.theme.create({
-        data: {
-          id,
-          name,
-          scope,
-          themeType,
-          themeJSON,
-          organizationId
+/**
+ * Creates a color theme.
+ *
+ * @param id - The ID of the color theme.
+ * @param name - The name of the color theme.
+ * @param scope - The scope of the color theme.
+ * @param themeType - The type of the color theme.
+ * @param themeJSON - The JSON representation of the color theme.
+ * @param organizationId - The ID of the organization (optional).
+ * @returns An object with the success property set to the created color theme if successful, or an object with the failure property containing the reason for failure.
+ */
+export const createColorTheme = authActionClient
+  .schema(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      scope: z.string(),
+      themeType: z.string(),
+      themeJSON: z.string(),
+      organizationId: z.string().optional()
+    })
+  )
+  .action(
+    async ({
+      parsedInput: { id, name, scope, themeType, themeJSON, organizationId }
+    }) => {
+      try {
+        const colorTheme = await prisma.theme.create({
+          data: {
+            id,
+            name,
+            scope,
+            themeType,
+            themeJSON,
+            organizationId
+          }
+        })
+
+        // revalidateTag(`themes-${themeType}-${organizationId}`)
+
+        return {
+          success: colorTheme
         }
-      })
-
-      // revalidateTag(`themes-${themeType}-${organizationId}`)
-
-      return {
-        success: colorTheme
-      }
-    } catch (error) {
-      let message
-      if (typeof error === "string") {
-        message = error
-      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
-          message = "Ya existe un tema personalizado"
+      } catch (error) {
+        let message
+        if (typeof error === "string") {
+          message = error
+        } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
+            message = "Ya existe un tema personalizado"
+          }
+        } else if (error instanceof Error) {
+          message = error.message
         }
-      } else if (error instanceof Error) {
-        message = error.message
-      }
-      return {
-        failure: {
-          reason: message
+        return {
+          failure: {
+            reason: message
+          }
         }
       }
     }
-  }
-)
+  )
 
-export const updateColorTheme = action(
-  z.object({
-    id: z.string(),
-    name: z.string(),
-    themeJSON: z.string()
-  }),
-  async ({ id, name, themeJSON }) => {
+/**
+ * Updates the color theme with the specified ID.
+ *
+ * @param id - The ID of the color theme.
+ * @param name - The name of the color theme.
+ * @param themeJSON - The JSON representation of the color theme.
+ * @returns An object with the updated color theme if successful, or an object with the failure reason if an error occurs.
+ */
+export const updateColorTheme = authActionClient
+  .schema(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      themeJSON: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { id, name, themeJSON } }) => {
     try {
       const colorTheme = await prisma.theme.update({
         where: { id },
@@ -303,14 +382,21 @@ export const updateColorTheme = action(
         }
       }
     }
-  }
-)
+  })
 
-export const deleteColorTheme = action(
-  z.object({
-    id: z.string()
-  }),
-  async ({ id }) => {
+/**
+ * Deletes a color theme.
+ *
+ * @param {string} id - The ID of the color theme to delete.
+ * @returns {Promise<{ success: boolean } | { failure: { reason: string } }>} - A promise that resolves to an object indicating the success or failure of the deletion operation.
+ */
+export const deleteColorTheme = authActionClient
+  .schema(
+    z.object({
+      id: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { id } }) => {
     const currentOrg = cookies().get(appConfig.cookieOrg)?.value
     try {
       await prisma.theme.delete({
@@ -337,5 +423,4 @@ export const deleteColorTheme = action(
         }
       }
     }
-  }
-)
+  })

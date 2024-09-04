@@ -116,7 +116,7 @@ function CategoryEditForm({
     status: statusInsert,
     reset: resetInsert
   } = useAction(createCategory, {
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Categoría agregada")
         onClose(false)
@@ -137,7 +137,7 @@ function CategoryEditForm({
     status: statusUpdate,
     reset: resetUpdate
   } = useAction(updateCategory, {
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Categoría actualizada")
         onClose(false)

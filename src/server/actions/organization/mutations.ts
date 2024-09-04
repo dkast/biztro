@@ -6,69 +6,86 @@ import { z } from "zod"
 
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
-import { action } from "@/lib/safe-actions"
-import { getCurrentUser } from "@/lib/session"
+import { actionClient, authActionClient } from "@/lib/safe-actions"
 import { orgSchema } from "@/lib/types"
 
-export const bootstrapOrg = action(
-  orgSchema,
-  async ({ name, description, subdomain }) => {
-    try {
-      const user = await getCurrentUser()
+/**
+ * Bootstrap an organization by creating a new organization with the provided name, description, and subdomain.
+ *
+ * @param name - The name of the organization.
+ * @param description - The description of the organization.
+ * @param subdomain - The subdomain of the organization.
+ * @returns An object indicating the success or failure of the operation.
+ */
+export const bootstrapOrg = authActionClient
+  .schema(orgSchema)
+  .action(
+    async ({
+      parsedInput: { name, description, subdomain },
+      ctx: { user }
+    }) => {
+      try {
+        if (user?.id === undefined) {
+          return {
+            failure: {
+              reason: "No se pudo obtener el usuario actual"
+            }
+          }
+        }
 
-      if (user?.id === undefined) {
+        const org = await prisma.organization.create({
+          data: {
+            name,
+            description,
+            subdomain
+          }
+        })
+
+        await prisma.membership.create({
+          data: {
+            userId: user.id,
+            organizationId: org.id,
+            role: "OWNER"
+          }
+        })
+
+        // Set the current organization
+        cookies().set(appConfig.cookieOrg, org.id, {
+          maxAge: 60 * 60 * 24 * 365
+        })
+
+        revalidateTag(`organization-${org.id}`)
+        revalidateTag(`organization-${org.subdomain}`)
+        revalidateTag(`memberships-${org.id}`)
+
+        return { success: true }
+      } catch (error) {
+        let message
+        if (typeof error === "string") {
+          message = error
+        } else if (error instanceof Error) {
+          message = error.message
+        }
         return {
           failure: {
-            reason: "No se pudo obtener el usuario actual"
+            reason: message
           }
         }
       }
-
-      const org = await prisma.organization.create({
-        data: {
-          name,
-          description,
-          subdomain
-        }
-      })
-
-      await prisma.membership.create({
-        data: {
-          userId: user.id,
-          organizationId: org.id,
-          role: "OWNER"
-        }
-      })
-
-      // Set the current organization
-      cookies().set(appConfig.cookieOrg, org.id, {
-        maxAge: 60 * 60 * 24 * 365
-      })
-
-      revalidateTag(`organization-${org.id}`)
-      revalidateTag(`organization-${org.subdomain}`)
-      revalidateTag(`memberships-${org.id}`)
-
-      return { success: true }
-    } catch (error) {
-      let message
-      if (typeof error === "string") {
-        message = error
-      } else if (error instanceof Error) {
-        message = error.message
-      }
-      return {
-        failure: {
-          reason: message
-        }
-      }
     }
-  }
-)
+  )
 
-export const createOrg = action(
-  orgSchema,
-  async ({ name, description, subdomain }) => {
+/**
+ * Creates a new organization.
+ *
+ * @param name - The name of the organization.
+ * @param description - The description of the organization.
+ * @param subdomain - The subdomain of the organization.
+ * @returns An object indicating the success or failure of the operation.
+ */
+export const createOrg = authActionClient
+  .schema(orgSchema)
+  .action(async ({ parsedInput: { name, description, subdomain } }) => {
     try {
       const org = await prisma.organization.create({
         data: {
@@ -95,12 +112,20 @@ export const createOrg = action(
         }
       }
     }
-  }
-)
+  })
 
-export const updateOrg = action(
-  orgSchema,
-  async ({ id, name, description, subdomain }) => {
+/**
+ * Updates an organization.
+ *
+ * @param id - The ID of the organization to update.
+ * @param name - The new name of the organization.
+ * @param description - The new description of the organization.
+ * @param subdomain - The new subdomain of the organization.
+ * @returns An object indicating the success or failure of the update operation.
+ */
+export const updateOrg = authActionClient
+  .schema(orgSchema)
+  .action(async ({ parsedInput: { id, name, description, subdomain } }) => {
     try {
       const org = await prisma.organization.update({
         where: {
@@ -130,15 +155,21 @@ export const updateOrg = action(
         }
       }
     }
-  }
-)
+  })
 
-export const joinWaitlist = action(
-  z.object({
-    email: z.string().email()
-  }),
-
-  async ({ email }) => {
+/**
+ * Join the waitlist with the provided email.
+ *
+ * @param {string} email - The email to join the waitlist with.
+ * @returns {Promise<{ success: { email: string } } | { failure: { reason: string } }>} - A promise that resolves to an object indicating the success or failure of joining the waitlist.
+ */
+export const joinWaitlist = actionClient
+  .schema(
+    z.object({
+      email: z.string().email()
+    })
+  )
+  .action(async ({ parsedInput: { email } }) => {
     try {
       const invite = await prisma.invite.findUnique({
         where: {
@@ -176,5 +207,4 @@ export const joinWaitlist = action(
         }
       }
     }
-  }
-)
+  })

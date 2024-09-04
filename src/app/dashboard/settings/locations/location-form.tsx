@@ -57,7 +57,7 @@ export default function LocationForm({
     status: statusCreate,
     reset: resetCreate
   } = useAction(createLocation, {
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Sucursal actualizada")
       } else if (data?.failure.reason) {
@@ -76,7 +76,7 @@ export default function LocationForm({
     status: statusUpdate,
     reset: resetUpdate
   } = useAction(updateLocation, {
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Sucursal actualizada")
       } else if (data?.failure.reason) {

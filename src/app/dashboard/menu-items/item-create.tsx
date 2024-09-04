@@ -14,13 +14,13 @@ export default function ItemCreate() {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
   const { execute, status, reset } = useAction(createItem, {
-    onSuccess: data => {
-      if (data.failure?.reason) {
+    onSuccess: ({ data }) => {
+      if (data?.failure?.reason) {
         toast.error(data.failure.reason)
         return
       }
       startTransition(() => {
-        router.push(`/dashboard/menu-items/new/${data.success?.id}`)
+        router.push(`/dashboard/menu-items/new/${data?.success?.id}`)
         reset()
       })
     },
