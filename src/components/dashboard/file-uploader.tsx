@@ -1,9 +1,13 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import AwsS3, { type AwsS3UploadParameters } from "@uppy/aws-s3"
 import Compressor from "@uppy/compressor"
-import Uppy, { type UploadResult, type UppyFile } from "@uppy/core"
+import Uppy, {
+  type Body,
+  type Meta,
+  type UploadResult,
+  type UppyFile
+} from "@uppy/core"
 import ImageEditor from "@uppy/image-editor"
-// @ts-expect-error - Uppy doesn't have types for this locale
 import Spanish from "@uppy/locales/lib/es_MX"
 import { Dashboard } from "@uppy/react"
 
@@ -20,7 +24,7 @@ import { useTheme } from "next-themes"
 import type { ImageType } from "@/lib/types"
 
 export async function getUploadParameters(
-  file: UppyFile,
+  file: UppyFile<Meta, Body>,
   organizationId: string,
   imageType: ImageType,
   objectId: string
@@ -57,31 +61,6 @@ export async function getUploadParameters(
   return object
 }
 
-const uppy = new Uppy({
-  autoProceed: false,
-  restrictions: {
-    maxNumberOfFiles: 1,
-    allowedFileTypes: [".jpg", ".jpeg", ".png"]
-  },
-  locale: Spanish
-})
-  .use(AwsS3)
-  // .use(Webcam, {
-  //   modes: ["picture"]
-  // })
-  .use(ImageEditor, {
-    quality: 0.8
-  })
-  .use(Compressor, {
-    locale: {
-      strings: {
-        // Shown in the Status Bar
-        compressingImages: "Optimizando imágenes...",
-        compressedX: "Ahorro de %{size} al optimizar imágenes"
-      }
-    }
-  })
-
 export function FileUploader({
   organizationId,
   imageType,
@@ -92,18 +71,43 @@ export function FileUploader({
   organizationId: string
   imageType: ImageType
   objectId: string
-  onUploadSuccess: (result: UploadResult) => void
+  onUploadSuccess: (result: UploadResult<Meta, Body>) => void
   limitDimension?: number
 }) {
   const { theme } = useTheme()
-  useEffect(() => {
-    const awsS3Plugin = uppy.getPlugin("AwsS3")
-    if (awsS3Plugin) {
-      awsS3Plugin.setOptions({
-        getUploadParameters: (file: UppyFile) =>
+
+  const [uppy] = useState(() =>
+    new Uppy({
+      autoProceed: false,
+      restrictions: {
+        maxNumberOfFiles: 1,
+        allowedFileTypes: [".jpg", ".jpeg", ".png"]
+      },
+      locale: Spanish
+    })
+      .use(AwsS3, {
+        shouldUseMultipart: false,
+        getUploadParameters: (file: UppyFile<Meta, Body>) =>
           getUploadParameters(file, organizationId, imageType, objectId)
       })
-    }
+      .use(ImageEditor, {
+        quality: 0.8
+      })
+      .use(Compressor, {
+        locale: {
+          strings: {
+            // Shown in the Status Bar
+            compressingImages: "Optimizando imágenes...",
+            compressedX: "Ahorro de %{size} al optimizar imágenes"
+          },
+          pluralize: function (n) {
+            return n === 1 ? 0 : 1
+          }
+        }
+      })
+  )
+
+  useEffect(() => {
     uppy.on("file-added", async file => {
       // If the file is an image, get the dimensions
       if (file.type?.startsWith("image/")) {
@@ -134,7 +138,15 @@ export function FileUploader({
     uppy.on("complete", result => {
       onUploadSuccess(result)
     })
-  }, [imageType, objectId, onUploadSuccess, organizationId, limitDimension])
+  }, [
+    uppy,
+    imageType,
+    objectId,
+    onUploadSuccess,
+    organizationId,
+    limitDimension
+  ])
+
   return (
     <Dashboard
       className="mx-auto max-w-[320px] sm:max-w-[520px]"
@@ -148,7 +160,7 @@ export function FileUploader({
 }
 
 function getImageDimensions(
-  imgFile: UppyFile
+  imgFile: UppyFile<Meta, Body>
 ): Promise<{ width: number; height: number }> {
   return new Promise(resolve => {
     const url = URL.createObjectURL(imgFile.data)

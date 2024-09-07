@@ -4,7 +4,7 @@ import { createSafeActionClient } from "next-safe-action"
 import { getCurrentUser } from "@/lib/session"
 
 export const actionClient = createSafeActionClient({
-  handleServerErrorLog(e) {
+  handleServerError(e) {
     console.error(e)
     const log = new Logger()
     log.error("Error in safe action", e)

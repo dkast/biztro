@@ -149,7 +149,7 @@ export async function getMenuItemsWithoutCategory() {
     return []
   }
 
-  return await prisma.menuItem.findMany({
+  const data = await prisma.menuItem.findMany({
     where: {
       organizationId: currentOrg,
       categoryId: null,
@@ -166,4 +166,13 @@ export async function getMenuItemsWithoutCategory() {
       name: "asc"
     }
   })
+
+  // Get the image URL for each item
+  for (const item of data) {
+    if (item.image) {
+      item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}`
+    }
+  }
+
+  return data
 }
