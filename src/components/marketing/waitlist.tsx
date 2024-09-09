@@ -36,7 +36,7 @@ export default function Waitlist() {
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
   const { execute, status, reset } = useAction(joinWaitlist, {
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.success) {
         setIsSubmitted(true)
       } else if (data?.failure.reason) {

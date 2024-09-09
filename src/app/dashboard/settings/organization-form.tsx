@@ -59,13 +59,13 @@ export default function OrganizationForm({
   const queryClient = useQueryClient()
 
   const { execute, status, reset } = useAction(updateOrg, {
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Información actualizada")
         queryClient.invalidateQueries({
           queryKey: ["workgroup", "current"]
         })
-      } else if (data?.failure.reason) {
+      } else if (data?.failure?.reason) {
         toast.error(data.failure.reason)
       }
 

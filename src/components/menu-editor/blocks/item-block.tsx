@@ -133,8 +133,8 @@ export function ItemView({
       >
         <div
           className={cn(
-            "flex gap-2",
-            hasVariants ? "flex-col-reverse" : "flex-row"
+            "flex gap-3",
+            hasVariants ? "flex-col-reverse" : "flex-row items-center"
           )}
         >
           {item.image && showImage && (

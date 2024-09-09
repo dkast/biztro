@@ -14,6 +14,7 @@ export default function Toolbar({
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
 }) {
+  if (!menu) return null
   return (
     <div className="mx-10 grid grow grid-cols-3 items-center">
       <GuardLink href={"/dashboard"}>

@@ -5,6 +5,12 @@ import { unstable_cache as cache } from "next/cache"
 import prisma from "@/lib/prisma"
 import { env } from "@/env.mjs"
 
+/**
+ * Retrieves an organization by its ID.
+ *
+ * @param id - The ID of the organization to retrieve.
+ * @returns A promise that resolves to the organization object.
+ */
 export async function getOrganization(id: string) {
   return await cache(
     async () => {
@@ -32,6 +38,12 @@ export async function getOrganization(id: string) {
   )()
 }
 
+/**
+ * Retrieves an organization by its subdomain.
+ *
+ * @param subdomain - The subdomain of the organization.
+ * @returns A promise that resolves to the organization object.
+ */
 export async function getOrganizationBySubdomain(subdomain: string) {
   return await cache(
     async () => {
@@ -59,6 +71,12 @@ export async function getOrganizationBySubdomain(subdomain: string) {
   )()
 }
 
+/**
+ * Retrieves the onboarding status of an organization.
+ *
+ * @param id - The ID of the organization.
+ * @returns A promise that resolves to the organization's onboarding status.
+ */
 export async function getOrganizationOnboardingStatus(id: string) {
   return await cache(
     async () => {

@@ -117,7 +117,7 @@ export default function ItemForm({
     status: statusCategory,
     reset: resetCategory
   } = useAction(createCategory, {
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.success) {
         // toast.success("Categoría agregada")
       } else if (data?.failure.reason) {
@@ -150,7 +150,7 @@ export default function ItemForm({
   }
 
   const { execute, status, reset } = useAction(updateItem, {
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Producto actualizado")
         // router.back()

@@ -29,7 +29,7 @@ export default function VariantDelete({
     onExecute: () => {
       toast.loading("Eliminando Variante...")
     },
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
         toast.dismiss()
         toast.error(data.failure.reason)

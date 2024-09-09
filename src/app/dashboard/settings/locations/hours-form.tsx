@@ -87,7 +87,7 @@ export default function HoursForm({
   })
 
   const { execute, status, reset } = useAction(updateHours, {
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Horario actualizado")
       } else if (data?.failure.reason) {

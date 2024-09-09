@@ -28,7 +28,7 @@ export default function ItemDelete({
     onExecute: () => {
       toast.loading("Eliminando Categoría...")
     },
-    onSuccess: data => {
+    onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
         toast.dismiss()
         toast.error(data.failure.reason)
