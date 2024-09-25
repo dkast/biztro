@@ -12,6 +12,7 @@ import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import ItemBlock from "@/components/menu-editor/blocks/item-block"
+import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import FloatingBar from "@/components/menu-editor/floating-bar"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
@@ -73,7 +74,8 @@ export default function Workbench({
           HeadingElement,
           TextElement,
           CategoryBlock,
-          ItemBlock
+          ItemBlock,
+          NavigatorBlock
         }}
         onRender={RenderNode}
       >

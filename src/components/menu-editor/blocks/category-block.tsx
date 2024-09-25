@@ -62,6 +62,7 @@ export default function CategoryBlock({
     >
       <div>
         <h2
+          id={useNode().id}
           className="p-2"
           style={{
             fontFamily: categoryFontFamily,

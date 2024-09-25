@@ -53,7 +53,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      className={`${inter.variable} ${sora.variable} antialiased`}
+      className={`${inter.variable} ${sora.variable} scroll-smooth antialiased`}
       suppressHydrationWarning
       lang="es-MX"
     >

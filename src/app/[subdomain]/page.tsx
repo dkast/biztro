@@ -136,11 +136,8 @@ export default async function SitePage({
           {siteMenu.publishedAt
             ? new Intl.DateTimeFormat("es-MX", {
                 year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                timeZone: "CST"
+                month: "short",
+                day: "numeric"
               }).format(new Date(siteMenu.publishedAt))
             : ""}
         </div>
