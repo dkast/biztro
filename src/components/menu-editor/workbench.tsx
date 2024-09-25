@@ -131,7 +131,7 @@ export default function Workbench({
                   <Frame data={json}>
                     <Element is={ContainerBlock} canvas>
                       <HeaderBlock
-                        layout="classic"
+                        layout="modern"
                         organization={organization}
                         location={location ?? undefined}
                       />
