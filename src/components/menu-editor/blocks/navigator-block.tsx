@@ -141,7 +141,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
         }
         navRef.current = ref
       }}
-      className={cn("sticky top-0 p-4 transition delay-150 ease-in-out", {
+      className={cn("sticky top-0 z-10 p-4 transition delay-150 ease-in-out", {
         "bg-black/60 backdrop-blur-md": isSticky
       })}
       style={{

@@ -121,8 +121,8 @@ export function ItemView({
     <div
       className={cn(
         "rounded-xl p-3",
-        backgroundMode === "dark" && "bg-black/50 backdrop-blur-lg",
-        backgroundMode === "light" && "bg-white/50 backdrop-blur-lg"
+        backgroundMode === "dark" && "bg-black/50 backdrop-blur-md",
+        backgroundMode === "light" && "bg-white/50 backdrop-blur-md"
       )}
     >
       <div
