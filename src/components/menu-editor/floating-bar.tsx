@@ -91,7 +91,13 @@ export default function FloatingBar() {
         </Button>
       </TooltipHelper>
       <Separator orientation="vertical" className="mx-1 h-6 bg-gray-500" />
-      <TooltipHelper content="Tamaño vista previa">
+      <TooltipHelper
+        content={
+          frameSize === FrameSize.MOBILE
+            ? "Cambiar a vista Escritorio"
+            : "Cambiar a vista Móvil"
+        }
+      >
         <Button
           variant="ghost"
           size="icon"
@@ -105,9 +111,9 @@ export default function FloatingBar() {
           }
         >
           {frameSize === FrameSize.MOBILE ? (
-            <TabletSmartphone className="size-4" />
-          ) : (
             <Monitor className="size-4" />
+          ) : (
+            <TabletSmartphone className="size-4" />
           )}
         </Button>
       </TooltipHelper>

@@ -197,11 +197,16 @@ export default function ToolboxPanel({
         <div
           ref={ref => {
             if (ref) {
-              connectors.create(ref, <NavigatorBlock ids={[]} />)
+              connectors.create(
+                ref,
+                <NavigatorBlock
+                  color={hexToRgba(selectedColorTheme.brandColor)}
+                />
+              )
             }
           }}
         >
-          <ToolboxElement title="Navegador" Icon={LinkIcon} />
+          <ToolboxElement title="Navegación" Icon={LinkIcon} />
         </div>
         <div
           ref={ref => {

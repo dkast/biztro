@@ -92,6 +92,15 @@ export default function ThemeSelector({
               }))
             })
             break
+          case "ItemBlock":
+            setIgnoreProp(key, props => {
+              return (props = Object.assign(props, {
+                itemFontFamily: selectedTheme.fontDisplay,
+                priceFontFamily: selectedTheme.fontText,
+                descriptionFontFamily: selectedTheme.fontText
+              }))
+            })
+            break
           case "TextElement":
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {
@@ -180,6 +189,13 @@ export default function ThemeSelector({
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {
                 color: hexToRgba(selectedTheme.accentColor)
+              }))
+            })
+            break
+          case "NavigatorBlock":
+            setIgnoreProp(key, props => {
+              return (props = Object.assign(props, {
+                color: hexToRgba(selectedTheme.brandColor)
               }))
             })
             break
