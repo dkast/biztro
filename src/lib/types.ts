@@ -137,6 +137,10 @@ export const COLORS = [
   "#ffffff"
 ]
 
+export const providers = {
+  google: { id: "google", name: "Google" }
+}
+
 export const FONT_SIZES = [12, 14, 16, 18, 20, 24, 30, 36]
 
 export const orgSchema = z.object({
@@ -335,6 +339,11 @@ export const enum ThemeType {
 export const enum ThemeScope {
   GLOBAL = "GLOBAL",
   USER = "USER"
+}
+
+export const enum InviteStatus {
+  PENDING = "PENDING",
+  ACCEPTED = "ACCEPTED"
 }
 
 export const fontThemes = [

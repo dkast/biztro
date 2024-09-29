@@ -8,6 +8,7 @@ import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import { getCurrentUser } from "@/lib/session"
+import { InviteStatus, MembershipRole } from "@/lib/types"
 
 export const assignOrganization = authActionClient
   .schema(
@@ -68,8 +69,8 @@ export const inviteMember = authActionClient
           email,
           token: nanoid(),
           organizationId: currentOrg,
-          role: "MEMBER",
-          status: "PENDING",
+          role: MembershipRole.MEMBER,
+          status: InviteStatus.PENDING,
           expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
           invitedById: membership?.id
         }

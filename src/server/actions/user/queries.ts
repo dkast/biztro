@@ -88,3 +88,23 @@ export const getMembers = async () => {
     }
   )()
 }
+
+export const getInviteByToken = async (token: string) => {
+  return await prisma.teamInvite.findFirst({
+    where: {
+      token
+    },
+    select: {
+      email: true,
+      expiresAt: true,
+      organizationId: true,
+      status: true,
+      organization: {
+        select: {
+          name: true,
+          subdomain: true
+        }
+      }
+    }
+  })
+}

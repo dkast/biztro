@@ -2,10 +2,12 @@ import authConfig from "@/auth.config"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import NextAuth from "next-auth"
 import type { Adapter } from "next-auth/adapters"
+import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
+import { InviteStatus } from "@/lib/types"
 
 export const { handlers, auth } = NextAuth({
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -14,6 +16,7 @@ export const { handlers, auth } = NextAuth({
   },
   callbacks: {
     async signIn({ user }) {
+      // Waitlist check, remove this once the waitlist is removed
       const found = await prisma.invite.count({
         where: {
           email: user.email ?? "",
@@ -38,8 +41,46 @@ export const { handlers, auth } = NextAuth({
         })
       }
 
-      // If found invite then allow to continue
-      return found > 0
+      // If team invite found then allow to continue
+      const invite = await prisma.teamInvite.findFirst({
+        where: {
+          email: user.email ?? "",
+          status: InviteStatus.PENDING
+        }
+      })
+
+      if (invite) {
+        // Accept the invite
+        await prisma.teamInvite.update({
+          where: {
+            id: invite.id
+          },
+          data: {
+            status: InviteStatus.ACCEPTED
+          }
+        })
+
+        // Add the user to the organization
+        if (user.id && invite.organizationId) {
+          await prisma.membership.create({
+            data: {
+              userId: user.id,
+              organizationId: invite.organizationId,
+              role: invite.role
+            }
+          })
+        }
+
+        // Set the current organization
+        cookies().set(appConfig.cookieOrg, invite.organizationId, {
+          maxAge: 60 * 60 * 24 * 365
+        })
+
+        revalidateTag(`members-${invite.organizationId}`)
+      }
+
+      // If found on waitlist, invite or already has a membership then allow to continue
+      return found > 0 || !!membership || !!invite
     },
     // skipcq: JS-0116
     async redirect({ url, baseUrl }) {
