@@ -1,6 +1,6 @@
 import authConfig from "@/auth.config"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import NextAuth from "next-auth"
+import NextAuth, { type DefaultSession } from "next-auth"
 import type { Adapter } from "next-auth/adapters"
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
@@ -8,6 +8,18 @@ import { cookies } from "next/headers"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { InviteStatus } from "@/lib/types"
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string
+      email: string
+      name?: string | null
+      image?: string | null
+      role?: string | null
+    } & DefaultSession["user"]
+  }
+}
 
 export const { handlers, auth } = NextAuth({
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -27,7 +39,8 @@ export const { handlers, auth } = NextAuth({
       // Find if the user has a membership
       const membership = await prisma.membership.findFirst({
         where: {
-          userId: user.id
+          userId: user.id,
+          isActive: true
         },
         include: {
           organization: true

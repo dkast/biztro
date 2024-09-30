@@ -10,21 +10,72 @@ import { authActionClient } from "@/lib/safe-actions"
 import { getCurrentUser } from "@/lib/session"
 import { InviteStatus, MembershipRole } from "@/lib/types"
 
-export const assignOrganization = authActionClient
+// export const assignOrganization = authActionClient
+//   .schema(
+//     z.object({
+//       cookieName: z.string(),
+//       organizationId: z.string()
+//     })
+//   )
+//   .action(
+//     // skipcq: JS-0116
+//     async ({ parsedInput: { cookieName, organizationId } }) => {
+//       cookies().set(cookieName, organizationId, {
+//         maxAge: 60 * 60 * 24 * 365
+//       })
+//     }
+//   )
+
+export const switchOrganization = authActionClient
   .schema(
     z.object({
-      cookieName: z.string(),
       organizationId: z.string()
     })
   )
-  .action(
-    // skipcq: JS-0116
-    async ({ parsedInput: { cookieName, organizationId } }) => {
-      cookies().set(cookieName, organizationId, {
+  .action(async ({ parsedInput: { organizationId } }) => {
+    try {
+      // Get the current user
+      const user = await getCurrentUser()
+
+      if (!user) {
+        return {
+          failure: {
+            reason: "No se pudo obtener el usuario actual"
+          }
+        }
+      }
+
+      // Get the membership
+      const membership = await prisma.membership.findFirst({
+        where: {
+          userId: user.id,
+          organizationId
+        }
+      })
+
+      if (!membership) {
+        return {
+          failure: {
+            reason: "No se pudo obtener la membresía"
+          }
+        }
+      }
+
+      // Set the current organization
+      cookies().set(appConfig.cookieOrg, organizationId, {
         maxAge: 60 * 60 * 24 * 365
       })
+
+      return { success: true }
+    } catch (error) {
+      console.error("Error switching organization:", error)
+      return {
+        failure: {
+          reason: "Error cambiando de organización"
+        }
+      }
     }
-  )
+  })
 
 export const inviteMember = authActionClient
   .schema(

@@ -54,9 +54,6 @@ export async function getCurrentOrganization() {
     if (!membership) {
       return null
     }
-
-    // await assignOrganization(appConfig.cookieOrg, membership.organizationId)
-
     return membership.organization
   }
 }
@@ -85,6 +82,51 @@ export const getMembers = async () => {
     {
       revalidate: 900,
       tags: [`members-${currentOrg}`]
+    }
+  )()
+}
+
+export const getCurrentMembership = async () => {
+  const user = await getCurrentUser()
+  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+
+  return await prisma.membership.findFirst({
+    where: {
+      userId: user?.id,
+      organizationId: currentOrg
+    }
+  })
+}
+
+export const getUserMemberships = async () => {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    return []
+  }
+
+  return await cache(
+    async () => {
+      const memberships = await prisma.membership.findMany({
+        where: {
+          userId: user.id
+        },
+        include: {
+          organization: true
+        },
+        orderBy: {
+          organization: {
+            name: "asc"
+          }
+        }
+      })
+
+      return memberships
+    },
+    [`memberships-${user.id}`],
+    {
+      revalidate: 900,
+      tags: [`memberships-${user.id}`]
     }
   )()
 }

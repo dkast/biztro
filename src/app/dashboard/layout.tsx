@@ -6,7 +6,10 @@ import {
 
 import Header from "@/components/dashboard/header"
 import Sidebar from "@/components/dashboard/sidebar"
-import { getCurrentOrganization } from "@/server/actions/user/queries"
+import {
+  getCurrentOrganization,
+  getUserMemberships
+} from "@/server/actions/user/queries"
 
 export default async function Layout({
   children
@@ -15,10 +18,16 @@ export default async function Layout({
 }) {
   const queryClient = new QueryClient()
 
-  await queryClient.prefetchQuery({
-    queryKey: ["workgroup", "current"],
-    queryFn: getCurrentOrganization
-  })
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["workgroup", "current"],
+      queryFn: getCurrentOrganization
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["workgroup", "memberships"],
+      queryFn: getUserMemberships
+    })
+  ])
 
   return (
     <div className="flex grow flex-col">
