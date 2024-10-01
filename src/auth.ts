@@ -93,7 +93,7 @@ export const { handlers, auth } = NextAuth({
       }
 
       // If found on waitlist, invite or already has a membership then allow to continue
-      return found > 0 || !!membership || !!invite
+      return found > 0 || Boolean(membership) || Boolean(invite)
     },
     // skipcq: JS-0116
     async redirect({ url, baseUrl }) {

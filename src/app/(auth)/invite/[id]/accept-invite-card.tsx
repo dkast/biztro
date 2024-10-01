@@ -29,8 +29,7 @@ export default function AcceptInviteCard({
     <Card className="mx-auto max-w-md shadow-xl">
       <CardHeader>
         <CardTitle className="text-balance text-xl">
-          Hola{user?.name ? user?.name + "," : ","} has sido invitado a unirte
-          al equipo de{" "}
+          {`Hola${user?.name ? ` ${user.name},` : ","} has sido invitado a unirte al equipo de `}
           <span className="text-orange-600">{invite?.organization.name}</span>.
         </CardTitle>
       </CardHeader>

@@ -52,55 +52,53 @@ export default function MemberInvite() {
   }
 
   return (
-    <>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button className="gap-2">
-            <UserPlus className="size-4" />
-            Invitar miembro
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogTitle>Invitar miembro</DialogTitle>
-          <DialogDescription>
-            Introduce el correo electrónico del miembro que deseas invitar.
-          </DialogDescription>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="mt-4 space-y-6"
-            >
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel htmlFor={field.name}>Email</FormLabel>
-                    <Input
-                      {...field}
-                      type="email"
-                      placeholder="correo@ejemplo.com"
-                      className="mb-4"
-                    />
-                  </FormItem>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="gap-2">
+          <UserPlus className="size-4" />
+          Invitar miembro
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogTitle>Invitar miembro</DialogTitle>
+        <DialogDescription>
+          Introduce el correo electrónico del miembro que deseas invitar.
+        </DialogDescription>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="mt-4 space-y-6"
+          >
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor={field.name}>Email</FormLabel>
+                  <Input
+                    {...field}
+                    type="email"
+                    placeholder="correo@ejemplo.com"
+                    className="mb-4"
+                  />
+                </FormItem>
+              )}
+            />
+            <div className="flex justify-end">
+              <Button type="submit" disabled={status === "executing"}>
+                {status === "executing" ? (
+                  <>
+                    <Loader className="mr-2 size-4 animate-spin" />
+                    {"Enviando..."}
+                  </>
+                ) : (
+                  "Enviar invitación"
                 )}
-              />
-              <div className="flex justify-end">
-                <Button type="submit" disabled={status === "executing"}>
-                  {status === "executing" ? (
-                    <>
-                      <Loader className="mr-2 size-4 animate-spin" />
-                      {"Enviando..."}
-                    </>
-                  ) : (
-                    "Enviar invitación"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-    </>
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   )
 }

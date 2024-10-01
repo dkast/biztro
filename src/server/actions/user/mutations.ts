@@ -1,7 +1,9 @@
 "use server"
 
+import InviteUserEmail from "@/emails/invite"
 import { nanoid } from "nanoid"
 import { cookies } from "next/headers"
+import { Resend } from "resend"
 import { z } from "zod"
 
 import { appConfig } from "@/app/config"
@@ -9,6 +11,7 @@ import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import { getCurrentUser } from "@/lib/session"
 import { InviteStatus, MembershipRole } from "@/lib/types"
+import { getBaseUrl } from "@/lib/utils"
 
 // export const assignOrganization = authActionClient
 //   .schema(
@@ -87,6 +90,7 @@ export const inviteMember = authActionClient
     try {
       // Get the current organization
       const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+      const baseUrl = getBaseUrl()
 
       // Get the current user
       const user = await getCurrentUser()
@@ -103,6 +107,9 @@ export const inviteMember = authActionClient
         where: {
           userId: user?.id,
           organizationId: currentOrg
+        },
+        include: {
+          organization: true
         }
       })
 
@@ -127,7 +134,24 @@ export const inviteMember = authActionClient
         }
       })
 
-      // TODO: Send email
+      // Send email
+      const resend = new Resend(process.env.RESEND_API_KEY)
+
+      // Extract shortname from email address
+      const shortname = email.split("@")[0]
+
+      await resend.emails.send({
+        from: "no-reply@biztro.co",
+        to: email,
+        subject: "Invitación para unirse a Biztro",
+        react: InviteUserEmail({
+          username: shortname,
+          invitedByUsername: user?.name ?? undefined,
+          invitedByEmail: user?.email,
+          teamName: membership.organization.name,
+          inviteLink: `${baseUrl}/invite/${invitation.token}`
+        })
+      })
 
       return { success: true }
     } catch (error) {

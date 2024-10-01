@@ -15,7 +15,7 @@ import {
   Text
 } from "@react-email/components"
 
-interface VercelInviteUserEmailProps {
+interface InviteUserEmailProps {
   username?: string
   userImage?: string
   invitedByUsername?: string
@@ -31,13 +31,13 @@ const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : ""
 
-export const BiztroInviteUserEmail = ({
+export const InviteUserEmail = ({
   username,
   invitedByUsername,
   invitedByEmail,
   teamName,
   inviteLink
-}: VercelInviteUserEmailProps) => {
+}: InviteUserEmailProps) => {
   const previewText = `Unete a ${invitedByUsername} en Biztro`
 
   return (
@@ -100,12 +100,12 @@ export const BiztroInviteUserEmail = ({
   )
 }
 
-BiztroInviteUserEmail.PreviewProps = {
+InviteUserEmail.PreviewProps = {
   username: "alanturing",
   invitedByUsername: "Alan",
   invitedByEmail: "alan.turing@example.com",
   teamName: "Enigma",
   inviteLink: "https://vercel.com/teams/invite/foo"
-} as VercelInviteUserEmailProps
+} as InviteUserEmailProps
 
-export default BiztroInviteUserEmail
+export default InviteUserEmail
