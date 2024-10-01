@@ -139,3 +139,90 @@ export const inviteMember = authActionClient
       }
     }
   })
+
+export const removeMember = authActionClient
+  .schema(
+    z.object({
+      memberId: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { memberId } }) => {
+    try {
+      // Get the membership
+      const membership = await prisma.membership.findFirst({
+        where: {
+          id: memberId,
+          role: MembershipRole.MEMBER
+        }
+      })
+
+      if (!membership) {
+        return {
+          failure: {
+            reason: "No se pudo obtener la membresía"
+          }
+        }
+      }
+
+      // Remove the membership
+      await prisma.membership.delete({
+        where: {
+          id: memberId
+        }
+      })
+
+      return { success: true }
+    } catch (error) {
+      console.error("Error removing member:", error)
+      return {
+        failure: {
+          reason: "Error eliminando al miembro"
+        }
+      }
+    }
+  })
+
+export const deactivateMember = authActionClient
+  .schema(
+    z.object({
+      memberId: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { memberId } }) => {
+    try {
+      // Get the membership
+      const membership = await prisma.membership.findFirst({
+        where: {
+          id: memberId,
+          role: MembershipRole.MEMBER
+        }
+      })
+
+      if (!membership) {
+        return {
+          failure: {
+            reason: "No se pudo obtener la membresía"
+          }
+        }
+      }
+
+      // Deactivate the membership
+      await prisma.membership.update({
+        where: {
+          id: memberId
+        },
+        data: {
+          isActive: false
+        }
+      })
+
+      return { success: true }
+    } catch (error) {
+      console.error("Error deactivating member:", error)
+      return {
+        failure: {
+          reason: "Error desactivando al miembro"
+        }
+      }
+    }
+  })

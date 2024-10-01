@@ -23,7 +23,7 @@ export default async function MembersPage() {
         description="Administra a los miembros de tu equipo"
         Icon={Users}
       >
-        {membership?.role === MembershipRole.OWNER && <MemberInvite />}
+        {membership?.role !== MembershipRole.MEMBER && <MemberInvite />}
       </PageSubtitle>
       <div className="mt-6">
         <DataTable columns={columns} data={data} />
