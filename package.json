@@ -15,7 +15,8 @@
     "prebuild": "prisma generate",
     "predev": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
-    "db:dev": "turso dev --db-file local.db"
+    "db:dev": "turso dev --db-file local.db",
+    "email": "email dev --dir src/emails"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.5.0",
@@ -54,6 +55,7 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
+    "@react-email/components": "^0.0.25",
     "@sindresorhus/slugify": "^2.2.1",
     "@suyalcinkaya/gauge": "^0.1.0",
     "@t3-oss/env-nextjs": "^0.11.1",
@@ -114,6 +116,7 @@
     "rehype-pretty-code": "^0.14.0",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.0",
+    "resend": "^4.0.0",
     "sharp": "^0.33.5",
     "shiki": "^1.18.0",
     "tailwind-merge": "^2.5.2",
@@ -150,6 +153,7 @@
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "prisma": "^5.20.0",
+    "react-email": "^3.0.1",
     "tailwindcss": "^3.4.13",
     "typescript": "^5.6.2"
   },
