@@ -76,16 +76,16 @@ export default function Workgroup({ className }: { className?: string }) {
         <Button
           variant="outline"
           className={cn(
-            "flex h-12 w-full flex-row items-center justify-between gap-3",
+            "flex h-12 w-full flex-row items-center justify-start gap-3 px-2",
             className
           )}
         >
-          <Avatar className="size-8 rounded-lg shadow">
+          <Avatar className="size-6 rounded shadow">
             <AvatarImage src={currentOrg.logo ?? undefined} />
             <AvatarFallback>{getInitials(currentOrg.name)}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col items-start">
-            <span className="line-clamp-1 text-sm font-semibold">
+          <div className="flex grow flex-col items-start">
+            <span className="line-clamp-1 text-xs font-semibold">
               {currentOrg.name}
             </span>
             <span className="text-xs font-semibold text-gray-400">Negocio</span>
