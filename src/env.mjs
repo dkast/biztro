@@ -29,7 +29,8 @@ export const env = createEnv({
     R2_BUCKET_NAME: z.string().min(1),
     R2_CUSTOM_DOMAIN: z.string().min(1),
     AUTH_GOOGLE_SECRET: z.string().min(1),
-    AUTH_GOOGLE_ID: z.string().min(1)
+    AUTH_GOOGLE_ID: z.string().min(1),
+    RESEND_API_KEY: z.string().min(1)
   },
 
   /**
@@ -58,7 +59,8 @@ export const env = createEnv({
     R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
     R2_CUSTOM_DOMAIN: process.env.R2_CUSTOM_DOMAIN,
     AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
-    AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID
+    AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
+    RESEND_API_KEY: process.env.RESEND_API_KEY
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

@@ -54,9 +54,6 @@ export async function getCurrentOrganization() {
     if (!membership) {
       return null
     }
-
-    // await assignOrganization(appConfig.cookieOrg, membership.organizationId)
-
     return membership.organization
   }
 }
@@ -87,4 +84,69 @@ export const getMembers = async () => {
       tags: [`members-${currentOrg}`]
     }
   )()
+}
+
+export const getCurrentMembership = async () => {
+  const user = await getCurrentUser()
+  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+
+  return await prisma.membership.findFirst({
+    where: {
+      userId: user?.id,
+      organizationId: currentOrg
+    }
+  })
+}
+
+export const getUserMemberships = async () => {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    return []
+  }
+
+  return await cache(
+    async () => {
+      const memberships = await prisma.membership.findMany({
+        where: {
+          userId: user.id
+        },
+        include: {
+          organization: true
+        },
+        orderBy: {
+          organization: {
+            name: "asc"
+          }
+        }
+      })
+
+      return memberships
+    },
+    [`memberships-${user.id}`],
+    {
+      revalidate: 900,
+      tags: [`memberships-${user.id}`]
+    }
+  )()
+}
+
+export const getInviteByToken = async (token: string) => {
+  return await prisma.teamInvite.findFirst({
+    where: {
+      token
+    },
+    select: {
+      email: true,
+      expiresAt: true,
+      organizationId: true,
+      status: true,
+      organization: {
+        select: {
+          name: true,
+          subdomain: true
+        }
+      }
+    }
+  })
 }

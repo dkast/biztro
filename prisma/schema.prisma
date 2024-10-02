@@ -69,6 +69,7 @@ model Membership {
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   user           User         @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
+  teamInvites    TeamInvite[]
 
   @@unique([organizationId, userId])
   @@index([userId])
@@ -92,6 +93,7 @@ model Organization {
   menus        Menu[]
   menuItems    MenuItem[]
   themes       Theme[]
+  teamInvite   TeamInvite[]
 }
 
 model Location {
@@ -199,4 +201,23 @@ model Invite {
   enabled Boolean @default(false)
 
   @@index([email])
+}
+
+model TeamInvite {
+  id             String       @id @default(cuid())
+  email          String
+  token          String       @unique
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role           String       @default("MEMBER")
+  status         String       @default("PENDING")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  invitedById    String
+  invitedBy      Membership   @relation(fields: [invitedById], references: [id])
+
+  @@unique([organizationId, email])
+  @@index([token])
 }

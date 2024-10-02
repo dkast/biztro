@@ -7,7 +7,7 @@ import { z } from "zod"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { actionClient, authActionClient } from "@/lib/safe-actions"
-import { orgSchema } from "@/lib/types"
+import { MembershipRole, orgSchema } from "@/lib/types"
 
 /**
  * Bootstrap an organization by creating a new organization with the provided name, description, and subdomain.
@@ -45,7 +45,7 @@ export const bootstrapOrg = authActionClient
           data: {
             userId: user.id,
             organizationId: org.id,
-            role: "OWNER"
+            role: MembershipRole.OWNER
           }
         })
 

@@ -9,6 +9,7 @@ import Link from "next/link"
 // import Logo from "@/components/logo"
 import Spinner from "@/components/ui/spinner"
 import LoginForm from "@/app/(auth)/login/login-form"
+import { providers } from "@/lib/types"
 
 export const metadata: Metadata = {
   title: "Iniciar sesión",
@@ -21,10 +22,6 @@ export default function LoginPage() {
   // if (!providers) {
   //   return notFound()
   // }
-
-  const providers = {
-    google: { id: "google", name: "Google" }
-  }
 
   return (
     <div className="flex min-h-full flex-1">

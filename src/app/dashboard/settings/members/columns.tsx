@@ -1,25 +1,27 @@
 "use client"
 
+import { useState } from "react"
 import { type Membership } from "@prisma/client"
-import { type ColumnDef } from "@tanstack/react-table"
+import { type ColumnDef, type Row } from "@tanstack/react-table"
 import {
   ChevronDown,
   ChevronsUpDown,
-  ChevronUp
-  // MoreHorizontal
+  ChevronUp,
+  MoreHorizontal
 } from "lucide-react"
-
-// import Link from "next/link"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuTrigger
-// } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import MemberDeactivate from "@/app/dashboard/settings/members/member-deactivate"
+import MemberDelete from "@/app/dashboard/settings/members/member-delete"
 import { MembershipRole } from "@/lib/types"
 
 export const columns: ColumnDef<Membership>[] = [
@@ -90,27 +92,62 @@ export const columns: ColumnDef<Membership>[] = [
       )
     },
     enableHiding: true
+  },
+  {
+    id: "actions",
+    cell: ActionsColumn
   }
-  // {
-  //   id: "actions",
-  //   cell: ({ row }) => {
-  //     const membership = row.original
-
-  //     return (
-  //       <DropdownMenu>
-  //         <DropdownMenuTrigger asChild>
-  //           <Button variant="ghost" className="h-8 w-8 p-0">
-  //             <MoreHorizontal className="h-4 w-4" />
-  //           </Button>
-  //         </DropdownMenuTrigger>
-  //         <DropdownMenuContent align="end" className="w-32">
-  //           <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-  //           <DropdownMenuItem asChild>
-  //             <Link href={`members/${membership.id}`}>Editar</Link>
-  //           </DropdownMenuItem>
-  //         </DropdownMenuContent>
-  //       </DropdownMenu>
-  //     )
-  //   }
-  // }
 ]
+
+function ActionsColumn({ row }: { row: Row<Membership> }) {
+  const membership = row.original
+  const [openDelete, setOpenDelete] = useState(false)
+  const [openDeactivate, setOpenDeactivate] = useState(false)
+
+  if (
+    membership.role === MembershipRole.OWNER ||
+    membership.role === MembershipRole.ADMIN
+  ) {
+    return null
+  }
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="hover:bg-gray-100">
+            <MoreHorizontal className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => {
+              setOpenDeactivate(true)
+            }}
+          >
+            <span>Desactivar</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setOpenDelete(true)
+            }}
+          >
+            <span className="text-red-500">Eliminar</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <MemberDeactivate
+        open={openDeactivate}
+        setOpen={setOpenDeactivate}
+        member={membership}
+      />
+      <MemberDelete
+        open={openDelete}
+        setOpen={setOpenDelete}
+        member={membership}
+      />
+    </>
+  )
+}

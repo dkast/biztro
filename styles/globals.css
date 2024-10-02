@@ -32,6 +32,11 @@
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+
+  .mask-fade {
+    -webkit-mask-image: linear-gradient(to left, transparent, black 20%);
+    mask-image: linear-gradient(to left, transparent, black 20%);
+  }
 }
 
 .dark .w-color-sketch {

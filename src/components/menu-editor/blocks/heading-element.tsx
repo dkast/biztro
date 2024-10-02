@@ -43,7 +43,8 @@ export default function HeadingElement({
             500
           )
         }}
-        tagName="p"
+        tagName="h2"
+        id={useNode().id}
         style={{
           fontSize: `${fontSize}px`,
           color: `rgba(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })}`,

@@ -10,6 +10,7 @@ import {
   Diamond,
   Layers,
   LetterText,
+  LinkIcon,
   PanelTop,
   Type,
   type LucideIcon
@@ -20,6 +21,7 @@ import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import ItemBlock from "@/components/menu-editor/blocks/item-block"
+import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import SideSection from "@/components/menu-editor/side-section"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -191,6 +193,20 @@ export default function ToolboxPanel({
           }}
         >
           <ToolboxElement title="Cabecera" Icon={PanelTop} />
+        </div>
+        <div
+          ref={ref => {
+            if (ref) {
+              connectors.create(
+                ref,
+                <NavigatorBlock
+                  color={hexToRgba(selectedColorTheme.brandColor)}
+                />
+              )
+            }
+          }}
+        >
+          <ToolboxElement title="Navegación" Icon={LinkIcon} />
         </div>
         <div
           ref={ref => {
