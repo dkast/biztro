@@ -17,26 +17,20 @@ import {
 
 interface InviteUserEmailProps {
   username?: string
-  userImage?: string
   invitedByUsername?: string
   invitedByEmail?: string
   teamName?: string
-  teamImage?: string
   inviteLink?: string
-  inviteFromIp?: string
-  inviteFromLocation?: string
+  baseUrl?: string
 }
-
-const baseUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : ""
 
 export const InviteUserEmail = ({
   username,
   invitedByUsername,
   invitedByEmail,
   teamName,
-  inviteLink
+  inviteLink,
+  baseUrl
 }: InviteUserEmailProps) => {
   const previewText = `Unete a ${invitedByUsername} en Biztro`
 
@@ -49,7 +43,7 @@ export const InviteUserEmail = ({
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src={`${baseUrl}/static/logo.png`}
+                src={`${baseUrl}/logo.png`}
                 width="40"
                 height="37"
                 alt="Biztro"
@@ -105,7 +99,8 @@ InviteUserEmail.PreviewProps = {
   invitedByUsername: "Alan",
   invitedByEmail: "alan.turing@example.com",
   teamName: "Enigma",
-  inviteLink: "https://vercel.com/teams/invite/foo"
+  inviteLink: "https://biztro.co/invite/foo",
+  baseUrl: "http://localhost:3000/static/"
 } as InviteUserEmailProps
 
 export default InviteUserEmail

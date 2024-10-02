@@ -149,7 +149,8 @@ export const inviteMember = authActionClient
           invitedByUsername: user?.name ?? undefined,
           invitedByEmail: user?.email,
           teamName: membership.organization.name,
-          inviteLink: `${baseUrl}/invite/${invitation.token}`
+          inviteLink: `${baseUrl}/invite/${invitation.token}`,
+          baseUrl: baseUrl
         })
       })
 
@@ -159,6 +160,80 @@ export const inviteMember = authActionClient
       return {
         failure: {
           reason: "Error invitando al miembro"
+        }
+      }
+    }
+  })
+
+export const acceptInvite = authActionClient
+  .schema(
+    z.object({
+      id: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { id } }) => {
+    try {
+      // Get the current user
+      const user = await getCurrentUser()
+
+      if (!user) {
+        return {
+          failure: {
+            reason: "No se pudo obtener el usuario actual"
+          }
+        }
+      }
+
+      // Get the team invite
+      const invite = await prisma.teamInvite.findFirst({
+        where: {
+          id,
+          email: user.email ?? "",
+          status: InviteStatus.PENDING
+        }
+      })
+
+      if (!invite) {
+        return {
+          failure: {
+            reason: "No se pudo obtener la invitación"
+          }
+        }
+      }
+
+      // Accept the invite
+      await prisma.teamInvite.update({
+        where: {
+          id
+        },
+        data: {
+          status: InviteStatus.ACCEPTED,
+          acceptedAt: new Date()
+        }
+      })
+
+      // Add the user to the organization
+      if (user.id && invite.organizationId) {
+        await prisma.membership.create({
+          data: {
+            userId: user.id,
+            organizationId: invite.organizationId,
+            role: invite.role
+          }
+        })
+      }
+
+      // Set the current organization
+      cookies().set(appConfig.cookieOrg, invite.organizationId, {
+        maxAge: 60 * 60 * 24 * 365
+      })
+
+      return { success: true }
+    } catch (error) {
+      console.error("Error accepting invite:", error)
+      return {
+        failure: {
+          reason: "Error aceptando la invitación"
         }
       }
     }
