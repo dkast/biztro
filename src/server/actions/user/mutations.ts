@@ -2,6 +2,7 @@
 
 import InviteUserEmail from "@/emails/invite"
 import { nanoid } from "nanoid"
+import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 import { Resend } from "resend"
 import { z } from "zod"
@@ -52,14 +53,15 @@ export const switchOrganization = authActionClient
       const membership = await prisma.membership.findFirst({
         where: {
           userId: user.id,
-          organizationId
+          organizationId,
+          isActive: true
         }
       })
 
       if (!membership) {
         return {
           failure: {
-            reason: "No se pudo obtener la membresía"
+            reason: "No se encontro la membresía para esa organización"
           }
         }
       }
@@ -270,6 +272,8 @@ export const removeMember = authActionClient
         }
       })
 
+      revalidateTag(`members-${membership.organizationId}`)
+
       return { success: true }
     } catch (error) {
       console.error("Error removing member:", error)
@@ -314,6 +318,8 @@ export const deactivateMember = authActionClient
           isActive: false
         }
       })
+
+      revalidateTag(`members-${membership.organizationId}`)
 
       return { success: true }
     } catch (error) {

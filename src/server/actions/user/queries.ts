@@ -109,7 +109,8 @@ export const getUserMemberships = async () => {
     async () => {
       const memberships = await prisma.membership.findMany({
         where: {
-          userId: user.id
+          userId: user.id,
+          isActive: true
         },
         include: {
           organization: true
@@ -118,6 +119,12 @@ export const getUserMemberships = async () => {
           organization: {
             name: "asc"
           }
+        }
+      })
+
+      memberships.forEach(membership => {
+        if (membership.organization.logo) {
+          membership.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${membership.organization.logo}`
         }
       })
 
