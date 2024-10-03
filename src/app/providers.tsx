@@ -14,6 +14,7 @@ import { usePathname } from "next/navigation"
 
 import { UnsavedChangesProvider } from "@/components/dashboard/unsaved-changes-provider"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
+import { CSPostHogProvider } from "@/app/analytics"
 
 function makeQueryClient() {
   return new QueryClient({
@@ -65,17 +66,18 @@ function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionProvider>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-        forcedTheme={forcedTheme}
-      >
-        <QueryClientProvider client={queryClient}>
-          <Provider>
-            {/* <PhotoProvider> */}
-            {/* <Suspense fallback={null}>
+      <CSPostHogProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          forcedTheme={forcedTheme}
+        >
+          <QueryClientProvider client={queryClient}>
+            <Provider>
+              {/* <PhotoProvider> */}
+              {/* <Suspense fallback={null}>
             <ProgressBar
               color="#FF6500"
               options={{ showSpinner: false }}
@@ -83,25 +85,26 @@ function Providers({ children }: { children: React.ReactNode }) {
               delay={200}
             />
           </Suspense> */}
-            <UnsavedChangesProvider>
-              <ReactQueryStreamedHydration>
-                {children}
-              </ReactQueryStreamedHydration>
-            </UnsavedChangesProvider>
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                style: {
-                  background: "#333",
-                  color: "#fff"
-                }
-              }}
-            />
-            <TailwindIndicator />
-            {/* </PhotoProvider> */}
-          </Provider>
-        </QueryClientProvider>
-      </ThemeProvider>
+              <UnsavedChangesProvider>
+                <ReactQueryStreamedHydration>
+                  {children}
+                </ReactQueryStreamedHydration>
+              </UnsavedChangesProvider>
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  style: {
+                    background: "#333",
+                    color: "#fff"
+                  }
+                }}
+              />
+              <TailwindIndicator />
+              {/* </PhotoProvider> */}
+            </Provider>
+          </QueryClientProvider>
+        </ThemeProvider>
+      </CSPostHogProvider>
     </SessionProvider>
   )
 }
