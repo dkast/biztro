@@ -94,6 +94,14 @@ export const getCurrentMembership = async () => {
     where: {
       userId: user?.id,
       organizationId: currentOrg
+    },
+    include: {
+      organization: {
+        select: {
+          name: true,
+          subdomain: true
+        }
+      }
     }
   })
 }

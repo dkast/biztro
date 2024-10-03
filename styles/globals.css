@@ -37,6 +37,26 @@
     -webkit-mask-image: linear-gradient(to left, transparent, black 20%);
     mask-image: linear-gradient(to left, transparent, black 20%);
   }
+
+  .bg-dot-pattern {
+    background-image: conic-gradient(
+      at 92% 8%,
+      #202128 90deg,
+      transparent 0 225deg,
+      transparent 0
+    );
+    background-size: 15px 15px;
+  }
+
+  .bg-dot-pattern-white {
+    background-image: conic-gradient(
+      at 92% 8%,
+      #303132 90deg,
+      transparent 0 225deg,
+      transparent 0
+    );
+    background-size: 15px 15px;
+  }
 }
 
 .dark .w-color-sketch {
