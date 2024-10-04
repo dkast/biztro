@@ -37,6 +37,7 @@ const config = {
       }
     ]
   },
+  // skipcq: JS-0116
   async rewrites() {
     return [
       {
