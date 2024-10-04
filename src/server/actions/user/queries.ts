@@ -94,6 +94,14 @@ export const getCurrentMembership = async () => {
     where: {
       userId: user?.id,
       organizationId: currentOrg
+    },
+    include: {
+      organization: {
+        select: {
+          name: true,
+          subdomain: true
+        }
+      }
     }
   })
 }
@@ -109,7 +117,8 @@ export const getUserMemberships = async () => {
     async () => {
       const memberships = await prisma.membership.findMany({
         where: {
-          userId: user.id
+          userId: user.id,
+          isActive: true
         },
         include: {
           organization: true
@@ -118,6 +127,12 @@ export const getUserMemberships = async () => {
           organization: {
             name: "asc"
           }
+        }
+      })
+
+      memberships.forEach(membership => {
+        if (membership.organization.logo) {
+          membership.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${membership.organization.logo}`
         }
       })
 
@@ -132,11 +147,12 @@ export const getUserMemberships = async () => {
 }
 
 export const getInviteByToken = async (token: string) => {
-  return await prisma.teamInvite.findFirst({
+  return await prisma.teamInvite.findUnique({
     where: {
       token
     },
     select: {
+      id: true,
       email: true,
       expiresAt: true,
       organizationId: true,

@@ -154,9 +154,10 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
         <div className="relative">
           <ul
             ref={ulRef}
-            className={cn("flex space-x-4 overflow-x-auto", {
-              "mask-fade": isOverflowing
-            })}
+            className={cn(
+              "flex space-x-4 overflow-x-auto",
+              isOverflowing ? "mask-fade justify-normal" : "justify-center"
+            )}
           >
             {ids.map((id, index) => (
               <li key={id} className="flex-shrink-0">

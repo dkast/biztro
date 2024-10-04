@@ -1,5 +1,6 @@
 "use client"
 
+import { useTransition } from "react"
 import toast from "react-hot-toast"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { ChevronsUpDown } from "lucide-react"
@@ -36,6 +37,7 @@ export default function Workgroup({ className }: { className?: string }) {
   })
 
   const queryClient = useQueryClient()
+  const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
   const { execute, status } = useAction(switchOrganization, {
@@ -45,7 +47,10 @@ export default function Workgroup({ className }: { className?: string }) {
         queryClient.invalidateQueries({
           queryKey: ["workgroup", "current"]
         })
-        router.replace("/dashboard")
+        // router.replace("/dashboard")
+        startTransition(() => {
+          router.replace("/dashboard")
+        })
       } else if (data?.failure?.reason) {
         toast.error(data.failure.reason)
       }
@@ -62,7 +67,7 @@ export default function Workgroup({ className }: { className?: string }) {
     })
   }
 
-  if (!currentOrg || status === "executing")
+  if (!currentOrg || status === "executing" || isPending)
     return (
       <div className="flex flex-row items-center gap-2">
         <Skeleton className="size-10 bg-gray-200" />
@@ -76,16 +81,18 @@ export default function Workgroup({ className }: { className?: string }) {
         <Button
           variant="outline"
           className={cn(
-            "flex h-12 w-full flex-row items-center justify-between gap-3",
+            "flex h-12 w-full flex-row items-center justify-start gap-3 px-2",
             className
           )}
         >
-          <Avatar className="size-8 rounded-lg shadow">
+          <Avatar className="size-6 rounded shadow">
             <AvatarImage src={currentOrg.logo ?? undefined} />
-            <AvatarFallback>{getInitials(currentOrg.name)}</AvatarFallback>
+            <AvatarFallback className="text-xs">
+              {getInitials(currentOrg.name)}
+            </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col items-start">
-            <span className="line-clamp-1 text-sm font-semibold">
+          <div className="flex grow flex-col items-start">
+            <span className="line-clamp-1 text-xs font-semibold">
               {currentOrg.name}
             </span>
             <span className="text-xs font-semibold text-gray-400">Negocio</span>
@@ -103,8 +110,17 @@ export default function Workgroup({ className }: { className?: string }) {
               /* handle selection */
               handleSwitchOrganization(membership.organization.id)
             }}
+            asChild
           >
-            {membership.organization.name}
+            <div className="flex items-center gap-1">
+              <Avatar className="size-5 rounded shadow">
+                <AvatarImage src={membership.organization.logo ?? undefined} />
+                <AvatarFallback className="text-xs">
+                  {getInitials(membership.organization.name)}
+                </AvatarFallback>
+              </Avatar>
+              {membership.organization.name}
+            </div>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

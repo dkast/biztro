@@ -46,7 +46,7 @@ export default function ProfileMenu() {
         <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="dashboard/profile">
+          <Link href="/dashboard/profile">
             <User className="mr-2 size-4" />
             Perfil
           </Link>

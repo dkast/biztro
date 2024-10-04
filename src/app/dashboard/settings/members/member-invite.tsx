@@ -16,12 +16,21 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
-import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { inviteMember } from "@/server/actions/user/mutations"
 
 const emailSchema = z.object({
-  email: z.string().email()
+  email: z.string().email({
+    message: "Introduce un correo electrónico válido"
+  })
 })
 
 export default function MemberInvite() {
@@ -75,12 +84,15 @@ export default function MemberInvite() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel htmlFor={field.name}>Email</FormLabel>
-                  <Input
-                    {...field}
-                    type="email"
-                    placeholder="correo@ejemplo.com"
-                    className="mb-4"
-                  />
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="email"
+                      placeholder="correo@ejemplo.com"
+                      className="mb-4"
+                    />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />

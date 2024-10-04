@@ -1,9 +1,13 @@
 "use client"
 
+import toast from "react-hot-toast"
 import type { Prisma } from "@prisma/client"
 import { signIn, useSession } from "next-auth/react"
+import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -12,11 +16,10 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
+import { acceptInvite } from "@/server/actions/user/mutations"
 import type { getInviteByToken } from "@/server/actions/user/queries"
 import { providers } from "@/lib/types"
-
-// import { acceptInviteSchema } from "@/lib/schemas"
-// import { acceptInvite } from "@/server/actions/user/mutations"
+import { getInitials } from "@/lib/utils"
 
 export default function AcceptInviteCard({
   invite
@@ -24,6 +27,26 @@ export default function AcceptInviteCard({
   invite: Prisma.PromiseReturnType<typeof getInviteByToken>
 }) {
   const user = useSession().data?.user
+  const router = useRouter()
+
+  const { execute, status } = useAction(acceptInvite, {
+    onSuccess: ({ data }) => {
+      if (data?.failure?.reason) {
+        console.error(data.failure.reason)
+        toast.error("Falló la aceptación de la invitación")
+      } else if (data?.success) {
+        router.push("/dashboard")
+      }
+    }
+  })
+
+  const handleAccept = async (id: string) => {
+    await execute({ id })
+  }
+
+  if (!invite) {
+    return null
+  }
 
   return (
     <Card className="mx-auto max-w-md shadow-xl">
@@ -36,16 +59,29 @@ export default function AcceptInviteCard({
       <CardContent>
         {user ? (
           <div>
-            <p>
-              Hola {user.name}, has sido invitado a unirte al equipo de{" "}
-              <span className="!text-orange-500">
-                {invite?.organization.name}
-              </span>
-              .
-            </p>
+            <div className="flex w-full flex-col items-center justify-center gap-8 py-2">
+              <div className="flex items-center space-x-4">
+                <Avatar className="size-6">
+                  <AvatarImage src={user.image ?? undefined} alt="Avatar" />
+                  <AvatarFallback className="text-xs">
+                    {getInitials(user.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium">
+                  Firmado con {user.email}
+                </span>
+              </div>
+              <p className="text-sm">
+                Da clic en el botón de abajo para aceptar la invitación.
+              </p>
+            </div>
             <form>
               <div className="mt-4">
-                <Button type="submit" className="w-full">
+                <Button
+                  type="button"
+                  className="w-full"
+                  onClick={() => handleAccept(invite?.id)}
+                >
                   Aceptar invitación
                 </Button>
               </div>
@@ -53,11 +89,14 @@ export default function AcceptInviteCard({
           </div>
         ) : (
           <div>
-            <p>Para aceptar la invitación, por favor inicia sesión.</p>
+            <p className="text-sm">
+              Para aceptar la invitación, por favor inicia sesión.
+            </p>
             <div className="mt-4">
               {Object.values(providers).map(provider => (
                 <Button
                   key={provider.name}
+                  disabled={status === "executing"}
                   onClick={() =>
                     signIn(provider.id, {
                       callbackUrl: "/dashboard"

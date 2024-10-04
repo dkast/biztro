@@ -32,15 +32,17 @@ export default function FloatingBar() {
   const onPasteProps = (clonedProps: unknown) => {
     const values = selectedNodeId.values()
     const nodeId = values.next()
-    actions.setProp(nodeId.value, props => {
-      return (props = Object.assign(props, clonedProps))
-    })
+    if (nodeId.value) {
+      actions.setProp(nodeId.value, props => {
+        return (props = Object.assign(props, clonedProps))
+      })
+    }
   }
 
   const onCopyProps = () => {
     const values = selectedNodeId.values()
     const nodeId = values.next()
-    if (selectedNodeId) {
+    if (selectedNodeId && nodeId.value) {
       const node = query.node(nodeId.value).get()
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { data, text, ...props } = node.data.props

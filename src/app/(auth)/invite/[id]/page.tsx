@@ -25,8 +25,10 @@ export default async function InvitePage({
     return notFound()
   }
 
+  console.log("invite data", data)
+
   if (data.expiresAt < new Date() || data.status === InviteStatus.ACCEPTED) {
-    return expiredInvite()
+    return <InviteExpired />
   }
 
   return (
@@ -48,7 +50,7 @@ export default async function InvitePage({
   )
 }
 
-const expiredInvite = () => {
+const InviteExpired = () => {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center">
       <Image
@@ -59,7 +61,7 @@ const expiredInvite = () => {
         className="py-10"
       />
       <h1 className="font-display text-3xl font-semibold">
-        Invitación Expirada
+        Invitación ha expirado
       </h1>
       <p className="mt-2 text-gray-600 dark:text-gray-400">
         La invitación ha expirado o ya ha sido utilizada.
