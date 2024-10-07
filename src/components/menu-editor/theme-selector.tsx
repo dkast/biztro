@@ -424,8 +424,6 @@ export default function ThemeSelector({
                   fontText={selectedFontTheme?.fontText}
                   theme={selectedColorTheme}
                   setTheme={(theme: (typeof colorThemes)[0]) => {
-                    // console.log("theme", theme)
-                    // console.log("colorThemes", colorThemes)
                     const selectedTheme = colorThemes.find(
                       t => t.id === theme.id
                     )
