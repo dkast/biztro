@@ -33,8 +33,8 @@ import {
 } from "@/components/ui/sheet"
 import { updateMenuSerialData } from "@/server/actions/menu/mutations"
 import { type getMenuById } from "@/server/actions/menu/queries"
-import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
-import { colorThemes, fontThemes } from "@/lib/types"
+import { colorListAtom, colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
+import { fontThemes } from "@/lib/types"
 import { ColorThemeEditor } from "./color-theme-editor"
 
 export default function ThemeSelector({
@@ -48,19 +48,21 @@ export default function ThemeSelector({
 
   const queryClient = useQueryClient()
 
-  const [openColorThemeEditor, setOpenColorThemeEditor] = useState(false)
-
+  // Atoms
   const [fontThemeId, setFontThemeId] = useAtom(fontThemeAtom)
+  const [colorThemes, setColorThemes] = useAtom(colorListAtom)
 
+  // Hooks
+  const [openColorThemeEditor, setOpenColorThemeEditor] = useState(false)
   const [selectedFontTheme, setSelectedFontTheme] = useState<
     (typeof fontThemes)[0] | undefined
   >(undefined)
-
   const [colorThemeId, setColorThemeId] = useAtom(colorThemeAtom)
   const [selectedColorTheme, setSelectedColorTheme] = useState<
     (typeof colorThemes)[0] | undefined
   >(undefined)
 
+  // Fonts
   useEffect(() => {
     // When the theme changes, set the CSS variables to the new theme
     const selectedTheme = fontThemes.find(theme => theme.name === fontThemeId)
@@ -124,7 +126,7 @@ export default function ThemeSelector({
 
   useEffect(() => {
     updateColorTheme(colorThemeId)
-  }, [colorThemeId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [colorThemeId, colorThemes]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateColorTheme = (colorThemeId: string) => {
     const selectedTheme = colorThemes.find(theme => theme.id === colorThemeId)
@@ -446,14 +448,6 @@ export default function ThemeSelector({
                     setOpenColorThemeEditor(false)
                   }}
                   removeTheme={(themeId: string) => {
-                    if (colorThemes[0]) {
-                      setColorThemeId(colorThemes[0].id)
-                      onUpdateSerialData(colorThemes[0].id)
-                    }
-                    queryClient.invalidateQueries({
-                      queryKey: ["themes"]
-                    })
-
                     console.log("colorThemes", colorThemes)
                     const index = colorThemes.findIndex(t => t.id === themeId)
                     console.log("index", index)
@@ -461,7 +455,16 @@ export default function ThemeSelector({
                     colorThemes.splice(index, 1)
                     console.log("themeId", themeId)
                     console.log("colorThemes", colorThemes)
+                    setColorThemes([...colorThemes])
 
+                    queryClient.invalidateQueries({
+                      queryKey: ["themes"]
+                    })
+
+                    if (colorThemes[0]) {
+                      setColorThemeId(colorThemes[0].id)
+                      onUpdateSerialData(colorThemes[0].id)
+                    }
                     setOpenColorThemeEditor(false)
                   }}
                 />

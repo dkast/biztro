@@ -143,7 +143,6 @@ export function ItemView({
               width={128}
               height={96}
               alt={item.name}
-              layout="fixed"
               className="h-16 w-20 rounded object-cover"
               unoptimized
             ></Image>
