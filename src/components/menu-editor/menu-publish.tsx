@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Globe,
   Loader,
+  Play,
   QrCodeIcon,
   Save
 } from "lucide-react"
@@ -25,6 +26,7 @@ import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
+import { GuardLink } from "@/components/dashboard/unsaved-changes-provider"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -137,6 +139,29 @@ export default function MenuPublish({
 
   return (
     <div className="editor-published flex justify-end gap-2">
+      <TooltipHelper content="Vista previa">
+        <div>
+          <GuardLink href={`/menu-editor/${menu.id}/preview`}>
+            <Button size="xs" variant="ghost">
+              <Play className="size-4" />
+            </Button>
+          </GuardLink>
+        </div>
+      </TooltipHelper>
+      <TooltipHelper content="Guardar cambios">
+        <Button
+          size="xs"
+          variant="ghost"
+          disabled={statusSerialData === "executing"}
+          onClick={() => handleUpdateSerialData()}
+        >
+          {statusSerialData === "executing" ? (
+            <Loader className="size-4 animate-spin" />
+          ) : (
+            <Save className="size-4" />
+          )}
+        </Button>
+      </TooltipHelper>
       <Dialog>
         <TooltipHelper content="Generar código QR">
           <DialogTrigger asChild>
@@ -177,22 +202,8 @@ export default function MenuPublish({
       </Dialog>
       <Separator
         orientation="vertical"
-        className="h-100 border-l dark:border-gray-700"
+        className="h-100 mr-2 border-l dark:border-gray-700"
       />
-      <TooltipHelper content="Guardar cambios">
-        <Button
-          size="xs"
-          variant="ghost"
-          disabled={statusSerialData === "executing"}
-          onClick={() => handleUpdateSerialData()}
-        >
-          {statusSerialData === "executing" ? (
-            <Loader className="size-4 animate-spin" />
-          ) : (
-            <Save className="size-4" />
-          )}
-        </Button>
-      </TooltipHelper>
       <Popover>
         <PopoverTrigger asChild>
           <Button size="xs">Publicar</Button>
