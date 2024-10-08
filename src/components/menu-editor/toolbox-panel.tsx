@@ -261,7 +261,7 @@ function ToolboxElement({
   classNameIcon?: string
 }) {
   return (
-    <div className="group flex cursor-move items-center gap-2 rounded-lg border p-2 text-sm shadow-sm hover:border-lime-400 hover:ring-1 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
+    <div className="group flex cursor-move items-center gap-2 rounded-lg border-[0.5px] p-2 text-sm shadow-sm hover:border-lime-400 hover:ring-1 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
       <Icon
         className={cn(
           "size-3.5 text-blue-400 group-hover:text-current",

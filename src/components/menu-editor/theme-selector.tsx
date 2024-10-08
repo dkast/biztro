@@ -285,7 +285,7 @@ export default function ThemeSelector({
       <SideSection title="Tipografía">
         <Popover>
           <PopoverTrigger asChild>
-            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
+            <button className="flex w-full flex-row items-center justify-between rounded-lg border-[0.5px] border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
               <div>
                 <FontWrapper fontFamily={selectedFontTheme?.fontDisplay}>
                   <span className="text-base font-medium">
@@ -344,7 +344,7 @@ export default function ThemeSelector({
         <div>
           <Popover>
             <PopoverTrigger asChild>
-              <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
+              <button className="flex w-full flex-row items-center justify-between rounded-lg border-[0.5px] border-gray-300 px-4 py-2 text-left shadow-sm transition-colors hover:border-lime-400 hover:ring-2 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
                 <div className="">
                   <div className="flex flex-row items-center gap-2">
                     <div className="isolate flex overflow-hidden">
