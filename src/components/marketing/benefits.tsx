@@ -61,10 +61,10 @@ export default function Benefits() {
       id="benefits"
       className="relative mt-16 bg-gray-50 pb-28 pt-20 dark:bg-transparent sm:py-32"
     >
-      <div className="absolute inset-0 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]"></div>
+      <div className="absolute inset-0 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]" />
       <div className="relative z-10">
         <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
-          <small className="mb-2 text-base font-semibold uppercase tracking-widest text-orange-600">
+          <small className="mb-4 block text-base font-semibold uppercase tracking-widest text-orange-600">
             Porque Biztro
           </small>
           <h2 className="text-balance font-display text-3xl tracking-tight text-gray-950 dark:text-white sm:text-4xl md:text-5xl">
@@ -96,10 +96,10 @@ const BenefitItem = ({
     <div className="flex flex-col items-center gap-2 text-center sm:items-start sm:text-start">
       <div className="mb-2">
         {Icon && (
-          <Icon className="size-10 rounded-xl bg-purple-500 p-2 text-purple-50" />
+          <Icon className="size-10 rounded-xl bg-violet-500 p-2 text-violet-50" />
         )}
       </div>
-      <h4 className="space-x-1 text-lg font-semibold text-purple-400">
+      <h4 className="space-x-1 text-lg font-semibold text-violet-400">
         {title}
         {soon && (
           <div>

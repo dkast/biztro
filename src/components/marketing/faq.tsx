@@ -46,11 +46,15 @@ export default function Faq() {
         <div>
           <Accordion type="single" collapsible>
             {FAQ.map((faq, index) => (
-              <AccordionItem key={index} value={`faq-${index}`}>
+              <AccordionItem
+                key={index}
+                value={`faq-${index}`}
+                className="dark:border-gray-700"
+              >
                 <AccordionTrigger className="text-start sm:text-lg [&>svg]:text-violet-500 sm:[&>svg]:size-5">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-base text-gray-700 dark:border-gray-800 dark:text-gray-300">
+                <AccordionContent className="text-base text-gray-700 dark:text-gray-300">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

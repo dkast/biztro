@@ -34,7 +34,7 @@ export default function EditorPreview() {
     <section
       id="editor-preview"
       ref={fadeInRef}
-      className="mx-auto max-w-6xl px-4 dark:bg-black sm:px-6 lg:px-8"
+      className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
     >
       <motion.div
         animate={fadeInInView ? "animate" : "initial"}
@@ -62,7 +62,7 @@ export default function EditorPreview() {
             "[background-image:linear-gradient(to_bottom,#ffaa40,transparent_30%)]",
 
             // dark styles
-            "dark:[background-image:linear-gradient(to_bottom,#c4b5fd,transparent_30%)]"
+            "dark:[background-image:linear-gradient(to_bottom,#fda4af,transparent_80%)]"
           )}
         />
 

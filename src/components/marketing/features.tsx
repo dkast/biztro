@@ -1,17 +1,22 @@
 "use client"
 
 import { QRCode } from "react-qrcode-logo"
-import { MousePointerClick, Paintbrush, QrCodeIcon } from "lucide-react"
+import {
+  MousePointerClick,
+  Paintbrush,
+  QrCodeIcon,
+  SwatchBook
+} from "lucide-react"
 
 import { BentoCard, BentoGrid } from "@/components/flare-ui/bento-grid"
 import GradientBlur from "@/components/flare-ui/gradient-blur"
 
 const features = [
   {
-    Icon: Paintbrush,
-    name: "Diseño personalizado",
+    Icon: SwatchBook,
+    name: "Diseño",
     description:
-      "Inicia con una plantilla y modifícala a tu gusto para crear algo original que se ajuste a tú negocio.",
+      "Inicia con una plantilla y modifícala a tu gusto para crear algo original que se ajuste a tú negocio. Con un diseño optimizado para dispositivos móviles.",
     href: undefined,
     cta: "Ver más",
     background: (
@@ -25,13 +30,13 @@ const features = [
       </div>
     ),
     className:
-      "lg:row-start-1 lg:row-end-4 lg:col-start-1 lg:col-end-2 bg-orange-500 dark:bg-orange-500 dark:text-orange-50 text-orange-50"
+      "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3 bg-orange-500 dark:bg-orange-500 dark:text-orange-50 text-orange-50"
   },
   {
     Icon: QrCodeIcon,
-    name: "Obtén un código QR",
+    name: "Genera tu código QR",
     description:
-      "Permite a tus clientes consultar tu menú utilizando la cámara en su télefono móvil.",
+      "Permite a tus clientes consultar tu menú utilizando la cámara en su télefono móvil. Sin necesidad de instalar aplicaciones o pasos adicionales.",
     href: undefined,
     cta: "Ver más",
     background: (
@@ -47,7 +52,7 @@ const features = [
       </div>
     ),
     className:
-      "lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-4 bg-violet-600 dark:bg-violet-600 dark:text-violet-50 text-violet-50"
+      "lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4 bg-violet-600 dark:bg-violet-600 dark:text-violet-50 text-violet-50"
   },
   {
     Icon: MousePointerClick,
@@ -67,7 +72,7 @@ const features = [
       </div>
     ),
     className:
-      "lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2 bg-gray-800 text-gray-50"
+      "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2 text-gray-50"
   }
 ]
 
