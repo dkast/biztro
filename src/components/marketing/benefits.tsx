@@ -57,19 +57,25 @@ const BENEFITS = [
 
 export default function Benefits() {
   return (
-    <section id="benefits" className="mt-16 bg-gray-50 pb-28 pt-20 sm:py-32">
-      <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
-        <small className="mb-2 text-base font-semibold uppercase tracking-widest text-orange-600">
-          Porque Biztro
-        </small>
-        <h2 className="text-balance font-display text-3xl tracking-tight text-gray-950 dark:text-white sm:text-4xl md:text-5xl">
-          Obtén los beneficions de tú menu en digital
-        </h2>
-      </div>
-      <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 px-4 sm:grid-cols-3 sm:gap-12 sm:px-6 lg:max-w-7xl lg:gap-16 lg:px-8">
-        {BENEFITS.map((benefit, index) => (
-          <BenefitItem key={index} {...benefit} />
-        ))}
+    <section
+      id="benefits"
+      className="relative mt-16 bg-gray-50 pb-28 pt-20 dark:bg-transparent sm:py-32"
+    >
+      <div className="absolute inset-0 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]"></div>
+      <div className="relative z-10">
+        <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
+          <small className="mb-2 text-base font-semibold uppercase tracking-widest text-orange-600">
+            Porque Biztro
+          </small>
+          <h2 className="text-balance font-display text-3xl tracking-tight text-gray-950 dark:text-white sm:text-4xl md:text-5xl">
+            Obtén los beneficions de tú menu en digital
+          </h2>
+        </div>
+        <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 px-4 sm:grid-cols-3 sm:gap-12 sm:px-6 lg:max-w-7xl lg:gap-16 lg:px-8">
+          {BENEFITS.map((benefit, index) => (
+            <BenefitItem key={index} {...benefit} />
+          ))}
+        </div>
       </div>
     </section>
   )
@@ -90,10 +96,10 @@ const BenefitItem = ({
     <div className="flex flex-col items-center gap-2 text-center sm:items-start sm:text-start">
       <div className="mb-2">
         {Icon && (
-          <Icon className="size-10 rounded-xl bg-green-500 p-2 text-green-50" />
+          <Icon className="size-10 rounded-xl bg-purple-500 p-2 text-purple-50" />
         )}
       </div>
-      <h4 className="space-x-1 text-lg font-semibold text-green-900">
+      <h4 className="space-x-1 text-lg font-semibold text-purple-400">
         {title}
         {soon && (
           <div>
@@ -103,7 +109,7 @@ const BenefitItem = ({
           </div>
         )}
       </h4>
-      <span className="text-balance text-gray-600">{description}</span>
+      <span className="text-balance text-gray-50">{description}</span>
     </div>
   )
 }

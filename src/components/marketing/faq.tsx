@@ -50,7 +50,7 @@ export default function Faq() {
                 <AccordionTrigger className="text-start sm:text-lg [&>svg]:text-violet-500 sm:[&>svg]:size-5">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-base text-gray-700">
+                <AccordionContent className="text-base text-gray-700 dark:border-gray-800 dark:text-gray-300">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

@@ -46,7 +46,7 @@ function getQueryClient() {
 
 const getForcedTheme = (pathname: string | null) => {
   if (pathname === "/") {
-    return "light"
+    return "dark"
   }
   if (pathname === "/terms") {
     return "light"

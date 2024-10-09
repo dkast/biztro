@@ -25,7 +25,7 @@ const features = [
       </div>
     ),
     className:
-      "lg:row-start-1 lg:row-end-4 lg:col-start-1 lg:col-end-2 bg-orange-500 text-orange-50"
+      "lg:row-start-1 lg:row-end-4 lg:col-start-1 lg:col-end-2 bg-orange-500 dark:bg-orange-500 dark:text-orange-50 text-orange-50"
   },
   {
     Icon: QrCodeIcon,
@@ -47,7 +47,7 @@ const features = [
       </div>
     ),
     className:
-      "lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-4 bg-violet-600 text-violet-50"
+      "lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-4 bg-violet-600 dark:bg-violet-600 dark:text-violet-50 text-violet-50"
   },
   {
     Icon: MousePointerClick,
@@ -83,7 +83,7 @@ export default function Features() {
           interfaz intuitiva y amigable, solo necesitas tu navegador web
         </p>
       </section>
-      <section className="mx-auto my-16 max-w-4xl px-4 sm:my-32 sm:px-6 lg:px-8">
+      <section className="mx-auto my-16 max-w-5xl px-4 sm:my-32 sm:px-6 lg:px-8">
         <BentoGrid className="sm:grid-cols-2 sm:grid-rows-3">
           {features.map(feature => (
             <BentoCard key={feature.name} {...feature} />
