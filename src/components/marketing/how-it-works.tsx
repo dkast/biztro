@@ -6,25 +6,25 @@ import TitleSection from "@/components/marketing/title-section"
 const data = [
   {
     id: 1,
-    title: "1. Upload Your Data",
+    title: "1. Configura tu negocio",
     content:
-      "Simply upload your data to our secure platform. We support various file formats and data types to ensure a seamless integration with your existing systems.",
+      "Agregar la información del negocio, configura tus horarios de atención y redes sociales. Nuestro sistema se encargará de todo lo demás.",
     image: "/configuration.png",
     icon: <Upload className="text-primary h-6 w-6" />
   },
   {
     id: 2,
-    title: "2. Click Start",
+    title: "2. Captura tus productos",
     content:
-      "Our advanced AI algorithms automatically process and analyze your data, extracting valuable insights and patterns that would be difficult to identify manually.",
+      "Captura tus productos, agrega una breve descripción, precio y estarás listo para crear tu menú.",
     image: "/products.png",
     icon: <Zap className="text-primary h-6 w-6" />
   },
   {
     id: 3,
-    title: "3. Get Actionable Insights",
+    title: "3. Publica tu menú",
     content:
-      "Receive clear, actionable insights and recommendations based on the AI analysis. Use these insights to make data-driven decisions and improve your business strategies.",
+      "Personaliza tu menú con el editor web, publicalo y comparte el enlace con tus clientes. ¡Así de fácil!",
     image: "/editor.png",
     icon: <Sparkles className="text-primary h-6 w-6" />
   }
@@ -33,7 +33,7 @@ const data = [
 export default function Component() {
   return (
     <section className="mx-auto max-w-5xl px-4 pb-28 pt-20 sm:px-6 sm:py-32 lg:max-w-7xl lg:px-8">
-      <TitleSection eyebrow="How It Works" title="Our Simple Process" />
+      <TitleSection eyebrow="Cómo funciona" title="Solo 3 pasos para iniciar" />
       <Features collapseDelay={8000} data={data} linePosition="bottom" />
     </section>
   )

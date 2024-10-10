@@ -28,8 +28,8 @@ const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
     </Accordion.Item>
   )
 )
-
 AccordionItem.displayName = "AccordionItem"
+
 type AccordionTriggerProps = {
   children: React.ReactNode
   className?: string
@@ -49,6 +49,7 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
   )
 )
 AccordionTrigger.displayName = "AccordionTrigger"
+
 type AccordionContentProps = {
   children: ReactNode
   className?: string
@@ -243,13 +244,13 @@ export default function Features({
 
                     <AccordionTrigger>
                       <div className="relative flex flex-col items-center">
-                        <div className="item-box bg-primary/10 mx-2 flex size-16 shrink-0 items-center justify-center rounded-full sm:mx-6">
+                        <div className="item-box mx-2 flex size-16 shrink-0 items-center justify-center rounded-full bg-green-400/10 text-green-400 ring-1 ring-inset ring-green-400/20 sm:mx-6">
                           {item.icon}
                         </div>
                         <div className="my-3 text-xl font-bold">
                           {item.title}
                         </div>
-                        <div className="mb-4 justify-center text-center">
+                        <div className="mb-4 justify-center text-pretty text-center dark:text-gray-400">
                           {item.content}
                         </div>
                       </div>
@@ -268,7 +269,7 @@ export default function Features({
                   key={currentIndex}
                   src={data[currentIndex].image}
                   alt="feature"
-                  className="relative aspect-auto h-full w-full rounded-lg border object-cover shadow-lg dark:border-gray-800"
+                  className="relative aspect-auto h-full w-full rounded-lg border object-cover shadow-lg dark:border-gray-800 sm:min-h-[600px]"
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
