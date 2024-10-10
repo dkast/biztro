@@ -2,7 +2,7 @@ import Image from "next/image"
 
 import Waitlist from "@/components/marketing/waitlist"
 
-export function CTABanner() {
+export default function CTABanner() {
   return (
     <div className="flex w-full flex-col justify-center pb-16 lg:pb-32">
       <div className="mx-auto w-full max-w-5xl px-4 lg:max-w-6xl">

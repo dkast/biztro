@@ -1,12 +1,7 @@
 "use client"
 
 import { QRCode } from "react-qrcode-logo"
-import {
-  MousePointerClick,
-  Paintbrush,
-  QrCodeIcon,
-  SwatchBook
-} from "lucide-react"
+import { MousePointerClick, QrCodeIcon, SwatchBook } from "lucide-react"
 
 import { BentoCard, BentoGrid } from "@/components/flare-ui/bento-grid"
 import GradientBlur from "@/components/flare-ui/gradient-blur"

@@ -50,8 +50,8 @@ export default function EditorPreview() {
           "relative mt-0 h-full w-full rounded-md after:absolute after:inset-0 after:z-10 sm:mt-10 sm:rounded-xl",
           // isMobile
           isMobile
-            ? "after:[background:linear-gradient(to_top,#fff_10%,transparent)] dark:after:[background:linear-gradient(to_top,#000000_10%,transparent)]"
-            : "after:[background:linear-gradient(to_top,#fff_2%,transparent)] dark:after:[background:linear-gradient(to_top,#000000_2%,transparent)]"
+            ? "after:[background:linear-gradient(to_top,#fff_10%,transparent)] dark:after:[background:linear-gradient(to_top,#0a0a0a_10%,transparent)]"
+            : "after:[background:linear-gradient(to_top,#fff_2%,transparent)] dark:after:[background:linear-gradient(to_top,#0a0a0a_2%,transparent)]"
         )}
       >
         <div
@@ -62,7 +62,7 @@ export default function EditorPreview() {
             "[background-image:linear-gradient(to_bottom,#ffaa40,transparent_30%)]",
 
             // dark styles
-            "dark:[background-image:linear-gradient(to_bottom,#fda4af,transparent_80%)]"
+            "dark:[background-image:linear-gradient(to_bottom,#fda4af,transparent_30%)]"
           )}
         />
 

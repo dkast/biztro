@@ -8,6 +8,7 @@ import {
   type LucideIcon
 } from "lucide-react"
 
+import TitleSection from "@/components/marketing/title-section"
 import { Badge } from "@/components/ui/badge"
 
 const BENEFITS = [
@@ -59,18 +60,14 @@ export default function Benefits() {
   return (
     <section
       id="benefits"
-      className="relative mt-16 bg-gray-50 pb-28 pt-20 dark:bg-transparent sm:py-32"
+      className="relative bg-gray-50 pb-28 pt-20 dark:bg-transparent sm:py-32"
     >
-      <div className="absolute inset-0 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)]" />
+      <div className="absolute inset-0 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#0a0a0a_40%,#63e_100%)]" />
       <div className="relative z-10">
-        <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
-          <small className="mb-4 block text-base font-semibold uppercase tracking-widest text-orange-600">
-            Porque Biztro
-          </small>
-          <h2 className="text-balance font-display text-3xl tracking-tight text-gray-950 dark:text-white sm:text-4xl md:text-5xl">
-            Obtén los beneficions de tú menu en digital
-          </h2>
-        </div>
+        <TitleSection
+          eyebrow="Por qué Biztro"
+          title="Obtén los beneficions de tú menu en digital"
+        />
         <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 px-4 sm:grid-cols-3 sm:gap-12 sm:px-6 lg:max-w-7xl lg:gap-16 lg:px-8">
           {BENEFITS.map((benefit, index) => (
             <BenefitItem key={index} {...benefit} />
