@@ -1,4 +1,4 @@
-import { Sparkles, Upload, Zap } from "lucide-react"
+import { Rocket, ShoppingBag, Store } from "lucide-react"
 
 import Features from "@/components/flare-ui/features-horizontal"
 import TitleSection from "@/components/marketing/title-section"
@@ -8,25 +8,25 @@ const data = [
     id: 1,
     title: "1. Configura tu negocio",
     content:
-      "Agregar la información del negocio, configura tus horarios de atención y redes sociales. Nuestro sistema se encargará de todo lo demás.",
+      "Agregar la información del negocio, tus horarios de atención y redes sociales. Nuestro sistema se encargará de todo lo demás.",
     image: "/configuration.png",
-    icon: <Upload className="text-primary h-6 w-6" />
+    icon: <Store className="text-primary h-6 w-6" />
   },
   {
     id: 2,
-    title: "2. Captura tus productos",
+    title: "2. Lista tus productos",
     content:
       "Captura tus productos, agrega una breve descripción, precio y estarás listo para crear tu menú.",
     image: "/products.png",
-    icon: <Zap className="text-primary h-6 w-6" />
+    icon: <ShoppingBag className="text-primary h-6 w-6" />
   },
   {
     id: 3,
-    title: "3. Publica tu menú",
+    title: "3. Lanza tu menú",
     content:
       "Personaliza tu menú con el editor web, publicalo y comparte el enlace con tus clientes. ¡Así de fácil!",
     image: "/editor.png",
-    icon: <Sparkles className="text-primary h-6 w-6" />
+    icon: <Rocket className="text-primary h-6 w-6" />
   }
 ]
 
