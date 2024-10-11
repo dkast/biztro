@@ -108,9 +108,9 @@ const config = {
         // Add your custom value here
         "300": "repeat(auto-fill, 300px)"
       }
-    },
-    plugins: [tailwindcssAnimate, typography, containerQueries, glassPlugin]
-  }
+    }
+  },
+  plugins: [tailwindcssAnimate, typography, containerQueries, glassPlugin]
 } satisfies Config
 
 export default config
