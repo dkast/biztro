@@ -31,7 +31,7 @@ const features = [
     Icon: QrCodeIcon,
     name: "Genera tu código QR",
     description:
-      "Permite a tus clientes consultar tu menú utilizando la cámara en su télefono móvil. Sin necesidad de instalar aplicaciones o pasos adicionales.",
+      "Permite a tus clientes consultar tu menú utilizando su télefono móvil. Sin necesidad de instalar aplicaciones adicionales.",
     href: undefined,
     cta: "Ver más",
     background: (
@@ -42,6 +42,7 @@ const features = [
             logoImage="/logo-bistro.svg"
             removeQrCodeBehindLogo
             ecLevel="Q"
+            size={128}
           />
         </div>
       </div>
@@ -78,7 +79,7 @@ export default function Features() {
         <h2 className="text-balance font-display text-3xl tracking-tight sm:text-4xl md:text-5xl">
           Publica tú menú en Internet, fácil y rápido
         </h2>
-        <p className="mt-6 text-balance text-lg tracking-tight text-gray-400">
+        <p className="mt-6 text-balance tracking-tight text-gray-400 sm:text-lg">
           Sin necesidad de conocimientos técnicos, crear tu menú utilizando una
           interfaz intuitiva y amigable, solo necesitas tu navegador web
         </p>

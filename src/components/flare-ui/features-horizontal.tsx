@@ -175,7 +175,7 @@ export default function Features({
 
   return (
     <section ref={ref} id="features">
-      <div className="container">
+      <div className="mx-4">
         <div className="mx-auto max-w-6xl">
           <div className="">
             <div
@@ -269,7 +269,7 @@ export default function Features({
                   key={currentIndex}
                   src={data[currentIndex].image}
                   alt="feature"
-                  className="relative aspect-auto h-full w-full rounded-lg border object-cover shadow-lg dark:border-gray-800 sm:min-h-[600px]"
+                  className="relative aspect-auto h-full min-h-[200px] w-full rounded-lg border object-cover shadow-lg dark:border-gray-800 sm:min-h-[600px]"
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
@@ -316,8 +316,8 @@ export default function Features({
                       }}
                     ></div>
                   </div>
-                  <h2 className="text-xl font-bold">{item.title}</h2>
-                  <p className="mx-0 max-w-sm text-balance text-sm">
+                  <h2 className="mb-1 text-lg font-semibold">{item.title}</h2>
+                  <p className="mx-0 max-w-sm text-balance text-sm text-gray-400">
                     {item.content}
                   </p>
                 </div>

@@ -1,12 +1,21 @@
+import { cn } from "@/lib/utils"
+
 export default function TitleSection({
   eyebrow,
-  title
+  title,
+  className
 }: {
   eyebrow: string
   title: string
+  className?: string
 }) {
   return (
-    <div className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
+    <div
+      className={cn(
+        "mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8",
+        className
+      )}
+    >
       <small className="mb-4 block text-base font-semibold uppercase tracking-widest text-orange-600">
         {eyebrow}
       </small>
