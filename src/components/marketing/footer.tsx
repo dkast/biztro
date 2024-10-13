@@ -23,7 +23,8 @@ export default function Footer() {
             className="opacity-30 dark:invert"
           />
           <p className="text-sm font-medium text-gray-500 dark:text-white">
-            Biztro © {new Date().getFullYear()}
+            <span className="hidden sm:inline">Biztro</span> &copy;{" "}
+            {new Date().getFullYear()}
           </p>
         </div>
 

@@ -37,27 +37,32 @@ export default function Hero() {
           <div className="mt-20 grid grid-cols-1">
             <div className="flex flex-col items-center gap-6 pb-8 text-center">
               {/* Top announcement */}
-              <motion.div
-                className={cn(
-                  "group relative cursor-pointer rounded-full border border-black/10 bg-gray-50 transition-all ease-in hover:bg-gray-100 dark:border-white/5 dark:bg-gray-900 dark:hover:bg-gray-800"
-                )}
-                animate={fadeInInView ? "animate" : "hidden"}
-                variants={fadeUpVariants}
-                initial={false}
-                transition={{
-                  duration: 0.6,
-                  delay: 0,
-                  ease: "easeIn"
-                }}
-              >
-                <AnimatedShinyText className="inset-0 inline-flex items-center justify-center px-4 py-1 text-xs transition ease-out hover:text-gray-600 hover:duration-300 hover:dark:text-gray-400 sm:text-sm">
-                  {"📣 Biztro esta en beta"}
-                  <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
-                </AnimatedShinyText>
-                <Link href="/blog/beta-biztro">
-                  <span className="absolute inset-0 z-50 h-full w-full"></span>
+              <div className="grid grid-cols-1 grid-rows-1">
+                <motion.div
+                  className={cn(
+                    "group relative col-start-1 row-start-1 cursor-pointer rounded-full border border-black/10 bg-gray-50 transition-all ease-in hover:bg-gray-100 dark:border-white/5 dark:bg-gray-900 dark:hover:bg-gray-800"
+                  )}
+                  animate={fadeInInView ? "animate" : "hidden"}
+                  variants={fadeUpVariants}
+                  initial={false}
+                  transition={{
+                    duration: 0.6,
+                    delay: 0,
+                    ease: "easeIn"
+                  }}
+                >
+                  <AnimatedShinyText className="inset-0 inline-flex items-center justify-center px-4 py-1 text-xs transition ease-out hover:text-gray-600 hover:duration-300 hover:dark:text-gray-400 sm:text-sm">
+                    {"📣 Biztro esta en beta"}
+                    <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
+                  </AnimatedShinyText>
+                </motion.div>
+                <Link
+                  href="/blog/beta-biztro"
+                  className="z-50 col-start-1 row-start-1"
+                >
+                  <span className="block h-full w-full"></span>
                 </Link>
-              </motion.div>
+              </div>
               <motion.h1
                 ref={fadeInRef}
                 className="text-balance bg-gradient-to-br from-black from-30% to-black/60 bg-clip-text py-6 font-display text-5xl font-medium leading-none tracking-tighter text-transparent dark:from-white dark:to-white/40 sm:text-6xl md:text-7xl lg:text-8xl"
