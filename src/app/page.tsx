@@ -9,6 +9,7 @@ import Footer from "@/components/marketing/footer"
 import Hero from "@/components/marketing/hero"
 import HowItWorks from "@/components/marketing/how-it-works"
 import Navbar from "@/components/marketing/nav-bar"
+import Pricing from "@/components/marketing/pricing"
 
 export const metadata: Metadata = {
   title: "Biztro | Crea tu menú digital en minutos"
@@ -23,6 +24,7 @@ export default function Page() {
       <Features />
       <HowItWorks />
       <Benefits />
+      <Pricing />
       <Faq />
       <CTABanner />
       <Footer />

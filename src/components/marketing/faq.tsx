@@ -61,6 +61,17 @@ export default function Faq() {
             ))}
           </Accordion>
         </div>
+        <div className="col-span-full">
+          <p className="text-center">
+            ¿Tienes más preguntas? Envianos un correo a{" "}
+            <a
+              href="mailto:hola@biztro.co"
+              className="text-violet-500 hover:underline"
+            >
+              hola@biztro.co
+            </a>
+          </p>
+        </div>
       </div>
     </section>
   )
