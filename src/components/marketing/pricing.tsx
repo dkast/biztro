@@ -7,7 +7,7 @@ const tiers = [
   {
     name: "Gratis",
     id: "tier-free",
-    href: "#",
+    href: "#cta-banner",
     priceMonthly: "$0",
     description:
       "El plan gratuito te permite comenzar a publicar tu menú en línea sin costo.",
@@ -22,7 +22,7 @@ const tiers = [
   {
     name: "Pro",
     id: "tier-pro",
-    href: "#",
+    href: "#cta-banner",
     priceMonthly: "$149",
     description: "Dedicated support and infrastructure for your company.",
     features: [
@@ -144,7 +144,7 @@ export default function Pricing() {
                 "mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:mt-10"
               )}
             >
-              Inicia hoy
+              Inica prueba gratis
             </a>
           </div>
         ))}

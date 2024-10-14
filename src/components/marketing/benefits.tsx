@@ -16,21 +16,28 @@ const BENEFITS = [
     title: "Comparte en Redes Sociales",
     Icon: BadgeCheck,
     description:
-      "Nuestro diseño optimizado para dispositivos móviles te permite compartir fácilmente el enlace de tu menú en todas tus redes sociales.",
+      "Junto con tu código QR, recibes también una liga pública a tu menú  que puedes compartir en todas tus redes sociales.",
     soon: false
   },
   {
     title: "Menú actualizado",
     Icon: RefreshCcw,
     description:
-      "Olvídate de las imágenes o PDFs estáticos. Con Biztro, puedes actualizar tu menú en minutos y mantenerlo siempre al día.",
+      "Olvídate de las imágenes o PDFs estáticos. Con Biztro, puedes actualizar precios y productos en cualquier momento del día.",
     soon: false
   },
   {
-    title: "Sin contratos",
-    Icon: Handshake,
+    title: "Personaliza tu código QR",
+    Icon: QrCodeIcon,
     description:
-      "Disfruta de nuestro servicio el tiempo que necesites y cancela en cualquier momento, sin restricciones ni penalizaciones.",
+      "Añade tu logo, personaliza los colores y adapta tu código QR para reflejar la imagen de tu negocio.",
+    soon: false
+  },
+  {
+    title: "Multiples menús",
+    Icon: Group,
+    description:
+      "Puedes crear diferentes menús para probar nuevos estilos o lanzar menús de temporada en cualquier momento. No tienes que actualizar tu código QR.",
     soon: false
   },
   {
@@ -41,17 +48,10 @@ const BENEFITS = [
     soon: true
   },
   {
-    title: "Multiples menús",
-    Icon: Group,
+    title: "Sin contratos",
+    Icon: Handshake,
     description:
-      "Crea diferentes menús para probar nuevos estilos o lanzar menús de temporada.",
-    soon: false
-  },
-  {
-    title: "Personaliza tu código QR",
-    Icon: QrCodeIcon,
-    description:
-      "Añade tu logo, personaliza los colores y adapta tu código QR para reflejar la imagen de tu negocio.",
+      "Disfruta de nuestro servicio el tiempo que necesites y cancela en cualquier momento, sin restricciones ni penalizaciones.",
     soon: false
   }
 ]

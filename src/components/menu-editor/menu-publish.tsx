@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
@@ -318,7 +318,30 @@ function QrCodeEditor({
     Record<"r" | "g" | "b" | "a", number>
   >("color", fgColor)
   const [showLogo, setShowLogo] = useLocalStorage<boolean>("logo", false)
+
+  const [logoBase64, setLogoBase64] = useState<string | null>(null)
+  useEffect(() => {
+    if (!logoURL) return
+
+    const img = new Image()
+    img.crossOrigin = "Anonymous"
+    img.src = logoURL
+    img.onload = () => {
+      const canvas = document.createElement("canvas")
+      const aspectRatio = img.width / img.height
+      canvas.width = 120 * aspectRatio
+      canvas.height = 120
+      const ctx = canvas.getContext("2d")
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        setLogoBase64(canvas.toDataURL("image/png"))
+      }
+    }
+  }, [logoURL])
+
   console.log(logoURL)
+  console.log(logoBase64)
+
   return (
     <div>
       <div className="my-6 flex flex-row items-start justify-between">
@@ -329,8 +352,8 @@ function QrCodeEditor({
                 value={value}
                 size={200}
                 ecLevel={showLogo ? "H" : "M"}
-                logoImage={showLogo ? logoURL : ""}
-                logoWidth={showLogo ? 80 : 0}
+                logoImage={showLogo && logoBase64 ? logoBase64 : ""}
+                logoWidth={showLogo ? 60 : 0}
                 logoPadding={showLogo ? 4 : 0}
                 removeQrCodeBehindLogo={showLogo}
                 enableCORS

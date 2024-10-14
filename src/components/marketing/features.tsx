@@ -38,7 +38,7 @@ const features = [
       <div className="absolte inset-0 flex origin-top items-center justify-center pt-8 transition-all duration-300 ease-out group-hover:scale-95">
         <div className="overflow-hidden rounded-lg shadow-xl shadow-violet-800">
           <QRCode
-            value="https://biztro.co/menu"
+            value="https://biztro.co"
             logoImage="/logo-bistro.svg"
             removeQrCodeBehindLogo
             ecLevel="Q"
