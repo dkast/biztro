@@ -260,7 +260,7 @@ export default function Features({
               </Accordion.Root>
             </div>
             <div
-              className={`relative w-auto overflow-hidden rounded-lg ${
+              className={`relative min-h-[200px] w-auto overflow-hidden rounded-lg sm:min-h-[630px] ${
                 ltr && "md:order-1"
               }`}
             >
@@ -269,7 +269,7 @@ export default function Features({
                   key={currentIndex}
                   src={data[currentIndex].image}
                   alt="feature"
-                  className="relative aspect-auto h-full min-h-[200px] w-full rounded-lg border object-cover shadow-lg dark:border-gray-800 sm:min-h-[600px]"
+                  className="relative aspect-auto h-full w-full rounded-lg border object-cover shadow-lg dark:border-gray-800"
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}

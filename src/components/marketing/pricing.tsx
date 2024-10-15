@@ -24,7 +24,7 @@ const tiers = [
     id: "tier-pro",
     href: "#cta-banner",
     priceMonthly: "$149",
-    description: "Dedicated support and infrastructure for your company.",
+    description: "Desbloquea todas las características de Biztro.",
     features: [
       "Productos ilimitados",
       "Menús ilimitados",

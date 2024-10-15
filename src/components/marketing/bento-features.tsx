@@ -28,6 +28,26 @@ const features = [
       "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3 bg-orange-500 dark:bg-orange-500 dark:text-orange-50 text-orange-50"
   },
   {
+    Icon: MousePointerClick,
+    name: "Editor web",
+    description:
+      "Con una interfaz de arrastrar y soltar, es fácil realizar cambios y los resultados se pueden ver al instante.",
+    href: undefined,
+    cta: "Ver más",
+    background: (
+      <div className="absolute inset-x-0 top-1/3 flex items-start justify-center py-2 transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-95 sm:inset-auto sm:right-8 sm:top-4">
+        <div className="relative flex items-center justify-center">
+          <span className="absolute inline-flex h-8 w-16 rounded-full bg-green-500 group-hover:animate-ping"></span>
+          <button className="relative inline-flex rounded-full bg-green-500 px-4 py-2 font-medium text-green-50 shadow-lg shadow-green-400/30">
+            Publicar
+          </button>
+        </div>
+      </div>
+    ),
+    className:
+      "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2 text-gray-50"
+  },
+  {
     Icon: QrCodeIcon,
     name: "Genera tu código QR",
     description:
@@ -49,30 +69,10 @@ const features = [
     ),
     className:
       "lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4 bg-violet-600 dark:bg-violet-600 dark:text-violet-50 text-violet-50"
-  },
-  {
-    Icon: MousePointerClick,
-    name: "Editor web",
-    description:
-      "Con una interfaz de arrastrar y soltar, es fácil realizar cambios y los resultados se pueden ver al instante.",
-    href: undefined,
-    cta: "Ver más",
-    background: (
-      <div className="absolute inset-x-0 top-1/3 flex items-start justify-center py-2 transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-95 sm:inset-auto sm:right-8 sm:top-4">
-        <div className="relative flex items-center justify-center">
-          <span className="absolute inline-flex h-8 w-16 rounded-full bg-green-500 group-hover:animate-ping"></span>
-          <button className="relative inline-flex rounded-full bg-green-500 px-4 py-2 font-medium text-green-50 shadow-lg shadow-green-400/30">
-            Publicar
-          </button>
-        </div>
-      </div>
-    ),
-    className:
-      "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2 text-gray-50"
   }
 ]
 
-export default function Features() {
+export default function FeaturesBento() {
   return (
     <>
       <section className="mt-0 max-w-2xl text-center md:mx-auto md:mt-0 md:text-center xl:max-w-none">

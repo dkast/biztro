@@ -1,5 +1,6 @@
 import { CornerRightUp, Rocket, ShoppingBag, Store } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 import Features from "@/components/flare-ui/features-horizontal"
 import TitleSection from "@/components/marketing/title-section"
@@ -40,7 +41,7 @@ export default function Component() {
         title="Solo 3 pasos para iniciar"
         className="mb-16"
       />
-      <Features collapseDelay={8000} data={data} linePosition="bottom" />
+      <Features collapseDelay={6000} data={data} linePosition="bottom" />
       <div className="mx-auto mt-0 grid max-w-5xl grid-cols-1 gap-8 px-4 sm:mt-28 sm:grid-cols-2">
         <div>
           <h3 className="mb-4 text-lg font-semibold sm:text-2xl lg:text-3xl">
@@ -67,15 +68,23 @@ export default function Component() {
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-3">
-          <Image
-            src={QRimage}
-            alt="Código QR de ejemplo"
-            className="rounded-lg shadow-xl"
-            width={300}
-            height={300}
-          />
+          <Link href="https://biztro.co/la-bella-italia">
+            <Image
+              src={QRimage}
+              alt="Código QR de ejemplo"
+              className="rounded-lg shadow-xl"
+              width={300}
+              height={300}
+            />
+          </Link>
           <span className="flex gap-2 text-gray-400">
-            Escanea para ver un ejemplo
+            Escanea para ver un{" "}
+            <Link
+              href="https://biztro.co/la-bella-italia"
+              className="underline underline-offset-2 hover:text-gray-50"
+            >
+              ejemplo
+            </Link>
             <CornerRightUp className="size-4" />
           </span>
         </div>

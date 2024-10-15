@@ -34,6 +34,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
         description={post?.description}
         formattedDate={formattedDate}
         author={post?.author}
+        position={post?.position}
         avatar={post?.avatar}
       />
       <section>
@@ -60,9 +61,9 @@ export default function Page({ params }: { params: { slug: string[] } }) {
 function Header({
   title,
   category,
-  description,
   formattedDate,
   author,
+  position,
   avatar
 }: {
   title: string
@@ -70,26 +71,14 @@ function Header({
   description?: string
   formattedDate: string
   author: string
+  position: string
   avatar: string
 }) {
   return (
-    <div className="mt-20">
+    <div className="mb-10 mt-20">
       <div className="space-y-6">
         <div className="flex flex-row items-center gap-2 text-xs font-medium text-gray-400 md:text-sm">
-          <time>{formattedDate},</time>
-          <div className="flex flex-row items-center gap-2">
-            <span>por</span>
-            <div className="relative h-[20px] w-[20px] overflow-hidden rounded-full border border-gray-200/70 shadow-md">
-              <Image
-                src={`/${avatar}`}
-                alt={`Imagen de perfil de ${author}`}
-                width={20}
-                height={20}
-                className="absolute inset-0"
-              />
-            </div>
-            <span className="text-gray-600">{author}</span>
-          </div>
+          <time>{formattedDate}</time>
           <Separator orientation="vertical" className="mx-2 h-5 bg-gray-300" />
           <span className="text-xs font-medium text-orange-500 md:text-sm">
             {category}
@@ -98,13 +87,24 @@ function Header({
         <h1 className="font-display text-4xl font-medium sm:text-5xl">
           {title}
         </h1>
-        {description && (
-          <p className="font-medium leading-relaxed text-gray-500 sm:text-lg md:text-xl">
-            {description}
-          </p>
-        )}
+        <div className="flex items-center gap-3">
+          <Image
+            src={`/${avatar}`}
+            alt={`Imagen de perfil de ${author}`}
+            width={44}
+            height={44}
+            className="rounded-full shadow-md"
+          />
+          <div className="flex flex-col">
+            <span className="text-base lg:text-lg lg:leading-tight">
+              {author}
+            </span>
+            <span className="text-sm text-gray-400 lg:text-base">
+              {position}
+            </span>
+          </div>
+        </div>
       </div>
-      <Separator className="my-10 w-20 bg-gray-300" />
     </div>
   )
 }

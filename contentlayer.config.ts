@@ -4,6 +4,7 @@ import {
   type ComputedFields,
   type LocalDocument
 } from "contentlayer2/source-files"
+import { position } from "html2canvas/dist/types/css/property-descriptors/position"
 import rehypePrettyCode, { type LineElement } from "rehype-pretty-code"
 import remarkGfm from "remark-gfm"
 
@@ -40,6 +41,10 @@ export const Post = defineDocumentType(() => ({
       required: true
     },
     author: {
+      type: "string",
+      required: true
+    },
+    position: {
       type: "string",
       required: true
     },

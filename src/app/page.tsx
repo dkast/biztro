@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 
 import Benefits from "@/components/marketing/benefits"
+import FeaturesBento from "@/components/marketing/bento-features"
 import CTABanner from "@/components/marketing/cta-banner"
 import EditorPreview from "@/components/marketing/editor-preview"
 import Faq from "@/components/marketing/faq"
-import Features from "@/components/marketing/features"
 import Footer from "@/components/marketing/footer"
 import Hero from "@/components/marketing/hero"
 import HowItWorks from "@/components/marketing/how-it-works"
@@ -21,7 +21,7 @@ export default function Page() {
       <Navbar />
       <Hero />
       <EditorPreview />
-      <Features />
+      <FeaturesBento />
       <HowItWorks />
       <Benefits />
       <Pricing />
