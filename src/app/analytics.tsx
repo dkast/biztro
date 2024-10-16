@@ -8,10 +8,25 @@ import { PostHogProvider } from "posthog-js/react"
 import { env } from "@/env.mjs"
 
 if (typeof window !== "undefined") {
-  posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY, {
+  const posthogKey =
+    process.env.NODE_ENV === "production"
+      ? env.NEXT_PUBLIC_POSTHOG_KEY
+      : "next_public_fake_posthog_key"
+
+  posthog.init(posthogKey, {
     api_host: "/ingest",
     ui_host: "https://us.posthog.com",
-    person_profiles: "always" // or 'always' to create profiles for anonymous users as well
+    person_profiles: "always", // or 'always' to create profiles for anonymous users as well,
+    autocapture: process.env.NODE_ENV === "production",
+    // skipcq: JS-0240
+    loaded: function (posthog) {
+      if (process.env.NODE_ENV === "development") {
+        posthog.opt_out_capturing()
+        posthog.set_config({
+          disable_session_recording: true
+        })
+      }
+    }
   })
 }
 export function CSPostHogProvider({ children }: { children: React.ReactNode }) {

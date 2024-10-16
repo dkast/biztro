@@ -46,16 +46,31 @@ export default function Faq() {
         <div>
           <Accordion type="single" collapsible>
             {FAQ.map((faq, index) => (
-              <AccordionItem key={index} value={`faq-${index}`}>
+              <AccordionItem
+                key={index}
+                value={`faq-${index}`}
+                className="dark:border-gray-700"
+              >
                 <AccordionTrigger className="text-start sm:text-lg [&>svg]:text-violet-500 sm:[&>svg]:size-5">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-base text-gray-700">
+                <AccordionContent className="text-base text-gray-700 dark:text-gray-300">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
+        </div>
+        <div className="col-span-full">
+          <p className="text-center">
+            ¿Tienes más preguntas? Envianos un correo a{" "}
+            <a
+              href="mailto:hola@biztro.co"
+              className="text-violet-500 hover:underline"
+            >
+              hola@biztro.co
+            </a>
+          </p>
         </div>
       </div>
     </section>

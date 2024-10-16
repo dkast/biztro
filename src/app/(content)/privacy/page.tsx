@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   const application = "Biztro"
   return (
-    <section className="prose mt-10">
+    <section className="prose prose-gray mt-10 dark:prose-invert">
       <h1>Política de privacidad</h1>
       <h2 className="font-medium text-gray-500">
         A partir del 1 de junio de 2024

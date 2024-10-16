@@ -19,22 +19,6 @@ export enum FrameSize {
 
 export const BgImages = [
   {
-    image: "bg-top-bakery-1.jpg",
-    name: "Bakery"
-  },
-  {
-    image: "bg-top-bakery-2.jpg",
-    name: "Bakery 2"
-  },
-  {
-    image: "bg-top-breakfast-1.jpg",
-    name: "Breakfast"
-  },
-  {
-    image: "bg-top-breakfast-2.jpg",
-    name: "Breakfast 2"
-  },
-  {
     image: "bg-top-burger-1.jpg",
     name: "Burger"
   },
@@ -64,15 +48,15 @@ export const BgImages = [
   },
   {
     image: "bg-top-ice-cream-1.jpg",
-    name: "Ice Cream"
+    name: "Helados"
   },
   {
     image: "bg-top-ice-cream-2.jpg",
-    name: "Ice Cream 2"
+    name: "Helados 2"
   },
   {
     image: "bg-center-ice-cream-3.jpg",
-    name: "Ice Cream 3"
+    name: "Yogurt"
   },
   {
     image: "bg-center-pizza-1.jpg",
@@ -113,6 +97,22 @@ export const BgImages = [
   {
     image: "bg-center-tacos-3.jpg",
     name: "Tacos 2"
+  },
+  {
+    image: "bg-top-bakery-1.jpg",
+    name: "Postre"
+  },
+  {
+    image: "bg-top-bakery-2.jpg",
+    name: "Postre 2"
+  },
+  {
+    image: "bg-top-breakfast-1.jpg",
+    name: "Pancakes"
+  },
+  {
+    image: "bg-top-breakfast-2.jpg",
+    name: "Waffles"
   }
 ]
 

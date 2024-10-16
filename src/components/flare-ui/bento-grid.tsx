@@ -58,7 +58,7 @@ const BentoCard = ({
         href ? "group-hover:-translate-y-10" : "group-hover:-translate-y-3"
       )}
     >
-      <Icon className="size-8 origin-left transform-gpu text-current transition-all duration-300 ease-in-out group-hover:scale-75" />
+      <Icon className="size-6 origin-left transform-gpu text-current transition-all duration-300 ease-in-out group-hover:scale-75 sm:size-8" />
       <h3 className="text-lg font-semibold text-current">{name}</h3>
       <p className="text-current/70 text-sm sm:max-w-lg">{description}</p>
     </div>

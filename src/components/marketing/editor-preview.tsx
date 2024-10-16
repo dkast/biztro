@@ -2,11 +2,14 @@
 
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
+import Image from "next/image"
 
 import { BorderBeam } from "@/components/flare-ui/border-beam"
 import GradientBlur from "@/components/flare-ui/gradient-blur"
 import { useMobile } from "@/lib/use-mobile"
 import { cn } from "@/lib/utils"
+import editorDark from "../../../public/editor-dark.png"
+import editorLight from "../../../public/editor-light.png"
 
 export default function EditorPreview() {
   const fadeInRef = useRef(null)
@@ -31,7 +34,7 @@ export default function EditorPreview() {
     <section
       id="editor-preview"
       ref={fadeInRef}
-      className="mx-auto max-w-5xl px-4 dark:bg-black sm:px-6 lg:px-8"
+      className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8"
     >
       <motion.div
         animate={fadeInInView ? "animate" : "initial"}
@@ -44,11 +47,11 @@ export default function EditorPreview() {
           type: "spring"
         }}
         className={cn(
-          "relative mt-0 h-full w-full rounded-md after:absolute after:inset-0 after:z-10 sm:mt-24 sm:rounded-xl",
+          "relative mt-0 h-full w-full rounded-md after:absolute after:inset-0 after:z-10 sm:mt-10 sm:rounded-xl",
           // isMobile
           isMobile
-            ? "after:[background:linear-gradient(to_top,#fff_10%,transparent)] dark:after:[background:linear-gradient(to_top,#000000_10%,transparent)]"
-            : "after:[background:linear-gradient(to_top,#fff_2%,transparent)] dark:after:[background:linear-gradient(to_top,#000000_2%,transparent)]"
+            ? "after:[background:linear-gradient(to_top,#fff_10%,transparent)] dark:after:[background:linear-gradient(to_top,#0a0a0a_10%,transparent)]"
+            : "after:[background:linear-gradient(to_top,#fff_2%,transparent)] dark:after:[background:linear-gradient(to_top,#0a0a0a_2%,transparent)]"
         )}
       >
         <div
@@ -59,26 +62,26 @@ export default function EditorPreview() {
             "[background-image:linear-gradient(to_bottom,#ffaa40,transparent_30%)]",
 
             // dark styles
-            "dark:[background-image:linear-gradient(to_bottom,#ffffff,transparent_30%)]"
+            "dark:[background-image:linear-gradient(to_bottom,#fda4af,transparent_30%)]"
           )}
         />
 
-        <img
-          src="/editor-light.png"
+        <Image
+          src={editorLight}
           className="relative block h-full w-full rounded-md border dark:hidden sm:rounded-xl"
           alt="Imagen del editor de menús en web"
         />
-        <img
-          src="/editor-dark.png"
+        <Image
+          src={editorDark}
           className="relative hidden h-full w-full rounded-md border border-gray-700/70 dark:block sm:rounded-xl"
           alt="Imagen del editor de menús en web"
         />
 
         {!isMobile && (
           <>
-            <GradientBlur className="inset-x-0 bottom-0 h-1/2" />
+            <GradientBlur className="inset-x-0 bottom-0 h-1/3" />
             <BorderBeam size={150} />
-            <BorderBeam size={150} delay={7} />
+            {/* <BorderBeam size={150} delay={7} /> */}
           </>
         )}
       </motion.div>

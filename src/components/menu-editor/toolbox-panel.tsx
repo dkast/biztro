@@ -5,7 +5,7 @@ import { useEditor } from "@craftjs/core"
 import type { Organization, Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
-import { useAtomValue } from "jotai"
+import { useAtomValue, useSetAtom } from "jotai"
 import {
   Diamond,
   Layers,
@@ -32,7 +32,7 @@ import type {
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { getThemes } from "@/server/actions/menu/queries"
-import { colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
+import { colorListAtom, colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import { colorThemes, fontThemes } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
@@ -56,6 +56,8 @@ export default function ToolboxPanel({
     queryFn: () => getThemes({ themeType: "COLOR" })
   })
 
+  // Save the colorThemes and userColorThemes in the atom state
+  const setColorList = useSetAtom(colorListAtom)
   const [selectedColorTheme, setSelectedColorTheme] =
     useState<(typeof colorThemes)[0]>()
   const [selectedFontTheme, setSelectedFontTheme] =
@@ -75,9 +77,13 @@ export default function ToolboxPanel({
         }
       }
     }
+    setColorList(colorThemes)
+  }, [userColorThemes, setColorList])
+
+  useEffect(() => {
     setSelectedColorTheme(colorThemes.find(theme => theme.id === colorThemeId))
     setSelectedFontTheme(fontThemes.find(theme => theme.name === fontThemeId))
-  }, [colorThemeId, fontThemeId, userColorThemes])
+  }, [colorThemeId, fontThemeId])
 
   if (!selectedFontTheme || !selectedColorTheme) {
     return (
@@ -255,7 +261,7 @@ function ToolboxElement({
   classNameIcon?: string
 }) {
   return (
-    <div className="group flex cursor-move items-center gap-2 rounded-lg border p-2 text-sm shadow-sm hover:border-lime-400 hover:ring-1 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
+    <div className="group flex cursor-move items-center gap-2 rounded-lg border-[0.5px] p-2 text-sm shadow-sm hover:border-lime-400 hover:ring-1 hover:ring-lime-100 dark:border-gray-700 dark:hover:border-green-600 dark:hover:ring-green-900">
       <Icon
         className={cn(
           "size-3.5 text-blue-400 group-hover:text-current",

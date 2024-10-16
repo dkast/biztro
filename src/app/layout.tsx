@@ -58,7 +58,7 @@ export default function RootLayout({
       lang="es-MX"
     >
       <AxiomWebVitals />
-      <body className="bg-white text-gray-950 antialiased dark:bg-gray-950 dark:text-white">
+      <body className="bg-white text-gray-950 dark:bg-gray-950 dark:text-white">
         <Providers>
           <div className="flex min-h-dvh flex-col">{children}</div>
         </Providers>

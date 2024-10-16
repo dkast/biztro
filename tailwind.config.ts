@@ -1,4 +1,7 @@
+import containerQueries from "@tailwindcss/container-queries"
+import typography from "@tailwindcss/typography"
 import type { Config } from "tailwindcss"
+import tailwindcssAnimate from "tailwindcss-animate"
 import colors from "tailwindcss/colors"
 import { fontFamily } from "tailwindcss/defaultTheme"
 import type { PluginCreator } from "tailwindcss/types/config"
@@ -83,13 +86,23 @@ const config = {
           "30%, 60%": {
             "background-position": "calc(100% + var(--shimmer-width)) 0"
           }
+        },
+        "slide-down": {
+          from: { height: "0px" },
+          to: { height: "var(--radix-accordion-content-height)" }
+        },
+        "slide-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0px" }
         }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
-        shimmer: "shimmer 8s infinite"
+        shimmer: "shimmer 8s infinite",
+        "slide-down": "slide-down 300ms cubic-bezier(0.87, 0, 0.13, 1)",
+        "slide-up": "slide-up 300ms cubic-bezier(0.87, 0, 0.13, 1)"
       },
       gridTemplateColumns: {
         // Add your custom value here
@@ -97,12 +110,7 @@ const config = {
       }
     }
   },
-  plugins: [
-    require("tailwindcss-animate"),
-    require("@tailwindcss/typography"),
-    require("@tailwindcss/container-queries"),
-    glassPlugin
-  ]
+  plugins: [tailwindcssAnimate, typography, containerQueries, glassPlugin]
 } satisfies Config
 
 export default config
