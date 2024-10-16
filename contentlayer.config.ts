@@ -4,7 +4,6 @@ import {
   type ComputedFields,
   type LocalDocument
 } from "contentlayer2/source-files"
-import { position } from "html2canvas/dist/types/css/property-descriptors/position"
 import rehypePrettyCode, { type LineElement } from "rehype-pretty-code"
 import remarkGfm from "remark-gfm"
 

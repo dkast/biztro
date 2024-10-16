@@ -115,7 +115,6 @@ export default function Pricing() {
               {tier.description}
             </p>
             <ul
-              role="list"
               className={cn(
                 tier.featured ? "text-gray-300" : "text-gray-400",
                 "mt-8 space-y-3 text-sm leading-6 sm:mt-10"

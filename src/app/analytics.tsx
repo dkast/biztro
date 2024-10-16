@@ -18,6 +18,7 @@ if (typeof window !== "undefined") {
     ui_host: "https://us.posthog.com",
     person_profiles: "always", // or 'always' to create profiles for anonymous users as well,
     autocapture: process.env.NODE_ENV === "production",
+    // skipcq: JS-0240
     loaded: function (posthog) {
       if (process.env.NODE_ENV === "development") {
         posthog.opt_out_capturing()
