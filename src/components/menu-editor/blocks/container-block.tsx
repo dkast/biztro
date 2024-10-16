@@ -45,7 +45,9 @@ export default function ContainerBlock({
           backgroundPosition: backgroundImage?.split("-")[1]
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/80"></div>
+        {backgroundImage?.startsWith("bg") && (
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/80"></div>
+        )}
       </div>
       <main className="mx-auto flex max-w-screen-md grow flex-col @container">
         <div className="relative flex grow flex-col pb-8">{children}</div>
