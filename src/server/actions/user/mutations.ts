@@ -123,40 +123,84 @@ export const inviteMember = authActionClient
         }
       }
 
-      // Create the invitation
-      const invitation = await prisma.teamInvite.create({
-        data: {
+      // Check for an existing active invitation
+      const existingInvite = await prisma.teamInvite.findFirst({
+        where: {
           email,
-          token: nanoid(),
           organizationId: currentOrg,
-          role: MembershipRole.MEMBER,
-          status: InviteStatus.PENDING,
-          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
-          invitedById: membership?.id
+          status: InviteStatus.PENDING
         }
       })
 
-      // Send email
-      const resend = new Resend(process.env.RESEND_API_KEY)
-
-      // Extract shortname from email address
-      const shortname = email.split("@")[0]
-
-      await resend.emails.send({
-        from: "no-reply@biztro.co",
-        to: email,
-        subject: "Invitación para unirse a Biztro",
-        react: InviteUserEmail({
-          username: shortname,
-          invitedByUsername: user?.name ?? undefined,
-          invitedByEmail: user?.email,
-          teamName: membership.organization.name,
-          inviteLink: `${baseUrl}/invite/${invitation.token}`,
-          baseUrl: baseUrl
+      if (existingInvite) {
+        // Update the existing invitation
+        const updatedInvite = await prisma.teamInvite.update({
+          where: {
+            id: existingInvite.id
+          },
+          data: {
+            token: nanoid(),
+            expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 days
+          }
         })
-      })
 
-      return { success: true }
+        // Send email
+        const resend = new Resend(process.env.RESEND_API_KEY)
+
+        // Extract shortname from email address
+        const shortname = email.split("@")[0]
+
+        await resend.emails.send({
+          from: "no-reply@biztro.co",
+          to: email,
+          subject: "Invitación para unirse a Biztro",
+          react: InviteUserEmail({
+            username: shortname,
+            invitedByUsername: user?.name ?? undefined,
+            invitedByEmail: user?.email,
+            teamName: membership.organization.name,
+            inviteLink: `${baseUrl}/invite/${updatedInvite.token}`,
+            baseUrl: baseUrl
+          })
+        })
+
+        return { success: true }
+      } else {
+        // Create the invitation
+        const invitation = await prisma.teamInvite.create({
+          data: {
+            email,
+            token: nanoid(),
+            organizationId: currentOrg,
+            role: MembershipRole.MEMBER,
+            status: InviteStatus.PENDING,
+            expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
+            invitedById: membership?.id
+          }
+        })
+
+        // Send email
+        const resend = new Resend(process.env.RESEND_API_KEY)
+
+        // Extract shortname from email address
+        const shortname = email.split("@")[0]
+
+        await resend.emails.send({
+          from: "no-reply@biztro.co",
+          to: email,
+          subject: "Invitación para unirse a Biztro",
+          react: InviteUserEmail({
+            username: shortname,
+            invitedByUsername: user?.name ?? undefined,
+            invitedByEmail: user?.email,
+            teamName: membership.organization.name,
+            inviteLink: `${baseUrl}/invite/${invitation.token}`,
+            baseUrl: baseUrl
+          })
+        })
+
+        return { success: true }
+      }
     } catch (error) {
       console.error("Error inviting member:", error)
       return {
