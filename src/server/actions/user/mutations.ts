@@ -160,7 +160,7 @@ export const inviteMember = authActionClient
             invitedByEmail: user?.email,
             teamName: membership.organization.name,
             inviteLink: `${baseUrl}/invite/${updatedInvite.token}`,
-            baseUrl: baseUrl
+            baseUrl
           })
         })
 
@@ -195,7 +195,7 @@ export const inviteMember = authActionClient
             invitedByEmail: user?.email,
             teamName: membership.organization.name,
             inviteLink: `${baseUrl}/invite/${invitation.token}`,
-            baseUrl: baseUrl
+            baseUrl
           })
         })
 
