@@ -33,7 +33,7 @@ const steps: Step[] = [
     placement: "right"
   },
   {
-    target: ".editor-preview",
+    target: ".editor-size",
     title: "Vista previa",
     content:
       "Aquí puedes ver cómo se verá tu menú en un dispositivo móvil o escritorio. Puedes hacer clic en los elementos para editarlos.",
