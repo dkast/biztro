@@ -318,14 +318,16 @@ function QrCodeEditor({
     Record<"r" | "g" | "b" | "a", number>
   >("color", fgColor)
   const [showLogo, setShowLogo] = useLocalStorage<boolean>("logo", false)
-
   const [logoBase64, setLogoBase64] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
   useEffect(() => {
     if (!logoURL) return
 
+    setIsLoading(true)
     const img = new Image()
     img.crossOrigin = "Anonymous"
-    img.src = logoURL
+    img.src = `${logoURL}?q=true`
     img.onload = () => {
       const canvas = document.createElement("canvas")
       const aspectRatio = img.width / img.height
@@ -336,6 +338,10 @@ function QrCodeEditor({
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
         setLogoBase64(canvas.toDataURL("image/png"))
       }
+      setIsLoading(false)
+    }
+    img.onerror = () => {
+      setIsLoading(false)
     }
   }, [logoURL])
 
@@ -410,12 +416,17 @@ function QrCodeEditor({
               </div>
               <div className="grid gap-3">
                 <Label htmlFor="logo">Mostrar Logo</Label>
-                <Switch
-                  checked={showLogo}
-                  onCheckedChange={checked => {
-                    setShowLogo(checked)
-                  }}
-                />
+                {isLoading ? (
+                  <Loader className="size-4 animate-spin" />
+                ) : (
+                  <Switch
+                    checked={showLogo}
+                    disabled={!logoBase64}
+                    onCheckedChange={checked => {
+                      setShowLogo(checked)
+                    }}
+                  />
+                )}
               </div>
             </fieldset>
           </form>

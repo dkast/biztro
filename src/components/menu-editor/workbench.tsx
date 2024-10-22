@@ -119,7 +119,7 @@ export default function Workbench({
                   "editor-preview group mx-auto pb-24 pt-10 transition-all duration-300 ease-in-out"
                 )}
               >
-                <span className="block p-2 text-center text-sm text-gray-400">
+                <span className="editor-size block p-2 text-center text-sm text-gray-400">
                   {frameSize === FrameSize.DESKTOP ? "Escritorio" : "Móvil"}
                 </span>
                 <div
