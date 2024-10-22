@@ -327,7 +327,7 @@ function QrCodeEditor({
     setIsLoading(true)
     const img = new Image()
     img.crossOrigin = "Anonymous"
-    img.src = logoURL
+    img.src = logoURL + "?q=true"
     img.onload = () => {
       const canvas = document.createElement("canvas")
       const aspectRatio = img.width / img.height
