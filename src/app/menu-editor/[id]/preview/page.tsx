@@ -3,7 +3,6 @@ import lz from "lzutf8"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import Header from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { getMenuById } from "@/server/actions/menu/queries"
@@ -25,20 +24,21 @@ export default async function PreviewPage({
   }
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-800">
-      <Header>
-        <div className="mx-10 grid grow grid-cols-3 items-center">
-          <Link href={`/menu-editor/${params.id}`}>
-            <Button variant="ghost" size="sm">
-              <ChevronLeft className="size-5" />
-              Regresar
-            </Button>
-          </Link>
-          <span className="mx-auto text-sm">{siteMenu.name}</span>
-        </div>
-      </Header>
-      <div className="mt-16">
+    <div className="relative bg-gray-50 dark:bg-gray-800">
+      <div className="fixed left-2 top-2 z-50">
+        <Link href={`/menu-editor/${params.id}`}>
+          <Button variant="outline" size="icon" className="rounded-full">
+            <ChevronLeft className="size-4" />
+          </Button>
+        </Link>
+      </div>
+      <div>
         <ResolveEditor json={json} />
+      </div>
+      <div className="fixed inset-x-0 bottom-2 text-center">
+        <span className="rounded-full bg-amber-400 px-3 py-0.5 text-sm text-amber-950">
+          Vista previa
+        </span>
       </div>
     </div>
   )
