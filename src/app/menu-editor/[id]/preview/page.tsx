@@ -1,11 +1,17 @@
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, ScanEye } from "lucide-react"
 import lz from "lzutf8"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import type { Metadata } from "next/types"
 
 import { Button } from "@/components/ui/button"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { getMenuById } from "@/server/actions/menu/queries"
+
+export const metadata: Metadata = {
+  title: "Vista previa",
+  description: "Vista previa de un menú"
+}
 
 export default async function PreviewPage({
   params
@@ -35,8 +41,9 @@ export default async function PreviewPage({
       <div>
         <ResolveEditor json={json} />
       </div>
-      <div className="fixed inset-x-0 bottom-2 text-center">
-        <span className="rounded-full bg-amber-400 px-3 py-0.5 text-sm text-amber-950">
+      <div className="fixed inset-x-0 bottom-3 text-center">
+        <span className="rounded-full bg-amber-400 px-3 py-1 text-sm text-amber-950">
+          <ScanEye className="mr-1 inline-block size-4 align-text-bottom" />
           Vista previa
         </span>
       </div>
