@@ -46,7 +46,7 @@ export default async function OnboardingStatus({ orgId }: { orgId: string }) {
       </PageSubtitle>
       <div className="mt-5 grid grid-cols-1 gap-2 md:grid-cols-3">
         <Card className="rounded-xl p-0">
-          <CardHeader className="flex flex-row items-center justify-between space-y-1 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-1 p-3 pb-1">
             <div className="flex flex-row items-center gap-2">
               <Badge className="p-2" variant="violet">
                 <Store className="text-muted-foreground size-4" />
@@ -73,14 +73,14 @@ export default async function OnboardingStatus({ orgId }: { orgId: string }) {
               </Button>
             </Link>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 p-3">
             <CardDescription className="text-xs">
               Captura la información de tu negocio, como nombre, logo, etc.
             </CardDescription>
           </CardContent>
         </Card>
         <Card className="rounded-xl p-0">
-          <CardHeader className="flex flex-row items-center justify-between space-y-1 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-1 p-3 pb-1">
             <div className="flex flex-row items-center gap-2">
               <Badge className="p-2" variant="destructive">
                 <MapPin className="text-muted-foreground size-4" />
@@ -107,14 +107,14 @@ export default async function OnboardingStatus({ orgId }: { orgId: string }) {
               </Button>
             </Link>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 p-3">
             <CardDescription className="text-xs">
               Registra la dirección, horarios y redes sociales.
             </CardDescription>
           </CardContent>
         </Card>
         <Card className="rounded-xl p-0">
-          <CardHeader className="flex flex-row items-center justify-between space-y-1 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-1 p-3 pb-1">
             <div className="flex flex-row items-center gap-2">
               <Badge className="p-2" variant="green">
                 <ShoppingBag className="text-muted-foreground size-4" />
@@ -141,7 +141,7 @@ export default async function OnboardingStatus({ orgId }: { orgId: string }) {
               </Button>
             </Link>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 p-3">
             <CardDescription className="text-xs">
               Crea tus productos y categorías para tu menú.
             </CardDescription>
