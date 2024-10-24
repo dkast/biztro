@@ -25,8 +25,6 @@ export default async function InvitePage({
     return notFound()
   }
 
-  console.log("invite data", data)
-
   if (data.expiresAt < new Date() || data.status === InviteStatus.ACCEPTED) {
     return <InviteExpired />
   }
@@ -40,9 +38,6 @@ export default async function InvitePage({
         height={44}
         className="py-6"
       />
-      {/* <h1 className="font-display text-3xl font-semibold">
-        Bienvenido a Biztro
-      </h1> */}
       <div className="mt-0">
         <AcceptInviteCard invite={data} />
       </div>
