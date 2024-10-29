@@ -4,8 +4,10 @@ import {
   QueryClient
 } from "@tanstack/react-query"
 
+import AppSidebar from "@/components/dashboard/app-sidebar"
 import Header from "@/components/dashboard/header"
 import Sidebar from "@/components/dashboard/sidebar"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import {
   getCurrentOrganization,
   getUserMemberships
@@ -31,11 +33,18 @@ export default async function Layout({
 
   return (
     <div className="flex grow flex-col">
-      <Header />
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <Sidebar />
-      </HydrationBoundary>
-      <div className="flex grow flex-col pt-16 lg:pl-60">{children}</div>
+      <SidebarProvider>
+        <Header />
+        <HydrationBoundary state={dehydrate(queryClient)}>
+          {/* <Sidebar /> */}
+
+          <AppSidebar />
+        </HydrationBoundary>
+        <main className="flex grow flex-col pt-16">
+          <SidebarTrigger />
+          {children}
+        </main>
+      </SidebarProvider>
     </div>
   )
 }
