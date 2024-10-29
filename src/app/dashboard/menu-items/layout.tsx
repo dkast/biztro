@@ -6,7 +6,7 @@ const SecondaryNavItems = [
     href: "dashboard/menu-items"
   },
   {
-    title: "Categorias",
+    title: "Categorías",
     href: "dashboard/menu-items/categories"
   }
 ]

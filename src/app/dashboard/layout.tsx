@@ -6,7 +6,6 @@ import {
 
 import AppSidebar from "@/components/dashboard/app-sidebar"
 import Header from "@/components/dashboard/header"
-import Sidebar from "@/components/dashboard/sidebar"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import {
   getCurrentOrganization,
@@ -34,14 +33,15 @@ export default async function Layout({
   return (
     <div className="flex grow flex-col">
       <SidebarProvider>
-        {/* <Header /> */}
         <HydrationBoundary state={dehydrate(queryClient)}>
           {/* <Sidebar /> */}
 
           <AppSidebar />
         </HydrationBoundary>
-        <main className="flex grow flex-col pt-16">
-          <SidebarTrigger />
+        <main className="flex grow flex-col">
+          <Header showLogo={false}>
+            <SidebarTrigger className="size-5 text-gray-400 dark:text-gray-500" />
+          </Header>
           {children}
         </main>
       </SidebarProvider>

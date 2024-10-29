@@ -1,9 +1,10 @@
 "use client"
 
-import { useTransition } from "react"
+import { Fragment, useTransition } from "react"
 import toast from "react-hot-toast"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
+  ChevronRight,
   ChevronsUpDown,
   LayoutTemplate,
   Settings,
@@ -20,6 +21,11 @@ import {
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from "@/components/ui/collapsible"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -33,7 +39,10 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { switchOrganization } from "@/server/actions/user/mutations"
@@ -41,40 +50,80 @@ import {
   getCurrentOrganization,
   getUserMemberships
 } from "@/server/actions/user/queries"
+import { Plan } from "@/lib/types"
 import { getInitials } from "@/lib/utils"
 
 type NavigationItem = {
-  name: string
-  href: string
-  icon: LucideIcon
+  title: string
+  url: string
+  icon?: LucideIcon
+  items?: NavigationItem[]
 }
 
 const navigation: NavigationItem[] = [
-  { name: "Menú", href: "/dashboard", icon: LayoutTemplate },
+  { title: "Menús", url: "/dashboard", icon: LayoutTemplate },
   {
-    name: "Productos",
-    href: "/dashboard/menu-items",
-    icon: ShoppingBag
+    title: "Catálogo",
+    url: "/dashboard/menu-items",
+    icon: ShoppingBag,
+    items: [
+      { title: "Productos", url: "/dashboard/menu-items" },
+      { title: "Categorías", url: "/dashboard/menu-items/categories" }
+    ]
   },
   {
-    name: "Configuración",
-    href: "/dashboard/settings",
-    icon: Settings
+    title: "Configuración",
+    url: "/dashboard/settings",
+    icon: Settings,
+    items: [
+      { title: "General", url: "/dashboard/settings" },
+      { title: "Sucursal", url: "/dashboard/settings/locations" },
+      { title: "Miembros", url: "/dashboard/settings/members" }
+    ]
   }
 ]
 
 export default function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar className="dark:border-gray-800">
       <SidebarWorkgroup />
       <SidebarContent>
         <SidebarGroup>
           <SidebarContent>
             <SidebarMenu>
               {navigation.map(item => (
-                <SidebarMenuItem key={item.name}>
-                  <SidebarLink item={item} />
-                </SidebarMenuItem>
+                <Fragment key={item.title}>
+                  {item.items ? (
+                    <Collapsible
+                      asChild
+                      defaultOpen={true}
+                      className="group/collapsible"
+                    >
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton tooltip={item.title}>
+                            {item.icon && <item.icon />}
+                            <span>{item.title}</span>
+                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.items?.map(subItem => (
+                              <SidebarMenuSubItem key={subItem.title}>
+                                <SidebarSubLink item={subItem} />
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  ) : (
+                    <SidebarMenuItem>
+                      <SidebarLink item={item} />
+                    </SidebarMenuItem>
+                  )}
+                </Fragment>
               ))}
             </SidebarMenu>
           </SidebarContent>
@@ -90,18 +139,40 @@ function SidebarLink({ item }: { item: NavigationItem }) {
 
   let isActive = false
   if (!segment || segment === "(start)") {
-    isActive = pathname?.includes(item.href) ?? false
+    isActive = pathname?.includes(item.url) ?? false
   } else {
-    isActive = item.href.includes(segment)
+    isActive = item.url.includes(segment)
   }
 
   return (
     <SidebarMenuButton asChild isActive={isActive}>
-      <Link href={item.href}>
-        <item.icon />
-        <span>{item.name}</span>
+      <Link href={item.url}>
+        {item.icon && <item.icon />}
+        <span>{item.title}</span>
       </Link>
     </SidebarMenuButton>
+  )
+}
+
+function SidebarSubLink({ item }: { item: NavigationItem }) {
+  const pathname = usePathname()
+  const segment = useSelectedLayoutSegment()
+
+  console.log({ pathname, segment, item })
+
+  const isActive = item.url === pathname
+  // if (!segment) {
+  //   isActive = pathname?.includes(item.url) ?? false
+  // } else {
+  //   isActive = item.url === segment
+  // }
+
+  return (
+    <SidebarMenuSubButton asChild isActive={isActive}>
+      <Link href={item.url}>
+        <span>{item.title}</span>
+      </Link>
+    </SidebarMenuSubButton>
   )
 }
 
@@ -181,7 +252,9 @@ function SidebarWorkgroup() {
                   <span className="truncate font-semibold">
                     {currentOrg.name}
                   </span>
-                  <span className="truncate text-xs">{currentOrg.plan}</span>
+                  <span className="truncate text-xs">
+                    {currentOrg.plan === Plan.BASIC ? "Básico" : "Pro"}
+                  </span>
                 </div>
                 <ChevronsUpDown className="ml-auto" />
               </SidebarMenuButton>
@@ -195,7 +268,7 @@ function SidebarWorkgroup() {
               <DropdownMenuLabel className="text-muted-foreground text-xs">
                 Organizaciones
               </DropdownMenuLabel>
-              {memberships?.map((membership, index) => (
+              {memberships?.map(membership => (
                 <DropdownMenuItem
                   key={membership.organization.name}
                   onClick={() =>
