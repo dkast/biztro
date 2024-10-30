@@ -61,7 +61,7 @@ const config = {
 }
 
 /** @type {import("next").NextConfig} */
-let nextConfig = {}
+let nextConfig
 
 // If in Turbo Pack mode, do not use Sentry
 if (!process.env.TURBOPACK) {
