@@ -79,7 +79,7 @@ export default function Workbench({
         }}
         onRender={RenderNode}
       >
-        <Header>
+        <Header className="fixed inset-x-0 top-0">
           <Toolbar menu={menu} />
           <MenuTour />
         </Header>
