@@ -61,7 +61,7 @@ const config = {
 }
 
 /** @type {import("next").NextConfig} */
-let nextConfig
+let nextConfig // skipcq: JS-E1009
 
 // If in Turbo Pack mode, do not use Sentry
 if (!process.env.TURBOPACK) {
