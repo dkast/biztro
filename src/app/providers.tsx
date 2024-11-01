@@ -9,6 +9,7 @@ import { Provider } from "jotai"
 import { SessionProvider } from "next-auth/react"
 import { ThemeProvider } from "next-themes"
 import { usePathname } from "next/navigation"
+import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 // import { AppProgressBar as ProgressBar } from "next-nprogress-bar"
 
@@ -65,10 +66,11 @@ function Providers({ children }: { children: React.ReactNode }) {
           disableTransitionOnChange
           forcedTheme={forcedTheme}
         >
-          <QueryClientProvider client={queryClient}>
-            <Provider>
-              {/* <PhotoProvider> */}
-              {/* <Suspense fallback={null}>
+          <NuqsAdapter>
+            <QueryClientProvider client={queryClient}>
+              <Provider>
+                {/* <PhotoProvider> */}
+                {/* <Suspense fallback={null}>
             <ProgressBar
               color="#FF6500"
               options={{ showSpinner: false }}
@@ -76,24 +78,25 @@ function Providers({ children }: { children: React.ReactNode }) {
               delay={200}
             />
           </Suspense> */}
-              <UnsavedChangesProvider>
-                <ReactQueryStreamedHydration>
-                  {children}
-                </ReactQueryStreamedHydration>
-              </UnsavedChangesProvider>
-              <Toaster
-                position="top-center"
-                toastOptions={{
-                  style: {
-                    background: "#333",
-                    color: "#fff"
-                  }
-                }}
-              />
-              <TailwindIndicator />
-              {/* </PhotoProvider> */}
-            </Provider>
-          </QueryClientProvider>
+                <UnsavedChangesProvider>
+                  <ReactQueryStreamedHydration>
+                    {children}
+                  </ReactQueryStreamedHydration>
+                </UnsavedChangesProvider>
+                <Toaster
+                  position="top-center"
+                  toastOptions={{
+                    style: {
+                      background: "#333",
+                      color: "#fff"
+                    }
+                  }}
+                />
+                <TailwindIndicator />
+                {/* </PhotoProvider> */}
+              </Provider>
+            </QueryClientProvider>
+          </NuqsAdapter>
         </ThemeProvider>
       </CSPostHogProvider>
     </SessionProvider>
