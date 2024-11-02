@@ -7,6 +7,7 @@ import { cookies } from "next/headers"
 import { z } from "zod"
 
 import { appConfig } from "@/app/config"
+import { getItemCount, isProMember } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import { categorySchema, menuItemSchema, variantSchema } from "@/lib/types"
@@ -40,6 +41,19 @@ export const createItem = authActionClient
         return {
           failure: {
             reason: "No se pudo obtener la organización actual"
+          }
+        }
+      }
+
+      const proMember = await isProMember()
+      const itemCount = await getItemCount()
+
+      const itemLimit = appConfig.itemLimit || 10
+      if (!proMember && itemCount >= itemLimit) {
+        return {
+          failure: {
+            reason:
+              "Límite de 10 productos alcanzado. Actualiza a Pro para crear más."
           }
         }
       }

@@ -166,3 +166,22 @@ export const getInviteByToken = async (token: string) => {
     }
   })
 }
+
+export async function isProMember() {
+  const org = await getCurrentOrganization()
+  return org?.plan === "PRO"
+}
+
+export async function getItemCount() {
+  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+
+  if (!currentOrg) {
+    return 0
+  }
+
+  return await prisma.menuItem.count({
+    where: {
+      organizationId: currentOrg
+    }
+  })
+}
