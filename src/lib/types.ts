@@ -17,6 +17,11 @@ export enum FrameSize {
   DESKTOP = "DESKTOP"
 }
 
+export enum BasicPlanLimits {
+  ITEM_LIMIT_REACHED = "ITEM_LIMIT_REACHED",
+  MENU_LIMIT_REACHED = "MENU_LIMIT_REACHED"
+}
+
 export const BgImages = [
   {
     image: "bg-top-burger-1.jpg",

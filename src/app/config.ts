@@ -1,5 +1,5 @@
 export const appConfig = {
   cookieOrg: "current-organization",
-  itemLimit: 10,
+  itemLimit: 2,
   menuLimit: 1
 } as const

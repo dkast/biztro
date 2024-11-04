@@ -78,7 +78,8 @@ const navigation: NavigationItem[] = [
     items: [
       { title: "General", url: "/dashboard/settings" },
       { title: "Sucursal", url: "/dashboard/settings/locations" },
-      { title: "Miembros", url: "/dashboard/settings/members" }
+      { title: "Miembros", url: "/dashboard/settings/members" },
+      { title: "Suscripción", url: "/dashboard/settings/billing" }
     ]
   }
 ]
@@ -156,16 +157,7 @@ function SidebarLink({ item }: { item: NavigationItem }) {
 
 function SidebarSubLink({ item }: { item: NavigationItem }) {
   const pathname = usePathname()
-  const segment = useSelectedLayoutSegment()
-
-  console.log({ pathname, segment, item })
-
   const isActive = item.url === pathname
-  // if (!segment) {
-  //   isActive = pathname?.includes(item.url) ?? false
-  // } else {
-  //   isActive = item.url === segment
-  // }
 
   return (
     <SidebarMenuSubButton asChild isActive={isActive}>

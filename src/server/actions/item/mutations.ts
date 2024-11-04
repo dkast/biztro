@@ -10,7 +10,12 @@ import { appConfig } from "@/app/config"
 import { getItemCount, isProMember } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
-import { categorySchema, menuItemSchema, variantSchema } from "@/lib/types"
+import {
+  BasicPlanLimits,
+  categorySchema,
+  menuItemSchema,
+  variantSchema
+} from "@/lib/types"
 import { env } from "@/env.mjs"
 
 // Create an Cloudflare R2 service client object
@@ -53,7 +58,8 @@ export const createItem = authActionClient
         return {
           failure: {
             reason:
-              "Límite de 10 productos alcanzado. Actualiza a Pro para crear más."
+              "Límite de 10 productos alcanzado. Actualiza a Pro para crear más.",
+            code: BasicPlanLimits.ITEM_LIMIT_REACHED
           }
         }
       }

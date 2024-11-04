@@ -8,8 +8,9 @@ import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { UpgradeDialog } from "@/components/ui/upgrade-dialog"
+import { appConfig } from "@/app/config"
 import { createItem } from "@/server/actions/item/mutations"
-import { MenuItemStatus } from "@/lib/types"
+import { BasicPlanLimits, MenuItemStatus } from "@/lib/types"
 
 export default function ItemCreate() {
   const [isPending, startTransition] = useTransition()
@@ -18,7 +19,8 @@ export default function ItemCreate() {
   const { execute, status, reset } = useAction(createItem, {
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
-        if (data.failure.reason.includes("Actualizar a Pro")) {
+        console.error(data.failure.reason)
+        if (data.failure.code === BasicPlanLimits.ITEM_LIMIT_REACHED) {
           setShowUpgrade(true)
         } else {
           toast.error(data.failure.reason)
@@ -63,7 +65,13 @@ export default function ItemCreate() {
         Nuevo producto
       </Button>
 
-      <UpgradeDialog open={showUpgrade} onClose={() => setShowUpgrade(false)} />
+      <UpgradeDialog
+        title="Actualiza a Pro"
+        description={`Has alcanzado el límite de ${appConfig.itemLimit} productos en tu plan gratuito. 
+      Considera actualizar a Pro para seguir creando sin restricciones.`}
+        open={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
+      />
     </>
   )
 }
