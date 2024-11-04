@@ -6,9 +6,11 @@ import { cookies } from "next/headers"
 import { z } from "zod"
 
 import { appConfig } from "@/app/config"
+import { getMenuCount } from "@/server/actions/menu/queries"
+import { isProMember } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
-import { menuSchema } from "@/lib/types"
+import { BasicPlanLimits, menuSchema } from "@/lib/types"
 
 /**
  * Creates a menu.
@@ -29,6 +31,19 @@ export const createMenu = authActionClient
       return {
         failure: {
           reason: "No se pudo obtener la organización actual"
+        }
+      }
+    }
+
+    const proMember = await isProMember()
+    const menuCount = await getMenuCount()
+
+    const menuLimit = appConfig.menuLimit || 5
+    if (!proMember && menuCount >= menuLimit) {
+      return {
+        failure: {
+          reason: `Límite de ${menuLimit} menús alcanzado. Actualiza a Pro para crear más.`,
+          code: BasicPlanLimits.MENU_LIMIT_REACHED
         }
       }
     }
@@ -54,9 +69,9 @@ export const createMenu = authActionClient
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
-          message = "Ya existe un producto con ese nombre"
+          message = "Conflict error"
         } else {
-          message = error.message
+          message = "Database error"
         }
       } else if (error instanceof Error) {
         message = error.message

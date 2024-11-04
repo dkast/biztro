@@ -112,3 +112,12 @@ export async function getThemes({ themeType }: { themeType: string }) {
   //   }
   // )()
 }
+
+export async function getMenuCount() {
+  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  return await prisma.menu.count({
+    where: {
+      organizationId: currentOrg
+    }
+  })
+}

@@ -7,7 +7,8 @@ import { cookies } from "next/headers"
 import { z } from "zod"
 
 import { appConfig } from "@/app/config"
-import { getItemCount, isProMember } from "@/server/actions/user/queries"
+import { getItemCount } from "@/server/actions/item/queries"
+import { isProMember } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import {
