@@ -566,3 +566,27 @@ export const colorThemes = [
     scope: "GLOBAL"
   }
 ]
+
+export const tiers = [
+  {
+    id: Plan.BASIC,
+    name: "Básico",
+    priceMonthly: 0,
+    description: "Plan gratuito para comenzar",
+    features: ["Hasta 10 productos", "1 menú", "Código QR Personalizado"]
+  },
+  {
+    id: Plan.PRO,
+    name: "Pro",
+    priceMonthly: 149,
+    description: "Plan para negocios en crecimiento",
+    features: [
+      "Productos y categorías ilimitadas",
+      "Menús ilimitados",
+      "Invitaciones a colaboradores",
+      "Soporte por correo electrónico",
+      "Analítica de visitas (Pronto)",
+      "Promociones y ofertas (Pronto)"
+    ]
+  }
+]

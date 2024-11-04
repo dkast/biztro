@@ -23,7 +23,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -142,7 +141,7 @@ export default function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <div className="p-1">
-          <Card className="bg-gradient-to-t from-violet-500/10 via-transparent to-transparent shadow-none">
+          <Card className="bg-gradient-to-t from-violet-500/10 to-transparent shadow-none">
             <CardHeader className="p-3 pb-1">
               <CardTitle className="text-sm">Actualiza a Pro</CardTitle>
               <CardDescription className="text-xs">
