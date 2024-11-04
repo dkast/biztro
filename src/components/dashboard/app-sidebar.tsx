@@ -20,6 +20,15 @@ import {
 } from "next/navigation"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
 import {
   Collapsible,
   CollapsibleContent,
@@ -35,6 +44,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
@@ -130,6 +140,28 @@ export default function AppSidebar() {
           </SidebarContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <div className="p-1">
+          <Card className="bg-gradient-to-t from-violet-500/10 via-transparent to-transparent shadow-none">
+            <CardHeader className="p-3 pb-1">
+              <CardTitle className="text-sm">Actualiza a Pro</CardTitle>
+              <CardDescription className="text-xs">
+                Productos y menús ilimitados, componentes adicionales y más.
+              </CardDescription>
+            </CardHeader>
+            <CardFooter className="p-3">
+              <Button
+                size="xs"
+                variant="secondary"
+                className="w-full border bg-white text-xs dark:border-gray-700"
+                asChild
+              >
+                <Link href="/dashboard/settings/billing">Actualiza ahora</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   )
 }
