@@ -19,7 +19,7 @@ export default async function BillingPage() {
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
       <PageSubtitle
         title="Planes de suscripción"
-        description="Maneja tus planes de suscripción y la historia de facturación"
+        description="Maneja tu plan de suscripción e historial de pagos"
         Icon={Wallet}
       />
       <TierSelector isPro={isPro} />
