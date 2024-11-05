@@ -94,6 +94,10 @@ const navigation: NavigationItem[] = [
 ]
 
 export default function AppSidebar() {
+  const { data: currentOrg } = useQuery({
+    queryKey: ["workgroup", "current"],
+    queryFn: getCurrentOrganization
+  })
   return (
     <Sidebar className="dark:border-gray-800">
       <SidebarWorkgroup />
@@ -140,26 +144,30 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <div className="p-1">
-          <Card className="bg-gradient-to-t from-violet-500/10 to-transparent shadow-none">
-            <CardHeader className="p-3 pb-1">
-              <CardTitle className="text-sm">Actualiza a Pro</CardTitle>
-              <CardDescription className="text-xs">
-                Productos y menús ilimitados, componentes adicionales y más.
-              </CardDescription>
-            </CardHeader>
-            <CardFooter className="p-3">
-              <Button
-                size="xs"
-                variant="secondary"
-                className="w-full border bg-white text-xs dark:border-gray-700"
-                asChild
-              >
-                <Link href="/dashboard/settings/billing">Actualiza ahora</Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
+        {currentOrg?.plan == Plan.BASIC && (
+          <div className="p-1">
+            <Card className="bg-gradient-to-t from-violet-500/10 to-transparent shadow-none">
+              <CardHeader className="p-3 pb-1">
+                <CardTitle className="text-sm">Actualiza a Pro</CardTitle>
+                <CardDescription className="text-xs">
+                  Productos y menús ilimitados, componentes adicionales y más.
+                </CardDescription>
+              </CardHeader>
+              <CardFooter className="p-3">
+                <Button
+                  size="xs"
+                  variant="secondary"
+                  className="w-full border bg-white text-xs dark:border-gray-700"
+                  asChild
+                >
+                  <Link href="/dashboard/settings/billing">
+                    Actualiza ahora
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        )}
       </SidebarFooter>
     </Sidebar>
   )

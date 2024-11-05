@@ -6,8 +6,8 @@ import { Loader, PlusCircle } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 
+import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { Button } from "@/components/ui/button"
-import { UpgradeDialog } from "@/components/ui/upgrade-dialog"
 import { appConfig } from "@/app/config"
 import { createItem } from "@/server/actions/item/mutations"
 import { BasicPlanLimits, MenuItemStatus } from "@/lib/types"
@@ -66,7 +66,7 @@ export default function ItemCreate() {
       </Button>
 
       <UpgradeDialog
-        title="Actualiza a Pro"
+        title="Obtén más con el plan Pro"
         description={`Has alcanzado el límite de ${appConfig.itemLimit} productos en tu plan gratuito. 
       Considera actualizar a Pro para seguir creando sin restricciones.`}
         open={showUpgrade}

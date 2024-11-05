@@ -7,7 +7,7 @@ import { CirclePlus, Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 
-import { UpgradeDialog } from "@/components/ui/upgrade-dialog"
+import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { createMenu } from "@/server/actions/menu/mutations"
 import { BasicPlanLimits } from "@/lib/types"
 
@@ -61,8 +61,8 @@ export default function MenuCreate() {
       <UpgradeDialog
         open={showUpgrade}
         onClose={() => setShowUpgrade(false)}
-        title="Actualiza a Pro"
-        description="Actualiza tu plan para crear más menús y acceder a todas las funciones premium."
+        title="Impulsa tu negocio con el plan Pro"
+        description="Actualiza tu plan a Pro para crear más menús y acceder a todas las funciones premium."
       />
     </>
   )

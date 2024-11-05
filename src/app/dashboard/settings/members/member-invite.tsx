@@ -8,6 +8,7 @@ import { Loader, UserPlus } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { z } from "zod"
 
+import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -33,8 +34,10 @@ const emailSchema = z.object({
   })
 })
 
-export default function MemberInvite() {
+export default function MemberInvite({ isPro }: { isPro: boolean }) {
   const [open, setOpen] = useState(false)
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
+
   const { execute, status, reset } = useAction(inviteMember, {
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
@@ -57,60 +60,83 @@ export default function MemberInvite() {
   })
 
   const onSubmit = async (data: z.infer<typeof emailSchema>) => {
+    if (!isPro) {
+      setUpgradeOpen(true)
+      return
+    }
     await execute(data)
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="gap-2">
-          <UserPlus className="size-4" />
-          Invitar miembro
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>Invitar miembro</DialogTitle>
-        <DialogDescription>
-          Introduce el correo electrónico del miembro que deseas invitar.
-        </DialogDescription>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="mt-4 space-y-6"
-          >
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel htmlFor={field.name}>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="email"
-                      placeholder="correo@ejemplo.com"
-                      className="mb-4"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end">
-              <Button type="submit" disabled={status === "executing"}>
-                {status === "executing" ? (
-                  <>
-                    <Loader className="mr-2 size-4 animate-spin" />
-                    {"Enviando..."}
-                  </>
-                ) : (
-                  "Enviar invitación"
-                )}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <>
+      {isPro ? (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button className="gap-2">
+              <UserPlus className="size-4" />
+              Invitar miembro
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>Invitar miembro</DialogTitle>
+            <DialogDescription>
+              Introduce el correo electrónico del miembro que deseas invitar.
+            </DialogDescription>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="mt-4 space-y-6"
+              >
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel htmlFor={field.name}>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="email"
+                          placeholder="correo@ejemplo.com"
+                          className="mb-4"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end">
+                  <Button type="submit" disabled={status === "executing"}>
+                    {status === "executing" ? (
+                      <>
+                        <Loader className="mr-2 size-4 animate-spin" />
+                        {"Enviando..."}
+                      </>
+                    ) : (
+                      "Enviar invitación"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>
+          <DialogTrigger asChild>
+            <Button className="gap-2">
+              <UserPlus className="size-4" />
+              Invitar miembro
+            </Button>
+          </DialogTrigger>
+          <UpgradeDialog
+            open={upgradeOpen}
+            onClose={() => setUpgradeOpen(false)}
+            title="Obtén más con el plan Pro"
+            description="Actualiza a Pro para colaborar con tu equipo e invitar miembros sin límites."
+          />
+        </Dialog>
+      )}
+    </>
   )
 }

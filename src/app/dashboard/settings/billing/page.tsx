@@ -50,8 +50,16 @@ function TierSelector({ isPro }: { isPro?: boolean }) {
             </div>
           </CardContent>
           <CardFooter>
-            {!isPro && tier.id === Plan.PRO ? (
-              <Button className="mt-4 w-full">Activar plan</Button>
+            {tier.id === Plan.PRO ? (
+              isPro ? (
+                <Button className="mt-4 w-full" disabled>
+                  Plan actual
+                </Button>
+              ) : (
+                <Button className="mt-4 w-full">Activar plan</Button>
+              )
+            ) : isPro ? (
+              <Button className="mt-4 w-full">Cambiar a este plan</Button>
             ) : (
               <Button className="mt-4 w-full" disabled>
                 Plan actual
