@@ -227,7 +227,7 @@ model TeamInvite {
 model Customer {
   stripeCustomerId String     @id
   membership       Membership @relation(fields: [membershipId], references: [id])
-  membershipId     String
+  membershipId     String     @unique
 }
 
 model Subscription {

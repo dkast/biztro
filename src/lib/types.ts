@@ -567,7 +567,7 @@ export const colorThemes = [
   }
 ]
 
-export const tiers = [
+export const Tiers = [
   {
     id: Plan.BASIC,
     name: "Básico",
