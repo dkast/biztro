@@ -22,8 +22,49 @@ export default async function BillingPage() {
         description="Maneja tu plan de suscripción e historial de pagos"
         Icon={Wallet}
       />
-      <TierSelector isPro={isPro} />
+      <div className="my-10">
+        <CurrentPlan isPro={isPro} />
+      </div>
     </div>
+  )
+}
+
+function CurrentPlan({ isPro }: { isPro: boolean }) {
+  return (
+    <Card className="flex flex-col justify-between">
+      <CardHeader>
+        <CardTitle>Plan actual</CardTitle>
+        <CardDescription>
+          {isPro ? "Plan Pro" : "Plan gratuito"}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grow">
+        <div className="flex flex-col gap-2">
+          {isPro ? (
+            <div className="flex items-center gap-x-3 text-gray-600 dark:text-gray-300">
+              <CircleCheck className="size-5" />
+              <span className="text-sm">
+                Acceso a todas las funcionalidades
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-x-3 text-gray-600 dark:text-gray-300">
+              <CircleCheck className="size-5" />
+              <span className="text-sm">Acceso a 5 proyectos</span>
+            </div>
+          )}
+        </div>
+      </CardContent>
+      <CardFooter>
+        {isPro ? (
+          <Button className="mt-4 w-full" disabled>
+            Plan actual
+          </Button>
+        ) : (
+          <Button className="mt-4 w-full">Activar plan</Button>
+        )}
+      </CardFooter>
+    </Card>
   )
 }
 

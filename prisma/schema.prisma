@@ -41,16 +41,14 @@ model Session {
 }
 
 model User {
-  id            String         @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String
-  email         String?        @unique
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
-  memberships   Membership[]   @relation("Memberships")
+  memberships   Membership[] @relation("Memberships")
   sessions      Session[]
-  subscriptions Subscription[]
-  customer      Customer[]
 }
 
 model VerificationToken {
@@ -62,16 +60,18 @@ model VerificationToken {
 }
 
 model Membership {
-  id             String       @id @default(cuid())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  role           String       @default("OWNER")
+  id             String         @id @default(cuid())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  role           String         @default("OWNER")
   userId         String
-  isActive       Boolean      @default(true)
+  isActive       Boolean        @default(true)
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user           User         @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User           @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
   teamInvites    TeamInvite[]
+  subscriptions  Subscription[]
+  customer       Customer[]
 
   @@unique([organizationId, userId])
   @@index([userId])
@@ -225,26 +225,26 @@ model TeamInvite {
 }
 
 model Customer {
-  stripeCustomerId String @id
-  user             User   @relation(fields: [userId], references: [id])
-  userId           String
+  stripeCustomerId String     @id
+  membership       Membership @relation(fields: [membershipId], references: [id])
+  membershipId     String
 }
 
 model Subscription {
-  id                 String    @id
+  id                 String     @id
   status             String
   metadata           String
   priceId            String?
   quantity           Int
-  cancelAtPeriodEnd  Boolean   @default(false)
-  created            DateTime  @default(now())
-  currentPeriodStart DateTime  @default(now())
-  currentPeriodEnd   DateTime  @default(now())
+  cancelAtPeriodEnd  Boolean    @default(false)
+  created            DateTime   @default(now())
+  currentPeriodStart DateTime   @default(now())
+  currentPeriodEnd   DateTime   @default(now())
   endedAt            DateTime?
   cancelAt           DateTime?
   canceledAt         DateTime?
   trialStart         DateTime?
   trialEnd           DateTime?
-  user               User      @relation(fields: [userId], references: [id])
-  userId             String
+  membership         Membership @relation(fields: [membershipId], references: [id])
+  membershipId       String
 }

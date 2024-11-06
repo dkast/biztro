@@ -31,7 +31,7 @@ export const manageSubscriptionStatusChnage = async (
       id: stripeSubscriptionId
     },
     create: {
-      user: { connect: { id: customer.userId } },
+      membership: { connect: { id: customer.membershipId } },
       id: stripeSubscriptionId,
       metadata: JSON.stringify(subscription.metadata),
       status: subscription.status,
@@ -54,7 +54,7 @@ export const manageSubscriptionStatusChnage = async (
       trialEnd: subscription.trial_end ? new Date(subscription.trial_end) : null
     },
     update: {
-      user: { connect: { id: customer.userId } },
+      membership: { connect: { id: customer.membershipId } },
       metadata: JSON.stringify(subscription.metadata),
       status: subscription.status,
       priceId: subscription.items.data[0]?.price.id,
