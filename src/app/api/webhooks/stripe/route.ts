@@ -1,4 +1,3 @@
-import type { NextApiResponse } from "next"
 import type Stripe from "stripe"
 
 import { manageSubscriptionStatusChnage } from "@/server/actions/subscriptions/mutations"
