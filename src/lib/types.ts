@@ -599,12 +599,12 @@ export const Tiers = [
 ]
 
 export enum SubscriptionStatus {
-  TRIALING = "trialing",
-  ACTIVE = "active",
-  CANCELED = "canceled",
-  INCOMPLETE = "incomplete",
-  INCOMPLETE_EXPIRED = "incomplete_expired",
-  PAST_DUE = "past_due",
-  UNPAID = "unpaid",
-  PAUSED = "paused"
+  TRIALING = "TRIALING",
+  ACTIVE = "ACTIVE",
+  CANCELED = "CANCELED",
+  INCOMPLETE = "INCOMPLETE",
+  INCOMPLETE_EXPIRED = "INCOMPLETE_EXPIRED",
+  PAST_DUE = "PAST_DUE",
+  UNPAID = "UNPAID",
+  PAUSED = "PAUSED"
 }
