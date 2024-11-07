@@ -296,6 +296,7 @@ export type MenuItemQueryFilter = {
   take?: number
 }
 
+// Deprecated, use SubscriptionStatus instead
 export const enum Status {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
@@ -596,3 +597,14 @@ export const Tiers = [
     ]
   }
 ]
+
+export enum SubscriptionStatus {
+  TRIALING = "trialing",
+  ACTIVE = "active",
+  CANCELED = "canceled",
+  INCOMPLETE = "incomplete",
+  INCOMPLETE_EXPIRED = "incomplete_expired",
+  PAST_DUE = "past_due",
+  UNPAID = "unpaid",
+  PAUSED = "paused"
+}

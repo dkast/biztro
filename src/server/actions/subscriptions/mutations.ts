@@ -5,6 +5,7 @@ import type Stripe from "stripe"
 
 import prisma from "@/lib/prisma"
 import { stripe } from "@/lib/stripe"
+import { Plan } from "@/lib/types"
 import { calculateTrialEndUnixTimestamp, getBaseUrl } from "@/lib/utils"
 
 export const manageSubscriptionStatusChnage = async (
@@ -28,6 +29,31 @@ export const manageSubscriptionStatusChnage = async (
       expand: ["default_payment_method"]
     }
   )
+
+  // Get the membership with the organization
+  const membershipOrg = await prisma.membership.findFirst({
+    where: {
+      id: customer.membershipId
+    },
+    include: {
+      organization: true
+    }
+  })
+
+  if (!membershipOrg) {
+    throw new Error("Membership not found")
+  }
+
+  // Update the organization plan and status in the database
+  await prisma.organization.update({
+    where: {
+      id: membershipOrg.organization.id
+    },
+    data: {
+      plan: Plan.PRO,
+      status: subscription.status.toUpperCase()
+    }
+  })
 
   // Upsert the subscription in the database
   await prisma.subscription.upsert({
@@ -212,7 +238,7 @@ export const checkoutWithStripe = async (
           quantity: 1
         }
       ],
-      cancel_url: getBaseUrl(),
+      cancel_url: getBaseUrl() + redirectPath,
       success_url: getBaseUrl() + redirectPath,
       mode: "subscription",
       subscription_data: {

@@ -26,7 +26,9 @@ export default async function BillingPage() {
         Icon={Wallet}
       />
       <div className="my-10">
-        {isPro ? null : (
+        {isPro ? (
+          <p>Eres PRO</p>
+        ) : (
           <div className="flex flex-col gap-6">
             <BasicPlanView itemCount={itemCount} />
             {/* <TierSelector /> */}
