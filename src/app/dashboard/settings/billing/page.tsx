@@ -11,6 +11,7 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { BasicPlanView } from "@/app/dashboard/settings/billing/basic-plan-view"
+import { ProPlanView } from "@/app/dashboard/settings/billing/pro-plan-view"
 import { getItemCount } from "@/server/actions/item/queries"
 import { isProMember } from "@/server/actions/user/queries"
 import { Plan, Tiers } from "@/lib/types"
@@ -27,7 +28,7 @@ export default async function BillingPage() {
       />
       <div className="my-10">
         {isPro ? (
-          <p>Eres PRO</p>
+          <ProPlanView />
         ) : (
           <div className="flex flex-col gap-6">
             <BasicPlanView itemCount={itemCount} />
