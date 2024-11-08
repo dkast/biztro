@@ -67,8 +67,8 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
         <CardDescription>Básico</CardDescription>
       </CardHeader>
       <CardContent>
-        <Separator />
-        <div className="mt-6 flex flex-row gap-4">
+        {/* <Separator /> */}
+        <div className="mt-2 flex flex-row gap-4">
           <div className="hidden sm:block">
             <Gauge
               value={itemCount * 10}
@@ -90,7 +90,8 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="justify-end">
+      <Separator />
+      <CardFooter className="justify-end py-4">
         <Button
           disabled={priceIdLoading !== undefined}
           onClick={handleStripeCheckout}

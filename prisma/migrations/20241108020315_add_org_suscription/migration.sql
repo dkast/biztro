@@ -1,34 +1,35 @@
 /*
-  Warnings:
-
-  - Added the required column `organizationId` to the `Subscription` table without a default value. This is not possible if the table is not empty.
-
-*/
+ Warnings:
+ 
+ - Added the required column `organizationId` to the `Subscription` table without a default value. This is not possible if the table is not empty.
+ 
+ */
 -- RedefineTables
-PRAGMA defer_foreign_keys=ON;
-PRAGMA foreign_keys=OFF;
+PRAGMA defer_foreign_keys = ON;
+PRAGMA foreign_keys = OFF;
 CREATE TABLE "new_Subscription" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "status" TEXT NOT NULL,
-    "metadata" TEXT NOT NULL,
-    "priceId" TEXT,
-    "quantity" INTEGER NOT NULL,
-    "cancelAtPeriodEnd" BOOLEAN NOT NULL DEFAULT false,
-    "created" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "currentPeriodStart" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "currentPeriodEnd" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "endedAt" DATETIME,
-    "cancelAt" DATETIME,
-    "canceledAt" DATETIME,
-    "trialStart" DATETIME,
-    "trialEnd" DATETIME,
-    "membershipId" TEXT NOT NULL,
-    "organizationId" TEXT NOT NULL,
-    CONSTRAINT "Subscription_membershipId_fkey" FOREIGN KEY ("membershipId") REFERENCES "Membership" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Subscription_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+  "id" TEXT NOT NULL PRIMARY KEY,
+  "status" TEXT NOT NULL,
+  "metadata" TEXT NOT NULL,
+  "priceId" TEXT,
+  "quantity" INTEGER NOT NULL,
+  "cancelAtPeriodEnd" BOOLEAN NOT NULL DEFAULT false,
+  "created" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "currentPeriodStart" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "currentPeriodEnd" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "endedAt" DATETIME,
+  "cancelAt" DATETIME,
+  "canceledAt" DATETIME,
+  "trialStart" DATETIME,
+  "trialEnd" DATETIME,
+  "membershipId" TEXT NOT NULL,
+  "organizationId" TEXT NOT NULL,
+  CONSTRAINT "Subscription_membershipId_fkey" FOREIGN KEY ("membershipId") REFERENCES "Membership" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT "Subscription_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
-INSERT INTO "new_Subscription" ("cancelAt", "cancelAtPeriodEnd", "canceledAt", "created", "currentPeriodEnd", "currentPeriodStart", "endedAt", "id", "membershipId", "metadata", "priceId", "quantity", "status", "trialEnd", "trialStart") SELECT "cancelAt", "cancelAtPeriodEnd", "canceledAt", "created", "currentPeriodEnd", "currentPeriodStart", "endedAt", "id", "membershipId", "metadata", "priceId", "quantity", "status", "trialEnd", "trialStart" FROM "Subscription";
+-- INSERT INTO "new_Subscription" ("cancelAt", "cancelAtPeriodEnd", "canceledAt", "created", "currentPeriodEnd", "currentPeriodStart", "endedAt", "id", "membershipId", "metadata", "priceId", "quantity", "status", "trialEnd", "trialStart") SELECT "cancelAt", "cancelAtPeriodEnd", "canceledAt", "created", "currentPeriodEnd", "currentPeriodStart", "endedAt", "id", "membershipId", "metadata", "priceId", "quantity", "status", "trialEnd", "trialStart" FROM "Subscription";
 DROP TABLE "Subscription";
-ALTER TABLE "new_Subscription" RENAME TO "Subscription";
-PRAGMA foreign_keys=ON;
-PRAGMA defer_foreign_keys=OFF;
+ALTER TABLE "new_Subscription"
+  RENAME TO "Subscription";
+PRAGMA foreign_keys = ON;
+PRAGMA defer_foreign_keys = OFF;

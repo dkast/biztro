@@ -81,7 +81,10 @@ export const manageSubscriptionStatusChnage = async (
       trialStart: subscription.trial_start
         ? new Date(subscription.trial_start)
         : null,
-      trialEnd: subscription.trial_end ? new Date(subscription.trial_end) : null
+      trialEnd: subscription.trial_end
+        ? new Date(subscription.trial_end)
+        : null,
+      organization: { connect: { id: membershipOrg.organization.id } }
     },
     update: {
       membership: { connect: { id: customer.membershipId } },
@@ -104,7 +107,10 @@ export const manageSubscriptionStatusChnage = async (
       trialStart: subscription.trial_start
         ? new Date(subscription.trial_start)
         : null,
-      trialEnd: subscription.trial_end ? new Date(subscription.trial_end) : null
+      trialEnd: subscription.trial_end
+        ? new Date(subscription.trial_end)
+        : null,
+      organization: { connect: { id: membershipOrg.organization.id } }
     }
   })
 }

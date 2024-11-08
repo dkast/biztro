@@ -1,6 +1,17 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
+import { Tiers } from "@/lib/types"
 
 export async function ProPlanView() {
   const org = await getCurrentOrganization()
@@ -10,35 +21,72 @@ export async function ProPlanView() {
   }
   const subscription = await getCurrentSubscription(org?.id)
 
+  if (!subscription) {
+    return null
+  }
+
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Current Plan</CardTitle>
+        <CardTitle>Plan</CardTitle>
+        <CardDescription className="flex items-center gap-2">
+          <span>PRO</span>
+          {(() => {
+            console.log(subscription.status)
+            switch (subscription.status) {
+              case "trialing":
+                return <Badge variant="blue">Prueba</Badge>
+              case "active":
+                return <Badge variant="green">Activo</Badge>
+              case "canceled":
+                return <Badge variant="destructive">Cancelado</Badge>
+              case "incomplete":
+                return <Badge variant="yellow">Incompleto</Badge>
+              case "incomplete_Expired":
+                return <Badge variant="destructive">Incompleto Expirado</Badge>
+              case "past_due":
+                return <Badge variant="yellow">Vencido</Badge>
+              case "unpaid":
+                return <Badge variant="destructive">No Pagado</Badge>
+              case "paused":
+                return <Badge variant="secondary">Pausado</Badge>
+              default:
+                return <Badge variant="secondary">Desconocido</Badge>
+            }
+          })()}
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Status</span>
-            <span className="font-medium capitalize">
-              {subscription?.status || "No active subscription"}
-            </span>
+        {/* <Separator /> */}
+        <div className="mt-2 flex flex-row justify-between gap-4">
+          <div>
+            <div className="text-sm text-gray-500">Precio</div>
+            <div className="text-base font-medium">
+              {Tiers.find(t => t.id === org.plan)?.priceMonthly
+                ? new Intl.NumberFormat("es-MX", {
+                    style: "currency",
+                    currency: "MXN"
+                  }).format(
+                    Tiers.find(t => t.id === org.plan)?.priceMonthly ?? 0
+                  ) + " MXN/mes"
+                : "N/A"}
+            </div>
           </div>
-          {subscription && (
-            <>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Plan</span>
-                <span className="font-medium">PRO</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Started</span>
-                <span className="font-medium">
-                  {new Date(subscription.created).toLocaleDateString()}
-                </span>
-              </div>
-            </>
-          )}
+          <div>
+            <div className="text-sm text-gray-500">Próxima renovación</div>
+            <div className="text-base font-medium">
+              {subscription?.currentPeriodEnd
+                ? new Date(subscription.currentPeriodEnd).toLocaleDateString()
+                : "N/A"}
+            </div>
+          </div>
         </div>
       </CardContent>
+      <Separator />
+      <CardFooter className="items-center justify-between py-4">
+        <p className="text-sm text-gray-500">Maneja tu suscripción en Stripe</p>
+        <Button>Manejar suscripcón</Button>
+      </CardFooter>
     </Card>
   )
 }
