@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -9,6 +8,7 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { CustomerPortalButton } from "@/app/dashboard/settings/billing/customer-portal-button"
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import { Tiers } from "@/lib/types"
@@ -85,7 +85,7 @@ export async function ProPlanView() {
       <Separator />
       <CardFooter className="items-center justify-between py-4">
         <p className="text-sm text-gray-500">Maneja tu suscripción en Stripe</p>
-        <Button>Manejar suscripcón</Button>
+        <CustomerPortalButton />
       </CardFooter>
     </Card>
   )

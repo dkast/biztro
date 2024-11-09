@@ -1,6 +1,8 @@
-import { CircleCheck, Wallet } from "lucide-react"
+import { Suspense } from "react"
+import { AlertCircle, CircleCheck, Wallet } from "lucide-react"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -10,15 +12,23 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { BasicPlanView } from "@/app/dashboard/settings/billing/basic-plan-view"
 import { ProPlanView } from "@/app/dashboard/settings/billing/pro-plan-view"
 import { getItemCount } from "@/server/actions/item/queries"
-import { isProMember } from "@/server/actions/user/queries"
-import { Plan, Tiers } from "@/lib/types"
+import {
+  getCurrentMembership,
+  isProMember
+} from "@/server/actions/user/queries"
+import { MembershipRole, Plan, Tiers } from "@/lib/types"
 
 export default async function BillingPage() {
+  const membership = await getCurrentMembership()
   const isPro = await isProMember()
   const itemCount = await getItemCount()
+
+  console.log(membership)
+
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
       <PageSubtitle
@@ -26,16 +36,31 @@ export default async function BillingPage() {
         description="Maneja tu plan de suscripción e historial de pagos"
         Icon={Wallet}
       />
-      <div className="my-10">
-        {isPro ? (
-          <ProPlanView />
-        ) : (
-          <div className="flex flex-col gap-6">
-            <BasicPlanView itemCount={itemCount} />
-            {/* <TierSelector /> */}
-          </div>
-        )}
-      </div>
+      {membership?.role === MembershipRole.OWNER ? (
+        <div className="my-10">
+          {isPro ? (
+            <Suspense fallback={<Skeleton className="h-48" />}>
+              <ProPlanView />
+            </Suspense>
+          ) : (
+            <div className="flex flex-col gap-6">
+              <Suspense fallback={<Skeleton className="h-48" />}>
+                <BasicPlanView itemCount={itemCount} />
+              </Suspense>
+              {/* <TierSelector /> */}
+            </div>
+          )}
+        </div>
+      ) : (
+        <Alert className="my-10" variant="warning">
+          <AlertCircle className="size-4" />
+          <AlertTitle>Aviso</AlertTitle>
+          <AlertDescription>
+            Solo los miembros propietarios de la organización pueden acceder a
+            esta página
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   )
 }

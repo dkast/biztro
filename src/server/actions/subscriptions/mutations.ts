@@ -3,7 +3,9 @@
 import { auth } from "@/auth"
 import type Stripe from "stripe"
 
+import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
+import { getCurrentUser } from "@/lib/session"
 import { stripe } from "@/lib/stripe"
 import { Plan } from "@/lib/types"
 import { calculateTrialEndUnixTimestamp, getBaseUrl } from "@/lib/utils"
@@ -268,5 +270,41 @@ export const checkoutWithStripe = async (
   } catch (error) {
     console.error(error)
     return { errorRedirect: redirectPath }
+  }
+}
+
+export const createStripePortal = async () => {
+  try {
+    // Get the user's membership id
+    const membership = await getCurrentMembership()
+    const user = await getCurrentUser()
+    if (!membership || !user) {
+      throw new Error("Membership or User not found")
+    }
+
+    let customer
+    try {
+      customer = await createOrRetrieveCustomer(user.email, membership.id)
+    } catch (error) {
+      console.error(error)
+      throw new Error("Unable to access customer record")
+    }
+
+    try {
+      const { url } = await stripe.billingPortal.sessions.create({
+        customer,
+        return_url: `${getBaseUrl()}/dashboard/settings/billing`
+      })
+      if (!url) {
+        throw new Error("Error creating portal session")
+      }
+      return url
+    } catch (error) {
+      console.error(error)
+      throw new Error("Error creating portal session")
+    }
+  } catch (error) {
+    console.error(error)
+    return null
   }
 }
