@@ -54,6 +54,18 @@ export async function ProPlanView() {
                 return <Badge variant="secondary">Desconocido</Badge>
             }
           })()}
+          {subscription.status === "trialing" && (
+            <span className="text-sm text-gray-500">
+              - Termina el{" "}
+              {subscription?.trialEnd
+                ? new Date(subscription.trialEnd).toLocaleDateString("es-MX", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric"
+                  })
+                : "N/A"}
+            </span>
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -73,10 +85,29 @@ export async function ProPlanView() {
             </div>
           </div>
           <div>
+            <div className="text-sm text-gray-500">Activo desde</div>
+            <div className="text-base font-medium">
+              {subscription?.created
+                ? new Date(subscription.created).toLocaleDateString("es-MX", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric"
+                  })
+                : "N/A"}
+            </div>
+          </div>
+          <div>
             <div className="text-sm text-gray-500">Próxima renovación</div>
             <div className="text-base font-medium">
               {subscription?.currentPeriodEnd
-                ? new Date(subscription.currentPeriodEnd).toLocaleDateString()
+                ? new Date(subscription.currentPeriodEnd).toLocaleDateString(
+                    "es-MX",
+                    {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric"
+                    }
+                  )
                 : "N/A"}
             </div>
           </div>

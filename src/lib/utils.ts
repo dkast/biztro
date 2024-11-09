@@ -139,3 +139,9 @@ export const calculateTrialEndUnixTimestamp = (
   ) // Add trial days
   return Math.floor(trialEnd.getTime() / 1000) // Convert to Unix timestamp in seconds
 }
+
+export const toDateTime = (secs: number) => {
+  const t = new Date(+0) // Unix epoch start.
+  t.setSeconds(secs)
+  return t
+}

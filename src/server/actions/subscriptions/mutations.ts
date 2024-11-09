@@ -1,6 +1,7 @@
 "use server"
 
 import { auth } from "@/auth"
+import { toDate } from "date-fns"
 import type Stripe from "stripe"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
@@ -8,7 +9,11 @@ import prisma from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/session"
 import { stripe } from "@/lib/stripe"
 import { Plan } from "@/lib/types"
-import { calculateTrialEndUnixTimestamp, getBaseUrl } from "@/lib/utils"
+import {
+  calculateTrialEndUnixTimestamp,
+  getBaseUrl,
+  toDateTime
+} from "@/lib/utils"
 
 export const manageSubscriptionStatusChnage = async (
   stripeSubscriptionId: string,
@@ -31,6 +36,9 @@ export const manageSubscriptionStatusChnage = async (
       expand: ["default_payment_method"]
     }
   )
+
+  console.log(subscription)
+  console.log(toDate(subscription.current_period_end))
 
   // Get the membership with the organization
   const membershipOrg = await prisma.membership.findFirst({
@@ -72,19 +80,19 @@ export const manageSubscriptionStatusChnage = async (
       quantity: subscription.quantity,
       cancelAtPeriodEnd: subscription.cancel_at_period_end,
       cancelAt: subscription.cancel_at
-        ? new Date(subscription.cancel_at)
+        ? toDateTime(subscription.cancel_at)
         : null,
       canceledAt: subscription.canceled_at
-        ? new Date(subscription.canceled_at)
+        ? toDateTime(subscription.canceled_at)
         : null,
-      currentPeriodStart: new Date(subscription.current_period_start),
-      currentPeriodEnd: new Date(subscription.current_period_end),
-      endedAt: subscription.ended_at ? new Date(subscription.ended_at) : null,
+      currentPeriodStart: toDateTime(subscription.current_period_start),
+      currentPeriodEnd: toDateTime(subscription.current_period_end),
+      endedAt: subscription.ended_at ? toDateTime(subscription.ended_at) : null,
       trialStart: subscription.trial_start
-        ? new Date(subscription.trial_start)
+        ? toDateTime(subscription.trial_start)
         : null,
       trialEnd: subscription.trial_end
-        ? new Date(subscription.trial_end)
+        ? toDateTime(subscription.trial_end)
         : null,
       organization: { connect: { id: membershipOrg.organization.id } }
     },
@@ -97,20 +105,20 @@ export const manageSubscriptionStatusChnage = async (
       quantity: subscription.quantity,
       cancelAtPeriodEnd: subscription.cancel_at_period_end,
       cancelAt: subscription.cancel_at
-        ? new Date(subscription.cancel_at)
+        ? toDateTime(subscription.cancel_at)
         : null,
       canceledAt: subscription.canceled_at
-        ? new Date(subscription.canceled_at)
+        ? toDateTime(subscription.canceled_at)
         : null,
-      currentPeriodStart: new Date(subscription.current_period_start),
-      currentPeriodEnd: new Date(subscription.current_period_end),
-      created: new Date(subscription.created),
-      endedAt: subscription.ended_at ? new Date(subscription.ended_at) : null,
+      currentPeriodStart: toDateTime(subscription.current_period_start),
+      currentPeriodEnd: toDateTime(subscription.current_period_end),
+      created: toDateTime(subscription.created),
+      endedAt: subscription.ended_at ? toDateTime(subscription.ended_at) : null,
       trialStart: subscription.trial_start
-        ? new Date(subscription.trial_start)
+        ? toDateTime(subscription.trial_start)
         : null,
       trialEnd: subscription.trial_end
-        ? new Date(subscription.trial_end)
+        ? toDateTime(subscription.trial_end)
         : null,
       organization: { connect: { id: membershipOrg.organization.id } }
     }
