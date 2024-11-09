@@ -144,7 +144,7 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        {currentOrg?.plan == Plan.BASIC && (
+        {currentOrg?.plan === Plan.BASIC && (
           <div className="p-1">
             <Card className="bg-gradient-to-t from-violet-500/10 to-transparent shadow-none">
               <CardHeader className="p-3 pb-1">

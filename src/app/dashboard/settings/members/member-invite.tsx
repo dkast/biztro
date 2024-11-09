@@ -67,6 +67,7 @@ export default function MemberInvite({ isPro }: { isPro: boolean }) {
     await execute(data)
   }
 
+  // skipcq: JS-0424
   return (
     <>
       {isPro ? (

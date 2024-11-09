@@ -75,12 +75,12 @@ export async function ProPlanView() {
             <div className="text-sm text-gray-500">Precio</div>
             <div className="text-base font-medium">
               {Tiers.find(t => t.id === org.plan)?.priceMonthly
-                ? new Intl.NumberFormat("es-MX", {
+                ? `${new Intl.NumberFormat("es-MX", {
                     style: "currency",
                     currency: "MXN"
                   }).format(
                     Tiers.find(t => t.id === org.plan)?.priceMonthly ?? 0
-                  ) + " MXN/mes"
+                  )} MXN/mes`
                 : "N/A"}
             </div>
           </div>

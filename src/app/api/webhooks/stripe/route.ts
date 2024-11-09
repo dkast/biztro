@@ -12,7 +12,7 @@ const relevantEvents = new Set([
 ])
 
 export async function POST(req: Request) {
-  const sig = req.headers.get("stripe-signature")!
+  const sig = req.headers.get("stripe-signature")
   const body = await req.text()
 
   let event: Stripe.Event
@@ -53,6 +53,8 @@ export async function POST(req: Request) {
           subscription.id,
           subscription.customer as string
         )
+        break
+      default:
         break
     }
 

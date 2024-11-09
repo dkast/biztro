@@ -51,7 +51,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
     if (!sessionId) {
       setpriceIdLoading(undefined)
       toast.error("Error al crear la sesión de pago")
-      return
+      return null
     }
 
     const stripe = await getStripeClient()

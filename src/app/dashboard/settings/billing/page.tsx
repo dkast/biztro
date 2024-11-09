@@ -1,17 +1,8 @@
 import { Suspense } from "react"
-import { AlertCircle, CircleCheck, Wallet } from "lucide-react"
+import { AlertCircle, Wallet } from "lucide-react"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BasicPlanView } from "@/app/dashboard/settings/billing/basic-plan-view"
 import { ProPlanView } from "@/app/dashboard/settings/billing/pro-plan-view"
@@ -20,7 +11,7 @@ import {
   getCurrentMembership,
   isProMember
 } from "@/server/actions/user/queries"
-import { MembershipRole, Plan, Tiers } from "@/lib/types"
+import { MembershipRole } from "@/lib/types"
 
 export default async function BillingPage() {
   const membership = await getCurrentMembership()
@@ -65,47 +56,47 @@ export default async function BillingPage() {
   )
 }
 
-function TierSelector({ isPro }: { isPro?: boolean }) {
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      {Tiers.map(tier => (
-        <Card key={tier.id} className="flex flex-col justify-between">
-          <CardHeader>
-            <CardTitle>Plan {tier.name}</CardTitle>
-            <CardDescription>{tier.description}</CardDescription>
-          </CardHeader>
-          <CardContent className="grow">
-            <div className="flex flex-col gap-2">
-              {tier.features.map(feature => (
-                <div
-                  key={feature}
-                  className="flex items-center gap-x-3 text-gray-600 dark:text-gray-300"
-                >
-                  <CircleCheck className="size-5" />
-                  <span className="text-sm">{feature}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-          <CardFooter>
-            {tier.id === Plan.PRO ? (
-              isPro ? (
-                <Button className="mt-4 w-full" disabled>
-                  Plan actual
-                </Button>
-              ) : (
-                <Button className="mt-4 w-full">Activar plan</Button>
-              )
-            ) : isPro ? (
-              <Button className="mt-4 w-full">Cambiar a este plan</Button>
-            ) : (
-              <Button className="mt-4 w-full" disabled>
-                Plan actual
-              </Button>
-            )}
-          </CardFooter>
-        </Card>
-      ))}
-    </div>
-  )
-}
+// function TierSelector({ isPro }: { isPro?: boolean }) {
+//   return (
+//     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+//       {Tiers.map(tier => (
+//         <Card key={tier.id} className="flex flex-col justify-between">
+//           <CardHeader>
+//             <CardTitle>Plan {tier.name}</CardTitle>
+//             <CardDescription>{tier.description}</CardDescription>
+//           </CardHeader>
+//           <CardContent className="grow">
+//             <div className="flex flex-col gap-2">
+//               {tier.features.map(feature => (
+//                 <div
+//                   key={feature}
+//                   className="flex items-center gap-x-3 text-gray-600 dark:text-gray-300"
+//                 >
+//                   <CircleCheck className="size-5" />
+//                   <span className="text-sm">{feature}</span>
+//                 </div>
+//               ))}
+//             </div>
+//           </CardContent>
+//           <CardFooter>
+//             {tier.id === Plan.PRO ? (
+//               isPro ? (
+//                 <Button className="mt-4 w-full" disabled>
+//                   Plan actual
+//                 </Button>
+//               ) : (
+//                 <Button className="mt-4 w-full">Activar plan</Button>
+//               )
+//             ) : isPro ? (
+//               <Button className="mt-4 w-full">Cambiar a este plan</Button>
+//             ) : (
+//               <Button className="mt-4 w-full" disabled>
+//                 Plan actual
+//               </Button>
+//             )}
+//           </CardFooter>
+//         </Card>
+//       ))}
+//     </div>
+//   )
+// }

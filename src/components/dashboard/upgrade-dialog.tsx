@@ -1,6 +1,6 @@
 "use client"
 
-import { CircleFadingArrowUp, Sparkles, Zap } from "lucide-react"
+import { CircleFadingArrowUp } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
