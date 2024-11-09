@@ -1,10 +1,10 @@
+import { VercelToolbar } from "@vercel/toolbar/next"
 import { type Metadata, type Viewport } from "next"
 import { Inter, Sora } from "next/font/google"
 
 import "../../styles/globals.css"
 import "../../styles/gradient-blur.css"
 
-// import { SpeedInsights } from "@vercel/speed-insights/next"
 import { AxiomWebVitals } from "next-axiom"
 
 // import "react-photo-view/dist/react-photo-view.css"
@@ -51,6 +51,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const shouldInjectToolbar = process.env.NODE_ENV === "development"
   return (
     <html
       className={`${inter.variable} ${sora.variable} scroll-smooth antialiased`}
@@ -60,9 +61,11 @@ export default function RootLayout({
       <AxiomWebVitals />
       <body className="bg-white text-gray-950 dark:bg-gray-950 dark:text-white">
         <Providers>
-          <div className="flex min-h-dvh flex-col">{children}</div>
+          <div className="flex min-h-dvh flex-col">
+            {children}
+            {shouldInjectToolbar && <VercelToolbar />}
+          </div>
         </Providers>
-        {/* <SpeedInsights /> */}
       </body>
     </html>
   )

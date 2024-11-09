@@ -80,6 +80,8 @@
     "@uppy/locales": "^4.2.1",
     "@uppy/progress-bar": "^4.0.1",
     "@uppy/react": "^4.0.3",
+    "@vercel/flags": "^2.6.3",
+    "@vercel/toolbar": "^0.1.26",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",

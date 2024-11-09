@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import { subscriptionsEnabled } from "@/flags"
 import { AlertCircle, Wallet } from "lucide-react"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -14,11 +15,10 @@ import {
 import { MembershipRole } from "@/lib/types"
 
 export default async function BillingPage() {
+  const subsEnabled = await subscriptionsEnabled()
   const membership = await getCurrentMembership()
   const isPro = await isProMember()
   const itemCount = await getItemCount()
-
-  console.log(membership)
 
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
@@ -27,7 +27,7 @@ export default async function BillingPage() {
         description="Maneja tu plan de suscripción e historial de pagos"
         Icon={Wallet}
       />
-      {membership?.role === MembershipRole.OWNER ? (
+      {membership?.role === MembershipRole.OWNER && subsEnabled ? (
         <div className="my-10">
           {isPro ? (
             <Suspense fallback={<Skeleton className="h-48" />}>
