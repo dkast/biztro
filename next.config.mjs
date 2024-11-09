@@ -67,7 +67,7 @@ let nextConfig // skipcq: JS-E1009
 // If in Turbo Pack mode, do not use Sentry
 if (!process.env.TURBOPACK) {
   nextConfig = withVercelToolbar()(
-    withSentryConfig(withVercelToolbar(withAxiom(withContentlayer(config)))),
+    withSentryConfig(withAxiom(withContentlayer(config))),
     {
       // For all available options, see:
       // https://github.com/getsentry/sentry-webpack-plugin#options
