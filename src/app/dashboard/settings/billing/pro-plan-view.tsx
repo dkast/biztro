@@ -96,21 +96,39 @@ export async function ProPlanView() {
                 : "N/A"}
             </div>
           </div>
-          <div>
-            <div className="text-sm text-gray-500">Próxima renovación</div>
-            <div className="text-base font-medium">
-              {subscription?.currentPeriodEnd
-                ? new Date(subscription.currentPeriodEnd).toLocaleDateString(
-                    "es-MX",
-                    {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric"
-                    }
-                  )
-                : "N/A"}
+          {subscription?.cancelAtPeriodEnd ? (
+            <div>
+              <div className="text-sm text-gray-500">Cancela el</div>
+              <div className="text-base font-medium">
+                {subscription?.cancelAt
+                  ? new Date(subscription.cancelAt).toLocaleDateString(
+                      "es-MX",
+                      {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric"
+                      }
+                    )
+                  : "N/A"}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div>
+              <div className="text-sm text-gray-500">Próxima renovación</div>
+              <div className="text-base font-medium">
+                {subscription?.currentPeriodEnd
+                  ? new Date(subscription.currentPeriodEnd).toLocaleDateString(
+                      "es-MX",
+                      {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric"
+                      }
+                    )
+                  : "N/A"}
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
       <Separator />
