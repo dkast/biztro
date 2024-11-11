@@ -49,13 +49,10 @@ export const { handlers, auth } = NextAuth({
 
       if (membership) {
         // Set the current organization
-        ;(cookies() as unknown as UnsafeUnwrappedCookies).set(
-          appConfig.cookieOrg,
-          membership.organizationId,
-          {
-            maxAge: 60 * 60 * 24 * 365
-          }
-        )
+        const cookieStore = await cookies()
+        cookieStore.set(appConfig.cookieOrg, membership.organizationId, {
+          maxAge: 60 * 60 * 24 * 365
+        })
       }
 
       // If team invite found then allow to continue
@@ -108,9 +105,8 @@ export const { handlers, auth } = NextAuth({
       console.log("redirect", url, baseUrl)
 
       // Redirect to /new-org if no organization cookie is set
-      const currentOrg = (cookies() as unknown as UnsafeUnwrappedCookies).get(
-        appConfig.cookieOrg
-      )?.value
+      const cookieStore = await cookies()
+      const currentOrg = cookieStore.get(appConfig.cookieOrg)?.value
       if (!currentOrg) {
         return `${baseUrl}/new-org`
       }
@@ -156,9 +152,8 @@ export const { handlers, auth } = NextAuth({
   events: {
     // skipcq: JS-0116
     async signOut() {
-      ;(cookies() as unknown as UnsafeUnwrappedCookies).delete(
-        appConfig.cookieOrg
-      )
+      const cookieStore = await cookies()
+      cookieStore.delete(appConfig.cookieOrg)
     }
   },
   ...authConfig

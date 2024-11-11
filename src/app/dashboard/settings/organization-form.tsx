@@ -38,7 +38,6 @@ import {
   ImageType,
   orgSchema,
   type Plan,
-  type Status,
   type SubscriptionStatus
 } from "@/lib/types"
 import { getInitials } from "@/lib/utils"
