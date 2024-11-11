@@ -13,6 +13,11 @@
     --sidebar-accent-foreground: 0 0% 9%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 24.6 95% 53.1%;
+    --color-1: 0 100% 63%;
+    --color-2: 270 100% 63%;
+    --color-3: 210 100% 63%;
+    --color-4: 195 100% 63%;
+    --color-5: 90 100% 63%;
   }
 
   .dark {
@@ -25,6 +30,11 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 24.6 95% 53.1%;
+    --color-1: 0 100% 63%;
+    --color-2: 270 100% 63%;
+    --color-3: 210 100% 63%;
+    --color-4: 195 100% 63%;
+    --color-5: 90 100% 63%;
   }
 }
 

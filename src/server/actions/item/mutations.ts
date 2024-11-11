@@ -7,9 +7,16 @@ import { cookies } from "next/headers"
 import { z } from "zod"
 
 import { appConfig } from "@/app/config"
+import { getItemCount } from "@/server/actions/item/queries"
+import { isProMember } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
-import { categorySchema, menuItemSchema, variantSchema } from "@/lib/types"
+import {
+  BasicPlanLimits,
+  categorySchema,
+  menuItemSchema,
+  variantSchema
+} from "@/lib/types"
 import { env } from "@/env.mjs"
 
 // Create an Cloudflare R2 service client object
@@ -40,6 +47,20 @@ export const createItem = authActionClient
         return {
           failure: {
             reason: "No se pudo obtener la organización actual"
+          }
+        }
+      }
+
+      const proMember = await isProMember()
+      const itemCount = await getItemCount()
+
+      const itemLimit = appConfig.itemLimit || 10
+      if (!proMember && itemCount >= itemLimit) {
+        return {
+          failure: {
+            reason:
+              "Límite de 10 productos alcanzado. Actualiza a Pro para crear más.",
+            code: BasicPlanLimits.ITEM_LIMIT_REACHED
           }
         }
       }

@@ -17,6 +17,11 @@ export enum FrameSize {
   DESKTOP = "DESKTOP"
 }
 
+export enum BasicPlanLimits {
+  ITEM_LIMIT_REACHED = "ITEM_LIMIT_REACHED",
+  MENU_LIMIT_REACHED = "MENU_LIMIT_REACHED"
+}
+
 export const BgImages = [
   {
     image: "bg-top-burger-1.jpg",
@@ -291,6 +296,7 @@ export type MenuItemQueryFilter = {
   take?: number
 }
 
+/** @deprecated Use SubscriptionStatus instead */
 export const enum Status {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
@@ -561,3 +567,44 @@ export const colorThemes = [
     scope: "GLOBAL"
   }
 ]
+
+export const Tiers = [
+  {
+    id: Plan.BASIC,
+    name: "Básico",
+    priceMonthly: 0,
+    priceYearly: 0,
+    priceMonthlyId: "none",
+    priceYearlyId: "none",
+    description: "Plan gratuito para comenzar",
+    features: ["Hasta 10 productos", "1 menú", "Código QR Personalizado"]
+  },
+  {
+    id: Plan.PRO,
+    name: "Pro",
+    priceMonthly: 149,
+    priceYearly: 1490,
+    priceMonthlyId: "price_1QHe5WEx6h9wDx2iLqP5S1sg",
+    priceYearlyId: "price_1QHr5cEx6h9wDx2iuhTQX1Mp",
+    description: "Plan para negocios en crecimiento",
+    features: [
+      "Productos y categorías ilimitadas",
+      "Menús ilimitados",
+      "Invitaciones a colaboradores",
+      "Soporte por correo electrónico",
+      "Analítica de visitas (Pronto)",
+      "Promociones y ofertas (Pronto)"
+    ]
+  }
+]
+
+export enum SubscriptionStatus {
+  TRIALING = "TRIALING",
+  ACTIVE = "ACTIVE",
+  CANCELED = "CANCELED",
+  INCOMPLETE = "INCOMPLETE",
+  INCOMPLETE_EXPIRED = "INCOMPLETE_EXPIRED",
+  PAST_DUE = "PAST_DUE",
+  UNPAID = "UNPAID",
+  PAUSED = "PAUSED"
+}

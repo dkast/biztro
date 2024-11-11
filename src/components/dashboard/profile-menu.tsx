@@ -35,7 +35,7 @@ export default function ProfileMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button type="button" className="focus:outline-none">
-          <Avatar>
+          <Avatar className="size-8">
             <AvatarImage src={user?.image ?? undefined} />
             <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
           </Avatar>

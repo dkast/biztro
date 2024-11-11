@@ -9,6 +9,7 @@ import { notFound } from "next/navigation"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { getMenuByOrgSubdomain } from "@/server/actions/menu/queries"
 import { getOrganizationBySubdomain } from "@/server/actions/organization/queries"
+import { SubscriptionStatus } from "@/lib/types"
 
 export async function generateMetadata(
   {
@@ -20,7 +21,11 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const org = await getOrganizationBySubdomain(params.subdomain)
 
-  if (org) {
+  if (
+    org &&
+    (org.status === SubscriptionStatus.ACTIVE ||
+      org.status === SubscriptionStatus.TRIALING)
+  ) {
     const description =
       org.description && org.description.length > 0
         ? org.description

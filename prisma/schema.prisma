@@ -60,40 +60,43 @@ model VerificationToken {
 }
 
 model Membership {
-  id             String       @id @default(cuid())
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  role           String       @default("OWNER")
+  id             String         @id @default(cuid())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  role           String         @default("OWNER")
   userId         String
-  isActive       Boolean      @default(true)
+  isActive       Boolean        @default(true)
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user           User         @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User           @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
   teamInvites    TeamInvite[]
+  subscriptions  Subscription[]
+  customer       Customer[]
 
   @@unique([organizationId, userId])
   @@index([userId])
 }
 
 model Organization {
-  id           String       @id @default(cuid())
-  name         String       @unique
-  description  String?
-  logo         String?
-  banner       String?
-  status       String       @default("ACTIVE")
-  plan         String       @default("BASIC")
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  subdomain    String       @unique
-  customDomain String?      @unique
-  categories   Category[]
-  location     Location[]
-  memberships  Membership[]
-  menus        Menu[]
-  menuItems    MenuItem[]
-  themes       Theme[]
-  teamInvite   TeamInvite[]
+  id            String         @id @default(cuid())
+  name          String         @unique
+  description   String?
+  logo          String?
+  banner        String?
+  status        String         @default("ACTIVE")
+  plan          String         @default("BASIC")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subdomain     String         @unique
+  customDomain  String?        @unique
+  categories    Category[]
+  location      Location[]
+  memberships   Membership[]
+  menus         Menu[]
+  menuItems     MenuItem[]
+  themes        Theme[]
+  teamInvite    TeamInvite[]
+  subscriptions Subscription[]
 }
 
 model Location {
@@ -220,4 +223,31 @@ model TeamInvite {
 
   @@unique([organizationId, email])
   @@index([token])
+}
+
+model Customer {
+  stripeCustomerId String     @id
+  membership       Membership @relation(fields: [membershipId], references: [id])
+  membershipId     String     @unique
+}
+
+model Subscription {
+  id                 String       @id
+  status             String
+  metadata           String
+  priceId            String?
+  quantity           Int
+  cancelAtPeriodEnd  Boolean      @default(false)
+  created            DateTime     @default(now())
+  currentPeriodStart DateTime     @default(now())
+  currentPeriodEnd   DateTime     @default(now())
+  endedAt            DateTime?
+  cancelAt           DateTime?
+  canceledAt         DateTime?
+  trialStart         DateTime?
+  trialEnd           DateTime?
+  membership         Membership   @relation(fields: [membershipId], references: [id])
+  membershipId       String
+  organization       Organization @relation(fields: [organizationId], references: [id])
+  organizationId     String
 }

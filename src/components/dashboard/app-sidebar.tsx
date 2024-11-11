@@ -20,6 +20,14 @@ import {
 } from "next/navigation"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
 import {
   Collapsible,
   CollapsibleContent,
@@ -35,6 +43,7 @@ import {
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
@@ -78,12 +87,17 @@ const navigation: NavigationItem[] = [
     items: [
       { title: "General", url: "/dashboard/settings" },
       { title: "Sucursal", url: "/dashboard/settings/locations" },
-      { title: "Miembros", url: "/dashboard/settings/members" }
+      { title: "Miembros", url: "/dashboard/settings/members" },
+      { title: "Suscripción", url: "/dashboard/settings/billing" }
     ]
   }
 ]
 
 export default function AppSidebar() {
+  const { data: currentOrg } = useQuery({
+    queryKey: ["workgroup", "current"],
+    queryFn: getCurrentOrganization
+  })
   return (
     <Sidebar className="dark:border-gray-800">
       <SidebarWorkgroup />
@@ -129,6 +143,32 @@ export default function AppSidebar() {
           </SidebarContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        {currentOrg?.plan === Plan.BASIC && (
+          <div className="p-1">
+            <Card className="bg-gradient-to-t from-violet-500/10 to-transparent shadow-none">
+              <CardHeader className="p-3 pb-1">
+                <CardTitle className="text-sm">Actualiza a Pro</CardTitle>
+                <CardDescription className="text-xs">
+                  Productos y menús ilimitados, componentes adicionales y más.
+                </CardDescription>
+              </CardHeader>
+              <CardFooter className="p-3">
+                <Button
+                  size="xs"
+                  variant="secondary"
+                  className="w-full border bg-white text-xs dark:border-gray-700"
+                  asChild
+                >
+                  <Link href="/dashboard/settings/billing">
+                    Actualiza ahora
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        )}
+      </SidebarFooter>
     </Sidebar>
   )
 }
@@ -156,16 +196,7 @@ function SidebarLink({ item }: { item: NavigationItem }) {
 
 function SidebarSubLink({ item }: { item: NavigationItem }) {
   const pathname = usePathname()
-  const segment = useSelectedLayoutSegment()
-
-  console.log({ pathname, segment, item })
-
   const isActive = item.url === pathname
-  // if (!segment) {
-  //   isActive = pathname?.includes(item.url) ?? false
-  // } else {
-  //   isActive = item.url === segment
-  // }
 
   return (
     <SidebarMenuSubButton asChild isActive={isActive}>

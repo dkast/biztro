@@ -166,3 +166,8 @@ export const getInviteByToken = async (token: string) => {
     }
   })
 }
+
+export async function isProMember() {
+  const org = await getCurrentOrganization()
+  return org?.plan === "PRO"
+}

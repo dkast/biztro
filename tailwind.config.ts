@@ -15,6 +15,7 @@ const glassPlugin: PluginCreator = ({ matchUtilities, theme }) => {
 
         return {
           "&::after": {
+            darkMode: ["class"],
             content: "''",
             position: "absolute",
             inset: "0",
@@ -73,7 +74,12 @@ const config = {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))"
-        }
+        },
+        "color-1": "hsl(var(--color-1))",
+        "color-2": "hsl(var(--color-2))",
+        "color-3": "hsl(var(--color-3))",
+        "color-4": "hsl(var(--color-4))",
+        "color-5": "hsl(var(--color-5))"
       },
       keyframes: {
         "accordion-down": {
@@ -104,6 +110,14 @@ const config = {
         "slide-up": {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0px" }
+        },
+        rainbow: {
+          "0%": {
+            "background-position": "0%"
+          },
+          "100%": {
+            "background-position": "200%"
+          }
         }
       },
       animation: {
@@ -112,7 +126,8 @@ const config = {
         "border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
         shimmer: "shimmer 8s infinite",
         "slide-down": "slide-down 300ms cubic-bezier(0.87, 0, 0.13, 1)",
-        "slide-up": "slide-up 300ms cubic-bezier(0.87, 0, 0.13, 1)"
+        "slide-up": "slide-up 300ms cubic-bezier(0.87, 0, 0.13, 1)",
+        rainbow: "rainbow var(--speed, 2s) infinite linear"
       },
       gridTemplateColumns: {
         // Add your custom value here

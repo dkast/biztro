@@ -30,7 +30,9 @@ export const env = createEnv({
     R2_CUSTOM_DOMAIN: z.string().min(1),
     AUTH_GOOGLE_SECRET: z.string().min(1),
     AUTH_GOOGLE_ID: z.string().min(1),
-    RESEND_API_KEY: z.string().min(1)
+    RESEND_API_KEY: z.string().min(1),
+    STRIPE_SECRET_KEY: z.string().min(1),
+    STRIPE_WEBHOOK_SECRET: z.string().min(1)
   },
 
   /**
@@ -40,8 +42,8 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
-    NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1)
-    // NEXT_PUBLIC_POSTHOG_HOST: z.string().min(1)
+    NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1)
   },
 
   /**
@@ -64,7 +66,11 @@ export const env = createEnv({
     AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
-    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST
+    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

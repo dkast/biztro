@@ -30,7 +30,8 @@ export default function FilterToolbar({
     "category",
     parseAsArrayOf(parseAsString)
       .withOptions({
-        shallow: false
+        shallow: false,
+        throttleMs: 300
       })
       .withDefault([])
   )
@@ -39,7 +40,8 @@ export default function FilterToolbar({
     "status",
     parseAsArrayOf(parseAsString)
       .withOptions({
-        shallow: false
+        shallow: false,
+        throttleMs: 300
       })
       .withDefault([])
   )

@@ -3,7 +3,7 @@ import { Check } from "lucide-react"
 import TitleSection from "@/components/marketing/title-section"
 import { cn } from "@/lib/utils"
 
-const tiers = [
+const marketingTiers = [
   {
     name: "Gratis",
     id: "tier-free",
@@ -32,7 +32,7 @@ const tiers = [
       "Código QR personalizado",
       "Analítica de visitas (próximamente)",
       "Promociones y ofertas (próximamente)",
-      "Soporte por correo electrónico en 24 horas o menos"
+      "Soporte por correo electrónico"
     ],
     featured: true
   }
@@ -64,7 +64,7 @@ export default function Pricing() {
         características con el plan Pro.
       </p>
       <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-2">
-        {tiers.map((tier, tierIdx) => (
+        {marketingTiers.map((tier, tierIdx) => (
           <div
             key={tier.id}
             className={cn(

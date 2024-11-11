@@ -176,3 +176,17 @@ export async function getMenuItemsWithoutCategory() {
 
   return data
 }
+
+export async function getItemCount() {
+  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+
+  if (!currentOrg) {
+    return 0
+  }
+
+  return await prisma.menuItem.count({
+    where: {
+      organizationId: currentOrg
+    }
+  })
+}
