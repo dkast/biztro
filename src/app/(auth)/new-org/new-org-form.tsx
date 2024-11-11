@@ -30,7 +30,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { bootstrapOrg } from "@/server/actions/organization/mutations"
-import { orgSchema, Plan, Status } from "@/lib/types"
+import { orgSchema, Plan, SubscriptionStatus } from "@/lib/types"
 
 export default function NewOrgForm() {
   const form = useForm<z.infer<typeof orgSchema>>({
@@ -39,7 +39,7 @@ export default function NewOrgForm() {
       name: "",
       description: "",
       subdomain: "",
-      status: Status.ACTIVE,
+      status: SubscriptionStatus.ACTIVE,
       plan: Plan.BASIC
     }
   })
