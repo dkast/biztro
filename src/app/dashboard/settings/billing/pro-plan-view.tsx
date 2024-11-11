@@ -29,10 +29,9 @@ export async function ProPlanView() {
     <Card className="w-full">
       <CardHeader>
         <CardTitle>Plan</CardTitle>
-        <CardDescription className="flex items-center gap-2">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
           <span>PRO</span>
           {(() => {
-            console.log(subscription.status)
             switch (subscription.status) {
               case "trialing":
                 return <Badge variant="blue">Prueba</Badge>
@@ -66,7 +65,7 @@ export async function ProPlanView() {
                 : "N/A"}
             </span>
           )}
-        </CardDescription>
+        </div>
       </CardHeader>
       <CardContent>
         {/* <Separator /> */}

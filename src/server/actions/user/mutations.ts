@@ -67,7 +67,7 @@ export const switchOrganization = authActionClient
       }
 
       // Set the current organization
-      cookies().set(appConfig.cookieOrg, organizationId, {
+      ;(await cookies()).set(appConfig.cookieOrg, organizationId, {
         maxAge: 60 * 60 * 24 * 365
       })
 
@@ -91,7 +91,7 @@ export const inviteMember = authActionClient
   .action(async ({ parsedInput: { email } }) => {
     try {
       // Get the current organization
-      const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+      const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
       const baseUrl = getBaseUrl()
 
       // Get the current user
@@ -270,7 +270,7 @@ export const acceptInvite = authActionClient
       }
 
       // Set the current organization
-      cookies().set(appConfig.cookieOrg, invite.organizationId, {
+      ;(await cookies()).set(appConfig.cookieOrg, invite.organizationId, {
         maxAge: 60 * 60 * 24 * 365
       })
 

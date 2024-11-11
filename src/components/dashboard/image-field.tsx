@@ -47,7 +47,7 @@ export function ImageField({
       <div className="absolute inset-0 hidden bg-black bg-opacity-50 group-hover:block">
         <div className="absolute inset-0 flex items-center justify-center">
           <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger>
+            <DialogTrigger asChild>
               <Button
                 type="button"
                 variant="default"

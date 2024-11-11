@@ -12,7 +12,10 @@ export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
     slug: post.slugAsParams.split("/")
   }))
 }
-export default function Page({ params }: { params: { slug: string[] } }) {
+export default async function Page(props: {
+  params: Promise<{ slug: string[] }>
+}) {
+  const params = await props.params
   const slug = params?.slug?.join("/")
   const post = allPosts.find(post => post.slugAsParams === slug)
 

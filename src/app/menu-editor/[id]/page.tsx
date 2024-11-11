@@ -15,11 +15,10 @@ import { getDefaultLocation } from "@/server/actions/location/queries"
 import { getMenuById, getThemes } from "@/server/actions/menu/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 
-export async function generateMetadata({
-  params
-}: {
-  params: { id: string }
+export async function generateMetadata(props: {
+  params: Promise<{ id: string }>
 }): Promise<Metadata> {
+  const params = await props.params
   const menu = await getMenuById(params.id)
 
   if (menu) {
@@ -33,11 +32,10 @@ export async function generateMetadata({
   }
 }
 
-export default async function MenuEditorPage({
-  params
-}: {
-  params: { id: string }
+export default async function MenuEditorPage(props: {
+  params: Promise<{ id: string }>
 }) {
+  const params = await props.params
   const queryClient = new QueryClient()
 
   await queryClient.prefetchQuery({

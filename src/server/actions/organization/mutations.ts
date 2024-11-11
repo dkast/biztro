@@ -49,8 +49,9 @@ export const bootstrapOrg = authActionClient
           }
         })
 
-        // Set the current organization
-        cookies().set(appConfig.cookieOrg, org.id, {
+        const cookieStore = await cookies()
+
+        cookieStore.set(appConfig.cookieOrg, org.id, {
           maxAge: 60 * 60 * 24 * 365
         })
 

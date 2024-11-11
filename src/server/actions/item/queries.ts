@@ -9,7 +9,7 @@ import type { MenuItemQueryFilter } from "@/lib/types"
 import { env } from "@/env.mjs"
 
 export async function getMenuItems(filter: MenuItemQueryFilter) {
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
   // return cache(
   //   async () => {
 
@@ -67,7 +67,7 @@ export async function getMenuItemById(id: string) {
 }
 
 export async function getCategories() {
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
   // return await cache(
   //   async () => {
   if (!currentOrg) {
@@ -89,7 +89,7 @@ export async function getCategories() {
 }
 
 export async function getCategoriesWithItems() {
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
   // return await cache(
   //   async () => {
   if (!currentOrg) {
@@ -144,7 +144,7 @@ export async function getCategoriesWithItems() {
 }
 
 export async function getMenuItemsWithoutCategory() {
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
   if (!currentOrg) {
     return []
   }
@@ -178,7 +178,7 @@ export async function getMenuItemsWithoutCategory() {
 }
 
 export async function getItemCount() {
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
   if (!currentOrg) {
     return 0

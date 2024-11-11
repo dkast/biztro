@@ -39,7 +39,7 @@ export const createLocation = authActionClient
       }
     }) => {
       try {
-        const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+        const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
         if (!currentOrg) {
           return {

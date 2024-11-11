@@ -41,7 +41,7 @@ export const createItem = authActionClient
     async ({
       parsedInput: { name, description, status, image, categoryId, variants }
     }) => {
-      const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+      const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
       if (!currentOrg) {
         return {
@@ -264,7 +264,7 @@ export const deleteItem = authActionClient
 export const createCategory = authActionClient
   .schema(categorySchema)
   .action(async ({ parsedInput: { name } }) => {
-    const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+    const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
     if (!currentOrg) {
       return {

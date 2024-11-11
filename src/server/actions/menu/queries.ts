@@ -9,7 +9,7 @@ import { MenuStatus, SubscriptionStatus } from "@/lib/types"
 import { env } from "@/env.mjs"
 
 export async function getMenus() {
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
   if (!currentOrg) {
     return []
@@ -91,7 +91,7 @@ export async function getMenuByOrgSubdomain(subdomain: string) {
 }
 
 export async function getThemes({ themeType }: { themeType: string }) {
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
   // return await cache(
   //   async () => {
   return await prisma.theme.findMany({
@@ -118,7 +118,7 @@ export async function getThemes({ themeType }: { themeType: string }) {
 }
 
 export async function getMenuCount() {
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
   return await prisma.menu.count({
     where: {
       organizationId: currentOrg

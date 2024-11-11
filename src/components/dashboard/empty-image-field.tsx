@@ -38,7 +38,7 @@ export function EmptyImageField({
     >
       <ImageIcon className="size-10 text-gray-300" />
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger>
+        <DialogTrigger asChild>
           <Button type="button" variant="secondary" size="sm">
             Subir imágen
           </Button>

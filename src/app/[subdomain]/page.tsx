@@ -12,13 +12,12 @@ import { getOrganizationBySubdomain } from "@/server/actions/organization/querie
 import { SubscriptionStatus } from "@/lib/types"
 
 export async function generateMetadata(
-  {
-    params
-  }: {
-    params: { subdomain: string }
+  props: {
+    params: Promise<{ subdomain: string }>
   },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  const params = await props.params
   const org = await getOrganizationBySubdomain(params.subdomain)
 
   if (
@@ -41,11 +40,10 @@ export async function generateMetadata(
   }
 }
 
-export async function generateViewport({
-  params
-}: {
-  params: { subdomain: string }
+export async function generateViewport(props0: {
+  params: Promise<{ subdomain: string }>
 }): Promise<Viewport> {
+  const params = await props0.params
   const siteMenu = await getMenuByOrgSubdomain(params.subdomain)
 
   if (!params.subdomain || !siteMenu) {
@@ -87,11 +85,10 @@ export async function generateViewport({
 //   themeColor: "#000000"
 // }
 
-export default async function SitePage({
-  params
-}: {
-  params: { subdomain: string }
+export default async function SitePage(props0: {
+  params: Promise<{ subdomain: string }>
 }) {
+  const params = await props0.params
   const siteMenu = await getMenuByOrgSubdomain(params.subdomain)
 
   if (!params.subdomain || !siteMenu) {

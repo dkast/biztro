@@ -12,22 +12,20 @@ import { getCategories, getMenuItemById } from "@/server/actions/item/queries"
 
 export const dynamic = "force-dynamic"
 
-export function generateMetadata({
-  params
-}: {
-  params: { action: string; id: string }
-}): Metadata {
+export async function generateMetadata(props: {
+  params: Promise<{ action: string; id: string }>
+}): Promise<Metadata> {
+  const params = await props.params
   const title = `${params.action === "new" ? "Crear" : "Editar"} Producto`
   return {
     title
   }
 }
 
-export default async function ItemPage({
-  params
-}: {
-  params: { action: string; id: string }
+export default async function ItemPage(props: {
+  params: Promise<{ action: string; id: string }>
 }) {
+  const params = await props.params
   const item = await getMenuItemById(params.id)
 
   const queryClient = new QueryClient()

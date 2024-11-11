@@ -10,11 +10,10 @@ export const metadata: Metadata = {
   title: "Unirse a equipo"
 }
 
-export default async function InvitePage({
-  params
-}: {
-  params: { id: string }
+export default async function InvitePage(props: {
+  params: Promise<{ id: string }>
 }) {
+  const params = await props.params
   if (!params.id) {
     return notFound()
   }

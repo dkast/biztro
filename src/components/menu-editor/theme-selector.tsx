@@ -131,7 +131,7 @@ export default function ThemeSelector({
   const updateColorTheme = (colorThemeId: string) => {
     const selectedTheme = colorThemes.find(theme => theme.id === colorThemeId)
     if (!selectedTheme) {
-      console.error("Theme not found")
+      console.log("Theme not found")
       return
     }
 

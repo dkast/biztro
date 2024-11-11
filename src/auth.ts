@@ -3,7 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import NextAuth, { type DefaultSession } from "next-auth"
 import type { Adapter } from "next-auth/adapters"
 import { revalidateTag } from "next/cache"
-import { cookies } from "next/headers"
+import { cookies, type UnsafeUnwrappedCookies } from "next/headers"
 
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
@@ -49,9 +49,13 @@ export const { handlers, auth } = NextAuth({
 
       if (membership) {
         // Set the current organization
-        cookies().set(appConfig.cookieOrg, membership.organizationId, {
-          maxAge: 60 * 60 * 24 * 365
-        })
+        ;(cookies() as unknown as UnsafeUnwrappedCookies).set(
+          appConfig.cookieOrg,
+          membership.organizationId,
+          {
+            maxAge: 60 * 60 * 24 * 365
+          }
+        )
       }
 
       // If team invite found then allow to continue
@@ -85,9 +89,13 @@ export const { handlers, auth } = NextAuth({
         }
 
         // Set the current organization
-        cookies().set(appConfig.cookieOrg, invite.organizationId, {
-          maxAge: 60 * 60 * 24 * 365
-        })
+        ;(cookies() as unknown as UnsafeUnwrappedCookies).set(
+          appConfig.cookieOrg,
+          invite.organizationId,
+          {
+            maxAge: 60 * 60 * 24 * 365
+          }
+        )
 
         revalidateTag(`members-${invite.organizationId}`)
       }
@@ -100,7 +108,9 @@ export const { handlers, auth } = NextAuth({
       console.log("redirect", url, baseUrl)
 
       // Redirect to /new-org if no organization cookie is set
-      const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+      const currentOrg = (cookies() as unknown as UnsafeUnwrappedCookies).get(
+        appConfig.cookieOrg
+      )?.value
       if (!currentOrg) {
         return `${baseUrl}/new-org`
       }
@@ -146,7 +156,9 @@ export const { handlers, auth } = NextAuth({
   events: {
     // skipcq: JS-0116
     async signOut() {
-      cookies().delete(appConfig.cookieOrg)
+      ;(cookies() as unknown as UnsafeUnwrappedCookies).delete(
+        appConfig.cookieOrg
+      )
     }
   },
   ...authConfig
