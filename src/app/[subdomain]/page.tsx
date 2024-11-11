@@ -21,7 +21,11 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const org = await getOrganizationBySubdomain(params.subdomain)
 
-  if (org && org.status === SubscriptionStatus.ACTIVE) {
+  if (
+    org &&
+    (org.status === SubscriptionStatus.ACTIVE ||
+      org.status === SubscriptionStatus.TRIALING)
+  ) {
     const description =
       org.description && org.description.length > 0
         ? org.description

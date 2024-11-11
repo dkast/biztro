@@ -5,7 +5,7 @@ import { cookies } from "next/headers"
 
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
-import { MenuStatus } from "@/lib/types"
+import { MenuStatus, SubscriptionStatus } from "@/lib/types"
 import { env } from "@/env.mjs"
 
 export async function getMenus() {
@@ -70,7 +70,11 @@ export async function getMenuByOrgSubdomain(subdomain: string) {
         where: {
           status: MenuStatus.PUBLISHED,
           organization: {
-            subdomain
+            subdomain,
+            OR: [
+              { status: SubscriptionStatus.ACTIVE },
+              { status: SubscriptionStatus.TRIALING }
+            ]
           }
         },
         orderBy: {

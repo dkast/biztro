@@ -296,7 +296,7 @@ export type MenuItemQueryFilter = {
   take?: number
 }
 
-// Deprecated, use SubscriptionStatus instead
+/** @deprecated Use SubscriptionStatus instead */
 export const enum Status {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
