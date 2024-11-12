@@ -69,7 +69,7 @@ export default function FloatingBar() {
   const [frameSize, setFrameSize] = useAtom(frameSizeAtom)
 
   return (
-    <div className="editor-toolbar fixed bottom-8 left-1/2 flex h-12 min-w-[200px] -translate-x-1/2 flex-row items-center justify-between rounded-full bg-gray-800 px-1 text-white shadow-lg dark:border dark:border-gray-800 dark:bg-gray-900">
+    <div className="editor-toolbar fixed bottom-8 left-1/2 flex h-12 min-w-[200px] -translate-x-1/2 flex-row items-center justify-between rounded-full bg-gray-800 px-1 text-white shadow-lg dark:border dark:border-gray-700 dark:bg-gray-900">
       <TooltipHelper content="Deshacer">
         <Button
           disabled={!canUndo}

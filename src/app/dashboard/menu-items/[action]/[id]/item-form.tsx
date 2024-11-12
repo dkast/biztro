@@ -312,6 +312,7 @@ export default function ItemForm({
                           trigger={
                             <FormControl>
                               <Button
+                                type="button"
                                 variant="outline"
                                 role="combobox"
                                 className={cn(
@@ -337,6 +338,7 @@ export default function ItemForm({
                           <ComboBoxList className="max-h-full sm:max-h-[300px]">
                             <ComboBoxEmpty className="p-2">
                               <Button
+                                type="button"
                                 disabled={statusCategory === "executing"}
                                 variant="ghost"
                                 className="w-full"
