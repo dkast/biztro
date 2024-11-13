@@ -148,6 +148,17 @@ export const providers = {
 
 export const FONT_SIZES = [12, 14, 16, 18, 20, 24, 30, 36]
 
+export enum SubscriptionStatus {
+  TRIALING = "TRIALING",
+  ACTIVE = "ACTIVE",
+  CANCELED = "CANCELED",
+  INCOMPLETE = "INCOMPLETE",
+  INCOMPLETE_EXPIRED = "INCOMPLETE_EXPIRED",
+  PAST_DUE = "PAST_DUE",
+  UNPAID = "UNPAID",
+  PAUSED = "PAUSED"
+}
+
 export const orgSchema = z.object({
   id: z.string().cuid().optional(),
   name: z
@@ -157,7 +168,7 @@ export const orgSchema = z.object({
   description: z.string().optional(),
   logo: z.string().url().optional(),
   banner: z.string().url().optional(),
-  status: z.enum(["ACTIVE", "INACTIVE", "DUE"]),
+  status: z.nativeEnum(SubscriptionStatus),
   plan: z.enum(["BASIC", "PRO"]),
   subdomain: z
     .string()
@@ -597,14 +608,3 @@ export const Tiers = [
     ]
   }
 ]
-
-export enum SubscriptionStatus {
-  TRIALING = "TRIALING",
-  ACTIVE = "ACTIVE",
-  CANCELED = "CANCELED",
-  INCOMPLETE = "INCOMPLETE",
-  INCOMPLETE_EXPIRED = "INCOMPLETE_EXPIRED",
-  PAST_DUE = "PAST_DUE",
-  UNPAID = "UNPAID",
-  PAUSED = "PAUSED"
-}

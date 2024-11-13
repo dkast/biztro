@@ -10,7 +10,7 @@ import { env } from "@/env.mjs"
 
 // Get current organization for the user
 export async function getCurrentOrganization() {
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
   if (currentOrg) {
     // return await cache(
@@ -59,7 +59,7 @@ export async function getCurrentOrganization() {
 }
 
 export const getMembers = async () => {
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
   if (!currentOrg) {
     return []
@@ -88,7 +88,7 @@ export const getMembers = async () => {
 
 export const getCurrentMembership = async () => {
   const user = await getCurrentUser()
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
   return await prisma.membership.findFirst({
     where: {

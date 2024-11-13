@@ -25,7 +25,7 @@ import { BasicPlanLimits, menuSchema } from "@/lib/types"
 export const createMenu = authActionClient
   .schema(menuSchema)
   .action(async ({ parsedInput: { name, description, status } }) => {
-    const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+    const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
     if (!currentOrg) {
       return {
@@ -412,7 +412,7 @@ export const deleteColorTheme = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
-    const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+    const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
     try {
       await prisma.theme.delete({
         where: { id, organizationId: currentOrg }

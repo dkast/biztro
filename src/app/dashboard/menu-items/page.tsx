@@ -13,11 +13,10 @@ export const metadata: Metadata = {
   title: "Productos"
 }
 
-export default async function ItemsPage({
-  searchParams
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
+export default async function ItemsPage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  const searchParams = await props.searchParams
   const currentOrg = await getCurrentOrganization()
 
   if (!currentOrg) {

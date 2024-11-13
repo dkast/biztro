@@ -43,7 +43,6 @@ export const LayerName = () => {
     <ContentEditable
       html={displayName}
       disabled={!editingName}
-      // @ts-expect-error - ref type is not correct
       ref={contentEditableRef}
       onChange={e => {
         actions.setCustom(id, custom => (custom.displayName = e.target.value))

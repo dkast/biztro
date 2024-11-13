@@ -45,7 +45,7 @@ export async function getUploadParameters(
   if (!response.ok) throw new Error("Unsuccessful request")
 
   // Parse the JSON response.
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
   const data: { url: string; method: "PUT" } = await response.json()
 
   // Return an object in the correct shape.

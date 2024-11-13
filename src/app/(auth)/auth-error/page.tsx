@@ -6,11 +6,10 @@ import Navbar from "@/components/marketing/nav-bar"
 import Waitlist from "@/components/marketing/waitlist"
 import { Button } from "@/components/ui/button"
 
-export default function Page({
-  searchParams
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
+export default async function Page(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  const searchParams = await props.searchParams
   let typeError: string | undefined
 
   if (searchParams.error) {

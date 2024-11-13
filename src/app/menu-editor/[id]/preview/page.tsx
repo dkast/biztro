@@ -13,11 +13,10 @@ export const metadata: Metadata = {
   description: "Vista previa de un menú"
 }
 
-export default async function PreviewPage({
-  params
-}: {
-  params: { id: string }
+export default async function PreviewPage(props: {
+  params: Promise<{ id: string }>
 }) {
+  const params = await props.params
   const siteMenu = await getMenuById(params.id)
 
   if (!params.id || !siteMenu) {

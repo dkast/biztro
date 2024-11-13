@@ -7,7 +7,7 @@ import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 
 export async function getDefaultLocation() {
-  const currentOrg = cookies().get(appConfig.cookieOrg)?.value
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
   // return await cache(
   //   async () => {
   const location = await prisma.location.findFirst({

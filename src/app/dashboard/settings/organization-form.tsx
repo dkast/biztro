@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Organization } from "@prisma/client"
+import { DialogTitle } from "@radix-ui/react-dialog"
 import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
@@ -33,7 +34,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { updateOrg } from "@/server/actions/organization/mutations"
-import { ImageType, orgSchema, type Plan, type Status } from "@/lib/types"
+import {
+  ImageType,
+  orgSchema,
+  type Plan,
+  type SubscriptionStatus
+} from "@/lib/types"
 import { getInitials } from "@/lib/utils"
 
 export default function OrganizationForm({
@@ -50,7 +56,7 @@ export default function OrganizationForm({
       name: data.name,
       description: data.description ?? undefined,
       subdomain: data.subdomain,
-      status: data.status as Status,
+      status: data.status as SubscriptionStatus,
       plan: data.plan as Plan
     }
   })
@@ -95,13 +101,15 @@ export default function OrganizationForm({
             </Avatar>
             <div>
               <Dialog>
-                <DialogTrigger>
+                <DialogTrigger asChild>
                   <Button type="button" variant="outline">
                     Cambiar imágen
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-xl">
-                  <DialogHeader>Subir imágen</DialogHeader>
+                  <DialogHeader>
+                    <DialogTitle>Subir imágen</DialogTitle>
+                  </DialogHeader>
                   <FileUploader
                     organizationId={data.id}
                     imageType={ImageType.LOGO}

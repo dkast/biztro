@@ -36,7 +36,8 @@
     "**/*.mjs",
     "**/*.js",
     ".next/types/**/*.ts",
-    ".contentlayer/generated"
+    ".contentlayer/generated",
+    "src/app/.well-known/**/*"
   ],
   "exclude": ["node_modules", ".next", "out", "public"]
 }
