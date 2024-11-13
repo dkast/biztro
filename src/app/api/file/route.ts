@@ -18,7 +18,6 @@ const R2 = new S3Client({
 })
 
 export async function POST(req: NextRequest) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { organizationId, imageType, objectId, filename, contentType } =
     await req.json()
 
