@@ -4,9 +4,7 @@ import prisma from "@/lib/prisma"
 export const getCurrentSubscription = async (organizationId: string) => {
   const subscriptions = await prisma.subscription.findMany({
     where: {
-      membership: {
-        organizationId
-      }
+      organizationId
     },
     orderBy: {
       created: "desc"

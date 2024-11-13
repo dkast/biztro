@@ -97,6 +97,8 @@ model Organization {
   themes        Theme[]
   teamInvite    TeamInvite[]
   subscriptions Subscription[]
+
+  @@index([subdomain])
 }
 
 model Location {
@@ -229,6 +231,8 @@ model Customer {
   stripeCustomerId String     @id
   membership       Membership @relation(fields: [membershipId], references: [id])
   membershipId     String     @unique
+
+  @@index([membershipId])
 }
 
 model Subscription {
@@ -250,4 +254,6 @@ model Subscription {
   membershipId       String
   organization       Organization @relation(fields: [organizationId], references: [id])
   organizationId     String
+
+  @@index([membershipId])
 }
