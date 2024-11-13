@@ -15,10 +15,12 @@ import {
 import { MembershipRole } from "@/lib/types"
 
 export default async function BillingPage() {
-  const subsEnabled = await subscriptionsEnabled()
-  const membership = await getCurrentMembership()
-  const isPro = await isProMember()
-  const itemCount = await getItemCount()
+  const [subsEnabled, membership, isPro, itemCount] = await Promise.all([
+    subscriptionsEnabled(),
+    getCurrentMembership(),
+    isProMember(),
+    getItemCount()
+  ])
 
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">

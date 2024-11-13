@@ -16,11 +16,12 @@ export const metadata: Metadata = {
 }
 
 export default async function ProfilePage() {
-  const user = await getCurrentUser()
+  const [user, membership] = await Promise.all([
+    getCurrentUser(),
+    getCurrentMembership()
+  ])
 
   if (!user) return notFound()
-
-  const membership = await getCurrentMembership()
 
   const roleLabel = (() => {
     switch (membership?.role) {

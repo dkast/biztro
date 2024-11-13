@@ -17,9 +17,11 @@ export const metadata: Metadata = {
 }
 
 export default async function MembersPage() {
-  const membership = await getCurrentMembership()
-  const data = await getMembers()
-  const isPro = await isProMember()
+  const [membership, data, isPro] = await Promise.all([
+    getCurrentMembership(),
+    getMembers(),
+    isProMember()
+  ])
 
   return (
     <div className="mx-auto grow px-4 sm:px-6">

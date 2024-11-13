@@ -15,13 +15,14 @@ export const metadata: Metadata = {
 }
 
 export default async function DashboardPage() {
-  const currentOrg = await getCurrentOrganization()
+  const [currentOrg, data] = await Promise.all([
+    getCurrentOrganization(),
+    getMenus()
+  ])
 
   if (!currentOrg) {
     notFound()
   }
-
-  const data = await getMenus()
 
   return (
     <div className="flex grow bg-gray-50 pb-4 dark:bg-gray-950">
