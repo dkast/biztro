@@ -3,15 +3,23 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
+import OrganizationDelete from "@/app/dashboard/settings/organization-delete"
 import OrganizationForm from "@/app/dashboard/settings/organization-form"
-import { getCurrentOrganization } from "@/server/actions/user/queries"
+import {
+  getCurrentMembership,
+  getCurrentOrganization
+} from "@/server/actions/user/queries"
+import { MembershipRole } from "@/lib/types"
 
 export const metadata: Metadata = {
   title: "Mi Negocio"
 }
 
 export default async function SettingsPage() {
-  const currentOrg = await getCurrentOrganization()
+  const [membership, currentOrg] = await Promise.all([
+    getCurrentMembership(),
+    getCurrentOrganization()
+  ])
 
   if (!currentOrg) {
     return notFound()
@@ -25,6 +33,9 @@ export default async function SettingsPage() {
         Icon={Store}
       />
       <OrganizationForm data={currentOrg} enabled />
+      {membership?.role === MembershipRole.OWNER && (
+        <OrganizationDelete organizationId={currentOrg.id} />
+      )}
     </div>
   )
 }

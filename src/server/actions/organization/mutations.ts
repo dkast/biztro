@@ -5,9 +5,10 @@ import { cookies } from "next/headers"
 import { z } from "zod"
 
 import { appConfig } from "@/app/config"
+import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import prisma from "@/lib/prisma"
 import { actionClient, authActionClient } from "@/lib/safe-actions"
-import { MembershipRole, orgSchema } from "@/lib/types"
+import { MembershipRole, orgSchema, SubscriptionStatus } from "@/lib/types"
 
 /**
  * Bootstrap an organization by creating a new organization with the provided name, description, and subdomain.
@@ -201,6 +202,54 @@ export const joinWaitlist = actionClient
         message = error.message
       } else {
         message = "Unknown error"
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  })
+
+export const deleteOrganization = authActionClient
+  .schema(
+    z.object({
+      id: z.string().cuid()
+    })
+  )
+  .action(async ({ parsedInput: { id } }) => {
+    // Delete organization
+    try {
+      const subscription = await getCurrentSubscription(id)
+      if (
+        subscription &&
+        (subscription.status === "active" || subscription.status === "trialing")
+      ) {
+        return {
+          failure: {
+            reason:
+              "No se puede eliminar una organización con una suscripción activa"
+          }
+        }
+      } else {
+        // await prisma.organization.delete({
+        //   where: {
+        //     id: id
+        //   }
+        // })
+
+        revalidateTag(`organization-${id}`)
+
+        return {
+          success: true
+        }
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Error) {
+        message = error.message
       }
       return {
         failure: {
