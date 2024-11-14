@@ -288,6 +288,87 @@ export const deleteMenu = authActionClient
   })
 
 /**
+ * Duplicates a menu and its data.
+ *
+ * @param id - The ID of the menu to duplicate.
+ * @returns An object with the duplicated menu if successful, or an object with the failure reason if unsuccessful.
+ */
+export const duplicateMenu = authActionClient
+  .schema(
+    z.object({
+      id: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { id } }) => {
+    const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+
+    if (!currentOrg) {
+      return {
+        failure: {
+          reason: "No se pudo obtener la organización actual"
+        }
+      }
+    }
+
+    const proMember = await isProMember()
+    const menuCount = await getMenuCount()
+
+    const menuLimit = appConfig.menuLimit || 5
+    if (!proMember && menuCount >= menuLimit) {
+      return {
+        failure: {
+          reason: `Límite de ${menuLimit} menús alcanzado. Actualiza a Pro para crear más.`,
+          code: BasicPlanLimits.MENU_LIMIT_REACHED
+        }
+      }
+    }
+
+    try {
+      const sourceMenu = await prisma.menu.findUnique({
+        where: { id }
+      })
+
+      if (!sourceMenu) {
+        return {
+          failure: {
+            reason: "Menú no encontrado"
+          }
+        }
+      }
+
+      const duplicatedMenu = await prisma.menu.create({
+        data: {
+          name: `${sourceMenu.name} (copia)`,
+          description: sourceMenu.description,
+          status: "DRAFT",
+          organizationId: currentOrg,
+          fontTheme: sourceMenu.fontTheme,
+          colorTheme: sourceMenu.colorTheme,
+          serialData: sourceMenu.serialData
+        }
+      })
+
+      revalidateTag(`menus-${currentOrg}`)
+
+      return {
+        success: duplicatedMenu
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  })
+
+/**
  * Creates a color theme.
  *
  * @param id - The ID of the color theme.
