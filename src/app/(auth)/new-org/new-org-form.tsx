@@ -52,8 +52,13 @@ export default function NewOrgForm() {
   }, [subdomain]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { execute, status, reset } = useAction(bootstrapOrg, {
-    onSuccess: () => {
-      router.push("/dashboard")
+    onSuccess: ({ data }) => {
+      if (data?.failure) {
+        toast.error(data.failure.reason)
+        return
+      } else if (!data?.success) {
+        router.push("/dashboard")
+      }
       reset()
     },
     onError: () => {

@@ -34,6 +34,17 @@ export const bootstrapOrg = authActionClient
           }
         }
 
+        // Verify if the subdomain is already taken
+        const existingOrg = await prisma.organization.findFirst({
+          where: {
+            subdomain
+          }
+        })
+
+        if (existingOrg) {
+          throw new Error("El subdominio ya está en uso")
+        }
+
         const org = await prisma.organization.create({
           data: {
             name,
@@ -232,11 +243,16 @@ export const deleteOrganization = authActionClient
           }
         }
       } else {
-        // await prisma.organization.delete({
-        //   where: {
-        //     id: id
-        //   }
-        // })
+        // Remove cookie
+        const cookieStore = await cookies()
+        cookieStore.delete(appConfig.cookieOrg)
+
+        // Delete organization and revalidate cache
+        await prisma.organization.delete({
+          where: {
+            id: id
+          }
+        })
 
         revalidateTag(`organization-${id}`)
 
