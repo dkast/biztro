@@ -7,7 +7,7 @@ import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { rgbaToHex, rgbaToHsva, Sketch, type RgbaColor } from "@uiw/react-color"
-import { formatDate } from "date-fns"
+import { differenceInMinutes, formatDate, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { AnimatePresence, motion } from "framer-motion"
 import { useAtomValue, useSetAtom } from "jotai"
@@ -205,9 +205,15 @@ export default function MenuPublish({
         className="h-100 mr-2 border-l dark:border-gray-700"
       />
       <Popover>
-        <PopoverTrigger asChild>
-          <Button size="xs">Publicar</Button>
-        </PopoverTrigger>
+        <div className="relative">
+          <PopoverTrigger asChild>
+            <Button size="xs">Publicar</Button>
+          </PopoverTrigger>
+          {menu.publishedAt &&
+            differenceInMinutes(menu.updatedAt, menu.publishedAt) >= 1 && (
+              <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-sky-500"></span>
+            )}
+        </div>
         <PopoverContent className="w-80">
           <AnimatePresence initial={false} mode="wait">
             {menu.status === MenuStatus.DRAFT ? (
@@ -259,6 +265,44 @@ export default function MenuPublish({
                   </Link>
                 </div>
                 <div className="space-y-2">
+                  <AnimatePresence>
+                    {menu.publishedAt &&
+                      differenceInMinutes(menu.updatedAt, menu.publishedAt) >=
+                        1 && (
+                        <motion.p
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{
+                            height: "auto",
+                            opacity: 1,
+                            transition: {
+                              height: {
+                                duration: 0.2
+                              },
+                              opacity: {
+                                duration: 0.1,
+                                delay: 0.05
+                              }
+                            }
+                          }}
+                          exit={{
+                            height: 0,
+                            opacity: 0,
+                            transition: {
+                              height: {
+                                duration: 0.2
+                              },
+                              opacity: {
+                                duration: 0.1
+                              }
+                            }
+                          }}
+                          className="my-3 text-xs text-gray-500 dark:text-gray-400"
+                        >
+                          Existen cambios sin publicar, publica los cambios para
+                          actualizar tu menú.
+                        </motion.p>
+                      )}
+                  </AnimatePresence>
                   <Button
                     size="xs"
                     className="mt-2 w-full"
@@ -282,9 +326,10 @@ export default function MenuPublish({
                   </Button>
 
                   <p className="pt-2 text-center text-xs text-gray-500 dark:text-gray-400">
-                    Última actualiazión:{" "}
+                    Publicado{" "}
                     {menu.publishedAt
-                      ? formatDate(menu.publishedAt, "PPpp", {
+                      ? formatDistanceToNow(menu.publishedAt, {
+                          addSuffix: true,
                           locale: es
                         })
                       : ""}
