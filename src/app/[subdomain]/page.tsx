@@ -6,6 +6,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
+import GradientBlur from "@/components/flare-ui/gradient-blur"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { getMenuByOrgSubdomain } from "@/server/actions/menu/queries"
 import { getOrganizationBySubdomain } from "@/server/actions/organization/queries"
@@ -133,7 +134,7 @@ export default async function SitePage(props0: {
           color: `${rgbaToHex(textColor)}`
         }}
       >
-        <div>
+        <div className="z-20">
           Últ. actualiazión:{" "}
           {siteMenu.publishedAt
             ? new Intl.DateTimeFormat("es-MX", {
@@ -143,7 +144,7 @@ export default async function SitePage(props0: {
               }).format(new Date(siteMenu.publishedAt))
             : ""}
         </div>
-        <Link href="https://biztro.co" target="_blank">
+        <Link href="https://biztro.co" target="_blank" className="z-20">
           <div className="flex items-center justify-center gap-x-2 rounded-full bg-black/50 px-3 py-1">
             <Image
               src="/safari-pinned-tab.svg"
@@ -157,6 +158,7 @@ export default async function SitePage(props0: {
             </span>
           </div>
         </Link>
+        <GradientBlur className="inset-0 md:hidden" />
       </div>
     </div>
   )

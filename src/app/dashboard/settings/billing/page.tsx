@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 import { subscriptionsEnabled } from "@/flags"
 import { AlertCircle, Wallet } from "lucide-react"
+import type { Metadata } from "next"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -13,6 +14,10 @@ import {
   isProMember
 } from "@/server/actions/user/queries"
 import { MembershipRole } from "@/lib/types"
+
+export const metadata: Metadata = {
+  title: "Suscripción"
+}
 
 export default async function BillingPage() {
   const [subsEnabled, membership, isPro, itemCount] = await Promise.all([

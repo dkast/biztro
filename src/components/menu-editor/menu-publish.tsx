@@ -298,8 +298,8 @@ export default function MenuPublish({
                           }}
                           className="my-3 text-xs text-gray-500 dark:text-gray-400"
                         >
-                          Existen cambios sin publicar, publica los cambios para
-                          actualizar tu menú.
+                          Existen cambios sin publicar. <br /> Publica los
+                          cambios para actualizar tu menú.
                         </motion.p>
                       )}
                   </AnimatePresence>

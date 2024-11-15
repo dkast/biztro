@@ -37,7 +37,7 @@ export default async function PreviewPage(props: {
           </Button>
         </Link>
       </div>
-      <div className="flex h-dvh">
+      <div className="flex min-h-dvh">
         <ResolveEditor json={json} />
       </div>
       <div className="fixed inset-x-0 bottom-3 text-center">

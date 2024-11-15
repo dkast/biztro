@@ -42,7 +42,11 @@ export const bootstrapOrg = authActionClient
         })
 
         if (existingOrg) {
-          throw new Error("El subdominio ya está en uso")
+          return {
+            failure: {
+              reason: "El subdominio ya está en uso"
+            }
+          }
         }
 
         const org = await prisma.organization.create({
@@ -140,6 +144,17 @@ export const updateOrg = authActionClient
   .schema(orgSchema)
   .action(async ({ parsedInput: { id, name, description, subdomain } }) => {
     try {
+      // Verify if the subdomain is already taken
+      const existingOrg = await prisma.organization.findFirst({
+        where: {
+          subdomain
+        }
+      })
+
+      if (existingOrg && existingOrg.id !== id) {
+        throw new Error("El subdominio ya está en uso")
+      }
+
       const org = await prisma.organization.update({
         where: {
           id

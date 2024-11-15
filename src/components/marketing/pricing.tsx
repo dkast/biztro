@@ -17,7 +17,8 @@ const marketingTiers = [
       "Temas personalizados",
       "Descargar código QR"
     ],
-    featured: false
+    featured: false,
+    cta: "Inicia ahora"
   },
   {
     name: "Pro",
@@ -34,7 +35,8 @@ const marketingTiers = [
       "Promociones y ofertas (próximamente)",
       "Soporte por correo electrónico"
     ],
-    featured: true
+    featured: true,
+    cta: "Inicia prueba gratis 7 días"
   }
 ]
 
@@ -143,7 +145,7 @@ export default function Pricing() {
                 "mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:mt-10"
               )}
             >
-              Inica prueba gratis
+              {tier.cta}
             </a>
           </div>
         ))}
