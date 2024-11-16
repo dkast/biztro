@@ -36,7 +36,7 @@ const marketingTiers = [
       "Soporte por correo electrónico"
     ],
     featured: true,
-    cta: "Inicia prueba gratis 7 días"
+    cta: "Prueba gratis por 14 días"
   }
 ]
 

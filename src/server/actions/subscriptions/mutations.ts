@@ -27,7 +27,7 @@ export const manageSubscriptionStatusChnage = async (
   })
 
   if (!customer) {
-    throw new Error("Customer not found")
+    throw new Error("Cliente no encontrado")
   }
 
   const subscription = await stripe.subscriptions.retrieve(
@@ -51,7 +51,7 @@ export const manageSubscriptionStatusChnage = async (
   })
 
   if (!membershipOrg) {
-    throw new Error("Membership not found")
+    throw new Error("Membresía no encontrada")
   }
 
   // Update the organization plan and status in the database
@@ -135,7 +135,7 @@ const createCustomerInStripe = async (id: string, email: string) => {
 
   const newCustomer = await stripe.customers.create(customerData)
   if (!newCustomer.id) {
-    throw new Error("Error creating customer")
+    throw new Error("Error creando cliente")
   }
 
   return newCustomer.id
@@ -170,7 +170,7 @@ const createOrRetrieveCustomer = async (email: string, id: string) => {
     ? stripeCustomerId
     : await createCustomerInStripe(id, email)
   if (!stripeIdToInsert) {
-    throw new Error("Error creating customer")
+    throw new Error("Error creando cliente")
   }
 
   if (customer && stripeCustomerId) {
@@ -226,7 +226,7 @@ export const checkoutWithStripe = async (
     })
 
     if (!membership) {
-      throw new Error("Membership not found")
+      throw new Error("Membresía no encontrada")
     }
 
     // Retrieve or create the customer in Stripe
@@ -238,7 +238,7 @@ export const checkoutWithStripe = async (
       )
     } catch (error) {
       console.error(error)
-      throw new Error("Unable to access customer record")
+      throw new Error("No se pudo acceder al registro del cliente")
     }
 
     const params: Stripe.Checkout.SessionCreateParams = {
@@ -258,7 +258,7 @@ export const checkoutWithStripe = async (
       success_url: getBaseUrl() + redirectPath,
       mode: "subscription",
       subscription_data: {
-        trial_end: calculateTrialEndUnixTimestamp(7)
+        trial_end: calculateTrialEndUnixTimestamp(14)
       }
     }
 
@@ -267,13 +267,13 @@ export const checkoutWithStripe = async (
       stripeSession = await stripe.checkout.sessions.create(params)
     } catch (error) {
       console.error(error)
-      throw new Error("Error creating checkout session")
+      throw new Error("Error creando la sesión de Stripe")
     }
 
     if (stripeSession.id) {
       return { sessionId: stripeSession.id }
     } else {
-      throw new Error("Error creating checkout session")
+      throw new Error("Error creando la sesión de Stripe")
     }
   } catch (error) {
     console.error(error)
@@ -287,7 +287,7 @@ export const createStripePortal = async () => {
     const membership = await getCurrentMembership()
     const user = await getCurrentUser()
     if (!membership || !user) {
-      throw new Error("Membership or User not found")
+      throw new Error("Membresía o usuario no encontrados")
     }
 
     let customer
@@ -295,7 +295,7 @@ export const createStripePortal = async () => {
       customer = await createOrRetrieveCustomer(user.email, membership.id)
     } catch (error) {
       console.error(error)
-      throw new Error("Unable to access customer record")
+      throw new Error("No se pudo acceder al registro del cliente")
     }
 
     try {
@@ -304,12 +304,12 @@ export const createStripePortal = async () => {
         return_url: `${getBaseUrl()}/dashboard/settings/billing`
       })
       if (!url) {
-        throw new Error("Error creating portal session")
+        throw new Error("Error creando el portal de facturación")
       }
       return url
     } catch (error) {
       console.error(error)
-      throw new Error("Error creating portal session")
+      throw new Error("Error creando el portal de facturación")
     }
   } catch (error) {
     console.error(error)
