@@ -4,6 +4,7 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
 import { hexToHsva, Sketch } from "@uiw/react-color"
+import { extractColors } from "extract-colors"
 import { Loader } from "lucide-react"
 import { nanoid } from "nanoid"
 // import { Avatar, AvatarImage } from "@/components/ui/avatar"
@@ -59,6 +60,7 @@ export function ColorThemeEditor({
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [themeState, setThemeState] = useState(theme)
+  const [isExtracting, setIsExtracting] = useState(false)
 
   const {
     execute: createTheme,
@@ -156,6 +158,23 @@ export function ColorThemeEditor({
 
   const handleDialogSubmit = (name: string) => {
     handleCreateTheme(name)
+  }
+
+  const extractColorsFromImage = async () => {
+    if (!menu?.organization.logo) {
+      toast.error("No hay logo para extraer colores")
+      return
+    }
+    try {
+      setIsExtracting(true)
+      const colors = await extractColors(menu.organization.logo)
+      console.log(colors)
+      // Maneja los colores extraídos según sea necesario
+    } catch {
+      toast.error("Error al extraer colores")
+    } finally {
+      setIsExtracting(false)
+    }
   }
 
   return (
@@ -370,6 +389,18 @@ export function ColorThemeEditor({
           >
             Copiar JSON
           </Button> */}
+          <Button
+            variant="secondary"
+            size="sm"
+            className="mt-2 w-full"
+            onClick={extractColorsFromImage}
+            disabled={isExtracting}
+          >
+            {isExtracting ? (
+              <Loader className="mr-2 size-4 animate-spin" />
+            ) : null}
+            Extraer colores
+          </Button>
         </div>
       </div>
     </>
