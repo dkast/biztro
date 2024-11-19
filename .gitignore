@@ -47,5 +47,9 @@ yarn-error.log*
 
 # Contentlayer
 .contentlayer
+
 # Sentry Config File
 .env.sentry-build-plugin
+
+# Content Collections
+.content-collections

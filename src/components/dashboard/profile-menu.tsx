@@ -1,6 +1,6 @@
 "use client"
 
-import { LogOut, SunMoon, User } from "lucide-react"
+import { Globe, LogOut, SunMoon, User } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
@@ -72,6 +72,12 @@ export default function ProfileMenu() {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
+        <DropdownMenuItem asChild>
+          <Link href="/">
+            <Globe className="mr-2 size-4" />
+            Inicio
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => signOut()}>
           <LogOut className="mr-2 size-4" />

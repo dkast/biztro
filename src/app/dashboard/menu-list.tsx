@@ -1,12 +1,15 @@
 "use client"
 
 import { useState } from "react"
+import toast from "react-hot-toast"
 import type { Menu } from "@prisma/client"
 import { AnimatePresence, motion } from "framer-motion"
 import { CircleCheck, MoreHorizontal } from "lucide-react"
+import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import gradient from "random-gradient"
 
+import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { AlertDialog } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -19,7 +22,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import MenuCreate from "@/app/dashboard/menu-create"
 import MenuDelete from "@/app/dashboard/menu-delete"
-import { MenuStatus } from "@/lib/types"
+import { duplicateMenu } from "@/server/actions/menu/mutations"
+import { BasicPlanLimits, MenuStatus } from "@/lib/types"
 
 export default function MenuList({ menus }: { menus: Menu[] }) {
   return (
@@ -41,7 +45,26 @@ export default function MenuList({ menus }: { menus: Menu[] }) {
 
 function MenuCard({ menu, index }: { menu: Menu; index: number }) {
   const [openDelete, setOpenDelete] = useState<boolean>(false)
+  const [showUpgrade, setShowUpgrade] = useState(false)
   const bgGradient = { background: gradient(menu.id) }
+
+  const { execute: executeDuplicate } = useAction(duplicateMenu, {
+    onSuccess: ({ data }) => {
+      if (data?.failure) {
+        if (data.failure.code === BasicPlanLimits.MENU_LIMIT_REACHED) {
+          setShowUpgrade(true)
+        } else {
+          toast.error(data.failure.reason)
+        }
+        return
+      }
+      toast.success("Menú duplicado")
+    },
+    onError: () => {
+      toast.error("No se pudo duplicar el menú")
+    }
+  })
+
   return (
     <motion.div
       layout
@@ -120,6 +143,11 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
                       <span>Editar</span>
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => executeDuplicate({ id: menu.id })}
+                  >
+                    <span>Duplicar</span>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setOpenDelete(true)}>
                     <span className="text-red-500">Eliminar</span>
                   </DropdownMenuItem>
@@ -130,6 +158,12 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
           </div>
         </div>
       </motion.div>
+      <UpgradeDialog
+        open={showUpgrade}
+        onClose={() => setShowUpgrade(false)}
+        title="Impulsa tu negocio con el plan Pro"
+        description="Actualiza tu plan a Pro para crear más menús y acceder a todas las funciones premium."
+      />
     </motion.div>
   )
 }

@@ -97,6 +97,8 @@ model Organization {
   themes        Theme[]
   teamInvite    TeamInvite[]
   subscriptions Subscription[]
+
+  @@index([subdomain])
 }
 
 model Location {
@@ -227,8 +229,10 @@ model TeamInvite {
 
 model Customer {
   stripeCustomerId String     @id
-  membership       Membership @relation(fields: [membershipId], references: [id])
+  membership       Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
   membershipId     String     @unique
+
+  @@index([membershipId])
 }
 
 model Subscription {
@@ -248,6 +252,8 @@ model Subscription {
   trialEnd           DateTime?
   membership         Membership   @relation(fields: [membershipId], references: [id])
   membershipId       String
-  organization       Organization @relation(fields: [organizationId], references: [id])
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId     String
+
+  @@index([membershipId])
 }

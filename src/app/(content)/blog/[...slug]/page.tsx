@@ -1,4 +1,4 @@
-import { allPosts } from "contentlayer/generated"
+import { allPosts } from "content-collections"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 
@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator"
 // skipcq: JS-0116
 export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
   return allPosts.map(post => ({
-    slug: post.slugAsParams.split("/")
+    slug: post._meta.path.split("/")
   }))
 }
 export default async function Page(props: {
@@ -17,7 +17,7 @@ export default async function Page(props: {
 }) {
   const params = await props.params
   const slug = params?.slug?.join("/")
-  const post = allPosts.find(post => post.slugAsParams === slug)
+  const post = allPosts.find(post => post._meta.path.split("/")[0] === slug)
 
   if (!post) {
     return notFound()
@@ -41,7 +41,7 @@ export default async function Page(props: {
         avatar={post?.avatar}
       />
       <section>
-        <Mdx code={post.body.code} />
+        <Mdx code={post.body} />
       </section>
       <section>
         <Separator className="my-10 w-20 bg-gray-300" />

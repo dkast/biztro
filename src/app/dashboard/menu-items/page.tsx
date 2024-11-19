@@ -16,14 +16,16 @@ export const metadata: Metadata = {
 export default async function ItemsPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const searchParams = await props.searchParams
-  const currentOrg = await getCurrentOrganization()
+  const [searchParams, currentOrg, categories] = await Promise.all([
+    props.searchParams,
+    getCurrentOrganization(),
+    getCategories()
+  ])
 
   if (!currentOrg) {
     notFound()
   }
 
-  const categories = await getCategories()
   const filter: MenuItemQueryFilter = {}
 
   if (searchParams.status) {

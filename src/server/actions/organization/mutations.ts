@@ -5,6 +5,7 @@ import { cookies } from "next/headers"
 import { z } from "zod"
 
 import { appConfig } from "@/app/config"
+import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import prisma from "@/lib/prisma"
 import { actionClient, authActionClient } from "@/lib/safe-actions"
 import { MembershipRole, orgSchema } from "@/lib/types"
@@ -29,6 +30,21 @@ export const bootstrapOrg = authActionClient
           return {
             failure: {
               reason: "No se pudo obtener el usuario actual"
+            }
+          }
+        }
+
+        // Verify if the subdomain is already taken
+        const existingOrg = await prisma.organization.findFirst({
+          where: {
+            subdomain
+          }
+        })
+
+        if (existingOrg) {
+          return {
+            failure: {
+              reason: "El subdominio ya está en uso"
             }
           }
         }
@@ -128,6 +144,17 @@ export const updateOrg = authActionClient
   .schema(orgSchema)
   .action(async ({ parsedInput: { id, name, description, subdomain } }) => {
     try {
+      // Verify if the subdomain is already taken
+      const existingOrg = await prisma.organization.findFirst({
+        where: {
+          subdomain
+        }
+      })
+
+      if (existingOrg && existingOrg.id !== id) {
+        throw new Error("El subdominio ya está en uso")
+      }
+
       const org = await prisma.organization.update({
         where: {
           id
@@ -201,6 +228,59 @@ export const joinWaitlist = actionClient
         message = error.message
       } else {
         message = "Unknown error"
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  })
+
+export const deleteOrganization = authActionClient
+  .schema(
+    z.object({
+      id: z.string().cuid()
+    })
+  )
+  .action(async ({ parsedInput: { id } }) => {
+    // Delete organization
+    try {
+      const subscription = await getCurrentSubscription(id)
+      if (
+        subscription &&
+        (subscription.status === "active" || subscription.status === "trialing")
+      ) {
+        return {
+          failure: {
+            reason:
+              "No se puede eliminar una organización con una suscripción activa"
+          }
+        }
+      } else {
+        // Remove cookie
+        const cookieStore = await cookies()
+        cookieStore.delete(appConfig.cookieOrg)
+
+        // Delete organization and revalidate cache
+        await prisma.organization.delete({
+          where: {
+            id
+          }
+        })
+
+        revalidateTag(`organization-${id}`)
+
+        return {
+          success: true
+        }
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Error) {
+        message = error.message
       }
       return {
         failure: {

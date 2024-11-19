@@ -1,7 +1,7 @@
+import { withContentCollections } from "@content-collections/next"
 import { withSentryConfig } from "@sentry/nextjs"
 import { withVercelToolbar } from "@vercel/toolbar/plugins/next"
 import { withAxiom } from "next-axiom"
-import { withContentlayer } from "next-contentlayer2"
 
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
@@ -65,8 +65,8 @@ let nextConfig // skipcq: JS-E1009
 
 // If in Turbo Pack mode, do not use Sentry
 if (!process.env.TURBOPACK) {
-  nextConfig = withVercelToolbar()(
-    withSentryConfig(withAxiom(withContentlayer(config))),
+  nextConfig = withContentCollections(
+    withVercelToolbar()(withSentryConfig(withAxiom(config))),
     {
       // For all available options, see:
       // https://github.com/getsentry/sentry-webpack-plugin#options
@@ -108,7 +108,7 @@ if (!process.env.TURBOPACK) {
     }
   )
 } else {
-  nextConfig = withVercelToolbar()(withAxiom(withContentlayer(config)))
+  nextConfig = withContentCollections(withVercelToolbar()(withAxiom(config)))
 }
 
 export default nextConfig
