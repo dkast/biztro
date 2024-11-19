@@ -8,7 +8,7 @@ import { appConfig } from "@/app/config"
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import prisma from "@/lib/prisma"
 import { actionClient, authActionClient } from "@/lib/safe-actions"
-import { MembershipRole, orgSchema, SubscriptionStatus } from "@/lib/types"
+import { MembershipRole, orgSchema } from "@/lib/types"
 
 /**
  * Bootstrap an organization by creating a new organization with the provided name, description, and subdomain.
@@ -265,7 +265,7 @@ export const deleteOrganization = authActionClient
         // Delete organization and revalidate cache
         await prisma.organization.delete({
           where: {
-            id: id
+            id
           }
         })
 

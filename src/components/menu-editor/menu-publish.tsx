@@ -325,15 +325,25 @@ export default function MenuPublish({
                     Cambiar a borrador
                   </Button>
 
-                  <p className="pt-2 text-center text-xs text-gray-500 dark:text-gray-400">
-                    Publicado{" "}
-                    {menu.publishedAt
-                      ? formatDistanceToNow(menu.publishedAt, {
-                          addSuffix: true,
-                          locale: es
-                        })
-                      : ""}
-                  </p>
+                  <TooltipHelper
+                    content={
+                      menu.publishedAt
+                        ? formatDate(menu.publishedAt, "PPpp", {
+                            locale: es
+                          })
+                        : ""
+                    }
+                  >
+                    <p className="pt-2 text-center text-xs text-gray-500 dark:text-gray-400">
+                      Publicado{" "}
+                      {menu.publishedAt
+                        ? formatDistanceToNow(menu.publishedAt, {
+                            addSuffix: true,
+                            locale: es
+                          })
+                        : ""}
+                    </p>
+                  </TooltipHelper>
                 </div>
               </motion.div>
             )}

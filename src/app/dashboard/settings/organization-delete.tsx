@@ -32,7 +32,6 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
       toast.dismiss()
       if (data?.failure) {
         toast.error(data.failure.reason)
-        return
       } else {
         router.push("/login")
         reset()
