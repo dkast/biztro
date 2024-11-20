@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
-import { hexToHsva, Sketch } from "@uiw/react-color"
+import { hexToHsva, Sketch, type SwatchPresetColor } from "@uiw/react-color"
 import { extractColors } from "extract-colors"
 import { Loader } from "lucide-react"
 import { nanoid } from "nanoid"
@@ -168,14 +168,62 @@ export function ColorThemeEditor({
     try {
       setIsExtracting(true)
       const colors = await extractColors(menu.organization.logo)
-      console.log(colors)
-      // Maneja los colores extraídos según sea necesario
+
+      // Sort colors by area
+      colors.sort((a, b) => b.area - a.area)
+      // console.log(colors)
+
+      setThemeState(prev => ({
+        ...prev,
+        surfaceColor: colors[0]?.hex || prev.surfaceColor,
+        brandColor: colors[1]?.hex || prev.brandColor,
+        accentColor: colors[2]?.hex || prev.accentColor,
+        textColor: colors[3]?.hex || prev.textColor,
+        mutedColor: colors[4]?.hex || prev.mutedColor
+      }))
+
+      // Update colorPresets when colors are extracted
+      setColorPresets([
+        {
+          color: colors[0]?.hex || themeState.surfaceColor,
+          title: "Fondo"
+        },
+        {
+          color: colors[1]?.hex || themeState.brandColor,
+          title: "Marca"
+        },
+        {
+          color: colors[2]?.hex || themeState.accentColor,
+          title: "Acento"
+        },
+        { color: colors[3]?.hex || themeState.textColor, title: "Texto" },
+        { color: colors[4]?.hex || themeState.mutedColor, title: "Tenue" }
+      ])
     } catch {
       toast.error("Error al extraer colores")
     } finally {
       setIsExtracting(false)
     }
   }
+
+  const invertColors = () => {
+    setThemeState(prev => ({
+      ...prev,
+      surfaceColor: prev.textColor,
+      brandColor: prev.accentColor,
+      accentColor: prev.brandColor,
+      textColor: prev.surfaceColor,
+      mutedColor: prev.mutedColor
+    }))
+  }
+
+  const [colorPresets, setColorPresets] = useState<SwatchPresetColor[]>([
+    { color: themeState.brandColor, title: "Marca" },
+    { color: themeState.accentColor, title: "Acento" },
+    { color: themeState.surfaceColor, title: "Fondo" },
+    { color: themeState.textColor, title: "Texto" },
+    { color: themeState.mutedColor, title: "Tenue" }
+  ])
 
   return (
     <>
@@ -210,6 +258,7 @@ export function ColorThemeEditor({
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
                     disableAlpha
+                    presetColors={colorPresets}
                     color={hexToHsva(themeState.surfaceColor)}
                     onChange={color => {
                       setThemeState(prev => ({
@@ -237,6 +286,7 @@ export function ColorThemeEditor({
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
                     disableAlpha
+                    presetColors={colorPresets}
                     color={hexToHsva(themeState.brandColor)}
                     onChange={color => {
                       setThemeState(prev => ({
@@ -264,6 +314,7 @@ export function ColorThemeEditor({
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
                     disableAlpha
+                    presetColors={colorPresets}
                     color={hexToHsva(themeState.accentColor)}
                     onChange={color => {
                       setThemeState(prev => ({
@@ -291,6 +342,7 @@ export function ColorThemeEditor({
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
                     disableAlpha
+                    presetColors={colorPresets}
                     color={hexToHsva(themeState.textColor)}
                     onChange={color => {
                       setThemeState(prev => ({
@@ -318,6 +370,7 @@ export function ColorThemeEditor({
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
                     disableAlpha
+                    presetColors={colorPresets}
                     color={hexToHsva(themeState.mutedColor)}
                     onChange={color => {
                       setThemeState(prev => ({
@@ -392,7 +445,7 @@ export function ColorThemeEditor({
           <Button
             variant="secondary"
             size="sm"
-            className="mt-2 w-full"
+            className="col-span-3"
             onClick={extractColorsFromImage}
             disabled={isExtracting}
           >
@@ -400,6 +453,14 @@ export function ColorThemeEditor({
               <Loader className="mr-2 size-4 animate-spin" />
             ) : null}
             Extraer colores
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="col-span-3"
+            onClick={invertColors}
+          >
+            Invertir colores
           </Button>
         </div>
       </div>
