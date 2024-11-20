@@ -3,8 +3,16 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
-import { hexToHsva, Sketch } from "@uiw/react-color"
-import { Loader } from "lucide-react"
+import { hexToHsva, Sketch, type SwatchPresetColor } from "@uiw/react-color"
+import { extractColors } from "extract-colors"
+import {
+  Contrast,
+  Loader,
+  Save,
+  SaveAll,
+  Trash2,
+  WandSparkles
+} from "lucide-react"
 import { nanoid } from "nanoid"
 // import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { useAction } from "next-safe-action/hooks"
@@ -59,6 +67,7 @@ export function ColorThemeEditor({
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [themeState, setThemeState] = useState(theme)
+  const [isExtracting, setIsExtracting] = useState(false)
 
   const {
     execute: createTheme,
@@ -158,6 +167,71 @@ export function ColorThemeEditor({
     handleCreateTheme(name)
   }
 
+  const extractColorsFromImage = async () => {
+    if (!menu?.organization.logo) {
+      toast.error("No hay logo para extraer colores")
+      return
+    }
+    try {
+      setIsExtracting(true)
+      const colors = await extractColors(menu.organization.logo)
+
+      // Sort colors by area
+      colors.sort((a, b) => b.area - a.area)
+      // console.log(colors)
+
+      setThemeState(prev => ({
+        ...prev,
+        surfaceColor: colors[0]?.hex || prev.surfaceColor,
+        brandColor: colors[1]?.hex || prev.brandColor,
+        accentColor: colors[2]?.hex || prev.accentColor,
+        textColor: colors[3]?.hex || prev.textColor,
+        mutedColor: colors[4]?.hex || prev.mutedColor
+      }))
+
+      // Update colorPresets when colors are extracted
+      setColorPresets([
+        {
+          color: colors[0]?.hex || themeState.surfaceColor,
+          title: "Fondo"
+        },
+        {
+          color: colors[1]?.hex || themeState.brandColor,
+          title: "Marca"
+        },
+        {
+          color: colors[2]?.hex || themeState.accentColor,
+          title: "Acento"
+        },
+        { color: colors[3]?.hex || themeState.textColor, title: "Texto" },
+        { color: colors[4]?.hex || themeState.mutedColor, title: "Tenue" }
+      ])
+    } catch {
+      toast.error("Error al extraer colores")
+    } finally {
+      setIsExtracting(false)
+    }
+  }
+
+  const invertColors = () => {
+    setThemeState(prev => ({
+      ...prev,
+      surfaceColor: prev.textColor,
+      brandColor: prev.accentColor,
+      accentColor: prev.brandColor,
+      textColor: prev.surfaceColor,
+      mutedColor: prev.mutedColor
+    }))
+  }
+
+  const [colorPresets, setColorPresets] = useState<SwatchPresetColor[]>([
+    { color: themeState.brandColor, title: "Marca" },
+    { color: themeState.accentColor, title: "Acento" },
+    { color: themeState.surfaceColor, title: "Fondo" },
+    { color: themeState.textColor, title: "Texto" },
+    { color: themeState.mutedColor, title: "Tenue" }
+  ])
+
   return (
     <>
       <ThemeNameDialog
@@ -191,6 +265,7 @@ export function ColorThemeEditor({
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
                     disableAlpha
+                    presetColors={colorPresets}
                     color={hexToHsva(themeState.surfaceColor)}
                     onChange={color => {
                       setThemeState(prev => ({
@@ -218,6 +293,7 @@ export function ColorThemeEditor({
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
                     disableAlpha
+                    presetColors={colorPresets}
                     color={hexToHsva(themeState.brandColor)}
                     onChange={color => {
                       setThemeState(prev => ({
@@ -245,6 +321,7 @@ export function ColorThemeEditor({
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
                     disableAlpha
+                    presetColors={colorPresets}
                     color={hexToHsva(themeState.accentColor)}
                     onChange={color => {
                       setThemeState(prev => ({
@@ -272,6 +349,7 @@ export function ColorThemeEditor({
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
                     disableAlpha
+                    presetColors={colorPresets}
                     color={hexToHsva(themeState.textColor)}
                     onChange={color => {
                       setThemeState(prev => ({
@@ -299,6 +377,7 @@ export function ColorThemeEditor({
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
                     disableAlpha
+                    presetColors={colorPresets}
                     color={hexToHsva(themeState.mutedColor)}
                     onChange={color => {
                       setThemeState(prev => ({
@@ -312,10 +391,34 @@ export function ColorThemeEditor({
             </dd>
           </div>
         </fieldset>
-        <div className="grid grid-cols-3 gap-1">
+        <div className="grid grid-cols-3 gap-y-1">
+          <Button
+            variant="secondary"
+            size="sm"
+            className="col-span-3"
+            onClick={extractColorsFromImage}
+            disabled={isExtracting}
+          >
+            {isExtracting ? (
+              <Loader className="mr-2 size-4 animate-spin" />
+            ) : (
+              <WandSparkles className="mr-2 size-4" />
+            )}
+            Extraer colores
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="col-span-3"
+            onClick={invertColors}
+          >
+            <Contrast className="mr-2 size-4" />
+            Invertir colores
+          </Button>
           <Button
             variant="outline"
             size="sm"
+            className="rounded-r-none border-r-0"
             disabled={
               status === "executing" ||
               updateStatus === "executing" ||
@@ -326,12 +429,15 @@ export function ColorThemeEditor({
           >
             {status === "executing" || updateStatus === "executing" ? (
               <Loader className="mr-2 size-4 animate-spin" />
-            ) : null}
+            ) : (
+              <Save className="mr-2 size-4" />
+            )}
             Guardar
           </Button>
           <Button
             variant="outline"
             size="sm"
+            className="rounded-none border-r-0"
             disabled={
               status === "executing" ||
               updateStatus === "executing" ||
@@ -339,11 +445,13 @@ export function ColorThemeEditor({
             }
             onClick={() => setIsDialogOpen(true)}
           >
-            Guardar como
+            <SaveAll className="mr-2 size-4" />
+            Duplicar
           </Button>
           <Button
-            variant="destructive"
+            variant="outline"
             size="sm"
+            className="rounded-l-none"
             disabled={
               status === "executing" ||
               updateStatus === "executing" ||
@@ -356,20 +464,11 @@ export function ColorThemeEditor({
           >
             {deleteStatus === "executing" ? (
               <Loader className="mr-2 size-4 animate-spin" />
-            ) : null}
+            ) : (
+              <Trash2 className="mr-2 size-4" />
+            )}
             Eliminar
           </Button>
-          {/* <Button
-            variant="secondary"
-            size="sm"
-            className="mt-2 w-full"
-            onClick={() => {
-              navigator.clipboard.writeText(JSON.stringify(themeState))
-              toast.success("Tema copiado al portapapeles")
-            }}
-          >
-            Copiar JSON
-          </Button> */}
         </div>
       </div>
     </>
