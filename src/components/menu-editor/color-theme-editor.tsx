@@ -5,7 +5,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
 import { hexToHsva, Sketch, type SwatchPresetColor } from "@uiw/react-color"
 import { extractColors } from "extract-colors"
-import { Loader } from "lucide-react"
+import {
+  Contrast,
+  Loader,
+  Save,
+  SaveAll,
+  Trash2,
+  WandSparkles
+} from "lucide-react"
 import { nanoid } from "nanoid"
 // import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { useAction } from "next-safe-action/hooks"
@@ -384,10 +391,34 @@ export function ColorThemeEditor({
             </dd>
           </div>
         </fieldset>
-        <div className="grid grid-cols-3 gap-1">
+        <div className="grid grid-cols-3 gap-y-1">
+          <Button
+            variant="secondary"
+            size="sm"
+            className="col-span-3"
+            onClick={extractColorsFromImage}
+            disabled={isExtracting}
+          >
+            {isExtracting ? (
+              <Loader className="mr-2 size-4 animate-spin" />
+            ) : (
+              <WandSparkles className="mr-2 size-4" />
+            )}
+            Extraer colores
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="col-span-3"
+            onClick={invertColors}
+          >
+            <Contrast className="mr-2 size-4" />
+            Invertir colores
+          </Button>
           <Button
             variant="outline"
             size="sm"
+            className="rounded-r-none border-r-0"
             disabled={
               status === "executing" ||
               updateStatus === "executing" ||
@@ -398,12 +429,15 @@ export function ColorThemeEditor({
           >
             {status === "executing" || updateStatus === "executing" ? (
               <Loader className="mr-2 size-4 animate-spin" />
-            ) : null}
+            ) : (
+              <Save className="mr-2 size-4" />
+            )}
             Guardar
           </Button>
           <Button
             variant="outline"
             size="sm"
+            className="rounded-none border-r-0"
             disabled={
               status === "executing" ||
               updateStatus === "executing" ||
@@ -411,11 +445,13 @@ export function ColorThemeEditor({
             }
             onClick={() => setIsDialogOpen(true)}
           >
-            Guardar como
+            <SaveAll className="mr-2 size-4" />
+            Duplicar
           </Button>
           <Button
-            variant="destructive"
+            variant="outline"
             size="sm"
+            className="rounded-l-none"
             disabled={
               status === "executing" ||
               updateStatus === "executing" ||
@@ -428,39 +464,10 @@ export function ColorThemeEditor({
           >
             {deleteStatus === "executing" ? (
               <Loader className="mr-2 size-4 animate-spin" />
-            ) : null}
+            ) : (
+              <Trash2 className="mr-2 size-4" />
+            )}
             Eliminar
-          </Button>
-          {/* <Button
-            variant="secondary"
-            size="sm"
-            className="mt-2 w-full"
-            onClick={() => {
-              navigator.clipboard.writeText(JSON.stringify(themeState))
-              toast.success("Tema copiado al portapapeles")
-            }}
-          >
-            Copiar JSON
-          </Button> */}
-          <Button
-            variant="secondary"
-            size="sm"
-            className="col-span-3"
-            onClick={extractColorsFromImage}
-            disabled={isExtracting}
-          >
-            {isExtracting ? (
-              <Loader className="mr-2 size-4 animate-spin" />
-            ) : null}
-            Extraer colores
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="col-span-3"
-            onClick={invertColors}
-          >
-            Invertir colores
           </Button>
         </div>
       </div>
