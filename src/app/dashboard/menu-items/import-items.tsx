@@ -19,10 +19,10 @@ import { bulkCreateItems } from "@/server/actions/item/mutations"
 import { MenuItemStatus, type BulkMenuItem } from "@/lib/types"
 
 type CSVRow = {
-  name: string
-  description?: string
-  price: string
-  category?: string
+  nombre: string
+  descripcion?: string
+  precio: string
+  categoria?: string
 }
 
 type ImportError = {
@@ -53,14 +53,14 @@ export default function ImportItems() {
   const validateRow = (row: CSVRow, _index: number): string[] => {
     const errors: string[] = []
 
-    if (!row.name?.trim()) {
+    if (!row.nombre?.trim()) {
       errors.push("El nombre es requerido")
     }
 
-    if (!row.price) {
+    if (!row.precio) {
       errors.push("El precio es requerido")
     } else {
-      const price = parseFloat(row.price)
+      const price = parseFloat(row.precio)
       if (isNaN(price) || price < 0) {
         errors.push("El precio debe ser un número positivo")
       }
@@ -104,9 +104,9 @@ export default function ImportItems() {
             })
           } else {
             validItems.push({
-              name: row.name,
-              description: row.description,
-              price: parseFloat(row.price),
+              name: row.nombre,
+              description: row.descripcion,
+              price: parseFloat(row.precio),
               status: MenuItemStatus.ACTIVE
             })
           }
@@ -150,8 +150,8 @@ export default function ImportItems() {
           <DialogHeader>
             <DialogTitle>Importar productos desde CSV</DialogTitle>
             <DialogDescription>
-              Sube un archivo CSV con las columnas: name, description
-              (opcional), price, category (opcional)
+              Sube un archivo CSV con las columnas: nombre, descripcion
+              (opcional), precio, categoria (opcional)
             </DialogDescription>
           </DialogHeader>
 
