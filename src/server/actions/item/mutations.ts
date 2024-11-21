@@ -155,28 +155,82 @@ export const bulkCreateItems = authActionClient
     }
 
     try {
-      const createdItems = await prisma.$transaction(
-        items.map(item =>
-          prisma.menuItem.create({
-            data: {
-              name: item.name,
-              description: item.description || "",
-              status: item.status || MenuItemStatus.ACTIVE,
-              organizationId: currentOrg,
-              variants: {
-                create: [
-                  {
-                    name: "Regular",
-                    price: item.price
-                  }
-                ]
-              }
+      const createdItems = await prisma.$transaction(async tx => {
+        // First, fetch all existing categories for the organization
+        const existingCategories = await tx.category.findMany({
+          where: {
+            organizationId: currentOrg
+          }
+        })
+
+        // Create a map of lowercase category names to their IDs
+        const categoryMap = new Map(
+          existingCategories.map(cat => [cat.name.toLowerCase(), cat.id])
+        )
+
+        // Track new categories to be created
+        const newCategoryNames = new Set<string>()
+
+        // First pass - collect unique new categories
+        items.forEach(item => {
+          if (item.category) {
+            const normalizedName = item.category.trim()
+            if (!categoryMap.has(normalizedName.toLowerCase())) {
+              newCategoryNames.add(normalizedName)
             }
+          }
+        })
+
+        // Bulk create new categories
+        await tx.category.createMany({
+          data: Array.from(newCategoryNames).map(name => ({
+            name,
+            organizationId: currentOrg
+          }))
+        })
+
+        // Refresh category map with new categories
+        const updatedCategories = await tx.category.findMany({
+          where: {
+            organizationId: currentOrg
+          }
+        })
+        const updatedCategoryMap = new Map(
+          updatedCategories.map(cat => [cat.name.toLowerCase(), cat.id])
+        )
+
+        return Promise.all(
+          items.map(async item => {
+            let categoryId = undefined
+
+            if (item.category) {
+              const normalizedName = item.category.trim()
+              categoryId = updatedCategoryMap.get(normalizedName.toLowerCase())
+            }
+
+            return tx.menuItem.create({
+              data: {
+                name: item.name,
+                description: item.description || "",
+                status: item.status || MenuItemStatus.ACTIVE,
+                categoryId,
+                organizationId: currentOrg,
+                variants: {
+                  create: [
+                    {
+                      name: "Regular",
+                      price: item.price
+                    }
+                  ]
+                }
+              }
+            })
           })
         )
-      )
+      })
 
       revalidateTag(`menuItems-${currentOrg}`)
+      revalidateTag(`categories-${currentOrg}`)
       return { success: createdItems }
     } catch (error) {
       console.error(error)

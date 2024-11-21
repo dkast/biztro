@@ -614,6 +614,7 @@ export type BulkMenuItem = {
   description?: string
   price: number
   status?: string
+  category?: string
 }
 
 export const bulkMenuItemSchema = z.array(
@@ -621,6 +622,7 @@ export const bulkMenuItemSchema = z.array(
     name: z.string().min(1),
     description: z.string().optional(),
     price: z.number().min(0),
-    status: z.string().optional()
+    status: z.string().optional(),
+    category: z.string().optional()
   })
 )

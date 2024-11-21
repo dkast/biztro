@@ -107,7 +107,8 @@ export default function ImportItems() {
               name: row.nombre,
               description: row.descripcion,
               price: parseFloat(row.precio),
-              status: MenuItemStatus.ACTIVE
+              status: MenuItemStatus.ACTIVE,
+              category: row.categoria
             })
           }
         })
