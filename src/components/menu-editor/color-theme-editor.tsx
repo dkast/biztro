@@ -174,7 +174,15 @@ export function ColorThemeEditor({
     }
     try {
       setIsExtracting(true)
-      const colors = await extractColors(menu.organization.logo)
+      let colors
+      try {
+        colors = await extractColors(menu.organization.logo, {
+          crossOrigin: "anonymous"
+        })
+      } catch {
+        toast.error("Error al extraer colores")
+        return
+      }
 
       // Sort colors by area
       colors.sort((a, b) => b.area - a.area)
