@@ -3,8 +3,8 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
-import ImportItems from "@/app/dashboard/menu-items/import-items"
 import ItemCreate from "@/app/dashboard/menu-items/item-create"
+import ItemImport from "@/app/dashboard/menu-items/item-import"
 import ItemTable from "@/app/dashboard/menu-items/item-table"
 import { getCategories, getMenuItems } from "@/server/actions/item/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
@@ -47,7 +47,7 @@ export default async function ItemsPage(props: {
         Icon={ShoppingBag}
       >
         <div className="flex gap-2">
-          <ImportItems />
+          <ItemImport />
           <ItemCreate />
         </div>
       </PageSubtitle>

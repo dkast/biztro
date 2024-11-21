@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import toast from "react-hot-toast"
-import { AlertCircle, Loader, Upload } from "lucide-react"
+import { AlertCircle, FileSpreadsheet, Loader, Upload } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Papa from "papaparse"
 
@@ -30,7 +30,7 @@ type ImportError = {
   errors: string[]
 }
 
-export default function ImportItems() {
+export default function ItemImport() {
   const [open, setOpen] = useState(false)
   const [errors, setErrors] = useState<ImportError[]>([])
   const { execute, isPending } = useAction(bulkCreateItems, {
@@ -128,6 +128,29 @@ export default function ImportItems() {
     })
   }
 
+  const handleDownloadTemplate = () => {
+    const template = [
+      {
+        nombre: "Producto ejemplo",
+        descripcion: "Descripcion del producto",
+        precio: "100.00",
+        categoria: "Categoria (opcional)"
+      }
+    ]
+
+    const csv = Papa.unparse(template)
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
+    const link = document.createElement("a")
+    const url = URL.createObjectURL(blob)
+
+    link.setAttribute("href", url)
+    link.setAttribute("download", "plantilla-productos.csv")
+    link.style.visibility = "hidden"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
     <>
       <Button
@@ -155,6 +178,15 @@ export default function ImportItems() {
               (opcional), precio, categoria (opcional)
             </DialogDescription>
           </DialogHeader>
+
+          <Button
+            variant="link"
+            className="mb-4 h-fit w-fit p-0 text-green-500 dark:text-green-400"
+            onClick={handleDownloadTemplate}
+          >
+            <FileSpreadsheet className="mr-1" />
+            Descargar plantilla CSV de ejemplo
+          </Button>
 
           {errors.length > 0 && (
             <Alert variant="destructive">
