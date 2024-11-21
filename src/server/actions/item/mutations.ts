@@ -13,8 +13,10 @@ import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import {
   BasicPlanLimits,
+  bulkMenuItemSchema,
   categorySchema,
   menuItemSchema,
+  MenuItemStatus,
   variantSchema
 } from "@/lib/types"
 import { env } from "@/env.mjs"
@@ -121,6 +123,70 @@ export const createItem = authActionClient
       }
     }
   )
+
+/**
+ * Creates multiple items in bulk.
+ */
+export const bulkCreateItems = authActionClient
+  .schema(bulkMenuItemSchema)
+  .action(async ({ parsedInput: items }) => {
+    const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+
+    if (!currentOrg) {
+      return {
+        failure: {
+          reason: "No se pudo obtener la organización actual"
+        }
+      }
+    }
+
+    const proMember = await isProMember()
+    const itemCount = await getItemCount()
+
+    const itemLimit = appConfig.itemLimit || 10
+    if (!proMember && itemCount + items.length > itemLimit) {
+      return {
+        failure: {
+          reason:
+            "Excederías el límite de productos permitidos en el plan básico",
+          code: BasicPlanLimits.ITEM_LIMIT_REACHED
+        }
+      }
+    }
+
+    try {
+      const createdItems = await prisma.$transaction(
+        items.map(item =>
+          prisma.menuItem.create({
+            data: {
+              name: item.name,
+              description: item.description || "",
+              status: item.status || MenuItemStatus.ACTIVE,
+              organizationId: currentOrg,
+              variants: {
+                create: [
+                  {
+                    name: "Regular",
+                    price: item.price
+                  }
+                ]
+              }
+            }
+          })
+        )
+      )
+
+      revalidateTag(`menuItems-${currentOrg}`)
+      return { success: createdItems }
+    } catch (error) {
+      console.error(error)
+      return {
+        failure: {
+          reason: "Error al crear los productos en masa"
+        }
+      }
+    }
+  })
 
 /**
  * Updates an item.
