@@ -1,5 +1,6 @@
 "use client"
 
+import { useDataTable } from "@/hooks/use-data-table"
 import type { Prisma } from "@prisma/client"
 import { useRouter } from "next/navigation"
 
@@ -16,6 +17,10 @@ export default function ItemTable({
   categories: Prisma.PromiseReturnType<typeof getCategories>
 }) {
   const router = useRouter()
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data,
+    columns
+  })
 
   return (
     <DataTable
@@ -23,7 +28,9 @@ export default function ItemTable({
         router.push(`/dashboard/menu-items/edit/${row.original?.id}`)
       }}
       columns={columns}
-      data={data}
+      table={table}
+      globalFilter={globalFilter}
+      setGlobalFilter={setGlobalFilter}
       toolbar={<FilterToolbar categories={categories} />}
     />
   )
