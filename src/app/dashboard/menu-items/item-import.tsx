@@ -34,13 +34,14 @@ export default function ItemImport() {
   const [open, setOpen] = useState(false)
   const [errors, setErrors] = useState<ImportError[]>([])
   const { execute, isPending } = useAction(bulkCreateItems, {
-    onSuccess: ({ data }) => {
-      if (data?.failure) {
-        toast.error(data.failure.reason)
+    onSuccess: response => {
+      console.dir(response.data)
+      if (response.data?.failure) {
+        toast.error(response.data.failure.reason)
         return
       }
       toast.success(
-        `${data?.success?.length} productos importados correctamente`
+        `${response.data?.success?.length} productos importados correctamente`
       )
       setOpen(false)
     },

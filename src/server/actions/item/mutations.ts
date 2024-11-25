@@ -200,7 +200,7 @@ export const bulkCreateItems = authActionClient
         )
 
         return Promise.all(
-          items.map(async item => {
+          items.map(item => {
             let categoryId = undefined
 
             if (item.category) {
@@ -233,11 +233,24 @@ export const bulkCreateItems = authActionClient
       revalidateTag(`categories-${currentOrg}`)
       return { success: createdItems }
     } catch (error) {
-      console.error(error)
-      return {
-        failure: {
-          reason: "Error al crear los productos en masa"
+      // Add type checking for better error handling
+      if (error instanceof Error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          switch (error.code) {
+            case "P2002":
+              return { failure: { reason: "Entrada duplicada" } }
+            case "P2003":
+              return { failure: { reason: "Referencia invalidad" } }
+            default:
+              return {
+                failure: {
+                  reason: `Error en Base de Datos: ${error.code}. Verifique que productos no esten duplicados`
+                }
+              }
+          }
         }
+      } else {
+        return { failure: { reason: "Error desconocido" } }
       }
     }
   })
