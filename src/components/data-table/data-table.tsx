@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import React, { useEffect } from "react"
 import {
   flexRender,
   type ColumnDef,
@@ -30,6 +30,7 @@ interface DataTableProps<TData, TValue> {
   table: TanStackTable<TData>
   globalFilter: string
   setGlobalFilter: (value: string) => void
+  floatinToolbar?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
@@ -38,7 +39,8 @@ export function DataTable<TData, TValue>({
   onRowClick,
   table,
   globalFilter,
-  setGlobalFilter
+  setGlobalFilter,
+  floatinToolbar
 }: DataTableProps<TData, TValue>) {
   const isMobile = useMobile()
 
@@ -128,9 +130,12 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="flex flex-col gap-2.5">
         <DataTablePagination table={table} />
-        {table.getFilteredSelectedRowModel().rows.length > 0 && (
-          <span>Test</span>
-        )}
+        {table.getFilteredSelectedRowModel().rows.length > 0 &&
+          floatinToolbar && (
+            <div className="fixed inset-x-0 bottom-6 z-10 mx-auto w-fit translate-x-1/2 rounded-full border bg-gray-800 px-1.5 py-1.5 text-white shadow-lg dark:border dark:border-gray-700 dark:bg-gray-900">
+              {floatinToolbar}
+            </div>
+          )}
       </div>
     </div>
   )

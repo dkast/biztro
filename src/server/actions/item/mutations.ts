@@ -617,3 +617,91 @@ export const deleteVariant = authActionClient
       }
     }
   })
+
+/**
+ * Updates the category of multiple items at once.
+ */
+export const bulkUpdateCategory = authActionClient
+  .schema(
+    z.object({
+      ids: z.array(z.string().cuid()),
+      categoryId: z.string().cuid(),
+      organizationId: z.string().cuid()
+    })
+  )
+  .action(async ({ parsedInput: { ids, categoryId, organizationId } }) => {
+    try {
+      await prisma.menuItem.updateMany({
+        where: {
+          id: { in: ids }
+        },
+        data: {
+          categoryId
+        }
+      })
+
+      revalidateTag(`menuItems-${organizationId}`)
+      ids.forEach(id => revalidateTag(`menuItem-${id}`))
+
+      return { success: true }
+    } catch (error) {
+      console.error(error)
+      return {
+        failure: {
+          reason: "Error al actualizar las categorías"
+        }
+      }
+    }
+  })
+
+/**
+ * Deletes multiple items at once.
+ */
+export const bulkDeleteItems = authActionClient
+  .schema(
+    z.object({
+      ids: z.array(z.string().cuid()),
+      organizationId: z.string().cuid()
+    })
+  )
+  .action(async ({ parsedInput: { ids, organizationId } }) => {
+    try {
+      // First get all items to delete their images
+      const items = await prisma.menuItem.findMany({
+        where: { id: { in: ids } }
+      })
+
+      // Delete images from storage if they exist
+      await Promise.all(
+        items
+          .filter(item => item.image)
+          .map(item =>
+            R2.send(
+              new DeleteObjectCommand({
+                Bucket: env.R2_BUCKET_NAME,
+                Key: item.image!
+              })
+            )
+          )
+      )
+
+      // Delete all items
+      await prisma.menuItem.deleteMany({
+        where: {
+          id: { in: ids }
+        }
+      })
+
+      revalidateTag(`menuItems-${organizationId}`)
+      ids.forEach(id => revalidateTag(`menuItem-${id}`))
+
+      return { success: true }
+    } catch (error) {
+      console.error(error)
+      return {
+        failure: {
+          reason: "Error al eliminar los productos"
+        }
+      }
+    }
+  })
