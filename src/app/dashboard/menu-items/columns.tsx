@@ -13,6 +13,7 @@ import Link from "next/link"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +28,31 @@ import { MenuItemStatus } from "@/lib/types"
 export const columns: ColumnDef<
   Prisma.PromiseReturnType<typeof getMenuItemById>
 >[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={() => table.toggleAllPageRowsSelected()}
+        aria-label="Selecciona todas las filas"
+      />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div onClick={e => e.stopPropagation()}>
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={() => row.toggleSelected()}
+            aria-label="Selecciona fila"
+            className="translate-y-0.5"
+          />
+        </div>
+      )
+    }
+  },
   {
     accessorKey: "name",
     header: ({ column }) => {

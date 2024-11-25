@@ -13,8 +13,10 @@ import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import {
   BasicPlanLimits,
+  bulkMenuItemSchema,
   categorySchema,
   menuItemSchema,
+  MenuItemStatus,
   variantSchema
 } from "@/lib/types"
 import { env } from "@/env.mjs"
@@ -123,6 +125,137 @@ export const createItem = authActionClient
   )
 
 /**
+ * Creates multiple items in bulk.
+ */
+export const bulkCreateItems = authActionClient
+  .schema(bulkMenuItemSchema)
+  .action(async ({ parsedInput: items }) => {
+    const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+
+    if (!currentOrg) {
+      return {
+        failure: {
+          reason: "No se pudo obtener la organización actual"
+        }
+      }
+    }
+
+    const proMember = await isProMember()
+    const itemCount = await getItemCount()
+
+    const itemLimit = appConfig.itemLimit || 10
+    if (!proMember && itemCount + items.length > itemLimit) {
+      return {
+        failure: {
+          reason:
+            "Excederías el límite de productos permitidos en el plan básico",
+          code: BasicPlanLimits.ITEM_LIMIT_REACHED
+        }
+      }
+    }
+
+    try {
+      const createdItems = await prisma.$transaction(async tx => {
+        // First, fetch all existing categories for the organization
+        const existingCategories = await tx.category.findMany({
+          where: {
+            organizationId: currentOrg
+          }
+        })
+
+        // Create a map of lowercase category names to their IDs
+        const categoryMap = new Map(
+          existingCategories.map(cat => [cat.name.toLowerCase(), cat.id])
+        )
+
+        // Track new categories to be created
+        const newCategoryNames = new Set<string>()
+
+        // First pass - collect unique new categories
+        items.forEach(item => {
+          if (item.category) {
+            const normalizedName = item.category.trim()
+            if (!categoryMap.has(normalizedName.toLowerCase())) {
+              newCategoryNames.add(normalizedName)
+            }
+          }
+        })
+
+        // Bulk create new categories
+        await tx.category.createMany({
+          data: Array.from(newCategoryNames).map(name => ({
+            name,
+            organizationId: currentOrg
+          }))
+        })
+
+        // Refresh category map with new categories
+        const updatedCategories = await tx.category.findMany({
+          where: {
+            organizationId: currentOrg
+          }
+        })
+        const updatedCategoryMap = new Map(
+          updatedCategories.map(cat => [cat.name.toLowerCase(), cat.id])
+        )
+
+        return Promise.all(
+          items.map(item => {
+            let categoryId = undefined
+
+            if (item.category) {
+              const normalizedName = item.category.trim()
+              categoryId = updatedCategoryMap.get(normalizedName.toLowerCase())
+            }
+
+            return tx.menuItem.create({
+              data: {
+                name: item.name,
+                description: item.description || "",
+                status: item.status || MenuItemStatus.ACTIVE,
+                categoryId,
+                organizationId: currentOrg,
+                variants: {
+                  create: [
+                    {
+                      name: "Regular",
+                      price: item.price
+                    }
+                  ]
+                }
+              }
+            })
+          })
+        )
+      })
+
+      revalidateTag(`menuItems-${currentOrg}`)
+      revalidateTag(`categories-${currentOrg}`)
+      return { success: createdItems }
+    } catch (error) {
+      // Add type checking for better error handling
+      if (error instanceof Error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          switch (error.code) {
+            case "P2002":
+              return { failure: { reason: "Entrada duplicada" } }
+            case "P2003":
+              return { failure: { reason: "Referencia invalidad" } }
+            default:
+              return {
+                failure: {
+                  reason: `Error en Base de Datos: ${error.code}. Verifique que productos no esten duplicados`
+                }
+              }
+          }
+        }
+      } else {
+        return { failure: { reason: "Error desconocido" } }
+      }
+    }
+  })
+
+/**
  * Updates an item.
  *
  * @param id - The ID of the item to update.
@@ -225,7 +358,7 @@ export const deleteItem = authActionClient
         await R2.send(
           new DeleteObjectCommand({
             Bucket: env.R2_BUCKET_NAME,
-            Key: item.image
+            Key: item.image || undefined
           })
         )
       }
@@ -493,6 +626,94 @@ export const deleteVariant = authActionClient
       return {
         failure: {
           reason: message
+        }
+      }
+    }
+  })
+
+/**
+ * Updates the category of multiple items at once.
+ */
+export const bulkUpdateCategory = authActionClient
+  .schema(
+    z.object({
+      ids: z.array(z.string().cuid()),
+      categoryId: z.string().cuid(),
+      organizationId: z.string().cuid()
+    })
+  )
+  .action(async ({ parsedInput: { ids, categoryId, organizationId } }) => {
+    try {
+      await prisma.menuItem.updateMany({
+        where: {
+          id: { in: ids }
+        },
+        data: {
+          categoryId
+        }
+      })
+
+      revalidateTag(`menuItems-${organizationId}`)
+      ids.forEach(id => revalidateTag(`menuItem-${id}`))
+
+      return { success: true }
+    } catch (error) {
+      console.error(error)
+      return {
+        failure: {
+          reason: "Error al actualizar las categorías"
+        }
+      }
+    }
+  })
+
+/**
+ * Deletes multiple items at once.
+ */
+export const bulkDeleteItems = authActionClient
+  .schema(
+    z.object({
+      ids: z.array(z.string().cuid()),
+      organizationId: z.string().cuid()
+    })
+  )
+  .action(async ({ parsedInput: { ids, organizationId } }) => {
+    try {
+      // First get all items to delete their images
+      const items = await prisma.menuItem.findMany({
+        where: { id: { in: ids } }
+      })
+
+      // Delete images from storage if they exist
+      await Promise.all(
+        items
+          .filter(item => item.image)
+          .map(item =>
+            R2.send(
+              new DeleteObjectCommand({
+                Bucket: env.R2_BUCKET_NAME,
+                Key: item.image || undefined
+              })
+            )
+          )
+      )
+
+      // Delete all items
+      await prisma.menuItem.deleteMany({
+        where: {
+          id: { in: ids }
+        }
+      })
+
+      revalidateTag(`menuItems-${organizationId}`)
+      ids.forEach(id => revalidateTag(`menuItem-${id}`))
+
+      return { success: true }
+    } catch (error) {
+      console.error(error)
+      return {
+        failure: {
+          reason: "Error al eliminar los productos"
         }
       }
     }

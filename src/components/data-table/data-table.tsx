@@ -1,18 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { rankItem } from "@tanstack/match-sorter-utils"
+import React, { useEffect } from "react"
 import {
   flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
   type ColumnDef,
-  type FilterFn,
   type Row,
-  type SortingState
+  type Table as TanStackTable
 } from "@tanstack/react-table"
 import { SearchX } from "lucide-react"
 
@@ -32,51 +25,23 @@ import { DataTablePagination } from "./data-table-pagination"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
-  data: TData[]
   toolbar?: React.ReactNode
   onRowClick?: (row: Row<TData>) => void
-}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
-  const itemRank = rankItem(row.getValue(columnId), value)
-
-  // Store the itemRank info
-  addMeta({
-    itemRank
-  })
-
-  // Return if the item should be filtered in/out
-  return itemRank.passed
+  table: TanStackTable<TData>
+  globalFilter: string
+  setGlobalFilter: (value: string) => void
+  floatinToolbar?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
   toolbar,
-  onRowClick
+  onRowClick,
+  table,
+  globalFilter,
+  setGlobalFilter,
+  floatinToolbar
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [globalFilter, setGlobalFilter] = useState<string>("")
-  const table = useReactTable({
-    data,
-    columns,
-    filterFns: {
-      fuzzy: fuzzyFilter
-    },
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: fuzzyFilter,
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-      globalFilter
-    }
-  })
-
   const isMobile = useMobile()
 
   useEffect(() => {
@@ -163,7 +128,15 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <div className="flex flex-col gap-2.5">
+        <DataTablePagination table={table} />
+        {table.getFilteredSelectedRowModel().rows.length > 0 &&
+          floatinToolbar && (
+            <div className="fixed inset-x-0 bottom-6 z-10 mx-auto w-fit translate-x-1/2 rounded-full border bg-gray-800 px-1.5 py-1.5 text-white shadow-lg dark:border dark:border-gray-700 dark:bg-gray-900">
+              {floatinToolbar}
+            </div>
+          )}
+      </div>
     </div>
   )
 }

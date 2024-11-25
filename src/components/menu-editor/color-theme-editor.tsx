@@ -7,9 +7,9 @@ import { hexToHsva, Sketch, type SwatchPresetColor } from "@uiw/react-color"
 import { extractColors } from "extract-colors"
 import {
   Contrast,
+  FilePlus,
   Loader,
   Save,
-  SaveAll,
   Trash2,
   WandSparkles
 } from "lucide-react"
@@ -453,8 +453,8 @@ export function ColorThemeEditor({
             }
             onClick={() => setIsDialogOpen(true)}
           >
-            <SaveAll className="mr-2 size-4" />
-            Duplicar
+            <FilePlus className="mr-2 size-4" />
+            Nuevo
           </Button>
           <Button
             variant="outline"

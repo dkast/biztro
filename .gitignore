@@ -45,9 +45,6 @@ yarn-error.log*
 # ESLint cache
 .eslintcache
 
-# Contentlayer
-.contentlayer
-
 # Sentry Config File
 .env.sentry-build-plugin
 
