@@ -345,7 +345,7 @@ export const deleteItem = authActionClient
         await R2.send(
           new DeleteObjectCommand({
             Bucket: env.R2_BUCKET_NAME,
-            Key: item.image
+            Key: item.image || undefined
           })
         )
       }
@@ -679,7 +679,7 @@ export const bulkDeleteItems = authActionClient
             R2.send(
               new DeleteObjectCommand({
                 Bucket: env.R2_BUCKET_NAME,
-                Key: item.image!
+                Key: item.image || undefined
               })
             )
           )
