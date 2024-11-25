@@ -2,9 +2,8 @@ import { Users } from "lucide-react"
 import type { Metadata } from "next"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
-import { DataTable } from "@/components/data-table/data-table"
-import { columns } from "@/app/dashboard/settings/members/columns"
 import MemberInvite from "@/app/dashboard/settings/members/member-invite"
+import MemberTable from "@/app/dashboard/settings/members/member-table"
 import {
   getCurrentMembership,
   getMembers,
@@ -35,7 +34,7 @@ export default async function MembersPage() {
         )}
       </PageSubtitle>
       <div className="mt-6">
-        <DataTable columns={columns} data={data} />
+        <MemberTable data={data} />
       </div>
     </div>
   )
