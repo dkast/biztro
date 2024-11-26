@@ -77,6 +77,7 @@ export default function ItemImport() {
 
     Papa.parse<CSVRow>(file, {
       header: true,
+      skipEmptyLines: true,
       complete: results => {
         if (results.data.length === 0) {
           setErrors([{ row: 0, errors: ["El archivo está vacío"] }])
