@@ -74,7 +74,7 @@ const DateTimePicker = React.forwardRef<
             {!!state.hasTime && (
               <TimeField
                 value={state.timeValue}
-                onChange={state.setTimeValue}
+                onChange={value => value && state.setTimeValue(value)}
               />
             )}
           </div>

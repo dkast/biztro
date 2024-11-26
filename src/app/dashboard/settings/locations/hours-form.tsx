@@ -163,8 +163,8 @@ export default function HoursForm({
                     <FormControl>
                       <TimeField
                         value={field.value ? parseTime(field.value) : undefined}
-                        onChange={(value: TimeValue) => {
-                          field.onChange(value.toString())
+                        onChange={(value: TimeValue | null) => {
+                          field.onChange(value?.toString() ?? "")
                         }}
                       />
                     </FormControl>
@@ -181,8 +181,8 @@ export default function HoursForm({
                     <FormControl>
                       <TimeField
                         value={field.value ? parseTime(field.value) : undefined}
-                        onChange={(value: TimeValue) => {
-                          field.onChange(value.toString())
+                        onChange={(value: TimeValue | null) => {
+                          field.onChange(value?.toString() ?? "")
                         }}
                       />
                     </FormControl>
