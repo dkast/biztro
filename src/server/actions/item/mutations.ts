@@ -244,7 +244,7 @@ export const bulkCreateItems = authActionClient
             default:
               return {
                 failure: {
-                  reason: `Error: Verifique que productos no esten duplicados. ${error.code}`
+                  reason: `Error: Verifique que productos no estén duplicados. ${error.code}`
                 }
               }
           }
