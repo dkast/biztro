@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect, type ReactNode } from "react"
 import ReactDOM from "react-dom"
 // import { useRect } from "@/hooks/use-rect"
 import { ROOT_NODE, useEditor, useNode } from "@craftjs/core"
@@ -7,7 +7,7 @@ import { ArrowUp, Clipboard, ClipboardPaste, Move, Trash } from "lucide-react"
 
 import { elementPropsAtom } from "@/lib/atoms"
 
-export const RenderNode = ({ render }: { render: unknown }) => {
+export const RenderNode = ({ render }: { render: ReactNode }) => {
   const { id } = useNode()
   const { actions, query, isActive } = useEditor((_, query) => ({
     isActive: query.getEvent("selected").contains(id)

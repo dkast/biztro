@@ -1,7 +1,8 @@
 "use client"
 
 import React, { useEffect } from "react"
-import WebFont from "webfontloader"
+
+// import WebFont from "webfontloader"
 
 export default function FontWrapper({
   fontFamily,
@@ -23,11 +24,21 @@ export default function FontWrapper({
       return
     }
     if (typeof window !== "undefined") {
-      WebFont.load({
-        google: {
-          families: [`${fontFamily}:300,400,500,700`]
-        }
-      })
+      // Dynamic import
+      import("webfontloader")
+        .then(WebFont => {
+          WebFont.default.load({
+            google: {
+              families: [`${fontFamily}:300,400,500,700`]
+            },
+            inactive: () => {
+              console.warn(`Failed to load font: ${fontFamily}`)
+            }
+          })
+        })
+        .catch(err => {
+          console.error("Error loading WebFont:", err)
+        })
     }
   }, [fontFamily])
 
