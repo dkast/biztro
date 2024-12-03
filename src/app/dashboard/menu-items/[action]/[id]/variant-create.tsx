@@ -32,8 +32,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { createVariant } from "@/server/actions/item/mutations"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { variantSchema } from "@/lib/types"
-import { useMobile } from "@/lib/use-mobile"
 
 export function VariantCreate({
   open,
@@ -44,7 +44,7 @@ export function VariantCreate({
   setOpen: (open: boolean) => void
   menuItemId: string
 }) {
-  const isMobile = useMobile()
+  const isMobile = useIsMobile()
 
   if (isMobile) {
     return (

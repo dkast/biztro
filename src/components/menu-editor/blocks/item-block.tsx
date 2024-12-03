@@ -1,4 +1,7 @@
-import { useNode } from "@craftjs/core"
+"use client"
+
+import { useState } from "react"
+import { useEditor, useNode } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
 import Image from "next/image"
@@ -7,6 +10,7 @@ import ItemSettings from "@/components/menu-editor/blocks/item-settings"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import type { getMenuItemsWithoutCategory } from "@/server/actions/item/queries"
 import { cn } from "@/lib/utils"
+import { ItemDetail } from "./item-detail"
 
 export type ItemBlockProps = {
   item: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>[0]
@@ -22,6 +26,7 @@ export type ItemBlockProps = {
   descriptionFontFamily?: string
   descriptionColor?: RgbaColor
   showImage?: boolean
+  isEditing?: boolean
 }
 
 export default function ItemBlock({
@@ -42,6 +47,9 @@ export default function ItemBlock({
   const {
     connectors: { connect }
   } = useNode()
+  const { isEditing } = useEditor(state => ({
+    isEditing: state.options.enabled
+  }))
 
   return (
     <div
@@ -67,7 +75,8 @@ export default function ItemBlock({
             priceFontFamily,
             descriptionFontFamily,
             descriptionColor,
-            showImage
+            showImage,
+            isEditing
           }}
         />
       )}
@@ -114,115 +123,149 @@ export function ItemView({
   priceFontFamily,
   descriptionFontFamily,
   descriptionColor,
-  showImage
+  showImage,
+  isEditing
 }: ItemBlockProps) {
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
   const hasVariants = item.variants.length > 1
+
   return (
-    <div
-      className={cn(
-        "rounded-xl p-3",
-        backgroundMode === "dark" && "bg-black/50 backdrop-blur-md",
-        backgroundMode === "light" && "bg-white/50 backdrop-blur-md"
-      )}
-    >
+    <>
       <div
+        onClick={() => !isEditing && setIsDetailOpen(true)}
+        onKeyDown={e => {
+          if (e.key === "Enter" && !isEditing) {
+            setIsDetailOpen(true)
+            e.preventDefault()
+          }
+        }}
         className={cn(
-          "flex flex-row justify-between gap-2",
-          hasVariants ? "items-start" : "items-center"
+          "cursor-pointer rounded-xl p-3 transition-colors hover:bg-black/5",
+          backgroundMode === "dark" && "bg-black/50 backdrop-blur-md",
+          backgroundMode === "light" && "bg-white/50 backdrop-blur-md",
+          isEditing && "cursor-default hover:bg-transparent"
         )}
+        role="button"
+        tabIndex={0}
       >
         <div
           className={cn(
-            "flex gap-3",
-            hasVariants ? "flex-col-reverse" : "flex-row items-center"
+            "flex flex-row justify-between gap-2",
+            hasVariants ? "items-start" : "items-center"
           )}
         >
-          {item.image && showImage && (
-            <Image
-              src={item.image}
-              width={128}
-              height={96}
-              alt={item.name}
-              className="h-16 w-20 rounded object-cover"
-              unoptimized
-            ></Image>
-          )}
-          <div>
-            <FontWrapper fontFamily={itemFontFamily}>
-              <h3
-                style={{
-                  fontSize: `${itemFontSize}px`,
-                  color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
-                  fontWeight: itemFontWeight
-                }}
-              >
-                {item.name}
-              </h3>
-            </FontWrapper>
-            <FontWrapper fontFamily={descriptionFontFamily}>
+          <div
+            className={cn(
+              "flex gap-3",
+              hasVariants ? "flex-col-reverse" : "flex-row items-center"
+            )}
+          >
+            {item.image && showImage && (
+              <Image
+                src={item.image}
+                width={128}
+                height={96}
+                alt={item.name}
+                className="h-16 w-20 rounded object-cover"
+                unoptimized
+              ></Image>
+            )}
+            <div>
+              <FontWrapper fontFamily={itemFontFamily}>
+                <h3
+                  style={{
+                    fontSize: `${itemFontSize}px`,
+                    color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                    fontWeight: itemFontWeight
+                  }}
+                >
+                  {item.name}
+                </h3>
+              </FontWrapper>
+              <FontWrapper fontFamily={descriptionFontFamily}>
+                <span
+                  className="line-clamp-3 text-pretty text-sm"
+                  style={{
+                    color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                  }}
+                >
+                  {item.description}
+                </span>
+              </FontWrapper>
+            </div>
+          </div>
+          {item.variants.length > 1 ? (
+            <div className="flex flex-col justify-end gap-1 self-end">
+              {item.variants.map(variant => (
+                <div
+                  key={variant.id}
+                  className="grid grid-cols-[1fr_60px] gap-1 text-right"
+                >
+                  <FontWrapper fontFamily={descriptionFontFamily}>
+                    <span
+                      className="text-sm"
+                      style={{
+                        color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                      }}
+                    >
+                      {variant.name}
+                    </span>
+                  </FontWrapper>
+                  <FontWrapper fontFamily={priceFontFamily}>
+                    <span
+                      style={{
+                        fontFamily: priceFontFamily,
+                        fontSize: `${priceFontSize}px`,
+                        color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                        fontWeight: priceFontWeight
+                      }}
+                    >
+                      {variant.price % 1 === 0
+                        ? variant.price
+                        : variant.price.toFixed(2)}
+                    </span>
+                  </FontWrapper>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <FontWrapper fontFamily={priceFontFamily}>
               <span
-                className="line-clamp-3 text-pretty text-sm"
                 style={{
-                  color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                  fontFamily: priceFontFamily,
+                  fontSize: `${priceFontSize}px`,
+                  color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                  fontWeight: priceFontWeight
                 }}
               >
-                {item.description}
+                {/* If it has decimal values, show them in the price as well with 2 decimal places */}
+                {(item.variants[0]?.price ?? 0) % 1 === 0
+                  ? item.variants[0]?.price
+                  : item.variants[0]?.price.toFixed(2)}
               </span>
             </FontWrapper>
-          </div>
+          )}
         </div>
-        {item.variants.length > 1 ? (
-          <div className="flex flex-col justify-end gap-1 self-end">
-            {item.variants.map(variant => (
-              <div
-                key={variant.id}
-                className="grid grid-cols-[1fr_60px] gap-1 text-right"
-              >
-                <FontWrapper fontFamily={descriptionFontFamily}>
-                  <span
-                    className="text-sm"
-                    style={{
-                      color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
-                    }}
-                  >
-                    {variant.name}
-                  </span>
-                </FontWrapper>
-                <FontWrapper fontFamily={priceFontFamily}>
-                  <span
-                    style={{
-                      fontFamily: priceFontFamily,
-                      fontSize: `${priceFontSize}px`,
-                      color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
-                      fontWeight: priceFontWeight
-                    }}
-                  >
-                    {variant.price % 1 === 0
-                      ? variant.price
-                      : variant.price.toFixed(2)}
-                  </span>
-                </FontWrapper>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <FontWrapper fontFamily={priceFontFamily}>
-            <span
-              style={{
-                fontFamily: priceFontFamily,
-                fontSize: `${priceFontSize}px`,
-                color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
-                fontWeight: priceFontWeight
-              }}
-            >
-              {/* If it has decimal values, show them in the price as well with 2 decimal places */}
-              {(item.variants[0]?.price ?? 0) % 1 === 0
-                ? item.variants[0]?.price
-                : item.variants[0]?.price.toFixed(2)}
-            </span>
-          </FontWrapper>
-        )}
       </div>
-    </div>
+      <ItemDetail
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        item={item}
+        {...{
+          backgroundMode,
+          itemFontSize,
+          itemColor,
+          itemFontWeight,
+          itemFontFamily,
+          priceFontSize,
+          priceColor,
+          priceFontWeight,
+          priceFontFamily,
+          descriptionFontFamily,
+          descriptionColor,
+          showImage
+        }}
+      />
+    </>
   )
 }

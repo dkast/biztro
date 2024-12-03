@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
-import { useMobile } from "@/lib/use-mobile"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { DataTablePagination } from "./data-table-pagination"
 
@@ -42,7 +42,7 @@ export function DataTable<TData, TValue>({
   setGlobalFilter,
   floatinToolbar
 }: DataTableProps<TData, TValue>) {
-  const isMobile = useMobile()
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     // If isMobile is true, then we need to hide the columns that have the enableHidden prop to true

@@ -1,4 +1,4 @@
-import { useNode } from "@craftjs/core"
+import { useEditor, useNode } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
 
@@ -51,6 +51,9 @@ export default function CategoryBlock({
   const {
     connectors: { connect }
   } = useNode()
+  const { isEditing } = useEditor(state => ({
+    isEditing: state.options.enabled
+  }))
   return (
     <div
       ref={ref => {
@@ -95,7 +98,8 @@ export default function CategoryBlock({
                   priceFontFamily,
                   descriptionFontFamily,
                   descriptionColor,
-                  showImage
+                  showImage,
+                  isEditing
                 }}
               />
             )

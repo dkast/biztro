@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/command"
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer"
 import { Popover, PopoverTrigger } from "@/components/ui/popover"
-import { useMobile } from "@/lib/use-mobile"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 
 function ComboBox({
@@ -25,7 +25,7 @@ function ComboBox({
   children: ReactNode
   trigger: ReactNode
 }) {
-  const isMobile = useMobile()
+  const isMobile = useIsMobile()
 
   if (isMobile) {
     return (
