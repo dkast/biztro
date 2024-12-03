@@ -133,12 +133,14 @@ export function ItemView({
     <>
       <div
         onClick={() => !isEditing && setIsDetailOpen(true)}
+        onKeyDown={() => !isEditing && setIsDetailOpen(true)}
         className={cn(
           "cursor-pointer rounded-xl p-3 transition-colors hover:bg-black/5",
           backgroundMode === "dark" && "bg-black/50 backdrop-blur-md",
           backgroundMode === "light" && "bg-white/50 backdrop-blur-md",
           isEditing && "cursor-default hover:bg-transparent"
         )}
+        role="button"
       >
         <div
           className={cn(
