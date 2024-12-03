@@ -6,7 +6,7 @@ import Image from "next/image"
 
 import { BorderBeam } from "@/components/flare-ui/border-beam"
 import GradientBlur from "@/components/flare-ui/gradient-blur"
-import { useMobile } from "@/lib/use-mobile"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import editorDark from "../../../public/editor-dark.png"
 import editorLight from "../../../public/editor-light.png"
@@ -28,7 +28,7 @@ export default function EditorPreview() {
     }
   }
 
-  const isMobile = useMobile()
+  const isMobile = useIsMobile()
 
   return (
     <section

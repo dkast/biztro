@@ -35,8 +35,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { createCategory, updateCategory } from "@/server/actions/item/mutations"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { ActionType, categorySchema } from "@/lib/types"
-import { useMobile } from "@/lib/use-mobile"
 
 export default function CategoryEdit({
   children,
@@ -47,7 +47,7 @@ export default function CategoryEdit({
   category?: z.infer<typeof categorySchema>
   action: ActionType
 }) {
-  const isMobile = useMobile()
+  const isMobile = useIsMobile()
   const [open, setOpen] = useState(false)
 
   if (isMobile) {

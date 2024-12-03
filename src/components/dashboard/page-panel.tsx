@@ -15,7 +15,7 @@ import {
   SheetHeader,
   SheetTitle
 } from "@/components/ui/sheet"
-import { useMobile } from "@/lib/use-mobile"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 
 export default function Panel({
@@ -30,7 +30,7 @@ export default function Panel({
   className?: string
 }) {
   const router = useRouter()
-  const isMobile = useMobile()
+  const isMobile = useIsMobile()
   return (
     <>
       {isMobile ? (

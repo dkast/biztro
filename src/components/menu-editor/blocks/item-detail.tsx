@@ -27,7 +27,7 @@ export function ItemDetail({
 }: ItemDetailProps) {
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="h-[96%] px-3">
+      <DrawerContent className="mx-auto h-[96%] max-w-lg px-3">
         <DrawerHeader>
           <DrawerTitle>Detalle del menú</DrawerTitle>
         </DrawerHeader>
