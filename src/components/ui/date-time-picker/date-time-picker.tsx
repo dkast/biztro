@@ -10,7 +10,7 @@ import {
 import { useDatePickerState, type DatePickerStateOptions } from "react-stately"
 import { CalendarIcon } from "lucide-react"
 
-import { useForwardedRef } from "@/lib/use-forwarded-ref"
+import { useForwardedRef } from "@/hooks/use-forwarded-ref"
 import { cn } from "@/lib/utils"
 import { Button } from "../button"
 import { Popover, PopoverContent, PopoverTrigger } from "../popover"
