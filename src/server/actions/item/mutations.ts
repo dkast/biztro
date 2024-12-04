@@ -6,9 +6,9 @@ import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 import { z } from "zod"
 
-import { appConfig } from "@/app/config"
 import { getItemCount } from "@/server/actions/item/queries"
 import { isProMember } from "@/server/actions/user/queries"
+import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import {
@@ -41,7 +41,15 @@ export const createItem = authActionClient
   .schema(menuItemSchema)
   .action(
     async ({
-      parsedInput: { name, description, status, image, categoryId, variants }
+      parsedInput: {
+        name,
+        description,
+        status,
+        image,
+        categoryId,
+        variants,
+        featured
+      }
     }) => {
       const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
@@ -86,6 +94,7 @@ export const createItem = authActionClient
             status,
             image,
             categoryId,
+            featured,
             organizationId: currentOrg,
             variants: {
               create: [
@@ -278,7 +287,8 @@ export const updateItem = authActionClient
         status,
         categoryId,
         organizationId,
-        variants
+        variants,
+        featured
       }
     }) => {
       try {
@@ -289,6 +299,7 @@ export const updateItem = authActionClient
             description,
             status,
             categoryId,
+            featured,
             variants: {
               upsert: variants.map(variant => ({
                 where: { id: variant.id },

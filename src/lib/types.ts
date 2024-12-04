@@ -271,6 +271,7 @@ export const menuItemSchema = z.object({
   image: z.string().url().optional(),
   categoryId: z.string().cuid().optional(),
   organizationId: z.string().cuid().optional(),
+  featured: z.boolean().default(false),
   variants: z.array(variantSchema).nonempty()
 })
 

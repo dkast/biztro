@@ -42,6 +42,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -55,14 +56,15 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch" // Add this import
 import { Textarea } from "@/components/ui/textarea"
-import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
-import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
 import { createCategory, updateItem } from "@/server/actions/item/mutations"
 import {
   getCategories,
   type getMenuItemById
 } from "@/server/actions/item/queries"
+import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
+import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
 import { ImageType, menuItemSchema, MenuItemStatus } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
@@ -435,15 +437,7 @@ export default function ItemForm({
                           onValueChange={field.onChange}
                           value={field.value}
                         >
-                          <FormControl
-                            onKeyDown={e => {
-                              // If is tab, go to save button
-                              if (e.key === "Tab") {
-                                e.preventDefault()
-                                saveRef.current?.focus()
-                              }
-                            }}
-                          >
+                          <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Seleccionar estado" />
                             </SelectTrigger>
@@ -460,6 +454,26 @@ export default function ItemForm({
                             </SelectItem>
                           </SelectContent>
                         </Select>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="featured"
+                    render={({ field }) => (
+                      <FormItem className="mt-4 flex flex-row items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+                        <div className="space-y-0.5">
+                          <FormLabel>Destacado</FormLabel>
+                          <FormDescription>
+                            Mostrar producto en la sección de destacados
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
                       </FormItem>
                     )}
                   />

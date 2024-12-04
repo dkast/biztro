@@ -168,6 +168,7 @@ model MenuItem {
   description    String?
   image          String?
   status         String       @default("DRAFT")
+  featured       Boolean      @default(false)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   categoryId     String?
