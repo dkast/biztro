@@ -16,8 +16,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
-  CommandSeparator
+  CommandList
 } from "@/components/ui/command"
 import {
   Popover,
@@ -32,17 +31,11 @@ import { cn } from "@/lib/utils"
  * Uses class-variance-authority (cva) to define different styles based on "variant" prop.
  */
 const multiSelectVariants = cva(
-  "m-1 py-1 transition ease-in-out delay-150 duration-150",
+  "m-0.5 py-0.5 transition ease-in-out delay-150 duration-150 rounded-sm",
   {
     variants: {
       variant: {
-        default:
-          "ring-orange-200 dark:ring-orange-700 text-orange-950 bg-orange-50 dark:bg-orange-900/50 dark:border-orange-800 dark:bg-orange-900/50 dark:text-orange-50 hover:bg-orange-100 dark:hover:bg-orange-800 dark:hover:text-orange-50 hover:bg-orange-100 dark:hover:bg-orange-800 dark:hover:text-orange-50",
-        secondary:
-          "border-foreground/10 bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        inverted: "inverted"
+        default: ""
       }
     },
     defaultVariants: {
@@ -213,9 +206,10 @@ export const MultiSelect = React.forwardRef<
                     return (
                       <Badge
                         key={value}
+                        variant="blue"
                         className={cn(
                           isAnimating ? "animate-bounce" : "",
-                          multiSelectVariants({ variant })
+                          multiSelectVariants()
                         )}
                         style={{ animationDuration: `${animation}s` }}
                       >
@@ -235,10 +229,11 @@ export const MultiSelect = React.forwardRef<
                   })}
                   {selectedValues.length > maxCount && (
                     <Badge
+                      variant="blue"
                       className={cn(
                         "",
                         isAnimating ? "animate-bounce" : "",
-                        multiSelectVariants({ variant })
+                        multiSelectVariants()
                       )}
                       style={{ animationDuration: `${animation}s` }}
                     >
@@ -298,7 +293,7 @@ export const MultiSelect = React.forwardRef<
                     className={cn(
                       "mr-2 flex h-4 w-4 items-center justify-center rounded border",
                       selectedValues.length === options.length
-                        ? "bg-orange-500 text-gray-50 dark:bg-gray-50 dark:text-gray-900"
+                        ? "border-orange-500 bg-orange-500 text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
                         : "dark:opacity-50 [&_svg]:invisible"
                     )}
                   >
@@ -318,7 +313,7 @@ export const MultiSelect = React.forwardRef<
                         className={cn(
                           "mr-2 flex h-4 w-4 items-center justify-center rounded border",
                           isSelected
-                            ? "bg-orange-500 text-gray-50 dark:bg-gray-50 dark:text-gray-900"
+                            ? "border-orange-500 bg-orange-500 text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
                             : "dark:opacity-50 [&_svg]:invisible"
                         )}
                       >
