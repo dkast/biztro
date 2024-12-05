@@ -48,7 +48,8 @@ export const createItem = authActionClient
         image,
         categoryId,
         variants,
-        featured
+        featured,
+        allergens
       }
     }) => {
       const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
@@ -95,6 +96,7 @@ export const createItem = authActionClient
             image,
             categoryId,
             featured,
+            allergens,
             organizationId: currentOrg,
             variants: {
               create: [
@@ -288,7 +290,8 @@ export const updateItem = authActionClient
         categoryId,
         organizationId,
         variants,
-        featured
+        featured,
+        allergens
       }
     }) => {
       try {
@@ -300,6 +303,7 @@ export const updateItem = authActionClient
             status,
             categoryId,
             featured,
+            allergens,
             variants: {
               upsert: variants.map(variant => ({
                 where: { id: variant.id },

@@ -272,7 +272,8 @@ export const menuItemSchema = z.object({
   categoryId: z.string().cuid().optional(),
   organizationId: z.string().cuid().optional(),
   featured: z.boolean().default(false),
-  variants: z.array(variantSchema).nonempty()
+  variants: z.array(variantSchema).nonempty(),
+  allergens: z.string().optional()
 })
 
 export const categorySchema = z.object({
@@ -627,3 +628,14 @@ export const bulkMenuItemSchema = z.array(
     category: z.string().optional()
   })
 )
+
+export const Allergens = [
+  { value: "SEAFOOD", label: "Mariscos" },
+  { value: "PEANUT", label: "Cacahuate" },
+  { value: "LACTOSE", label: "Lactosa" },
+  { value: "NUT", label: "Nueces" },
+  { value: "GLUTEN", label: "Gluten" },
+  { value: "FISH", label: "Pescado" },
+  { value: "VEGETARIAN", label: "Vegetariano" },
+  { value: "SPICY", label: "Picante" }
+] as const

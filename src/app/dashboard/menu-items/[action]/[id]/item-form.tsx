@@ -49,6 +49,7 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { MultiSelect } from "@/components/ui/multi-select"
 import {
   Select,
   SelectContent,
@@ -65,7 +66,12 @@ import {
 } from "@/server/actions/item/queries"
 import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
 import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
-import { ImageType, menuItemSchema, MenuItemStatus } from "@/lib/types"
+import {
+  Allergens,
+  ImageType,
+  menuItemSchema,
+  MenuItemStatus
+} from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 export default function ItemForm({
@@ -87,11 +93,13 @@ export default function ItemForm({
       image: item?.image ?? undefined,
       categoryId: item?.category?.id ?? undefined,
       organizationId: item?.organizationId,
+      featured: item?.featured ?? false,
       variants:
         item?.variants.map(variant => ({
           ...variant,
           description: variant.description ?? undefined
-        })) ?? []
+        })) ?? [],
+      allergens: item?.allergens ?? undefined
     }
   })
   const [openCategory, setOpenCategory] = useState<boolean>(false)
@@ -177,11 +185,13 @@ export default function ItemForm({
         image: item?.image ?? undefined,
         categoryId: item?.category?.id ?? undefined,
         organizationId: item?.organizationId,
+        featured: item?.featured ?? false,
         variants:
           item?.variants.map(variant => ({
             ...variant,
             description: variant.description ?? undefined
-          })) ?? []
+          })) ?? [],
+        allergens: item?.allergens ?? undefined
       })
     }
   }, [item]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -384,6 +394,41 @@ export default function ItemForm({
                             </ComboBoxGroup>
                           </ComboBoxList>
                         </ComboBox>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Alérgenos e Indicadores</CardTitle>
+                  <CardDescription>
+                    Selecciona los alérgenos o indicadores especiales para este
+                    producto
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <FormField
+                    control={form.control}
+                    name="allergens"
+                    render={({ field }) => (
+                      <FormItem>
+                        <MultiSelect
+                          options={Allergens.map(allergen => ({
+                            label: allergen.label,
+                            value: allergen.value
+                          }))}
+                          defaultValue={
+                            field.value?.split(",").filter(Boolean) || []
+                          }
+                          onValueChange={values => {
+                            form.setValue("allergens", values.join(","))
+                          }}
+                          placeholder="Seleccionar alérgenos"
+                          variant="default"
+                          maxCount={4}
+                        />
                         <FormMessage />
                       </FormItem>
                     )}
