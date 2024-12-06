@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils"
  * Uses class-variance-authority (cva) to define different styles based on "variant" prop.
  */
 const multiSelectVariants = cva(
-  "m-0.5 py-0.5 transition ease-in-out delay-150 duration-150 rounded-sm",
+  "m-0.5 py-0.5 transition ease-in-out delay-150 duration-150 rounded",
   {
     variants: {
       variant: {
