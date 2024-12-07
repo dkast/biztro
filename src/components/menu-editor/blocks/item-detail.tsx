@@ -1,5 +1,6 @@
 import Image from "next/image"
 
+import { Allergens } from "@/components/menu-editor/blocks/allergens"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import {
   Dialog,
@@ -47,7 +48,7 @@ export function ItemDetail({
         />
       ) : (
         <div
-          className="h-[300px] w-full rounded-lg bg-gray-50 bg-cover bg-center shadow dark:bg-gray-800"
+          className="h-[250px] w-full rounded-lg bg-gray-50 bg-cover bg-center shadow dark:bg-gray-800"
           style={{
             backgroundImage: 'url("/bg/leaf.svg")'
           }}
@@ -89,6 +90,9 @@ export function ItemDetail({
           ))}
         </div>
       </FontWrapper>
+      {item.allergens && (
+        <Allergens allergens={item.allergens.split(",")} showLabel />
+      )}
     </div>
   )
 
