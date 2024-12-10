@@ -1,6 +1,6 @@
 import Image from "next/image"
 
-import { Allergens } from "@/components/menu-editor/blocks/allergens"
+import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import {
   Dialog,

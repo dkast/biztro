@@ -6,12 +6,12 @@ import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
 import Image from "next/image"
 
+import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
+import { ItemDetail } from "@/components/menu-editor/blocks/item-detail"
 import ItemSettings from "@/components/menu-editor/blocks/item-settings"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import type { getMenuItemsWithoutCategory } from "@/server/actions/item/queries"
 import { cn } from "@/lib/utils"
-import { Allergens } from "./allergens"
-import { ItemDetail } from "./item-detail"
 
 export type ItemBlockProps = {
   item: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>[0]
