@@ -8,7 +8,10 @@ import { RefreshCcw } from "lucide-react"
 import lz from "lzutf8"
 
 import { Button } from "@/components/ui/button"
-import type { getCategoriesWithItems } from "@/server/actions/item/queries"
+import type {
+  getCategoriesWithItems,
+  getFeaturedItems
+} from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import difference from "@/lib/difference"
@@ -16,11 +19,13 @@ import difference from "@/lib/difference"
 export default function SyncStatus({
   menu,
   location,
-  categories
+  categories,
+  featuredItems // Add featuredItems prop
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
   location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
+  featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems> // Add type
 }) {
   const { actions } = useEditor()
   const [syncReq, setSyncReq] = useState(false)
@@ -32,6 +37,9 @@ export default function SyncStatus({
       const objectData = JSON.parse(serial)
       const menuCategories: Prisma.PromiseReturnType<
         typeof getCategoriesWithItems
+      > = []
+      const menuFeaturedItems: Prisma.PromiseReturnType<
+        typeof getFeaturedItems
       > = []
       let organization: Organization | null = null
       let defaultLocation: Prisma.PromiseReturnType<
@@ -47,6 +55,10 @@ export default function SyncStatus({
         if (component?.type?.resolvedName === "HeaderBlock") {
           organization = component?.props?.organization
           defaultLocation = component?.props?.location
+        }
+
+        if (component?.type?.resolvedName === "FeaturedBlock") {
+          menuFeaturedItems.push(...(component?.props?.items || []))
         }
       }
 
@@ -132,6 +144,32 @@ export default function SyncStatus({
         return
       }
 
+      // Compare featured items
+      let equalFeatured = true
+      if (menuFeaturedItems.length !== featuredItems.length) {
+        equalFeatured = false
+      } else {
+        equalFeatured = menuFeaturedItems.every(menuItem => {
+          const dbItem = featuredItems.find(dbItem => dbItem.id === menuItem.id)
+          if (!dbItem) return false
+
+          if (typeof dbItem.updatedAt !== "object") {
+            console.error("dbItem not found")
+            return false
+          }
+
+          return (
+            dbItem.updatedAt.getTime() ===
+            new Date(menuItem.updatedAt).getTime()
+          )
+        })
+      }
+
+      if (!equalFeatured) {
+        setSyncReq(true)
+        return
+      }
+
       // Check changed properties, exclude serialData and updatedAt
       let equalMenu = true
       if (organization) {
@@ -206,10 +244,10 @@ export default function SyncStatus({
         }
       }
 
-      // console.log(equalData, equalMenu)
-      setSyncReq(!equalData || !equalMenu)
+      // console.log(equalData, equalMenu, equalFeatured)
+      setSyncReq(!equalData || !equalMenu || !equalFeatured)
     }
-  }, [menu, categories, location, setSyncReq])
+  }, [menu, categories, location, featuredItems, setSyncReq])
 
   const syncState = () => {
     if (menu && menu?.serialData) {
@@ -233,6 +271,12 @@ export default function SyncStatus({
           actions.setProp(property, props => {
             props.organization = menu?.organization
             props.location = location
+          })
+        }
+
+        if (component?.type?.resolvedName === "FeaturedBlock") {
+          actions.setProp(property, props => {
+            props.items = featuredItems
           })
         }
       }

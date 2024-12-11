@@ -4,6 +4,7 @@ import { Editor, Frame } from "@craftjs/core"
 
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
+import FeaturedBlock from "@/components/menu-editor/blocks/featured-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import ItemBlock from "@/components/menu-editor/blocks/item-block"
@@ -20,7 +21,8 @@ export default function ResolveEditor({ json }: { json: string }) {
         TextElement,
         CategoryBlock,
         ItemBlock,
-        NavigatorBlock
+        NavigatorBlock,
+        FeaturedBlock
       }}
       enabled={false}
     >

@@ -9,6 +9,7 @@ import lz from "lzutf8"
 import Header from "@/components/dashboard/header"
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
+import FeaturedBlock from "@/components/menu-editor/blocks/featured-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import ItemBlock from "@/components/menu-editor/blocks/item-block"
@@ -31,6 +32,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type {
   getCategoriesWithItems,
+  getFeaturedItems,
   getMenuItemsWithoutCategory
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
@@ -44,13 +46,15 @@ export default function Workbench({
   organization,
   location,
   categories,
-  soloItems
+  soloItems,
+  featuredItems
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
   organization: Organization
   location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
   soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
+  featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
 }) {
   // Initialize the atoms for the editor
   const [frameSize] = useAtom(frameSizeAtom)
@@ -75,7 +79,8 @@ export default function Workbench({
           TextElement,
           CategoryBlock,
           ItemBlock,
-          NavigatorBlock
+          NavigatorBlock,
+          FeaturedBlock
         }}
         onRender={RenderNode}
       >
@@ -96,6 +101,7 @@ export default function Workbench({
                     location={location}
                     categories={categories}
                     soloItems={soloItems}
+                    featuredItems={featuredItems}
                   />
                 </ScrollArea>
               </ResizablePanel>
@@ -112,6 +118,7 @@ export default function Workbench({
                 menu={menu}
                 location={location}
                 categories={categories}
+                featuredItems={featuredItems}
               />
               <div
                 className={cn(

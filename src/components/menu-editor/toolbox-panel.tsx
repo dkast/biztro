@@ -12,12 +12,14 @@ import {
   LetterText,
   LinkIcon,
   PanelTop,
+  Star,
   Type,
   type LucideIcon
 } from "lucide-react"
 import Link from "next/link"
 
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
+import FeaturedBlock from "@/components/menu-editor/blocks/featured-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import ItemBlock from "@/components/menu-editor/blocks/item-block"
@@ -28,6 +30,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import type {
   getCategoriesWithItems,
+  getFeaturedItems,
   getMenuItemsWithoutCategory
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
@@ -40,12 +43,14 @@ export default function ToolboxPanel({
   organization,
   location,
   categories,
-  soloItems
+  soloItems,
+  featuredItems
 }: {
   organization: Organization
   location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
   soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
+  featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
 }) {
   const { connectors } = useEditor()
   const fontThemeId = useAtomValue(fontThemeAtom)
@@ -95,6 +100,8 @@ export default function ToolboxPanel({
       </Alert>
     )
   }
+
+  console.log(featuredItems)
 
   return (
     <>
@@ -213,6 +220,32 @@ export default function ToolboxPanel({
           }}
         >
           <ToolboxElement title="Navegación" Icon={LinkIcon} />
+        </div>
+        <div
+          ref={ref => {
+            if (ref) {
+              connectors.create(
+                ref,
+                <FeaturedBlock
+                  items={featuredItems}
+                  backgroundMode="none"
+                  itemFontSize={24}
+                  itemColor={hexToRgba(selectedColorTheme.textColor)}
+                  itemFontWeight="700"
+                  itemFontFamily={selectedFontTheme.fontDisplay}
+                  priceFontSize={16}
+                  priceColor={hexToRgba(selectedColorTheme.accentColor)}
+                  priceFontWeight="500"
+                  priceFontFamily={selectedFontTheme.fontText}
+                  descriptionFontFamily={selectedFontTheme.fontText}
+                  descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
+                  showImage={true}
+                />
+              )
+            }
+          }}
+        >
+          <ToolboxElement title="Destacados" Icon={Star} />
         </div>
         <div
           ref={ref => {
