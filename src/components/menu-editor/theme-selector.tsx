@@ -208,6 +208,13 @@ export default function ThemeSelector({
               }))
             })
             break
+          case "FeaturedBlock":
+            setIgnoreProp(key, props => {
+              return (props = Object.assign(props, {
+                backgroundColor: hexToRgba(selectedTheme.surfaceColor)
+              }))
+            })
+            break
           default:
             break
         }

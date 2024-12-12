@@ -228,6 +228,7 @@ export default function ToolboxPanel({
                 ref,
                 <FeaturedBlock
                   items={featuredItems}
+                  backgroundColor={hexToRgba(selectedColorTheme.surfaceColor)}
                   backgroundMode="none"
                   itemFontSize={24}
                   itemColor={hexToRgba(selectedColorTheme.textColor)}

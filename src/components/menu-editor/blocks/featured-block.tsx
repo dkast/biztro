@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils"
 
 export type FeaturedBlockProps = {
   items: Prisma.PromiseReturnType<typeof getFeaturedItems>
+  backgroundColor?: RgbaColor
   backgroundMode: "dark" | "light" | "none"
   itemFontSize?: number
   itemColor?: RgbaColor
@@ -35,18 +36,9 @@ export type FeaturedBlockProps = {
 
 export default function FeaturedBlock({
   items,
+  backgroundColor,
   backgroundMode,
-  itemFontSize,
-  itemColor,
-  itemFontWeight,
-  itemFontFamily,
-  priceFontSize,
-  priceColor,
-  priceFontWeight,
-  priceFontFamily,
-  descriptionFontFamily,
-  descriptionColor,
-  showImage
+  itemFontFamily
 }: FeaturedBlockProps) {
   const {
     connectors: { connect }
@@ -64,7 +56,10 @@ export default function FeaturedBlock({
           connect(ref)
         }
       }}
-      className={cn("w-full", backgroundMode === "none" ? "px-2 py-0" : "p-2")}
+      className={cn(
+        "w-full @container/feat",
+        backgroundMode === "none" ? "px-2 py-0" : "p-2"
+      )}
     >
       <Carousel
         opts={{
@@ -75,10 +70,13 @@ export default function FeaturedBlock({
       >
         <CarouselContent>
           {items.map(item => (
-            <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/3">
-              <Card>
-                <CardContent className="p-0">
-                  <div className="relative h-40 overflow-hidden rounded-lg p-4">
+            <CarouselItem
+              key={item.id}
+              className="@md/feat:basis-1/2 @lg/feat:basis-1/3"
+            >
+              <div>
+                <div className="p-0">
+                  <div className="relative flex h-40 flex-col justify-end overflow-hidden rounded-lg border border-white/10">
                     {item.image ? (
                       <div
                         className="absolute inset-0 bg-cover bg-center"
@@ -87,20 +85,25 @@ export default function FeaturedBlock({
                     ) : (
                       <div
                         className="absolute inset-0 bg-cover bg-center"
-                        style={{ backgroundImage: `url("/bg/leaf.svg")` }}
+                        style={{
+                          backgroundImage: `url("/bg/leaf.svg")`,
+                          backgroundColor: `rgba(${Object.values(backgroundColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                        }}
                       />
                     )}
-                    <div className="relative z-50">
+                    <div className="relative z-50 bg-gradient-to-t from-black/80 to-transparent p-4">
                       <FontWrapper
                         fontFamily={itemFontFamily}
                         className="flex flex-row gap-3"
                       >
-                        <h3 className="text-lg font-semibold">{item.name}</h3>
+                        <h3 className="text-lg font-semibold text-white">
+                          {item.name}
+                        </h3>
                       </FontWrapper>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </CarouselItem>
           ))}
         </CarouselContent>
