@@ -4,7 +4,7 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
 import { hexToHsva, Sketch, type SwatchPresetColor } from "@uiw/react-color"
-import { extractColors } from "extract-colors"
+import { extractColors } from "extract-colors/lib/worker-wrapper"
 import {
   Contrast,
   FilePlus,
@@ -177,7 +177,8 @@ export function ColorThemeEditor({
       let colors
       try {
         colors = await extractColors(menu.organization.logo, {
-          crossOrigin: "anonymous"
+          crossOrigin: "anonymous",
+          requestMode: "cors"
         })
       } catch {
         toast.error("Error al extraer colores")

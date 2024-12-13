@@ -303,7 +303,7 @@ function ProOnlyWrapper({
       <div className="relative cursor-not-allowed opacity-50">
         {children}
         <Badge
-          className="absolute right-1 top-1.5 px-1 py-1 text-xs"
+          className="absolute right-2 top-2 px-1 py-1 text-xs"
           variant="yellow"
         >
           <Lock className="size-3" />
