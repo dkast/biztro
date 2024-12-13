@@ -733,3 +733,39 @@ export const bulkDeleteItems = authActionClient
       }
     }
   })
+
+/**
+ * Toggles the featured status of multiple items at once.
+ */
+export const bulkToggleFeature = authActionClient
+  .schema(
+    z.object({
+      ids: z.array(z.string().cuid()),
+      featured: z.boolean(),
+      organizationId: z.string().cuid()
+    })
+  )
+  .action(async ({ parsedInput: { ids, featured, organizationId } }) => {
+    try {
+      await prisma.menuItem.updateMany({
+        where: {
+          id: { in: ids }
+        },
+        data: {
+          featured
+        }
+      })
+
+      revalidateTag(`menuItems-${organizationId}`)
+      ids.forEach(id => revalidateTag(`menuItem-${id}`))
+
+      return { success: true }
+    } catch (error) {
+      console.error(error)
+      return {
+        failure: {
+          reason: "Error al actualizar los productos destacados"
+        }
+      }
+    }
+  })
