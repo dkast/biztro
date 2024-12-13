@@ -87,7 +87,15 @@ export default function FeaturedBlock({
               >
                 <div
                   onClick={() => !isEditing && setSelectedItem(item)}
+                  onKeyDown={e => {
+                    if (e.key === "Enter" && !isEditing) {
+                      setSelectedItem(item)
+                      e.preventDefault()
+                    }
+                  }}
                   className={cn("cursor-pointer", isEditing && "cursor-move")}
+                  role="button"
+                  tabIndex={0}
                 >
                   <div className="p-0">
                     <div className="relative flex h-40 flex-col justify-end overflow-hidden rounded-lg border border-white/10">
@@ -100,7 +108,7 @@ export default function FeaturedBlock({
                         <div
                           className="absolute inset-0 bg-cover bg-center"
                           style={{
-                            backgroundImage: `url("/bg/leaf.svg")`,
+                            backgroundImage: "url('/bg/leaf.svg')",
                             backgroundColor: `rgba(${Object.values(backgroundColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
                           }}
                         />
