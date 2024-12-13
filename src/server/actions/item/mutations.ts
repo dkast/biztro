@@ -6,9 +6,9 @@ import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 import { z } from "zod"
 
-import { appConfig } from "@/app/config"
 import { getItemCount } from "@/server/actions/item/queries"
 import { isProMember } from "@/server/actions/user/queries"
+import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import {
@@ -41,7 +41,16 @@ export const createItem = authActionClient
   .schema(menuItemSchema)
   .action(
     async ({
-      parsedInput: { name, description, status, image, categoryId, variants }
+      parsedInput: {
+        name,
+        description,
+        status,
+        image,
+        categoryId,
+        variants,
+        featured,
+        allergens
+      }
     }) => {
       const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
@@ -86,6 +95,8 @@ export const createItem = authActionClient
             status,
             image,
             categoryId,
+            featured,
+            allergens,
             organizationId: currentOrg,
             variants: {
               create: [
@@ -278,7 +289,9 @@ export const updateItem = authActionClient
         status,
         categoryId,
         organizationId,
-        variants
+        variants,
+        featured,
+        allergens
       }
     }) => {
       try {
@@ -289,6 +302,8 @@ export const updateItem = authActionClient
             description,
             status,
             categoryId,
+            featured,
+            allergens,
             variants: {
               upsert: variants.map(variant => ({
                 where: { id: variant.id },
@@ -714,6 +729,42 @@ export const bulkDeleteItems = authActionClient
       return {
         failure: {
           reason: "Error al eliminar los productos"
+        }
+      }
+    }
+  })
+
+/**
+ * Toggles the featured status of multiple items at once.
+ */
+export const bulkToggleFeature = authActionClient
+  .schema(
+    z.object({
+      ids: z.array(z.string().cuid()),
+      featured: z.boolean(),
+      organizationId: z.string().cuid()
+    })
+  )
+  .action(async ({ parsedInput: { ids, featured, organizationId } }) => {
+    try {
+      await prisma.menuItem.updateMany({
+        where: {
+          id: { in: ids }
+        },
+        data: {
+          featured
+        }
+      })
+
+      revalidateTag(`menuItems-${organizationId}`)
+      ids.forEach(id => revalidateTag(`menuItem-${id}`))
+
+      return { success: true }
+    } catch (error) {
+      console.error(error)
+      return {
+        failure: {
+          reason: "Error al actualizar los productos destacados"
         }
       }
     }

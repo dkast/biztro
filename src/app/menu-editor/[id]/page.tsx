@@ -9,6 +9,7 @@ import { notFound } from "next/navigation"
 import Workbench from "@/components/menu-editor/workbench"
 import {
   getCategoriesWithItems,
+  getFeaturedItems,
   getMenuItemsWithoutCategory
 } from "@/server/actions/item/queries"
 import { getDefaultLocation } from "@/server/actions/location/queries"
@@ -49,10 +50,14 @@ export default async function MenuEditorPage(props: {
     return notFound()
   }
 
-  const categories = await getCategoriesWithItems()
-  const soloItems = await getMenuItemsWithoutCategory()
-  const location = await getDefaultLocation()
-  const menu = await getMenuById(params.id)
+  const [categories, soloItems, location, featuredItems, menu] =
+    await Promise.all([
+      getCategoriesWithItems(),
+      getMenuItemsWithoutCategory(),
+      getDefaultLocation(),
+      getFeaturedItems(),
+      getMenuById(params.id)
+    ])
 
   if (!menu) {
     return notFound()
@@ -66,6 +71,7 @@ export default async function MenuEditorPage(props: {
         location={location}
         categories={categories}
         soloItems={soloItems}
+        featuredItems={featuredItems}
       />
     </HydrationBoundary>
   )

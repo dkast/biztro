@@ -6,11 +6,12 @@ import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
 import Image from "next/image"
 
+import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
+import { ItemDetail } from "@/components/menu-editor/blocks/item-detail"
 import ItemSettings from "@/components/menu-editor/blocks/item-settings"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import type { getMenuItemsWithoutCategory } from "@/server/actions/item/queries"
 import { cn } from "@/lib/utils"
-import { ItemDetail } from "./item-detail"
 
 export type ItemBlockProps = {
   item: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>[0]
@@ -171,7 +172,10 @@ export function ItemView({
               ></Image>
             )}
             <div>
-              <FontWrapper fontFamily={itemFontFamily}>
+              <FontWrapper
+                fontFamily={itemFontFamily}
+                className="flex flex-row gap-3"
+              >
                 <h3
                   style={{
                     fontSize: `${itemFontSize}px`,
@@ -181,6 +185,16 @@ export function ItemView({
                 >
                   {item.name}
                 </h3>
+
+                {item.allergens && (
+                  <div
+                    style={{
+                      color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                    }}
+                  >
+                    <Allergens allergens={item.allergens.split(",")} />
+                  </div>
+                )}
               </FontWrapper>
               <FontWrapper fontFamily={descriptionFontFamily}>
                 <span
@@ -251,20 +265,11 @@ export function ItemView({
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
         item={item}
-        {...{
-          backgroundMode,
-          itemFontSize,
-          itemColor,
-          itemFontWeight,
-          itemFontFamily,
-          priceFontSize,
-          priceColor,
-          priceFontWeight,
-          priceFontFamily,
-          descriptionFontFamily,
-          descriptionColor,
-          showImage
-        }}
+        itemFontWeight={itemFontWeight ?? "400"}
+        itemFontFamily={itemFontFamily ?? "Inter"}
+        priceFontWeight={priceFontWeight ?? "400"}
+        priceFontFamily={priceFontFamily ?? "Inter"}
+        descriptionFontFamily={descriptionFontFamily ?? "Inter"}
       />
     </>
   )

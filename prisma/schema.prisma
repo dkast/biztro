@@ -168,6 +168,7 @@ model MenuItem {
   description    String?
   image          String?
   status         String       @default("DRAFT")
+  featured       Boolean      @default(false)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   categoryId     String?
@@ -175,6 +176,7 @@ model MenuItem {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   category       Category?    @relation(fields: [categoryId], references: [id])
   variants       Variant[]
+  allergens      String?
 
   @@unique([organizationId, name])
 }

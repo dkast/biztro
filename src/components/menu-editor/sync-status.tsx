@@ -8,208 +8,211 @@ import { RefreshCcw } from "lucide-react"
 import lz from "lzutf8"
 
 import { Button } from "@/components/ui/button"
-import type { getCategoriesWithItems } from "@/server/actions/item/queries"
+import type {
+  getCategoriesWithItems,
+  getFeaturedItems
+} from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import difference from "@/lib/difference"
 
+type MenuData = {
+  categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
+  featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
+  organization: Organization | null
+  defaultLocation: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
+}
+
+function extractMenuData(serialData: string): MenuData {
+  const serial = lz.decompress(lz.decodeBase64(serialData))
+  const objectData = JSON.parse(serial)
+  const menuData: MenuData = {
+    categories: [],
+    featuredItems: [],
+    organization: null,
+    defaultLocation: null
+  }
+
+  for (const property in objectData) {
+    const component = objectData[property]
+    switch (component?.type?.resolvedName) {
+      case "CategoryBlock":
+        menuData.categories.push(component?.props?.data)
+        break
+      case "HeaderBlock":
+        menuData.organization = component?.props?.organization
+        menuData.defaultLocation = component?.props?.location
+        break
+      case "FeaturedBlock":
+        menuData.featuredItems.push(...(component?.props?.items || []))
+        break
+      default:
+        break
+    }
+  }
+
+  return menuData
+}
+
+function compareDates(date1: Date, date2: Date | string): boolean {
+  return date1.getTime() === new Date(date2).getTime()
+}
+
+function compareCategories(
+  menuCategories: MenuData["categories"],
+  dbCategories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
+): boolean {
+  // Check existing categories
+  const areCategoriesEqual = menuCategories.every(menuCategory => {
+    const dbCategory = dbCategories.find(db => db.id === menuCategory.id)
+    if (!dbCategory?.updatedAt) return false
+
+    const isCategoryUpdated = compareDates(
+      dbCategory.updatedAt,
+      menuCategory.updatedAt
+    )
+    const areItemsEqual = menuCategory.menuItems.every(menuItem => {
+      const dbItem = dbCategory.menuItems.find(db => db.id === menuItem.id)
+      return (
+        dbItem?.updatedAt && compareDates(dbItem.updatedAt, menuItem.updatedAt)
+      )
+    })
+
+    return isCategoryUpdated && areItemsEqual
+  })
+
+  // Check for new items
+  const hasNewItems = dbCategories.some(dbCategory => {
+    const menuCategory = menuCategories.find(menu => menu.id === dbCategory.id)
+    return (
+      !menuCategory ||
+      dbCategory.menuItems.some(
+        dbItem =>
+          !menuCategory.menuItems.find(menuItem => menuItem.id === dbItem.id)
+      )
+    )
+  })
+
+  return areCategoriesEqual && !hasNewItems
+}
+
+function compareFeaturedItems(
+  menuItems: Prisma.PromiseReturnType<typeof getFeaturedItems>,
+  dbItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
+): boolean {
+  if (menuItems.length !== dbItems.length) return false
+
+  return menuItems.every(menuItem => {
+    const dbItem = dbItems.find(db => db.id === menuItem.id)
+    return (
+      dbItem?.updatedAt && compareDates(dbItem.updatedAt, menuItem.updatedAt)
+    )
+  })
+}
+
 export default function SyncStatus({
   menu,
   location,
-  categories
+  categories,
+  featuredItems
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
   location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
+  featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
 }) {
   const { actions } = useEditor()
   const [syncReq, setSyncReq] = useState(false)
 
   useEffect(() => {
-    if (menu && menu?.serialData) {
-      // Get Menu Items and check if update is necessary
-      const serial = lz.decompress(lz.decodeBase64(menu?.serialData))
-      const objectData = JSON.parse(serial)
-      const menuCategories: Prisma.PromiseReturnType<
-        typeof getCategoriesWithItems
-      > = []
-      let organization: Organization | null = null
-      let defaultLocation: Prisma.PromiseReturnType<
-        typeof getDefaultLocation
-      > | null = null
+    if (!menu?.serialData) return
 
-      for (const property in objectData) {
-        const component = objectData[property]
-        if (component?.type?.resolvedName === "CategoryBlock") {
-          menuCategories.push(component?.props?.data)
-        }
+    const menuData = extractMenuData(menu.serialData)
 
-        if (component?.type?.resolvedName === "HeaderBlock") {
-          organization = component?.props?.organization
-          defaultLocation = component?.props?.location
-        }
-      }
+    const needsSync =
+      !compareCategories(menuData.categories, categories) ||
+      !compareFeaturedItems(menuData.featuredItems, featuredItems)
 
-      // Compare categories
-      let equalData = true
-      equalData = menuCategories.every(menuCategory => {
-        const dbCategory = categories.filter(
-          dbCategory => dbCategory.id === menuCategory.id
-        )
+    setSyncReq(needsSync)
 
-        if (typeof dbCategory[0]?.updatedAt !== "object") {
-          console.error("dbCategory not found")
-          return false
-        }
-
-        return (
-          dbCategory[0]?.updatedAt.getTime() ===
-          new Date(menuCategory.updatedAt).getTime()
-        )
-      })
-
-      if (!equalData) {
-        setSyncReq(true)
-        return
-      }
-
-      // Compare items
-      equalData = menuCategories.every(menuCategory => {
-        const dbCategory = categories.filter(
-          dbCategory => dbCategory.id === menuCategory.id
-        )
-
-        return menuCategory.menuItems.every(menuItem => {
-          const dbItem = dbCategory[0]?.menuItems.filter(
-            dbItem => dbItem.id === menuItem.id
-          )
-
-          if (dbItem === null || dbItem === undefined) {
-            console.error("dbItem not found")
-            return false
-          }
-
-          if (dbItem[0] && typeof dbItem[0]?.updatedAt !== "object") {
-            console.error("dbCategory not found")
-            return false
-          }
-
-          return (
-            dbItem[0]?.updatedAt.getTime() ===
-            new Date(menuItem.updatedAt).getTime()
-          )
-        })
-      })
-
-      if (!equalData) {
-        setSyncReq(true)
-        return
-      }
-
-      // Search for items not currently present in the menu
-      equalData = categories.every(dbCategory => {
-        const menuCategory = menuCategories.filter(
-          menuCategory => menuCategory.id === dbCategory.id
-        )
-
-        // If the category is present in the menu, check if all items are present
-        if (menuCategory.length > 0) {
-          return dbCategory.menuItems.every(dbItem => {
-            const menuItem = menuCategory[0]?.menuItems.filter(
-              menuItem => menuItem.id === dbItem.id
-            )
-
-            return menuItem?.length ?? 0 > 0
-          })
-        } else {
-          // If the category is not present in the menu, return true so it can be added to the menu
-          return true
-        }
-      })
-
-      if (!equalData) {
-        setSyncReq(true)
-        return
-      }
-
-      // Check changed properties, exclude serialData and updatedAt
-      let equalMenu = true
-      if (organization) {
-        const diff = difference(organization, menu.organization)
-        // console.log(diff)
-        Object.getOwnPropertyNames(diff).forEach(propName => {
-          if (
-            propName === "banner" ||
-            propName === "logo" ||
-            propName === "name"
-          ) {
-            equalMenu = false
-          }
-        })
-      }
-
-      if (defaultLocation && !location) {
-        equalMenu = false
-      }
-
-      if (!defaultLocation && location) {
-        equalMenu = false
-      }
-
-      if (defaultLocation && location) {
-        const diff = difference(defaultLocation, location)
-        // console.log(location.openingHours)
-        // console.log(diff)
-        Object.getOwnPropertyNames(diff).forEach(propName => {
-          if (
-            propName === "address" ||
-            propName === "phone" ||
-            propName === "facebook" ||
-            propName === "instagram" ||
-            propName === "twitter" ||
-            propName === "tiktok" ||
-            propName === "whatsapp" ||
-            propName === "website"
-          ) {
-            equalMenu = false
-          }
-        })
-
+    // Check changed properties, exclude serialData and updatedAt
+    let equalMenu = true
+    if (menuData.organization) {
+      const diff = difference(menuData.organization, menu.organization)
+      // console.log(diff)
+      Object.getOwnPropertyNames(diff).forEach(propName => {
         if (
-          !defaultLocation.openingHours &&
-          location.openingHours &&
-          location.openingHours.length > 0
+          propName === "banner" ||
+          propName === "logo" ||
+          propName === "name"
         ) {
           equalMenu = false
         }
+      })
+    }
 
+    if (menuData.defaultLocation && !location) {
+      equalMenu = false
+    }
+
+    if (!menuData.defaultLocation && location) {
+      equalMenu = false
+    }
+
+    if (menuData.defaultLocation && location) {
+      const diff = difference(menuData.defaultLocation, location)
+      // console.log(location.openingHours)
+      // console.log(diff)
+      Object.getOwnPropertyNames(diff).forEach(propName => {
         if (
-          defaultLocation.openingHours &&
-          defaultLocation.openingHours.length > 0
+          propName === "address" ||
+          propName === "phone" ||
+          propName === "facebook" ||
+          propName === "instagram" ||
+          propName === "twitter" ||
+          propName === "tiktok" ||
+          propName === "whatsapp" ||
+          propName === "website"
         ) {
-          location.openingHours.forEach((entry, index) => {
-            const diff = difference(
-              defaultLocation.openingHours[index] ?? {},
-              entry ?? {}
-            )
-            // console.log(diff)
-            Object.getOwnPropertyNames(diff).forEach(propName => {
-              if (
-                propName === "allDay" ||
-                propName === "startTime" ||
-                propName === "endTime"
-              ) {
-                equalMenu = false
-              }
-            })
-          })
+          equalMenu = false
         }
+      })
+
+      if (
+        !menuData.defaultLocation.openingHours &&
+        location.openingHours &&
+        location.openingHours.length > 0
+      ) {
+        equalMenu = false
       }
 
-      // console.log(equalData, equalMenu)
-      setSyncReq(!equalData || !equalMenu)
+      if (
+        menuData.defaultLocation.openingHours &&
+        menuData.defaultLocation.openingHours.length > 0
+      ) {
+        location.openingHours.forEach((entry, index) => {
+          const diff = difference(
+            menuData.defaultLocation?.openingHours?.[index] ?? {},
+            entry ?? {}
+          )
+          // console.log(diff)
+          Object.getOwnPropertyNames(diff).forEach(propName => {
+            if (
+              propName === "allDay" ||
+              propName === "startTime" ||
+              propName === "endTime"
+            ) {
+              equalMenu = false
+            }
+          })
+        })
+      }
     }
-  }, [menu, categories, location, setSyncReq])
+
+    if (!equalMenu) {
+      setSyncReq(true)
+    }
+  }, [menu, categories, location, featuredItems])
 
   const syncState = () => {
     if (menu && menu?.serialData) {
@@ -233,6 +236,12 @@ export default function SyncStatus({
           actions.setProp(property, props => {
             props.organization = menu?.organization
             props.location = location
+          })
+        }
+
+        if (component?.type?.resolvedName === "FeaturedBlock") {
+          actions.setProp(property, props => {
+            props.items = featuredItems
           })
         }
       }

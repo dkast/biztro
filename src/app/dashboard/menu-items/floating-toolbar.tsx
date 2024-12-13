@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast"
 import type { Category, Prisma } from "@prisma/client"
 import { SelectTrigger } from "@radix-ui/react-select"
 import type { Table } from "@tanstack/react-table"
-import { Combine, Loader, Trash2, X } from "lucide-react"
+import { Combine, Loader, Star, Trash2, X } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
@@ -27,6 +27,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import {
   bulkDeleteItems,
+  bulkToggleFeature,
   bulkUpdateCategory
 } from "@/server/actions/item/mutations"
 import type { getMenuItems } from "@/server/actions/item/queries"
@@ -66,6 +67,18 @@ function FloatingToolbar({
     }
   )
 
+  const { execute: executeBulkFeature, isPending: featureIsPending } =
+    useAction(bulkToggleFeature, {
+      onSuccess: ({ data }) => {
+        if (data?.failure) {
+          toast.error(data.failure.reason)
+          return
+        }
+        toast.success("Productos actualizados")
+        table.toggleAllRowsSelected(false)
+      }
+    })
+
   const rows = table.getFilteredSelectedRowModel().rows
   const selectedIds = rows.map(row => row.original.id)
   const orgId = rows[0]?.original.organizationId
@@ -94,6 +107,20 @@ function FloatingToolbar({
       console.error("Error deleting items:", error)
       // Add appropriate error handling/notification
     }
+  }
+
+  const handleToggleFeature = async () => {
+    if (!orgId || selectedIds.length === 0 || !rows[0]) return
+
+    // Get current featured status of first selected item to toggle all to opposite
+    const firstItem = rows[0].original
+    const newFeaturedStatus = !firstItem.featured
+
+    await executeBulkFeature({
+      ids: selectedIds,
+      featured: newFeaturedStatus,
+      organizationId: orgId
+    })
   }
 
   return (
@@ -142,6 +169,21 @@ function FloatingToolbar({
           </SelectGroup>
         </SelectContent>
       </Select>
+      <TooltipHelper content="Destacar">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-7 rounded-full"
+          disabled={featureIsPending}
+          onClick={handleToggleFeature}
+        >
+          {featureIsPending ? (
+            <Loader className="size-3.5 animate-spin" />
+          ) : (
+            <Star className="size-3.5" />
+          )}
+        </Button>
+      </TooltipHelper>
       <TooltipHelper content="Eliminar">
         <Button
           variant="ghost"
@@ -157,6 +199,7 @@ function FloatingToolbar({
           )}
         </Button>
       </TooltipHelper>
+
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>

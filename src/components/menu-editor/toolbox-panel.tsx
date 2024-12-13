@@ -11,13 +11,17 @@ import {
   Layers,
   LetterText,
   LinkIcon,
+  Lock,
   PanelTop,
+  Star,
   Type,
   type LucideIcon
 } from "lucide-react"
 import Link from "next/link"
 
+import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
+import FeaturedBlock from "@/components/menu-editor/blocks/featured-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import ItemBlock from "@/components/menu-editor/blocks/item-block"
@@ -25,9 +29,11 @@ import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import SideSection from "@/components/menu-editor/side-section"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type {
   getCategoriesWithItems,
+  getFeaturedItems,
   getMenuItemsWithoutCategory
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
@@ -40,12 +46,16 @@ export default function ToolboxPanel({
   organization,
   location,
   categories,
-  soloItems
+  soloItems,
+  featuredItems,
+  isPro // Add this prop
 }: {
   organization: Organization
   location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
   soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
+  featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
+  isPro: boolean
 }) {
   const { connectors } = useEditor()
   const fontThemeId = useAtomValue(fontThemeAtom)
@@ -95,6 +105,8 @@ export default function ToolboxPanel({
       </Alert>
     )
   }
+
+  console.log(featuredItems)
 
   return (
     <>
@@ -214,40 +226,90 @@ export default function ToolboxPanel({
         >
           <ToolboxElement title="Navegación" Icon={LinkIcon} />
         </div>
-        <div
-          ref={ref => {
-            if (ref) {
-              connectors.create(
-                ref,
-                <HeadingElement
-                  text="Encabezado"
-                  color={hexToRgba(selectedColorTheme.accentColor)}
-                  fontFamily={selectedFontTheme.fontDisplay}
-                />
-              )
-            }
-          }}
-        >
-          <ToolboxElement title="Encabezado" Icon={Type} />
-        </div>
-        <div
-          ref={ref => {
-            if (ref) {
-              connectors.create(
-                ref,
-                <TextElement
-                  text="Texto"
-                  color={hexToRgba(selectedColorTheme.textColor)}
-                  fontFamily={selectedFontTheme.fontText}
-                />
-              )
-            }
-          }}
-        >
-          <ToolboxElement title="Texto" Icon={LetterText} />
-        </div>
+        <ProOnlyWrapper enabled={isPro}>
+          <div
+            ref={ref => {
+              if (ref && isPro) {
+                connectors.create(
+                  ref,
+                  <FeaturedBlock
+                    items={featuredItems}
+                    backgroundColor={hexToRgba(selectedColorTheme.surfaceColor)}
+                    itemFontWeight="700"
+                    itemFontFamily={selectedFontTheme.fontText}
+                    priceFontWeight="500"
+                    priceFontFamily={selectedFontTheme.fontText}
+                    descriptionFontFamily={selectedFontTheme.fontText}
+                  />
+                )
+              }
+            }}
+          >
+            <ToolboxElement title="Destacados" Icon={Star} />
+          </div>
+        </ProOnlyWrapper>
+        <ProOnlyWrapper enabled={isPro}>
+          <div
+            ref={ref => {
+              if (ref && isPro) {
+                connectors.create(
+                  ref,
+                  <HeadingElement
+                    text="Encabezado"
+                    color={hexToRgba(selectedColorTheme.accentColor)}
+                    fontFamily={selectedFontTheme.fontDisplay}
+                  />
+                )
+              }
+            }}
+          >
+            <ToolboxElement title="Encabezado" Icon={Type} />
+          </div>
+        </ProOnlyWrapper>
+        <ProOnlyWrapper enabled={isPro}>
+          <div
+            ref={ref => {
+              if (ref && isPro) {
+                connectors.create(
+                  ref,
+                  <TextElement
+                    text="Texto"
+                    color={hexToRgba(selectedColorTheme.textColor)}
+                    fontFamily={selectedFontTheme.fontText}
+                  />
+                )
+              }
+            }}
+          >
+            <ToolboxElement title="Texto" Icon={LetterText} />
+          </div>
+        </ProOnlyWrapper>
       </SideSection>
     </>
+  )
+}
+
+function ProOnlyWrapper({
+  children,
+  enabled
+}: {
+  children: React.ReactNode
+  enabled: boolean
+}) {
+  if (enabled) return <>{children}</>
+
+  return (
+    <TooltipHelper content="Disponible en la versión Pro">
+      <div className="relative cursor-not-allowed opacity-50">
+        {children}
+        <Badge
+          className="absolute right-2 top-2 px-1 py-1 text-xs"
+          variant="yellow"
+        >
+          <Lock className="size-3" />
+        </Badge>
+      </div>
+    </TooltipHelper>
   )
 }
 

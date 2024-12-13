@@ -190,3 +190,37 @@ export async function getItemCount() {
     }
   })
 }
+
+export async function getFeaturedItems() {
+  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  if (!currentOrg) {
+    return []
+  }
+
+  const data = await prisma.menuItem.findMany({
+    where: {
+      organizationId: currentOrg,
+      featured: true,
+      status: "ACTIVE"
+    },
+    include: {
+      variants: {
+        orderBy: {
+          price: "asc"
+        }
+      }
+    },
+    orderBy: {
+      name: "asc"
+    }
+  })
+
+  // Get the image URL for each item
+  for (const item of data) {
+    if (item.image) {
+      item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}`
+    }
+  }
+
+  return data
+}

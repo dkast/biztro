@@ -7,7 +7,8 @@ import {
   ChevronDown,
   ChevronsUpDown,
   ChevronUp,
-  MoreHorizontal
+  MoreHorizontal,
+  Star
 } from "lucide-react"
 import Link from "next/link"
 
@@ -21,8 +22,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import ItemDelete from "@/app/dashboard/menu-items/item-delete"
 import type { getMenuItemById } from "@/server/actions/item/queries"
+import ItemDelete from "@/app/dashboard/menu-items/item-delete"
 import { MenuItemStatus } from "@/lib/types"
 
 export const columns: ColumnDef<
@@ -69,6 +70,18 @@ export const columns: ColumnDef<
             <ChevronsUpDown className="ml-2 h-4 w-4" />
           )}
         </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const item = row.original
+      if (!item) return null
+      return (
+        <div className="flex items-center gap-2">
+          <span>{item.name}</span>
+          {item.featured && (
+            <Star className="size-3 text-orange-400 dark:text-yellow-400" />
+          )}
+        </div>
       )
     }
   },
