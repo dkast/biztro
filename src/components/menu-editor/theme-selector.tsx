@@ -120,7 +120,7 @@ export default function ThemeSelector({
           case "FeaturedBlock":
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {
-                itemFontFamily: selectedTheme.fontDisplay
+                itemFontFamily: selectedTheme.fontText
               }))
             })
             break

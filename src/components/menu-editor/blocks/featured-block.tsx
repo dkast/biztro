@@ -1,12 +1,14 @@
 "use client"
 
+import { useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
+import Autoplay from "embla-carousel-autoplay"
 
 import FeaturedSettings from "@/components/menu-editor/blocks/featured-settings"
+import { ItemDetail } from "@/components/menu-editor/blocks/item-detail"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
-import { Card, CardContent } from "@/components/ui/card"
 import {
   Carousel,
   CarouselContent,
@@ -14,31 +16,32 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel"
-import type { getFeaturedItems } from "@/server/actions/item/queries"
 import { cn } from "@/lib/utils"
 
 export type FeaturedBlockProps = {
-  items: Prisma.PromiseReturnType<typeof getFeaturedItems>
+  items: Prisma.MenuItemGetPayload<{
+    include: {
+      variants: true
+    }
+  }>[]
   backgroundColor?: RgbaColor
-  backgroundMode: "dark" | "light" | "none"
-  itemFontSize?: number
-  itemColor?: RgbaColor
-  itemFontWeight?: string
   itemFontFamily?: string
-  priceFontSize?: number
-  priceColor?: RgbaColor
-  priceFontWeight?: string
-  priceFontFamily?: string
+  itemFontWeight?: string
   descriptionFontFamily?: string
-  descriptionColor?: RgbaColor
-  showImage?: boolean
+  priceFontFamily?: string
+  priceFontWeight?: string
+  autoPlay?: boolean
 }
 
 export default function FeaturedBlock({
   items,
   backgroundColor,
-  backgroundMode,
-  itemFontFamily
+  itemFontFamily = "Inter",
+  itemFontWeight = "500",
+  descriptionFontFamily = "Inter",
+  priceFontFamily = "Inter",
+  priceFontWeight = "400",
+  autoPlay = true
 }: FeaturedBlockProps) {
   const {
     connectors: { connect }
@@ -47,88 +50,107 @@ export default function FeaturedBlock({
     isEditing: state.options.enabled
   }))
 
+  const [selectedItem, setSelectedItem] = useState<(typeof items)[0] | null>(
+    null
+  )
+
   if (!items?.length) return <div>No hay elementos destacados</div>
 
   return (
-    <div
-      ref={ref => {
-        if (ref) {
-          connect(ref)
-        }
-      }}
-      className={cn(
-        "w-full @container/feat",
-        backgroundMode === "none" ? "px-2 py-0" : "p-2"
-      )}
-    >
-      <Carousel
-        opts={{
-          align: "start",
-          loop: true
+    <>
+      <div
+        ref={ref => {
+          if (ref) {
+            connect(ref)
+          }
         }}
-        className="w-full"
+        className="w-full px-2 @container/feat"
       >
-        <CarouselContent>
-          {items.map(item => (
-            <CarouselItem
-              key={item.id}
-              className="@md/feat:basis-1/2 @lg/feat:basis-1/3"
-            >
-              <div>
-                <div className="p-0">
-                  <div className="relative flex h-40 flex-col justify-end overflow-hidden rounded-lg border border-white/10">
-                    {item.image ? (
-                      <div
-                        className="absolute inset-0 bg-cover bg-center"
-                        style={{ backgroundImage: `url(${item.image})` }}
-                      />
-                    ) : (
-                      <div
-                        className="absolute inset-0 bg-cover bg-center"
-                        style={{
-                          backgroundImage: `url("/bg/leaf.svg")`,
-                          backgroundColor: `rgba(${Object.values(backgroundColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
-                        }}
-                      />
-                    )}
-                    <div className="relative z-50 bg-gradient-to-t from-black/80 to-transparent p-4">
-                      <FontWrapper
-                        fontFamily={itemFontFamily}
-                        className="flex flex-row gap-3"
-                      >
-                        <h3 className="text-lg font-semibold text-white">
-                          {item.name}
-                        </h3>
-                      </FontWrapper>
+        <Carousel
+          opts={{
+            align: "center",
+            loop: true
+          }}
+          plugins={[
+            Autoplay({
+              delay: 5000,
+              playOnInit: autoPlay && !isEditing
+            })
+          ]}
+          className="w-full"
+        >
+          <CarouselContent>
+            {items.map(item => (
+              <CarouselItem
+                key={item.id}
+                className="@md/feat:basis-1/2 @lg/feat:basis-1/3"
+              >
+                <div
+                  onClick={() => !isEditing && setSelectedItem(item)}
+                  className={cn("cursor-pointer", isEditing && "cursor-move")}
+                >
+                  <div className="p-0">
+                    <div className="relative flex h-40 flex-col justify-end overflow-hidden rounded-lg border border-white/10">
+                      {item.image ? (
+                        <div
+                          className="absolute inset-0 bg-cover bg-center"
+                          style={{ backgroundImage: `url(${item.image})` }}
+                        />
+                      ) : (
+                        <div
+                          className="absolute inset-0 bg-cover bg-center"
+                          style={{
+                            backgroundImage: `url("/bg/leaf.svg")`,
+                            backgroundColor: `rgba(${Object.values(backgroundColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                          }}
+                        />
+                      )}
+                      <div className="relative z-50 bg-gradient-to-t from-black/80 to-transparent p-4">
+                        <FontWrapper
+                          fontFamily={itemFontFamily}
+                          className="flex flex-row gap-3"
+                        >
+                          <h3 className="text-lg font-semibold text-white">
+                            {item.name}
+                          </h3>
+                        </FontWrapper>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
-    </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
+
+      {selectedItem && (
+        <ItemDetail
+          item={selectedItem}
+          isOpen={!!selectedItem}
+          onClose={() => setSelectedItem(null)}
+          itemFontFamily={itemFontFamily}
+          itemFontWeight={itemFontWeight}
+          descriptionFontFamily={descriptionFontFamily}
+          priceFontFamily={priceFontFamily}
+          priceFontWeight={priceFontWeight}
+        />
+      )}
+    </>
   )
 }
 
 FeaturedBlock.craft = {
   displayName: "Destacados",
   props: {
-    backgroundMode: "none",
-    itemFontSize: 16,
-    itemColor: { r: 38, g: 50, b: 56, a: 1 },
+    autoPlay: true,
     itemFontWeight: "500",
     itemFontFamily: "Inter",
-    priceFontSize: 14,
-    priceColor: { r: 38, g: 50, b: 56, a: 1 },
     priceFontWeight: "400",
     priceFontFamily: "Inter",
-    descriptionFontFamily: "Inter",
-    descriptionColor: { r: 38, g: 50, b: 56, a: 1 },
-    showImage: true
+    descriptionFontFamily: "Inter"
   },
   related: {
     settings: FeaturedSettings

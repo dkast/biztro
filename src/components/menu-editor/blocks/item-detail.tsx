@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client"
 import Image from "next/image"
 
 import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
@@ -16,11 +17,22 @@ import {
 } from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
 import { useIsMobile } from "@/hooks/use-mobile"
-import type { ItemBlockProps } from "./item-block"
 
-interface ItemDetailProps extends ItemBlockProps {
+type DetailItem = Prisma.MenuItemGetPayload<{
+  include: {
+    variants: true
+  }
+}>
+
+interface ItemDetailProps {
+  item: DetailItem
   isOpen: boolean
   onClose: () => void
+  itemFontFamily?: string
+  itemFontWeight?: string
+  descriptionFontFamily?: string
+  priceFontFamily?: string
+  priceFontWeight?: string
 }
 
 export function ItemDetail({
@@ -48,7 +60,7 @@ export function ItemDetail({
         />
       ) : (
         <div
-          className="h-[250px] w-full rounded-lg bg-gray-50 bg-cover bg-center shadow dark:bg-gray-800"
+          className="h-48 w-full rounded-lg bg-gray-50 bg-cover bg-center shadow dark:bg-gray-800"
           style={{
             backgroundImage: 'url("/bg/leaf.svg")'
           }}

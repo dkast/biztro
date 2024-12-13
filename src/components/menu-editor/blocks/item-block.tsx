@@ -265,20 +265,11 @@ export function ItemView({
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
         item={item}
-        {...{
-          backgroundMode,
-          itemFontSize,
-          itemColor,
-          itemFontWeight,
-          itemFontFamily,
-          priceFontSize,
-          priceColor,
-          priceFontWeight,
-          priceFontFamily,
-          descriptionFontFamily,
-          descriptionColor,
-          showImage
-        }}
+        itemFontWeight={itemFontWeight ?? "400"}
+        itemFontFamily={itemFontFamily ?? "Inter"}
+        priceFontWeight={priceFontWeight ?? "400"}
+        priceFontFamily={priceFontFamily ?? "Inter"}
+        descriptionFontFamily={descriptionFontFamily ?? "Inter"}
       />
     </>
   )

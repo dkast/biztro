@@ -229,18 +229,11 @@ export default function ToolboxPanel({
                 <FeaturedBlock
                   items={featuredItems}
                   backgroundColor={hexToRgba(selectedColorTheme.surfaceColor)}
-                  backgroundMode="none"
-                  itemFontSize={24}
-                  itemColor={hexToRgba(selectedColorTheme.textColor)}
                   itemFontWeight="700"
-                  itemFontFamily={selectedFontTheme.fontDisplay}
-                  priceFontSize={16}
-                  priceColor={hexToRgba(selectedColorTheme.accentColor)}
+                  itemFontFamily={selectedFontTheme.fontText}
                   priceFontWeight="500"
                   priceFontFamily={selectedFontTheme.fontText}
                   descriptionFontFamily={selectedFontTheme.fontText}
-                  descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
-                  showImage={true}
                 />
               )
             }
