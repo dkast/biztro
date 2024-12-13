@@ -46,6 +46,8 @@ function extractMenuData(serialData: string): MenuData {
       case "FeaturedBlock":
         menuData.featuredItems.push(...(component?.props?.items || []))
         break
+      default:
+        break
     }
   }
 

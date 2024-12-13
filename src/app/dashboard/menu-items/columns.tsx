@@ -79,7 +79,7 @@ export const columns: ColumnDef<
         <div className="flex items-center gap-2">
           <span>{item.name}</span>
           {item.featured && (
-            <Star className="size-3 fill-orange-400 text-orange-400 dark:fill-yellow-400 dark:text-yellow-400" />
+            <Star className="size-3 text-orange-400 dark:text-yellow-400" />
           )}
         </div>
       )

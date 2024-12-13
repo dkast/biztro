@@ -102,6 +102,7 @@ export default function Workbench({
                     categories={categories}
                     soloItems={soloItems}
                     featuredItems={featuredItems}
+                    isPro={organization.plan === "PRO"} // Add this line
                   />
                 </ScrollArea>
               </ResizablePanel>
