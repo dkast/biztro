@@ -23,6 +23,12 @@ type MenuData = {
   defaultLocation: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
 }
 
+type MenuComponent = {
+  type?: {
+    resolvedName?: string
+  }
+}
+
 function extractMenuData(serialData: string): MenuData {
   const serial = lz.decompress(lz.decodeBase64(serialData))
   const objectData = JSON.parse(serial)
@@ -98,8 +104,22 @@ function compareCategories(
 
 function compareFeaturedItems(
   menuItems: Prisma.PromiseReturnType<typeof getFeaturedItems>,
-  dbItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
+  dbItems: Prisma.PromiseReturnType<typeof getFeaturedItems>,
+  serialData?: string
 ): boolean {
+  if (!serialData) return false
+
+  // Check if FeaturedBlock exists in menu data
+  const serial = lz.decompress(lz.decodeBase64(serialData))
+  const objectData = JSON.parse(serial)
+
+  const hasFeaturedBlock = Object.values(objectData).some(
+    component =>
+      (component as MenuComponent)?.type?.resolvedName === "FeaturedBlock"
+  )
+
+  if (!hasFeaturedBlock) return true
+
   if (menuItems.length !== dbItems.length) return false
 
   return menuItems.every(menuItem => {
@@ -131,7 +151,11 @@ export default function SyncStatus({
 
     const needsSync =
       !compareCategories(menuData.categories, categories) ||
-      !compareFeaturedItems(menuData.featuredItems, featuredItems)
+      !compareFeaturedItems(
+        menuData.featuredItems,
+        featuredItems,
+        menu.serialData
+      )
 
     setSyncReq(needsSync)
 
@@ -139,7 +163,7 @@ export default function SyncStatus({
     let equalMenu = true
     if (menuData.organization) {
       const diff = difference(menuData.organization, menu.organization)
-      // console.log(diff)
+      console.log(diff)
       Object.getOwnPropertyNames(diff).forEach(propName => {
         if (
           propName === "banner" ||

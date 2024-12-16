@@ -82,7 +82,7 @@ export default function ToolboxPanel({
           t => t.id === parsedTheme.id
         )
         if (customThemeIndex === -1) {
-          console.log("add theme", theme)
+          // console.log("add theme", theme)
           colorThemes.push(parsedTheme)
         }
       }
@@ -105,8 +105,6 @@ export default function ToolboxPanel({
       </Alert>
     )
   }
-
-  console.log(featuredItems)
 
   return (
     <>
