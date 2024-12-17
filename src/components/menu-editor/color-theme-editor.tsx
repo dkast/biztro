@@ -181,6 +181,7 @@ export function ColorThemeEditor({
           requestMode: "cors"
         })
       } catch {
+        setIsExtracting(false)
         toast.error("Error al extraer colores")
         return
       }
@@ -424,10 +425,25 @@ export function ColorThemeEditor({
             <Contrast className="mr-2 size-4" />
             Invertir colores
           </Button>
+
           <Button
             variant="outline"
             size="sm"
             className="rounded-r-none border-r-0"
+            disabled={
+              status === "executing" ||
+              updateStatus === "executing" ||
+              deleteStatus === "executing"
+            }
+            onClick={() => setIsDialogOpen(true)}
+          >
+            <FilePlus className="mr-2 size-4" />
+            Nuevo
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-none border-r-0"
             disabled={
               status === "executing" ||
               updateStatus === "executing" ||
@@ -442,20 +458,6 @@ export function ColorThemeEditor({
               <Save className="mr-2 size-4" />
             )}
             Guardar
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-none border-r-0"
-            disabled={
-              status === "executing" ||
-              updateStatus === "executing" ||
-              deleteStatus === "executing"
-            }
-            onClick={() => setIsDialogOpen(true)}
-          >
-            <FilePlus className="mr-2 size-4" />
-            Nuevo
           </Button>
           <Button
             variant="outline"

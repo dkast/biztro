@@ -508,9 +508,9 @@ export default function ItemForm({
                     render={({ field }) => (
                       <FormItem className="mt-4 flex flex-row items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-800">
                         <div className="space-y-0.5">
-                          <FormLabel>Destacado</FormLabel>
+                          <FormLabel>Recomendado</FormLabel>
                           <FormDescription>
-                            Mostrar producto en la sección de destacados
+                            Mostrar producto en la sección de recomendados
                           </FormDescription>
                         </div>
                         <FormControl>

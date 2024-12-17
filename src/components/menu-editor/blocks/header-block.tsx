@@ -5,6 +5,11 @@ import { ChevronDown, Clock, Phone } from "lucide-react"
 import Image from "next/image"
 
 import GradientBlur from "@/components/flare-ui/gradient-blur"
+import { FacebookIcon } from "@/components/icons/facebook-icon"
+import { InstagramIcon } from "@/components/icons/instagram-icon"
+import { TiktokIcon } from "@/components/icons/tiktok-icon"
+import { TwitterIcon } from "@/components/icons/twitter-icon"
+import { WhatsappIcon } from "@/components/icons/whatsapp-icon"
 import HeaderSettings from "@/components/menu-editor/blocks/header-settings"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -26,7 +31,6 @@ export type HeaderBlockProps = {
   organization: Organization
   location?: Prisma.PromiseReturnType<typeof getDefaultLocation>
   fontFamily?: string
-  color?: RgbaColor
   accentColor?: RgbaColor
   backgroundColor?: RgbaColor
   showBanner?: boolean
@@ -40,7 +44,6 @@ export default function HeaderBlock({
   location,
   layout,
   fontFamily,
-  color,
   accentColor,
   backgroundColor,
   showBanner,
@@ -60,7 +63,7 @@ export default function HeaderBlock({
           isBannerVisible={showBanner ?? false}
           className="relative"
         />
-        <div className="px-4 pb-8 pt-4">
+        <div className="px-4 pb-6 pt-4">
           {/* Logo and organization name */}
           <div
             className={cn(
@@ -98,7 +101,7 @@ export default function HeaderBlock({
               organization.banner && showBanner ? "" : "-mt-5"
             )}
             style={{
-              color: `rgb(${Object.values(color ?? { r: 0, g: 0, b: 0, a: 1 })})`
+              color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
             }}
           >
             <LocationData
@@ -108,7 +111,13 @@ export default function HeaderBlock({
             />
           </div>
         </div>
-        <SocialMedia location={location} isVisible={showSocialMedia} />
+        <div
+          style={{
+            color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+          }}
+        >
+          <SocialMedia location={location} isVisible={showSocialMedia} />
+        </div>
       </>
     )
   }
@@ -165,7 +174,13 @@ export default function HeaderBlock({
             </div>
           </div>
         </div>
-        <SocialMedia location={location} isVisible={showSocialMedia} />
+        <div
+          style={{
+            color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+          }}
+        >
+          <SocialMedia location={location} isVisible={showSocialMedia} />
+        </div>
       </>
     )
   }
@@ -249,7 +264,14 @@ function LocationData({
     <div className={cn("flex flex-col gap-1 text-xs", className)}>
       {isBusinessInfoVisible && (
         <>
-          <span>{location.address}</span>
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            {location.address}
+          </a>
           {location.phone && (
             <div className="flex flex-row items-center gap-1">
               <Phone className="inline-block size-2.5" />
@@ -319,79 +341,52 @@ function SocialMedia({
   if (!isVisible || !location) return null
 
   return (
-    <div className="absolute right-0 top-0 rounded-bl-lg backdrop-blur-sm has-[a]:bg-white/75">
-      <div className="flex flex-row items-center gap-3 p-2">
-        {location?.facebook && (
-          <a
-            href={`https://facebook.com/${location.facebook}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              alt="Facebook"
-              height={24}
-              width={24}
-              src="/facebook-mono.svg"
-            />
-          </a>
-        )}
-        {location?.instagram && (
-          <a
-            href={`https://instagram.com/${location.instagram}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              alt="Instagram"
-              height={24}
-              width={24}
-              src="/instagram-mono.svg"
-            />
-          </a>
-        )}
-        {location?.twitter && (
-          <a
-            href={`https://twitter.com/${location.twitter}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              alt="Twitter"
-              height={24}
-              width={24}
-              src="/twitter-mono.svg"
-            />
-          </a>
-        )}
-        {location?.tiktok && (
-          <a
-            href={`https://tiktok.com/${location.tiktok}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              alt="Youtube"
-              height={24}
-              width={24}
-              src="/tiktok-mono.svg"
-            />
-          </a>
-        )}
-        {location?.whatsapp && (
-          <a
-            href={`https://wa.me/${location.whatsapp}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              alt="Youtube"
-              height={24}
-              width={24}
-              src="/whatsapp-mono.svg"
-            />
-          </a>
-        )}
-      </div>
+    <div className="flex flex-row items-center justify-center gap-4 p-2">
+      {location?.facebook && (
+        <a
+          href={`https://facebook.com/${location.facebook}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FacebookIcon className="size-8" />
+        </a>
+      )}
+      {location?.instagram && (
+        <a
+          href={`https://instagram.com/${location.instagram}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <InstagramIcon className="size-8" />
+        </a>
+      )}
+      {location?.twitter && (
+        <a
+          href={`https://twitter.com/${location.twitter}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <TwitterIcon className="size-8" />
+        </a>
+      )}
+      {location?.tiktok && (
+        <a
+          href={`https://tiktok.com/${location.tiktok}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <TiktokIcon className="size-8" />
+        </a>
+      )}
+      {location?.whatsapp && (
+        <a
+          href={`https://wa.me/${location.whatsapp}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <WhatsappIcon className="size-8" />
+        </a>
+      )}
     </div>
   )
 }
