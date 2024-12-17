@@ -64,7 +64,7 @@ export default function FeaturedBlock({
             connect(ref)
           }
         }}
-        className="w-full px-2 @container/feat"
+        className="w-full p-2 @container/feat"
       >
         <Carousel
           opts={{

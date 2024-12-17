@@ -169,7 +169,7 @@ function FloatingToolbar({
           </SelectGroup>
         </SelectContent>
       </Select>
-      <TooltipHelper content="Destacar">
+      <TooltipHelper content="Recomendado">
         <Button
           variant="ghost"
           size="icon"

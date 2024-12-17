@@ -243,7 +243,7 @@ export default function ToolboxPanel({
               }
             }}
           >
-            <ToolboxElement title="Destacados" Icon={Star} />
+            <ToolboxElement title="Recomendados" Icon={Star} />
           </div>
         </ProOnlyWrapper>
         <ProOnlyWrapper enabled={isPro}>
