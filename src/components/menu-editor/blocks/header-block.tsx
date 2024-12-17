@@ -117,7 +117,7 @@ export default function HeaderBlock({
           }}
         >
           <SocialMedia location={location} isVisible={showSocialMedia} />
-        </span>
+        </div>
       </>
     )
   }
@@ -180,7 +180,7 @@ export default function HeaderBlock({
           }}
         >
           <SocialMedia location={location} isVisible={showSocialMedia} />
-        </span>
+        </div>
       </>
     )
   }
