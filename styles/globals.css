@@ -40,11 +40,11 @@
 
 @layer components {
   .component-selected {
-    @apply outline outline-1 outline-lime-500 dark:outline-green-500;
+    @apply outline outline-1 outline-indigo-500;
   }
 
   .component-hovered {
-    @apply outline outline-1 outline-lime-500 dark:outline-green-500;
+    @apply outline outline-1 outline-indigo-500;
   }
 }
 
