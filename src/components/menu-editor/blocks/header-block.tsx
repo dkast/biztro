@@ -111,7 +111,7 @@ export default function HeaderBlock({
             />
           </div>
         </div>
-        <span
+        <div
           style={{
             color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
           }}
