@@ -31,7 +31,6 @@ export type HeaderBlockProps = {
   organization: Organization
   location?: Prisma.PromiseReturnType<typeof getDefaultLocation>
   fontFamily?: string
-  color?: RgbaColor
   accentColor?: RgbaColor
   backgroundColor?: RgbaColor
   showBanner?: boolean
@@ -45,7 +44,6 @@ export default function HeaderBlock({
   location,
   layout,
   fontFamily,
-  color,
   accentColor,
   backgroundColor,
   showBanner,
