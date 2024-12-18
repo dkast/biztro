@@ -74,6 +74,9 @@ function compareCategories(
     const dbCategory = dbCategories.find(db => db.id === menuCategory.id)
     if (!dbCategory?.updatedAt) return false
 
+    // Check if dbCategory still exists
+    if (!dbCategory) return false
+
     const isCategoryEqual = compareDates(
       dbCategory.updatedAt,
       menuCategory.updatedAt
@@ -287,6 +290,11 @@ export default function SyncStatus({
             actions.setProp(property, props => {
               props.data = dbCategory[0]
             })
+          }
+
+          // Check if a dbCategory has been removed
+          if (!dbCategory[0]) {
+            actions.delete(property)
           }
         }
 

@@ -295,14 +295,13 @@ export const updateItem = authActionClient
       }
     }) => {
       try {
-        console.log("Updating item", id, name, description, status, categoryId)
         const item = await prisma.menuItem.update({
           where: { id },
           data: {
             name,
             description,
             status,
-            categoryId: categoryId === "" ? undefined : categoryId,
+            categoryId: categoryId === "" ? null : categoryId,
             featured,
             allergens,
             variants: {
