@@ -12,7 +12,8 @@ import {
   Loader,
   PlusCircle,
   PlusIcon,
-  TriangleAlert
+  TriangleAlert,
+  X
 } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
@@ -197,6 +198,7 @@ export default function ItemForm({
   }, [item]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = (data: z.infer<typeof menuItemSchema>) => {
+    console.dir(data)
     execute(data)
   }
 
@@ -317,7 +319,18 @@ export default function ItemForm({
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        {/* <FormLabel htmlFor="categoryId">Categoría</FormLabel> */}
+                        {field.value && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              form.setValue("categoryId", "")
+                            }}
+                          >
+                            <X className="size-4" />
+                          </Button>
+                        )}
                         <ComboBox
                           open={openCategory}
                           setOpen={setOpenCategory}

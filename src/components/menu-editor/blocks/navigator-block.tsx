@@ -109,7 +109,6 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
     const checkOverflow = () => {
       if (ulRef.current) {
         setIsOverflowing(ulRef.current.scrollWidth > ulRef.current.offsetWidth)
-        console.log(ulRef.current.scrollWidth, ulRef.current.offsetWidth)
       }
     }
 

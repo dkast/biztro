@@ -70,36 +70,54 @@ function compareCategories(
 ): boolean {
   // Check existing categories
   const areCategoriesEqual = menuCategories.every(menuCategory => {
+    console.log("menuCategory", menuCategory.name)
     const dbCategory = dbCategories.find(db => db.id === menuCategory.id)
     if (!dbCategory?.updatedAt) return false
 
-    const isCategoryUpdated = compareDates(
+    const isCategoryEqual = compareDates(
       dbCategory.updatedAt,
       menuCategory.updatedAt
     )
-    const areItemsEqual = menuCategory.menuItems.every(menuItem => {
-      const dbItem = dbCategory.menuItems.find(db => db.id === menuItem.id)
+    const areItemsEqual = dbCategory.menuItems.every(dbItem => {
+      const menuItem = menuCategory.menuItems.find(
+        menu => menu.id === dbItem.id
+      )
       return (
-        dbItem?.updatedAt && compareDates(dbItem.updatedAt, menuItem.updatedAt)
+        menuItem?.updatedAt &&
+        compareDates(dbItem.updatedAt, menuItem.updatedAt)
       )
     })
-
-    return isCategoryUpdated && areItemsEqual
+    return isCategoryEqual && areItemsEqual
   })
+  console.log("areCategoriesEqual", areCategoriesEqual)
 
   // Check for new items
-  const hasNewItems = dbCategories.some(dbCategory => {
-    const menuCategory = menuCategories.find(menu => menu.id === dbCategory.id)
+  const hasNewItems = menuCategories.some(menuCategory => {
+    const dbCategory = dbCategories.find(db => db.id === menuCategory.id)
     return (
-      !menuCategory ||
+      !dbCategory ||
       dbCategory.menuItems.some(
         dbItem =>
           !menuCategory.menuItems.find(menuItem => menuItem.id === dbItem.id)
       )
     )
   })
+  console.log("hasNewItems", hasNewItems)
 
-  return areCategoriesEqual && !hasNewItems
+  // Check for items that were removed
+  const hasRemovedItems = menuCategories.some(menuCategory => {
+    const dbCategory = dbCategories.find(db => db.id === menuCategory.id)
+    return (
+      !dbCategory ||
+      menuCategory.menuItems.some(
+        menuItem =>
+          !dbCategory.menuItems.find(dbItem => dbItem.id === menuItem.id)
+      )
+    )
+  })
+  console.log("hasRemovedItems", hasRemovedItems)
+
+  return areCategoriesEqual && !hasNewItems && !hasRemovedItems
 }
 
 function compareFeaturedItems(
@@ -121,6 +139,9 @@ function compareFeaturedItems(
   if (!hasFeaturedBlock) return true
 
   if (menuItems.length !== dbItems.length) return false
+
+  // Check if both arrays are empty
+  if (menuItems.length === 0 && dbItems.length === 0) return true
 
   return menuItems.every(menuItem => {
     const dbItem = dbItems.find(db => db.id === menuItem.id)
@@ -157,6 +178,19 @@ export default function SyncStatus({
         menu.serialData
       )
 
+    console.log(
+      "Categories",
+      !compareCategories(menuData.categories, categories)
+    )
+    console.log(
+      "Featured",
+      !compareFeaturedItems(
+        menuData.featuredItems,
+        featuredItems,
+        menu.serialData
+      )
+    )
+    console.log("needsSync", needsSync)
     setSyncReq(needsSync)
 
     // Check changed properties, exclude serialData and updatedAt
