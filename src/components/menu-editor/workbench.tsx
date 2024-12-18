@@ -108,7 +108,9 @@ export default function Workbench({
               </ResizablePanel>
               <ResizableHandle />
               <ResizablePanel defaultSize={35} minSize={10}>
-                <Layers renderLayer={DefaultLayer} />
+                <ScrollArea className="h-full">
+                  <Layers renderLayer={DefaultLayer} />
+                </ScrollArea>
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
@@ -120,6 +122,7 @@ export default function Workbench({
                 location={location}
                 categories={categories}
                 featuredItems={featuredItems}
+                soloItems={soloItems}
               />
               <div
                 className={cn(

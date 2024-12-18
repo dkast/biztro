@@ -5,6 +5,7 @@ import { useEditor, useNode } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
 import Autoplay from "embla-carousel-autoplay"
+import { CircleAlert } from "lucide-react"
 
 import FeaturedSettings from "@/components/menu-editor/blocks/featured-settings"
 import { ItemDetail } from "@/components/menu-editor/blocks/item-detail"
@@ -54,7 +55,20 @@ export default function FeaturedBlock({
     null
   )
 
-  if (!items?.length) return <div>No hay elementos destacados</div>
+  if (!items?.length)
+    return (
+      <div
+        ref={ref => {
+          if (ref) {
+            connect(ref)
+          }
+        }}
+        className="flex items-center justify-center gap-2"
+      >
+        <CircleAlert className="size-4" />
+        <span>No hay elementos recomendados</span>
+      </div>
+    )
 
   return (
     <>

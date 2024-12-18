@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -12,7 +12,8 @@ import {
   Loader,
   PlusCircle,
   PlusIcon,
-  TriangleAlert
+  TriangleAlert,
+  X
 } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
@@ -175,27 +176,6 @@ export default function ItemForm({
     }
   })
 
-  useEffect(() => {
-    if (item) {
-      form.reset({
-        id: item?.id,
-        name: item?.name,
-        description: item?.description ?? undefined,
-        status: item?.status as MenuItemStatus,
-        image: item?.image ?? undefined,
-        categoryId: item?.category?.id ?? undefined,
-        organizationId: item?.organizationId,
-        featured: item?.featured ?? false,
-        variants:
-          item?.variants.map(variant => ({
-            ...variant,
-            description: variant.description ?? undefined
-          })) ?? [],
-        allergens: item?.allergens ?? undefined
-      })
-    }
-  }, [item]) // eslint-disable-line react-hooks/exhaustive-deps
-
   const onSubmit = (data: z.infer<typeof menuItemSchema>) => {
     execute(data)
   }
@@ -317,83 +297,96 @@ export default function ItemForm({
                     name="categoryId"
                     render={({ field }) => (
                       <FormItem>
-                        {/* <FormLabel htmlFor="categoryId">Categoría</FormLabel> */}
-                        <ComboBox
-                          open={openCategory}
-                          setOpen={setOpenCategory}
-                          trigger={
-                            <FormControl>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                role="combobox"
-                                className={cn(
-                                  "flex w-full justify-between sm:w-[300px]",
-                                  field.value ?? "text-gray-500"
-                                )}
-                              >
-                                {field.value
-                                  ? categories.find(
-                                      category => category.id === field.value
-                                    )?.name
-                                  : "Seleccionar Categoría"}
-                                <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          }
-                        >
-                          <ComboBoxInput
-                            value={searchCategory}
-                            onValueChange={setSearchCategory}
-                            placeholder="Buscar categoría..."
-                          />
-                          <ComboBoxList className="max-h-full sm:max-h-[300px]">
-                            <ComboBoxEmpty className="p-2">
-                              <Button
-                                type="button"
-                                disabled={statusCategory === "executing"}
-                                variant="ghost"
-                                className="w-full"
-                                size="xs"
-                                onClick={handleAddCategory}
-                              >
-                                {statusCategory === "executing" ? (
-                                  <Loader className="mr-2 size-4 animate-spin" />
-                                ) : (
-                                  <PlusIcon className="mr-2 size-4" />
-                                )}
-                                {searchCategory
-                                  ? `Agregar "${searchCategory}"`
-                                  : "Agregar"}
-                              </Button>
-                            </ComboBoxEmpty>
-                            <ComboBoxGroup className="overflow-y-auto sm:max-h-[300px]">
-                              {categories.map(category => (
-                                <ComboBoxItem
-                                  value={category.name}
-                                  key={category.id}
-                                  onSelect={() => {
-                                    if (category.id) {
-                                      form.setValue("categoryId", category.id)
-                                      setOpenCategory(false)
-                                    }
-                                  }}
-                                  className="py-2 text-base sm:py-1.5 sm:text-sm"
+                        <div className="flex items-center space-x-2">
+                          <ComboBox
+                            open={openCategory}
+                            setOpen={setOpenCategory}
+                            trigger={
+                              <FormControl>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  role="combobox"
+                                  className={cn(
+                                    "flex w-full justify-between sm:w-[300px]",
+                                    field.value ?? "text-gray-500"
+                                  )}
                                 >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 size-4",
-                                      category.id === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                  {category.name}
-                                </ComboBoxItem>
-                              ))}
-                            </ComboBoxGroup>
-                          </ComboBoxList>
-                        </ComboBox>
+                                  {field.value
+                                    ? categories.find(
+                                        category => category.id === field.value
+                                      )?.name
+                                    : "Seleccionar Categoría"}
+                                  <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            }
+                          >
+                            <ComboBoxInput
+                              value={searchCategory}
+                              onValueChange={setSearchCategory}
+                              placeholder="Buscar categoría..."
+                            />
+                            <ComboBoxList className="max-h-full sm:max-h-[300px]">
+                              <ComboBoxEmpty className="p-2">
+                                <Button
+                                  type="button"
+                                  disabled={statusCategory === "executing"}
+                                  variant="ghost"
+                                  className="w-full"
+                                  size="xs"
+                                  onClick={handleAddCategory}
+                                >
+                                  {statusCategory === "executing" ? (
+                                    <Loader className="mr-2 size-4 animate-spin" />
+                                  ) : (
+                                    <PlusIcon className="mr-2 size-4" />
+                                  )}
+                                  {searchCategory
+                                    ? `Agregar "${searchCategory}"`
+                                    : "Agregar"}
+                                </Button>
+                              </ComboBoxEmpty>
+                              <ComboBoxGroup className="overflow-y-auto sm:max-h-[300px]">
+                                {categories.map(category => (
+                                  <ComboBoxItem
+                                    value={category.name}
+                                    key={category.id}
+                                    onSelect={() => {
+                                      if (category.id) {
+                                        form.setValue("categoryId", category.id)
+                                        setOpenCategory(false)
+                                      }
+                                    }}
+                                    className="py-2 text-base sm:py-1.5 sm:text-sm"
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 size-4",
+                                        category.id === field.value
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                    {category.name}
+                                  </ComboBoxItem>
+                                ))}
+                              </ComboBoxGroup>
+                            </ComboBoxList>
+                          </ComboBox>
+                          {field.value && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => {
+                                form.setValue("categoryId", "")
+                              }}
+                            >
+                              <X className="size-4" />
+                            </Button>
+                          )}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}

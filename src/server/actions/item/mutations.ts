@@ -94,7 +94,7 @@ export const createItem = authActionClient
             description,
             status,
             image,
-            categoryId,
+            categoryId: categoryId === "" ? null : categoryId,
             featured,
             allergens,
             organizationId: currentOrg,
@@ -301,7 +301,7 @@ export const updateItem = authActionClient
             name,
             description,
             status,
-            categoryId,
+            categoryId: categoryId === "" ? null : categoryId,
             featured,
             allergens,
             variants: {

@@ -269,7 +269,7 @@ export const menuItemSchema = z.object({
   status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]),
   description: z.string().optional(),
   image: z.string().url().optional(),
-  categoryId: z.string().cuid().optional(),
+  categoryId: z.string().optional(),
   organizationId: z.string().cuid().optional(),
   featured: z.boolean().default(false),
   variants: z.array(variantSchema).nonempty(),
