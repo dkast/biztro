@@ -76,7 +76,7 @@ function compareCategories(
 ): boolean {
   // Check existing categories
   const areCategoriesEqual = menuCategories.every(menuCategory => {
-    console.log("menuCategory", menuCategory.name)
+    // console.log("menuCategory", menuCategory.name)
     const dbCategory = dbCategories.find(db => db.id === menuCategory.id)
     if (!dbCategory?.updatedAt) return false
 
@@ -98,7 +98,7 @@ function compareCategories(
     })
     return isCategoryEqual && areItemsEqual
   })
-  console.log("areCategoriesEqual", areCategoriesEqual)
+  // console.log("areCategoriesEqual", areCategoriesEqual)
 
   // Check for new items
   const hasNewItems = menuCategories.some(menuCategory => {
@@ -111,7 +111,7 @@ function compareCategories(
       )
     )
   })
-  console.log("hasNewItems", hasNewItems)
+  // console.log("hasNewItems", hasNewItems)
 
   // Check for items that were removed
   const hasRemovedItems = menuCategories.some(menuCategory => {
@@ -124,7 +124,7 @@ function compareCategories(
       )
     )
   })
-  console.log("hasRemovedItems", hasRemovedItems)
+  // console.log("hasRemovedItems", hasRemovedItems)
 
   return areCategoriesEqual && !hasNewItems && !hasRemovedItems
 }
@@ -195,7 +195,6 @@ export default function SyncStatus({
     if (!menu?.serialData) return
 
     const menuData = extractMenuData(menu.serialData)
-    console.dir(menuData)
 
     const needsSync =
       !compareCategories(menuData.categories, categories) ||
@@ -206,26 +205,13 @@ export default function SyncStatus({
       ) ||
       !compareItems(menuData.items, soloItems)
 
-    console.log(
-      "Categories",
-      !compareCategories(menuData.categories, categories)
-    )
-    console.log(
-      "Featured",
-      !compareFeaturedItems(
-        menuData.featuredItems,
-        featuredItems,
-        menu.serialData
-      )
-    )
-    console.log("needsSync", needsSync)
     setSyncReq(needsSync)
 
     // Check changed properties, exclude serialData and updatedAt
     let equalMenu = true
     if (menuData.organization) {
       const diff = difference(menuData.organization, menu.organization)
-      console.log(diff)
+      // console.log(diff)
       Object.getOwnPropertyNames(diff).forEach(propName => {
         if (
           propName === "banner" ||

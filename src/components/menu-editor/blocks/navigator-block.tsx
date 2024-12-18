@@ -30,29 +30,26 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
   const ulRef = useRef<HTMLUListElement | null>(null)
 
   useEffect(() => {
-    setIds(
-      Object.values(nodes)
-        .filter(
-          node =>
-            node.data.name === "CategoryBlock" ||
-            node.data.name === "HeadingElement"
-        )
-        .map(node => node.id)
-    )
+    const rootNode = nodes.ROOT
+    const rootNodeArray = rootNode?.data?.nodes || []
+
+    const filteredAndSortedNodes = rootNodeArray
+      .map(id => nodes[id])
+      .filter(
+        (node): node is NonNullable<typeof node> =>
+          node?.data.name === "CategoryBlock" ||
+          node?.data.name === "HeadingElement"
+      )
+
+    setIds(filteredAndSortedNodes.map(node => node.id))
     setDisplayNames(
-      Object.values(nodes)
-        .filter(
-          node =>
-            node.data.name === "CategoryBlock" ||
-            node.data.name === "HeadingElement"
-        )
-        .map(node => {
-          if (node.data.name === "CategoryBlock") {
-            return node.data.props.data.name
-          } else {
-            return node.data.props.text
-          }
-        })
+      filteredAndSortedNodes.map(node => {
+        if (node.data.name === "CategoryBlock") {
+          return node.data.props.data.name
+        } else {
+          return node.data.props.text
+        }
+      })
     )
   }, [nodes])
 
