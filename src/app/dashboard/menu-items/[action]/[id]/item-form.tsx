@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -175,27 +175,6 @@ export default function ItemForm({
       toast.error("No se pudo actualizar el producto")
     }
   })
-
-  useEffect(() => {
-    if (item) {
-      form.reset({
-        id: item?.id,
-        name: item?.name,
-        description: item?.description ?? undefined,
-        status: item?.status as MenuItemStatus,
-        image: item?.image ?? undefined,
-        categoryId: item?.category?.id ?? undefined,
-        organizationId: item?.organizationId,
-        featured: item?.featured ?? false,
-        variants:
-          item?.variants.map(variant => ({
-            ...variant,
-            description: variant.description ?? undefined
-          })) ?? [],
-        allergens: item?.allergens ?? undefined
-      })
-    }
-  }, [item]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = (data: z.infer<typeof menuItemSchema>) => {
     execute(data)
