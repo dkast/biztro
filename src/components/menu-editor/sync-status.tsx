@@ -10,7 +10,8 @@ import lz from "lzutf8"
 import { Button } from "@/components/ui/button"
 import type {
   getCategoriesWithItems,
-  getFeaturedItems
+  getFeaturedItems,
+  getMenuItemsWithoutCategory
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
@@ -19,6 +20,7 @@ import difference from "@/lib/difference"
 type MenuData = {
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
   featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
+  items: Prisma.PromiseReturnType<typeof getCategoriesWithItems>[0]["menuItems"]
   organization: Organization | null
   defaultLocation: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
 }
@@ -35,6 +37,7 @@ function extractMenuData(serialData: string): MenuData {
   const menuData: MenuData = {
     categories: [],
     featuredItems: [],
+    items: [],
     organization: null,
     defaultLocation: null
   }
@@ -51,6 +54,9 @@ function extractMenuData(serialData: string): MenuData {
         break
       case "FeaturedBlock":
         menuData.featuredItems.push(...(component?.props?.items || []))
+        break
+      case "ItemBlock":
+        menuData.items.push(component?.props?.item)
         break
       default:
         break
@@ -154,16 +160,33 @@ function compareFeaturedItems(
   })
 }
 
+function compareItems(
+  menuItems: MenuData["items"],
+  soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
+): boolean {
+  if (menuItems.length === 0 && soloItems.length === 0) return true
+
+  // Check if all menu items exist and are up to date in soloItems
+  return menuItems.every(menuItem => {
+    const dbItem = soloItems.find(db => db.id === menuItem.id)
+    return (
+      dbItem?.updatedAt && compareDates(dbItem.updatedAt, menuItem.updatedAt)
+    )
+  })
+}
+
 export default function SyncStatus({
   menu,
   location,
   categories,
-  featuredItems
+  featuredItems,
+  soloItems
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
   location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
   featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
+  soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
 }) {
   const { actions } = useEditor()
   const [syncReq, setSyncReq] = useState(false)
@@ -172,6 +195,7 @@ export default function SyncStatus({
     if (!menu?.serialData) return
 
     const menuData = extractMenuData(menu.serialData)
+    console.dir(menuData)
 
     const needsSync =
       !compareCategories(menuData.categories, categories) ||
@@ -179,7 +203,8 @@ export default function SyncStatus({
         menuData.featuredItems,
         featuredItems,
         menu.serialData
-      )
+      ) ||
+      !compareItems(menuData.items, soloItems)
 
     console.log(
       "Categories",
@@ -273,7 +298,7 @@ export default function SyncStatus({
     if (!equalMenu) {
       setSyncReq(true)
     }
-  }, [menu, categories, location, featuredItems])
+  }, [menu, categories, location, featuredItems, soloItems])
 
   const syncState = () => {
     if (menu && menu?.serialData) {
@@ -310,6 +335,22 @@ export default function SyncStatus({
             props.items = featuredItems
           })
         }
+
+        if (component?.type?.resolvedName === "ItemBlock") {
+          const dbItem = soloItems.find(
+            dbItem => dbItem.id === component?.props?.item.id
+          )
+          if (dbItem) {
+            actions.setProp(property, props => {
+              props.item = dbItem
+            })
+          }
+
+          // Remove ItemBlock if item no longer exists
+          if (!dbItem) {
+            actions.delete(property)
+          }
+        }
       }
 
       toast.success("Información actualizada")
@@ -320,11 +361,11 @@ export default function SyncStatus({
   return (
     <>
       {syncReq && (
-        <div className="m-2 rounded-lg bg-violet-100 px-4 py-2 dark:bg-violet-900/50">
+        <div className="m-2 rounded-lg bg-indigo-100 px-4 py-2 dark:bg-indigo-900/50">
           <div className="flex justify-between">
             <div className="flex items-center gap-x-3">
-              <RefreshCcw className="size-4 text-violet-400" />
-              <span className="text-sm text-violet-700 dark:text-violet-300">
+              <RefreshCcw className="size-4 text-indigo-400" />
+              <span className="text-sm text-indigo-700 dark:text-indigo-300">
                 La información del negocio o productos ha cambiado, puedes
                 sincronizar para aplicar los últimos cambios
               </span>
@@ -332,7 +373,7 @@ export default function SyncStatus({
             <Button
               variant="link"
               size="xs"
-              className="text-violet-700"
+              className="text-indigo-700 dark:text-indigo-300"
               onClick={() => syncState()}
             >
               Sincronizar
