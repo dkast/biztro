@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useInView } from "framer-motion"
+import { motion, useInView } from "motion/react"
 import Image from "next/image"
 
 import { BorderBeam } from "@/components/flare-ui/border-beam"

@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
 import type { RgbaColor } from "@uiw/react-color"
-import { AnimatePresence, motion } from "framer-motion"
 import { ChevronsRight } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
 
 import { cn } from "@/lib/utils"

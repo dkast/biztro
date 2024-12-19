@@ -9,7 +9,6 @@ import { useQueryClient } from "@tanstack/react-query"
 import { rgbaToHex, rgbaToHsva, Sketch, type RgbaColor } from "@uiw/react-color"
 import { differenceInMinutes, formatDate, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
-import { AnimatePresence, motion } from "framer-motion"
 import { useAtomValue, useSetAtom } from "jotai"
 import {
   CircleHelp,
@@ -22,6 +21,7 @@ import {
   Save
 } from "lucide-react"
 import lz from "lzutf8"
+import { AnimatePresence, motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 
