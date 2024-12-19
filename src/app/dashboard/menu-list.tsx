@@ -3,8 +3,8 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import type { Menu } from "@prisma/client"
-import { AnimatePresence, motion } from "framer-motion"
 import { CircleCheck, MoreHorizontal } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import gradient from "random-gradient"
@@ -20,9 +20,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { duplicateMenu } from "@/server/actions/menu/mutations"
 import MenuCreate from "@/app/dashboard/menu-create"
 import MenuDelete from "@/app/dashboard/menu-delete"
-import { duplicateMenu } from "@/server/actions/menu/mutations"
 import { BasicPlanLimits, MenuStatus } from "@/lib/types"
 
 export default function MenuList({ menus }: { menus: Menu[] }) {

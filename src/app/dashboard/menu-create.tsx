@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import toast from "react-hot-toast"
-import { motion } from "framer-motion"
 import { CirclePlus, Loader } from "lucide-react"
+import { motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 

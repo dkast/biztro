@@ -1,8 +1,8 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useInView } from "framer-motion"
 import { ArrowRightIcon } from "lucide-react"
+import { motion, useInView } from "motion/react"
 import Link from "next/link"
 
 import AnimatedShinyText from "@/components/flare-ui/animated-shiny-text"

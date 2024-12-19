@@ -124,64 +124,63 @@ export default function HeaderBlock({
 
   const renderModern = () => {
     return (
-      <>
-        <div className="flex items-center justify-center pb-6 pt-8">
-          <div className="absolute inset-0 origin-top">
-            <Banner
-              banner={organization.banner}
-              isBannerVisible={showBanner ?? false}
-            />
-            {showBanner && (
-              <>
-                <GradientBlur className="inset-x-0 bottom-0 h-2/3" />
-                <div
-                  className="absolute inset-x-0 bottom-0 z-20 h-2/3"
-                  style={{
-                    background: `linear-gradient(180deg, rgba(0,0,0,0), rgba(${Object.values(backgroundColor ?? { r: 0, g: 0, b: 0, a: 1 })}))`
-                  }}
-                ></div>
-              </>
-            )}
-          </div>
-          <div className="z-20 flex flex-col items-center gap-2">
-            <Logo
-              logo={organization.logo}
-              orgName={organization.name}
-              isLogoVisible={showLogo ?? false}
-              className="size-24 rounded-full shadow-lg"
-            />
-            <FontWrapper fontFamily={fontFamily}>
-              <h1
-                className={cn("text-xl font-semibold")}
+      <div className="flex flex-col items-center justify-center pb-4 pt-8">
+        <div className="absolute inset-0 origin-top">
+          <Banner
+            banner={organization.banner}
+            isBannerVisible={showBanner ?? false}
+          />
+          {showBanner && (
+            <>
+              <GradientBlur className="inset-x-0 bottom-0 h-2/3" />
+              <div
+                className="absolute inset-x-0 bottom-0 z-20 h-2/3"
                 style={{
-                  color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+                  background: `linear-gradient(180deg, rgba(0,0,0,0), rgba(${Object.values(backgroundColor ?? { r: 0, g: 0, b: 0, a: 1 })}))`
                 }}
-              >
-                {organization?.name}
-              </h1>
-            </FontWrapper>
-            <div
+              ></div>
+            </>
+          )}
+        </div>
+        <div className="z-20 flex flex-col items-center gap-2">
+          <Logo
+            logo={organization.logo}
+            orgName={organization.name}
+            isLogoVisible={showLogo ?? false}
+            className="size-24 rounded-full shadow-lg"
+          />
+          <FontWrapper fontFamily={fontFamily}>
+            <h1
+              className={cn("text-xl font-semibold")}
               style={{
                 color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
               }}
             >
-              <LocationData
-                isBusinessInfoVisible={showAddress ?? false}
-                isOpenHoursVisible={showAddress ?? false}
-                location={location}
-                className="items-center"
-              />
-            </div>
+              {organization?.name}
+            </h1>
+          </FontWrapper>
+          <div
+            style={{
+              color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+            }}
+          >
+            <LocationData
+              isBusinessInfoVisible={showAddress ?? false}
+              isOpenHoursVisible={showAddress ?? false}
+              location={location}
+              className="items-center"
+            />
           </div>
         </div>
         <div
           style={{
             color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
           }}
+          className="z-20 mt-2"
         >
           <SocialMedia location={location} isVisible={showSocialMedia} />
         </div>
-      </>
+      </div>
     )
   }
 
