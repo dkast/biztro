@@ -125,7 +125,7 @@ export default function HeaderBlock({
   const renderModern = () => {
     return (
       <>
-        <div className="flex items-center justify-center pb-6 pt-8">
+        <div className="flex flex-col items-center justify-center pb-4 pt-8">
           <div className="absolute inset-0 origin-top">
             <Banner
               banner={organization.banner}
@@ -173,13 +173,14 @@ export default function HeaderBlock({
               />
             </div>
           </div>
-        </div>
-        <div
-          style={{
-            color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-          }}
-        >
-          <SocialMedia location={location} isVisible={showSocialMedia} />
+          <div
+            style={{
+              color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+            }}
+            className="z-20 mt-2"
+          >
+            <SocialMedia location={location} isVisible={showSocialMedia} />
+          </div>
         </div>
       </>
     )
