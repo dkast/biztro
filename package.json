@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
-    "@aws-sdk/client-s3": "^3.715.0",
-    "@aws-sdk/s3-request-presigner": "^3.715.0",
+    "@aws-sdk/client-s3": "^3.716.0",
+    "@aws-sdk/s3-request-presigner": "^3.716.0",
     "@craftjs/core": "0.2.10",
     "@craftjs/layers": "0.2.5",
     "@hookform/resolvers": "^3.9.1",
@@ -60,7 +60,7 @@
     "@react-email/components": "^0.0.31",
     "@sentry/nextjs": "^8",
     "@sindresorhus/slugify": "^2.2.1",
-    "@stripe/stripe-js": "^5.3.0",
+    "@stripe/stripe-js": "^5.4.0",
     "@suyalcinkaya/gauge": "^0.1.0",
     "@t3-oss/env-nextjs": "^0.11.1",
     "@tailwindcss/container-queries": "^0.1.1",
@@ -103,14 +103,14 @@
     "lzutf8": "^0.6.3",
     "motion": "^11.15.0",
     "nanoid": "^5.0.9",
-    "next": "15.1.1",
+    "next": "15.1.2",
     "next-auth": "5.0.0-beta.24",
     "next-axiom": "^1.9.1",
     "next-safe-action": "^7.10.2",
     "next-themes": "^0.4.4",
     "nuqs": "^2.2.3",
     "papaparse": "^5.4.1",
-    "posthog-js": "^1.202.2",
+    "posthog-js": "^1.202.5",
     "random-gradient": "^0.0.2",
     "react": "19.0.0",
     "react-aria": "^3.36.0",
@@ -129,7 +129,7 @@
     "remark-gfm": "^4.0.0",
     "resend": "^4.0.1",
     "sharp": "^0.33.5",
-    "shiki": "^1.24.2",
+    "shiki": "^1.24.3",
     "stripe": "^17.5.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
@@ -162,7 +162,7 @@
     "autoprefixer": "^10.4.20",
     "commitlint": "19.6.1",
     "eslint": "9.17.0",
-    "eslint-config-next": "15.1.1",
+    "eslint-config-next": "15.1.2",
     "eslint-plugin-react": "^7.37.2",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.11",
@@ -179,7 +179,7 @@
     "*.{ts,tsx,js,jsx,css,json,md,mdx}": "prettier --write"
   },
   "overrides": {
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+    "@types/react": "npm:types-react@19.0.0-alpha.3",
+    "@types/react-dom": "npm:types-react-dom@19.0.0-alpha.3"
   }
 }
