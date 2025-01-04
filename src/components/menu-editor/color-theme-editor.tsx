@@ -25,6 +25,7 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
+  DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
 import {
@@ -595,10 +596,12 @@ export function ThemeNameDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
-        <DialogTitle>Nombre del Tema</DialogTitle>
-        <DialogDescription>
-          Por favor, ingresa un nombre para el tema.
-        </DialogDescription>
+        <DialogHeader>
+          <DialogTitle>Nombre del Tema</DialogTitle>
+          <DialogDescription>
+            Por favor, ingresa un nombre para el tema.
+          </DialogDescription>
+        </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleFormSubmit)}>
             <FormField

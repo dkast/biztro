@@ -132,7 +132,7 @@ export function DataTable<TData, TValue>({
         <DataTablePagination table={table} />
         {table.getFilteredSelectedRowModel().rows.length > 0 &&
           floatinToolbar && (
-            <div className="fixed inset-x-0 bottom-6 z-10 mx-auto w-fit translate-x-1/2 rounded-full border bg-gray-800 px-1.5 py-1.5 text-white shadow-lg dark:border dark:border-gray-700 dark:bg-gray-900">
+            <div className="fixed inset-x-0 bottom-6 z-10 mx-auto w-fit rounded-full border bg-gray-800 px-1.5 py-1.5 text-white shadow-lg dark:border dark:border-gray-700 dark:bg-gray-900 sm:translate-x-1/2">
               {floatinToolbar}
             </div>
           )}

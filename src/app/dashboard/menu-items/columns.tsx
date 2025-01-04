@@ -113,6 +113,11 @@ export const columns: ColumnDef<
   {
     accessorKey: "status",
     header: "Estatus",
+    enableHiding: true,
+    enableSorting: false,
+    meta: {
+      className: "hidden md:table-cell"
+    },
     cell: ({ row }) => {
       const item = row.original
       return (

@@ -14,6 +14,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogHeader,
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
@@ -78,10 +79,12 @@ export default function MemberInvite({ isPro }: { isPro: boolean }) {
             </Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogTitle>Invitar miembro</DialogTitle>
-            <DialogDescription>
-              Introduce el correo electrónico del miembro que deseas invitar.
-            </DialogDescription>
+            <DialogHeader>
+              <DialogTitle>Invitar miembro</DialogTitle>
+              <DialogDescription>
+                Introduce el correo electrónico del miembro que deseas invitar.
+              </DialogDescription>
+            </DialogHeader>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
