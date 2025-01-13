@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Organization, Prisma } from "@prisma/client"
@@ -86,8 +86,12 @@ export default function Workbench({
   const [frameSize] = useAtom(frameSizeAtom)
   const setFontThemeId = useSetAtom(fontThemeAtom)
   const setColorThemeId = useSetAtom(colorThemeAtom)
-  setFontThemeId(menu?.fontTheme ?? "DEFAULT")
-  setColorThemeId(menu?.colorTheme ?? "DEFAULT")
+  // Initialize themes only on first load
+
+  useEffect(() => {
+    setFontThemeId(menu?.fontTheme ?? "DEFAULT")
+    setColorThemeId(menu?.colorTheme ?? "DEFAULT")
+  }, []) // Empty dependency array ensures this runs once
 
   if (!menu || !categories) return null
 
