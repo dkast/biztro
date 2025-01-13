@@ -177,51 +177,71 @@ export default function Workbench({
                   />
                 </Element>
               </Frame>
-              <div className="fixed bottom-0 flex w-full flex-row items-center justify-between bg-gray-50 px-8 pb-8 pt-4 dark:border-t dark:border-gray-700 dark:bg-gray-800">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full"
-                  onClick={() => {
-                    setActivePanel(PanelType.TOOLBOX)
-                    setIsOpen(true)
-                  }}
-                >
-                  <SquarePlus className="size-8" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full"
-                  onClick={() => {
-                    setActivePanel(PanelType.THEME)
-                    setIsOpen(true)
-                  }}
-                >
-                  <SwatchBook className="size-8" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full"
-                  onClick={() => {
-                    setActivePanel(PanelType.LAYERS)
-                    setIsOpen(true)
-                  }}
-                >
-                  <LayersIcon className="size-8" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full"
-                  onClick={() => {
-                    setActivePanel(PanelType.SETTINGS)
-                    setIsOpen(true)
-                  }}
-                >
-                  <Settings2 className="size-8" />
-                </Button>
+              <div className="fixed bottom-0 flex w-full flex-row items-center justify-between bg-gray-50 px-8 pb-4 pt-4 dark:border-t dark:border-gray-700 dark:bg-gray-800">
+                <div className="flex flex-col items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => {
+                      setActivePanel(PanelType.TOOLBOX)
+                      setIsOpen(true)
+                    }}
+                  >
+                    <SquarePlus className="size-8" />
+                  </Button>
+                  <span className="text-xs text-gray-600 dark:text-gray-300">
+                    Elementos
+                  </span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => {
+                      setActivePanel(PanelType.THEME)
+                      setIsOpen(true)
+                    }}
+                  >
+                    <SwatchBook className="size-8" />
+                  </Button>
+                  <span className="text-xs text-gray-600 dark:text-gray-300">
+                    Temas
+                  </span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => {
+                      setActivePanel(PanelType.LAYERS)
+                      setIsOpen(true)
+                    }}
+                  >
+                    <LayersIcon className="size-8" />
+                  </Button>
+                  <span className="text-xs text-gray-600 dark:text-gray-300">
+                    Capas
+                  </span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full"
+                    onClick={() => {
+                      setActivePanel(PanelType.SETTINGS)
+                      setIsOpen(true)
+                    }}
+                  >
+                    <Settings2 className="size-8" />
+                  </Button>
+                  <span className="text-xs text-gray-600 dark:text-gray-300">
+                    Ajustes
+                  </span>
+                </div>
               </div>
               <Drawer open={isOpen} onOpenChange={setIsOpen}>
                 <DrawerContent>
