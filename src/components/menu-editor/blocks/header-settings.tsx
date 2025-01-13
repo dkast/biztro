@@ -40,7 +40,7 @@ export default function HeaderSettings() {
             )
           }
         >
-          <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+          <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
             <SelectValue placeholder="Selecciona" />
           </SelectTrigger>
           <SelectContent>
@@ -56,7 +56,7 @@ export default function HeaderSettings() {
           </dt>
           <dd className="flex items-center">
             <Switch
-              className="scale-75"
+              className="sm:scale-75"
               checked={showLogo}
               onCheckedChange={checked => {
                 setProp(
@@ -71,7 +71,7 @@ export default function HeaderSettings() {
           </dt>
           <dd className="flex items-center">
             <Switch
-              className="scale-75"
+              className="sm:scale-75"
               checked={showBanner}
               onCheckedChange={checked => {
                 setProp(
@@ -90,7 +90,7 @@ export default function HeaderSettings() {
           </dt>
           <dd className="flex items-center">
             <Switch
-              className="scale-75"
+              className="sm:scale-75"
               checked={showAddress}
               onCheckedChange={checked => {
                 setProp(
@@ -105,7 +105,7 @@ export default function HeaderSettings() {
           </dt>
           <dd className="flex items-center">
             <Switch
-              className="scale-75"
+              className="sm:scale-75"
               checked={showSocialMedia}
               onCheckedChange={checked => {
                 setProp(

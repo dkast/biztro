@@ -5,7 +5,12 @@ import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Organization, Prisma } from "@prisma/client"
 import { useAtom, useSetAtom } from "jotai"
-import { Layers as LayersIcon, PanelLeft, Settings2 } from "lucide-react"
+import {
+  Layers as LayersIcon,
+  PanelLeft,
+  Settings2,
+  SquarePlus
+} from "lucide-react"
 import lz from "lzutf8"
 
 import Header from "@/components/dashboard/header"
@@ -97,7 +102,7 @@ export default function Workbench({
             <DrawerHeader>
               <DrawerTitle>Ajustes</DrawerTitle>
             </DrawerHeader>
-            <ThemeSelector menu={menu} />
+            {/* <ThemeSelector menu={menu} /> */}
             <SettingsPanel />
           </>
         )
@@ -159,18 +164,7 @@ export default function Workbench({
                   />
                 </Element>
               </Frame>
-              <div className="fixed bottom-0 flex w-full flex-row items-center justify-between bg-gray-50 px-8 pb-12 pt-4 dark:bg-gray-800">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full"
-                  onClick={() => {
-                    setActivePanel(PanelType.SETTINGS)
-                    setIsOpen(true)
-                  }}
-                >
-                  <Settings2 className="size-8" />
-                </Button>
+              <div className="fixed bottom-0 flex w-full flex-row items-center justify-between bg-gray-50 px-8 pb-8 pt-4 dark:border-t dark:border-gray-700 dark:bg-gray-800">
                 <Button
                   variant="ghost"
                   size="icon"
@@ -180,7 +174,7 @@ export default function Workbench({
                     setIsOpen(true)
                   }}
                 >
-                  <PanelLeft className="size-8" />
+                  <SquarePlus className="size-8" />
                 </Button>
                 <Button
                   variant="ghost"
@@ -192,6 +186,17 @@ export default function Workbench({
                   }}
                 >
                   <LayersIcon className="size-8" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full"
+                  onClick={() => {
+                    setActivePanel(PanelType.SETTINGS)
+                    setIsOpen(true)
+                  }}
+                >
+                  <Settings2 className="size-8" />
                 </Button>
               </div>
               <Drawer open={isOpen} onOpenChange={setIsOpen}>

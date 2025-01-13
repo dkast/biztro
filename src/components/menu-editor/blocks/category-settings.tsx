@@ -58,7 +58,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+              <SelectTrigger className="focus:ring-transparent sm:sm:h-7 sm:text-xs">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -85,7 +85,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+              <SelectTrigger className="focus:ring-transparent sm:sm:h-7 sm:text-xs">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -110,7 +110,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+              <SelectTrigger className="focus:ring-transparent sm:sm:h-7 sm:text-xs">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -134,7 +134,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <TabsList className="h-8 p-0.5">
+              <TabsList className="p-0.5 sm:h-8">
                 <TabsTrigger value="left">
                   <AlignLeft className="size-3.5" />
                 </TabsTrigger>
@@ -164,7 +164,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+              <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -188,7 +188,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+              <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -216,7 +216,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+              <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -240,7 +240,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+              <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -260,7 +260,7 @@ export default function CategorySettings() {
           </dt>
           <dd className="col-span-2 flex items-center">
             <Switch
-              className="scale-75"
+              className="sm:scale-75"
               checked={showImage}
               onCheckedChange={checked => {
                 setProp(
