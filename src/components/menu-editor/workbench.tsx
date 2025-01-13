@@ -7,9 +7,9 @@ import type { Organization, Prisma } from "@prisma/client"
 import { useAtom, useSetAtom } from "jotai"
 import {
   Layers as LayersIcon,
-  PanelLeft,
   Settings2,
-  SquarePlus
+  SquarePlus,
+  SwatchBook
 } from "lucide-react"
 import lz from "lzutf8"
 
@@ -59,7 +59,8 @@ import { cn } from "@/lib/utils"
 enum PanelType {
   SETTINGS = "settings",
   TOOLBOX = "toolbox",
-  LAYERS = "layers"
+  LAYERS = "layers",
+  THEME = "theme"
 }
 
 export default function Workbench({
@@ -96,13 +97,21 @@ export default function Workbench({
 
   const getPanelContent = () => {
     switch (activePanel) {
+      case PanelType.THEME:
+        return (
+          <>
+            <DrawerHeader>
+              <DrawerTitle>Temas</DrawerTitle>
+            </DrawerHeader>
+            <ThemeSelector menu={menu} />
+          </>
+        )
       case PanelType.SETTINGS:
         return (
           <>
             <DrawerHeader>
               <DrawerTitle>Ajustes</DrawerTitle>
             </DrawerHeader>
-            {/* <ThemeSelector menu={menu} /> */}
             <SettingsPanel />
           </>
         )
@@ -175,6 +184,17 @@ export default function Workbench({
                   }}
                 >
                   <SquarePlus className="size-8" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full"
+                  onClick={() => {
+                    setActivePanel(PanelType.THEME)
+                    setIsOpen(true)
+                  }}
+                >
+                  <SwatchBook className="size-8" />
                 </Button>
                 <Button
                   variant="ghost"
