@@ -9,6 +9,7 @@ import { hexToRgba } from "@uiw/react-color"
 import { useAtomValue, useSetAtom } from "jotai"
 import {
   Diamond,
+  GripVertical,
   Layers,
   LetterText,
   LinkIcon,
@@ -118,7 +119,7 @@ export default function ToolboxPanel({
     )
   }
 
-  // Extracted JSX blocks as constants
+  // Blocks
   const headerBlock = (
     <HeaderBlock
       layout="classic"
@@ -194,9 +195,7 @@ export default function ToolboxPanel({
                 Icon={Layers}
                 classNameIcon="text-orange-400"
                 addButton={
-                  <Button
-                    variant="ghost"
-                    size="icon"
+                  <AddButton
                     onClick={() => {
                       const newNode = query
                         .parseReactElement(categoryBlock)
@@ -204,9 +203,7 @@ export default function ToolboxPanel({
                       actions.addNodeTree(newNode, ROOT_NODE)
                       toast.success("Categoría agregada")
                     }}
-                  >
-                    <PlusSquare className="size-5 text-green-400 sm:size-3.5" />
-                  </Button>
+                  />
                 }
               />
             </div>
@@ -240,9 +237,7 @@ export default function ToolboxPanel({
                 Icon={Diamond}
                 classNameIcon="text-purple-400"
                 addButton={
-                  <Button
-                    variant="ghost"
-                    size="icon"
+                  <AddButton
                     onClick={() => {
                       const newNode = query
                         .parseReactElement(itemBlock)
@@ -250,9 +245,7 @@ export default function ToolboxPanel({
                       actions.addNodeTree(newNode, ROOT_NODE)
                       toast.success("Producto agregado")
                     }}
-                  >
-                    <PlusSquare className="size-5 text-green-400 sm:size-3.5" />
-                  </Button>
+                  />
                 }
               />
             </div>
@@ -292,9 +285,7 @@ export default function ToolboxPanel({
             title="Cabecera"
             Icon={PanelTop}
             addButton={
-              <Button
-                variant="ghost"
-                size="icon"
+              <AddButton
                 onClick={() => {
                   const newNode = query
                     .parseReactElement(headerBlock)
@@ -302,9 +293,7 @@ export default function ToolboxPanel({
                   actions.addNodeTree(newNode, ROOT_NODE)
                   toast.success("Cabecera agregada")
                 }}
-              >
-                <PlusSquare className="size-5 text-green-400" />
-              </Button>
+              />
             }
           />
         </div>
@@ -319,17 +308,13 @@ export default function ToolboxPanel({
             title="Navegación"
             Icon={LinkIcon}
             addButton={
-              <Button
-                variant="ghost"
-                size="icon"
+              <AddButton
                 onClick={() => {
                   const newNode = query.parseReactElement(navBlock).toNodeTree()
                   actions.addNodeTree(newNode, ROOT_NODE)
                   toast.success("Navegación agregada")
                 }}
-              >
-                <PlusSquare className="size-5 text-green-400" />
-              </Button>
+              />
             }
           />
         </div>
@@ -346,9 +331,7 @@ export default function ToolboxPanel({
               Icon={Star}
               addButton={
                 isPro && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
+                  <AddButton
                     onClick={() => {
                       const newNode = query
                         .parseReactElement(featuredBlock)
@@ -356,9 +339,7 @@ export default function ToolboxPanel({
                       actions.addNodeTree(newNode, ROOT_NODE)
                       toast.success("Recomendados agregados")
                     }}
-                  >
-                    <PlusSquare className="size-5 text-green-400" />
-                  </Button>
+                  />
                 )
               }
             />
@@ -377,9 +358,7 @@ export default function ToolboxPanel({
               Icon={Type}
               addButton={
                 isPro && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
+                  <AddButton
                     onClick={() => {
                       const newNode = query
                         .parseReactElement(headingBlock)
@@ -387,9 +366,7 @@ export default function ToolboxPanel({
                       actions.addNodeTree(newNode, ROOT_NODE)
                       toast.success("Encabezado agregado")
                     }}
-                  >
-                    <PlusSquare className="size-5 text-green-400" />
-                  </Button>
+                  />
                 )
               }
             />
@@ -408,9 +385,7 @@ export default function ToolboxPanel({
               Icon={LetterText}
               addButton={
                 isPro && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
+                  <AddButton
                     onClick={() => {
                       const newNode = query
                         .parseReactElement(textBlock)
@@ -418,9 +393,7 @@ export default function ToolboxPanel({
                       actions.addNodeTree(newNode, ROOT_NODE)
                       toast.success("Texto agregado")
                     }}
-                  >
-                    <PlusSquare className="size-5 text-green-400" />
-                  </Button>
+                  />
                 )
               }
             />
@@ -479,5 +452,22 @@ function ToolboxElement({
       </div>
       {addButton}
     </div>
+  )
+}
+
+function AddButton({ onClick }: { onClick: () => void }) {
+  return (
+    <>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-5 sm:hidden"
+        onClick={onClick}
+      >
+        <PlusSquare className="size-5 text-green-500 dark:text-green-400" />
+      </Button>
+
+      <GripVertical className="hidden size-5 text-gray-400 dark:text-gray-600 sm:block" />
+    </>
   )
 }
