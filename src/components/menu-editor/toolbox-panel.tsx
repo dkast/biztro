@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useEditor } from "@craftjs/core"
+import toast from "react-hot-toast"
+import { ROOT_NODE, useEditor } from "@craftjs/core"
 import type { Organization, Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
@@ -13,6 +14,7 @@ import {
   LinkIcon,
   Lock,
   PanelTop,
+  PlusSquare,
   Star,
   Type,
   type LucideIcon
@@ -57,9 +59,19 @@ export default function ToolboxPanel({
   featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
   isPro: boolean
 }) {
-  const { connectors } = useEditor()
+  const { connectors, nodes, actions, query } = useEditor(state => ({
+    nodes: state.nodes
+  }))
   const fontThemeId = useAtomValue(fontThemeAtom)
   const colorThemeId = useAtomValue(colorThemeAtom)
+
+  useEffect(() => {
+    const rootNode = nodes.ROOT
+    // Get the first child of the ROOT node
+    console.dir(rootNode)
+    const rootNodeArray = rootNode?.data?.nodes || []
+    console.dir(rootNodeArray)
+  }, [nodes])
 
   const { data: userColorThemes } = useQuery({
     queryKey: ["themes"],
@@ -106,68 +118,146 @@ export default function ToolboxPanel({
     )
   }
 
+  // Extracted JSX blocks as constants
+  const headerBlock = (
+    <HeaderBlock
+      layout="classic"
+      organization={organization}
+      location={location ?? undefined}
+      accentColor={hexToRgba(selectedColorTheme.brandColor)}
+      backgroundColor={hexToRgba(selectedColorTheme.surfaceColor)}
+      fontFamily={selectedFontTheme.fontDisplay}
+    />
+  )
+
+  const navBlock = (
+    <NavigatorBlock color={hexToRgba(selectedColorTheme.brandColor)} />
+  )
+
+  const featuredBlock = (
+    <FeaturedBlock
+      items={featuredItems}
+      backgroundColor={hexToRgba(selectedColorTheme.surfaceColor)}
+      itemFontWeight="700"
+      itemFontFamily={selectedFontTheme.fontText}
+      priceFontWeight="500"
+      priceFontFamily={selectedFontTheme.fontText}
+      descriptionFontFamily={selectedFontTheme.fontText}
+    />
+  )
+
+  const headingBlock = (
+    <HeadingElement
+      text="Encabezado"
+      color={hexToRgba(selectedColorTheme.accentColor)}
+      fontFamily={selectedFontTheme.fontDisplay}
+    />
+  )
+
+  const textBlock = (
+    <TextElement
+      text="Texto"
+      color={hexToRgba(selectedColorTheme.textColor)}
+      fontFamily={selectedFontTheme.fontText}
+    />
+  )
+
   return (
     <>
       <SideSection title="Categorías y Productos" className="editor-categories">
-        {categories.map(category => (
-          <div
-            key={category.id}
-            ref={ref => {
-              if (ref) {
-                connectors.create(
-                  ref,
-                  <CategoryBlock
-                    data={category}
-                    backgroundMode="none"
-                    categoryFontFamily={selectedFontTheme.fontDisplay}
-                    itemFontFamily={selectedFontTheme.fontDisplay}
-                    priceFontFamily={selectedFontTheme.fontText}
-                    descriptionFontFamily={selectedFontTheme.fontText}
-                    categoryColor={hexToRgba(selectedColorTheme.accentColor)}
-                    itemColor={hexToRgba(selectedColorTheme.textColor)}
-                    priceColor={hexToRgba(selectedColorTheme.accentColor)}
-                    descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
-                  />
-                )
-              }
-            }}
-          >
-            <ToolboxElement
-              title={category.name}
-              Icon={Layers}
-              classNameIcon="text-orange-400"
+        {categories.map(category => {
+          const categoryBlock = (
+            <CategoryBlock
+              data={category}
+              backgroundMode="none"
+              categoryFontFamily={selectedFontTheme.fontDisplay}
+              itemFontFamily={selectedFontTheme.fontDisplay}
+              priceFontFamily={selectedFontTheme.fontText}
+              descriptionFontFamily={selectedFontTheme.fontText}
+              categoryColor={hexToRgba(selectedColorTheme.accentColor)}
+              itemColor={hexToRgba(selectedColorTheme.textColor)}
+              priceColor={hexToRgba(selectedColorTheme.accentColor)}
+              descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
             />
-          </div>
-        ))}
+          )
+          return (
+            <div
+              key={category.id}
+              ref={ref => {
+                if (ref) {
+                  connectors.create(ref, categoryBlock)
+                }
+              }}
+            >
+              <ToolboxElement
+                title={category.name}
+                Icon={Layers}
+                classNameIcon="text-orange-400"
+                addButton={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      const newNode = query
+                        .parseReactElement(categoryBlock)
+                        .toNodeTree()
+                      actions.addNodeTree(newNode, ROOT_NODE)
+                      toast.success("Categoría agregada")
+                    }}
+                  >
+                    <PlusSquare className="size-5 text-green-400 sm:size-3.5" />
+                  </Button>
+                }
+              />
+            </div>
+          )
+        })}
 
-        {soloItems.map(item => (
-          <div
-            key={item.id}
-            ref={ref => {
-              if (ref) {
-                connectors.create(
-                  ref,
-                  <ItemBlock
-                    item={item}
-                    backgroundMode="none"
-                    itemFontFamily={selectedFontTheme.fontDisplay}
-                    priceFontFamily={selectedFontTheme.fontText}
-                    descriptionFontFamily={selectedFontTheme.fontText}
-                    itemColor={hexToRgba(selectedColorTheme.textColor)}
-                    priceColor={hexToRgba(selectedColorTheme.accentColor)}
-                    descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
-                  />
-                )
-              }
-            }}
-          >
-            <ToolboxElement
-              title={item.name}
-              Icon={Diamond}
-              classNameIcon="text-purple-400"
+        {soloItems.map(item => {
+          const itemBlock = (
+            <ItemBlock
+              item={item}
+              backgroundMode="none"
+              itemFontFamily={selectedFontTheme.fontDisplay}
+              priceFontFamily={selectedFontTheme.fontText}
+              descriptionFontFamily={selectedFontTheme.fontText}
+              itemColor={hexToRgba(selectedColorTheme.textColor)}
+              priceColor={hexToRgba(selectedColorTheme.accentColor)}
+              descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
             />
-          </div>
-        ))}
+          )
+          return (
+            <div
+              key={item.id}
+              ref={ref => {
+                if (ref) {
+                  connectors.create(ref, itemBlock)
+                }
+              }}
+            >
+              <ToolboxElement
+                title={item.name}
+                Icon={Diamond}
+                classNameIcon="text-purple-400"
+                addButton={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      const newNode = query
+                        .parseReactElement(itemBlock)
+                        .toNodeTree()
+                      actions.addNodeTree(newNode, ROOT_NODE)
+                      toast.success("Producto agregado")
+                    }}
+                  >
+                    <PlusSquare className="size-5 text-green-400 sm:size-3.5" />
+                  </Button>
+                }
+              />
+            </div>
+          )
+        })}
 
         {categories.length === 0 && soloItems.length === 0 ? (
           <Alert
@@ -194,92 +284,146 @@ export default function ToolboxPanel({
         <div
           ref={ref => {
             if (ref) {
-              connectors.create(
-                ref,
-                <HeaderBlock
-                  layout="classic"
-                  organization={organization}
-                  location={location ?? undefined}
-                  accentColor={hexToRgba(selectedColorTheme.brandColor)}
-                  backgroundColor={hexToRgba(selectedColorTheme.surfaceColor)}
-                  fontFamily={selectedFontTheme.fontDisplay}
-                />
-              )
+              connectors.create(ref, headerBlock)
             }
           }}
         >
-          <ToolboxElement title="Cabecera" Icon={PanelTop} />
+          <ToolboxElement
+            title="Cabecera"
+            Icon={PanelTop}
+            addButton={
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  const newNode = query
+                    .parseReactElement(headerBlock)
+                    .toNodeTree()
+                  actions.addNodeTree(newNode, ROOT_NODE)
+                  toast.success("Cabecera agregada")
+                }}
+              >
+                <PlusSquare className="size-5 text-green-400" />
+              </Button>
+            }
+          />
         </div>
         <div
           ref={ref => {
             if (ref) {
-              connectors.create(
-                ref,
-                <NavigatorBlock
-                  color={hexToRgba(selectedColorTheme.brandColor)}
-                />
-              )
+              connectors.create(ref, navBlock)
             }
           }}
         >
-          <ToolboxElement title="Navegación" Icon={LinkIcon} />
+          <ToolboxElement
+            title="Navegación"
+            Icon={LinkIcon}
+            addButton={
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  const newNode = query.parseReactElement(navBlock).toNodeTree()
+                  actions.addNodeTree(newNode, ROOT_NODE)
+                  toast.success("Navegación agregada")
+                }}
+              >
+                <PlusSquare className="size-5 text-green-400" />
+              </Button>
+            }
+          />
         </div>
         <ProOnlyWrapper enabled={isPro}>
           <div
             ref={ref => {
               if (ref && isPro) {
-                connectors.create(
-                  ref,
-                  <FeaturedBlock
-                    items={featuredItems}
-                    backgroundColor={hexToRgba(selectedColorTheme.surfaceColor)}
-                    itemFontWeight="700"
-                    itemFontFamily={selectedFontTheme.fontText}
-                    priceFontWeight="500"
-                    priceFontFamily={selectedFontTheme.fontText}
-                    descriptionFontFamily={selectedFontTheme.fontText}
-                  />
-                )
+                connectors.create(ref, featuredBlock)
               }
             }}
           >
-            <ToolboxElement title="Recomendados" Icon={Star} />
+            <ToolboxElement
+              title="Recomendados"
+              Icon={Star}
+              addButton={
+                isPro && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      const newNode = query
+                        .parseReactElement(featuredBlock)
+                        .toNodeTree()
+                      actions.addNodeTree(newNode, ROOT_NODE)
+                      toast.success("Recomendados agregados")
+                    }}
+                  >
+                    <PlusSquare className="size-5 text-green-400" />
+                  </Button>
+                )
+              }
+            />
           </div>
         </ProOnlyWrapper>
         <ProOnlyWrapper enabled={isPro}>
           <div
             ref={ref => {
               if (ref && isPro) {
-                connectors.create(
-                  ref,
-                  <HeadingElement
-                    text="Encabezado"
-                    color={hexToRgba(selectedColorTheme.accentColor)}
-                    fontFamily={selectedFontTheme.fontDisplay}
-                  />
-                )
+                connectors.create(ref, headingBlock)
               }
             }}
           >
-            <ToolboxElement title="Encabezado" Icon={Type} />
+            <ToolboxElement
+              title="Encabezado"
+              Icon={Type}
+              addButton={
+                isPro && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      const newNode = query
+                        .parseReactElement(headingBlock)
+                        .toNodeTree()
+                      actions.addNodeTree(newNode, ROOT_NODE)
+                      toast.success("Encabezado agregado")
+                    }}
+                  >
+                    <PlusSquare className="size-5 text-green-400" />
+                  </Button>
+                )
+              }
+            />
           </div>
         </ProOnlyWrapper>
         <ProOnlyWrapper enabled={isPro}>
           <div
             ref={ref => {
               if (ref && isPro) {
-                connectors.create(
-                  ref,
-                  <TextElement
-                    text="Texto"
-                    color={hexToRgba(selectedColorTheme.textColor)}
-                    fontFamily={selectedFontTheme.fontText}
-                  />
-                )
+                connectors.create(ref, textBlock)
               }
             }}
           >
-            <ToolboxElement title="Texto" Icon={LetterText} />
+            <ToolboxElement
+              title="Texto"
+              Icon={LetterText}
+              addButton={
+                isPro && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      const newNode = query
+                        .parseReactElement(textBlock)
+                        .toNodeTree()
+                      actions.addNodeTree(newNode, ROOT_NODE)
+                      toast.success("Texto agregado")
+                    }}
+                  >
+                    <PlusSquare className="size-5 text-green-400" />
+                  </Button>
+                )
+              }
+            />
           </div>
         </ProOnlyWrapper>
       </SideSection>
@@ -314,21 +458,26 @@ function ProOnlyWrapper({
 function ToolboxElement({
   title,
   Icon,
-  classNameIcon
+  classNameIcon,
+  addButton
 }: {
   title: string
   Icon: LucideIcon
   classNameIcon?: string
+  addButton?: React.ReactNode
 }) {
   return (
-    <div className="group flex cursor-move items-center gap-2 rounded bg-gray-100 p-2 text-sm hover:bg-gray-50 dark:bg-gray-800/50 dark:hover:bg-gray-800">
-      <Icon
-        className={cn(
-          "size-3.5 text-indigo-400 group-hover:text-current",
-          classNameIcon
-        )}
-      />
-      <span>{title}</span>
+    <div className="group flex cursor-move items-center justify-between gap-2 rounded bg-gray-100 p-4 hover:bg-gray-50 dark:bg-gray-800/50 dark:hover:bg-gray-800 sm:p-2 sm:text-sm">
+      <div className="flex items-center gap-2">
+        <Icon
+          className={cn(
+            "size-5 text-indigo-400 group-hover:text-current sm:size-3.5",
+            classNameIcon
+          )}
+        />
+        <span>{title}</span>
+      </div>
+      {addButton}
     </div>
   )
 }

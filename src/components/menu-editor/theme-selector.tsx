@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, type JSX } from "react"
 import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
@@ -44,6 +44,71 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { colorListAtom, colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import { fontThemes } from "@/lib/types"
 import { ColorThemeEditor } from "./color-theme-editor"
+
+function ThemedSelector<T>({
+  isMobile,
+  title,
+  items,
+  currentValue,
+  onValueChange,
+  triggerContent,
+  renderItem
+}: {
+  isMobile: boolean
+  title: string
+  items: T[]
+  currentValue: string
+  onValueChange: (v: string) => void
+  triggerContent: JSX.Element
+  renderItem: (item: T) => JSX.Element
+}) {
+  return isMobile ? (
+    <DrawerNested>
+      <DrawerTrigger asChild>{triggerContent}</DrawerTrigger>
+      <DrawerContent className="px-4 pb-8">
+        <DrawerHeader>
+          <DrawerTitle>{title}</DrawerTitle>
+        </DrawerHeader>
+        <div className="relative min-h-[400px]">
+          <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
+            <div className="flex flex-col items-center gap-2">
+              <RadioGroup
+                value={currentValue}
+                onValueChange={onValueChange}
+                className="w-full"
+              >
+                {items.map(renderItem)}
+              </RadioGroup>
+            </div>
+          </div>
+        </div>
+      </DrawerContent>
+    </DrawerNested>
+  ) : (
+    <Popover>
+      <PopoverTrigger asChild>{triggerContent}</PopoverTrigger>
+      <PopoverAnchor asChild>
+        <div className="-ml-40 size-0" />
+      </PopoverAnchor>
+      <PopoverContent className="-mt-20 max-w-[250px]">
+        <Label className="mb-4 block">{title}</Label>
+        <div className="relative min-h-[400px]">
+          <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
+            <div className="flex flex-col items-center gap-2">
+              <RadioGroup
+                value={currentValue}
+                onValueChange={onValueChange}
+                className="w-full"
+              >
+                {items.map(renderItem)}
+              </RadioGroup>
+            </div>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}
 
 export default function ThemeSelector({
   menu
@@ -306,246 +371,89 @@ export default function ThemeSelector({
   return (
     <div className="editor-theme flex flex-col">
       <SideSection title="Tipografía">
-        {isMobile ? (
-          <DrawerNested>
-            <DrawerTrigger asChild>
-              <button className="flex w-full flex-row items-center justify-between rounded-lg border px-4 py-2 text-left shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
-                <div>
-                  <FontWrapper fontFamily={selectedFontTheme?.fontDisplay}>
-                    <span className="text-base font-medium">
-                      {selectedFontTheme?.fontDisplay}
-                    </span>
-                  </FontWrapper>
-                  <FontWrapper fontFamily={selectedFontTheme?.fontText}>
-                    <span className="text-sm">
-                      {selectedFontTheme?.fontText}
-                    </span>
-                  </FontWrapper>
-                </div>
-                <ChevronsUpDown className="size-4 text-gray-500" />
-              </button>
-            </DrawerTrigger>
-            <DrawerContent className="px-4 pb-8">
-              <DrawerHeader>
-                <DrawerTitle>Tipografías</DrawerTitle>
-              </DrawerHeader>
-              <div className="relative min-h-[400px]">
-                <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
-                  <div className="flex flex-col items-center gap-2">
-                    <RadioGroup
-                      value={fontThemeId}
-                      onValueChange={setFontThemeId}
-                      className="w-full"
-                    >
-                      {fontThemes.map(theme => (
-                        <label
-                          key={theme.name}
-                          className="cursor-pointer [&:has([data-state=checked])>div]:border-indigo-400 [&:has([data-state=checked])>div]:bg-indigo-50 dark:[&:has([data-state=checked])>div]:border-indigo-700 dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
-                        >
-                          <RadioGroupItem
-                            value={theme.name}
-                            className="sr-only"
-                          />
-                          <div className="w-full rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
-                            <FontWrapper fontFamily={theme.fontDisplay}>
-                              <span className="text-base font-medium">
-                                {theme.fontDisplay}
-                              </span>
-                            </FontWrapper>
-                            <FontWrapper fontFamily={theme.fontText}>
-                              <span className="text-sm">{theme.fontText}</span>
-                            </FontWrapper>
-                          </div>
-                        </label>
-                      ))}
-                    </RadioGroup>
-                  </div>
-                </div>
+        <ThemedSelector
+          isMobile={isMobile}
+          title="Tipografías"
+          items={fontThemes}
+          currentValue={fontThemeId}
+          onValueChange={setFontThemeId}
+          triggerContent={
+            <button className="flex w-full flex-row items-center justify-between rounded-lg border px-4 py-2 text-left shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
+              <div>
+                <FontWrapper fontFamily={selectedFontTheme?.fontDisplay}>
+                  <span className="text-base font-medium">
+                    {selectedFontTheme?.fontDisplay}
+                  </span>
+                </FontWrapper>
+                <FontWrapper fontFamily={selectedFontTheme?.fontText}>
+                  <span className="text-sm">{selectedFontTheme?.fontText}</span>
+                </FontWrapper>
               </div>
-            </DrawerContent>
-          </DrawerNested>
-        ) : (
-          <Popover>
-            <PopoverTrigger asChild>
-              <button className="flex w-full flex-row items-center justify-between rounded-lg border px-4 py-2 text-left shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
-                <div>
-                  <FontWrapper fontFamily={selectedFontTheme?.fontDisplay}>
-                    <span className="text-base font-medium">
-                      {selectedFontTheme?.fontDisplay}
-                    </span>
-                  </FontWrapper>
-                  <FontWrapper fontFamily={selectedFontTheme?.fontText}>
-                    <span className="text-sm">
-                      {selectedFontTheme?.fontText}
-                    </span>
-                  </FontWrapper>
-                </div>
-                <ChevronsUpDown className="size-4 text-gray-500" />
-              </button>
-            </PopoverTrigger>
-            <PopoverAnchor asChild>
-              <div className="-ml-40 size-0" />
-            </PopoverAnchor>
-            <PopoverContent className="-mt-20 max-w-[250px]">
-              <Label className="mb-4 block">Tipografías</Label>
-              <div className="relative min-h-[400px]">
-                <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
-                  <div className="flex flex-col items-center gap-2">
-                    <RadioGroup
-                      value={fontThemeId}
-                      onValueChange={setFontThemeId}
-                      className="w-full"
-                    >
-                      {fontThemes.map(theme => (
-                        <label
-                          key={theme.name}
-                          className="cursor-pointer [&:has([data-state=checked])>div]:border-indigo-400 [&:has([data-state=checked])>div]:bg-indigo-50 dark:[&:has([data-state=checked])>div]:border-indigo-700 dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
-                        >
-                          <RadioGroupItem
-                            value={theme.name}
-                            className="sr-only"
-                          />
-                          <div className="w-full rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
-                            <FontWrapper fontFamily={theme.fontDisplay}>
-                              <span className="text-base font-medium">
-                                {theme.fontDisplay}
-                              </span>
-                            </FontWrapper>
-                            <FontWrapper fontFamily={theme.fontText}>
-                              <span className="text-sm">{theme.fontText}</span>
-                            </FontWrapper>
-                          </div>
-                        </label>
-                      ))}
-                    </RadioGroup>
-                  </div>
-                </div>
+              <ChevronsUpDown className="size-4 text-gray-500" />
+            </button>
+          }
+          renderItem={theme => (
+            <label
+              key={theme.name}
+              className="cursor-pointer [&:has([data-state=checked])>div]:border-indigo-400 [&:has([data-state=checked])>div]:bg-indigo-50 dark:[&:has([data-state=checked])>div]:border-indigo-700 dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
+            >
+              <RadioGroupItem value={theme.name} className="sr-only" />
+              <div className="w-full rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
+                <FontWrapper fontFamily={theme.fontDisplay}>
+                  <span className="text-base font-medium">
+                    {theme.fontDisplay}
+                  </span>
+                </FontWrapper>
+                <FontWrapper fontFamily={theme.fontText}>
+                  <span className="text-sm">{theme.fontText}</span>
+                </FontWrapper>
               </div>
-            </PopoverContent>
-          </Popover>
-        )}
+            </label>
+          )}
+        />
       </SideSection>
       <SideSection title="Colores">
-        {isMobile ? (
-          <DrawerNested>
-            <DrawerTrigger asChild>
-              <button className="flex w-full flex-row items-center justify-between rounded-lg border px-4 py-2 text-left shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
-                <div className="">
-                  <div className="flex flex-row items-center gap-2">
-                    <div className="isolate flex overflow-hidden">
-                      <ColorChip color={selectedColorTheme?.surfaceColor} />
-                      <ColorChip color={selectedColorTheme?.brandColor} />
-                      <ColorChip color={selectedColorTheme?.accentColor} />
-                      <ColorChip color={selectedColorTheme?.textColor} />
-                      <ColorChip color={selectedColorTheme?.mutedColor} />
-                    </div>
-                  </div>
-                </div>
-                <ChevronsUpDown className="size-4 text-gray-500" />
-              </button>
-            </DrawerTrigger>
-            <DrawerContent className="px-4 pb-8">
-              <DrawerHeader>
-                <DrawerTitle>Colores</DrawerTitle>
-              </DrawerHeader>
-              <div className="relative h-[300px]">
-                <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
-                  <div className="flex flex-col items-center gap-2">
-                    <RadioGroup
-                      value={colorThemeId}
-                      onValueChange={setColorThemeId}
-                      className="w-full"
-                    >
-                      {colorThemes.map(theme => (
-                        <label
-                          key={theme.id}
-                          className="cursor-pointer [&:has([data-state=checked])>div]:border-indigo-400 [&:has([data-state=checked])>div]:bg-indigo-50 dark:[&:has([data-state=checked])>div]:border-indigo-700 dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
-                        >
-                          <RadioGroupItem
-                            value={theme.id}
-                            className="sr-only"
-                          />
-                          <div className="flex w-full flex-col justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
-                            <span className="text-xs font-medium">
-                              {theme.name}
-                            </span>
-                            <div className="isolate mx-auto flex overflow-hidden">
-                              <ColorChip color={theme.surfaceColor} />
-                              <ColorChip color={theme.brandColor} />
-                              <ColorChip color={theme.accentColor} />
-                              <ColorChip color={theme.textColor} />
-                              <ColorChip color={theme.mutedColor} />
-                            </div>
-                          </div>
-                        </label>
-                      ))}
-                    </RadioGroup>
+        <ThemedSelector
+          isMobile={isMobile}
+          title="Colores"
+          items={colorThemes}
+          currentValue={colorThemeId}
+          onValueChange={setColorThemeId}
+          triggerContent={
+            <button className="flex w-full flex-row items-center justify-between rounded-lg border px-4 py-2 text-left shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
+              <div className="">
+                <div className="flex flex-row items-center gap-2">
+                  <div className="isolate flex overflow-hidden">
+                    <ColorChip color={selectedColorTheme?.surfaceColor} />
+                    <ColorChip color={selectedColorTheme?.brandColor} />
+                    <ColorChip color={selectedColorTheme?.accentColor} />
+                    <ColorChip color={selectedColorTheme?.textColor} />
+                    <ColorChip color={selectedColorTheme?.mutedColor} />
                   </div>
                 </div>
               </div>
-            </DrawerContent>
-          </DrawerNested>
-        ) : (
-          <Popover>
-            <PopoverTrigger asChild>
-              <button className="flex w-full flex-row items-center justify-between rounded-lg border px-4 py-2 text-left shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
-                <div className="">
-                  <div className="flex flex-row items-center gap-2">
-                    <div className="isolate flex overflow-hidden">
-                      <ColorChip color={selectedColorTheme?.surfaceColor} />
-                      <ColorChip color={selectedColorTheme?.brandColor} />
-                      <ColorChip color={selectedColorTheme?.accentColor} />
-                      <ColorChip color={selectedColorTheme?.textColor} />
-                      <ColorChip color={selectedColorTheme?.mutedColor} />
-                    </div>
-                  </div>
-                </div>
-                <ChevronsUpDown className="size-4 text-gray-500" />
-              </button>
-            </PopoverTrigger>
-            <PopoverAnchor asChild>
-              <div className="-ml-28 size-0" />
-            </PopoverAnchor>
-            <PopoverContent className="-mt-20 max-w-[170px]">
-              <Label className="mb-4 block">Colores</Label>
-              <div className="relative h-[300px]">
-                <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
-                  <div className="flex flex-col items-center gap-2">
-                    <RadioGroup
-                      value={colorThemeId}
-                      onValueChange={setColorThemeId}
-                      className="w-full"
-                    >
-                      {colorThemes.map(theme => (
-                        <label
-                          key={theme.id}
-                          className="cursor-pointer [&:has([data-state=checked])>div]:border-indigo-400 [&:has([data-state=checked])>div]:bg-indigo-50 dark:[&:has([data-state=checked])>div]:border-indigo-700 dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
-                        >
-                          <RadioGroupItem
-                            value={theme.id}
-                            className="sr-only"
-                          />
-                          <div className="flex w-full flex-col justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
-                            <span className="text-xs font-medium">
-                              {theme.name}
-                            </span>
-                            <div className="isolate mx-auto flex overflow-hidden">
-                              <ColorChip color={theme.surfaceColor} />
-                              <ColorChip color={theme.brandColor} />
-                              <ColorChip color={theme.accentColor} />
-                              <ColorChip color={theme.textColor} />
-                              <ColorChip color={theme.mutedColor} />
-                            </div>
-                          </div>
-                        </label>
-                      ))}
-                    </RadioGroup>
-                  </div>
+              <ChevronsUpDown className="size-4 text-gray-500" />
+            </button>
+          }
+          renderItem={theme => (
+            <label
+              key={theme.id}
+              className="cursor-pointer [&:has([data-state=checked])>div]:border-indigo-400 [&:has([data-state=checked])>div]:bg-indigo-50 dark:[&:has([data-state=checked])>div]:border-indigo-700 dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
+            >
+              <RadioGroupItem value={theme.id} className="sr-only" />
+              <div className="flex w-full flex-col justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
+                <span className="text-xs font-medium">{theme.name}</span>
+                <div className="isolate mx-auto flex overflow-hidden">
+                  <ColorChip color={theme.surfaceColor} />
+                  <ColorChip color={theme.brandColor} />
+                  <ColorChip color={theme.accentColor} />
+                  <ColorChip color={theme.textColor} />
+                  <ColorChip color={theme.mutedColor} />
                 </div>
               </div>
-            </PopoverContent>
-          </Popover>
-        )}
+            </label>
+          )}
+        />
         <div>
           {selectedColorTheme && (
             <Sheet
