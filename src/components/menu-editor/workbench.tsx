@@ -299,7 +299,10 @@ export default function Workbench({
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={70}>
-              <div className="no-scrollbar relative h-full w-full overflow-y-auto bg-gray-50 dark:bg-gray-800">
+              <div
+                id="editor-canvas"
+                className="no-scrollbar relative h-full w-full overflow-y-auto bg-gray-50 dark:bg-gray-800"
+              >
                 <SyncStatus
                   menu={menu}
                   location={location}

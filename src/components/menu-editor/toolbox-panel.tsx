@@ -60,19 +60,9 @@ export default function ToolboxPanel({
   featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
   isPro: boolean
 }) {
-  const { connectors, nodes, actions, query } = useEditor(state => ({
-    nodes: state.nodes
-  }))
+  const { connectors, actions, query } = useEditor()
   const fontThemeId = useAtomValue(fontThemeAtom)
   const colorThemeId = useAtomValue(colorThemeAtom)
-
-  useEffect(() => {
-    const rootNode = nodes.ROOT
-    // Get the first child of the ROOT node
-    console.dir(rootNode)
-    const rootNodeArray = rootNode?.data?.nodes || []
-    console.dir(rootNodeArray)
-  }, [nodes])
 
   const { data: userColorThemes } = useQuery({
     queryKey: ["themes"],

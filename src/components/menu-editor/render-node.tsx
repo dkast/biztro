@@ -1,15 +1,22 @@
-import React, { useCallback, useEffect, type ReactNode } from "react"
+import React, { useCallback, useEffect, useState, type ReactNode } from "react"
 import ReactDOM from "react-dom"
-// import { useRect } from "@/hooks/use-rect"
 import { ROOT_NODE, useEditor, useNode } from "@craftjs/core"
+import { useLayer } from "@craftjs/layers"
 import { useAtom } from "jotai"
-import { ArrowUp, Clipboard, ClipboardPaste, Move, Trash } from "lucide-react"
+import {
+  ArrowDown,
+  ArrowUp,
+  Clipboard,
+  ClipboardPaste,
+  Move,
+  Trash
+} from "lucide-react"
 
 import { elementPropsAtom } from "@/lib/atoms"
 
 export const RenderNode = ({ render }: { render: ReactNode }) => {
   const { id } = useNode()
-  const { actions, query, isActive } = useEditor((_, query) => ({
+  const { actions, query, isActive } = useEditor((_state, query) => ({
     isActive: query.getEvent("selected").contains(id)
   }))
 
@@ -32,10 +39,8 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
     props: node.data.props
   }))
 
-  // const currentRef = useRef<HTMLDivElement>()
-  // const rect = useRect(dom)
-  // const [propsCopy, setPropsCopy] = useRecoilState(propState)
   const [propsCopy, setPropsCopy] = useAtom(elementPropsAtom)
+  const [scrollPosition, setScrollPosition] = useState(0) // New state for scroll position
 
   useEffect(() => {
     if (dom) {
@@ -46,16 +51,30 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
     }
   }, [dom, isActive, isHover])
 
+  // Listen for scroll events in the editor canvas to update the position of the context menu
+  useEffect(() => {
+    const editorCanvas = document.getElementById("editor-canvas")
+    const handleScroll = () => {
+      setScrollPosition(Date.now()) // Update state to trigger getPos
+    }
+
+    const debounceHandleScroll = debounce(handleScroll, 200) // Debounce the scroll handler
+
+    editorCanvas?.addEventListener("scroll", debounceHandleScroll)
+    return () => {
+      editorCanvas?.removeEventListener("scroll", debounceHandleScroll)
+    }
+  }, [])
+
   const getPos = useCallback(() => {
     const { top, left, bottom } = dom
       ? dom.getBoundingClientRect()
       : { top: 0, left: 0, bottom: 0 }
-    // console.dir(dom)
     return {
       top: `${top > 0 ? top : bottom}px`,
       left: `${left}px`
     }
-  }, [dom])
+  }, [dom, scrollPosition]) // Added scrollPosition to dependencies to trigger re-render on scroll
 
   const onPasteProps = (clonedProps: unknown) => {
     actions.setProp(id, props => {
@@ -99,10 +118,22 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
                 <button
                   className="cursor-pointer active:scale-90"
                   onClick={() => {
-                    actions.selectNode(parent ?? undefined)
+                    // actions.selectNode(parent ?? undefined)
+                    actions.move(id, parent ?? ROOT_NODE, 1) // TODO: find the index of the current node
                   }}
                 >
                   <ArrowUp className="size-3.5" />
+                </button>
+              )}
+              {id !== ROOT_NODE && (
+                <button
+                  className="cursor-pointer active:scale-90"
+                  onClick={() => {
+                    // actions.selectNode(parent ?? undefined)
+                    actions.move(id, parent ?? ROOT_NODE, 1) // TODO: find the index of the current node
+                  }}
+                >
+                  <ArrowDown className="size-3.5" />
                 </button>
               )}
               {deletable ? (
@@ -139,4 +170,15 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
       {render}
     </>
   )
+}
+
+// Debounce function implementation
+function debounce(func: () => void, wait: number) {
+  let timeout: NodeJS.Timeout
+  return () => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => {
+      func()
+    }, wait)
+  }
 }
