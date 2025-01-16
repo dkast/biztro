@@ -17,6 +17,7 @@ import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import ItemBlock from "@/components/menu-editor/blocks/item-block"
 import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
+import { BottomBar } from "@/components/menu-editor/bottom-bar"
 import FloatingBar from "@/components/menu-editor/floating-bar"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
 import MenuPublish from "@/components/menu-editor/menu-publish"
@@ -52,7 +53,7 @@ import { colorThemeAtom, fontThemeAtom, frameSizeAtom } from "@/lib/atoms"
 import { FrameSize } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
-enum PanelType {
+export enum PanelType {
   SETTINGS = "settings",
   TOOLBOX = "toolbox",
   LAYERS = "layers",
@@ -165,6 +166,13 @@ export default function Workbench({
             <Header className="relative py-4">
               <MenuPublish menu={menu} />
             </Header>
+            <SyncStatus
+              menu={menu}
+              location={location}
+              categories={categories}
+              featuredItems={featuredItems}
+              soloItems={soloItems}
+            />
             <div className="pb-20">
               <Frame data={json}>
                 <Element is={ContainerBlock} canvas>
@@ -175,79 +183,12 @@ export default function Workbench({
                   />
                 </Element>
               </Frame>
-              <div className="fixed bottom-0 z-10 flex w-full flex-row items-center justify-between border-t bg-gray-50 px-8 pb-2 pt-1 dark:border-gray-700 dark:bg-gray-800">
-                <div className="flex flex-col items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full"
-                    onClick={() => {
-                      setActivePanel(PanelType.TOOLBOX)
-                      setIsOpen(true)
-                    }}
-                  >
-                    <SquarePlus className="size-6" />
-                  </Button>
-                  <span className="text-xs text-gray-600 dark:text-gray-300">
-                    Elementos
-                  </span>
-                </div>
-                <div className="flex flex-col items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full"
-                    onClick={() => {
-                      setActivePanel(PanelType.THEME)
-                      setIsOpen(true)
-                    }}
-                  >
-                    <SwatchBook className="size-6" />
-                  </Button>
-                  <span className="text-xs text-gray-600 dark:text-gray-300">
-                    Temas
-                  </span>
-                </div>
-                <div className="flex flex-col items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full"
-                    onClick={() => {
-                      setActivePanel(PanelType.LAYERS)
-                      setIsOpen(true)
-                    }}
-                  >
-                    <LayoutList className="size-6" />
-                  </Button>
-                  <span className="text-xs text-gray-600 dark:text-gray-300">
-                    Secciones
-                  </span>
-                </div>
-                <div className="flex flex-col items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full"
-                    onClick={() => {
-                      setActivePanel(PanelType.SETTINGS)
-                      setIsOpen(true)
-                    }}
-                  >
-                    <Settings2 className="size-6" />
-                  </Button>
-                  <span className="text-xs text-gray-600 dark:text-gray-300">
-                    Ajustes
-                  </span>
-                </div>
-              </div>
-              <Drawer open={isOpen} onOpenChange={setIsOpen}>
-                <DrawerContent>
-                  <ScrollArea className="h-[80vh]">
-                    {getPanelContent()}
-                  </ScrollArea>
-                </DrawerContent>
-              </Drawer>
+              <BottomBar
+                setActivePanel={setActivePanel}
+                setIsOpen={setIsOpen}
+                isOpen={isOpen}
+                getPanelContent={getPanelContent}
+              />
             </div>
           </Editor>
         </div>

@@ -446,7 +446,7 @@ function QrCodeEditor({
             </div>
           </div>
         </div>
-        <div className="min-w-40">
+        <div className="sm:min-w-40">
           <form className="grid w-full items-start gap-6">
             <fieldset className="grid gap-6 rounded-lg border p-4 dark:border-gray-800">
               <legend className="-ml-1 px-1 text-sm font-medium">
