@@ -5,12 +5,7 @@ import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Organization, Prisma } from "@prisma/client"
 import { useAtom, useSetAtom } from "jotai"
-import {
-  Layers as LayersIcon,
-  Settings2,
-  SquarePlus,
-  SwatchBook
-} from "lucide-react"
+import { LayoutList, Settings2, SquarePlus, SwatchBook } from "lucide-react"
 import lz from "lzutf8"
 
 import Header from "@/components/dashboard/header"
@@ -139,7 +134,7 @@ export default function Workbench({
         return (
           <>
             <DrawerHeader>
-              <DrawerTitle>Capas</DrawerTitle>
+              <DrawerTitle>Secciones</DrawerTitle>
             </DrawerHeader>
             <Layers renderLayer={DefaultLayer} />
           </>
@@ -177,7 +172,7 @@ export default function Workbench({
                   />
                 </Element>
               </Frame>
-              <div className="fixed bottom-0 flex w-full flex-row items-center justify-between bg-gray-50 px-8 pb-4 pt-4 dark:border-t dark:border-gray-700 dark:bg-gray-800">
+              <div className="fixed bottom-0 z-10 flex w-full flex-row items-center justify-between border-t bg-gray-50 px-8 py-3 dark:border-gray-700 dark:bg-gray-800">
                 <div className="flex flex-col items-center gap-1">
                   <Button
                     variant="ghost"
@@ -188,7 +183,7 @@ export default function Workbench({
                       setIsOpen(true)
                     }}
                   >
-                    <SquarePlus className="size-8" />
+                    <SquarePlus className="size-6" />
                   </Button>
                   <span className="text-xs text-gray-600 dark:text-gray-300">
                     Elementos
@@ -204,7 +199,7 @@ export default function Workbench({
                       setIsOpen(true)
                     }}
                   >
-                    <SwatchBook className="size-8" />
+                    <SwatchBook className="size-6" />
                   </Button>
                   <span className="text-xs text-gray-600 dark:text-gray-300">
                     Temas
@@ -220,10 +215,10 @@ export default function Workbench({
                       setIsOpen(true)
                     }}
                   >
-                    <LayersIcon className="size-8" />
+                    <LayoutList className="size-6" />
                   </Button>
                   <span className="text-xs text-gray-600 dark:text-gray-300">
-                    Capas
+                    Secciones
                   </span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
@@ -236,7 +231,7 @@ export default function Workbench({
                       setIsOpen(true)
                     }}
                   >
-                    <Settings2 className="size-8" />
+                    <Settings2 className="size-6" />
                   </Button>
                   <span className="text-xs text-gray-600 dark:text-gray-300">
                     Ajustes

@@ -134,7 +134,7 @@ export default function CategorySettings() {
                 )
               }
             >
-              <TabsList className="p-0.5 sm:h-8">
+              <TabsList className="h-8 p-0.5">
                 <TabsTrigger value="left">
                   <AlignLeft className="size-3.5" />
                 </TabsTrigger>

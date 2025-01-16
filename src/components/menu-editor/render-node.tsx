@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState, type ReactNode } from "react"
 import ReactDOM from "react-dom"
 import { ROOT_NODE, useEditor, useNode } from "@craftjs/core"
-import { useLayer } from "@craftjs/layers"
 import { useAtom } from "jotai"
 import {
   ArrowDown,
@@ -9,15 +8,18 @@ import {
   Clipboard,
   ClipboardPaste,
   Move,
+  SquareMousePointer,
   Trash
 } from "lucide-react"
 
+import { useIsMobile } from "@/hooks/use-mobile"
 import { elementPropsAtom } from "@/lib/atoms"
 
 export const RenderNode = ({ render }: { render: ReactNode }) => {
   const { id } = useNode()
-  const { actions, query, isActive } = useEditor((_state, query) => ({
-    isActive: query.getEvent("selected").contains(id)
+  const { actions, query, isActive, nodes } = useEditor((_state, query) => ({
+    isActive: query.getEvent("selected").contains(id),
+    nodes: query.node(ROOT_NODE).decendants()
   }))
 
   const {
@@ -39,8 +41,17 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
     props: node.data.props
   }))
 
+  const isMobile = useIsMobile()
+
   const [propsCopy, setPropsCopy] = useAtom(elementPropsAtom)
   const [scrollPosition, setScrollPosition] = useState(0) // New state for scroll position
+  const [index, setIndex] = useState<number>(-1) // Added state for index
+
+  useEffect(() => {
+    if (!isActive) return
+    setIndex(nodes.findIndex((node: string) => node === id))
+    console.log("index", index)
+  }, [isActive, nodes, id, index])
 
   useEffect(() => {
     if (dom) {
@@ -95,16 +106,17 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
         ? ReactDOM.createPortal(
             <div
               // ref={currentRef}
-              className="fixed z-40 -mt-7 flex h-6 items-center gap-3 rounded bg-gray-800 px-2 py-2 text-xs text-white dark:bg-gray-900"
+              className="fixed z-40 flex h-8 items-center gap-5 rounded bg-gray-800 p-4 text-xs text-white shadow dark:bg-gray-900 sm:-mt-7 sm:h-6 sm:gap-3 sm:p-2"
               style={{
-                left: getPos().left,
-                top: getPos().top
+                left: isMobile ? "auto" : getPos().left,
+                top: getPos().top,
+                right: isMobile ? 10 : "auto"
               }}
             >
               <h2 className="flex">{name}</h2>
               {moveable ? (
                 <span
-                  className="cursor-move"
+                  className="hidden cursor-move sm:block"
                   ref={ref => {
                     if (ref) {
                       drag(ref)
@@ -118,22 +130,24 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
                 <button
                   className="cursor-pointer active:scale-90"
                   onClick={() => {
-                    // actions.selectNode(parent ?? undefined)
-                    actions.move(id, parent ?? ROOT_NODE, 1) // TODO: find the index of the current node
+                    const newIndex = index - 1
+                    console.log("move up", newIndex)
+                    actions.move(id, parent ?? ROOT_NODE, newIndex)
                   }}
                 >
-                  <ArrowUp className="size-3.5" />
+                  <ArrowUp className="size-5 sm:size-3.5" />
                 </button>
               )}
               {id !== ROOT_NODE && (
                 <button
                   className="cursor-pointer active:scale-90"
                   onClick={() => {
-                    // actions.selectNode(parent ?? undefined)
-                    actions.move(id, parent ?? ROOT_NODE, 1) // TODO: find the index of the current node
+                    const newIndex = index + 2
+                    console.log("move down", newIndex)
+                    actions.move(id, parent ?? ROOT_NODE, newIndex)
                   }}
                 >
-                  <ArrowDown className="size-3.5" />
+                  <ArrowDown className="size-5 sm:size-3.5" />
                 </button>
               )}
               {deletable ? (
@@ -141,10 +155,20 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
                   className="cursor-pointer active:scale-90"
                   onMouseDown={(e: React.MouseEvent) => {
                     e.stopPropagation()
-                    actions.delete(id)
+                    if (isMobile) {
+                      if (
+                        window.confirm(
+                          "¿Estás seguro de remover este elemento?"
+                        )
+                      ) {
+                        actions.delete(id)
+                      }
+                    } else {
+                      actions.delete(id)
+                    }
                   }}
                 >
-                  <Trash className="size-3.5" />
+                  <Trash className="size-5 sm:size-3.5" />
                 </button>
               ) : null}
               <button
@@ -153,16 +177,26 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
                   onCopyProps(props)
                 }}
               >
-                <Clipboard className="size-3.5" />
+                <Clipboard className="size-5 sm:size-3.5" />
               </button>
               {Object.keys(propsCopy).length !== 0 ? (
                 <button
                   className="cursor-pointer active:scale-90"
                   onClick={() => onPasteProps(propsCopy)}
                 >
-                  <ClipboardPaste className="size-3.5" />
+                  <ClipboardPaste className="size-5 sm:size-3.5" />
                 </button>
               ) : null}
+              {id !== ROOT_NODE && (
+                <button
+                  className="cursor-pointer active:scale-90"
+                  onClick={() => {
+                    actions.selectNode(parent ?? undefined)
+                  }}
+                >
+                  <SquareMousePointer className="size-5 sm:size-3.5" />
+                </button>
+              )}
             </div>,
             document.querySelector(".page-container") ?? document.body
           )
