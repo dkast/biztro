@@ -94,7 +94,7 @@ export default function MenuPublish({
   } = useAction(updateMenuSerialData, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Menú actualizado")
+        toast.success("Cambios guardados")
         queryClient.invalidateQueries({
           queryKey: ["menu", menu?.id]
         })
@@ -138,7 +138,7 @@ export default function MenuPublish({
   }
 
   return (
-    <div className="editor-published flex justify-end gap-2">
+    <div className="editor-published flex justify-end gap-4 sm:gap-2">
       <TooltipHelper content="Vista previa">
         <div>
           <GuardLink href={`/menu-editor/${menu.id}/preview`}>
@@ -351,7 +351,12 @@ export default function MenuPublish({
         </PopoverContent>
       </Popover>
       <TooltipHelper content="Ayuda">
-        <Button size="xs" variant="ghost" onClick={() => setMenuTour(true)}>
+        <Button
+          size="xs"
+          variant="ghost"
+          onClick={() => setMenuTour(true)}
+          className="hidden sm:block"
+        >
           <CircleHelp className="size-4" />
         </Button>
       </TooltipHelper>

@@ -19,6 +19,7 @@ import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import FloatingBar from "@/components/menu-editor/floating-bar"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
+import MenuPublish from "@/components/menu-editor/menu-publish"
 import MenuTour from "@/components/menu-editor/menu-tour"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
@@ -148,7 +149,6 @@ export default function Workbench({
     <div className="absolute inset-0">
       {isMobile ? (
         <div className={cn("flex h-full flex-col bg-gray-50 dark:bg-gray-800")}>
-          <Header className="relative py-4" />
           <Editor
             resolver={{
               ContainerBlock,
@@ -162,6 +162,9 @@ export default function Workbench({
             }}
             onRender={RenderNode}
           >
+            <Header className="relative py-4">
+              <MenuPublish menu={menu} />
+            </Header>
             <div className="pb-20">
               <Frame data={json}>
                 <Element is={ContainerBlock} canvas>
@@ -172,7 +175,7 @@ export default function Workbench({
                   />
                 </Element>
               </Frame>
-              <div className="fixed bottom-0 z-10 flex w-full flex-row items-center justify-between border-t bg-gray-50 px-8 py-3 dark:border-gray-700 dark:bg-gray-800">
+              <div className="fixed bottom-0 z-10 flex w-full flex-row items-center justify-between border-t bg-gray-50 px-8 pb-2 pt-1 dark:border-gray-700 dark:bg-gray-800">
                 <div className="flex flex-col items-center gap-1">
                   <Button
                     variant="ghost"
