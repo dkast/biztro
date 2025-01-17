@@ -91,7 +91,7 @@ export default function MenuPublish({
   })
 
   // Verify if the menu theme has changed
-  const { setUnsavedChanges: _, clearUnsavedChanges } = useSetUnsavedChanges()
+  const { clearUnsavedChanges } = useSetUnsavedChanges()
   const {
     execute: updateSerialData,
     status: statusSerialData,
