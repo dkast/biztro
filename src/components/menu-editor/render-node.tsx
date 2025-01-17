@@ -50,7 +50,6 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
   useEffect(() => {
     if (!isActive) return
     setIndex(nodes.findIndex((node: string) => node === id))
-    console.log("index", index)
   }, [isActive, nodes, id, index])
 
   useEffect(() => {
@@ -131,7 +130,6 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
                   className="cursor-pointer active:scale-90"
                   onClick={() => {
                     const newIndex = index - 1
-                    console.log("move up", newIndex)
                     actions.move(id, parent ?? ROOT_NODE, newIndex)
                   }}
                 >
@@ -143,7 +141,6 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
                   className="cursor-pointer active:scale-90"
                   onClick={() => {
                     const newIndex = index + 2
-                    console.log("move down", newIndex)
                     actions.move(id, parent ?? ROOT_NODE, newIndex)
                   }}
                 >

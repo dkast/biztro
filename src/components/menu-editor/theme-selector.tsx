@@ -326,6 +326,8 @@ export default function ThemeSelector({
 
   useEffect(() => {
     if (menu) {
+      console.log("Menu Font and Color", menu?.fontTheme, menu?.colorTheme)
+      console.log("Selected Font and Color", fontThemeId, colorThemeId)
       if (
         menu?.fontTheme !== fontThemeId ||
         menu?.colorTheme !== colorThemeId

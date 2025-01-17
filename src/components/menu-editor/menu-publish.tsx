@@ -26,7 +26,10 @@ import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
-import { GuardLink } from "@/components/dashboard/unsaved-changes-provider"
+import {
+  GuardLink,
+  useSetUnsavedChanges
+} from "@/components/dashboard/unsaved-changes-provider"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -87,6 +90,8 @@ export default function MenuPublish({
     }
   })
 
+  // Verify if the menu theme has changed
+  const { setUnsavedChanges: _, clearUnsavedChanges } = useSetUnsavedChanges()
   const {
     execute: updateSerialData,
     status: statusSerialData,
@@ -100,6 +105,8 @@ export default function MenuPublish({
         })
         // Reset history to avoid undoing the update
         actions.history.clear()
+        // Clear unsaved changes
+        clearUnsavedChanges()
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
