@@ -13,4 +13,9 @@ export const colorThemeAtom = atom("DEFAULT")
 
 export const tourModeAtom = atomWithStorage("tourMode", true)
 
+export const onboardingCardsCollapsedAtom = atomWithStorage(
+  "onboardingCardsCollapsed",
+  false
+)
+
 export const colorListAtom = atom<(typeof colorThemes)[0][]>([])
