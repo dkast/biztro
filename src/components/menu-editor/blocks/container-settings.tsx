@@ -36,7 +36,7 @@ export default function ContainerSettings() {
               )
             }
           >
-            <SelectTrigger className="h-7 text-xs focus:ring-transparent">
+            <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
               <SelectValue placeholder="Selecciona" />
             </SelectTrigger>
             <SelectContent>

@@ -18,11 +18,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { duplicateMenu } from "@/server/actions/menu/mutations"
 import MenuCreate from "@/app/dashboard/menu-create"
 import MenuDelete from "@/app/dashboard/menu-delete"
+import { MenuRename } from "@/app/dashboard/menu-rename"
 import { BasicPlanLimits, MenuStatus } from "@/lib/types"
 
 export default function MenuList({ menus }: { menus: Menu[] }) {
@@ -45,6 +47,7 @@ export default function MenuList({ menus }: { menus: Menu[] }) {
 
 function MenuCard({ menu, index }: { menu: Menu; index: number }) {
   const [openDelete, setOpenDelete] = useState<boolean>(false)
+  const [openRename, setOpenRename] = useState<boolean>(false)
   const [showUpgrade, setShowUpgrade] = useState(false)
   const bgGradient = { background: gradient(menu.id) }
 
@@ -148,6 +151,10 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
                   >
                     <span>Duplicar</span>
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setOpenRename(true)}>
+                    <span>Renombrar</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => setOpenDelete(true)}>
                     <span className="text-red-500">Eliminar</span>
                   </DropdownMenuItem>
@@ -155,6 +162,7 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
               </DropdownMenu>
             </AlertDialog>
             <MenuDelete menu={menu} open={openDelete} setOpen={setOpenDelete} />
+            <MenuRename menu={menu} open={openRename} setOpen={setOpenRename} />
           </div>
         </div>
       </motion.div>

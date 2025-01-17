@@ -15,6 +15,7 @@ import type {
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
+import { useIsMobile } from "@/hooks/use-mobile"
 import difference from "@/lib/difference"
 
 type MenuData = {
@@ -190,6 +191,7 @@ export default function SyncStatus({
 }) {
   const { actions } = useEditor()
   const [syncReq, setSyncReq] = useState(false)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     if (!menu?.serialData) return
@@ -347,17 +349,17 @@ export default function SyncStatus({
   return (
     <>
       {syncReq && (
-        <div className="m-2 rounded-lg bg-indigo-100 px-4 py-2 dark:bg-indigo-900/50">
-          <div className="flex justify-between">
+        <div className="z-50 bg-indigo-100 px-4 py-2 dark:bg-indigo-900/50 sm:m-2 sm:rounded-lg">
+          <div className="flex flex-col justify-between gap-2 sm:flex-row">
             <div className="flex items-center gap-x-3">
-              <RefreshCcw className="size-4 text-indigo-400" />
+              <RefreshCcw className="size-8 text-indigo-400 sm:size-4" />
               <span className="text-sm text-indigo-700 dark:text-indigo-300">
-                La información del negocio o productos ha cambiado, puedes
-                sincronizar para aplicar los últimos cambios
+                La información del negocio o productos ha cambiado, sincroniza
+                para aplicar los cambios
               </span>
             </div>
             <Button
-              variant="link"
+              variant={isMobile ? "outline" : "link"}
               size="xs"
               className="text-indigo-700 dark:text-indigo-300"
               onClick={() => syncState()}

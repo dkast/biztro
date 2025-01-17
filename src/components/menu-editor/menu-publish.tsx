@@ -26,7 +26,10 @@ import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
-import { GuardLink } from "@/components/dashboard/unsaved-changes-provider"
+import {
+  GuardLink,
+  useSetUnsavedChanges
+} from "@/components/dashboard/unsaved-changes-provider"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -87,6 +90,8 @@ export default function MenuPublish({
     }
   })
 
+  // Verify if the menu theme has changed
+  const { clearUnsavedChanges } = useSetUnsavedChanges()
   const {
     execute: updateSerialData,
     status: statusSerialData,
@@ -94,12 +99,14 @@ export default function MenuPublish({
   } = useAction(updateMenuSerialData, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Menú actualizado")
+        toast.success("Cambios guardados")
         queryClient.invalidateQueries({
           queryKey: ["menu", menu?.id]
         })
         // Reset history to avoid undoing the update
         actions.history.clear()
+        // Clear unsaved changes
+        clearUnsavedChanges()
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
@@ -138,7 +145,7 @@ export default function MenuPublish({
   }
 
   return (
-    <div className="editor-published flex justify-end gap-2">
+    <div className="editor-published flex justify-end gap-4 sm:gap-2">
       <TooltipHelper content="Vista previa">
         <div>
           <GuardLink href={`/menu-editor/${menu.id}/preview`}>
@@ -351,7 +358,12 @@ export default function MenuPublish({
         </PopoverContent>
       </Popover>
       <TooltipHelper content="Ayuda">
-        <Button size="xs" variant="ghost" onClick={() => setMenuTour(true)}>
+        <Button
+          size="xs"
+          variant="ghost"
+          onClick={() => setMenuTour(true)}
+          className="hidden sm:block"
+        >
           <CircleHelp className="size-4" />
         </Button>
       </TooltipHelper>
@@ -441,7 +453,7 @@ function QrCodeEditor({
             </div>
           </div>
         </div>
-        <div className="min-w-40">
+        <div className="sm:min-w-40">
           <form className="grid w-full items-start gap-6">
             <fieldset className="grid gap-6 rounded-lg border p-4 dark:border-gray-800">
               <legend className="-ml-1 px-1 text-sm font-medium">

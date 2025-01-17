@@ -63,7 +63,7 @@ export default function FeaturedBlock({
             connect(ref)
           }
         }}
-        className="flex items-center justify-center gap-2"
+        className="flex items-center justify-center gap-2 text-gray-500"
       >
         <CircleAlert className="size-4" />
         <span>No hay elementos recomendados</span>

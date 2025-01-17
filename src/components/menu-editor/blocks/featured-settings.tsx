@@ -26,7 +26,7 @@ export default function FeaturedSettings() {
         </dt>
         <dd className="flex items-center">
           <Switch
-            className="scale-75"
+            className="sm:scale-75"
             checked={autoPlay}
             onCheckedChange={checked => {
               setProp((props: FeaturedBlockProps) => (props.autoPlay = checked))

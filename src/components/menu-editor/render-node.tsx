@@ -1,16 +1,35 @@
-import React, { useCallback, useEffect, type ReactNode } from "react"
+import React, { useCallback, useEffect, useState, type ReactNode } from "react"
 import ReactDOM from "react-dom"
-// import { useRect } from "@/hooks/use-rect"
 import { ROOT_NODE, useEditor, useNode } from "@craftjs/core"
 import { useAtom } from "jotai"
-import { ArrowUp, Clipboard, ClipboardPaste, Move, Trash } from "lucide-react"
+import {
+  ArrowDown,
+  ArrowUp,
+  Clipboard,
+  ClipboardPaste,
+  Move,
+  SquareMousePointer,
+  Trash
+} from "lucide-react"
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { elementPropsAtom } from "@/lib/atoms"
 
 export const RenderNode = ({ render }: { render: ReactNode }) => {
   const { id } = useNode()
-  const { actions, query, isActive } = useEditor((_, query) => ({
-    isActive: query.getEvent("selected").contains(id)
+  const { actions, query, isActive, nodes } = useEditor((_state, query) => ({
+    isActive: query.getEvent("selected").contains(id),
+    nodes: query.node(ROOT_NODE).decendants()
   }))
 
   const {
@@ -32,10 +51,17 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
     props: node.data.props
   }))
 
-  // const currentRef = useRef<HTMLDivElement>()
-  // const rect = useRect(dom)
-  // const [propsCopy, setPropsCopy] = useRecoilState(propState)
+  const isMobile = useIsMobile()
+
   const [propsCopy, setPropsCopy] = useAtom(elementPropsAtom)
+  const [scrollPosition, setScrollPosition] = useState(0) // New state for scroll position
+  const [index, setIndex] = useState<number>(-1) // Added state for index
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false) // New state for alert dialog
+
+  useEffect(() => {
+    if (!isActive) return
+    setIndex(nodes.findIndex((node: string) => node === id))
+  }, [isActive, nodes, id, index])
 
   useEffect(() => {
     if (dom) {
@@ -46,16 +72,30 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
     }
   }, [dom, isActive, isHover])
 
+  // Listen for scroll events in the editor canvas to update the position of the context menu
+  useEffect(() => {
+    const editorCanvas = document.getElementById("editor-canvas")
+    const handleScroll = () => {
+      setScrollPosition(Date.now()) // Update state to trigger getPos
+    }
+
+    const debounceHandleScroll = debounce(handleScroll, 200) // Debounce the scroll handler
+
+    editorCanvas?.addEventListener("scroll", debounceHandleScroll)
+    return () => {
+      editorCanvas?.removeEventListener("scroll", debounceHandleScroll)
+    }
+  }, [])
+
   const getPos = useCallback(() => {
     const { top, left, bottom } = dom
       ? dom.getBoundingClientRect()
       : { top: 0, left: 0, bottom: 0 }
-    // console.dir(dom)
     return {
       top: `${top > 0 ? top : bottom}px`,
       left: `${left}px`
     }
-  }, [dom])
+  }, [dom, scrollPosition]) // Added scrollPosition to dependencies to trigger re-render on scroll
 
   const onPasteProps = (clonedProps: unknown) => {
     actions.setProp(id, props => {
@@ -74,69 +114,128 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
     <>
       {isActive
         ? ReactDOM.createPortal(
-            <div
-              // ref={currentRef}
-              className="fixed z-40 -mt-7 flex h-6 items-center gap-3 rounded bg-gray-800 px-2 py-2 text-xs text-white dark:bg-gray-900"
-              style={{
-                left: getPos().left,
-                top: getPos().top
-              }}
-            >
-              <h2 className="flex">{name}</h2>
-              {moveable ? (
-                <span
-                  className="cursor-move"
-                  ref={ref => {
-                    if (ref) {
-                      drag(ref)
-                    }
-                  }}
-                >
-                  <Move className="size-3" />
-                </span>
-              ) : null}
-              {id !== ROOT_NODE && (
+            <>
+              <div
+                className="fixed z-40 flex h-8 items-center gap-5 rounded bg-gray-800 p-4 text-xs text-white shadow dark:bg-gray-900 sm:-mt-7 sm:h-6 sm:gap-3 sm:p-2"
+                style={{
+                  left: isMobile ? "auto" : getPos().left,
+                  top: getPos().top,
+                  right: isMobile ? 10 : "auto"
+                }}
+              >
+                <h2 className="flex">{name}</h2>
+                {moveable ? (
+                  <span
+                    className="hidden cursor-move sm:block"
+                    ref={ref => {
+                      if (ref) {
+                        drag(ref)
+                      }
+                    }}
+                  >
+                    <Move className="size-3" />
+                  </span>
+                ) : null}
+                {id !== ROOT_NODE && (
+                  <button
+                    className="cursor-pointer active:scale-90"
+                    onClick={() => {
+                      const newIndex = index - 1
+                      actions.move(id, parent ?? ROOT_NODE, newIndex)
+                    }}
+                  >
+                    <ArrowUp className="size-5 sm:size-3.5" />
+                  </button>
+                )}
+                {id !== ROOT_NODE && (
+                  <button
+                    className="cursor-pointer active:scale-90"
+                    onClick={() => {
+                      const newIndex = index + 2
+                      actions.move(id, parent ?? ROOT_NODE, newIndex)
+                    }}
+                  >
+                    <ArrowDown className="size-5 sm:size-3.5" />
+                  </button>
+                )}
+                {deletable ? (
+                  <button
+                    className="cursor-pointer active:scale-90"
+                    onMouseDown={(e: React.MouseEvent) => {
+                      e.stopPropagation()
+                      if (isMobile) {
+                        setShowDeleteDialog(true)
+                      } else {
+                        actions.delete(id)
+                      }
+                    }}
+                  >
+                    <Trash className="size-5 sm:size-3.5" />
+                  </button>
+                ) : null}
                 <button
                   className="cursor-pointer active:scale-90"
                   onClick={() => {
-                    actions.selectNode(parent ?? undefined)
+                    onCopyProps(props)
                   }}
                 >
-                  <ArrowUp className="size-3.5" />
+                  <Clipboard className="size-5 sm:size-3.5" />
                 </button>
-              )}
-              {deletable ? (
-                <button
-                  className="cursor-pointer active:scale-90"
-                  onMouseDown={(e: React.MouseEvent) => {
-                    e.stopPropagation()
-                    actions.delete(id)
-                  }}
-                >
-                  <Trash className="size-3.5" />
-                </button>
-              ) : null}
-              <button
-                className="cursor-pointer active:scale-90"
-                onClick={() => {
-                  onCopyProps(props)
-                }}
+                {Object.keys(propsCopy).length !== 0 ? (
+                  <button
+                    className="cursor-pointer active:scale-90"
+                    onClick={() => onPasteProps(propsCopy)}
+                  >
+                    <ClipboardPaste className="size-5 sm:size-3.5" />
+                  </button>
+                ) : null}
+                {id !== ROOT_NODE && (
+                  <button
+                    className="cursor-pointer active:scale-90"
+                    onClick={() => {
+                      actions.selectNode(parent ?? undefined)
+                    }}
+                  >
+                    <SquareMousePointer className="size-5 sm:size-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <AlertDialog
+                open={showDeleteDialog}
+                onOpenChange={setShowDeleteDialog}
               >
-                <Clipboard className="size-3.5" />
-              </button>
-              {Object.keys(propsCopy).length !== 0 ? (
-                <button
-                  className="cursor-pointer active:scale-90"
-                  onClick={() => onPasteProps(propsCopy)}
-                >
-                  <ClipboardPaste className="size-3.5" />
-                </button>
-              ) : null}
-            </div>,
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirmar</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      ¿Estás seguro de remover este elemento?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => actions.delete(id)}>
+                      Remover
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>,
             document.querySelector(".page-container") ?? document.body
           )
         : null}
       {render}
     </>
   )
+}
+
+// Debounce function implementation
+function debounce(func: () => void, wait: number) {
+  let timeout: NodeJS.Timeout
+  return () => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => {
+      func()
+    }, wait)
+  }
 }
