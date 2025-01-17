@@ -41,7 +41,7 @@ export function MenuRename({
 }) {
   const form = useForm<z.infer<typeof nameSchema>>({
     resolver: zodResolver(nameSchema),
-    defaultValues: { name: menu.name ?? "Sin nombre" }
+    defaultValues: { name: menu.name ?? "" }
   })
   const queryClient = useQueryClient()
   const [name, setName] = useState(menu.name)
