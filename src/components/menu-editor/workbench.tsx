@@ -5,7 +5,6 @@ import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Organization, Prisma } from "@prisma/client"
 import { useAtom, useSetAtom } from "jotai"
-import { LayoutList, Settings2, SquarePlus, SwatchBook } from "lucide-react"
 import lz from "lzutf8"
 
 import Header from "@/components/dashboard/header"
@@ -28,13 +27,7 @@ import SyncStatus from "@/components/menu-editor/sync-status"
 import ThemeSelector from "@/components/menu-editor/theme-selector"
 import Toolbar from "@/components/menu-editor/toolbar"
 import ToolboxPanel from "@/components/menu-editor/toolbox-panel"
-import { Button } from "@/components/ui/button"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle
-} from "@/components/ui/drawer"
+import { DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import {
   ResizableHandle,
   ResizablePanel,
