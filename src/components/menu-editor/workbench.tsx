@@ -176,6 +176,7 @@ export default function Workbench({
                   />
                 </Element>
               </Frame>
+              <FloatingBar />
               <BottomBar
                 setActivePanel={setActivePanel}
                 setIsOpen={setIsOpen}
