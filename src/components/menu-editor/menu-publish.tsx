@@ -64,7 +64,10 @@ export default function MenuPublish({
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
 }) {
-  const { query, actions } = useEditor()
+  const { store, query, actions, nodes } = useEditor((state, query) => ({
+    nodes: query.getSerializedNodes()
+  }))
+
   const queryClient = useQueryClient()
   const fontTheme = useAtomValue(fontThemeAtom)
   const colorTheme = useAtomValue(colorThemeAtom)
@@ -90,6 +93,10 @@ export default function MenuPublish({
     }
   })
 
+  useEffect(() => {
+    console.dir(store.history.timeline)
+  }, [store.history.timeline, query, nodes])
+
   // Verify if the menu theme has changed
   const { clearUnsavedChanges } = useSetUnsavedChanges()
   const {
@@ -99,12 +106,13 @@ export default function MenuPublish({
   } = useAction(updateMenuSerialData, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Cambios guardados")
+        // toast.success("Cambios guardados")
         queryClient.invalidateQueries({
           queryKey: ["menu", menu?.id]
         })
         // Reset history to avoid undoing the update
-        actions.history.clear()
+        // actions.history.clear()
+
         // Clear unsaved changes
         clearUnsavedChanges()
       } else if (data?.failure.reason) {
@@ -117,6 +125,21 @@ export default function MenuPublish({
       resetSerialData()
     }
   })
+
+  const [lastSavedTimelineLength, setLastSavedTimelineLength] =
+    useState<number>(store.history.timeline.length)
+
+  useEffect(() => {
+    // Check if the timeline has more changes since the last save
+    if (store.history.timeline.length <= lastSavedTimelineLength) return
+
+    const autoSaveTimer = setTimeout(() => {
+      handleUpdateSerialData()
+      setLastSavedTimelineLength(store.history.timeline.length)
+    }, 10000)
+
+    return () => clearTimeout(autoSaveTimer)
+  }, [store.history.timeline.length, lastSavedTimelineLength, nodes])
 
   if (!menu) return null
 
