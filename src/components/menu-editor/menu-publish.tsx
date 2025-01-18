@@ -11,14 +11,14 @@ import { differenceInMinutes, formatDate, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { useAtomValue, useSetAtom } from "jotai"
 import {
+  Check,
   CircleHelp,
   Download,
   ExternalLink,
   Globe,
   Loader,
   Play,
-  QrCodeIcon,
-  Save
+  QrCodeIcon
 } from "lucide-react"
 import lz from "lzutf8"
 import { AnimatePresence, motion } from "motion/react"
@@ -188,7 +188,7 @@ export default function MenuPublish({
           {statusSerialData === "executing" ? (
             <Loader className="size-4 animate-spin" />
           ) : (
-            <Save className="size-4" />
+            <Check className="size-4" />
           )}
         </Button>
       </TooltipHelper>
@@ -241,7 +241,10 @@ export default function MenuPublish({
           </PopoverTrigger>
           {menu.publishedAt &&
             differenceInMinutes(menu.updatedAt, menu.publishedAt) >= 1 && (
-              <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-rose-500"></span>
+              <>
+                <span className="absolute -right-1 -top-1 h-3 w-3 animate-[ping_1s_ease-in-out_5] rounded-full bg-rose-400"></span>
+                <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-rose-500"></span>
+              </>
             )}
         </div>
         <PopoverContent className="w-80">
