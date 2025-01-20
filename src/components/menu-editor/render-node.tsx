@@ -29,7 +29,7 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
   const { id } = useNode()
   const { actions, query, isActive, nodes } = useEditor((_state, query) => ({
     isActive: query.getEvent("selected").contains(id),
-    nodes: query.node(ROOT_NODE).decendants()
+    nodes: query.node(ROOT_NODE).descendants()
   }))
 
   const {
