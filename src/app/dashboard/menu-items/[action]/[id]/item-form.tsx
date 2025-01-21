@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -181,6 +181,22 @@ export default function ItemForm({
   }
 
   const saveRef = React.useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (item?.variants && item.variants.length > 0) {
+      const mappedVariants = item.variants.map(variant => ({
+        name: variant.name,
+        price: variant.price,
+        id: variant.id,
+        description: variant.description ?? undefined,
+        menuItemId: variant.menuItemId
+      }))
+      form.setValue(
+        "variants",
+        mappedVariants as z.infer<typeof menuItemSchema>["variants"]
+      )
+    }
+  }, [item?.variants, form])
 
   if (!item) {
     return (
