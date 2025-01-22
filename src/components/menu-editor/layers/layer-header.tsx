@@ -1,7 +1,15 @@
 import React, { useEffect, useRef } from "react"
-import { useEditor } from "@craftjs/core"
+import { ROOT_NODE, useEditor } from "@craftjs/core"
 import { useLayer } from "@craftjs/layers"
-import { ChevronDown, ChevronUp, Eye, EyeOff, Link } from "lucide-react"
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  EyeOff,
+  Link
+} from "lucide-react"
 
 import { LayerName } from "@/components/menu-editor/layers/layer-name"
 import { cn } from "@/lib/utils"
@@ -19,16 +27,23 @@ export default function LayerHeader() {
     }
   })
 
-  const { hidden, actions, selected, topLevel } = useEditor((state, query) => {
-    // TODO: handle multiple selected elements
-    const selected = query.getEvent("selected").first() === id
+  const { hidden, actions, selected, topLevel, nodes, parent } = useEditor(
+    (state, query) => {
+      const selected = query.getEvent("selected").first() === id
+      const nodes = query.node(ROOT_NODE).descendants()
+      const parent = state.nodes[id]?.data.parent
 
-    return {
-      hidden: state.nodes[id]?.data.hidden,
-      selected,
-      topLevel: query.node(id).isTopLevelCanvas()
+      return {
+        hidden: state.nodes[id]?.data.hidden,
+        selected,
+        topLevel: query.node(id).isTopLevelCanvas(),
+        nodes,
+        parent
+      }
     }
-  })
+  )
+
+  const currentIndex = nodes.findIndex((node: string) => node === id)
 
   const divRef = useRef<HTMLDivElement>(null)
 
@@ -72,6 +87,33 @@ export default function LayerHeader() {
         <div className="layer-name grow text-sm">
           <LayerName />
         </div>
+
+        {/* Mobile-only movement buttons */}
+        <div className="mx-4 flex gap-4 sm:hidden">
+          {id !== ROOT_NODE && (
+            <button
+              className="cursor-pointer active:scale-90"
+              onClick={() => {
+                const newIndex = currentIndex - 1
+                actions.move(id, parent ?? ROOT_NODE, newIndex)
+              }}
+            >
+              <ArrowUp className="size-4" />
+            </button>
+          )}
+          {id !== ROOT_NODE && (
+            <button
+              className="cursor-pointer active:scale-90"
+              onClick={() => {
+                const newIndex = currentIndex + 2
+                actions.move(id, parent ?? ROOT_NODE, newIndex)
+              }}
+            >
+              <ArrowDown className="size-4" />
+            </button>
+          )}
+        </div>
+
         {children.length ? (
           <button onMouseDown={() => toggleLayer()} className="mr-2">
             {expanded ? (
