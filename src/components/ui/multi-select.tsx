@@ -272,11 +272,12 @@ export const MultiSelect = React.forwardRef<
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-auto p-0"
+          className="isolate z-[999] w-auto p-0"
           align="start"
+          forceMount
           onEscapeKeyDown={() => setIsPopoverOpen(false)}
         >
-          <Command>
+          <Command className="relative">
             <CommandInput
               placeholder="Buscar..."
               onKeyDown={handleInputKeyDown}
@@ -311,7 +312,7 @@ export const MultiSelect = React.forwardRef<
                     >
                       <div
                         className={cn(
-                          "mr-2 flex h-4 w-4 items-center justify-center rounded border",
+                          "!pointer-events-auto relative z-50 mr-2 flex h-4 w-4 items-center justify-center rounded border",
                           isSelected
                             ? "border-orange-500 bg-orange-500 text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
                             : "dark:opacity-50 [&_svg]:invisible"

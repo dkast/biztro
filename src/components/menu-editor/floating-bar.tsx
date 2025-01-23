@@ -69,7 +69,7 @@ export default function FloatingBar() {
   const [frameSize, setFrameSize] = useAtom(frameSizeAtom)
 
   return (
-    <div className="editor-toolbar fixed bottom-8 left-1/2 flex h-12 min-w-[200px] -translate-x-1/2 flex-row items-center justify-between rounded-full bg-gray-800 px-1 text-white shadow-lg dark:border dark:border-gray-700 dark:bg-gray-900">
+    <div className="editor-toolbar fixed bottom-20 left-1/2 flex h-12 -translate-x-1/2 flex-row items-center justify-between rounded-full bg-gray-800 px-1 text-white shadow-lg dark:border dark:border-gray-700 dark:bg-gray-900 sm:bottom-8 sm:min-w-[200px]">
       <TooltipHelper content="Deshacer">
         <Button
           disabled={!canUndo}
@@ -92,7 +92,10 @@ export default function FloatingBar() {
           <Redo2 className="size-4" />
         </Button>
       </TooltipHelper>
-      <Separator orientation="vertical" className="mx-1 h-6 bg-gray-500" />
+      <Separator
+        orientation="vertical"
+        className="mx-1 hidden h-6 bg-gray-500 sm:inline-flex"
+      />
       <TooltipHelper
         content={
           frameSize === FrameSize.MOBILE
@@ -103,7 +106,7 @@ export default function FloatingBar() {
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full"
+          className="hidden rounded-full sm:inline-flex"
           onClick={() =>
             setFrameSize(
               FrameSize.DESKTOP === frameSize
@@ -119,12 +122,15 @@ export default function FloatingBar() {
           )}
         </Button>
       </TooltipHelper>
-      <Separator orientation="vertical" className="mx-1 h-6 bg-gray-500" />
+      <Separator
+        orientation="vertical"
+        className="mx-1 hidden h-6 bg-gray-500 sm:inline-flex"
+      />
       <TooltipHelper content="Copiar estilo">
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full"
+          className="hidden rounded-full sm:inline-flex"
           onClick={() => onCopyProps()}
         >
           <Clipboard className="size-4" />
@@ -135,18 +141,21 @@ export default function FloatingBar() {
           disabled={Object.keys(propsCopy).length === 0}
           variant="ghost"
           size="icon"
-          className="rounded-full"
+          className="hidden rounded-full sm:inline-flex"
           onClick={() => onPasteProps(propsCopy)}
         >
           <ClipboardPaste className="size-4" />
         </Button>
       </TooltipHelper>
-      <Separator orientation="vertical" className="mx-1 h-6 bg-gray-500" />
+      <Separator
+        orientation="vertical"
+        className="mx-1 hidden h-6 bg-gray-500 sm:inline-flex"
+      />
       <TooltipHelper content="Restringir cambios">
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full"
+          className="hidden rounded-full sm:inline-flex"
           onClick={() =>
             actions.setOptions(options => (options.enabled = !enabled))
           }

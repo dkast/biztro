@@ -21,6 +21,7 @@ import FloatingBar from "@/components/menu-editor/floating-bar"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
 import MenuPublish from "@/components/menu-editor/menu-publish"
 import MenuTour from "@/components/menu-editor/menu-tour"
+import MenuTourMobile from "@/components/menu-editor/menu-tour-mobile"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
 import SyncStatus from "@/components/menu-editor/sync-status"
@@ -156,7 +157,7 @@ export default function Workbench({
             }}
             onRender={RenderNode}
           >
-            <Header className="relative py-4">
+            <Header className="editor-topbar relative py-4">
               <MenuPublish menu={menu} />
             </Header>
             <SyncStatus
@@ -176,12 +177,14 @@ export default function Workbench({
                   />
                 </Element>
               </Frame>
+              <FloatingBar />
               <BottomBar
                 setActivePanel={setActivePanel}
                 setIsOpen={setIsOpen}
                 isOpen={isOpen}
                 getPanelContent={getPanelContent}
               />
+              <MenuTourMobile />
             </div>
           </Editor>
         </div>

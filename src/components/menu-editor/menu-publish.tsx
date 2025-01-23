@@ -11,14 +11,14 @@ import { differenceInMinutes, formatDate, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { useAtomValue, useSetAtom } from "jotai"
 import {
+  Check,
   CircleHelp,
   Download,
   ExternalLink,
   Globe,
   Loader,
   Play,
-  QrCodeIcon,
-  Save
+  QrCodeIcon
 } from "lucide-react"
 import lz from "lzutf8"
 import { AnimatePresence, motion } from "motion/react"
@@ -64,7 +64,10 @@ export default function MenuPublish({
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
 }) {
-  const { query, actions } = useEditor()
+  const { store, query, actions, nodes } = useEditor((state, query) => ({
+    nodes: query.getSerializedNodes()
+  }))
+
   const queryClient = useQueryClient()
   const fontTheme = useAtomValue(fontThemeAtom)
   const colorTheme = useAtomValue(colorThemeAtom)
@@ -90,6 +93,10 @@ export default function MenuPublish({
     }
   })
 
+  useEffect(() => {
+    // console.dir(store.history.timeline)
+  }, [store.history.timeline, query, nodes])
+
   // Verify if the menu theme has changed
   const { clearUnsavedChanges } = useSetUnsavedChanges()
   const {
@@ -99,12 +106,13 @@ export default function MenuPublish({
   } = useAction(updateMenuSerialData, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Cambios guardados")
+        // toast.success("Cambios guardados")
         queryClient.invalidateQueries({
           queryKey: ["menu", menu?.id]
         })
         // Reset history to avoid undoing the update
-        actions.history.clear()
+        // actions.history.clear()
+
         // Clear unsaved changes
         clearUnsavedChanges()
       } else if (data?.failure.reason) {
@@ -117,6 +125,21 @@ export default function MenuPublish({
       resetSerialData()
     }
   })
+
+  const [lastSavedTimelineLength, setLastSavedTimelineLength] =
+    useState<number>(store.history.timeline.length)
+
+  useEffect(() => {
+    // Check if the timeline has more changes since the last save
+    if (store.history.timeline.length <= lastSavedTimelineLength) return
+
+    const autoSaveTimer = setTimeout(() => {
+      handleUpdateSerialData()
+      setLastSavedTimelineLength(store.history.timeline.length)
+    }, 10000)
+
+    return () => clearTimeout(autoSaveTimer)
+  }, [store.history.timeline.length, lastSavedTimelineLength, nodes])
 
   if (!menu) return null
 
@@ -165,7 +188,7 @@ export default function MenuPublish({
           {statusSerialData === "executing" ? (
             <Loader className="size-4 animate-spin" />
           ) : (
-            <Save className="size-4" />
+            <Check className="size-4" />
           )}
         </Button>
       </TooltipHelper>
@@ -218,7 +241,10 @@ export default function MenuPublish({
           </PopoverTrigger>
           {menu.publishedAt &&
             differenceInMinutes(menu.updatedAt, menu.publishedAt) >= 1 && (
-              <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-rose-500"></span>
+              <>
+                <span className="absolute -right-1 -top-1 h-3 w-3 animate-[ping_1s_ease-in-out_5] rounded-full bg-rose-400"></span>
+                <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-rose-500"></span>
+              </>
             )}
         </div>
         <PopoverContent className="w-80">

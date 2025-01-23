@@ -1,9 +1,6 @@
-import { useEffect } from "react"
-import { useEditor } from "@craftjs/core"
 import { LayoutList, Settings2, SquarePlus, SwatchBook } from "lucide-react"
 
-import { useSetUnsavedChanges } from "@/components/dashboard/unsaved-changes-provider"
-import { PanelType } from "@/components/menu-editor/workbench" // Export PanelType from workbench.tsx
+import { PanelType } from "@/components/menu-editor/workbench"
 import { Button } from "@/components/ui/button"
 import { Drawer, DrawerContent } from "@/components/ui/drawer"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -21,29 +18,9 @@ export function BottomBar({
   isOpen,
   getPanelContent
 }: BottomBarProps) {
-  const { canUndo } = useEditor((state, query) => ({
-    canUndo: query.history.canUndo()
-  }))
-
-  const { setUnsavedChanges, clearUnsavedChanges } = useSetUnsavedChanges()
-
-  useEffect(() => {
-    // console.log("canUndo", canUndo)
-    if (canUndo) {
-      setUnsavedChanges({
-        message:
-          "Tienes cambios sin guardar ¿Estás seguro de salir del Editor?",
-        dismissButtonLabel: "Cancelar",
-        proceedLinkLabel: "Descartar cambios"
-      })
-    } else {
-      clearUnsavedChanges()
-    }
-  }, [setUnsavedChanges, clearUnsavedChanges, canUndo])
-
   return (
     <>
-      <div className="fixed bottom-0 z-10 flex w-full flex-row items-center justify-between border-t bg-gray-50 px-8 pb-2 pt-1 dark:border-gray-700 dark:bg-gray-800">
+      <div className="editor-bottombar fixed bottom-0 z-10 flex w-full flex-row items-center justify-between border-t bg-gray-50 px-8 pb-2 pt-1 dark:border-gray-700 dark:bg-gray-800">
         <div className="flex flex-col items-center">
           <Button
             variant="ghost"

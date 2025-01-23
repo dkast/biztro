@@ -5,6 +5,7 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
+import { useRouter } from "next/navigation"
 import type { z } from "zod"
 
 import { Button } from "@/components/ui/button"
@@ -96,10 +97,12 @@ export function VariantCreateForm({
       menuItemId
     }
   })
+  const router = useRouter()
 
   const { execute, status, reset } = useAction(createVariant, {
     onSuccess: ({ data }) => {
       if (data?.success) {
+        router.refresh()
         onClose(false)
       } else if (data?.failure.reason) {
         toast.error(data?.failure.reason)

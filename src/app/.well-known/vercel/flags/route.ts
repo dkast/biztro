@@ -1,5 +1,5 @@
 import { verifyAccess, type ApiData } from "@vercel/flags"
-import { unstable_getProviderData as getProviderData } from "@vercel/flags/next"
+import { getProviderData } from "@vercel/flags/next"
 import { NextResponse, type NextRequest } from "next/server"
 
 import * as flags from "../../../../flags"
