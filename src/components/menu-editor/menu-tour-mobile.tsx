@@ -30,7 +30,7 @@ const steps: Step[] = [
           </li>
           <li className="flex items-center gap-2">
             <QrCode className="size-4 text-white" />
-            <span>Genera tú codigo QR y descargalo como imágen</span>
+            <span>Genera tu código QR y descargalo como imagen</span>
           </li>
           <li className="flex items-center gap-2">
             <strong className="text-white">Publicar</strong>
