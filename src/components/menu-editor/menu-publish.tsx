@@ -94,7 +94,7 @@ export default function MenuPublish({
   })
 
   useEffect(() => {
-    console.dir(store.history.timeline)
+    // console.dir(store.history.timeline)
   }, [store.history.timeline, query, nodes])
 
   // Verify if the menu theme has changed
