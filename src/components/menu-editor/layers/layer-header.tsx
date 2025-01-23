@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { ROOT_NODE, useEditor } from "@craftjs/core"
 import { useLayer } from "@craftjs/layers"
 import {
@@ -8,13 +8,26 @@ import {
   ChevronUp,
   Eye,
   EyeOff,
-  Link
+  Link,
+  PenSquare
 } from "lucide-react"
 
 import { LayerName } from "@/components/menu-editor/layers/layer-name"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 export default function LayerHeader() {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [tempName, setTempName] = useState("")
+
   const {
     id,
     expanded,
@@ -27,21 +40,24 @@ export default function LayerHeader() {
     }
   })
 
-  const { hidden, actions, selected, topLevel, nodes, parent } = useEditor(
-    (state, query) => {
+  const { hidden, actions, selected, topLevel, nodes, parent, displayName } =
+    useEditor((state, query) => {
       const selected = query.getEvent("selected").first() === id
       const nodes = query.node(ROOT_NODE).descendants()
       const parent = state.nodes[id]?.data.parent
+      const displayName = state.nodes[id]?.data.custom.displayName
+        ? state.nodes[id]?.data.custom.displayName
+        : state.nodes[id]?.data.displayName
 
       return {
         hidden: state.nodes[id]?.data.hidden,
         selected,
         topLevel: query.node(id).isTopLevelCanvas(),
         nodes,
-        parent
+        parent,
+        displayName
       }
-    }
-  )
+    })
 
   const currentIndex = nodes.findIndex((node: string) => node === id)
 
@@ -60,6 +76,11 @@ export default function LayerHeader() {
       layerHeader(headerRef.current)
     }
   }, [layerHeader])
+
+  const handleSaveName = () => {
+    actions.setCustom(id, custom => (custom.displayName = tempName))
+    setIsEditDialogOpen(false)
+  }
 
   return (
     <div
@@ -87,6 +108,13 @@ export default function LayerHeader() {
         <div className="layer-name grow text-sm">
           <LayerName />
         </div>
+
+        <button
+          className="mx-2 opacity-50 hover:opacity-100"
+          onClick={() => setIsEditDialogOpen(true)}
+        >
+          <PenSquare className="size-3.5" />
+        </button>
 
         {/* Mobile-only movement buttons */}
         <div className="mx-4 flex gap-4 sm:hidden">
@@ -124,6 +152,30 @@ export default function LayerHeader() {
           </button>
         ) : null}
       </div>
+
+      <Dialog
+        open={isEditDialogOpen}
+        onOpenChange={open => {
+          setIsEditDialogOpen(open)
+          if (open) setTempName(displayName)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar nombre</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              value={tempName}
+              onChange={e => setTempName(e.target.value)}
+              placeholder="Escribe el nombre de la sección"
+            />
+          </div>
+          <DialogFooter>
+            <Button onClick={handleSaveName}>Guardar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
