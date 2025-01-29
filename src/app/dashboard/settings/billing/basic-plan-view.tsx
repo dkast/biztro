@@ -17,8 +17,9 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { appConfig } from "@/app/config"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { checkoutWithStripe } from "@/server/actions/subscriptions/mutations"
+import { appConfig } from "@/app/config"
 import { getStripeClient } from "@/lib/stripe-client"
 import { Plan, Tiers } from "@/lib/types"
 
@@ -26,20 +27,24 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
   const theme = useTheme()
   const router = useRouter()
   const [priceIdLoading, setpriceIdLoading] = useState<string>()
+  const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">(
+    "monthly"
+  )
 
   const handleStripeCheckout = async () => {
-    // Get priceId from type of plan
-
     const tier = Tiers.find(tier => tier.id === Plan.PRO)
 
     if (!tier) {
       throw new Error("Tier not found")
     }
 
-    setpriceIdLoading(tier.priceMonthlyId)
+    const priceId =
+      billingInterval === "monthly" ? tier.priceMonthlyId : tier.priceYearlyId
+
+    setpriceIdLoading(priceId)
 
     const { errorRedirect, sessionId } = await checkoutWithStripe(
-      tier.priceMonthlyId,
+      priceId,
       "/dashboard/settings/billing"
     )
 
@@ -67,7 +72,6 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
         <CardDescription>Básico</CardDescription>
       </CardHeader>
       <CardContent>
-        {/* <Separator /> */}
         <div className="mt-2 flex flex-row gap-4">
           <div className="hidden sm:block">
             <Gauge
@@ -91,7 +95,27 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
         </div>
       </CardContent>
       <Separator />
-      <CardFooter className="justify-end py-4">
+      <CardFooter className="justify-between py-4">
+        <div>
+          <ToggleGroup
+            type="single"
+            value={billingInterval}
+            onValueChange={value =>
+              value && setBillingInterval(value as "monthly" | "yearly")
+            }
+            className="justify-center"
+          >
+            <ToggleGroupItem value="monthly" className="text-sm">
+              Mensual
+            </ToggleGroupItem>
+            <ToggleGroupItem value="yearly" className="text-sm">
+              Anual
+              <span className="ml-1.5 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-600 dark:bg-green-900 dark:text-green-300">
+                -10%
+              </span>
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
         <Button
           disabled={priceIdLoading !== undefined}
           onClick={handleStripeCheckout}
@@ -99,7 +123,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
           {priceIdLoading ? (
             <Loader className="size-4 animate-spin" />
           ) : (
-            "Actualizar a Pro"
+            `Actualizar a Pro ${billingInterval === "monthly" ? "Mensual" : "Anual"}`
           )}
         </Button>
       </CardFooter>
