@@ -20,7 +20,7 @@ export function BottomBar({
 }: BottomBarProps) {
   return (
     <>
-      <div className="editor-bottombar fixed bottom-0 z-10 flex w-full flex-row items-center justify-between border-t bg-gray-50 px-8 pb-2 pt-1 dark:border-gray-700 dark:bg-gray-800">
+      <div className="editor-bottombar fixed bottom-0 z-10 flex w-full flex-row items-center justify-between border-t bg-gray-50 px-8 pb-4 pt-1 dark:border-gray-700 dark:bg-gray-800">
         <div className="flex flex-col items-center">
           <Button
             variant="ghost"
