@@ -597,8 +597,8 @@ export const Tiers = [
     name: "Pro",
     priceMonthly: 149,
     priceYearly: 1490,
-    priceMonthlyId: "price_1QHe5WEx6h9wDx2iLqP5S1sg",
-    priceYearlyId: "price_1QHr5cEx6h9wDx2iuhTQX1Mp",
+    priceMonthlyId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY,
+    priceYearlyId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY,
     description: "Plan para negocios en crecimiento",
     features: [
       "Productos y categorías ilimitadas",

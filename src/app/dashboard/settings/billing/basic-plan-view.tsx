@@ -41,6 +41,11 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
     const priceId =
       billingInterval === "monthly" ? tier.priceMonthlyId : tier.priceYearlyId
 
+    if (!priceId) {
+      toast.error("No existe configuración de precio")
+      return
+    }
+
     setpriceIdLoading(priceId)
 
     const { errorRedirect, sessionId } = await checkoutWithStripe(
@@ -159,7 +164,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
           {priceIdLoading ? (
             <Loader className="size-4 animate-spin" />
           ) : (
-            `Actualizar a Pro ${billingInterval === "monthly" ? "Mensual" : "Anual"}`
+            `Obtener Pro ${billingInterval === "monthly" ? "Mensual" : "Anual"}`
           )}
         </Button>
       </CardFooter>
