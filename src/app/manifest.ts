@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Biztro",
     short_name: "Biztro",
-    description: "Tu solución moderna de gestión de restaurantes",
+    description: "Tu solución moderna para la gestión de restaurantes",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",
