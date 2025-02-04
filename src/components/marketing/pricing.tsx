@@ -92,7 +92,7 @@ export default function Pricing() {
               value="yearly"
               className="rounded-full data-[state=active]:bg-violet-600"
             >
-              Anual <span className="ml-1 text-violet-400">(−10%)</span>
+              Anual <span className="ml-1 text-violet-400">(−20%)</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
