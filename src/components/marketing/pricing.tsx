@@ -1,6 +1,10 @@
+"use client"
+
+import { useState } from "react"
 import { Check } from "lucide-react"
 
 import TitleSection from "@/components/marketing/title-section"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 
 const marketingTiers = [
@@ -9,6 +13,7 @@ const marketingTiers = [
     id: "tier-free",
     href: "#cta-banner",
     priceMonthly: "$0",
+    priceYearly: "$0",
     description:
       "El plan gratuito te permite comenzar a publicar tu menú en línea sin costo.",
     features: [
@@ -25,6 +30,7 @@ const marketingTiers = [
     id: "tier-pro",
     href: "#cta-banner",
     priceMonthly: "$149",
+    priceYearly: "$1,490",
     description: "Desbloquea todas las características de Biztro.",
     features: [
       "Productos ilimitados",
@@ -41,6 +47,11 @@ const marketingTiers = [
 ]
 
 export default function Pricing() {
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
+    "monthly"
+  )
+  const isYearly = billingPeriod === "yearly"
+
   return (
     <div className="relative isolate bg-gray-950 px-6 py-24 sm:py-32 lg:px-8">
       <div
@@ -60,6 +71,31 @@ export default function Pricing() {
           eyebrow="Precios"
           title="Escoge el plan correcto para tí"
         />
+      </div>
+      <div className="mx-auto mt-8 flex items-center justify-center">
+        <Tabs
+          defaultValue="monthly"
+          value={billingPeriod}
+          onValueChange={value =>
+            setBillingPeriod(value as "monthly" | "yearly")
+          }
+          className="w-fit"
+        >
+          <TabsList className="grid w-full grid-cols-2 rounded-full bg-gray-800/60">
+            <TabsTrigger
+              value="monthly"
+              className="rounded-full data-[state=active]:bg-violet-600"
+            >
+              Mensual
+            </TabsTrigger>
+            <TabsTrigger
+              value="yearly"
+              className="rounded-full data-[state=active]:bg-violet-600"
+            >
+              Anual <span className="ml-1 text-violet-400">(−10%)</span>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
       <p className="mx-auto mt-6 max-w-2xl text-pretty text-center text-lg leading-8 text-gray-400">
         Inicia con el plan gratuito, o desbloquea productos ilimitados y
@@ -97,7 +133,7 @@ export default function Pricing() {
                   "text-5xl font-bold tracking-tight"
                 )}
               >
-                {tier.priceMonthly}
+                {isYearly ? tier.priceYearly : tier.priceMonthly}
               </span>
               <span
                 className={cn(
@@ -105,7 +141,7 @@ export default function Pricing() {
                   "text-base"
                 )}
               >
-                MXN/mes
+                {isYearly ? "MXN/año" : "MXN/mes"}
               </span>
             </p>
             <p

@@ -174,6 +174,7 @@ export default function Workbench({
                     layout="modern"
                     organization={organization}
                     location={location ?? undefined}
+                    showBanner={organization.banner !== null}
                   />
                 </Element>
               </Frame>
@@ -270,6 +271,7 @@ export default function Workbench({
                           layout="modern"
                           organization={organization}
                           location={location ?? undefined}
+                          showBanner={organization.banner !== null}
                         />
                       </Element>
                     </Frame>

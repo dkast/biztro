@@ -208,7 +208,8 @@ export const updateHours = authActionClient
     if (!locationId) {
       return {
         failure: {
-          reason: "No se pudo obtener la ubicación actual"
+          reason:
+            "No has creado una sucursal. Por favor, cree una sucursal antes de agregar horarios."
         }
       }
     }

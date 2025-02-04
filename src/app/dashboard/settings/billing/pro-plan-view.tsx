@@ -7,9 +7,9 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { CustomerPortalButton } from "@/app/dashboard/settings/billing/customer-portal-button"
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
+import { CustomerPortalButton } from "@/app/dashboard/settings/billing/customer-portal-button"
 import { Tiers } from "@/lib/types"
 
 export async function ProPlanView() {
@@ -72,14 +72,20 @@ export async function ProPlanView() {
           <div>
             <div className="text-sm text-gray-500">Precio</div>
             <div className="text-base font-medium">
-              {Tiers.find(t => t.id === org.plan)?.priceMonthly
-                ? `${new Intl.NumberFormat("es-MX", {
-                    style: "currency",
-                    currency: "MXN"
-                  }).format(
-                    Tiers.find(t => t.id === org.plan)?.priceMonthly ?? 0
-                  )} MXN/mes`
-                : "N/A"}
+              {(() => {
+                const tier = Tiers.find(
+                  t =>
+                    t.priceMonthlyId === subscription.priceId ||
+                    t.priceYearlyId === subscription.priceId
+                )
+                if (!tier) return "N/A"
+                const isMonthly = tier.priceMonthlyId === subscription.priceId
+                const price = isMonthly ? tier.priceMonthly : tier.priceYearly
+                return `${new Intl.NumberFormat("es-MX", {
+                  style: "currency",
+                  currency: "MXN"
+                }).format(price)} MXN/${isMonthly ? "mes" : "año"}`
+              })()}
             </div>
           </div>
           <div>

@@ -17,8 +17,9 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { appConfig } from "@/app/config"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { checkoutWithStripe } from "@/server/actions/subscriptions/mutations"
+import { appConfig } from "@/app/config"
 import { getStripeClient } from "@/lib/stripe-client"
 import { Plan, Tiers } from "@/lib/types"
 
@@ -26,20 +27,29 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
   const theme = useTheme()
   const router = useRouter()
   const [priceIdLoading, setpriceIdLoading] = useState<string>()
+  const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">(
+    "monthly"
+  )
 
   const handleStripeCheckout = async () => {
-    // Get priceId from type of plan
-
     const tier = Tiers.find(tier => tier.id === Plan.PRO)
 
     if (!tier) {
       throw new Error("Tier not found")
     }
 
-    setpriceIdLoading(tier.priceMonthlyId)
+    const priceId =
+      billingInterval === "monthly" ? tier.priceMonthlyId : tier.priceYearlyId
+
+    if (!priceId) {
+      toast.error("No existe configuración de precio")
+      return
+    }
+
+    setpriceIdLoading(priceId)
 
     const { errorRedirect, sessionId } = await checkoutWithStripe(
-      tier.priceMonthlyId,
+      priceId,
       "/dashboard/settings/billing"
     )
 
@@ -67,14 +77,13 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
         <CardDescription>Básico</CardDescription>
       </CardHeader>
       <CardContent>
-        {/* <Separator /> */}
         <div className="mt-2 flex flex-row gap-4">
           <div className="hidden sm:block">
             <Gauge
               value={itemCount * 10}
               showAnimation
               size="sm"
-              primary="#2563eb"
+              primary="#8b5cf6"
               secondary={theme.resolvedTheme === "dark" ? "#212121" : "#cfcfcf"}
             />
           </div>
@@ -89,6 +98,62 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
             </p>
           </div>
         </div>
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="sm:col-start-2">
+            <ToggleGroup
+              type="single"
+              value={billingInterval}
+              onValueChange={value =>
+                value && setBillingInterval(value as "monthly" | "yearly")
+              }
+              className="justify-center"
+            >
+              <ToggleGroupItem value="monthly" className="text-sm">
+                Mensual
+              </ToggleGroupItem>
+              <ToggleGroupItem value="yearly" className="text-sm">
+                Anual
+                <span className="ml-1.5 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-600 dark:bg-green-900 dark:text-green-300">
+                  -10%
+                </span>
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+          {Tiers.map(tier => (
+            <Card
+              key={tier.id}
+              className={
+                tier.id === Plan.PRO
+                  ? "border-violet-500 dark:border-violet-500"
+                  : "hidden border-dashed sm:block"
+              }
+            >
+              <CardHeader>
+                <div>
+                  <CardTitle className="text-sm">
+                    {`Plan ${tier.name}`}
+                  </CardTitle>
+                  {tier.id === Plan.PRO ? (
+                    <div className="mt-1 text-sm">
+                      {billingInterval === "monthly"
+                        ? `${new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(tier.priceMonthly)} MXN/mes`
+                        : `${new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(tier.priceYearly)} MXN/año`}
+                    </div>
+                  ) : (
+                    <div className="mt-1 text-sm text-gray-500">Gratis</div>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm">
+                  {tier.features.map(feature => (
+                    <li key={feature}>• {feature}</li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </CardContent>
       <Separator />
       <CardFooter className="justify-end py-4">
@@ -99,7 +164,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
           {priceIdLoading ? (
             <Loader className="size-4 animate-spin" />
           ) : (
-            "Actualizar a Pro"
+            `Obtener Pro ${billingInterval === "monthly" ? "Mensual" : "Anual"}`
           )}
         </Button>
       </CardFooter>
