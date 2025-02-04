@@ -3,6 +3,7 @@
 import { unstable_cache as cache } from "next/cache"
 
 import prisma from "@/lib/prisma"
+import { SubscriptionStatus } from "@/lib/types"
 import { env } from "@/env.mjs"
 
 /**
@@ -109,6 +110,34 @@ export async function getOrganizationOnboardingStatus(id: string) {
     {
       revalidate: 900,
       tags: [`organization-${id}-onboarding`]
+    }
+  )()
+}
+
+/**
+ * Retrieves all active organizations.
+ * @returns A promise that resolves to an array of organizations with their subdomains.
+ */
+export async function getAllActiveOrganizations() {
+  return await cache(
+    async () => {
+      const orgs = await prisma.organization.findMany({
+        where: {
+          OR: [
+            { status: SubscriptionStatus.ACTIVE },
+            { status: SubscriptionStatus.TRIALING }
+          ]
+        },
+        select: {
+          subdomain: true
+        }
+      })
+      return orgs
+    },
+    ["all-active-organizations"],
+    {
+      revalidate: 3600,
+      tags: ["all-active-organizations"]
     }
   )()
 }

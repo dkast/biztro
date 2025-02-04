@@ -7,10 +7,31 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import GradientBlur from "@/components/flare-ui/gradient-blur"
-import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { getMenuByOrgSubdomain } from "@/server/actions/menu/queries"
-import { getOrganizationBySubdomain } from "@/server/actions/organization/queries"
+import {
+  getAllActiveOrganizations,
+  getOrganizationBySubdomain
+} from "@/server/actions/organization/queries"
+import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { SubscriptionStatus } from "@/lib/types"
+
+// ISR configuration is correct:
+// - revalidate is set to 3600 (1 hour)
+// - dynamicParams is true and generateStaticParams properly returns prerender paths.
+
+// Add revalidation time (e.g., 1 hour)
+export const revalidate = 3600
+
+// Add dynamic params configuration
+export const dynamicParams = true
+
+// Add generateStaticParams to pre-render specific paths
+export async function generateStaticParams() {
+  const organizations = await getAllActiveOrganizations()
+  return organizations.map(({ subdomain }) => ({
+    subdomain
+  }))
+}
 
 export async function generateMetadata(
   props: {
@@ -41,10 +62,10 @@ export async function generateMetadata(
   }
 }
 
-export async function generateViewport(props0: {
+export async function generateViewport(props: {
   params: Promise<{ subdomain: string }>
 }): Promise<Viewport> {
-  const params = await props0.params
+  const params = await props.params
   const siteMenu = await getMenuByOrgSubdomain(params.subdomain)
 
   if (!params.subdomain || !siteMenu) {
@@ -86,13 +107,15 @@ export async function generateViewport(props0: {
 //   themeColor: "#000000"
 // }
 
-export default async function SitePage(props0: {
+export default async function SitePage(props: {
   params: Promise<{ subdomain: string }>
 }) {
-  const params = await props0.params
+  const params = await props.params
   const siteMenu = await getMenuByOrgSubdomain(params.subdomain)
 
   if (!params.subdomain || !siteMenu) {
+    console.log(params.subdomain)
+    console.dir(siteMenu)
     return notFound()
   }
 
@@ -152,6 +175,7 @@ export default async function SitePage(props0: {
               width={12}
               height={12}
               className="opacity-90 invert"
+              unoptimized
             />
             <span className="text-xs text-gray-100">
               <em className="hidden not-italic sm:inline">Powered by </em>Biztro

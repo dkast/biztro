@@ -33,7 +33,7 @@ export async function ProPlanView() {
           {(() => {
             switch (subscription.status) {
               case "trialing":
-                return <Badge variant="blue">Prueba</Badge>
+                return <Badge variant="violet">Prueba</Badge>
               case "active":
                 return <Badge variant="green">Activo</Badge>
               case "canceled":

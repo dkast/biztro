@@ -114,7 +114,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
               <ToggleGroupItem value="yearly" className="text-sm">
                 Anual
                 <span className="ml-1.5 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-600 dark:bg-green-900 dark:text-green-300">
-                  -10%
+                  -20%
                 </span>
               </ToggleGroupItem>
             </ToggleGroup>
