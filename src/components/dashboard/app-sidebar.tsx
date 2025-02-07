@@ -1,7 +1,9 @@
 "use client"
 
-import { Fragment, useTransition } from "react"
+import { Fragment, useEffect, useRef, useState, useTransition } from "react"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
+import type { feedbackIntegration } from "@sentry/nextjs"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ChevronRight,
@@ -45,6 +47,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -98,6 +101,7 @@ export default function AppSidebar() {
     queryKey: ["workgroup", "current"],
     queryFn: getCurrentOrganization
   })
+
   return (
     <Sidebar className="dark:border-gray-800">
       <SidebarWorkgroup />
@@ -140,6 +144,17 @@ export default function AppSidebar() {
                 </Fragment>
               ))}
             </SidebarMenu>
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild size="sm">
+                      <AttachToFeedbackButton />
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
           </SidebarContent>
         </SidebarGroup>
       </SidebarContent>
@@ -335,5 +350,29 @@ function SidebarWorkgroup() {
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>
+  )
+}
+
+function AttachToFeedbackButton() {
+  // Explicitly set the state type to any (adjust as needed).
+  const [feedback, setFeedback] =
+    useState<ReturnType<typeof feedbackIntegration>>()
+  useEffect(() => {
+    setFeedback(Sentry.getFeedback())
+  }, [])
+
+  // Type the ref as an HTMLButtonElement.
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (feedback && buttonRef.current) {
+      const unsubscribe = feedback.attachTo(buttonRef.current)
+      return () => unsubscribe?.()
+    }
+  }, [feedback])
+
+  return (
+    <button type="button" ref={buttonRef}>
+      Give me feedback
+    </button>
   )
 }
