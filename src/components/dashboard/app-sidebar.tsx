@@ -9,11 +9,12 @@ import {
   ChevronRight,
   ChevronsUpDown,
   LayoutTemplate,
-  Send,
+  Megaphone,
   Settings,
   ShoppingBag,
   type LucideIcon
 } from "lucide-react"
+import { useSession } from "next-auth/react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import {
@@ -360,6 +361,18 @@ function AttachToFeedbackButton() {
     setFeedback(Sentry.getFeedback())
   }, [])
 
+  // Set the Sentry user based on the current user.
+  const { data: session } = useSession()
+
+  useEffect(() => {
+    if (Sentry) {
+      Sentry.setUser({
+        name: session?.user?.name,
+        email: session?.user?.email
+      })
+    }
+  }, [session?.user?.email, session?.user?.name])
+
   // Type the ref as an HTMLButtonElement.
   const elRef = useRef<HTMLAnchorElement>(null)
   useEffect(() => {
@@ -372,8 +385,8 @@ function AttachToFeedbackButton() {
   return (
     <SidebarMenuButton asChild size="sm">
       <a href="#" ref={elRef}>
-        <Send />
-        <span>Enviar comentarios</span>
+        <Megaphone />
+        <span>Reportar errores</span>
       </a>
     </SidebarMenuButton>
   )

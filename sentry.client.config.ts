@@ -11,7 +11,22 @@ Sentry.init({
   integrations: [
     Sentry.replayIntegration(),
     Sentry.feedbackIntegration({
-      colorScheme: "system"
+      autoInject: false,
+      colorScheme: "system",
+      formTitle: "Ayúdanos a mejorar",
+      submitButtonLabel: "Enviar",
+      cancelButtonLabel: "Cancelar",
+      confirmButtonLabel: "Confirmar",
+      addScreenshotButtonLabel: "Agregar captura de pantalla",
+      removeScreenshotButtonLabel: "Eliminar captura de pantalla",
+      nameLabel: "Nombre",
+      namePlaceholder: "Nombre",
+      emailLabel: "Correo electrónico",
+      emailPlaceholder: "Correo electrónico",
+      isRequiredLabel: "(requerido)",
+      messageLabel: "Descripción",
+      messagePlaceholder: "¿Cuál es el error? ¿Qué esperabas que sucediera?",
+      successMessageText: "¡Gracias por tu ayuda!"
     })
   ],
 
