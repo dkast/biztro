@@ -9,6 +9,7 @@ import {
   ChevronRight,
   ChevronsUpDown,
   LayoutTemplate,
+  Send,
   Settings,
   ShoppingBag,
   type LucideIcon
@@ -144,18 +145,16 @@ export default function AppSidebar() {
                 </Fragment>
               ))}
             </SidebarMenu>
-            <SidebarGroup>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild size="sm">
-                      <AttachToFeedbackButton />
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
           </SidebarContent>
+        </SidebarGroup>
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <AttachToFeedbackButton />
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
@@ -362,17 +361,20 @@ function AttachToFeedbackButton() {
   }, [])
 
   // Type the ref as an HTMLButtonElement.
-  const buttonRef = useRef<HTMLButtonElement>(null)
+  const elRef = useRef<HTMLAnchorElement>(null)
   useEffect(() => {
-    if (feedback && buttonRef.current) {
-      const unsubscribe = feedback.attachTo(buttonRef.current)
+    if (feedback && elRef.current) {
+      const unsubscribe = feedback.attachTo(elRef.current)
       return () => unsubscribe?.()
     }
   }, [feedback])
 
   return (
-    <button type="button" ref={buttonRef}>
-      Give me feedback
-    </button>
+    <SidebarMenuButton asChild size="sm">
+      <a href="#" ref={elRef}>
+        <Send />
+        <span>Enviar comentarios</span>
+      </a>
+    </SidebarMenuButton>
   )
 }
