@@ -27,6 +27,10 @@ Sentry.init({
       messageLabel: "Descripción",
       messagePlaceholder: "¿Cuál es el error? ¿Qué esperabas que sucediera?",
       successMessageText: "¡Gracias por tu ayuda!"
+    }),
+    Sentry.thirdPartyErrorFilterIntegration({
+      filterKeys: ["biztro"],
+      behaviour: "apply-tag-if-contains-third-party-frames"
     })
   ],
 
@@ -42,7 +46,5 @@ Sentry.init({
   replaysOnErrorSampleRate: 1.0,
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
-
-  tunnel: "monitoring"
+  debug: false
 })
