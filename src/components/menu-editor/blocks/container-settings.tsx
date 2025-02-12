@@ -39,7 +39,7 @@ function BackgroundPreview({
       onClick={onClick}
       className={cn(
         "group relative aspect-video w-full overflow-hidden rounded-lg border-2 transition-all hover:border-indigo-500",
-        active ? "border-primary" : "border-muted"
+        active ? "border-indigo-500" : "border-transparent"
       )}
     >
       <div

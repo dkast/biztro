@@ -1,16 +1,20 @@
 "use client"
 
-import { Fragment, useTransition } from "react"
+import { Fragment, useEffect, useRef, useState, useTransition } from "react"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
+import type { feedbackIntegration } from "@sentry/nextjs"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ChevronRight,
   ChevronsUpDown,
   LayoutTemplate,
+  Megaphone,
   Settings,
   ShoppingBag,
   type LucideIcon
 } from "lucide-react"
+import { useSession } from "next-auth/react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import {
@@ -45,6 +49,7 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -98,6 +103,7 @@ export default function AppSidebar() {
     queryKey: ["workgroup", "current"],
     queryFn: getCurrentOrganization
   })
+
   return (
     <Sidebar className="dark:border-gray-800">
       <SidebarWorkgroup />
@@ -141,6 +147,15 @@ export default function AppSidebar() {
               ))}
             </SidebarMenu>
           </SidebarContent>
+        </SidebarGroup>
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <AttachToFeedbackButton />
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
@@ -335,5 +350,44 @@ function SidebarWorkgroup() {
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>
+  )
+}
+
+function AttachToFeedbackButton() {
+  // Explicitly set the state type to any (adjust as needed).
+  const [feedback, setFeedback] =
+    useState<ReturnType<typeof feedbackIntegration>>()
+  useEffect(() => {
+    setFeedback(Sentry.getFeedback())
+  }, [])
+
+  // Set the Sentry user based on the current user.
+  const { data: session } = useSession()
+
+  useEffect(() => {
+    if (Sentry) {
+      Sentry.setUser({
+        name: session?.user?.name,
+        email: session?.user?.email
+      })
+    }
+  }, [session?.user?.email, session?.user?.name])
+
+  // Type the ref as an HTMLButtonElement.
+  const elRef = useRef<HTMLAnchorElement>(null)
+  useEffect(() => {
+    if (feedback && elRef.current) {
+      const unsubscribe = feedback.attachTo(elRef.current)
+      return () => unsubscribe?.()
+    }
+  }, [feedback])
+
+  return (
+    <SidebarMenuButton asChild size="sm">
+      <a href="#" ref={elRef}>
+        <Megaphone />
+        <span>Reportar un problema</span>
+      </a>
+    </SidebarMenuButton>
   )
 }
