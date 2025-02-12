@@ -386,7 +386,7 @@ function AttachToFeedbackButton() {
     <SidebarMenuButton asChild size="sm">
       <a href="#" ref={elRef}>
         <Megaphone />
-        <span>Reportar errores</span>
+        <span>Reportar un problema</span>
       </a>
     </SidebarMenuButton>
   )
