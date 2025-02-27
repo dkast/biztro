@@ -20,10 +20,10 @@ export default function CTABanner() {
             />
           </div>
           <p className="mb-1 mt-4 text-lg text-orange-200">
-            Inicia con una cuenta gratis
+            ¿Listo para transformar tu negocio con un menú digital profesional?
           </p>
           <h3 className="mb-4 text-center text-3xl text-white">
-            Crea tu menú en Biztro hoy
+            Crea tu menú en Biztro
           </h3>
           <span className="mb-4 text-orange-200">
             Unirse a la lista de espera

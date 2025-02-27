@@ -92,8 +92,9 @@ export default function Hero() {
                   type: "spring"
                 }}
               >
-                Biztro te permite crea tu menú digital y QR para compartirlo con
-                tus clientes
+                Crea y actualiza tu menú digital con facilidad. Sin necesidad de
+                conocimientos técnicos. Aumenta tus ventas y mejora la
+                experiencia de tus clientes desde hoy mismo.
               </motion.p>
 
               <motion.div
