@@ -31,7 +31,9 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
     onSuccess: ({ data }) => {
       toast.dismiss()
       if (data?.failure) {
-        toast.error(data.failure.reason)
+        toast.error(
+          data.failure.reason ?? "No se pudo eliminar la organización"
+        )
       } else {
         router.push("/login")
         reset()

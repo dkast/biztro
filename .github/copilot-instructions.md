@@ -42,3 +42,7 @@ Key Conventions
   - Favor server components and Next.js SSR.
   - Use only for Web API access in small components.
   - Avoid for data fetching or state management.
+
+Commit messages
+
+- Use the commitlint convention when creating new commit messages

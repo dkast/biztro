@@ -64,7 +64,7 @@ export default function NewOrgForm() {
   const { execute, status, reset } = useAction(bootstrapOrg, {
     onSuccess: ({ data }) => {
       if (data?.failure) {
-        toast.error(data.failure.reason)
+        toast.error(data.failure.reason ?? "Ocurrió un error")
         return
       } else if (!data?.success) {
         router.push("/dashboard")
