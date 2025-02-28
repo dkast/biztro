@@ -14,45 +14,45 @@ import { Badge } from "@/components/ui/badge"
 
 const BENEFITS = [
   {
-    title: "Comparte en Redes Sociales",
+    title: "Amplía tu alcance digital",
     Icon: BadgeCheck,
     description:
-      "Junto con tu código QR, recibes también una liga pública a tu menú  que puedes compartir en todas tus redes sociales.",
+      "Integra tu menú con tus redes sociales y sitio web para aumentar la visibilidad de tu negocio. Los clientes pueden compartir tu menú utilizando una liga directa a tu sitio.",
     soon: false
   },
   {
-    title: "Menú actualizado",
+    title: "Actualiza sin límites",
     Icon: RefreshCcw,
     description:
-      "Olvídate de las imágenes o PDFs estáticos. Con Biztro, puedes actualizar precios y productos en cualquier momento del día.",
+      "Cambia precios, añade platos de temporada o actualiza ingredientes en segundos. Responde ágilmente a cambios en costos o disponibilidad sin gastos de impresión.",
     soon: false
   },
   {
-    title: "Personaliza tu código QR",
+    title: "Diferénciate con tu marca",
     Icon: QrCodeIcon,
     description:
-      "Añade tu logo, personaliza los colores y adapta tu código QR para reflejar la imagen de tu negocio.",
+      "Destaca frente a la competencia con códigos QR personalizados que reflejan la identidad de tu negocio, aumentando el reconocimiento de marca y la experiencia del cliente.",
     soon: false
   },
   {
-    title: "Multiples menús",
+    title: "Flexibilidad total",
     Icon: Group,
     description:
-      "Puedes crear diferentes menús para probar nuevos estilos o lanzar menús de temporada en cualquier momento. No tienes que actualizar tu código QR.",
+      "Crea menús específicos para probar nuevos estilos o lanzar menús de temporada. No tienes que actualizar tu código QR.",
     soon: false
   },
   {
-    title: "Ofertas y Promociones",
+    title: "Marketing integrado",
     Icon: Gem,
     description:
-      "Destaca tus promociones directamente en tu menú de forma dinámica y atractiva.",
+      "Impulsa las ventas destacando promociones especiales o platillos del día, directamente en tu menú digital.",
     soon: true
   },
   {
-    title: "Sin contratos",
+    title: "Sin compromisos",
     Icon: Handshake,
     description:
-      "Disfruta de nuestro servicio el tiempo que necesites y cancela en cualquier momento, sin restricciones ni penalizaciones.",
+      "Modelo flexible que crece con tu negocio. Empieza con lo básico y escala según tus necesidades, sin penalizaciones ni contratos de permanencia.",
     soon: false
   }
 ]
@@ -66,8 +66,8 @@ export default function Benefits() {
       <div className="absolute inset-0 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#0a0a0a_40%,#63e_100%)]" />
       <div className="relative z-10">
         <TitleSection
-          eyebrow="Por qué Biztro"
-          title="Obtén los beneficions de tú menu en digital"
+          eyebrow="Por qué elegir Biztro"
+          title="Transforma la experiencia de tus clientes y aumenta tus ingresos"
         />
         <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 px-4 sm:grid-cols-3 sm:gap-12 sm:px-6 lg:max-w-7xl lg:gap-16 lg:px-8">
           {BENEFITS.map((benefit, index) => (

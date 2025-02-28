@@ -36,7 +36,10 @@ const data = [
 
 export default function Component() {
   return (
-    <section className="mx-auto max-w-5xl px-4 pt-20 sm:px-6 sm:py-32 sm:pb-28 lg:max-w-7xl lg:px-8">
+    <section
+      id="how-it-works"
+      className="mx-auto max-w-5xl px-4 pt-20 sm:px-6 sm:py-32 sm:pb-28 lg:max-w-7xl lg:px-8"
+    >
       <TitleSection
         eyebrow="Cómo funciona"
         title="Solo 3 pasos para iniciar"
