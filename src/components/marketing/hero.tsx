@@ -92,9 +92,8 @@ export default function Hero() {
                   type: "spring"
                 }}
               >
-                Crea y actualiza tu menú digital con facilidad. Sin necesidad de
-                conocimientos técnicos. Aumenta tus ventas y mejora la
-                experiencia de tus clientes desde hoy mismo.
+                Con Biztro crea, actualiza y gestiona Menús Digitales con
+                facilidad
               </motion.p>
 
               <motion.div

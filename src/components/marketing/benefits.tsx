@@ -24,7 +24,7 @@ const BENEFITS = [
     title: "Actualiza sin límites",
     Icon: RefreshCcw,
     description:
-      "Cambia precios, añade platos de temporada o actualiza ingredientes en segundos. Responde ágilmente a cambios en costos o disponibilidad sin gastos de impresión.",
+      "Cambia precios, añade platillos de temporada o actualiza ingredientes en segundos. Responde ágilmente a cambios en costos o disponibilidad sin gastos de impresión.",
     soon: false
   },
   {
