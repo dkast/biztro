@@ -3,7 +3,13 @@ import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 
-export default function Navbar({ children }: { children?: React.ReactNode }) {
+export default function Navbar({
+  children,
+  showLinks = false
+}: {
+  children?: React.ReactNode
+  showLinks?: boolean
+}) {
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex h-16 bg-white/50 dark:bg-black/5">
       <div className="glass"></div>
@@ -12,26 +18,28 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
           <Image src="/logo-bistro.svg" alt="Logo" width={32} height={32} />
           <span className="font-medium">Biztro</span>
         </Link>
-        <nav className="hidden space-x-6 text-sm md:flex">
-          <Link
-            href="#how-it-works"
-            className="text-gray-600 hover:text-violet-600 dark:text-gray-300 dark:hover:text-violet-400"
-          >
-            Cómo Funciona
-          </Link>
-          <Link
-            href="#benefits"
-            className="text-gray-600 hover:text-violet-600 dark:text-gray-300 dark:hover:text-violet-400"
-          >
-            Beneficios
-          </Link>
-          <Link
-            href="#pricing"
-            className="text-gray-600 hover:text-violet-600 dark:text-gray-300 dark:hover:text-violet-400"
-          >
-            Precios
-          </Link>
-        </nav>
+        {showLinks && (
+          <nav className="hidden space-x-6 text-sm md:flex">
+            <Link
+              href="#how-it-works"
+              className="text-gray-600 hover:text-violet-600 dark:text-gray-300 dark:hover:text-violet-400"
+            >
+              Cómo Funciona
+            </Link>
+            <Link
+              href="#benefits"
+              className="text-gray-600 hover:text-violet-600 dark:text-gray-300 dark:hover:text-violet-400"
+            >
+              Beneficios
+            </Link>
+            <Link
+              href="#pricing"
+              className="text-gray-600 hover:text-violet-600 dark:text-gray-300 dark:hover:text-violet-400"
+            >
+              Precios
+            </Link>
+          </nav>
+        )}
         {children}
         <Link href="/dashboard">
           <Button

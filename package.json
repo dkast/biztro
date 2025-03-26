@@ -129,7 +129,7 @@
     "remark-gfm": "^4.0.1",
     "resend": "^4.2.0",
     "sharp": "^0.33.5",
-    "shiki": "2.5.0",
+    "shiki": "3.2.1",
     "stripe": "^17.7.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
