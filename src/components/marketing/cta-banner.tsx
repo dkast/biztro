@@ -20,13 +20,13 @@ export default function CTABanner() {
             />
           </div>
           <p className="mb-1 mt-4 text-lg text-orange-200">
-            ¿Listo para transformar tu negocio con un menú digital profesional?
+            ¿Listo para mejorar tu servicio con un menú digital?
           </p>
           <h3 className="mb-4 text-center text-3xl text-white">
-            Crea tu menú en Biztro
+            Haz tu menú online con Biztro
           </h3>
           <span className="mb-4 text-orange-200">
-            Unirse a la lista de espera
+            Únete a nuestra lista de espera
           </span>
           <Waitlist />
         </div>

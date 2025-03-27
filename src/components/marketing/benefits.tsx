@@ -14,45 +14,43 @@ import { Badge } from "@/components/ui/badge"
 
 const BENEFITS = [
   {
-    title: "Amplía tu alcance digital",
+    title: "Llega a más clientes",
     Icon: BadgeCheck,
-    description:
-      "Integra tu menú con tus redes sociales y sitio web para aumentar la visibilidad de tu negocio. Los clientes pueden compartir tu menú utilizando una liga directa a tu sitio.",
+    description: "Comparte tu menú en línea y refuerza tu presencia digital.",
     soon: false
   },
   {
-    title: "Actualiza sin límites",
+    title: "Actualiza tu menú fácilmente",
     Icon: RefreshCcw,
     description:
-      "Cambia precios, añade platillos de temporada o actualiza ingredientes en segundos. Responde ágilmente a cambios en costos o disponibilidad sin gastos de impresión.",
+      "Cambia precios y agrega platillos en segundos sin complicaciones.",
     soon: false
   },
   {
-    title: "Diferénciate con tu marca",
+    title: "Destaca tu negocio",
     Icon: QrCodeIcon,
-    description:
-      "Destaca frente a la competencia con códigos QR personalizados que reflejan la identidad de tu negocio, aumentando el reconocimiento de marca y la experiencia del cliente.",
+    description: "Usa códigos QR personalizados que muestran tu estilo único.",
     soon: false
   },
   {
-    title: "Flexibilidad total",
+    title: "Menú flexible",
     Icon: Group,
     description:
-      "Crea menús específicos para probar nuevos estilos o lanzar menús de temporada. No tienes que actualizar tu código QR.",
+      "Crea menús especiales para eventos o promociones sin esfuerzo.",
     soon: false
   },
   {
-    title: "Marketing integrado",
+    title: "Promociona tu negocio",
     Icon: Gem,
     description:
-      "Impulsa las ventas destacando promociones especiales o platillos del día, directamente en tu menú digital.",
+      "Resalta ofertas y platillos destacados para atraer más clientes.",
     soon: true
   },
   {
     title: "Sin compromisos",
     Icon: Handshake,
     description:
-      "Modelo flexible que crece con tu negocio. Empieza con lo básico y escala según tus necesidades, sin penalizaciones ni contratos de permanencia.",
+      "Empieza sin contratos largos y adapta tu menú a tus necesidades.",
     soon: false
   }
 ]
