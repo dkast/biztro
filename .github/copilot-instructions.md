@@ -21,7 +21,7 @@ Syntax and Formatting
 
 UI and Styling
 
-- Use Shadcn UI, Radix, and Tailwind for components and styling.
+- Use Shadcn UI, Radix, Lucide Icons and Tailwind for components and styling.
 - Always try to use the components available in "@/componentes/ui" folder.
 - Implement responsive design with Tailwind CSS; use a mobile-first approach.
 - Use React Hook Forms with Zod validation when creating Forms.
@@ -42,3 +42,7 @@ Key Conventions
   - Favor server components and Next.js SSR.
   - Use only for Web API access in small components.
   - Avoid for data fetching or state management.
+
+Commit messages
+
+- Use the commitlint convention when creating new commit messages

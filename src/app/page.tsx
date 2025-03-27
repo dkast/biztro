@@ -12,13 +12,17 @@ import Navbar from "@/components/marketing/nav-bar"
 import Pricing from "@/components/marketing/pricing"
 
 export const metadata: Metadata = {
-  title: "Biztro | Crea tu menú digital en minutos"
+  title: "Biztro | Crea tu menú digital profesional en minutos",
+  description:
+    "Diseña, actualiza y comparte menús QR profesionales. Aumenta tus ventas y mejora la experiencia de tus clientes sin conocimientos técnicos.",
+  keywords:
+    "menu digital, menu QR, restaurante, cafetería, hostelería, menú online"
 }
 
 export default function Page() {
   return (
     <div className="relative dark:bg-gray-950">
-      <Navbar />
+      <Navbar showLinks />
       <Hero />
       <EditorPreview />
       <FeaturesBento />

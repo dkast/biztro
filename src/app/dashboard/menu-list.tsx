@@ -57,7 +57,7 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
         if (data.failure.code === BasicPlanLimits.MENU_LIMIT_REACHED) {
           setShowUpgrade(true)
         } else {
-          toast.error(data.failure.reason)
+          toast.error(data.failure.reason ?? "Ocurrió un error")
         }
         return
       }

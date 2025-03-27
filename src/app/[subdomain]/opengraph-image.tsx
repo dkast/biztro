@@ -23,7 +23,7 @@ export default async function Image({
 }) {
   try {
     const org: Organization = await fetch(
-      `${getBaseUrl()}/api/org?subdomain=${params.subdomain}`
+      `${getBaseUrl()}/api/org?subdomain=${params.subdomain}&secret=${env.AUTH_SECRET}`
     ).then(res => res.json())
 
     console.log(
