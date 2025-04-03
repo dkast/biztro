@@ -45,9 +45,9 @@ export default async function ProfilePage() {
             title="Datos generales"
             description="Información general sobre mi cuenta"
           />
-          <div className="relative my-6 rounded-xl bg-gradient-to-t from-white to-gray-100 dark:from-gray-950 dark:to-gray-900">
+          <div className="relative my-6 rounded-xl bg-linear-to-t from-white to-gray-100 dark:from-gray-950 dark:to-gray-900">
             <div className="bg-dot-pattern dark:bg-dot-pattern-white absolute inset-0 size-full" />
-            <div className="absolute inset-0 size-full rounded-xl bg-gradient-to-t from-gray-50 via-gray-100/50 to-gray-200/90 dark:from-gray-950" />
+            <div className="absolute inset-0 size-full rounded-xl bg-linear-to-t from-gray-50 via-gray-100/50 to-gray-200/90 dark:from-gray-950" />
             <div className="flex h-36 items-center overflow-hidden px-7">
               <Avatar className="size-20 shadow-lg">
                 {user.image && <AvatarImage src={user.image} />}
@@ -56,11 +56,11 @@ export default async function ProfilePage() {
                 </AvatarFallback>
               </Avatar>
             </div>
-            <div className="relative pb-8 pl-8 pr-8">
-              <h3 className="text-xl font-semibold leading-none">
+            <div className="relative pr-8 pb-8 pl-8">
+              <h3 className="text-xl leading-none font-semibold">
                 {user.name}
               </h3>
-              <p className="mt-1.5 font-medium leading-none text-gray-600 dark:text-gray-400">
+              <p className="mt-1.5 leading-none font-medium text-gray-600 dark:text-gray-400">
                 {user.email}
               </p>
             </div>
@@ -72,7 +72,7 @@ export default async function ProfilePage() {
             />
             <div className="mt-6">
               {membership ? (
-                <div className="grid grid-cols-1 gap-6 rounded-lg border px-6 py-3 dark:border-gray-800 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-6 rounded-lg border px-6 py-3 sm:grid-cols-2 dark:border-gray-800">
                   <div>
                     <Label>Organización</Label>
                     <h4 className="text-gray-500">

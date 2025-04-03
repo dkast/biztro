@@ -15,13 +15,13 @@ export default function PageSubtitle({
     <div className="md:flex md:items-center md:justify-between">
       {/* Icon */}
       {Icon && (
-        <div className="mr-3 flex size-10 flex-shrink-0 items-center justify-center rounded-lg bg-gray-50 text-gray-500 dark:bg-gray-900 dark:text-gray-300">
+        <div className="mr-3 flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-50 text-gray-500 dark:bg-gray-900 dark:text-gray-300">
           <Icon className="size-6" />
         </div>
       )}
       {/* Title and description */}
       <div className="min-w-0 flex-1">
-        <h2 className="text-base font-semibold leading-5 text-gray-900 dark:text-gray-100">
+        <h2 className="text-base leading-5 font-semibold text-gray-900 dark:text-gray-100">
           {title}
         </h2>
         {description && (
@@ -31,7 +31,7 @@ export default function PageSubtitle({
         )}
       </div>
       {/* Attach buttons or other elements here */}
-      {children && <div className="mt-4 flex md:ml-4 md:mt-0">{children}</div>}
+      {children && <div className="mt-4 flex md:mt-0 md:ml-4">{children}</div>}
     </div>
   )
 }

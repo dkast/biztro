@@ -52,7 +52,7 @@ export function DataTableFilter({
               <Separator orientation="vertical" className="mx-2 h-4" />
               <Badge
                 variant="blue"
-                className="rounded-sm px-1 font-normal lg:hidden"
+                className="rounded-xs px-1 font-normal lg:hidden"
               >
                 {value.length}
               </Badge>
@@ -60,7 +60,7 @@ export function DataTableFilter({
                 {value.length > 2 ? (
                   <Badge
                     variant="blue"
-                    className="whitespace-nowrap rounded-sm px-1 font-normal"
+                    className="rounded-xs px-1 font-normal whitespace-nowrap"
                   >
                     {value.length} selecc.
                   </Badge>
@@ -71,7 +71,7 @@ export function DataTableFilter({
                       <Badge
                         variant="blue"
                         key={option.value}
-                        className="whitespace-nowrap rounded-sm px-1 font-normal"
+                        className="rounded-xs px-1 font-normal whitespace-nowrap"
                       >
                         {option.label}
                       </Badge>
@@ -105,7 +105,7 @@ export function DataTableFilter({
                   >
                     <div
                       className={cn(
-                        "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                        "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-xs border",
                         isSelected
                           ? "bg-primary text-primary-foreground"
                           : "opacity-50 [&_svg]:invisible"

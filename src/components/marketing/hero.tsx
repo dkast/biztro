@@ -33,7 +33,7 @@ export default function Hero() {
   return (
     <section id="hero">
       <div className="relative h-full overflow-hidden py-14">
-        <div className="container z-10 flex flex-col">
+        <div className="z-10 container flex flex-col">
           <div className="mt-20 grid grid-cols-1">
             <div className="flex flex-col items-center gap-6 pb-8 text-center">
               {/* Top announcement */}
@@ -51,7 +51,7 @@ export default function Hero() {
                     ease: "easeIn"
                   }}
                 >
-                  <AnimatedShinyText className="inset-0 inline-flex items-center justify-center px-4 py-1 text-xs transition ease-out hover:text-gray-600 hover:duration-300 hover:dark:text-gray-400 sm:text-sm">
+                  <AnimatedShinyText className="inset-0 inline-flex items-center justify-center px-4 py-1 text-xs transition ease-out hover:text-gray-600 hover:duration-300 sm:text-sm dark:hover:text-gray-400">
                     📣 Biztro en versión beta
                     <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
                   </AnimatedShinyText>
@@ -65,7 +65,7 @@ export default function Hero() {
               </div>
               <motion.h1
                 ref={fadeInRef}
-                className="text-balance bg-gradient-to-br from-black from-30% to-black/60 bg-clip-text py-6 font-display text-5xl font-medium leading-none tracking-tighter text-transparent dark:from-white dark:to-white/40 sm:text-6xl md:text-7xl lg:text-8xl"
+                className="font-display bg-linear-to-br from-black from-30% to-black/60 bg-clip-text py-6 text-5xl leading-none font-medium tracking-tighter text-balance text-transparent sm:text-6xl md:text-7xl lg:text-8xl dark:from-white dark:to-white/40"
                 animate={fadeInInView ? "animate" : "initial"}
                 variants={fadeUpVariants}
                 initial={false}
@@ -81,7 +81,7 @@ export default function Hero() {
               </motion.h1>
 
               <motion.p
-                className="text-balance text-lg tracking-tight text-gray-400 md:text-xl"
+                className="text-lg tracking-tight text-balance text-gray-400 md:text-xl"
                 animate={fadeInInView ? "animate" : "initial"}
                 variants={fadeUpVariants}
                 initial={false}

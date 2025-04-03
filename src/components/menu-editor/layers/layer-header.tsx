@@ -87,7 +87,7 @@ export default function LayerHeader() {
       ref={divRef}
       className={cn(
         selected
-          ? "rounded bg-indigo-500 text-white dark:bg-indigo-600"
+          ? "rounded-sm bg-indigo-500 text-white dark:bg-indigo-600"
           : "bg-transparent text-gray-700 dark:text-gray-100",
         "flex flex-row items-center px-2 py-2"
       )}
@@ -100,7 +100,7 @@ export default function LayerHeader() {
       </button>
       <div ref={headerRef} className="flex grow flex-row items-center">
         {topLevel ? (
-          <div className="-ml-6 mr-3">
+          <div className="mr-3 -ml-6">
             <Link />
           </div>
         ) : null}

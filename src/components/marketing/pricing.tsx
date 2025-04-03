@@ -66,7 +66,7 @@ export default function Pricing() {
             clipPath:
               "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
           }}
-          className="mx-auto aspect-[1155/678] w-[72.1875rem] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30"
+          className="mx-auto aspect-1155/678 w-[72.1875rem] bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30"
         />
       </div>
       <div className="mx-auto max-w-2xl text-center lg:max-w-4xl">
@@ -100,7 +100,7 @@ export default function Pricing() {
           </TabsList>
         </Tabs>
       </div>
-      <p className="mx-auto mt-6 max-w-2xl text-pretty text-center text-lg leading-8 text-gray-400">
+      <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-pretty text-gray-400">
         Inicia con el plan gratuito, o desbloquea productos ilimitados y
         características con el plan Pro.
       </p>
@@ -115,8 +115,8 @@ export default function Pricing() {
               tier.featured
                 ? ""
                 : tierIdx === 0
-                  ? "rounded-t-3xl sm:rounded-b-none lg:rounded-bl-3xl lg:rounded-tr-none"
-                  : "sm:rounded-t-none lg:rounded-bl-none lg:rounded-tr-3xl",
+                  ? "rounded-t-3xl sm:rounded-b-none lg:rounded-tr-none lg:rounded-bl-3xl"
+                  : "sm:rounded-t-none lg:rounded-tr-3xl lg:rounded-bl-none",
               "rounded-3xl p-8 ring-1 sm:p-10"
             )}
           >
@@ -124,7 +124,7 @@ export default function Pricing() {
               id={tier.id}
               className={cn(
                 tier.featured ? "text-violet-400" : "text-gray-400",
-                "text-base font-semibold leading-7"
+                "text-base leading-7 font-semibold"
               )}
             >
               {tier.name}
@@ -179,8 +179,8 @@ export default function Pricing() {
               aria-describedby={tier.id}
               className={cn(
                 tier.featured
-                  ? "bg-violet-500 text-white shadow-sm hover:bg-violet-400 focus-visible:outline-violet-500"
-                  : "text-gray-300 ring-1 ring-inset ring-gray-700 hover:ring-gray-500 focus-visible:outline-gray-600",
+                  ? "bg-violet-500 text-white shadow-xs hover:bg-violet-400 focus-visible:outline-violet-500"
+                  : "text-gray-300 ring-1 ring-gray-700 ring-inset hover:ring-gray-500 focus-visible:outline-gray-600",
                 "mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:mt-10"
               )}
             >
