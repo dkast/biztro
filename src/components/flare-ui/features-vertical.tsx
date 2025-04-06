@@ -1,12 +1,6 @@
 "use client"
 
-import React, {
-  forwardRef,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode
-} from "react"
+import React, { useEffect, useRef, useState, type ReactNode } from "react"
 import * as Accordion from "@radix-ui/react-accordion"
 import { motion, useInView } from "motion/react"
 
@@ -17,19 +11,24 @@ type AccordionItemProps = {
   className?: string
 } & Accordion.AccordionItemProps
 
-const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
-  ({ children, className, ...props }, forwardedRef) => (
-    <Accordion.Item
-      className={cn(
-        "mt-px overflow-hidden focus-within:relative focus-within:z-10",
-        className
-      )}
-      {...props}
-      ref={forwardedRef}
-    >
-      {children}
-    </Accordion.Item>
-  )
+const AccordionItem = ({
+  ref: forwardedRef,
+  children,
+  className,
+  ...props
+}: AccordionItemProps & {
+  ref: React.RefObject<HTMLDivElement>
+}) => (
+  <Accordion.Item
+    className={cn(
+      "mt-px overflow-hidden focus-within:relative focus-within:z-10",
+      className
+    )}
+    {...props}
+    ref={forwardedRef}
+  >
+    {children}
+  </Accordion.Item>
 )
 AccordionItem.displayName = "AccordionItem"
 
@@ -38,21 +37,26 @@ type AccordionTriggerProps = {
   className?: string
 }
 
-const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
-  ({ children, className, ...props }, forwardedRef) => (
-    <Accordion.Header className="flex">
-      <Accordion.Trigger
-        className={cn(
-          "group flex flex-1 cursor-pointer items-center justify-between px-5 text-[15px] leading-none outline-hidden",
-          className
-        )}
-        {...props}
-        ref={forwardedRef}
-      >
-        {children}
-      </Accordion.Trigger>
-    </Accordion.Header>
-  )
+const AccordionTrigger = ({
+  ref: forwardedRef,
+  children,
+  className,
+  ...props
+}: AccordionTriggerProps & {
+  ref: React.RefObject<HTMLButtonElement>
+}) => (
+  <Accordion.Header className="flex">
+    <Accordion.Trigger
+      className={cn(
+        "group flex flex-1 cursor-pointer items-center justify-between px-5 text-[15px] leading-none outline-hidden",
+        className
+      )}
+      {...props}
+      ref={forwardedRef}
+    >
+      {children}
+    </Accordion.Trigger>
+  </Accordion.Header>
 )
 AccordionTrigger.displayName = "AccordionTrigger"
 type AccordionContentProps = {
@@ -60,19 +64,24 @@ type AccordionContentProps = {
   className?: string
 } & Accordion.AccordionContentProps
 
-const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
-  ({ children, className, ...props }, forwardedRef) => (
-    <Accordion.Content
-      className={cn(
-        "data-[state=closed]:animate-slide-up data-[state=open]:animate-slide-down overflow-hidden text-[15px] font-medium",
-        className
-      )}
-      {...props}
-      ref={forwardedRef}
-    >
-      <div className="px-5 py-2">{children}</div>
-    </Accordion.Content>
-  )
+const AccordionContent = ({
+  ref: forwardedRef,
+  children,
+  className,
+  ...props
+}: AccordionContentProps & {
+  ref: React.RefObject<HTMLDivElement>
+}) => (
+  <Accordion.Content
+    className={cn(
+      "data-[state=closed]:animate-slide-up data-[state=open]:animate-slide-down overflow-hidden text-[15px] font-medium",
+      className
+    )}
+    {...props}
+    ref={forwardedRef}
+  >
+    <div className="px-5 py-2">{children}</div>
+  </Accordion.Content>
 )
 AccordionContent.displayName = "AccordionContent"
 
