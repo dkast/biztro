@@ -291,12 +291,12 @@ export default function ItemForm({
                 <CardContent>
                   <VariantForm fieldArray={fields} parentForm={form} />
                 </CardContent>
-                <CardFooter className="justify-center border-t p-2 dark:border-gray-800">
+                <CardFooter className="justify-center dark:border-gray-800">
                   <Button
                     type="button"
                     variant="ghost"
                     onClick={handleOpenVariant}
-                    className="gap-1"
+                    className="w-full gap-1"
                   >
                     <PlusCircle className="size-3.5" />
                     Crear variante

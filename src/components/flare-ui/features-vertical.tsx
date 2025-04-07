@@ -12,20 +12,16 @@ type AccordionItemProps = {
 } & Accordion.AccordionItemProps
 
 const AccordionItem = ({
-  ref: forwardedRef,
   children,
   className,
   ...props
-}: AccordionItemProps & {
-  ref: React.RefObject<HTMLDivElement>
-}) => (
+}: AccordionItemProps) => (
   <Accordion.Item
     className={cn(
       "mt-px overflow-hidden focus-within:relative focus-within:z-10",
       className
     )}
     {...props}
-    ref={forwardedRef}
   >
     {children}
   </Accordion.Item>
@@ -38,13 +34,10 @@ type AccordionTriggerProps = {
 }
 
 const AccordionTrigger = ({
-  ref: forwardedRef,
   children,
   className,
   ...props
-}: AccordionTriggerProps & {
-  ref: React.RefObject<HTMLButtonElement>
-}) => (
+}: AccordionTriggerProps) => (
   <Accordion.Header className="flex">
     <Accordion.Trigger
       className={cn(
@@ -52,33 +45,29 @@ const AccordionTrigger = ({
         className
       )}
       {...props}
-      ref={forwardedRef}
     >
       {children}
     </Accordion.Trigger>
   </Accordion.Header>
 )
 AccordionTrigger.displayName = "AccordionTrigger"
+
 type AccordionContentProps = {
   children: ReactNode
   className?: string
 } & Accordion.AccordionContentProps
 
 const AccordionContent = ({
-  ref: forwardedRef,
   children,
   className,
   ...props
-}: AccordionContentProps & {
-  ref: React.RefObject<HTMLDivElement>
-}) => (
+}: AccordionContentProps) => (
   <Accordion.Content
     className={cn(
       "data-[state=closed]:animate-slide-up data-[state=open]:animate-slide-down overflow-hidden text-[15px] font-medium",
       className
     )}
     {...props}
-    ref={forwardedRef}
   >
     <div className="px-5 py-2">{children}</div>
   </Accordion.Content>

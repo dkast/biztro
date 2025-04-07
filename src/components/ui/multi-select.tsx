@@ -111,25 +111,16 @@ interface MultiSelectProps
 }
 
 export const MultiSelect = ({
-  ref,
   options,
   onValueChange,
-
-  // variant,
   defaultValue = [],
-
   placeholder = "Select options",
   animation = 0,
   maxCount = 3,
   modalPopover = false,
-
-  // asChild = false,
   className,
-
   ...props
-}: MultiSelectProps & {
-  ref: React.RefObject<HTMLButtonElement>
-}) => {
+}: MultiSelectProps) => {
   const [selectedValues, setSelectedValues] =
     React.useState<string[]>(defaultValue)
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false)
@@ -187,7 +178,6 @@ export const MultiSelect = ({
     >
       <PopoverTrigger asChild>
         <Button
-          ref={ref}
           {...props}
           onClick={handleTogglePopover}
           className={cn(

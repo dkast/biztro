@@ -172,7 +172,7 @@ export default function LocationForm({
             )}
           />
           <PageSubtitle title="Redes sociales" />
-          <div>
+          <div className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="facebook"
