@@ -257,7 +257,7 @@ export function ColorThemeEditor({
           fontText={fontText}
           theme={themeState}
         />
-        <fieldset className="rounded-lg border p-4 dark:border-gray-700">
+        <fieldset className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
           <legend className="-ml-1 px-1 text-sm font-medium">Colores</legend>
           <div className="grid grid-cols-4 items-center gap-2">
             <dt>

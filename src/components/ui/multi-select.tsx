@@ -181,7 +181,7 @@ export const MultiSelect = ({
           {...props}
           onClick={handleTogglePopover}
           className={cn(
-            "flex h-auto min-h-10 w-full items-center justify-between rounded-md border bg-inherit p-1 text-gray-950 hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-50 dark:hover:bg-gray-900 [&_svg]:pointer-events-auto",
+            "flex h-auto min-h-10 w-full items-center justify-between rounded-md border border-gray-200 bg-inherit p-1 text-gray-950 hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-50 dark:hover:bg-gray-900 [&_svg]:pointer-events-auto",
             className
           )}
         >
