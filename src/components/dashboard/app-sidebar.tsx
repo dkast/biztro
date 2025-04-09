@@ -105,7 +105,7 @@ export default function AppSidebar() {
   })
 
   return (
-    <Sidebar className="dark:border-gray-800">
+    <Sidebar className="border-gray-200 dark:border-gray-800">
       <SidebarWorkgroup />
       <SidebarContent>
         <SidebarGroup>
@@ -172,7 +172,7 @@ export default function AppSidebar() {
                 <Button
                   size="xs"
                   variant="secondary"
-                  className="w-full border bg-white text-xs dark:border-gray-700"
+                  className="w-full border border-gray-200 bg-white text-xs dark:border-gray-700"
                   asChild
                 >
                   <Link href="/dashboard/settings/billing">
