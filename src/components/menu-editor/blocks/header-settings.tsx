@@ -40,7 +40,7 @@ export default function HeaderSettings() {
             )
           }
         >
-          <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
+          <SelectTrigger className="focus:ring-transparent sm:h-7! sm:text-xs">
             <SelectValue placeholder="Selecciona" />
           </SelectTrigger>
           <SelectContent>

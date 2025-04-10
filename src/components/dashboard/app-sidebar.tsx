@@ -161,14 +161,14 @@ export default function AppSidebar() {
       <SidebarFooter>
         {currentOrg?.plan === Plan.BASIC && (
           <div className="p-1">
-            <Card className="bg-linear-to-t from-violet-500/10 to-transparent shadow-none">
+            <Card className="gap-3 bg-linear-to-t from-violet-500/10 to-transparent shadow-none">
               <CardHeader className="p-3 pb-1">
                 <CardTitle className="text-sm">Actualiza a Pro</CardTitle>
                 <CardDescription className="text-xs">
                   Productos y menús ilimitados, componentes adicionales y más.
                 </CardDescription>
               </CardHeader>
-              <CardFooter className="p-3">
+              <CardFooter className="px-3">
                 <Button
                   size="xs"
                   variant="secondary"

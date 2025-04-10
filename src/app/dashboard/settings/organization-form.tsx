@@ -93,7 +93,10 @@ export default function OrganizationForm({
           <div className="flex items-center gap-x-8">
             <Avatar className="h-24 w-24 rounded-xl">
               {data.logo && (
-                <AvatarImage src={data.logo} className="rounded-xl border" />
+                <AvatarImage
+                  src={data.logo}
+                  className="rounded-xl border border-gray-200"
+                />
               )}
               <AvatarFallback className="text-3xl">
                 {getInitials(data.name)}
@@ -174,7 +177,7 @@ export default function OrganizationForm({
                 <FormLabel htmlFor="subdomain">Sitio web</FormLabel>
                 <FormControl>
                   <div className="flex flex-row items-center">
-                    <span className="flex h-10 items-center rounded-md rounded-r-none border border-r-0 bg-gray-50 px-2 text-sm text-gray-500">
+                    <span className="flex h-9 items-center rounded-md rounded-r-none border border-r-0 border-gray-200 bg-gray-50 px-2 text-sm text-gray-500">
                       https://.biztro.co/
                     </span>
                     <Input

@@ -43,7 +43,7 @@ export default function TextSettings() {
               )
             }
           >
-            <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
+            <SelectTrigger className="focus:ring-transparent sm:h-7! sm:text-xs">
               <SelectValue placeholder="Selecciona" />
             </SelectTrigger>
             <SelectContent>
@@ -65,7 +65,7 @@ export default function TextSettings() {
               setProp((props: TextElementProps) => (props.fontWeight = value))
             }
           >
-            <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
+            <SelectTrigger className="focus:ring-transparent sm:h-7! sm:text-xs">
               <SelectValue placeholder="Selecciona" />
             </SelectTrigger>
             <SelectContent>

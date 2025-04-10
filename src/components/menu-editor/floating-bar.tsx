@@ -94,7 +94,7 @@ export default function FloatingBar() {
       </TooltipHelper>
       <Separator
         orientation="vertical"
-        className="mx-1 hidden h-6 bg-gray-500 sm:inline-flex"
+        className="mx-1 hidden h-6! bg-gray-600 sm:inline-flex"
       />
       <TooltipHelper
         content={
@@ -124,7 +124,7 @@ export default function FloatingBar() {
       </TooltipHelper>
       <Separator
         orientation="vertical"
-        className="mx-1 hidden h-6 bg-gray-500 sm:inline-flex"
+        className="mx-1 hidden h-6! bg-gray-600 sm:inline-flex"
       />
       <TooltipHelper content="Copiar estilo">
         <Button
@@ -149,7 +149,7 @@ export default function FloatingBar() {
       </TooltipHelper>
       <Separator
         orientation="vertical"
-        className="mx-1 hidden h-6 bg-gray-500 sm:inline-flex"
+        className="mx-1 hidden h-6! bg-gray-600 sm:inline-flex"
       />
       <TooltipHelper content="Restringir cambios">
         <Button
