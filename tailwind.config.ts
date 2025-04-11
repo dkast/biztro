@@ -3,33 +3,6 @@ import { type Config } from "tailwindcss"
 import tailwindcssAnimate from "tailwindcss-animate"
 import colors from "tailwindcss/colors"
 import defaultTheme from "tailwindcss/defaultTheme"
-import plugin from "tailwindcss/plugin"
-
-const glassPlugin = plugin(({ matchUtilities, theme }) => {
-  matchUtilities(
-    {
-      glass: (value, { modifier }) => {
-        const extendedBy = modifier || "6rem"
-        const cutoff = `calc(100% - ${extendedBy})`
-
-        return {
-          "&::after": {
-            content: "''",
-            position: "absolute",
-            inset: "0",
-            bottom: `calc(-1 * ${extendedBy})`,
-            maskImage: `linear-gradient(to bottom, black 0, black ${cutoff}, transparent ${cutoff})`,
-            backdropFilter: `blur(${value || "1rem"})`
-          }
-        }
-      }
-    },
-    {
-      values: theme("spacing"),
-      modifiers: theme("spacing")
-    }
-  )
-})
 
 const config = {
   darkMode: "class",
@@ -123,7 +96,7 @@ const config = {
       }
     }
   },
-  plugins: [typography, tailwindcssAnimate, glassPlugin]
+  plugins: [typography, tailwindcssAnimate]
 } satisfies Config
 
 export default config

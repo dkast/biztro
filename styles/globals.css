@@ -67,6 +67,29 @@
   background-size: 15px 15px;
 }
 
+@utility glass {
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    bottom: calc(-1 * var(--glass-extend, 6rem));
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      black 0,
+      black calc(100% - var(--glass-extend, 6rem)),
+      transparent calc(100% - var(--glass-extend, 6rem))
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      black 0,
+      black calc(100% - var(--glass-extend, 6rem)),
+      transparent calc(100% - var(--glass-extend, 6rem))
+    );
+    backdrop-filter: blur(var(--glass-blur, 1rem));
+    -webkit-backdrop-filter: blur(var(--glass-blur, 1rem));
+  }
+}
+
 .dark .w-color-sketch {
   --sketch-background: #323232 !important;
 }
@@ -126,6 +149,8 @@
   --color-3: hsl(210, 100%, 63%);
   --color-4: hsl(195, 100%, 63%);
   --color-5: hsl(90, 100%, 63%);
+  --glass-blur: 1rem;
+  --glass-extend: 6rem;
 }
 
 .dark {
@@ -143,6 +168,8 @@
   --color-3: hsl(210, 100%, 63%);
   --color-4: hsl(195, 100%, 63%);
   --color-5: hsl(90, 100%, 63%);
+  --glass-blur: 1rem;
+  --glass-extend: 6rem;
 }
 
 /*
