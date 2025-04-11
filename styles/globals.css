@@ -85,8 +85,8 @@
       black calc(100% - var(--glass-extend, 6rem)),
       transparent calc(100% - var(--glass-extend, 6rem))
     );
-    backdrop-filter: blur(var(--glass-blur, 1rem));
     -webkit-backdrop-filter: blur(var(--glass-blur, 1rem));
+    backdrop-filter: blur(var(--glass-blur, 1rem));
   }
 }
 
