@@ -3,6 +3,7 @@
 import { CircleFadingArrowUp } from "lucide-react"
 import { useRouter } from "next/navigation"
 
+import { RainbowButton } from "@/components/magicui/rainbow-button"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
-import { RainbowButton } from "@/components/ui/rainbow-button"
 
 interface UpgradeDialogProps {
   open: boolean
