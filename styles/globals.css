@@ -135,15 +135,15 @@
 */
 
 :root {
-  --primary: 240 5.9% 10%;
-  --sidebar-background: 0 0% 98%;
-  --sidebar-foreground: 0 0% 32.2%;
-  --sidebar-primary: 240 5.9% 10%;
-  --sidebar-primary-foreground: 0 0% 98%;
-  --sidebar-accent: 0 0% 93.1%;
-  --sidebar-accent-foreground: 0 0% 9%;
-  --sidebar-border: 220 13% 91%;
-  --sidebar-ring: 24.6 95% 53.1%;
+  --primary: hsl(240 5.9% 10%);
+  --sidebar-background: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(0 0% 32.2%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(0 0% 93.1%);
+  --sidebar-accent-foreground: hsl(0 0% 9%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(24.6 95% 53.1%);
   --color-1: 0 100% 63%;
   --color-2: 270 100% 63%;
   --color-3: 210 100% 63%;
@@ -151,18 +151,19 @@
   --color-5: 90 100% 63%;
   --glass-blur: 1rem;
   --glass-extend: 6rem;
+  --sidebar: hsl(0 0% 98%);
 }
 
 .dark {
-  --primary: 0 0% 98%;
-  --sidebar-background: 0 0% 9%;
-  --sidebar-foreground: 0 0% 63.9%;
-  --sidebar-primary: 224.3 76.3% 48%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 240 3.7% 15.9%;
-  --sidebar-accent-foreground: 240 4.8% 95.9%;
-  --sidebar-border: 240 3.7% 15.9%;
-  --sidebar-ring: 24.6 95% 53.1%;
+  --primary: hsl(0 0% 98%);
+  --sidebar-background: hsl(0 0% 9%);
+  --sidebar-foreground: hsl(0 0% 63.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(24.6 95% 53.1%);
   --color-1: 0 100% 63%;
   --color-2: 270 100% 63%;
   --color-3: 210 100% 63%;
@@ -170,6 +171,7 @@
   --color-5: 90 100% 63%;
   --glass-blur: 1rem;
   --glass-extend: 6rem;
+  --sidebar: hsl(240 5.9% 10%);
 }
 
 /*
