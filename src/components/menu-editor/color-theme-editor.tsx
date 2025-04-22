@@ -29,6 +29,13 @@ import {
   DialogTitle
 } from "@/components/ui/dialog"
 import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle
+} from "@/components/ui/drawer"
+import {
   Form,
   FormControl,
   FormField,
@@ -49,6 +56,7 @@ import {
   updateColorTheme
 } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { ThemeScope, type colorThemes } from "@/lib/types"
 
 export function ColorThemeEditor({
@@ -570,7 +578,14 @@ function ThemePreview({
 }
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required")
+  name: z
+    .string()
+    .min(1, "Nombre es requerido")
+    .max(50)
+    .regex(
+      /^[a-zA-Z0-9 ]*$/,
+      "Nombre solo puede contener letras, números y espacios"
+    )
 })
 
 type ThemeNameDialogProps = {
@@ -584,6 +599,7 @@ export function ThemeNameDialog({
   onClose,
   onSubmit
 }: ThemeNameDialogProps) {
+  const isMobile = useIsMobile()
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema)
   })
@@ -591,6 +607,45 @@ export function ThemeNameDialog({
   const handleFormSubmit = (data: { name: string }) => {
     onSubmit(data.name)
     onClose()
+  }
+
+  if (isMobile) {
+    return (
+      <Drawer open={isOpen} onOpenChange={onClose}>
+        <DrawerContent>
+          <DrawerHeader className="text-left">
+            <DrawerTitle>Nombre del Tema</DrawerTitle>
+            <DrawerDescription>
+              Por favor, ingresa un nombre para el tema.
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="px-4 pb-4">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+                <FormField
+                  name="name"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nombre Tema</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Nombre Tema" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="mt-6 flex">
+                  <Button type="submit" className="w-full">
+                    Guardar
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </DrawerContent>
+      </Drawer>
+    )
   }
 
   return (
@@ -619,7 +674,9 @@ export function ThemeNameDialog({
             />
             <div className="mt-6 flex justify-end gap-2">
               <DialogClose asChild>
-                <Button variant="secondary">Cancelar</Button>
+                <Button variant="secondary" type="button">
+                  Cancelar
+                </Button>
               </DialogClose>
               <Button type="submit">Guardar</Button>
             </div>

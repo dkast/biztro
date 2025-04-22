@@ -21,7 +21,15 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle
+} from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 
 export default function LayerHeader() {
@@ -81,6 +89,8 @@ export default function LayerHeader() {
     actions.setCustom(id, custom => (custom.displayName = tempName))
     setIsEditDialogOpen(false)
   }
+
+  const isMobile = useIsMobile()
 
   return (
     <div
@@ -153,29 +163,60 @@ export default function LayerHeader() {
         ) : null}
       </div>
 
-      <Dialog
-        open={isEditDialogOpen}
-        onOpenChange={open => {
-          setIsEditDialogOpen(open)
-          if (open) setTempName(displayName)
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editar nombre</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <Input
-              value={tempName}
-              onChange={e => setTempName(e.target.value)}
-              placeholder="Escribe el nombre de la sección"
-            />
-          </div>
-          <DialogFooter>
-            <Button onClick={handleSaveName}>Guardar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {isMobile ? (
+        <Drawer
+          open={isEditDialogOpen}
+          onOpenChange={open => {
+            setIsEditDialogOpen(open)
+            if (open) setTempName(displayName)
+          }}
+        >
+          <DrawerContent>
+            <DrawerHeader className="text-left">
+              <DrawerTitle>Editar nombre</DrawerTitle>
+              <DrawerDescription>
+                Cambia el nombre de la sección.
+              </DrawerDescription>
+            </DrawerHeader>
+            <div className="px-4 pb-4">
+              <Input
+                value={tempName}
+                onChange={e => setTempName(e.target.value)}
+                placeholder="Escribe el nombre de la sección"
+              />
+              <div className="mt-6 flex">
+                <Button onClick={handleSaveName} className="w-full">
+                  Guardar
+                </Button>
+              </div>
+            </div>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog
+          open={isEditDialogOpen}
+          onOpenChange={open => {
+            setIsEditDialogOpen(open)
+            if (open) setTempName(displayName)
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Editar nombre</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <Input
+                value={tempName}
+                onChange={e => setTempName(e.target.value)}
+                placeholder="Escribe el nombre de la sección"
+              />
+            </div>
+            <DialogFooter>
+              <Button onClick={handleSaveName}>Guardar</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }
