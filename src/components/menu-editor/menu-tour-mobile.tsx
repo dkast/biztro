@@ -137,7 +137,9 @@ function Tooltip({
       className="max-w-80 rounded-lg border border-transparent bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
       <h3 className="mb-2 font-medium">{step.title}</h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400">{step.content}</p>
+      <div className="text-sm text-gray-600 dark:text-gray-400">
+        {step.content}
+      </div>
       <div className="mt-4 flex items-center justify-between">
         <div className="text-xs text-gray-500">
           {index + 1} de {size}
