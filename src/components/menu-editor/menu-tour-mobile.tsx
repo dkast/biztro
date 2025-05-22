@@ -19,21 +19,21 @@ const steps: Step[] = [
       <div>
         Accede a las opciones de guardado, vista previa y exportación de tu
         menú.
-        <ul className="mt-2 space-y-2">
+        <ul className="my-4 space-y-3">
           <li className="flex items-center gap-2">
-            <Play className="size-4 text-white" />
+            <Play className="size-4 text-orange-400 dark:text-white" />
             <span>Visualiza tu menú</span>
           </li>
           <li className="flex items-center gap-2">
-            <Check className="size-4 text-white" />
+            <Check className="size-4 text-green-400 dark:text-white" />
             <span>Guarda los cambios</span>
           </li>
           <li className="flex items-center gap-2">
-            <QrCode className="size-4 text-white" />
-            <span>Genera tu código QR y descargalo como imagen</span>
+            <QrCode className="size-4 text-blue-400 dark:text-white" />
+            <span>Genera tu código QR</span>
           </li>
           <li className="flex items-center gap-2">
-            <strong className="text-white">Publicar</strong>
+            <strong className="dark:text-white">Publicar</strong>
             <span>Publica tu menú en la web</span>
           </li>
         </ul>
