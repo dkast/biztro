@@ -273,15 +273,17 @@ export function ColorThemeEditor({
             </dt>
             <dd className="flex items-center">
               <Popover>
-                <PopoverTrigger>
-                  <div
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
                     className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
                     style={{
                       backgroundColor: themeState.surfaceColor
                     }}
-                  ></div>
+                    aria-label="Seleccionar color de fondo"
+                  />
                 </PopoverTrigger>
-                <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                <PopoverContent className="pointer-events-auto z-[9999] w-[218px] border-0 p-0 shadow-none">
                   <Sketch
                     disableAlpha
                     presetColors={colorPresets}
@@ -301,13 +303,15 @@ export function ColorThemeEditor({
             </dt>
             <dd className="flex items-center">
               <Popover>
-                <PopoverTrigger>
-                  <div
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
                     className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
                     style={{
                       backgroundColor: themeState.brandColor
                     }}
-                  ></div>
+                    aria-label="Seleccionar color de marca"
+                  />
                 </PopoverTrigger>
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
@@ -329,13 +333,15 @@ export function ColorThemeEditor({
             </dt>
             <dd className="flex items-center">
               <Popover>
-                <PopoverTrigger>
-                  <div
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
                     className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
                     style={{
                       backgroundColor: themeState.accentColor
                     }}
-                  ></div>
+                    aria-label="Seleccionar color de acento"
+                  />
                 </PopoverTrigger>
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
@@ -357,13 +363,15 @@ export function ColorThemeEditor({
             </dt>
             <dd className="flex items-center">
               <Popover>
-                <PopoverTrigger>
-                  <div
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
                     className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
                     style={{
                       backgroundColor: themeState.textColor
                     }}
-                  ></div>
+                    aria-label="Seleccionar color de texto"
+                  />
                 </PopoverTrigger>
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
@@ -385,13 +393,15 @@ export function ColorThemeEditor({
             </dt>
             <dd className="flex items-center">
               <Popover>
-                <PopoverTrigger>
-                  <div
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
                     className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
                     style={{
                       backgroundColor: themeState.mutedColor
                     }}
-                  ></div>
+                    aria-label="Seleccionar color tenue"
+                  />
                 </PopoverTrigger>
                 <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
                   <Sketch
