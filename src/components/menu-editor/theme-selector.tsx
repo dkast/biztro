@@ -465,7 +465,10 @@ export default function ThemeSelector({
                   Personalizar tema
                 </Button>
               </SheetTrigger>
-              <SheetContent className="w-[96%] px-4 sm:max-w-md" side="right">
+              <SheetContent
+                className="px-4 sm:max-w-md"
+                side={isMobile ? "bottom" : "right"}
+              >
                 <SheetHeader>
                   <SheetTitle>Personalizar tema</SheetTitle>
                   <SheetDescription>

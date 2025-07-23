@@ -3,7 +3,12 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
-import { hexToHsva, Sketch, type SwatchPresetColor } from "@uiw/react-color"
+import {
+  Colorful,
+  hexToHsva,
+  Sketch,
+  type SwatchPresetColor
+} from "@uiw/react-color"
 import { extractColors } from "extract-colors/lib/worker-wrapper"
 import {
   Contrast,
@@ -33,6 +38,7 @@ import {
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
+  DrawerNested,
   DrawerTitle
 } from "@/components/ui/drawer"
 import {
@@ -77,6 +83,10 @@ export function ColorThemeEditor({
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [themeState, setThemeState] = useState(theme)
   const [isExtracting, setIsExtracting] = useState(false)
+  const isMobile = useIsMobile()
+  const [drawerColorKey, setDrawerColorKey] = useState<
+    null | keyof typeof themeState
+  >(null)
 
   const {
     execute: createTheme,
@@ -258,6 +268,57 @@ export function ColorThemeEditor({
         onClose={() => setIsDialogOpen(false)}
         onSubmit={handleDialogSubmit}
       />
+      {/* Drawer for mobile color picker */}
+      {isMobile && drawerColorKey && (
+        <DrawerNested
+          open={!!drawerColorKey}
+          onOpenChange={open => (open ? null : setDrawerColorKey(null))}
+        >
+          <DrawerContent>
+            <DrawerHeader className="text-left">
+              <DrawerTitle>
+                {drawerColorKey === "surfaceColor" && "Color de Fondo"}
+                {drawerColorKey === "brandColor" && "Color de Marca"}
+                {drawerColorKey === "accentColor" && "Color de Acento"}
+                {drawerColorKey === "textColor" && "Color de Texto"}
+                {drawerColorKey === "mutedColor" && "Color Tenue"}
+              </DrawerTitle>
+              <DrawerDescription>Selecciona un color.</DrawerDescription>
+            </DrawerHeader>
+            <div className="px-4 pb-4">
+              <div
+                className="mb-4 flex items-center justify-center"
+                onPointerDown={e => e.stopPropagation()}
+                onTouchStart={e => e.stopPropagation()}
+                onMouseDown={e => e.stopPropagation()}
+              >
+                <Colorful
+                  disableAlpha
+                  color={
+                    themeState[
+                      drawerColorKey as keyof typeof themeState
+                    ] as string
+                  }
+                  onChange={color => {
+                    setThemeState(prev => ({
+                      ...prev,
+                      [drawerColorKey]: color.hex
+                    }))
+                  }}
+                />
+              </div>
+              <div className="mt-6 flex">
+                <Button
+                  className="w-full"
+                  onClick={() => setDrawerColorKey(null)}
+                >
+                  Listo
+                </Button>
+              </div>
+            </div>
+          </DrawerContent>
+        </DrawerNested>
+      )}
       <div className="flex flex-col gap-6 py-4">
         <ThemePreview
           menu={menu}
@@ -272,151 +333,191 @@ export function ColorThemeEditor({
               <Label size="sm">Fondo</Label>
             </dt>
             <dd className="flex items-center">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
-                    style={{
-                      backgroundColor: themeState.surfaceColor
-                    }}
-                    aria-label="Seleccionar color de fondo"
-                  />
-                </PopoverTrigger>
-                <PopoverContent className="pointer-events-auto z-[9999] w-[218px] border-0 p-0 shadow-none">
-                  <Sketch
-                    disableAlpha
-                    presetColors={colorPresets}
-                    color={hexToHsva(themeState.surfaceColor)}
-                    onChange={color => {
-                      setThemeState(prev => ({
-                        ...prev,
-                        surfaceColor: color.hex
-                      }))
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+              {isMobile ? (
+                <button
+                  type="button"
+                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  style={{ backgroundColor: themeState.surfaceColor }}
+                  aria-label="Seleccionar color de fondo"
+                  onClick={() => setDrawerColorKey("surfaceColor")}
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      style={{ backgroundColor: themeState.surfaceColor }}
+                      aria-label="Seleccionar color de fondo"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                    <Sketch
+                      disableAlpha
+                      presetColors={colorPresets}
+                      color={hexToHsva(themeState.surfaceColor)}
+                      onChange={color => {
+                        setThemeState(prev => ({
+                          ...prev,
+                          surfaceColor: color.hex
+                        }))
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </dd>
             <dt>
               <Label size="sm">Marca</Label>
             </dt>
             <dd className="flex items-center">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
-                    style={{
-                      backgroundColor: themeState.brandColor
-                    }}
-                    aria-label="Seleccionar color de marca"
-                  />
-                </PopoverTrigger>
-                <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-                  <Sketch
-                    disableAlpha
-                    presetColors={colorPresets}
-                    color={hexToHsva(themeState.brandColor)}
-                    onChange={color => {
-                      setThemeState(prev => ({
-                        ...prev,
-                        brandColor: color.hex
-                      }))
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+              {isMobile ? (
+                <button
+                  type="button"
+                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  style={{ backgroundColor: themeState.brandColor }}
+                  aria-label="Seleccionar color de marca"
+                  onClick={() => setDrawerColorKey("brandColor")}
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      style={{ backgroundColor: themeState.brandColor }}
+                      aria-label="Seleccionar color de marca"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                    <Sketch
+                      disableAlpha
+                      presetColors={colorPresets}
+                      color={hexToHsva(themeState.brandColor)}
+                      onChange={color => {
+                        setThemeState(prev => ({
+                          ...prev,
+                          brandColor: color.hex
+                        }))
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </dd>
             <dt>
               <Label size="sm">Acento</Label>
             </dt>
             <dd className="flex items-center">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
-                    style={{
-                      backgroundColor: themeState.accentColor
-                    }}
-                    aria-label="Seleccionar color de acento"
-                  />
-                </PopoverTrigger>
-                <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-                  <Sketch
-                    disableAlpha
-                    presetColors={colorPresets}
-                    color={hexToHsva(themeState.accentColor)}
-                    onChange={color => {
-                      setThemeState(prev => ({
-                        ...prev,
-                        accentColor: color.hex
-                      }))
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+              {isMobile ? (
+                <button
+                  type="button"
+                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  style={{ backgroundColor: themeState.accentColor }}
+                  aria-label="Seleccionar color de acento"
+                  onClick={() => setDrawerColorKey("accentColor")}
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      style={{ backgroundColor: themeState.accentColor }}
+                      aria-label="Seleccionar color de acento"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                    <Sketch
+                      disableAlpha
+                      presetColors={colorPresets}
+                      color={hexToHsva(themeState.accentColor)}
+                      onChange={color => {
+                        setThemeState(prev => ({
+                          ...prev,
+                          accentColor: color.hex
+                        }))
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </dd>
             <dt>
               <Label size="sm">Texto</Label>
             </dt>
             <dd className="flex items-center">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
-                    style={{
-                      backgroundColor: themeState.textColor
-                    }}
-                    aria-label="Seleccionar color de texto"
-                  />
-                </PopoverTrigger>
-                <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-                  <Sketch
-                    disableAlpha
-                    presetColors={colorPresets}
-                    color={hexToHsva(themeState.textColor)}
-                    onChange={color => {
-                      setThemeState(prev => ({
-                        ...prev,
-                        textColor: color.hex
-                      }))
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+              {isMobile ? (
+                <button
+                  type="button"
+                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  style={{ backgroundColor: themeState.textColor }}
+                  aria-label="Seleccionar color de texto"
+                  onClick={() => setDrawerColorKey("textColor")}
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      style={{ backgroundColor: themeState.textColor }}
+                      aria-label="Seleccionar color de texto"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                    <Sketch
+                      disableAlpha
+                      presetColors={colorPresets}
+                      color={hexToHsva(themeState.textColor)}
+                      onChange={color => {
+                        setThemeState(prev => ({
+                          ...prev,
+                          textColor: color.hex
+                        }))
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </dd>
             <dt>
               <Label size="sm">Tenue</Label>
             </dt>
             <dd className="flex items-center">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
-                    style={{
-                      backgroundColor: themeState.mutedColor
-                    }}
-                    aria-label="Seleccionar color tenue"
-                  />
-                </PopoverTrigger>
-                <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-                  <Sketch
-                    disableAlpha
-                    presetColors={colorPresets}
-                    color={hexToHsva(themeState.mutedColor)}
-                    onChange={color => {
-                      setThemeState(prev => ({
-                        ...prev,
-                        mutedColor: color.hex
-                      }))
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+              {isMobile ? (
+                <button
+                  type="button"
+                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  style={{ backgroundColor: themeState.mutedColor }}
+                  aria-label="Seleccionar color tenue"
+                  onClick={() => setDrawerColorKey("mutedColor")}
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      style={{ backgroundColor: themeState.mutedColor }}
+                      aria-label="Seleccionar color tenue"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                    <Sketch
+                      disableAlpha
+                      presetColors={colorPresets}
+                      color={hexToHsva(themeState.mutedColor)}
+                      onChange={color => {
+                        setThemeState(prev => ({
+                          ...prev,
+                          mutedColor: color.hex
+                        }))
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </dd>
           </div>
         </fieldset>
