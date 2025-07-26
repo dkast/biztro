@@ -521,10 +521,10 @@ export function ColorThemeEditor({
             </dd>
           </div>
         </fieldset>
-        <div className="grid grid-cols-3 gap-y-1">
+        <div className="grid grid-cols-3 gap-y-3 pb-12 sm:gap-y-1">
           <Button
             variant="secondary"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             className="col-span-3"
             onClick={extractColorsFromImage}
             disabled={isExtracting}
@@ -538,7 +538,7 @@ export function ColorThemeEditor({
           </Button>
           <Button
             variant="secondary"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             className="col-span-3"
             onClick={invertColors}
           >
@@ -548,7 +548,7 @@ export function ColorThemeEditor({
 
           <Button
             variant="outline"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             className="rounded-r-none border-r-0"
             disabled={
               status === "executing" ||
@@ -562,7 +562,7 @@ export function ColorThemeEditor({
           </Button>
           <Button
             variant="outline"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             className="rounded-none border-r-0"
             disabled={
               status === "executing" ||
@@ -581,7 +581,7 @@ export function ColorThemeEditor({
           </Button>
           <Button
             variant="outline"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             className="rounded-l-none"
             disabled={
               status === "executing" ||
