@@ -194,7 +194,7 @@ export const MultiSelect = ({
                   return (
                     <Badge
                       key={value}
-                      variant="blue"
+                      variant="violet"
                       className={cn(
                         isAnimating ? "animate-bounce" : "",
                         multiSelectVariants()
@@ -217,7 +217,7 @@ export const MultiSelect = ({
                 })}
                 {selectedValues.length > maxCount && (
                   <Badge
-                    variant="blue"
+                    variant="violet"
                     className={cn(
                       "",
                       isAnimating ? "animate-bounce" : "",
@@ -282,11 +282,11 @@ export const MultiSelect = ({
                   className={cn(
                     "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
                     selectedValues.length === options.length
-                      ? "border-orange-500 bg-orange-500 text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
+                      ? "border-black bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
                       : "dark:opacity-50 [&_svg]:invisible"
                   )}
                 >
-                  <CheckIcon className="h-4 w-4" />
+                  <CheckIcon className="h-4 w-4 text-white dark:text-gray-500" />
                 </div>
                 <span>(Todos)</span>
               </CommandItem>
@@ -302,14 +302,14 @@ export const MultiSelect = ({
                       className={cn(
                         "pointer-events-auto! relative z-50 mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
                         isSelected
-                          ? "border-orange-500 bg-orange-500 text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
+                          ? "border-black bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
                           : "dark:opacity-50 [&_svg]:invisible"
                       )}
                     >
-                      <CheckIcon className="h-4 w-4" />
+                      <CheckIcon className="h-4 w-4 text-white dark:text-gray-500" />
                     </div>
                     {option.icon && (
-                      <option.icon className="mr-2 h-4 w-4 text-gray-400" />
+                      <option.icon className="mr-2 h-4 w-4 text-white dark:text-gray-500" />
                     )}
                     <span>{option.label}</span>
                   </CommandItem>
