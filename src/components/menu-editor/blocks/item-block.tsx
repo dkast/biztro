@@ -167,7 +167,7 @@ export function ItemView({
                 width={128}
                 height={96}
                 alt={item.name}
-                className="h-16 w-20 rounded object-cover"
+                className="h-16 w-20 rounded-sm object-cover"
                 unoptimized
               ></Image>
             )}
@@ -198,7 +198,7 @@ export function ItemView({
               </FontWrapper>
               <FontWrapper fontFamily={descriptionFontFamily}>
                 <span
-                  className="line-clamp-3 text-pretty text-sm"
+                  className="line-clamp-3 text-sm text-pretty"
                   style={{
                     color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
                   }}

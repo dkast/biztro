@@ -45,7 +45,7 @@ export default function Navbar({
           <Button
             variant="outline"
             size="xs"
-            className="rounded-full px-3 shadow-sm"
+            className="rounded-full px-3 shadow-xs"
           >
             Acceder a mi cuenta
           </Button>

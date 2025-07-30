@@ -36,7 +36,7 @@ export default function ContainerBlock({
     >
       <div
         // className="grow bg-cover bg-fixed bg-no-repeat group-[.editor-preview]:bg-contain @3xl:bg-[50%_auto]"
-        className="fixed inset-0 mx-auto h-screen w-screen max-w-screen-md bg-cover bg-no-repeat group-[.editor-preview]:absolute group-[.editor-preview]:w-full"
+        className="fixed inset-0 mx-auto h-screen w-screen max-w-(--breakpoint-md) bg-cover bg-no-repeat group-[.editor-preview]:absolute group-[.editor-preview]:w-full"
         style={{
           backgroundImage:
             backgroundImage === "none" || !backgroundImage?.startsWith("bg")
@@ -46,10 +46,10 @@ export default function ContainerBlock({
         }}
       >
         {backgroundImage?.startsWith("bg") && (
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/80"></div>
+          <div className="absolute inset-0 bg-linear-to-b from-black/20 to-black/80"></div>
         )}
       </div>
-      <main className="mx-auto flex max-w-screen-md grow flex-col @container">
+      <main className="@container mx-auto flex max-w-(--breakpoint-md) grow flex-col">
         <div className="relative flex grow flex-col pb-8">{children}</div>
       </main>
     </div>

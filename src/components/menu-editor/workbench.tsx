@@ -208,7 +208,7 @@ export default function Workbench({
             <MenuTour />
           </Header>
           <ResizablePanelGroup
-            className="grow pt-16 dark:bg-gray-900"
+            className="grow pt-16 dark:bg-gray-950"
             direction="horizontal"
           >
             <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
@@ -237,7 +237,7 @@ export default function Workbench({
             <ResizablePanel defaultSize={70}>
               <div
                 id="editor-canvas"
-                className="no-scrollbar relative h-full w-full overflow-y-auto bg-gray-50 dark:bg-gray-800"
+                className="no-scrollbar relative h-full w-full overflow-y-auto bg-gray-50 dark:bg-gray-900"
               >
                 <SyncStatus
                   menu={menu}
@@ -251,7 +251,7 @@ export default function Workbench({
                     frameSize === FrameSize.DESKTOP
                       ? "w-[1024px]"
                       : "w-[390px]",
-                    "editor-preview group mx-auto pb-24 pt-10 transition-all duration-300 ease-in-out"
+                    "editor-preview group mx-auto pt-10 pb-24 transition-all duration-300 ease-in-out"
                   )}
                 >
                   <span className="editor-size block p-2 text-center text-sm text-gray-400">

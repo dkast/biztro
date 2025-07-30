@@ -26,7 +26,7 @@ export default function LoginForm({
               callbackUrl: callbackUrl ? callbackUrl : "/"
             })
           }
-          className="mt-4 w-full shadow-sm"
+          className="mt-4 w-full shadow-xs"
           variant="outline"
         >
           <Image

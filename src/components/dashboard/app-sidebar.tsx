@@ -105,7 +105,7 @@ export default function AppSidebar() {
   })
 
   return (
-    <Sidebar className="dark:border-gray-800">
+    <Sidebar className="border-gray-200 dark:border-gray-800">
       <SidebarWorkgroup />
       <SidebarContent>
         <SidebarGroup>
@@ -161,18 +161,18 @@ export default function AppSidebar() {
       <SidebarFooter>
         {currentOrg?.plan === Plan.BASIC && (
           <div className="p-1">
-            <Card className="bg-gradient-to-t from-violet-500/10 to-transparent shadow-none">
+            <Card className="gap-3 border-pink-400/50 bg-radial-[at_0%_100%] from-pink-500/50 via-violet-500/20 to-transparent shadow-none">
               <CardHeader className="p-3 pb-1">
                 <CardTitle className="text-sm">Actualiza a Pro</CardTitle>
                 <CardDescription className="text-xs">
                   Productos y menús ilimitados, componentes adicionales y más.
                 </CardDescription>
               </CardHeader>
-              <CardFooter className="p-3">
+              <CardFooter className="px-3">
                 <Button
                   size="xs"
                   variant="secondary"
-                  className="w-full border bg-white text-xs dark:border-gray-700"
+                  className="w-full border border-gray-200 bg-white text-xs dark:border-gray-700"
                   asChild
                 >
                   <Link href="/dashboard/settings/billing">
@@ -286,8 +286,8 @@ function SidebarWorkgroup() {
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Avatar className="size-8 rounded shadow">
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <Avatar className="size-8 rounded-sm shadow-sm">
                     <AvatarImage src={currentOrg.logo ?? undefined} />
                     <AvatarFallback className="text-xs">
                       {getInitials(currentOrg.name)}
@@ -306,7 +306,7 @@ function SidebarWorkgroup() {
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
               align="start"
               side="bottom"
               sideOffset={4}
@@ -322,8 +322,8 @@ function SidebarWorkgroup() {
                   }
                   className="gap-2 p-2"
                 >
-                  <div className="flex size-6 items-center justify-center rounded-sm border">
-                    <Avatar className="size-5 rounded-sm shadow">
+                  <div className="flex size-6 items-center justify-center rounded-xs border">
+                    <Avatar className="size-5 rounded-xs shadow-sm">
                       <AvatarImage
                         src={membership.organization.logo ?? undefined}
                       />

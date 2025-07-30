@@ -79,7 +79,7 @@ export default function Waitlist() {
               disabled={status === "executing"}
               type="submit"
               size="xs"
-              className="bg-brand-500 rounded-full px-4 py-2 text-white transition-colors duration-200 ease-in-out hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
+              className="bg-brand-500 focus:ring-opacity-50 rounded-full px-4 py-2 text-white transition-colors duration-200 ease-in-out hover:bg-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-hidden"
             >
               {status === "executing" ? (
                 <>

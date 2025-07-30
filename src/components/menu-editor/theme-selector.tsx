@@ -378,7 +378,7 @@ export default function ThemeSelector({
           currentValue={fontThemeId}
           onValueChange={setFontThemeId}
           triggerContent={
-            <button className="flex w-full flex-row items-center justify-between rounded-lg border px-4 py-2 text-left shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
+            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-200 px-4 py-2 text-left shadow-xs transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
               <div>
                 <FontWrapper fontFamily={selectedFontTheme?.fontDisplay}>
                   <span className="text-base font-medium">
@@ -420,7 +420,7 @@ export default function ThemeSelector({
           currentValue={colorThemeId}
           onValueChange={setColorThemeId}
           triggerContent={
-            <button className="flex w-full flex-row items-center justify-between rounded-lg border px-4 py-2 text-left shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
+            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-200 px-4 py-2 text-left shadow-xs transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
               <div className="">
                 <div className="flex flex-row items-center gap-2">
                   <div className="isolate flex overflow-hidden">
@@ -465,7 +465,10 @@ export default function ThemeSelector({
                   Personalizar tema
                 </Button>
               </SheetTrigger>
-              <SheetContent className="w-[96%] sm:max-w-md" side="right">
+              <SheetContent
+                className="px-4 sm:max-w-md"
+                side={isMobile ? "bottom" : "right"}
+              >
                 <SheetHeader>
                   <SheetTitle>Personalizar tema</SheetTitle>
                   <SheetDescription>

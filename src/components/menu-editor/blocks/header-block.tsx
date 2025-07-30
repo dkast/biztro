@@ -63,7 +63,7 @@ export default function HeaderBlock({
           isBannerVisible={showBanner ?? false}
           className="relative"
         />
-        <div className="px-4 pb-6 pt-4">
+        <div className="px-4 pt-4 pb-6">
           {/* Logo and organization name */}
           <div
             className={cn(
@@ -124,7 +124,7 @@ export default function HeaderBlock({
 
   const renderModern = () => {
     return (
-      <div className="flex flex-col items-center justify-center pb-4 pt-8">
+      <div className="flex flex-col items-center justify-center pt-8 pb-4">
         <div className="absolute inset-0 origin-top">
           <Banner
             banner={organization.banner}
@@ -236,7 +236,7 @@ function Logo({
 }) {
   return (
     isLogoVisible && (
-      <Avatar className={cn("size-16 rounded-xl shadow", className)}>
+      <Avatar className={cn("size-16 rounded-xl shadow-sm", className)}>
         <AvatarImage src={logo ?? undefined} className="rounded-xl" />
         <AvatarFallback className="text-xl">
           {getInitials(orgName)}

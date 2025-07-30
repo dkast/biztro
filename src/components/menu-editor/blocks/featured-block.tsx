@@ -78,7 +78,7 @@ export default function FeaturedBlock({
             connect(ref)
           }
         }}
-        className="w-full p-2 @container/feat"
+        className="@container/feat w-full p-2"
       >
         <Carousel
           opts={{
@@ -127,7 +127,7 @@ export default function FeaturedBlock({
                           }}
                         />
                       )}
-                      <div className="relative z-50 bg-gradient-to-t from-black/80 to-transparent p-4">
+                      <div className="relative z-50 bg-linear-to-t from-black/80 to-transparent p-4">
                         <FontWrapper
                           fontFamily={itemFontFamily}
                           className="flex flex-row gap-3"

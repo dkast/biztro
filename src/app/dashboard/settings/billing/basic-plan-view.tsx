@@ -106,7 +106,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
               onValueChange={value =>
                 value && setBillingInterval(value as "monthly" | "yearly")
               }
-              className="justify-center"
+              className="w-full justify-center border border-gray-200 dark:border-gray-800"
             >
               <ToggleGroupItem value="monthly" className="text-sm">
                 Mensual

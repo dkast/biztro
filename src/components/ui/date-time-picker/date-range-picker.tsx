@@ -81,10 +81,12 @@ const presetButtons = [
   }
 ]
 
-const DateRangePicker = React.forwardRef<
-  HTMLDivElement,
-  DateRangePickerStateOptions<DateValue>
->((props, forwardedRef) => {
+const DateRangePicker = ({
+  ref: forwardedRef,
+  ...props
+}: DateRangePickerStateOptions<DateValue> & {
+  ref: React.RefObject<HTMLDivElement>
+}) => {
   const state = useDateRangePickerState(props)
   const ref = useForwardedRef(forwardedRef)
   const contentRef = useRef<HTMLDivElement | null>(null)
@@ -187,7 +189,7 @@ const DateRangePicker = React.forwardRef<
         </PopoverTrigger>
         <PopoverContent ref={contentRef} className="w-full p-2 sm:p-4">
           <div {...dialogProps} className="flex space-y-3">
-            <div className="flex flex-col pr-1 pt-2 sm:pr-2">
+            <div className="flex flex-col pt-2 pr-1 sm:pr-2">
               {presetButtons.map(({ label, value }) => (
                 <Button
                   key={value}
@@ -214,7 +216,7 @@ const DateRangePicker = React.forwardRef<
       </Popover>
     </div>
   )
-})
+}
 
 DateRangePicker.displayName = "DateRangePicker"
 

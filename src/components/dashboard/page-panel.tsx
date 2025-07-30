@@ -42,7 +42,7 @@ export default function Panel({
           <DrawerContent
             className={cn(
               className,
-              "h-[96%] gap-y-2 shadow focus:outline-none"
+              "h-[96%] gap-y-2 shadow-sm focus:outline-hidden"
             )}
             onInteractOutside={event => event.preventDefault()}
           >

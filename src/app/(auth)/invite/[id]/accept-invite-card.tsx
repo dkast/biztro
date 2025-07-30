@@ -51,7 +51,7 @@ export default function AcceptInviteCard({
   return (
     <Card className="mx-auto max-w-md shadow-xl">
       <CardHeader>
-        <CardTitle className="text-pretty text-lg font-medium">
+        <CardTitle className="text-lg font-medium text-pretty">
           {`Hola${user?.name ? ` ${user.name},` : ","} has sido invitado a unirte al equipo de `}
           <span className="text-orange-600">{invite?.organization.name}</span>.
         </CardTitle>
@@ -102,7 +102,7 @@ export default function AcceptInviteCard({
                       callbackUrl: "/dashboard"
                     })
                   }
-                  className="mt-4 w-full shadow-sm"
+                  className="mt-4 w-full shadow-xs"
                   variant="outline"
                 >
                   <Image

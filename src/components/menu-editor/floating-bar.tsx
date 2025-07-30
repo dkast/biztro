@@ -69,7 +69,7 @@ export default function FloatingBar() {
   const [frameSize, setFrameSize] = useAtom(frameSizeAtom)
 
   return (
-    <div className="editor-toolbar fixed bottom-24 left-1/2 flex h-12 -translate-x-1/2 flex-row items-center justify-between rounded-full bg-gray-800 px-1 text-white shadow-lg dark:border dark:border-gray-700 dark:bg-gray-900 sm:bottom-8 sm:min-w-[200px]">
+    <div className="editor-toolbar fixed bottom-24 left-1/2 flex h-12 -translate-x-1/2 flex-row items-center justify-between rounded-full bg-gray-800 px-1 text-white shadow-lg sm:bottom-8 sm:min-w-[200px] dark:border dark:border-gray-700 dark:bg-gray-900">
       <TooltipHelper content="Deshacer">
         <Button
           disabled={!canUndo}
@@ -94,7 +94,7 @@ export default function FloatingBar() {
       </TooltipHelper>
       <Separator
         orientation="vertical"
-        className="mx-1 hidden h-6 bg-gray-500 sm:inline-flex"
+        className="mx-1 hidden h-6! bg-gray-600 sm:inline-flex"
       />
       <TooltipHelper
         content={
@@ -124,7 +124,7 @@ export default function FloatingBar() {
       </TooltipHelper>
       <Separator
         orientation="vertical"
-        className="mx-1 hidden h-6 bg-gray-500 sm:inline-flex"
+        className="mx-1 hidden h-6! bg-gray-600 sm:inline-flex"
       />
       <TooltipHelper content="Copiar estilo">
         <Button
@@ -149,7 +149,7 @@ export default function FloatingBar() {
       </TooltipHelper>
       <Separator
         orientation="vertical"
-        className="mx-1 hidden h-6 bg-gray-500 sm:inline-flex"
+        className="mx-1 hidden h-6! bg-gray-600 sm:inline-flex"
       />
       <TooltipHelper content="Restringir cambios">
         <Button

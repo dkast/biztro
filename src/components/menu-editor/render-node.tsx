@@ -116,7 +116,7 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
         ? ReactDOM.createPortal(
             <>
               <div
-                className="fixed z-40 flex h-8 items-center gap-5 rounded bg-gray-800 p-4 text-xs text-white shadow dark:bg-gray-900 sm:-mt-7 sm:h-6 sm:gap-3 sm:p-2"
+                className="fixed z-40 flex h-8 items-center gap-5 rounded-sm bg-gray-800 p-4 text-xs text-white shadow-sm sm:-mt-7 sm:h-6 sm:gap-3 sm:p-2 dark:bg-gray-900"
                 style={{
                   left: isMobile ? "auto" : getPos().left,
                   top: getPos().top,

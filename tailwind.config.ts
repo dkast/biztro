@@ -1,66 +1,28 @@
-import containerQueries from "@tailwindcss/container-queries"
 import typography from "@tailwindcss/typography"
-import type { Config } from "tailwindcss"
+import { type Config } from "tailwindcss"
 import tailwindcssAnimate from "tailwindcss-animate"
 import colors from "tailwindcss/colors"
-import { fontFamily } from "tailwindcss/defaultTheme"
-import type { PluginCreator } from "tailwindcss/types/config"
-
-const glassPlugin: PluginCreator = ({ matchUtilities, theme }) => {
-  matchUtilities(
-    {
-      glass: (value, { modifier }) => {
-        const extendedBy = modifier || "6rem"
-        const cutoff = `calc(100% - ${extendedBy})`
-
-        return {
-          "&::after": {
-            darkMode: ["class"],
-            content: "''",
-            position: "absolute",
-            inset: "0",
-            // Extend backdrop surface to the bottom
-            bottom: `calc(-1 * ${extendedBy})`,
-            // Mask out the part falling outside the nav
-            "-webkit-mask-image": `linear-gradient(to bottom, black 0, black ${cutoff}, transparent ${cutoff})`,
-            "backdrop-filter": `blur(${value || "1rem"})`
-          }
-        }
-      }
-    },
-    {
-      values: {
-        ...theme("spacing"),
-        DEFAULT: theme("spacing.4")
-      },
-      modifiers: theme("spacing")
-    }
-  )
-}
+import defaultTheme from "tailwindcss/defaultTheme"
 
 const config = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}"
   ],
-  prefix: "",
   theme: {
-    fontFamily: {
-      display: ["var(--font-sora)"],
-      sans: ["var(--font-inter)", ...fontFamily.sans]
-    },
-
-    transparent: "transparent",
-    current: "currentColor",
     container: {
       center: true,
       padding: "2rem",
       screens: {
         "2xl": "1400px"
       }
+    },
+    fontFamily: {
+      display: ["var(--font-sora)"],
+      sans: ["var(--font-inter)", ...defaultTheme.fontFamily.sans]
     },
     extend: {
       colors: {
@@ -130,12 +92,11 @@ const config = {
         rainbow: "rainbow var(--speed, 2s) infinite linear"
       },
       gridTemplateColumns: {
-        // Add your custom value here
         "300": "repeat(auto-fill, 300px)"
       }
     }
   },
-  plugins: [tailwindcssAnimate, typography, containerQueries, glassPlugin]
+  plugins: [typography, tailwindcssAnimate]
 } satisfies Config
 
 export default config

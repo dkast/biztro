@@ -232,7 +232,7 @@ export default function MenuPublish({
       </Dialog>
       <Separator
         orientation="vertical"
-        className="h-100 mr-2 border-l dark:border-gray-700"
+        className="mr-2 h-100 border-l dark:border-gray-700"
       />
       <Popover>
         <div className="relative">
@@ -242,8 +242,8 @@ export default function MenuPublish({
           {menu.publishedAt &&
             differenceInMinutes(menu.updatedAt, menu.publishedAt) >= 1 && (
               <>
-                <span className="absolute -right-1 -top-1 h-3 w-3 animate-[ping_1s_ease-in-out_5] rounded-full bg-rose-400"></span>
-                <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-rose-500"></span>
+                <span className="absolute -top-1 -right-1 h-3 w-3 animate-[ping_1s_ease-in-out_5] rounded-full bg-rose-400"></span>
+                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-rose-500"></span>
               </>
             )}
         </div>
@@ -257,7 +257,7 @@ export default function MenuPublish({
                 exit={{ opacity: 0, y: 10 }}
                 className="flex flex-col items-center gap-2"
               >
-                <span className="rounded-full bg-indigo-50 p-2 text-indigo-700 ring-1 ring-inset ring-indigo-600/20 dark:bg-indigo-900/70 dark:text-indigo-500">
+                <span className="rounded-full bg-indigo-50 p-2 text-indigo-700 ring-1 ring-indigo-600/20 ring-inset dark:bg-indigo-900/70 dark:text-indigo-500">
                   <Globe className="size-6" />
                 </span>
                 <span className="text-sm font-medium">Publicar Menú</span>
@@ -481,7 +481,7 @@ function QrCodeEditor({
         </div>
         <div className="sm:min-w-40">
           <form className="grid w-full items-start gap-6">
-            <fieldset className="grid gap-6 rounded-lg border p-4 dark:border-gray-800">
+            <fieldset className="grid gap-6 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
               <legend className="-ml-1 px-1 text-sm font-medium">
                 Ajustes
               </legend>
@@ -490,7 +490,7 @@ function QrCodeEditor({
                 <Popover>
                   <PopoverTrigger>
                     <div
-                      className="h-6 w-12 rounded border border-black/20 dark:border-white/20"
+                      className="h-6 w-12 rounded-sm border border-black/20 dark:border-white/20"
                       style={{
                         backgroundColor: `rgb(${Object.values(color)})`
                       }}

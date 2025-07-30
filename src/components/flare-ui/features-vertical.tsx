@@ -1,12 +1,6 @@
 "use client"
 
-import React, {
-  forwardRef,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode
-} from "react"
+import React, { useEffect, useRef, useState, type ReactNode } from "react"
 import * as Accordion from "@radix-ui/react-accordion"
 import { motion, useInView } from "motion/react"
 
@@ -17,19 +11,20 @@ type AccordionItemProps = {
   className?: string
 } & Accordion.AccordionItemProps
 
-const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
-  ({ children, className, ...props }, forwardedRef) => (
-    <Accordion.Item
-      className={cn(
-        "mt-px overflow-hidden focus-within:relative focus-within:z-10",
-        className
-      )}
-      {...props}
-      ref={forwardedRef}
-    >
-      {children}
-    </Accordion.Item>
-  )
+const AccordionItem = ({
+  children,
+  className,
+  ...props
+}: AccordionItemProps) => (
+  <Accordion.Item
+    className={cn(
+      "mt-px overflow-hidden focus-within:relative focus-within:z-10",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </Accordion.Item>
 )
 AccordionItem.displayName = "AccordionItem"
 
@@ -38,41 +33,44 @@ type AccordionTriggerProps = {
   className?: string
 }
 
-const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
-  ({ children, className, ...props }, forwardedRef) => (
-    <Accordion.Header className="flex">
-      <Accordion.Trigger
-        className={cn(
-          "group flex flex-1 cursor-pointer items-center justify-between px-5 text-[15px] leading-none outline-none",
-          className
-        )}
-        {...props}
-        ref={forwardedRef}
-      >
-        {children}
-      </Accordion.Trigger>
-    </Accordion.Header>
-  )
+const AccordionTrigger = ({
+  children,
+  className,
+  ...props
+}: AccordionTriggerProps) => (
+  <Accordion.Header className="flex">
+    <Accordion.Trigger
+      className={cn(
+        "group flex flex-1 cursor-pointer items-center justify-between px-5 text-[15px] leading-none outline-hidden",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </Accordion.Trigger>
+  </Accordion.Header>
 )
 AccordionTrigger.displayName = "AccordionTrigger"
+
 type AccordionContentProps = {
   children: ReactNode
   className?: string
 } & Accordion.AccordionContentProps
 
-const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
-  ({ children, className, ...props }, forwardedRef) => (
-    <Accordion.Content
-      className={cn(
-        "overflow-hidden text-[15px] font-medium data-[state=closed]:animate-slide-up data-[state=open]:animate-slide-down",
-        className
-      )}
-      {...props}
-      ref={forwardedRef}
-    >
-      <div className="px-5 py-2">{children}</div>
-    </Accordion.Content>
-  )
+const AccordionContent = ({
+  children,
+  className,
+  ...props
+}: AccordionContentProps) => (
+  <Accordion.Content
+    className={cn(
+      "data-[state=closed]:animate-slide-up data-[state=open]:animate-slide-down overflow-hidden text-[15px] font-medium",
+      className
+    )}
+    {...props}
+  >
+    <div className="px-5 py-2">{children}</div>
+  </Accordion.Content>
 )
 AccordionContent.displayName = "AccordionContent"
 
@@ -183,7 +181,7 @@ export default function Features({
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto my-12 grid h-full items-center gap-10 lg:grid-cols-2">
             <div
-              className={`order-1 hidden lg:order-[0] lg:flex ${
+              className={`order-1 hidden lg:order-0 lg:flex ${
                 ltr ? "lg:order-2 lg:justify-end" : "justify-start"
               }`}
             >
@@ -204,14 +202,14 @@ export default function Features({
                   >
                     {linePosition === "left" || linePosition === "right" ? (
                       <div
-                        className={`absolute bottom-0 top-0 h-full w-0.5 overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30 ${
+                        className={`absolute top-0 bottom-0 h-full w-0.5 overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30 ${
                           linePosition === "right"
-                            ? "left-auto right-0"
-                            : "left-0 right-auto"
+                            ? "right-0 left-auto"
+                            : "right-auto left-0"
                         }`}
                       >
                         <div
-                          className={`absolute left-0 top-0 w-full ${
+                          className={`absolute top-0 left-0 w-full ${
                             currentIndex === index ? "h-full" : "h-0"
                           } bg-primary origin-top transition-all ease-linear dark:bg-white`}
                           style={{
@@ -226,7 +224,7 @@ export default function Features({
 
                     {linePosition === "top" || linePosition === "bottom" ? (
                       <div
-                        className={`absolute left-0 right-0 h-0.5 w-full overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30 ${
+                        className={`absolute right-0 left-0 h-0.5 w-full overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30 ${
                           linePosition === "bottom" ? "bottom-0" : "top-0"
                         }`}
                       >
@@ -252,11 +250,11 @@ export default function Features({
                       </div>
 
                       <div className="flex flex-col gap-3">
-                        <AccordionTrigger className="pl-0 font-display text-xl font-medium">
+                        <AccordionTrigger className="font-display pl-0 text-xl font-medium">
                           {item.title}
                         </AccordionTrigger>
 
-                        <AccordionTrigger className="justify-start text-balance pl-0 text-left leading-6 text-gray-50">
+                        <AccordionTrigger className="justify-start pl-0 text-left leading-6 text-balance text-gray-50">
                           {item.content}
                         </AccordionTrigger>
                       </div>
@@ -297,7 +295,7 @@ export default function Features({
 
             <ul
               ref={carouselRef}
-              className="flex h-full snap-x snap-mandatory flex-nowrap overflow-x-auto py-10 [-ms-overflow-style:none] [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] [mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden"
+              className="flex h-full snap-x snap-mandatory flex-nowrap overflow-x-auto [mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] py-10 [-ms-overflow-style:none] [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden"
               style={{
                 padding: "50px calc(50%)"
               }}
@@ -311,9 +309,9 @@ export default function Features({
                     scrollSnapAlign: "center"
                   }}
                 >
-                  <div className="absolute bottom-0 left-0 right-auto top-0 h-0.5 w-full overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30">
+                  <div className="absolute top-0 right-auto bottom-0 left-0 h-0.5 w-full overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30">
                     <div
-                      className={`absolute left-0 top-0 h-full ${
+                      className={`absolute top-0 left-0 h-full ${
                         currentIndex === index ? "w-full" : "w-0"
                       } bg-primary origin-top transition-all ease-linear`}
                       style={{
@@ -323,7 +321,7 @@ export default function Features({
                     ></div>
                   </div>
                   <h2 className="text-xl font-bold">{item.title}</h2>
-                  <p className="mx-0 max-w-sm text-balance text-sm">
+                  <p className="mx-0 max-w-sm text-sm text-balance">
                     {item.content}
                   </p>
                 </div>

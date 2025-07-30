@@ -3,7 +3,12 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
-import { hexToHsva, Sketch, type SwatchPresetColor } from "@uiw/react-color"
+import {
+  Colorful,
+  hexToHsva,
+  Sketch,
+  type SwatchPresetColor
+} from "@uiw/react-color"
 import { extractColors } from "extract-colors/lib/worker-wrapper"
 import {
   Contrast,
@@ -29,6 +34,14 @@ import {
   DialogTitle
 } from "@/components/ui/dialog"
 import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerNested,
+  DrawerTitle
+} from "@/components/ui/drawer"
+import {
   Form,
   FormControl,
   FormField,
@@ -49,6 +62,7 @@ import {
   updateColorTheme
 } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { ThemeScope, type colorThemes } from "@/lib/types"
 
 export function ColorThemeEditor({
@@ -69,6 +83,10 @@ export function ColorThemeEditor({
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [themeState, setThemeState] = useState(theme)
   const [isExtracting, setIsExtracting] = useState(false)
+  const isMobile = useIsMobile()
+  const [drawerColorKey, setDrawerColorKey] = useState<
+    null | keyof typeof themeState
+  >(null)
 
   const {
     execute: createTheme,
@@ -250,6 +268,57 @@ export function ColorThemeEditor({
         onClose={() => setIsDialogOpen(false)}
         onSubmit={handleDialogSubmit}
       />
+      {/* Drawer for mobile color picker */}
+      {isMobile && drawerColorKey && (
+        <DrawerNested
+          open={!!drawerColorKey}
+          onOpenChange={open => (open ? null : setDrawerColorKey(null))}
+        >
+          <DrawerContent>
+            <DrawerHeader className="text-left">
+              <DrawerTitle>
+                {drawerColorKey === "surfaceColor" && "Color de Fondo"}
+                {drawerColorKey === "brandColor" && "Color de Marca"}
+                {drawerColorKey === "accentColor" && "Color de Acento"}
+                {drawerColorKey === "textColor" && "Color de Texto"}
+                {drawerColorKey === "mutedColor" && "Color Tenue"}
+              </DrawerTitle>
+              <DrawerDescription>Selecciona un color.</DrawerDescription>
+            </DrawerHeader>
+            <div className="px-4 pb-4">
+              <div
+                className="mb-4 flex items-center justify-center"
+                onPointerDown={e => e.stopPropagation()}
+                onTouchStart={e => e.stopPropagation()}
+                onMouseDown={e => e.stopPropagation()}
+              >
+                <Colorful
+                  disableAlpha
+                  color={
+                    themeState[
+                      drawerColorKey as keyof typeof themeState
+                    ] as string
+                  }
+                  onChange={color => {
+                    setThemeState(prev => ({
+                      ...prev,
+                      [drawerColorKey]: color.hex
+                    }))
+                  }}
+                />
+              </div>
+              <div className="mt-6 flex">
+                <Button
+                  className="w-full"
+                  onClick={() => setDrawerColorKey(null)}
+                >
+                  Listo
+                </Button>
+              </div>
+            </div>
+          </DrawerContent>
+        </DrawerNested>
+      )}
       <div className="flex flex-col gap-6 py-4">
         <ThemePreview
           menu={menu}
@@ -257,155 +326,205 @@ export function ColorThemeEditor({
           fontText={fontText}
           theme={themeState}
         />
-        <fieldset className="rounded-lg border p-4 dark:border-gray-700">
+        <fieldset className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
           <legend className="-ml-1 px-1 text-sm font-medium">Colores</legend>
           <div className="grid grid-cols-4 items-center gap-2">
             <dt>
               <Label size="sm">Fondo</Label>
             </dt>
             <dd className="flex items-center">
-              <Popover>
-                <PopoverTrigger>
-                  <div
-                    className="h-5 w-12 rounded border border-black/20 dark:border-white/20"
-                    style={{
-                      backgroundColor: themeState.surfaceColor
-                    }}
-                  ></div>
-                </PopoverTrigger>
-                <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-                  <Sketch
-                    disableAlpha
-                    presetColors={colorPresets}
-                    color={hexToHsva(themeState.surfaceColor)}
-                    onChange={color => {
-                      setThemeState(prev => ({
-                        ...prev,
-                        surfaceColor: color.hex
-                      }))
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+              {isMobile ? (
+                <button
+                  type="button"
+                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  style={{ backgroundColor: themeState.surfaceColor }}
+                  aria-label="Seleccionar color de fondo"
+                  onClick={() => setDrawerColorKey("surfaceColor")}
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      style={{ backgroundColor: themeState.surfaceColor }}
+                      aria-label="Seleccionar color de fondo"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                    <Sketch
+                      disableAlpha
+                      presetColors={colorPresets}
+                      color={hexToHsva(themeState.surfaceColor)}
+                      onChange={color => {
+                        setThemeState(prev => ({
+                          ...prev,
+                          surfaceColor: color.hex
+                        }))
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </dd>
             <dt>
               <Label size="sm">Marca</Label>
             </dt>
             <dd className="flex items-center">
-              <Popover>
-                <PopoverTrigger>
-                  <div
-                    className="h-5 w-12 rounded border border-black/20 dark:border-white/20"
-                    style={{
-                      backgroundColor: themeState.brandColor
-                    }}
-                  ></div>
-                </PopoverTrigger>
-                <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-                  <Sketch
-                    disableAlpha
-                    presetColors={colorPresets}
-                    color={hexToHsva(themeState.brandColor)}
-                    onChange={color => {
-                      setThemeState(prev => ({
-                        ...prev,
-                        brandColor: color.hex
-                      }))
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+              {isMobile ? (
+                <button
+                  type="button"
+                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  style={{ backgroundColor: themeState.brandColor }}
+                  aria-label="Seleccionar color de marca"
+                  onClick={() => setDrawerColorKey("brandColor")}
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      style={{ backgroundColor: themeState.brandColor }}
+                      aria-label="Seleccionar color de marca"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                    <Sketch
+                      disableAlpha
+                      presetColors={colorPresets}
+                      color={hexToHsva(themeState.brandColor)}
+                      onChange={color => {
+                        setThemeState(prev => ({
+                          ...prev,
+                          brandColor: color.hex
+                        }))
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </dd>
             <dt>
               <Label size="sm">Acento</Label>
             </dt>
             <dd className="flex items-center">
-              <Popover>
-                <PopoverTrigger>
-                  <div
-                    className="h-5 w-12 rounded border border-black/20 dark:border-white/20"
-                    style={{
-                      backgroundColor: themeState.accentColor
-                    }}
-                  ></div>
-                </PopoverTrigger>
-                <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-                  <Sketch
-                    disableAlpha
-                    presetColors={colorPresets}
-                    color={hexToHsva(themeState.accentColor)}
-                    onChange={color => {
-                      setThemeState(prev => ({
-                        ...prev,
-                        accentColor: color.hex
-                      }))
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+              {isMobile ? (
+                <button
+                  type="button"
+                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  style={{ backgroundColor: themeState.accentColor }}
+                  aria-label="Seleccionar color de acento"
+                  onClick={() => setDrawerColorKey("accentColor")}
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      style={{ backgroundColor: themeState.accentColor }}
+                      aria-label="Seleccionar color de acento"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                    <Sketch
+                      disableAlpha
+                      presetColors={colorPresets}
+                      color={hexToHsva(themeState.accentColor)}
+                      onChange={color => {
+                        setThemeState(prev => ({
+                          ...prev,
+                          accentColor: color.hex
+                        }))
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </dd>
             <dt>
               <Label size="sm">Texto</Label>
             </dt>
             <dd className="flex items-center">
-              <Popover>
-                <PopoverTrigger>
-                  <div
-                    className="h-5 w-12 rounded border border-black/20 dark:border-white/20"
-                    style={{
-                      backgroundColor: themeState.textColor
-                    }}
-                  ></div>
-                </PopoverTrigger>
-                <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-                  <Sketch
-                    disableAlpha
-                    presetColors={colorPresets}
-                    color={hexToHsva(themeState.textColor)}
-                    onChange={color => {
-                      setThemeState(prev => ({
-                        ...prev,
-                        textColor: color.hex
-                      }))
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+              {isMobile ? (
+                <button
+                  type="button"
+                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  style={{ backgroundColor: themeState.textColor }}
+                  aria-label="Seleccionar color de texto"
+                  onClick={() => setDrawerColorKey("textColor")}
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      style={{ backgroundColor: themeState.textColor }}
+                      aria-label="Seleccionar color de texto"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                    <Sketch
+                      disableAlpha
+                      presetColors={colorPresets}
+                      color={hexToHsva(themeState.textColor)}
+                      onChange={color => {
+                        setThemeState(prev => ({
+                          ...prev,
+                          textColor: color.hex
+                        }))
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </dd>
             <dt>
               <Label size="sm">Tenue</Label>
             </dt>
             <dd className="flex items-center">
-              <Popover>
-                <PopoverTrigger>
-                  <div
-                    className="h-5 w-12 rounded border border-black/20 dark:border-white/20"
-                    style={{
-                      backgroundColor: themeState.mutedColor
-                    }}
-                  ></div>
-                </PopoverTrigger>
-                <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
-                  <Sketch
-                    disableAlpha
-                    presetColors={colorPresets}
-                    color={hexToHsva(themeState.mutedColor)}
-                    onChange={color => {
-                      setThemeState(prev => ({
-                        ...prev,
-                        mutedColor: color.hex
-                      }))
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
+              {isMobile ? (
+                <button
+                  type="button"
+                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  style={{ backgroundColor: themeState.mutedColor }}
+                  aria-label="Seleccionar color tenue"
+                  onClick={() => setDrawerColorKey("mutedColor")}
+                />
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      style={{ backgroundColor: themeState.mutedColor }}
+                      aria-label="Seleccionar color tenue"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                    <Sketch
+                      disableAlpha
+                      presetColors={colorPresets}
+                      color={hexToHsva(themeState.mutedColor)}
+                      onChange={color => {
+                        setThemeState(prev => ({
+                          ...prev,
+                          mutedColor: color.hex
+                        }))
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </dd>
           </div>
         </fieldset>
-        <div className="grid grid-cols-3 gap-y-1">
+        <div className="grid grid-cols-3 gap-y-3 pb-12 sm:gap-y-1">
           <Button
             variant="secondary"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             className="col-span-3"
             onClick={extractColorsFromImage}
             disabled={isExtracting}
@@ -419,7 +538,7 @@ export function ColorThemeEditor({
           </Button>
           <Button
             variant="secondary"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             className="col-span-3"
             onClick={invertColors}
           >
@@ -429,7 +548,7 @@ export function ColorThemeEditor({
 
           <Button
             variant="outline"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             className="rounded-r-none border-r-0"
             disabled={
               status === "executing" ||
@@ -443,7 +562,7 @@ export function ColorThemeEditor({
           </Button>
           <Button
             variant="outline"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             className="rounded-none border-r-0"
             disabled={
               status === "executing" ||
@@ -462,7 +581,7 @@ export function ColorThemeEditor({
           </Button>
           <Button
             variant="outline"
-            size="sm"
+            size={isMobile ? "default" : "sm"}
             className="rounded-l-none"
             disabled={
               status === "executing" ||
@@ -508,7 +627,7 @@ function ThemePreview({
     >
       <div className="flex flex-row items-center gap-4">
         {/* {menu?.organization?.logo && (
-          <Avatar className="h-16 w-16 rounded-xl shadow">
+          <Avatar className="h-16 w-16 rounded-xl shadow-sm">
             <AvatarImage
               src={menu?.organization?.logo}
               className="rounded-xl"
@@ -570,7 +689,14 @@ function ThemePreview({
 }
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required")
+  name: z
+    .string()
+    .min(1, "Nombre es requerido")
+    .max(50)
+    .regex(
+      /^[a-zA-Z0-9 ]*$/,
+      "Nombre solo puede contener letras, números y espacios"
+    )
 })
 
 type ThemeNameDialogProps = {
@@ -584,6 +710,7 @@ export function ThemeNameDialog({
   onClose,
   onSubmit
 }: ThemeNameDialogProps) {
+  const isMobile = useIsMobile()
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema)
   })
@@ -591,6 +718,45 @@ export function ThemeNameDialog({
   const handleFormSubmit = (data: { name: string }) => {
     onSubmit(data.name)
     onClose()
+  }
+
+  if (isMobile) {
+    return (
+      <Drawer open={isOpen} onOpenChange={onClose}>
+        <DrawerContent>
+          <DrawerHeader className="text-left">
+            <DrawerTitle>Nombre del Tema</DrawerTitle>
+            <DrawerDescription>
+              Por favor, ingresa un nombre para el tema.
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="px-4 pb-4">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+                <FormField
+                  name="name"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nombre Tema</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Nombre Tema" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="mt-6 flex">
+                  <Button type="submit" className="w-full">
+                    Guardar
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </DrawerContent>
+      </Drawer>
+    )
   }
 
   return (
@@ -619,7 +785,9 @@ export function ThemeNameDialog({
             />
             <div className="mt-6 flex justify-end gap-2">
               <DialogClose asChild>
-                <Button variant="secondary">Cancelar</Button>
+                <Button variant="secondary" type="button">
+                  Cancelar
+                </Button>
               </DialogClose>
               <Button type="submit">Guardar</Button>
             </div>

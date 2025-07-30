@@ -18,10 +18,12 @@ import { Calendar } from "./calendar"
 import { DateField } from "./date-field"
 import { TimeField } from "./time-field"
 
-const DateTimePicker = React.forwardRef<
-  HTMLDivElement,
-  DatePickerStateOptions<DateValue>
->((props, forwardedRef) => {
+const DateTimePicker = ({
+  ref: forwardedRef,
+  ...props
+}: DatePickerStateOptions<DateValue> & {
+  ref: React.RefObject<HTMLDivElement>
+}) => {
   const ref = useForwardedRef(forwardedRef)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const contentRef = useRef<HTMLDivElement | null>(null)
@@ -82,7 +84,7 @@ const DateTimePicker = React.forwardRef<
       </Popover>
     </div>
   )
-})
+}
 
 DateTimePicker.displayName = "DateTimePicker"
 

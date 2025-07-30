@@ -22,7 +22,7 @@ export default function SideSection({
     <Collapsible className="w-full text-sm" open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
         className={cn(
-          "flex w-full items-center justify-between border-b px-4 py-2 text-left dark:border-gray-800"
+          "flex w-full items-center justify-between border-b border-gray-200 px-4 py-2 text-left dark:border-gray-800"
         )}
       >
         <span className="text-sm font-medium">{title}</span>

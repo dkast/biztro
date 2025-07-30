@@ -153,19 +153,22 @@ function Tooltip({
   )
 }
 
-const Beacon = React.forwardRef<HTMLButtonElement, BeaconRenderProps>(
-  (props, ref) => {
-    return (
-      <div className="relative">
-        <span className="absolute -left-1 -top-1 size-8 animate-ping rounded-full bg-blue-400" />
-        <button
-          ref={ref}
-          {...props}
-          className="absolute inset-auto inline-block size-6 rounded-full bg-blue-500 ring-4 ring-blue-400"
-        />
-      </div>
-    )
-  }
-)
+const Beacon = ({
+  ref,
+  ...props
+}: BeaconRenderProps & {
+  ref: React.RefObject<HTMLButtonElement>
+}) => {
+  return (
+    <div className="relative">
+      <span className="absolute -top-1 -left-1 size-8 animate-ping rounded-full bg-blue-400" />
+      <button
+        ref={ref}
+        {...props}
+        className="absolute inset-auto inline-block size-6 rounded-full bg-blue-500 ring-4 ring-blue-400"
+      />
+    </div>
+  )
+}
 
 Beacon.displayName = "Beacon"
