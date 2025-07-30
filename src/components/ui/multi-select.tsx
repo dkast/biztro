@@ -282,7 +282,7 @@ export const MultiSelect = ({
                   className={cn(
                     "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
                     selectedValues.length === options.length
-                      ? "bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
+                      ? "border-black bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
                       : "opacity-50 [&_svg]:invisible"
                   )}
                 >
@@ -302,7 +302,7 @@ export const MultiSelect = ({
                       className={cn(
                         "pointer-events-auto! relative z-50 mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
                         isSelected
-                          ? "bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
+                          ? "border-black bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
                           : "opacity-50 [&_svg]:invisible"
                       )}
                     >
