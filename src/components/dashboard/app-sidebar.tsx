@@ -161,7 +161,7 @@ export default function AppSidebar() {
       <SidebarFooter>
         {currentOrg?.plan === Plan.BASIC && (
           <div className="p-1">
-            <Card className="gap-3 bg-linear-to-t from-violet-500/10 to-transparent shadow-none">
+            <Card className="gap-3 border-pink-400/50 bg-radial-[at_0%_100%] from-pink-500/50 via-violet-500/20 to-transparent shadow-none">
               <CardHeader className="p-3 pb-1">
                 <CardTitle className="text-sm">Actualiza a Pro</CardTitle>
                 <CardDescription className="text-xs">

@@ -282,8 +282,8 @@ export const MultiSelect = ({
                   className={cn(
                     "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
                     selectedValues.length === options.length
-                      ? "border-black bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
-                      : "dark:opacity-50 [&_svg]:invisible"
+                      ? "bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
+                      : "opacity-50 [&_svg]:invisible"
                   )}
                 >
                   <CheckIcon className="h-4 w-4 text-white dark:text-gray-500" />
@@ -302,8 +302,8 @@ export const MultiSelect = ({
                       className={cn(
                         "pointer-events-auto! relative z-50 mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
                         isSelected
-                          ? "border-black bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
-                          : "dark:opacity-50 [&_svg]:invisible"
+                          ? "bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
+                          : "opacity-50 [&_svg]:invisible"
                       )}
                     >
                       <CheckIcon className="h-4 w-4 text-white dark:text-gray-500" />
