@@ -260,7 +260,7 @@ export const MultiSelect = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="isolate z-999 w-auto p-0"
+        className="isolate z-[999] w-auto p-0"
         align="start"
         forceMount
         onEscapeKeyDown={() => setIsPopoverOpen(false)}
