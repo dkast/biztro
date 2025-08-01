@@ -430,7 +430,7 @@ export const createCategory = authActionClient
         }
       })
 
-      // revalidateTag(`categories-${currentOrg}`)
+      revalidateTag(`categories-${currentOrg}`)
 
       return { success: category }
     } catch (error) {
