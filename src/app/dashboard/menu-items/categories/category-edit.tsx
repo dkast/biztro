@@ -6,7 +6,7 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
-import type { z } from "zod"
+import type { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import {

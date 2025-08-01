@@ -7,7 +7,7 @@ import type { Location } from "@prisma/client"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
-import type { z } from "zod"
+import type { z } from "zod/v4"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Button } from "@/components/ui/button"

@@ -10,7 +10,7 @@ import { parseTime } from "@internationalized/date"
 import type { Prisma } from "@prisma/client"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
-import type { z } from "zod"
+import type { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import { TimeField } from "@/components/ui/date-time-picker/time-field"

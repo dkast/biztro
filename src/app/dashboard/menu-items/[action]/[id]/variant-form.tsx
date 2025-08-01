@@ -6,7 +6,7 @@ import {
   type UseFormReturn
 } from "react-hook-form"
 import { Trash } from "lucide-react"
-import type { z } from "zod"
+import type { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -106,7 +106,10 @@ function MultiVariantForm({
                         {...field}
                         id={`variants.${index}.price`}
                         type="number"
+                        inputMode="decimal"
                         placeholder="Precio"
+                        onChange={e => field.onChange(Number(e.target.value))}
+                        value={field.value ?? ""}
                       />
                     </FormControl>
                     <FormMessage />

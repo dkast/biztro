@@ -3,11 +3,11 @@
 import { Prisma } from "@prisma/client"
 import { revalidatePath, revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
-import { z } from "zod"
+import { z } from "zod/v4"
 
-import { appConfig } from "@/app/config"
 import { getMenuCount } from "@/server/actions/menu/queries"
 import { isProMember } from "@/server/actions/user/queries"
+import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import { BasicPlanLimits, menuSchema } from "@/lib/types"

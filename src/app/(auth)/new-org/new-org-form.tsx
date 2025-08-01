@@ -9,7 +9,7 @@ import confetti from "canvas-confetti"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
-import type { z } from "zod"
+import type { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import {

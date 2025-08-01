@@ -135,7 +135,7 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
     "webfontloader": "^1.6.28",
-    "zod": "^3.25.57"
+    "zod": "^4.0.14"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
