@@ -1,18 +1,10 @@
-import type { Organization } from "@prisma/client"
 import { ImageResponse } from "next/og"
 
 import { getBaseUrl } from "@/lib/utils"
 import { env } from "@/env.mjs"
 
-// Route segment config
-export const runtime = "edge"
-
-// Image metadata
-export const size = {
-  width: 1200,
-  height: 630
-}
-
+export const runtime = "nodejs"
+export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
 // Image generation
@@ -22,46 +14,43 @@ export default async function Image({
   params: { subdomain: string }
 }) {
   try {
-    const org: Organization = await fetch(
-      `${getBaseUrl()}/api/org?subdomain=${params.subdomain}&secret=${env.AUTH_SECRET}`
+    // Only select needed fields to reduce payload
+    const org = await fetch(
+      `${getBaseUrl()}/api/org?subdomain=${params.subdomain}&fields=name,logo,banner&secret=${env.AUTH_SECRET}`
     ).then(res => res.json())
 
-    console.log(
-      `${getBaseUrl()}/api/org?subdomain=${params.subdomain}&secret=${env.AUTH_SECRET}`
-    )
-    console.dir(org)
-
-    // Font
+    // Font loading preserved
     const inter = fetch(
       new URL("../../../public/Inter-SemiBold.ttf", import.meta.url)
     ).then(res => res.arrayBuffer())
 
+    // Use Tailwind classes for layout, minimize inline styles
     return new ImageResponse(
       (
         <div
           tw="flex flex-col w-full h-full items-center justify-end bg-orange-500" // skipcq: JS-0455
-          style={{
-            backgroundImage: org?.banner
-              ? `url(${org?.banner})`
-              : "linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.8))",
-            backgroundSize: "cover",
-            backgroundPosition: "center"
-          }}
+          style={
+            org?.banner
+              ? {
+                  backgroundImage: `url(${org.banner})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center"
+                }
+              : undefined
+          }
         >
-          <div
-            tw="flex w-full" // skipcq: JS-0455
-            style={{
-              backgroundImage:
-                "linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.8))"
-            }}
-          >
+          {/* skipcq: JS-0455 */}
+          <div tw="flex w-full bg-gradient-to-b from-transparent to-black/80">
             {/* skipcq: JS-0455 */}
             <div tw="flex flex-col md:flex-row w-full py-12 px-24 md:items-center justify-start">
               {org?.logo && (
                 <img
                   tw="w-24 h-24 md:w-30 md:h-30 rounded-full mr-8"
-                  src={org?.logo}
-                  alt={org?.name}
+                  src={org.logo}
+                  alt={org.name}
+                  width={120}
+                  height={120}
+                  style={{ objectFit: "cover" }}
                 />
               )}
               {/* skipcq: JS-0455 */}
@@ -84,10 +73,7 @@ export default async function Image({
         ]
       }
     )
-  } catch (error) {
-    console.error(error)
-    return new Response("Failed to generate image", {
-      status: 500
-    })
+  } catch {
+    return new Response("Failed to generate image", { status: 500 })
   }
 }
