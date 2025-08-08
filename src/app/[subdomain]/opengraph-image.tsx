@@ -25,7 +25,7 @@ export default async function Image({
     // Load font from filesystem in Node.js runtime (avoid fetch+URL rewrite)
     const fontPath = path.join(
       fileURLToPath(import.meta.url),
-      "../../../../public",
+      "../../assets/",
       "Inter-SemiBold.ttf"
     )
     const inter = await fs.readFile(fontPath)
