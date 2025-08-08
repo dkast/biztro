@@ -1,5 +1,6 @@
 import fs from "node:fs/promises"
 import path from "node:path"
+import { fileURLToPath } from "node:url"
 import { ImageResponse } from "next/og"
 
 import { getBaseUrl } from "@/lib/utils"
@@ -22,7 +23,11 @@ export default async function Image({
     ).then(res => res.json())
 
     // Load font from filesystem in Node.js runtime (avoid fetch+URL rewrite)
-    const fontPath = path.join(process.cwd(), "public", "Inter-SemiBold.ttf")
+    const fontPath = path.join(
+      fileURLToPath(import.meta.url),
+      "../../../../public",
+      "Inter-SemiBold.ttf"
+    )
     const inter = await fs.readFile(fontPath)
 
     // Use Tailwind classes for layout, minimize inline styles
