@@ -1,3 +1,5 @@
+import fs from "node:fs/promises"
+import path from "node:path"
 import { ImageResponse } from "next/og"
 
 import { getBaseUrl } from "@/lib/utils"
@@ -19,16 +21,15 @@ export default async function Image({
       `${getBaseUrl()}/api/org?subdomain=${params.subdomain}&fields=name,logo,banner&secret=${env.AUTH_SECRET}`
     ).then(res => res.json())
 
-    // Font loading preserved
-    const inter = fetch(
-      new URL("../../../public/Inter-SemiBold.ttf", import.meta.url)
-    ).then(res => res.arrayBuffer())
+    // Load font from filesystem in Node.js runtime (avoid fetch+URL rewrite)
+    const fontPath = path.join(process.cwd(), "public", "Inter-SemiBold.ttf")
+    const inter = await fs.readFile(fontPath)
 
     // Use Tailwind classes for layout, minimize inline styles
     return new ImageResponse(
       (
         <div
-          tw="flex flex-col w-full h-full items-center justify-end bg-orange-500" // skipcq: JS-0455
+          tw="flex flex-col w-full h-full items-center justify-end bg-orange-500"
           style={
             org?.banner
               ? {
@@ -39,9 +40,7 @@ export default async function Image({
               : undefined
           }
         >
-          {/* skipcq: JS-0455 */}
           <div tw="flex w-full bg-gradient-to-b from-transparent to-black/80">
-            {/* skipcq: JS-0455 */}
             <div tw="flex flex-col md:flex-row w-full py-12 px-24 md:items-center justify-start">
               {org?.logo && (
                 <img
@@ -53,7 +52,6 @@ export default async function Image({
                   style={{ objectFit: "cover" }}
                 />
               )}
-              {/* skipcq: JS-0455 */}
               <h2 tw="flex flex-col text-5xl sm:text-6xl font-semibold tracking-tight text-gray-50 text-left">
                 <span>{org?.name}</span>
               </h2>
@@ -66,14 +64,15 @@ export default async function Image({
         fonts: [
           {
             name: "Inter",
-            data: await inter,
+            data: inter,
             style: "normal",
             weight: 400
           }
         ]
       }
     )
-  } catch {
+  } catch (error) {
+    console.error(error)
     return new Response("Failed to generate image", { status: 500 })
   }
 }
