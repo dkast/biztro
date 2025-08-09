@@ -1,6 +1,3 @@
-import fs from "node:fs/promises"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
 import { ImageResponse } from "next/og"
 
 import { getBaseUrl } from "@/lib/utils"
@@ -11,6 +8,23 @@ export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
 // Image generation
+// Simple in-memory cache for the font ArrayBuffer during a single build/runtime lifecycle
+let interFontData: ArrayBuffer | null = null
+
+async function loadGoogleFont(font: string, weights: number[], text: string) {
+  const weightsParam = weights.map(w => `wght@${w}`).join(";")
+  const url = `https://fonts.googleapis.com/css2?family=${font}:${weightsParam}&text=${encodeURIComponent(text)}`
+  const css = await (await fetch(url)).text()
+  const resource = /src: url\((.+)\) format\('(opentype|truetype)'\)/.exec(css)
+
+  if (resource?.[1]) {
+    const response = await fetch(resource[1])
+    if (response.status === 200) return await response.arrayBuffer()
+  }
+
+  throw new Error("failed to load font data")
+}
+
 export default async function Image({
   params
 }: {
@@ -22,44 +36,81 @@ export default async function Image({
       `${getBaseUrl()}/api/org?subdomain=${params.subdomain}&fields=name,logo,banner&secret=${env.AUTH_SECRET}`
     ).then(res => res.json())
 
-    // Load font from filesystem in Node.js runtime (avoid fetch+URL rewrite)
-    const fontPath = path.join(
-      fileURLToPath(import.meta.url),
-      "../../assets/",
-      "Inter-SemiBold.ttf"
-    )
-    const inter = await fs.readFile(fontPath)
+    // Load Inter font (SemiBold ~ weight 600) via Google Fonts once and reuse
+    if (!interFontData) {
+      const sample = org?.name ? org.name.slice(0, 60) : "Biztro" // limit for query length
+      interFontData = await loadGoogleFont("Inter", [600], sample)
+    }
 
     // Use Tailwind classes for layout, minimize inline styles
     return new ImageResponse(
       (
         <div
-          tw="flex flex-col w-full h-full items-center justify-end bg-orange-500"
-          style={
-            org?.banner
-              ? {
-                  backgroundImage: `url(${org.banner})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center"
-                }
-              : undefined
-          }
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            backgroundColor: "#f97316"
+          }}
         >
-          <div tw="flex w-full bg-gradient-to-b from-transparent to-black/80">
-            <div tw="flex flex-col md:flex-row w-full py-12 px-24 md:items-center justify-start">
-              {org?.logo && (
-                <img
-                  tw="w-24 h-24 md:w-30 md:h-30 rounded-full mr-8"
-                  src={org.logo}
-                  alt={org.name}
-                  width={120}
-                  height={120}
-                  style={{ objectFit: "cover" }}
-                />
-              )}
-              <h2 tw="flex flex-col text-5xl sm:text-6xl font-semibold tracking-tight text-gray-50 text-left">
-                <span>{org?.name}</span>
-              </h2>
+          {org?.banner && (
+            <img
+              src={org.banner}
+              alt="Background"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+                zIndex: 0
+              }}
+            />
+          )}
+          {/* Gradient overlay for improved visibility */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              background: "linear-gradient(to top, black, transparent)",
+              opacity: 0.7,
+              zIndex: 1
+            }}
+          />
+          <div
+            style={{
+              position: "relative",
+              zIndex: 2,
+              width: "100%",
+              height: "100%",
+              display: "flex"
+            }}
+          >
+            <div tw="flex w-full">
+              <div tw="flex flex-row w-full py-12 px-24 items-end justify-start">
+                {org?.logo && (
+                  <img
+                    tw="w-30 h-30 rounded-full mr-8"
+                    src={org.logo}
+                    alt={org.name}
+                    width={120}
+                    height={120}
+                    style={{ objectFit: "cover" }}
+                  />
+                )}
+                <h2 tw="flex flex-col text-7xl font-semibold tracking-tight text-gray-50 text-left truncate">
+                  <span>{org?.name}</span>
+                </h2>
+              </div>
             </div>
           </div>
         </div>
@@ -69,9 +120,9 @@ export default async function Image({
         fonts: [
           {
             name: "Inter",
-            data: inter,
+            data: interFontData,
             style: "normal",
-            weight: 400
+            weight: 600
           }
         ]
       }
