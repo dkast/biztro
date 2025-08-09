@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
-import type { z } from "zod"
+import type { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -117,6 +117,10 @@ export function VariantCreateForm({
   })
 
   const onSubmit = (data: z.infer<typeof variantSchema>) => {
+    // Convert price to number if it's a string
+    if (typeof data.price === "string") {
+      data.price = parseFloat(data.price)
+    }
     execute(data)
   }
 
@@ -151,7 +155,10 @@ export function VariantCreateForm({
                   {...field}
                   id="price"
                   type="number"
+                  inputMode="decimal"
                   placeholder="Precio"
+                  onChange={e => field.onChange(Number(e.target.value))}
+                  value={field.value ?? ""}
                 />
               </FormControl>
               <FormMessage />

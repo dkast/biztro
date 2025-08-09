@@ -9,7 +9,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
-import type { z } from "zod"
+import type { z } from "zod/v4"
 
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { FileUploader } from "@/components/dashboard/file-uploader"

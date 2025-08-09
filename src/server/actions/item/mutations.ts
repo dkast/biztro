@@ -4,7 +4,7 @@ import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { Prisma } from "@prisma/client"
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
-import { z } from "zod"
+import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
 import { isProMember } from "@/server/actions/user/queries"
@@ -357,8 +357,8 @@ export const updateItem = authActionClient
 export const deleteItem = authActionClient
   .schema(
     z.object({
-      id: z.string().cuid(),
-      organizationId: z.string().cuid()
+      id: z.cuid(),
+      organizationId: z.cuid()
     })
   )
   .action(async ({ parsedInput: { id, organizationId } }) => {
@@ -430,7 +430,7 @@ export const createCategory = authActionClient
         }
       })
 
-      // revalidateTag(`categories-${currentOrg}`)
+      revalidateTag(`categories-${currentOrg}`)
 
       return { success: category }
     } catch (error) {
@@ -509,8 +509,8 @@ export const updateCategory = authActionClient
 export const deleteCategory = authActionClient
   .schema(
     z.object({
-      id: z.string().cuid(),
-      organizationId: z.string().cuid()
+      id: z.cuid(),
+      organizationId: z.cuid()
     })
   )
   .action(async ({ parsedInput: { id, organizationId } }) => {
@@ -614,8 +614,8 @@ export const createVariant = authActionClient
 export const deleteVariant = authActionClient
   .schema(
     z.object({
-      id: z.string().cuid(),
-      menuItemId: z.string().cuid()
+      id: z.cuid(),
+      menuItemId: z.cuid()
     })
   )
   .action(async ({ parsedInput: { id, menuItemId } }) => {
@@ -652,9 +652,9 @@ export const deleteVariant = authActionClient
 export const bulkUpdateCategory = authActionClient
   .schema(
     z.object({
-      ids: z.array(z.string().cuid()),
-      categoryId: z.string().cuid(),
-      organizationId: z.string().cuid()
+      ids: z.array(z.cuid()),
+      categoryId: z.cuid(),
+      organizationId: z.cuid()
     })
   )
   .action(async ({ parsedInput: { ids, categoryId, organizationId } }) => {
@@ -688,8 +688,8 @@ export const bulkUpdateCategory = authActionClient
 export const bulkDeleteItems = authActionClient
   .schema(
     z.object({
-      ids: z.array(z.string().cuid()),
-      organizationId: z.string().cuid()
+      ids: z.array(z.cuid()),
+      organizationId: z.cuid()
     })
   )
   .action(async ({ parsedInput: { ids, organizationId } }) => {
@@ -740,9 +740,9 @@ export const bulkDeleteItems = authActionClient
 export const bulkToggleFeature = authActionClient
   .schema(
     z.object({
-      ids: z.array(z.string().cuid()),
+      ids: z.array(z.cuid()),
       featured: z.boolean(),
-      organizationId: z.string().cuid()
+      organizationId: z.cuid()
     })
   )
   .action(async ({ parsedInput: { ids, featured, organizationId } }) => {

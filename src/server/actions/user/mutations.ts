@@ -5,7 +5,7 @@ import { nanoid } from "nanoid"
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 import { Resend } from "resend"
-import { z } from "zod"
+import { z } from "zod/v4"
 
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
@@ -85,7 +85,7 @@ export const switchOrganization = authActionClient
 export const inviteMember = authActionClient
   .schema(
     z.object({
-      email: z.string().email()
+      email: z.email()
     })
   )
   .action(async ({ parsedInput: { email } }) => {

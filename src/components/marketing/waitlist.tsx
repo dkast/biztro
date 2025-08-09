@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 import { motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
-import { z } from "zod"
+import { z } from "zod/v4"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -22,8 +22,8 @@ import { Input } from "@/components/ui/input"
 import { joinWaitlist } from "@/server/actions/organization/mutations"
 
 const emailSchema = z.object({
-  email: z.string().email({
-    message: "El correo electrónico no es válido"
+  email: z.email({
+    error: "Por favor, ingresa un correo electrónico válido"
   })
 })
 

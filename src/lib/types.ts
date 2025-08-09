@@ -1,4 +1,4 @@
-import { string, z } from "zod"
+import { string, z } from "zod/v4"
 
 export enum HttpMethod {
   CONNECT = "CONNECT",
@@ -160,43 +160,58 @@ export enum SubscriptionStatus {
 }
 
 export const orgSchema = z.object({
-  id: z.string().cuid().optional(),
+  id: z.cuid().optional(),
   name: z
-    .string({ required_error: "Nombre es requerido" })
-    .min(3, { message: "Nombre muy corto" })
-    .max(100, { message: "Nombre muy largo" }),
+    .string({
+      error: issue =>
+        issue.input === undefined ? "Nombre es requerido" : undefined
+    })
+    .min(3, {
+      error: "Nombre muy corto"
+    })
+    .max(100, {
+      error: "Nombre muy largo"
+    }),
   description: z.string().optional(),
-  logo: z.string().url().optional(),
-  banner: z.string().url().optional(),
-  status: z.nativeEnum(SubscriptionStatus),
+  logo: z.url().optional(),
+  banner: z.url().optional(),
+  status: z.enum(SubscriptionStatus),
   plan: z.enum(["BASIC", "PRO"]),
   subdomain: z
     .string()
-    .min(3, { message: "Subdominio muy corto" })
+    .min(3, {
+      error: "Subdominio muy corto"
+    })
     .trim()
     .regex(/^[a-z0-9-]+$/i, {
-      message: "Solo letras, números y guiones son permitidos"
+      error: "Solo letras, números y guiones son permitidos"
     })
 })
 
 export const locationSchema = z.object({
-  id: z.string().cuid().optional(),
+  id: z.cuid().optional(),
   name: z
     .string({
-      required_error: "Nombre es requerido"
+      error: issue =>
+        issue.input === undefined ? "Nombre es requerido" : undefined
     })
-    .min(3, { message: "Nombre muy corto" })
+    .min(3, {
+      error: "Nombre muy corto"
+    })
     .max(100),
   description: z.string().optional(),
   address: z
     .string({
-      required_error: "Dirección es requerida"
+      error: issue =>
+        issue.input === undefined ? "Dirección es requerida" : undefined
     })
-    .min(3, { message: "Dirección no es válida" }),
+    .min(3, {
+      error: "Dirección no es válida"
+    }),
   phone: z
     .string()
     .regex(/^\d{10}$/, {
-      message: "Número de teléfono inválido"
+      error: "Número de teléfono inválido"
     })
     .optional(),
   facebook: z.string().optional(),
@@ -204,16 +219,16 @@ export const locationSchema = z.object({
   twitter: z.string().optional(),
   tiktok: z.string().optional(),
   whatsapp: z.string().optional(),
-  website: z.string().url().optional(),
-  organizationId: z.string().cuid().optional()
+  website: z.url().optional(),
+  organizationId: z.cuid().optional()
 })
 
 export const hoursSchema = z.object({
-  locationId: z.string().cuid().optional(),
+  locationId: z.cuid().optional(),
   items: z.array(
     z
       .object({
-        id: z.string().cuid().optional(),
+        id: z.cuid().optional(),
         day: z.enum([
           "MONDAY",
           "TUESDAY",
@@ -236,68 +251,86 @@ export const hoursSchema = z.object({
           }
         },
         {
-          message: "Ingresa la hora",
-          path: ["allDay"]
+          path: ["allDay"],
+          error: "Ingresa la hora"
         }
       )
   )
 })
 
 export const variantSchema = z.object({
-  id: z.string().cuid().optional(),
+  id: z.cuid().optional(),
   name: z
     .string({
-      required_error: "Nombre es requerido"
+      error: issue =>
+        issue.input === undefined ? "Nombre es requerido" : undefined
     })
-    .min(3, { message: "Nombre muy corto" })
-    .max(100, { message: "Nombre muy largo" }),
+    .min(3, {
+      error: "Nombre muy corto"
+    })
+    .max(100, {
+      error: "Nombre muy largo"
+    }),
   description: z.string().optional(),
-  price: z.coerce.number().min(0, {
-    message: "Precio no puede ser negativo"
-  }),
-  menuItemId: z.string().cuid().optional()
+  price: z.number().min(0, { error: "Precio no puede ser negativo" }),
+  menuItemId: z.cuid().optional()
 })
 
 export const menuItemSchema = z.object({
-  id: z.string().cuid().optional(),
+  id: z.cuid().optional(),
   name: z
     .string({
-      required_error: "Nombre es requerido"
+      error: issue =>
+        issue.input === undefined ? "Nombre es requerido" : undefined
     })
-    .min(3, { message: "Nombre muy corto" })
-    .max(100, { message: "Nombre muy largo" }),
+    .min(3, {
+      error: "Nombre muy corto"
+    })
+    .max(100, {
+      error: "Nombre muy largo"
+    }),
   status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]),
   description: z.string().optional(),
-  image: z.string().url().optional(),
+  image: z.url().optional(),
   categoryId: z.string().optional(),
-  organizationId: z.string().cuid().optional(),
-  featured: z.boolean().default(false).optional(),
-  variants: z.array(variantSchema).nonempty(),
+  organizationId: z.cuid().optional(),
+  featured: z.boolean().prefault(false).optional(),
+  variants: z.tuple([variantSchema], variantSchema),
   allergens: z.string().optional()
 })
 
 export const categorySchema = z.object({
-  id: z.string().cuid().optional(),
+  id: z.cuid().optional(),
   name: z
     .string({
-      required_error: "Nombre es requerido"
+      error: issue =>
+        issue.input === undefined ? "Nombre es requerido" : undefined
     })
-    .min(3, { message: "Nombre muy corto" })
-    .max(100, { message: "Nombre muy largo" }),
-  organizationId: z.string().cuid().optional()
+    .min(3, {
+      error: "Nombre muy corto"
+    })
+    .max(100, {
+      error: "Nombre muy largo"
+    }),
+  organizationId: z.cuid().optional()
 })
 
 export const menuSchema = z.object({
-  id: z.string().cuid().optional(),
+  id: z.cuid().optional(),
   name: z
     .string({
-      required_error: "Nombre es requerido"
+      error: issue =>
+        issue.input === undefined ? "Nombre es requerido" : undefined
     })
-    .min(3, { message: "Nombre muy corto" })
-    .max(100, { message: "Nombre muy largo" }),
+    .min(3, {
+      error: "Nombre muy corto"
+    })
+    .max(100, {
+      error: "Nombre muy largo"
+    }),
   description: z.string().optional(),
   status: z.enum(["PUBLISHED", "DRAFT"]),
-  organizationId: z.string().cuid().optional(),
+  organizationId: z.cuid().optional(),
   serialData: string().optional()
 })
 

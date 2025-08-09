@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import type { Menu } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { useOptimisticAction } from "next-safe-action/hooks"
-import { z } from "zod"
+import { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import {

@@ -2,10 +2,10 @@
 
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
-import { z } from "zod"
+import { z } from "zod/v4"
 
-import { appConfig } from "@/app/config"
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
+import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { actionClient, authActionClient } from "@/lib/safe-actions"
 import { MembershipRole, orgSchema } from "@/lib/types"
@@ -194,7 +194,7 @@ export const updateOrg = authActionClient
 export const joinWaitlist = actionClient
   .schema(
     z.object({
-      email: z.string().email()
+      email: z.email()
     })
   )
   .action(async ({ parsedInput: { email } }) => {
@@ -240,7 +240,7 @@ export const joinWaitlist = actionClient
 export const deleteOrganization = authActionClient
   .schema(
     z.object({
-      id: z.string().cuid()
+      id: z.cuid()
     })
   )
   .action(async ({ parsedInput: { id } }) => {

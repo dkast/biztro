@@ -1,18 +1,24 @@
 import type { LucideIcon } from "lucide-react"
 
+import { cn } from "@/lib/utils"
+
 export default function PageSubtitle({
   title,
   description,
   children,
-  Icon
+  Icon,
+  className
 }: {
   title: string
   description?: string
   children?: React.ReactNode
   Icon?: LucideIcon
+  className?: string
 }) {
   return (
-    <div className="md:flex md:items-center md:justify-between">
+    <div
+      className={cn("md:flex md:items-center md:justify-between", className)}
+    >
       {/* Icon */}
       {Icon && (
         <div className="mr-3 flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-50 text-gray-500 dark:bg-gray-900 dark:text-gray-300">

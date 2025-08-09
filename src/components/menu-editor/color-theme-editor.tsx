@@ -21,7 +21,7 @@ import {
 import { nanoid } from "nanoid"
 // import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { useAction } from "next-safe-action/hooks"
-import * as z from "zod"
+import * as z from "zod/v4"
 
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { Button } from "@/components/ui/button"

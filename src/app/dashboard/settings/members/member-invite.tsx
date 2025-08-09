@@ -6,7 +6,7 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, UserPlus } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
-import { z } from "zod"
+import { z } from "zod/v4"
 
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { Button } from "@/components/ui/button"
@@ -30,8 +30,8 @@ import { Input } from "@/components/ui/input"
 import { inviteMember } from "@/server/actions/user/mutations"
 
 const emailSchema = z.object({
-  email: z.string().email({
-    message: "Introduce un correo electrónico válido"
+  email: z.email({
+    error: "Por favor, introduce un correo electrónico válido"
   })
 })
 

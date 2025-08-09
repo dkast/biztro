@@ -17,7 +17,7 @@ import {
 } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
-import type { z } from "zod"
+import type { z } from "zod/v4"
 
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { ImageField } from "@/components/dashboard/image-field"
@@ -84,7 +84,7 @@ export default function ItemForm({
   // categories: Prisma.PromiseReturnType<typeof getCategories>
   action: string
 }) {
-  const form = useForm<z.infer<typeof menuItemSchema>>({
+  const form = useForm<z.output<typeof menuItemSchema>>({
     resolver: zodResolver(menuItemSchema),
     defaultValues: {
       id: item?.id,
@@ -98,6 +98,7 @@ export default function ItemForm({
       variants:
         item?.variants.map(variant => ({
           ...variant,
+          price: Number(variant.price),
           description: variant.description ?? undefined
         })) ?? [],
       allergens: item?.allergens ?? undefined
@@ -214,7 +215,10 @@ export default function ItemForm({
     <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <PageSubtitle title={title}>
+          <PageSubtitle
+            title={title}
+            className="sticky top-0 z-10 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-xs dark:border-gray-800 dark:bg-gray-950"
+          >
             <div className="flex gap-2">
               <Button
                 type="button"
