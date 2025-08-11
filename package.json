@@ -93,6 +93,7 @@
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "extract-colors": "^4.2.0",
+    "flags": "^4.0.1",
     "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",
     "jotai": "^2.12.5",
