@@ -31,7 +31,7 @@ import { getBaseUrl } from "@/lib/utils"
 //   )
 
 export const switchOrganization = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       organizationId: z.string()
     })
@@ -83,7 +83,7 @@ export const switchOrganization = authActionClient
   })
 
 export const inviteMember = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       email: z.email()
     })
@@ -212,7 +212,7 @@ export const inviteMember = authActionClient
   })
 
 export const acceptInvite = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.string()
     })
@@ -286,7 +286,7 @@ export const acceptInvite = authActionClient
   })
 
 export const removeMember = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       memberId: z.string()
     })
@@ -330,7 +330,7 @@ export const removeMember = authActionClient
   })
 
 export const deactivateMember = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       memberId: z.string()
     })

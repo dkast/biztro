@@ -19,7 +19,7 @@ import { MembershipRole, orgSchema } from "@/lib/types"
  * @returns An object indicating the success or failure of the operation.
  */
 export const bootstrapOrg = authActionClient
-  .schema(orgSchema)
+  .inputSchema(orgSchema)
   .action(
     async ({
       parsedInput: { name, description, subdomain },
@@ -101,7 +101,7 @@ export const bootstrapOrg = authActionClient
  * @returns An object indicating the success or failure of the operation.
  */
 export const createOrg = authActionClient
-  .schema(orgSchema)
+  .inputSchema(orgSchema)
   .action(async ({ parsedInput: { name, description, subdomain } }) => {
     try {
       const org = await prisma.organization.create({
@@ -141,7 +141,7 @@ export const createOrg = authActionClient
  * @returns An object indicating the success or failure of the update operation.
  */
 export const updateOrg = authActionClient
-  .schema(orgSchema)
+  .inputSchema(orgSchema)
   .action(async ({ parsedInput: { id, name, description, subdomain } }) => {
     try {
       // Verify if the subdomain is already taken
@@ -192,7 +192,7 @@ export const updateOrg = authActionClient
  * @returns {Promise<{ success: { email: string } } | { failure: { reason: string } }>} - A promise that resolves to an object indicating the success or failure of joining the waitlist.
  */
 export const joinWaitlist = actionClient
-  .schema(
+  .inputSchema(
     z.object({
       email: z.email()
     })
@@ -238,7 +238,7 @@ export const joinWaitlist = actionClient
   })
 
 export const deleteOrganization = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.cuid()
     })

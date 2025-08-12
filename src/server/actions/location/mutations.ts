@@ -23,7 +23,7 @@ import { hoursSchema, locationSchema } from "@/lib/types"
  * @returns An object with either a success property containing the created location, or a failure property containing the reason for failure.
  */
 export const createLocation = authActionClient
-  .schema(locationSchema)
+  .inputSchema(locationSchema)
   .action(
     async ({
       parsedInput: {
@@ -103,7 +103,7 @@ export const createLocation = authActionClient
  * @returns An object with the updated location if successful, or an object with the failure reason if an error occurs.
  */
 export const updateLocation = authActionClient
-  .schema(locationSchema)
+  .inputSchema(locationSchema)
   .action(
     async ({
       parsedInput: {
@@ -163,7 +163,7 @@ export const updateLocation = authActionClient
  * @returns A promise that resolves to an object with a `success` property if the deletion is successful, or a `failure` property with a `reason` if an error occurs.
  */
 export const deleteLocation = authActionClient
-  .schema(locationSchema)
+  .inputSchema(locationSchema)
   .action(async ({ parsedInput: { id } }) => {
     try {
       await prisma.location.delete({
@@ -203,7 +203,7 @@ export const deleteLocation = authActionClient
  * @returns {Promise<Object>} - A promise that resolves to an object with the updated opening hours or a failure reason.
  */
 export const updateHours = authActionClient
-  .schema(hoursSchema)
+  .inputSchema(hoursSchema)
   .action(async ({ parsedInput: { locationId, items } }) => {
     if (!locationId) {
       return {

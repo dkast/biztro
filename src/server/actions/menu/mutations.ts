@@ -23,7 +23,7 @@ import { BasicPlanLimits, menuSchema } from "@/lib/types"
  *          - If failed, the failure property contains the reason for the failure.
  */
 export const createMenu = authActionClient
-  .schema(menuSchema)
+  .inputSchema(menuSchema)
   .action(async ({ parsedInput: { name, description, status } }) => {
     const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
@@ -92,7 +92,7 @@ export const createMenu = authActionClient
  * @returns An object with the updated menu name, or a failure object with a reason if an error occurs.
  */
 export const updateMenuName = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.string(),
       name: z.string()
@@ -144,7 +144,7 @@ export const updateMenuName = authActionClient
  * @returns An object with the updated menu if successful, or an object with the failure reason if unsuccessful.
  */
 export const updateMenuStatus = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.string(),
       subdomain: z.string(),
@@ -206,7 +206,7 @@ export const updateMenuStatus = authActionClient
  * @returns An object with the updated menu if successful, or an object with the failure reason if unsuccessful.
  */
 export const updateMenuSerialData = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.string(),
       fontTheme: z.string(),
@@ -253,7 +253,7 @@ export const updateMenuSerialData = authActionClient
  * @returns An object indicating the success or failure of the deletion operation.
  */
 export const deleteMenu = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.string(),
       organizationId: z.string()
@@ -294,7 +294,7 @@ export const deleteMenu = authActionClient
  * @returns An object with the duplicated menu if successful, or an object with the failure reason if unsuccessful.
  */
 export const duplicateMenu = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.string()
     })
@@ -380,7 +380,7 @@ export const duplicateMenu = authActionClient
  * @returns An object with the success property set to the created color theme if successful, or an object with the failure property containing the reason for failure.
  */
 export const createColorTheme = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.string(),
       name: z.string(),
@@ -440,7 +440,7 @@ export const createColorTheme = authActionClient
  * @returns An object with the updated color theme if successful, or an object with the failure reason if an error occurs.
  */
 export const updateColorTheme = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.string(),
       name: z.string(),
@@ -487,7 +487,7 @@ export const updateColorTheme = authActionClient
  * @returns {Promise<{ success: boolean } | { failure: { reason: string } }>} - A promise that resolves to an object indicating the success or failure of the deletion operation.
  */
 export const deleteColorTheme = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.string()
     })

@@ -38,7 +38,7 @@ const R2 = new S3Client({
  * @returns {Promise<{ success: menuItemSchema } | { failure: { reason: string } }>} - A promise that resolves to an object with either a success or failure property.
  */
 export const createItem = authActionClient
-  .schema(menuItemSchema)
+  .inputSchema(menuItemSchema)
   .action(
     async ({
       parsedInput: {
@@ -139,7 +139,7 @@ export const createItem = authActionClient
  * Creates multiple items in bulk.
  */
 export const bulkCreateItems = authActionClient
-  .schema(bulkMenuItemSchema)
+  .inputSchema(bulkMenuItemSchema)
   .action(async ({ parsedInput: items }) => {
     const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
@@ -279,7 +279,7 @@ export const bulkCreateItems = authActionClient
  * @returns An object with the updated item on success, or a failure object with a reason on failure.
  */
 export const updateItem = authActionClient
-  .schema(menuItemSchema)
+  .inputSchema(menuItemSchema)
   .action(
     async ({
       parsedInput: {
@@ -355,7 +355,7 @@ export const updateItem = authActionClient
  * @returns An object indicating the success or failure of the deletion operation.
  */
 export const deleteItem = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.cuid(),
       organizationId: z.cuid()
@@ -410,7 +410,7 @@ export const deleteItem = authActionClient
  * @returns An object with either a success property containing the created category, or a failure property containing the reason for failure.
  */
 export const createCategory = authActionClient
-  .schema(categorySchema)
+  .inputSchema(categorySchema)
   .action(async ({ parsedInput: { name } }) => {
     const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
 
@@ -464,7 +464,7 @@ export const createCategory = authActionClient
  * @returns An object with the updated category if successful, or a failure object with a reason if an error occurs.
  */
 export const updateCategory = authActionClient
-  .schema(categorySchema)
+  .inputSchema(categorySchema)
   .action(async ({ parsedInput: { id, name, organizationId } }) => {
     try {
       const category = await prisma.category.update({
@@ -507,7 +507,7 @@ export const updateCategory = authActionClient
  * @returns {Promise<{ success: boolean } | { failure: { reason: string } }>} - A promise that resolves to an object indicating the success or failure of the deletion operation.
  */
 export const deleteCategory = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.cuid(),
       organizationId: z.cuid()
@@ -563,7 +563,7 @@ export const deleteCategory = authActionClient
  * @returns An object with either a success property containing the created variant, or a failure property containing the reason for failure.
  */
 export const createVariant = authActionClient
-  .schema(variantSchema)
+  .inputSchema(variantSchema)
   .action(async ({ parsedInput: { name, price, menuItemId } }) => {
     if (!menuItemId) {
       return {
@@ -612,7 +612,7 @@ export const createVariant = authActionClient
  * @returns {Promise<{ success: boolean } | { failure: { reason: string } }>} - A promise that resolves to an object indicating the success or failure of the deletion operation.
  */
 export const deleteVariant = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       id: z.cuid(),
       menuItemId: z.cuid()
@@ -650,7 +650,7 @@ export const deleteVariant = authActionClient
  * Updates the category of multiple items at once.
  */
 export const bulkUpdateCategory = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       ids: z.array(z.cuid()),
       categoryId: z.cuid(),
@@ -686,7 +686,7 @@ export const bulkUpdateCategory = authActionClient
  * Deletes multiple items at once.
  */
 export const bulkDeleteItems = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       ids: z.array(z.cuid()),
       organizationId: z.cuid()
@@ -738,7 +738,7 @@ export const bulkDeleteItems = authActionClient
  * Toggles the featured status of multiple items at once.
  */
 export const bulkToggleFeature = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       ids: z.array(z.cuid()),
       featured: z.boolean(),
