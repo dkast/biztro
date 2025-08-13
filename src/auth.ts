@@ -1,13 +1,15 @@
 import authConfig from "@/auth.config"
 import { PrismaAdapter } from "@auth/prisma-adapter"
+import { PrismaClient } from "@prisma/client"
 import NextAuth, { type DefaultSession } from "next-auth"
 import type { Adapter } from "next-auth/adapters"
 import { revalidateTag } from "next/cache"
 import { cookies, type UnsafeUnwrappedCookies } from "next/headers"
 
 import { appConfig } from "@/app/config"
-import prisma from "@/lib/prisma"
 import { InviteStatus } from "@/lib/types"
+
+const prisma = new PrismaClient()
 
 declare module "next-auth" {
   interface Session {

@@ -13,6 +13,9 @@
 /prisma/dev.db-journal
 local.db*
 
+# prisma generated client
+prisma/generated/prisma-client
+
 # next.js
 /.next/
 /out/

@@ -59,7 +59,16 @@ const config = {
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
   // pageExtensions: ["md", "mdx", "js", "jsx", "ts", "tsx"]
-  serverExternalPackages: ["import-in-the-middle"]
+  serverExternalPackages: ["import-in-the-middle", "@prisma/adapter-libsql"],
+  webpack: webpackConfig => {
+    // Workaround for packages that accidentally reference Markdown files (e.g., README.md)
+    // Treat .md files as source strings so Webpack doesn't try to parse them as JS
+    webpackConfig.module.rules.push({
+      test: /\.md$/,
+      type: "asset/source"
+    })
+    return webpackConfig
+  }
 }
 
 /** @type {import("next").NextConfig} */
@@ -67,7 +76,7 @@ let nextConfig // skipcq: JS-E1009
 
 // If in Turbo Pack mode, do not use Sentry
 if (!process.env.TURBOPACK) {
-  nextConfig = withBundleAnalyzer(
+  nextConfig = withBundleAnalyzer({ enabled: process.env.ANALYZE === "true" })(
     withContentCollections(
       withVercelToolbar()(withSentryConfig(withAxiom(config))),
       {
