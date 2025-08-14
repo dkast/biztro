@@ -4,6 +4,16 @@ import { manageSubscriptionStatusChnage } from "@/server/actions/subscriptions/m
 import { stripe } from "@/lib/stripe"
 import { env } from "@/env.mjs"
 
+// Utility function to escape HTML meta-characters
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 const relevantEvents = new Set([
   "checkout.session.completed",
   "customer.subscription.created",
@@ -25,9 +35,13 @@ export async function POST(req: Request) {
     event = stripe.webhooks.constructEvent(body, sig, env.STRIPE_WEBHOOK_SECRET)
   } catch (err: Error | unknown) {
     console.error(err)
-    return new Response(`Webhook Error: ${(err as Error).message}`, {
-      status: 400
-    })
+    return new Response(
+      `Webhook Error: ${escapeHtml((err as Error).message)}`,
+      {
+        status: 400,
+        headers: { "Content-Type": "text/plain" }
+      }
+    )
   }
 
   if (!relevantEvents.has(event.type)) {
@@ -61,8 +75,12 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify({ received: true }))
   } catch (err: Error | unknown) {
     console.error(err)
-    return new Response(`Error processing event: ${(err as Error).message}`, {
-      status: 500
-    })
+    return new Response(
+      `Error processing event: ${escapeHtml((err as Error).message)}`,
+      {
+        status: 500,
+        headers: { "Content-Type": "text/plain" }
+      }
+    )
   }
 }
