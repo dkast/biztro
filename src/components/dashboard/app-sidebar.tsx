@@ -14,7 +14,6 @@ import {
   ShoppingBag,
   type LucideIcon
 } from "lucide-react"
-import { useSession } from "next-auth/react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import {
@@ -64,6 +63,7 @@ import {
   getCurrentOrganization,
   getUserMemberships
 } from "@/server/actions/user/queries"
+import { authClient } from "@/lib/auth-client"
 import { Plan } from "@/lib/types"
 import { getInitials } from "@/lib/utils"
 
@@ -362,7 +362,7 @@ function AttachToFeedbackButton() {
   }, [])
 
   // Set the Sentry user based on the current user.
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
 
   useEffect(() => {
     if (Sentry) {

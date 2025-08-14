@@ -21,7 +21,6 @@
     "stripe:listen": "stripe listen --forward-to=localhost:3000/api/webhooks/stripe"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.10.0",
     "@aws-sdk/client-s3": "^3.864.0",
     "@aws-sdk/s3-request-presigner": "^3.864.0",
     "@craftjs/core": "0.2.10",
@@ -85,6 +84,7 @@
     "@uppy/react": "^4.5.2",
     "@vercel/flags": "^3.1.1",
     "@vercel/toolbar": "^0.1.38",
+    "better-auth": "^1.3.6",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -106,7 +106,6 @@
     "motion": "^12.23.12",
     "nanoid": "^5.1.5",
     "next": "15.4.6",
-    "next-auth": "5.0.0-beta.24",
     "next-axiom": "^1.9.2",
     "next-safe-action": "^8",
     "next-themes": "^0.4.6",

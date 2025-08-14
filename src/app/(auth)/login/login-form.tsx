@@ -1,11 +1,11 @@
 "use client"
 
-import { signIn } from "next-auth/react"
 import Image from "next/image"
 import { useSearchParams } from "next/navigation"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { signIn } from "@/lib/auth-client"
 
 export default function LoginForm({
   providers
@@ -22,8 +22,9 @@ export default function LoginForm({
         <Button
           key={provider.name}
           onClick={() =>
-            signIn(provider.id, {
-              callbackUrl: callbackUrl ? callbackUrl : "/"
+            signIn.social({
+              provider: provider.id,
+              callbackURL: callbackUrl ? callbackUrl : "/"
             })
           }
           className="mt-4 w-full shadow-xs"

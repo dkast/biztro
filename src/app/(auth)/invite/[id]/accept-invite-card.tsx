@@ -2,7 +2,6 @@
 
 import toast from "react-hot-toast"
 import type { Prisma } from "@prisma/client"
-import { signIn, useSession } from "next-auth/react"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -18,6 +17,7 @@ import {
 } from "@/components/ui/card"
 import { acceptInvite } from "@/server/actions/user/mutations"
 import type { getInviteByToken } from "@/server/actions/user/queries"
+import { signIn, useSession } from "@/lib/auth-client"
 import { providers } from "@/lib/types"
 import { getInitials } from "@/lib/utils"
 
@@ -98,8 +98,9 @@ export default function AcceptInviteCard({
                   key={provider.name}
                   disabled={status === "executing"}
                   onClick={() =>
-                    signIn(provider.id, {
-                      callbackUrl: "/dashboard"
+                    signIn.social({
+                      provider: provider.id,
+                      callbackURL: "/dashboard"
                     })
                   }
                   className="mt-4 w-full shadow-xs"

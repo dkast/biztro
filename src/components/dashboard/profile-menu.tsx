@@ -1,7 +1,6 @@
 "use client"
 
 import { Globe, LogOut, SunMoon, User } from "lucide-react"
-import { signOut, useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 
@@ -20,10 +19,11 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { authClient } from "@/lib/auth-client"
 import { getInitials } from "@/lib/utils"
 
 export default function ProfileMenu() {
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
   const user = session?.user
   const { theme, setTheme } = useTheme()
 
@@ -79,7 +79,7 @@ export default function ProfileMenu() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => signOut()}>
+        <DropdownMenuItem onSelect={() => authClient.signOut()}>
           <LogOut className="mr-2 size-4" />
           <span>Salir</span>
         </DropdownMenuItem>
