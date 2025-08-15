@@ -6,7 +6,6 @@ import { Toaster } from "react-hot-toast"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental"
 import { Provider } from "jotai"
-import { SessionProvider } from "next-auth/react"
 import { ThemeProvider } from "next-themes"
 import { usePathname } from "next/navigation"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
@@ -57,20 +56,19 @@ function Providers({ children }: { children: React.ReactNode }) {
   const forcedTheme = getForcedTheme(usePathname())
 
   return (
-    <SessionProvider>
-      <CSPostHogProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-          forcedTheme={forcedTheme}
-        >
-          <NuqsAdapter>
-            <QueryClientProvider client={queryClient}>
-              <Provider>
-                {/* <PhotoProvider> */}
-                {/* <Suspense fallback={null}>
+    <CSPostHogProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+        forcedTheme={forcedTheme}
+      >
+        <NuqsAdapter>
+          <QueryClientProvider client={queryClient}>
+            <Provider>
+              {/* <PhotoProvider> */}
+              {/* <Suspense fallback={null}>
             <ProgressBar
               color="#FF6500"
               options={{ showSpinner: false }}
@@ -78,28 +76,27 @@ function Providers({ children }: { children: React.ReactNode }) {
               delay={200}
             />
           </Suspense> */}
-                <UnsavedChangesProvider>
-                  <ReactQueryStreamedHydration>
-                    {children}
-                  </ReactQueryStreamedHydration>
-                </UnsavedChangesProvider>
-                <Toaster
-                  position="top-center"
-                  toastOptions={{
-                    style: {
-                      background: "#333",
-                      color: "#fff"
-                    }
-                  }}
-                />
-                <TailwindIndicator />
-                {/* </PhotoProvider> */}
-              </Provider>
-            </QueryClientProvider>
-          </NuqsAdapter>
-        </ThemeProvider>
-      </CSPostHogProvider>
-    </SessionProvider>
+              <UnsavedChangesProvider>
+                <ReactQueryStreamedHydration>
+                  {children}
+                </ReactQueryStreamedHydration>
+              </UnsavedChangesProvider>
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  style: {
+                    background: "#333",
+                    color: "#fff"
+                  }
+                }}
+              />
+              <TailwindIndicator />
+              {/* </PhotoProvider> */}
+            </Provider>
+          </QueryClientProvider>
+        </NuqsAdapter>
+      </ThemeProvider>
+    </CSPostHogProvider>
   )
 }
 

@@ -1,10 +1,11 @@
 "use server"
 
-import { auth } from "@/auth"
 import { toDate } from "date-fns"
+import { headers } from "next/headers"
 import type Stripe from "stripe"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
+import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/session"
 import { stripe } from "@/lib/stripe"
@@ -217,7 +218,7 @@ export const checkoutWithStripe = async (
 ): Promise<CheckoutResponse> => {
   try {
     // Get the user's membership id
-    const session = await auth()
+    const session = await auth.api.getSession({ headers: await headers() })
     const membership = await prisma.membership.findFirst({
       where: {
         userId: session?.user.id,

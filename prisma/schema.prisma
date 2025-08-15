@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Account {
-  id                       String  @id @default(cuid())
+  id                       String    @id @default(cuid())
   userId                   String
   type                     String
   provider                 String
@@ -17,14 +17,18 @@ model Account {
   refresh_token            String?
   refresh_token_expires_in Int?
   access_token             String?
-  expires_at               Int?
+  expires_at               DateTime?
   token_type               String?
   scope                    String?
   id_token                 String?
   session_state            String?
   oauth_token_secret       String?
   oauth_token              String?
-  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  password  String?
+  createdAt DateTime
+  updatedAt DateTime
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -36,6 +40,11 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
 
   @@index([userId])
 }
@@ -49,6 +58,8 @@ model User {
   accounts      Account[]
   memberships   Membership[] @relation("Memberships")
   sessions      Session[]
+  createdAt     DateTime
+  updatedAt     DateTime
 }
 
 model VerificationToken {
@@ -258,4 +269,13 @@ model Subscription {
   organizationId     String
 
   @@index([membershipId])
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
 }
