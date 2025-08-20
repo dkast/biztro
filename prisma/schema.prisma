@@ -11,17 +11,14 @@ datasource db {
 model Account {
   id                       String    @id @default(cuid())
   userId                   String
-  type                     String
   provider                 String
   providerAccountId        String
   refresh_token            String?
   refresh_token_expires_in Int?
   access_token             String?
   expires_at               DateTime?
-  token_type               String?
   scope                    String?
   id_token                 String?
-  session_state            String?
   oauth_token_secret       String?
   oauth_token              String?
   user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -53,7 +50,7 @@ model User {
   id            String       @id @default(cuid())
   name          String
   email         String?      @unique
-  emailVerified DateTime?
+  emailVerified Boolean?     @default(false)
   image         String?
   accounts      Account[]
   memberships   Membership[] @relation("Memberships")
