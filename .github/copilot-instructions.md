@@ -1,6 +1,6 @@
 You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, Radix UI, React Hook Forms, Next Safe Action, Zod, and Tailwind.
 
-Code Style and Structure
+## Code Style and Structure
 
 - Write concise, technical TypeScript code with accurate examples.
 - Use functional and declarative programming patterns; avoid classes.
@@ -8,41 +8,46 @@ Code Style and Structure
 - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
 - Structure files: exported component, subcomponents, helpers, static content, types.
 
-Naming Conventions
+## Naming Conventions
 
 - Use lowercase with dashes for directories (e.g., components/auth-wizard).
 - Favor named exports for components.
 
-Syntax and Formatting
+## Syntax and Formatting
 
 - Use the "function" keyword for pure functions.
 - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
 - Use declarative JSX.
 
-UI and Styling
+## UI and Styling
 
 - Use Shadcn UI, Radix, Lucide Icons and Tailwind for components and styling.
 - Always try to use the components available in "@/componentes/ui" folder.
 - Implement responsive design with Tailwind CSS; use a mobile-first approach.
 - Use React Hook Forms with Zod validation when creating Forms.
 
-Performance Optimization
+## Performance Optimization
 
 - Minimize 'use client', 'useEffect', and 'setState'; favor React Server Components (RSC).
 - Wrap client components in Suspense with fallback.
 - Use dynamic loading for non-critical components.
 - Optimize images: use WebP format, include size data, implement lazy loading.
 
-Key Conventions
+## Key Conventions
 
 - Use 'nuqs' for URL search parameter state management.
 - Use 'next-safe-action' for server actions.
+- Use 'better-auth' for authentication-related tasks.
 - Optimize Web Vitals (LCP, CLS, FID).
 - Limit 'use client':
   - Favor server components and Next.js SSR.
   - Use only for Web API access in small components.
   - Avoid for data fetching or state management.
 
-Commit messages
+## Commit messages
 
 - Use the commitlint convention when creating new commit messages
+
+## Additional Resources
+
+- **Better Auth Reference**: For comprehensive Better Auth guidance and best practices, see the official Better Auth llms.txt file: https://www.better-auth.com/llms.txt

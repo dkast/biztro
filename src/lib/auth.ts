@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { nextCookies } from "better-auth/next-js"
+import { organization } from "better-auth/plugins"
 
 const prisma = new PrismaClient()
 
@@ -31,5 +32,45 @@ export const auth = betterAuth({
       clientSecret: process.env.AUTH_GOOGLE_SECRET!
     }
   },
-  plugins: [nextCookies()]
+  plugins: [
+    nextCookies(),
+    organization({
+      schema: {
+        organization: {
+          // Expose selected Prisma Organization scalar fields to better-auth.
+          // Assumptions: the organization plugin accepts a simple mapping of field
+          // names to metadata objects describing the column name and type. If the
+          // real plugin API differs, this mapping is conservative and easy to adapt.
+          // Better Auth already includes: id, name, slug, logo, metadata, createdAt
+          // Only declare additional/custom fields present in your Prisma model.
+          additionalFields: {
+            description: {
+              column: "description",
+              type: "string",
+              nullable: true
+            },
+            banner: { column: "banner", type: "string", nullable: true },
+            status: { column: "status", type: "string", default: "ACTIVE" },
+            plan: { column: "plan", type: "string", default: "BASIC" },
+            // `slug` is a built-in Better Auth field; your Prisma model uses `subdomain`.
+            // Keep it as an additional field if you want both, or map via `fields` option.
+            subdomain: { column: "subdomain", type: "string", unique: true },
+            customDomain: {
+              column: "customDomain",
+              type: "string",
+              nullable: true
+            },
+            // updatedAt is not part of the default Better Auth organization table.
+            updatedAt: { column: "updatedAt", type: "date" }
+          }
+        }
+      }
+    })
+  ]
 })
+
+// Mappings notes:
+// The Prisma `Organization` model includes fields:
+// id, name, description, logo, banner, status, plan, createdAt, updatedAt, subdomain, customDomain
+// We expose commonly useful fields to the better-auth organization schema so the plugin
+// can read/write them without changing the existing database schema.

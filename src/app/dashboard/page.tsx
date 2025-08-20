@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 
 import InfoHelper from "@/components/dashboard/info-helper"
 import OnboardingStatus from "@/components/dashboard/onboarding-status"
@@ -21,7 +21,7 @@ export default async function DashboardPage() {
   ])
 
   if (!currentOrg) {
-    notFound()
+    redirect("/new-org")
   }
 
   return (
