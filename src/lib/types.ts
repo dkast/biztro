@@ -177,6 +177,7 @@ export const orgSchema = z.object({
   banner: z.url().optional(),
   status: z.enum(SubscriptionStatus),
   plan: z.enum(["BASIC", "PRO"]),
+  // Deprecated: `subdomain` will be replaced by `slug` - kept for backwards compatibility
   subdomain: z
     .string()
     .min(3, {
@@ -185,7 +186,18 @@ export const orgSchema = z.object({
     .trim()
     .regex(/^[a-z0-9-]+$/i, {
       error: "Solo letras, números y guiones son permitidos"
+    }),
+  // New preferred field replacing subdomain
+  slug: z
+    .string()
+    .min(3, {
+      error: "Subdominio muy corto"
     })
+    .trim()
+    .regex(/^[a-z0-9-]+$/i, {
+      error: "Solo letras, números y guiones son permitidos"
+    })
+    .optional()
 })
 
 export const locationSchema = z.object({
