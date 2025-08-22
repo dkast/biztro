@@ -186,7 +186,8 @@ export const orgSchema = z.object({
     .trim()
     .regex(/^[a-z0-9-]+$/i, {
       error: "Solo letras, números y guiones son permitidos"
-    }),
+    })
+    .optional(),
   // New preferred field replacing subdomain
   slug: z
     .string()
@@ -197,7 +198,6 @@ export const orgSchema = z.object({
     .regex(/^[a-z0-9-]+$/i, {
       error: "Solo letras, números y guiones son permitidos"
     })
-    .optional()
 })
 
 export const locationSchema = z.object({

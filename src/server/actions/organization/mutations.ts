@@ -1,11 +1,12 @@
 "use server"
 
 import { revalidateTag } from "next/cache"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { z } from "zod/v4"
 
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import { appConfig } from "@/app/config"
+import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { actionClient, authActionClient } from "@/lib/safe-actions"
 import { MembershipRole, orgSchema } from "@/lib/types"
@@ -15,16 +16,13 @@ import { MembershipRole, orgSchema } from "@/lib/types"
  *
  * @param name - The name of the organization.
  * @param description - The description of the organization.
- * @param subdomain - The subdomain of the organization.
+ * @param slug - The slug of the organization.
  * @returns An object indicating the success or failure of the operation.
  */
 export const bootstrapOrg = authActionClient
   .inputSchema(orgSchema)
   .action(
-    async ({
-      parsedInput: { name, description, subdomain },
-      ctx: { user }
-    }) => {
+    async ({ parsedInput: { name, description, slug }, ctx: { user } }) => {
       try {
         if (user?.id === undefined) {
           return {
@@ -34,14 +32,15 @@ export const bootstrapOrg = authActionClient
           }
         }
 
-        // Verify if the subdomain is already taken
-        const existingOrg = await prisma.organization.findFirst({
-          where: {
-            subdomain
-          }
+        // Verify if the slug is already taken
+        const existingOrg = await auth.api.checkOrganizationSlug({
+          body: { slug },
+          headers: await headers()
         })
 
-        if (existingOrg) {
+        console.log("Checking existing organization slug:", slug, existingOrg)
+
+        if (!existingOrg.status) {
           return {
             failure: {
               reason: "El subdominio ya está en uso"
@@ -49,19 +48,29 @@ export const bootstrapOrg = authActionClient
           }
         }
 
-        const org = await prisma.organization.create({
-          data: {
+        // Create the organization
+        const org = await auth.api.createOrganization({
+          body: {
             name,
             description,
-            subdomain
-          }
+            slug
+          },
+          headers: await headers()
         })
 
-        await prisma.membership.create({
-          data: {
-            userId: user.id,
+        if (!org) {
+          return {
+            failure: {
+              reason: "No se pudo crear la organización"
+            }
+          }
+        }
+
+        // Set the organization
+        await auth.api.setActiveOrganization({
+          body: {
             organizationId: org.id,
-            role: MembershipRole.OWNER
+            organizationSlug: org.slug
           }
         })
 

@@ -48,18 +48,18 @@ export default function NewOrgForm() {
     defaultValues: {
       name: "",
       description: "",
-      subdomain: "",
+      slug: "",
       status: SubscriptionStatus.ACTIVE,
       plan: Plan.BASIC
     }
   })
   const router = useRouter()
 
-  const subdomain = form.watch("name", "mi-negocio")
+  const slug = form.watch("name", "mi-negocio")
 
   useEffect(() => {
-    form.setValue("subdomain", slugify(subdomain))
-  }, [subdomain]) // eslint-disable-line react-hooks/exhaustive-deps
+    form.setValue("slug", slugify(slug))
+  }, [slug]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { execute, status, reset } = useAction(bootstrapOrg, {
     onSuccess: ({ data }) => {
@@ -78,6 +78,7 @@ export default function NewOrgForm() {
   })
 
   const onSubmit = (data: z.infer<typeof orgSchema>) => {
+    console.log("Submitting form with data:", data)
     execute(data)
   }
 
@@ -129,10 +130,10 @@ export default function NewOrgForm() {
               />
               <FormField
                 control={form.control}
-                name="subdomain"
+                name="slug"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="subdomain">Sitio web</FormLabel>
+                    <FormLabel htmlFor="slug">Sitio web</FormLabel>
                     <FormControl>
                       <div className="flex flex-row items-center">
                         <span className="flex h-10 items-center rounded-md rounded-r-none border border-r-0 bg-gray-50 px-2 text-sm text-gray-500">
@@ -140,7 +141,7 @@ export default function NewOrgForm() {
                         </span>
                         <Input
                           {...field}
-                          id="subdomain"
+                          id="slug"
                           placeholder="Sitio web"
                           className="rounded-l-none"
                         />
