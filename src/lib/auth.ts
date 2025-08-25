@@ -51,17 +51,17 @@ export const auth = betterAuth({
             },
             banner: { column: "banner", type: "string", nullable: true },
             status: { column: "status", type: "string", default: "ACTIVE" },
-            plan: { column: "plan", type: "string", default: "BASIC" },
+            plan: { column: "plan", type: "string", default: "BASIC" }
             // `slug` is a built-in Better Auth field; your Prisma model uses `subdomain`.
             // Keep it as an additional field if you want both, or map via `fields` option.
-            subdomain: { column: "subdomain", type: "string", unique: true },
-            customDomain: {
-              column: "customDomain",
-              type: "string",
-              nullable: true
-            },
+            // subdomain: { column: "subdomain", type: "string", unique: true },
+            // customDomain: {
+            //   column: "customDomain",
+            //   type: "string",
+            //   nullable: true
+            // },
             // updatedAt is not part of the default Better Auth organization table.
-            updatedAt: { column: "updatedAt", type: "date" }
+            // updatedAt: { column: "updatedAt", type: "date" }
           }
         }
       }

@@ -50,7 +50,7 @@ export async function getOrganizationBySubdomain(subdomain: string) {
     async () => {
       const org = await prisma.organization.findFirst({
         where: {
-          subdomain
+          slug: subdomain
         }
       })
 
@@ -88,7 +88,7 @@ export async function getOrganizationOnboardingStatus(id: string) {
         select: {
           id: true,
           name: true,
-          subdomain: true,
+          slug: true,
           banner: true,
           logo: true,
           location: {
@@ -129,7 +129,7 @@ export async function getAllActiveOrganizations() {
           ]
         },
         select: {
-          subdomain: true
+          slug: true
         }
       })
       return orgs

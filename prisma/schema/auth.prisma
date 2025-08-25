@@ -92,7 +92,7 @@ model Organization {
   plan          String         @default("BASIC")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  subdomain     String         @unique
+  // subdomain     String         @unique
   customDomain  String?        @unique
   categories    Category[]
   location      Location[]
@@ -108,7 +108,7 @@ model Organization {
   members     Member[]
   invitations Invitation[]
 
-  @@index([subdomain])
+  @@index([slug])
 }
 
 // Planned to remove and use the invitation system from BetterAuth

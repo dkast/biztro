@@ -38,6 +38,7 @@ You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, 
 - Use 'nuqs' for URL search parameter state management.
 - Use 'next-safe-action' for server actions.
 - Use 'better-auth' for authentication-related tasks.
+- Use 'bun' as a package manager for JavaScript and TypeScript projects.
 - Optimize Web Vitals (LCP, CLS, FID).
 - Limit 'use client':
   - Favor server components and Next.js SSR.
