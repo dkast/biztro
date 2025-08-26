@@ -24,7 +24,7 @@ export default function LoginForm({
           onClick={() =>
             signIn.social({
               provider: provider.id,
-              callbackURL: callbackUrl ? callbackUrl : "/"
+              callbackURL: callbackUrl ? callbackUrl : "/dashboard"
             })
           }
           className="mt-4 w-full shadow-xs"

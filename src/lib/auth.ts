@@ -4,10 +4,28 @@ import { prismaAdapter } from "better-auth/adapters/prisma"
 import { nextCookies } from "better-auth/next-js"
 import { organization } from "better-auth/plugins"
 
+import { getActiveOrganization } from "@/server/actions/user/queries"
+
 const prisma = new PrismaClient()
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "sqlite" }),
+  databaseHooks: {
+    session: {
+      create: {
+        before: async session => {
+          // Perform any necessary transformations or validations on the session data
+          const organization = await getActiveOrganization(session.userId)
+          return {
+            data: {
+              ...session,
+              activeOrganizationId: organization?.id
+            }
+          }
+        }
+      }
+    }
+  },
   emailAndPassword: { enabled: false },
   // Map existing NextAuth columns to Better Auth fields to avoid schema changes
   session: {
@@ -52,25 +70,9 @@ export const auth = betterAuth({
             banner: { column: "banner", type: "string", nullable: true },
             status: { column: "status", type: "string", default: "ACTIVE" },
             plan: { column: "plan", type: "string", default: "BASIC" }
-            // `slug` is a built-in Better Auth field; your Prisma model uses `subdomain`.
-            // Keep it as an additional field if you want both, or map via `fields` option.
-            // subdomain: { column: "subdomain", type: "string", unique: true },
-            // customDomain: {
-            //   column: "customDomain",
-            //   type: "string",
-            //   nullable: true
-            // },
-            // updatedAt is not part of the default Better Auth organization table.
-            // updatedAt: { column: "updatedAt", type: "date" }
           }
         }
       }
     })
   ]
 })
-
-// Mappings notes:
-// The Prisma `Organization` model includes fields:
-// id, name, description, logo, banner, status, plan, createdAt, updatedAt, subdomain, customDomain
-// We expose commonly useful fields to the better-auth organization schema so the plugin
-// can read/write them without changing the existing database schema.

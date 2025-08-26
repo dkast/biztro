@@ -4,6 +4,7 @@ import { unstable_cache as cache } from "next/cache"
 import { cookies } from "next/headers"
 
 import { appConfig } from "@/app/config"
+import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/session"
 import { env } from "@/env.mjs"
@@ -56,6 +57,25 @@ export async function getCurrentOrganization() {
     }
     return membership.organization
   }
+}
+
+export async function getActiveOrganization(userId: string) {
+  const member = await prisma.member.findFirst({
+    where: {
+      userId
+    },
+    include: {
+      organization: true
+    }
+  })
+
+  return member?.organization
+}
+
+export async function hasOrganizations() {
+  const data = await auth.api.listOrganizations()
+
+  return data.length > 0
 }
 
 export const getMembers = async () => {
