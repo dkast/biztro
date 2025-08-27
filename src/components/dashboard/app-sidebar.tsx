@@ -233,6 +233,8 @@ function SidebarWorkgroup() {
     queryFn: getUserMemberships
   })
 
+  console.log("Current Organization:", currentOrg)
+
   const queryClient = useQueryClient()
   const [isPending, startTransition] = useTransition()
   const router = useRouter()

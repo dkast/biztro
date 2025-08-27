@@ -63,10 +63,11 @@ export default function NewOrgForm() {
 
   const { execute, status, reset } = useAction(bootstrapOrg, {
     onSuccess: ({ data }) => {
+      console.log("Organization created successfully:", data)
       if (data?.failure) {
         toast.error(data.failure.reason ?? "Ocurrió un error")
         return
-      } else if (!data?.success) {
+      } else if (data?.success) {
         router.push("/dashboard")
       }
       reset()

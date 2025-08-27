@@ -70,7 +70,7 @@ export async function getMenuByOrgSubdomain(subdomain: string) {
         where: {
           status: MenuStatus.PUBLISHED,
           organization: {
-            subdomain,
+            slug: subdomain,
             OR: [
               { status: SubscriptionStatus.ACTIVE },
               { status: SubscriptionStatus.TRIALING }

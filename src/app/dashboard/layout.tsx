@@ -34,8 +34,6 @@ export default async function Layout({
     <div className="flex grow flex-col">
       <SidebarProvider>
         <HydrationBoundary state={dehydrate(queryClient)}>
-          {/* <Sidebar /> */}
-
           <AppSidebar />
         </HydrationBoundary>
         <main className="flex grow flex-col">

@@ -1,7 +1,7 @@
 "use server"
 
 import { unstable_cache as cache } from "next/cache"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 
 import { appConfig } from "@/app/config"
 import { auth } from "@/lib/auth"
@@ -11,55 +11,20 @@ import { env } from "@/env.mjs"
 
 // Get current organization for the user
 export async function getCurrentOrganization() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
-
-  if (currentOrg) {
-    // return await cache(
-    //   async () => {
-    const org = await prisma.organization.findUnique({
-      where: {
-        id: currentOrg
-      }
+  try {
+    const currentOrg = await auth.api.getFullOrganization({
+      headers: await headers()
     })
 
-    if (org?.banner) {
-      org.banner = `${env.R2_CUSTOM_DOMAIN}/${org.banner}`
-    }
-
-    if (org?.logo) {
-      org.logo = `${env.R2_CUSTOM_DOMAIN}/${org.logo}`
-    }
-
-    return org
-    //   },
-    //   [`organization-${currentOrg}`],
-    //   {
-    //     revalidate: 900,
-    //     tags: [`organization-${currentOrg}`]
-    //   }
-    // )()
-  } else {
-    // Return first organization for the user
-    const user = await getCurrentUser()
-
-    console.log("current user", user)
-    const membership = await prisma.membership.findFirst({
-      where: {
-        userId: user?.id
-      },
-      include: {
-        organization: true
-      }
-    })
-
-    if (!membership) {
-      return null
-    }
-    return membership.organization
+    return currentOrg
+  } catch (err) {
+    console.error("Failed to get current organization", err)
+    return null
   }
 }
 
 export async function getActiveOrganization(userId: string) {
+  console.log("Fetching active organization for user:", userId)
   const member = await prisma.member.findFirst({
     where: {
       userId
@@ -69,13 +34,31 @@ export async function getActiveOrganization(userId: string) {
     }
   })
 
+  if (member?.organization?.banner) {
+    member.organization.banner = `${env.R2_CUSTOM_DOMAIN}/${member.organization.banner}`
+  }
+
+  if (member?.organization?.logo) {
+    member.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${member.organization.logo}`
+  }
+
+  console.log("Member:", member)
+  console.log("Current Organization:", member?.organization)
+
   return member?.organization
 }
 
-export async function hasOrganizations() {
-  const data = await auth.api.listOrganizations()
-
-  return data.length > 0
+export async function hasOrganizations(): Promise<number> {
+  try {
+    const data = await auth.api.listOrganizations({
+      headers: await headers()
+    })
+    if (!Array.isArray(data)) return 0
+    return data.length
+  } catch (err) {
+    console.error("Failed to list organizations", err)
+    return 0
+  }
 }
 
 export const getMembers = async () => {
@@ -119,7 +102,7 @@ export const getCurrentMembership = async () => {
       organization: {
         select: {
           name: true,
-          subdomain: true
+          slug: true
         }
       }
     }
@@ -180,7 +163,7 @@ export const getInviteByToken = async (token: string) => {
       organization: {
         select: {
           name: true,
-          subdomain: true
+          slug: true
         }
       }
     }

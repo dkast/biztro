@@ -28,8 +28,8 @@ export const dynamicParams = true
 // Add generateStaticParams to pre-render specific paths
 export async function generateStaticParams() {
   const organizations = await getAllActiveOrganizations()
-  return organizations.map(({ subdomain }) => ({
-    subdomain
+  return organizations.map(({ slug }) => ({
+    slug
   }))
 }
 
