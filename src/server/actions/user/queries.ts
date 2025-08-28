@@ -34,6 +34,8 @@ export async function getActiveOrganization(userId: string) {
     }
   })
 
+  // console.log("Member:", member)
+
   if (member?.organization?.banner) {
     member.organization.banner = `${env.R2_CUSTOM_DOMAIN}/${member.organization.banner}`
   }
@@ -42,8 +44,14 @@ export async function getActiveOrganization(userId: string) {
     member.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${member.organization.logo}`
   }
 
-  console.log("Member:", member)
   console.log("Current Organization:", member?.organization)
+
+  // DEBUG: Count the number of records for member and organization tables
+  // const memberCount = await prisma.member.count()
+  // const organizationCount = await prisma.organization.count()
+  // console.log(
+  //   `Member count: ${memberCount}, Organization count: ${organizationCount}`
+  // )
 
   return member?.organization
 }

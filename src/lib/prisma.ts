@@ -9,10 +9,38 @@ const libsql = createClient({
   authToken: `${env.TURSO_AUTH_TOKEN}`
 })
 
-const adapter = new PrismaLibSQL(libsql)
+// Cast to any to avoid a type mismatch between different @libsql/client copies.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const adapter = new PrismaLibSQL(libsql as any)
 const prisma = new PrismaClient({
-  adapter
-  // log: env.NODE_ENV === "development" ? ["error", "warn"] : ["error"]
+  adapter,
+  log:
+    env.NODE_ENV === "development"
+      ? ["query", "info", "warn", "error"]
+      : ["error"]
 })
+
+// In development, also print queries and their params/duration to the console.
+if (env.NODE_ENV === "development") {
+  // Use a narrow handler type to avoid `any` linting errors.
+  const prismaWithOn = prisma as unknown as {
+    $on: (
+      event: string,
+      handler: (e: {
+        query?: string
+        params?: string
+        duration?: number
+      }) => void
+    ) => void
+  }
+
+  prismaWithOn.$on("query", e => {
+    const q = e.query ?? ""
+    const params = e.params
+    const duration = typeof e.duration === "number" ? `${e.duration}ms` : "-"
+    console.log(`[prisma] query (${duration}): ${q}`)
+    if (params) console.log(`[prisma] params: ${params}`)
+  })
+}
 
 export default prisma
