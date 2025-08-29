@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { ROOT_NODE, useEditor } from "@craftjs/core"
-import type { Organization, Prisma } from "@prisma/client"
+import type { Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtomValue, useSetAtom } from "jotai"
@@ -41,6 +41,7 @@ import type {
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { getThemes } from "@/server/actions/menu/queries"
+import type { getCurrentOrganization } from "@/server/actions/user/queries"
 import { colorListAtom, colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import { colorThemes, fontThemes } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -53,7 +54,9 @@ export default function ToolboxPanel({
   featuredItems,
   isPro // Add this prop
 }: {
-  organization: Organization
+  organization: NonNullable<
+    Prisma.PromiseReturnType<typeof getCurrentOrganization>
+  >
   location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
   soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>

@@ -2,12 +2,13 @@
 
 import { Prisma } from "@prisma/client"
 import { revalidatePath, revalidateTag } from "next/cache"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { z } from "zod/v4"
 
 import { getMenuCount } from "@/server/actions/menu/queries"
 import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
+import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import { BasicPlanLimits, menuSchema } from "@/lib/types"
@@ -25,7 +26,9 @@ import { BasicPlanLimits, menuSchema } from "@/lib/types"
 export const createMenu = authActionClient
   .inputSchema(menuSchema)
   .action(async ({ parsedInput: { name, description, status } }) => {
-    const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+    const currentOrg = await auth.api.getFullOrganization({
+      headers: await headers()
+    })
 
     if (!currentOrg) {
       return {
@@ -54,11 +57,11 @@ export const createMenu = authActionClient
           name,
           description,
           status,
-          organizationId: currentOrg
+          organizationId: currentOrg.id
         }
       })
 
-      revalidateTag(`menus-${currentOrg}`)
+      revalidateTag(`menus-${currentOrg.id}`)
 
       return {
         success: menu
@@ -300,7 +303,9 @@ export const duplicateMenu = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
-    const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+    const currentOrg = await auth.api.getFullOrganization({
+      headers: await headers()
+    })
 
     if (!currentOrg) {
       return {
@@ -341,14 +346,14 @@ export const duplicateMenu = authActionClient
           name: `${sourceMenu.name} (copia)`,
           description: sourceMenu.description,
           status: "DRAFT",
-          organizationId: currentOrg,
+          organizationId: currentOrg.id,
           fontTheme: sourceMenu.fontTheme,
           colorTheme: sourceMenu.colorTheme,
           serialData: sourceMenu.serialData
         }
       })
 
-      revalidateTag(`menus-${currentOrg}`)
+      revalidateTag(`menus-${currentOrg.id}`)
 
       return {
         success: duplicatedMenu

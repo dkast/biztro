@@ -16,6 +16,14 @@ export async function getCurrentOrganization() {
       headers: await headers()
     })
 
+    if (currentOrg?.banner) {
+      currentOrg.banner = `${env.R2_CUSTOM_DOMAIN}/${currentOrg.banner}`
+    }
+
+    if (currentOrg?.logo) {
+      currentOrg.logo = `${env.R2_CUSTOM_DOMAIN}/${currentOrg.logo}`
+    }
+
     return currentOrg
   } catch (err) {
     console.error("Failed to get current organization", err)
@@ -35,14 +43,6 @@ export async function getActiveOrganization(userId: string) {
   })
 
   // console.log("Member:", member)
-
-  if (member?.organization?.banner) {
-    member.organization.banner = `${env.R2_CUSTOM_DOMAIN}/${member.organization.banner}`
-  }
-
-  if (member?.organization?.logo) {
-    member.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${member.organization.logo}`
-  }
 
   console.log("Current Organization:", member?.organization)
 

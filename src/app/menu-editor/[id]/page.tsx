@@ -59,7 +59,7 @@ export default async function MenuEditorPage(props: {
       getMenuById(params.id)
     ])
 
-  if (!menu) {
+  if (!menu || !currentOrg) {
     return notFound()
   }
 

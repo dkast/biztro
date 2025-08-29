@@ -1,15 +1,18 @@
 "use server"
 
 import { unstable_cache as cache } from "next/cache"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 
 import { appConfig } from "@/app/config"
+import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { MenuStatus, SubscriptionStatus } from "@/lib/types"
 import { env } from "@/env.mjs"
 
 export async function getMenus() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const currentOrg = await auth.api.getFullOrganization({
+    headers: await headers()
+  })
 
   if (!currentOrg) {
     return []
@@ -18,7 +21,7 @@ export async function getMenus() {
   //   async () => {
   return await prisma.menu.findMany({
     where: {
-      organizationId: currentOrg
+      organizationId: currentOrg.id
     },
     orderBy: {
       publishedAt: "desc"
