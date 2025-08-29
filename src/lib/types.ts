@@ -160,7 +160,8 @@ export enum SubscriptionStatus {
 }
 
 export const orgSchema = z.object({
-  id: z.cuid().optional(),
+  // Accept string ids from external auth provider; keep optional for creation
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>

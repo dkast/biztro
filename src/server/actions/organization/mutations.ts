@@ -215,14 +215,22 @@ export const updateOrg = authActionClient
       }
       // Verify if the slug is already taken using Better Auth server API
       if (slug) {
-        const existingSlug = await auth.api.checkOrganizationSlug({
-          body: { slug },
-          headers: await headers()
-        })
+        let existingSlug: { status?: boolean } | null = null
+        try {
+          existingSlug = await auth.api.checkOrganizationSlug({
+            body: { slug },
+            headers: await headers()
+          })
+        } catch (err) {
+          // If the external API throws (for example, when slug is taken),
+          // don't return early — treat as 'not available' and verify ownership below.
+          console.warn("checkOrganizationSlug failed:", err)
+          existingSlug = null
+        }
 
         // checkOrganizationSlug returns status: true when available
-        if (!existingSlug.status) {
-          // If slug is taken, verify it's not taken by this same org
+        if (!existingSlug?.status) {
+          // If slug appears taken or check failed, verify it's not taken by this same org
           const maybeOrg = await auth.api
             .getFullOrganization({
               query: { organizationSlug: slug },

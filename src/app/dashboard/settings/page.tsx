@@ -4,13 +4,11 @@ import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Badge } from "@/components/ui/badge"
-import {
-  getCurrentMembership,
-  getCurrentOrganization
-} from "@/server/actions/user/queries"
+import { getCurrentOrganization } from "@/server/actions/user/queries"
 import OrganizationDelete from "@/app/dashboard/settings/organization-delete"
 import OrganizationForm from "@/app/dashboard/settings/organization-form"
-import { MembershipRole, SubscriptionStatus } from "@/lib/types"
+import { authClient } from "@/lib/auth-client"
+import { SubscriptionStatus } from "@/lib/types"
 
 export const metadata: Metadata = {
   title: "Mi Negocio"
@@ -48,9 +46,11 @@ function StatusBadge({ status }: { status: SubscriptionStatus }) {
 }
 
 export default async function SettingsPage() {
-  const [membership, currentOrg] = await Promise.all([
-    getCurrentMembership(),
-    getCurrentOrganization()
+  const [currentOrg, canDeleteOrg] = await Promise.all([
+    getCurrentOrganization(),
+    authClient.organization.hasPermission({
+      permissions: { organization: ["delete"] }
+    })
   ])
 
   if (!currentOrg) {
@@ -68,9 +68,7 @@ export default async function SettingsPage() {
         <StatusBadge status={currentOrg.status as SubscriptionStatus} />
       </div>
       <OrganizationForm data={currentOrg} enabled />
-      {membership?.role === MembershipRole.OWNER && (
-        <OrganizationDelete organizationId={currentOrg.id} />
-      )}
+      {canDeleteOrg && <OrganizationDelete organizationId={currentOrg.id} />}
     </div>
   )
 }
