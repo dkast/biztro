@@ -202,7 +202,7 @@ export const orgSchema = z.object({
 })
 
 export const locationSchema = z.object({
-  id: z.cuid().optional(),
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>
@@ -233,15 +233,15 @@ export const locationSchema = z.object({
   tiktok: z.string().optional(),
   whatsapp: z.string().optional(),
   website: z.url().optional(),
-  organizationId: z.cuid().optional()
+  organizationId: z.string().optional()
 })
 
 export const hoursSchema = z.object({
-  locationId: z.cuid().optional(),
+  locationId: z.string().optional(),
   items: z.array(
     z
       .object({
-        id: z.cuid().optional(),
+        id: z.string().optional(),
         day: z.enum([
           "MONDAY",
           "TUESDAY",

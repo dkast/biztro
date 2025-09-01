@@ -23,6 +23,10 @@ export const auth = betterAuth({
             }
           }
         }
+      },
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60 // 5 minutes
       }
     }
   },
@@ -76,3 +80,5 @@ export const auth = betterAuth({
     })
   ]
 })
+
+export type AuthMember = typeof auth.$Infer.Member

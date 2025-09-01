@@ -3,6 +3,7 @@
 import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
 
+import { getCurrentOrganization } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
@@ -39,7 +40,7 @@ export const createLocation = authActionClient
       }
     }) => {
       try {
-        const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+        const currentOrg = await getCurrentOrganization()
 
         if (!currentOrg) {
           return {
@@ -62,13 +63,13 @@ export const createLocation = authActionClient
             whatsapp,
             organization: {
               connect: {
-                id: currentOrg
+                id: currentOrg.id
               }
             }
           }
         })
 
-        revalidateTag(`default-location-${currentOrg}`)
+        revalidateTag(`default-location-${currentOrg.id}`)
 
         return { success: location }
       } catch (error) {

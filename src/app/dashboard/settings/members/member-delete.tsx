@@ -1,7 +1,6 @@
 "use client"
 
 import toast from "react-hot-toast"
-import type { Membership } from "@prisma/client"
 import { useAction } from "next-safe-action/hooks"
 
 import {
@@ -15,13 +14,14 @@ import {
   AlertDialogTitle
 } from "@/components/ui/alert-dialog"
 import { removeMember } from "@/server/actions/user/mutations"
+import type { AuthMember } from "@/lib/auth"
 
 export default function MemberDelete({
   member,
   open,
   setOpen
 }: {
-  member: Membership
+  member: AuthMember
   open: boolean
   setOpen: (open: boolean) => void
 }) {

@@ -1,6 +1,6 @@
 "use server"
 
-import { unstable_cache as cache } from "next/cache"
+// removed unstable_cache usage — functions now fetch directly
 import { cookies, headers } from "next/headers"
 
 import { appConfig } from "@/app/config"
@@ -70,31 +70,18 @@ export async function hasOrganizations(): Promise<number> {
 }
 
 export const getMembers = async () => {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const currentOrg = await getCurrentOrganization()
 
   if (!currentOrg) {
     return []
   }
 
-  return await cache(
-    async () => {
-      const members = await prisma.membership.findMany({
-        where: {
-          organizationId: currentOrg
-        },
-        include: {
-          user: true
-        }
-      })
+  // Direct fetch without Next.js unstable cache wrapper
+  const members = await auth.api.listMembers({
+    headers: await headers()
+  })
 
-      return members
-    },
-    [`members-${currentOrg}`],
-    {
-      revalidate: 900,
-      tags: [`members-${currentOrg}`]
-    }
-  )()
+  return members
 }
 
 export const getCurrentMembership = async () => {
@@ -124,37 +111,28 @@ export const getUserMemberships = async () => {
     return []
   }
 
-  return await cache(
-    async () => {
-      const memberships = await prisma.membership.findMany({
-        where: {
-          userId: user.id,
-          isActive: true
-        },
-        include: {
-          organization: true
-        },
-        orderBy: {
-          organization: {
-            name: "asc"
-          }
-        }
-      })
-
-      memberships.forEach(membership => {
-        if (membership.organization.logo) {
-          membership.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${membership.organization.logo}`
-        }
-      })
-
-      return memberships
+  const memberships = await prisma.membership.findMany({
+    where: {
+      userId: user.id,
+      isActive: true
     },
-    [`memberships-${user.id}`],
-    {
-      revalidate: 900,
-      tags: [`memberships-${user.id}`]
+    include: {
+      organization: true
+    },
+    orderBy: {
+      organization: {
+        name: "asc"
+      }
     }
-  )()
+  })
+
+  memberships.forEach(membership => {
+    if (membership.organization.logo) {
+      membership.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${membership.organization.logo}`
+    }
+  })
+
+  return memberships
 }
 
 export const getInviteByToken = async (token: string) => {

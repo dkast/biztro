@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { type Membership } from "@prisma/client"
 import { type ColumnDef, type Row } from "@tanstack/react-table"
 import {
   ChevronDown,
@@ -10,7 +9,7 @@ import {
   MoreHorizontal
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -22,76 +21,67 @@ import {
 } from "@/components/ui/dropdown-menu"
 import MemberDeactivate from "@/app/dashboard/settings/members/member-deactivate"
 import MemberDelete from "@/app/dashboard/settings/members/member-delete"
-import { MembershipRole } from "@/lib/types"
+import type { AuthMember } from "@/lib/auth"
 
-export const columns: ColumnDef<Membership>[] = [
+export const columns: ColumnDef<AuthMember>[] = [
   {
     accessorKey: "user.name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Nombre
-          {{
-            asc: <ChevronUp className="ml-2 h-4 w-4" />,
-            desc: <ChevronDown className="ml-2 h-4 w-4" />
-          }[column.getIsSorted() as string] ?? (
-            <ChevronsUpDown className="ml-2 h-4 w-4" />
-          )}
-        </Button>
-      )
-    }
-  },
-  {
-    accessorKey: "user.email",
-    header: "Correo electrónico",
-    enableHiding: true
-  },
-  {
-    accessorKey: "role",
-    header: "Rol",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Usuario
+        {{
+          asc: <ChevronUp className="ml-2 h-4 w-4" />,
+          desc: <ChevronDown className="ml-2 h-4 w-4" />
+        }[column.getIsSorted() as string] ?? (
+          <ChevronsUpDown className="ml-2 h-4 w-4" />
+        )}
+      </Button>
+    ),
     cell: ({ row }) => {
-      const membership = row.original
-      const roleLabel = (() => {
-        switch (membership.role) {
-          case MembershipRole.ADMIN:
-            return "Administrador"
-          case MembershipRole.MEMBER:
-            return "Miembro"
-          case MembershipRole.OWNER:
-            return "Propietario"
-          default:
-            return ""
-        }
-      })()
+      const m = row.original
+      const name = m.user?.name ?? m.user?.email ?? "Usuario"
+      const email = m.user?.email ?? ""
+      const initials = name
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(w => w[0]?.toUpperCase() ?? "")
+        .join("")
 
       return (
-        <div className="flex gap-y-1 sm:flex-col">
-          <span className="text-sm">{roleLabel}</span>
-          <div className="ml-2 sm:hidden">
-            <Badge variant={membership.isActive ? "green" : "secondary"}>
-              {membership.isActive ? "Activo" : "Inactivo"}
-            </Badge>
+        <div className="flex items-center gap-3">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={m.user?.image ?? undefined} alt={name} />
+            <AvatarFallback>{initials || "?"}</AvatarFallback>
+          </Avatar>
+          <div className="flex min-w-0 flex-col">
+            <span className="truncate text-sm font-medium">{name}</span>
+            {email && (
+              <span className="text-muted-foreground truncate text-xs">
+                {email}
+              </span>
+            )}
           </div>
         </div>
       )
     }
   },
   {
-    accessorKey: "isActive",
-    header: "Estado",
+    accessorKey: "role",
+    header: "Rol",
     cell: ({ row }) => {
-      const membership = row.original
-
-      return (
-        <Badge variant={membership.isActive ? "green" : "secondary"}>
-          {membership.isActive ? "Activo" : "Inactivo"}
-        </Badge>
-      )
-    },
-    enableHiding: true
+      const role = row.original.role
+      const label =
+        role === "owner"
+          ? "Propietario"
+          : role === "admin"
+            ? "Administrador"
+            : "Miembro"
+      return <span className="text-sm">{label}</span>
+    }
   },
   {
     id: "actions",
@@ -99,15 +89,12 @@ export const columns: ColumnDef<Membership>[] = [
   }
 ]
 
-function ActionsColumn({ row }: { row: Row<Membership> }) {
-  const membership = row.original
+function ActionsColumn({ row }: { row: Row<AuthMember> }) {
+  const member = row.original
   const [openDelete, setOpenDelete] = useState(false)
   const [openDeactivate, setOpenDeactivate] = useState(false)
 
-  if (
-    membership.role === MembershipRole.OWNER ||
-    membership.role === MembershipRole.ADMIN
-  ) {
+  if (member.role === "owner" || member.role === "admin") {
     return null
   }
 
@@ -141,13 +128,9 @@ function ActionsColumn({ row }: { row: Row<Membership> }) {
       <MemberDeactivate
         open={openDeactivate}
         setOpen={setOpenDeactivate}
-        member={membership}
+        member={member}
       />
-      <MemberDelete
-        open={openDelete}
-        setOpen={setOpenDelete}
-        member={membership}
-      />
+      <MemberDelete open={openDelete} setOpen={setOpenDelete} member={member} />
     </>
   )
 }
