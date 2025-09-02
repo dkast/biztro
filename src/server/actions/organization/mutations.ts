@@ -72,12 +72,6 @@ export const bootstrapOrg = authActionClient
           }
         }
 
-        const cookieStore = await cookies()
-
-        cookieStore.set(appConfig.cookieOrg, org.id, {
-          maxAge: 60 * 60 * 24 * 365
-        })
-
         revalidateTag(`organization-${org.id}`)
         revalidateTag(`organization-${org.slug}`)
         revalidateTag(`memberships-${org.id}`)
@@ -164,12 +158,6 @@ export const createOrg = authActionClient
             }
           }
         }
-
-        const cookieStore = await cookies()
-
-        cookieStore.set(appConfig.cookieOrg, org.id, {
-          maxAge: 60 * 60 * 24 * 365
-        })
 
         revalidateTag(`organization-${org.id}`)
         revalidateTag(`organization-${org.slug}`)

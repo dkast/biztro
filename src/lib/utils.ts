@@ -1,3 +1,4 @@
+import InviteUserEmail from "@/emails/invite"
 import {
   getLocalTimeZone,
   parseTime,
@@ -8,7 +9,10 @@ import {
 } from "@internationalized/date"
 import type { OpeningHours } from "@prisma/client"
 import { clsx, type ClassValue } from "clsx"
+import { Resend } from "resend"
 import { twMerge } from "tailwind-merge"
+
+import { env } from "@/env.mjs"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -144,4 +148,40 @@ export const toDateTime = (secs: number) => {
   const t = new Date(+0) // Unix epoch start.
   t.setSeconds(secs)
   return t
+}
+
+export const sendOrganizationInvitation = async ({
+  email,
+  invitedByUsername,
+  invitedByEmail,
+  teamName,
+  inviteLink
+}: {
+  email: string
+  invitedByUsername: string
+  invitedByEmail: string
+  teamName: string
+  inviteLink: string
+}) => {
+  // Send email invitation
+  const resend = new Resend(env.RESEND_API_KEY)
+
+  // Extract shortname from email address
+  const shortname = email.split("@")[0]
+
+  const baseUrl = getBaseUrl()
+
+  await resend.emails.send({
+    from: "no-reply@biztro.com",
+    to: email,
+    subject: `Invitación a unirse a ${teamName}`,
+    react: InviteUserEmail({
+      username: shortname,
+      invitedByUsername,
+      invitedByEmail,
+      teamName,
+      inviteLink,
+      baseUrl
+    })
+  })
 }

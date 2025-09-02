@@ -3,11 +3,12 @@
 import InviteUserEmail from "@/emails/invite"
 import { nanoid } from "nanoid"
 import { revalidateTag } from "next/cache"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { Resend } from "resend"
 import { z } from "zod/v4"
 
 import { appConfig } from "@/app/config"
+import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import { getCurrentUser } from "@/lib/session"
@@ -90,115 +91,16 @@ export const inviteMember = authActionClient
   )
   .action(async ({ parsedInput: { email } }) => {
     try {
-      // Get the current organization
-      const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
-      const baseUrl = getBaseUrl()
-
-      // Get the current user
-      const user = await getCurrentUser()
-
-      if (!currentOrg) {
-        return {
-          failure: {
-            reason: "No se pudo obtener la organización actual"
-          }
-        }
-      }
-
-      const membership = await prisma.membership.findFirst({
-        where: {
-          userId: user?.id,
-          organizationId: currentOrg
-        },
-        include: {
-          organization: true
-        }
-      })
-
-      if (!membership) {
-        return {
-          failure: {
-            reason: "No se pudo obtener la información de la membresía"
-          }
-        }
-      }
-
-      // Check for an existing active invitation
-      const existingInvite = await prisma.teamInvite.findFirst({
-        where: {
+      const data = await auth.api.createInvitation({
+        body: {
           email,
-          organizationId: currentOrg,
-          status: InviteStatus.PENDING
-        }
+          role: "member",
+          resend: true
+        },
+        headers: await headers()
       })
 
-      if (existingInvite) {
-        // Update the existing invitation
-        const updatedInvite = await prisma.teamInvite.update({
-          where: {
-            id: existingInvite.id
-          },
-          data: {
-            token: nanoid(),
-            expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7) // 7 days
-          }
-        })
-
-        // Send email
-        const resend = new Resend(process.env.RESEND_API_KEY)
-
-        // Extract shortname from email address
-        const shortname = email.split("@")[0]
-
-        await resend.emails.send({
-          from: "no-reply@biztro.co",
-          to: email,
-          subject: "Invitación para unirse a Biztro",
-          react: InviteUserEmail({
-            username: shortname,
-            invitedByUsername: user?.name ?? undefined,
-            invitedByEmail: user?.email,
-            teamName: membership.organization.name,
-            inviteLink: `${baseUrl}/invite/${updatedInvite.token}`,
-            baseUrl
-          })
-        })
-
-        return { success: true }
-      } else {
-        // Create the invitation
-        const invitation = await prisma.teamInvite.create({
-          data: {
-            email,
-            token: nanoid(),
-            organizationId: currentOrg,
-            role: MembershipRole.MEMBER,
-            status: InviteStatus.PENDING,
-            expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
-            invitedById: membership?.id
-          }
-        })
-
-        // Send email
-        const resend = new Resend(process.env.RESEND_API_KEY)
-
-        // Extract shortname from email address
-        const shortname = email.split("@")[0]
-
-        await resend.emails.send({
-          from: "no-reply@biztro.co",
-          to: email,
-          subject: "Invitación para unirse a Biztro",
-          react: InviteUserEmail({
-            username: shortname,
-            invitedByUsername: user?.name ?? undefined,
-            invitedByEmail: user?.email,
-            teamName: membership.organization.name,
-            inviteLink: `${baseUrl}/invite/${invitation.token}`,
-            baseUrl
-          })
-        })
-
+      if (data) {
         return { success: true }
       }
     } catch (error) {
