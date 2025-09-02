@@ -171,8 +171,8 @@ export const sendOrganizationInvitation = async ({
 
   const baseUrl = getBaseUrl()
 
-  await resend.emails.send({
-    from: "no-reply@biztro.com",
+  const { data, error } = await resend.emails.send({
+    from: "noreply@biztro.co",
     to: email,
     subject: `Invitación a unirse a ${teamName}`,
     react: InviteUserEmail({
@@ -184,4 +184,8 @@ export const sendOrganizationInvitation = async ({
       baseUrl
     })
   })
+
+  if (error) {
+    console.error("Error sending invitation email:", error)
+  }
 }
