@@ -1,20 +1,27 @@
 "use client"
 
 import Image from "next/image"
-import { useSearchParams } from "next/navigation"
+
+// search params are provided by the page; only read error from window when needed
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { signIn } from "@/lib/auth-client"
+import { providers } from "@/lib/types"
 
 export default function LoginForm({
-  providers
+  callbackUrl: propCallbackUrl
 }: {
-  providers: Record<string, { id: string; name: string }>
-}) {
-  const searchParams = useSearchParams()
-  const error = searchParams?.get("error")
-  const callbackUrl = searchParams?.get("callbackUrl")
+  callbackUrl?: string
+} = {}) {
+  // prefer the prop provided by the page; default to dashboard
+  const callbackUrl = propCallbackUrl ?? "/dashboard"
+  // read `error` from the client URL if present (this file is client-side)
+  let error: string | null = null
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search)
+    error = params.get("error")
+  }
 
   return (
     <div>

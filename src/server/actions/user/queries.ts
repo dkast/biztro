@@ -136,24 +136,34 @@ export const getUserMemberships = async () => {
 }
 
 export const getInviteByToken = async (token: string) => {
-  return await prisma.teamInvite.findUnique({
-    where: {
-      token
-    },
-    select: {
-      id: true,
-      email: true,
-      expiresAt: true,
-      organizationId: true,
-      status: true,
-      organization: {
-        select: {
-          name: true,
-          slug: true
-        }
-      }
-    }
+  // return await prisma.teamInvite.findUnique({
+  //   where: {
+  //     token
+  //   },
+  //   select: {
+  //     id: true,
+  //     email: true,
+  //     expiresAt: true,
+  //     organizationId: true,
+  //     status: true,
+  //     organization: {
+  //       select: {
+  //         name: true,
+  //         slug: true
+  //       }
+  //     }
+  //   }
+  // })
+  const data = await auth.api.getInvitation({
+    query: { id: token },
+    headers: await headers()
   })
+
+  if (!data) {
+    return null
+  }
+
+  return data
 }
 
 export async function isProMember() {
