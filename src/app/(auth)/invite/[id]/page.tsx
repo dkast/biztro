@@ -27,8 +27,15 @@ export default async function InvitePage(props: {
       query: { id: params.id }
     })
 
-  if (inviteError) {
-    return { inviteError }
+  if (user && inviteError) {
+    return (
+      <InviteExpiredOrInvalid
+        title="Invitación inválida"
+        description={
+          inviteError?.message ?? "Ocurrió un error al cargar la invitación."
+        }
+      />
+    )
   }
 
   return (
@@ -51,7 +58,15 @@ export default async function InvitePage(props: {
   )
 }
 
-const InviteExpiredOrInvalid = () => {
+type InviteExpiredOrInvalidProps = {
+  title?: string
+  description?: string
+}
+
+const InviteExpiredOrInvalid = ({
+  title = "Invitación ha expirado o no es válida",
+  description = "La invitación ha expirado o ya ha sido utilizada."
+}: InviteExpiredOrInvalidProps) => {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center">
       <Image
@@ -61,12 +76,8 @@ const InviteExpiredOrInvalid = () => {
         height={44}
         className="py-10"
       />
-      <h1 className="font-display text-3xl font-semibold">
-        Invitación ha expirado o no es válida
-      </h1>
-      <p className="mt-2 text-gray-600 dark:text-gray-400">
-        La invitación ha expirado o ya ha sido utilizada.
-      </p>
+      <h1 className="font-display text-3xl font-semibold">{title}</h1>
+      <p className="mt-2 text-gray-600 dark:text-gray-400">{description}</p>
     </div>
   )
 }
