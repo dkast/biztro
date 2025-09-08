@@ -136,34 +136,38 @@ export const getUserMemberships = async () => {
 }
 
 export const getInviteByToken = async (token: string) => {
-  // return await prisma.teamInvite.findUnique({
-  //   where: {
-  //     token
-  //   },
-  //   select: {
-  //     id: true,
-  //     email: true,
-  //     expiresAt: true,
-  //     organizationId: true,
-  //     status: true,
-  //     organization: {
-  //       select: {
-  //         name: true,
-  //         slug: true
-  //       }
-  //     }
-  //   }
-  // })
-  const data = await auth.api.getInvitation({
-    query: { id: token },
-    headers: await headers()
-  })
+  try {
+    const data = await auth.api.getInvitation({
+      query: { id: token },
+      headers: await headers()
+    })
 
-  if (!data) {
-    return null
+    return {
+      data,
+      error: null
+    }
+  } catch (err) {
+    console.error("Failed to get invitation by token", err)
+    // If err has a message property, return it; otherwise stringify
+    if (err && typeof err === "object" && "message" in err) {
+      return {
+        data: null,
+        error: (err as Error).message
+      }
+    }
+
+    try {
+      return {
+        data: null,
+        error: String(err)
+      }
+    } catch {
+      return {
+        data: null,
+        error: "An unknown error occurred"
+      }
+    }
   }
-
-  return data
 }
 
 export async function isProMember() {

@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 
+import { getInviteByToken } from "@/server/actions/user/queries"
 import AcceptInviteCard from "@/app/(auth)/invite/[id]/accept-invite-card"
 import LoginForm from "@/app/(auth)/login/login-form"
-import { authClient } from "@/lib/auth-client"
 import { getCurrentUser } from "@/lib/session"
 
 export const metadata: Metadata = {
@@ -22,18 +22,14 @@ export default async function InvitePage(props: {
   const user = await getCurrentUser()
 
   // If user session exists, fetch the invitation data
-  const { data: invite, error: inviteError } =
-    await authClient.organization.getInvitation({
-      query: { id: params.id }
-    })
+  const invite = await getInviteByToken(params.id)
 
-  if (user && inviteError) {
+  if (user && invite.error) {
+    // console.dir(invite, { depth: null })
     return (
       <InviteExpiredOrInvalid
         title="Invitación inválida"
-        description={
-          inviteError?.message ?? "Ocurrió un error al cargar la invitación."
-        }
+        description={invite.error}
       />
     )
   }
@@ -51,7 +47,7 @@ export default async function InvitePage(props: {
         {!user ? (
           <LoginForm callbackUrl={`/invite/${params.id}`} />
         ) : (
-          <AcceptInviteCard invite={invite} />
+          <AcceptInviteCard invite={invite.data} />
         )}
       </div>
     </div>
