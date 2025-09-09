@@ -180,5 +180,8 @@
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": "eslint --cache --fix",
     "*.{ts,tsx,js,jsx,css,json,md,mdx}": "prettier --write"
+  },
+  "overrides": {
+    "import-in-the-middle": "1.13.1"
   }
 }

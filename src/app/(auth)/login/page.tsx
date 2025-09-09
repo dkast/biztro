@@ -11,11 +11,14 @@ export const metadata: Metadata = {
   description: "Iniciar sesión en Biztro"
 }
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams
 }: {
-  searchParams?: { callbackUrl?: string }
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  const callbackUrl =
+    ((await searchParams)?.callbackUrl as string) ?? "/dashboard"
+
   return (
     <div className="flex min-h-full flex-1">
       <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
@@ -31,12 +34,9 @@ export default function LoginPage({
               Inicia sesión con tu cuenta de Biztro
             </span>
           </div>
-
           <div className="mt-10">
             <Suspense fallback={<Loading />}>
-              <LoginForm
-                callbackUrl={searchParams?.callbackUrl ?? "/dashboard"}
-              />
+              <LoginForm callbackUrl={callbackUrl} />
             </Suspense>
           </div>
         </div>
