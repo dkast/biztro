@@ -25,7 +25,7 @@ type InviteData =
     : Awaited<ReturnType<typeof getInviteByToken>>
 
 export default function AcceptInviteCard({ invite }: { invite: InviteData }) {
-  const { data: session } = authClient.useSession()
+  const { data: session, isPending } = authClient.useSession()
   const router = useRouter()
 
   const { execute, status } = useAction(acceptInvite, {
@@ -46,8 +46,6 @@ export default function AcceptInviteCard({ invite }: { invite: InviteData }) {
   if (!invite) {
     return null
   }
-
-  const isPending = session === undefined
 
   return (
     <Card className="mx-auto max-w-md shadow-xl">

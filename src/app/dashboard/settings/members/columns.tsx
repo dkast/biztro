@@ -109,19 +109,19 @@ function ActionsColumn({ row }: { row: Row<AuthMember> }) {
         <DropdownMenuContent>
           <DropdownMenuLabel>Acciones</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
+          {/* <DropdownMenuItem
             onClick={() => {
               setOpenDeactivate(true)
             }}
           >
             <span>Desactivar</span>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DropdownMenuItem
             onClick={() => {
               setOpenDelete(true)
             }}
           >
-            <span className="text-red-500">Eliminar</span>
+            <span className="text-red-500">Remover</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

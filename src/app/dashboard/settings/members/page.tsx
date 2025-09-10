@@ -12,9 +12,12 @@ export const metadata: Metadata = {
 }
 
 export default async function MembersPage() {
-  const [canInvite, data, isPro] = await Promise.all([
+  const [canInviteMember, canDeleteMember, data, isPro] = await Promise.all([
     authClient.organization.hasPermission({
       permissions: { invitation: ["create"] }
+    }),
+    authClient.organization.hasPermission({
+      permissions: { member: ["delete"] }
     }),
     getMembers(),
     isProMember()
@@ -45,7 +48,7 @@ export default async function MembersPage() {
         description="Administra a los miembros de tu equipo"
         Icon={Users}
       >
-        {canInvite && <MemberInvite isPro={isPro} />}
+        {canInviteMember && <MemberInvite isPro={isPro} />}
       </PageSubtitle>
       <div className="mt-6">
         <MemberTable data={members} />
