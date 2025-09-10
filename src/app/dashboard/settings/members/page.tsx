@@ -1,11 +1,12 @@
 import { Users } from "lucide-react"
 import type { Metadata } from "next"
+import { headers } from "next/headers"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { getMembers, isProMember } from "@/server/actions/user/queries"
 import MemberInvite from "@/app/dashboard/settings/members/member-invite"
 import MemberTable from "@/app/dashboard/settings/members/member-table"
-import { authClient } from "@/lib/auth-client"
+import { auth } from "@/lib/auth"
 
 export const metadata: Metadata = {
   title: "Miembros"
@@ -13,11 +14,13 @@ export const metadata: Metadata = {
 
 export default async function MembersPage() {
   const [canInviteMember, canDeleteMember, data, isPro] = await Promise.all([
-    authClient.organization.hasPermission({
-      permissions: { invitation: ["create"] }
+    auth.api.hasPermission({
+      headers: await headers(),
+      body: { permissions: { invitation: ["create"] } }
     }),
-    authClient.organization.hasPermission({
-      permissions: { member: ["delete"] }
+    auth.api.hasPermission({
+      headers: await headers(),
+      body: { permissions: { member: ["delete"] } }
     }),
     getMembers(),
     isProMember()
@@ -41,6 +44,9 @@ export default async function MembersPage() {
     })
   )
 
+  console.dir(canDeleteMember)
+  console.dir(canInviteMember)
+
   return (
     <div className="mx-auto grow px-4 sm:px-6">
       <PageSubtitle
@@ -48,10 +54,10 @@ export default async function MembersPage() {
         description="Administra a los miembros de tu equipo"
         Icon={Users}
       >
-        {canInviteMember && <MemberInvite isPro={isPro} />}
+        {canInviteMember.success && <MemberInvite isPro={isPro} />}
       </PageSubtitle>
       <div className="mt-6">
-        <MemberTable data={members} />
+        <MemberTable data={members} canDeleteMember={canDeleteMember.success} />
       </div>
     </div>
   )

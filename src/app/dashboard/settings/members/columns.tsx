@@ -23,76 +23,90 @@ import MemberDeactivate from "@/app/dashboard/settings/members/member-deactivate
 import MemberDelete from "@/app/dashboard/settings/members/member-delete"
 import type { AuthMember } from "@/lib/auth"
 
-export const columns: ColumnDef<AuthMember>[] = [
-  {
-    accessorKey: "user.name",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Usuario
-        {{
-          asc: <ChevronUp className="ml-2 h-4 w-4" />,
-          desc: <ChevronDown className="ml-2 h-4 w-4" />
-        }[column.getIsSorted() as string] ?? (
-          <ChevronsUpDown className="ml-2 h-4 w-4" />
-        )}
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const m = row.original
-      const name = m.user?.name ?? m.user?.email ?? "Usuario"
-      const email = m.user?.email ?? ""
-      const initials = name
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map(w => w[0]?.toUpperCase() ?? "")
-        .join("")
+export function getColumns(canDeleteMember: boolean): ColumnDef<AuthMember>[] {
+  return [
+    {
+      accessorKey: "user.name",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Usuario
+          {{
+            asc: <ChevronUp className="ml-2 h-4 w-4" />,
+            desc: <ChevronDown className="ml-2 h-4 w-4" />
+          }[column.getIsSorted() as string] ?? (
+            <ChevronsUpDown className="ml-2 h-4 w-4" />
+          )}
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const m = row.original
+        const name = m.user?.name ?? m.user?.email ?? "Usuario"
+        const email = m.user?.email ?? ""
+        const initials = name
+          .split(/\s+/)
+          .filter(Boolean)
+          .slice(0, 2)
+          .map(w => w[0]?.toUpperCase() ?? "")
+          .join("")
 
-      return (
-        <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={m.user?.image ?? undefined} alt={name} />
-            <AvatarFallback>{initials || "?"}</AvatarFallback>
-          </Avatar>
-          <div className="flex min-w-0 flex-col">
-            <span className="truncate text-sm font-medium">{name}</span>
-            {email && (
-              <span className="text-muted-foreground truncate text-xs">
-                {email}
-              </span>
-            )}
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={m.user?.image ?? undefined} alt={name} />
+              <AvatarFallback>{initials || "?"}</AvatarFallback>
+            </Avatar>
+            <div className="flex min-w-0 flex-col">
+              <span className="truncate text-sm font-medium">{name}</span>
+              {email && (
+                <span className="text-muted-foreground truncate text-xs">
+                  {email}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      )
+        )
+      }
+    },
+    {
+      accessorKey: "role",
+      header: "Rol",
+      cell: ({ row }) => {
+        const role = row.original.role
+        const label =
+          role === "owner"
+            ? "Propietario"
+            : role === "admin"
+              ? "Administrador"
+              : "Miembro"
+        return <span className="text-sm">{label}</span>
+      }
+    },
+    {
+      id: "actions",
+      cell: props => {
+        return (
+          <ActionsColumn row={props.row} canDeleteMember={canDeleteMember} />
+        )
+      }
     }
-  },
-  {
-    accessorKey: "role",
-    header: "Rol",
-    cell: ({ row }) => {
-      const role = row.original.role
-      const label =
-        role === "owner"
-          ? "Propietario"
-          : role === "admin"
-            ? "Administrador"
-            : "Miembro"
-      return <span className="text-sm">{label}</span>
-    }
-  },
-  {
-    id: "actions",
-    cell: ActionsColumn
-  }
-]
+  ]
+}
 
-function ActionsColumn({ row }: { row: Row<AuthMember> }) {
+function ActionsColumn({
+  row,
+  canDeleteMember
+}: {
+  row: Row<AuthMember>
+  canDeleteMember: boolean
+}) {
   const member = row.original
   const [openDelete, setOpenDelete] = useState(false)
   const [openDeactivate, setOpenDeactivate] = useState(false)
+
+  if (!canDeleteMember) return null
 
   if (member.role === "owner" || member.role === "admin") {
     return null
