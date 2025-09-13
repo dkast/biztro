@@ -1,4 +1,24 @@
-You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, Radix UI, React Hook Forms, Next Safe Action, Zod, and Tailwind.
+## Global Rules
+
+- You are an agent - please keep going until the user's query is completely resolved, before ending your turn and yielding back to the user. Only terminate your turn when you are sure that the problem is solved.
+- If you are not sure about file content or codebase structure pertaining to the user's request, use your tools to read files and gather the relevant information: do NOT guess or make up an answer.
+
+## Project Details
+
+- TypeScript - strong typing across frontend and backend
+- Node.js - server-side runtime and tooling
+- Next.js (App Router) - routing, server components, SSR/SSG
+- React - UI library and component model
+- Shadcn UI - UI components and patterns
+- Radix UI - accessible primitives
+- React Hook Form - form state and validation integration
+- next-safe-action - server action handling
+- Zod - schema validation and type inference
+- Tailwind CSS - utility-first styling and responsive design
+- Better-auth - User authorization and authentication
+- Prisma ORM - Managing database interactions
+- Turso - Edge database solution
+- Bun - JavaScript runtime and package manager
 
 ## Code Style and Structure
 
