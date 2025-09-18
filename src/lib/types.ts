@@ -313,7 +313,7 @@ export const menuItemSchema = z.object({
 })
 
 export const categorySchema = z.object({
-  id: z.cuid().optional(),
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>
@@ -325,11 +325,11 @@ export const categorySchema = z.object({
     .max(100, {
       error: "Nombre muy largo"
     }),
-  organizationId: z.cuid().optional()
+  organizationId: z.string().optional()
 })
 
 export const menuSchema = z.object({
-  id: z.cuid().optional(),
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>

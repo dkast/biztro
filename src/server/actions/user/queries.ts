@@ -84,11 +84,16 @@ export const getMembers = async () => {
 }
 
 export const getCurrentMembership = async () => {
-  const member = await auth.api.getActiveMember({
-    headers: await headers()
-  })
+  try {
+    const member = await auth.api.getActiveMember({
+      headers: await headers()
+    })
 
-  return member
+    return member
+  } catch (err) {
+    console.error("Failed to get current membership", err)
+    return null
+  }
 }
 
 export const getCurrentMembershipRole = async () => {

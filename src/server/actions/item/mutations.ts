@@ -519,8 +519,8 @@ export const deleteCategory = authMemberActionClient
       organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, organizationId }, ctx: { member } }) => {
-    const currentOrgId = member.organizationId
+  .action(async ({ parsedInput: { id, organizationId } }) => {
+    // const currentOrgId = member.organizationId
     try {
       // Check if the category is being used by any item
       const items = await prisma.menuItem.findMany({
@@ -540,7 +540,7 @@ export const deleteCategory = authMemberActionClient
         where: { id }
       })
 
-      revalidateTag(`categories-${organizationId ?? currentOrgId}`)
+      revalidateTag(`categories-${organizationId}`)
 
       return { success: true }
     } catch (error) {
