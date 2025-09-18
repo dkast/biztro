@@ -6,13 +6,13 @@ import type { Metadata } from "next"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
-import { BasicPlanView } from "@/app/dashboard/settings/billing/basic-plan-view"
-import { ProPlanView } from "@/app/dashboard/settings/billing/pro-plan-view"
 import { getItemCount } from "@/server/actions/item/queries"
 import {
-  getCurrentMembership,
+  getCurrentMembershipRole,
   isProMember
 } from "@/server/actions/user/queries"
+import { BasicPlanView } from "@/app/dashboard/settings/billing/basic-plan-view"
+import { ProPlanView } from "@/app/dashboard/settings/billing/pro-plan-view"
 import { MembershipRole } from "@/lib/types"
 
 export const metadata: Metadata = {
@@ -20,9 +20,9 @@ export const metadata: Metadata = {
 }
 
 export default async function BillingPage() {
-  const [subsEnabled, membership, isPro, itemCount] = await Promise.all([
+  const [subsEnabled, role, isPro, itemCount] = await Promise.all([
     subscriptionsEnabled(),
-    getCurrentMembership(),
+    getCurrentMembershipRole(),
     isProMember(),
     getItemCount()
   ])
@@ -34,7 +34,7 @@ export default async function BillingPage() {
         description="Maneja tu plan de suscripción e historial de pagos"
         Icon={Wallet}
       />
-      {membership?.role === MembershipRole.OWNER && subsEnabled ? (
+      {role === MembershipRole.OWNER && subsEnabled ? (
         <div className="my-10">
           {isPro ? (
             <Suspense fallback={<Skeleton className="h-48" />}>

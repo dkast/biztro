@@ -1,9 +1,9 @@
 "use server"
 
 import { unstable_cache as cache } from "next/cache"
-import { cookies, headers } from "next/headers"
+import { headers } from "next/headers"
 
-import { appConfig } from "@/app/config"
+import { getCurrentMembership } from "@/server/actions/user/queries"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { MenuStatus, SubscriptionStatus } from "@/lib/types"
@@ -94,7 +94,8 @@ export async function getMenuByOrgSubdomain(subdomain: string) {
 }
 
 export async function getThemes({ themeType }: { themeType: string }) {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const membership = await getCurrentMembership()
+  const currentOrg = membership?.organizationId
   // return await cache(
   //   async () => {
   return await prisma.theme.findMany({
@@ -121,7 +122,8 @@ export async function getThemes({ themeType }: { themeType: string }) {
 }
 
 export async function getMenuCount() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const membership = await getCurrentMembership()
+  const currentOrg = membership?.organizationId
   return await prisma.menu.count({
     where: {
       organizationId: currentOrg

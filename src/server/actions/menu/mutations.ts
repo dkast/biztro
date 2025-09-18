@@ -2,7 +2,7 @@
 
 import { Prisma } from "@prisma/client"
 import { revalidatePath, revalidateTag } from "next/cache"
-import { cookies, headers } from "next/headers"
+import { headers } from "next/headers"
 import { z } from "zod/v4"
 
 import { getMenuCount } from "@/server/actions/menu/queries"
@@ -498,7 +498,11 @@ export const deleteColorTheme = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
-    const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+    const { getCurrentMembership } = await import(
+      "@/server/actions/user/queries"
+    )
+    const membership = await getCurrentMembership()
+    const currentOrg = membership?.organizationId
     try {
       await prisma.theme.delete({
         where: { id, organizationId: currentOrg }

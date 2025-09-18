@@ -1,13 +1,12 @@
 "use server"
 
 // import { unstable_cache as cache } from "next/cache"
-import { cookies } from "next/headers"
-
-import { appConfig } from "@/app/config"
+import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 
 export async function getDefaultLocation() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const membership = await getCurrentMembership()
+  const currentOrg = membership?.organizationId
   // return await cache(
   //   async () => {
   const location = await prisma.location.findFirst({

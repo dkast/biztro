@@ -1,15 +1,14 @@
 "use server"
 
 // import { unstable_cache as cache } from "next/cache"
-import { cookies } from "next/headers"
-
-import { appConfig } from "@/app/config"
+import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import type { MenuItemQueryFilter } from "@/lib/types"
 import { env } from "@/env.mjs"
 
 export async function getMenuItems(filter: MenuItemQueryFilter) {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const membership = await getCurrentMembership()
+  const currentOrg = membership?.organizationId
   // return cache(
   //   async () => {
 
@@ -67,7 +66,8 @@ export async function getMenuItemById(id: string) {
 }
 
 export async function getCategories() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const membership = await getCurrentMembership()
+  const currentOrg = membership?.organizationId
   // return await cache(
   //   async () => {
   if (!currentOrg) {
@@ -89,7 +89,8 @@ export async function getCategories() {
 }
 
 export async function getCategoriesWithItems() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const membership = await getCurrentMembership()
+  const currentOrg = membership?.organizationId
   // return await cache(
   //   async () => {
   if (!currentOrg) {
@@ -144,7 +145,8 @@ export async function getCategoriesWithItems() {
 }
 
 export async function getMenuItemsWithoutCategory() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const membership = await getCurrentMembership()
+  const currentOrg = membership?.organizationId
   if (!currentOrg) {
     return []
   }
@@ -178,7 +180,8 @@ export async function getMenuItemsWithoutCategory() {
 }
 
 export async function getItemCount() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const membership = await getCurrentMembership()
+  const currentOrg = membership?.organizationId
 
   if (!currentOrg) {
     return 0
@@ -192,7 +195,8 @@ export async function getItemCount() {
 }
 
 export async function getFeaturedItems() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const membership = await getCurrentMembership()
+  const currentOrg = membership?.organizationId
   if (!currentOrg) {
     return []
   }

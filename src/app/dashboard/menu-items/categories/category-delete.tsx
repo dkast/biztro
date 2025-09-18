@@ -29,6 +29,7 @@ export default function ItemDelete({
       toast.loading("Eliminando Categoría...")
     },
     onSuccess: ({ data }) => {
+      console.dir(data)
       if (data?.failure?.reason) {
         toast.dismiss()
         toast.error(data.failure.reason)
@@ -41,6 +42,11 @@ export default function ItemDelete({
       toast.dismiss()
       toast.error("Algo salió mal")
       reset()
+    },
+    onSettled: ({ result }) => {
+      console.log("Result onSettled:")
+      console.dir(result.data)
+      toast.dismiss()
     }
   })
 

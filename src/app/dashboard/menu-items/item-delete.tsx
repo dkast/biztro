@@ -39,6 +39,7 @@ export default function ItemDelete({
       reset()
     },
     onError: () => {
+      toast.dismiss()
       toast.error("Algo salió mal")
       reset()
     }

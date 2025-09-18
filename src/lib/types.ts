@@ -374,9 +374,9 @@ export const enum ImageType {
 }
 
 export const enum MembershipRole {
-  ADMIN = "ADMIN",
-  MEMBER = "MEMBER",
-  OWNER = "OWNER"
+  ADMIN = "admin",
+  MEMBER = "member",
+  OWNER = "owner"
 }
 
 export const enum ActionType {

@@ -1,9 +1,8 @@
 "use server"
 
 // removed unstable_cache usage — functions now fetch directly
-import { cookies, headers } from "next/headers"
+import { headers } from "next/headers"
 
-import { appConfig } from "@/app/config"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/session"
@@ -85,23 +84,19 @@ export const getMembers = async () => {
 }
 
 export const getCurrentMembership = async () => {
-  const user = await getCurrentUser()
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
-
-  return await prisma.membership.findFirst({
-    where: {
-      userId: user?.id,
-      organizationId: currentOrg
-    },
-    include: {
-      organization: {
-        select: {
-          name: true,
-          slug: true
-        }
-      }
-    }
+  const member = await auth.api.getActiveMember({
+    headers: await headers()
   })
+
+  return member
+}
+
+export const getCurrentMembershipRole = async () => {
+  const { role } = await auth.api.getActiveMemberRole({
+    headers: await headers()
+  })
+
+  return role
 }
 
 export const getUserMemberships = async () => {
