@@ -10,6 +10,7 @@ import {
   ChevronsUpDown,
   LayoutTemplate,
   Megaphone,
+  Plus,
   Settings,
   ShoppingBag,
   type LucideIcon
@@ -41,6 +42,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import {
@@ -59,10 +61,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { switchOrganization } from "@/server/actions/user/mutations"
-import {
-  getCurrentOrganization,
-  getUserMemberships
-} from "@/server/actions/user/queries"
+import { getCurrentOrganization } from "@/server/actions/user/queries"
 import { authClient } from "@/lib/auth-client"
 import { Plan } from "@/lib/types"
 import { getInitials } from "@/lib/utils"
@@ -228,10 +227,7 @@ function SidebarWorkgroup() {
     queryFn: getCurrentOrganization
   })
 
-  const { data: memberships } = useQuery({
-    queryKey: ["workgroup", "memberships"],
-    queryFn: getUserMemberships
-  })
+  const { data: organizations } = authClient.useListOrganizations()
 
   const queryClient = useQueryClient()
   const [isPending, startTransition] = useTransition()
@@ -314,37 +310,32 @@ function SidebarWorkgroup() {
               <DropdownMenuLabel className="text-muted-foreground text-xs">
                 Organizaciones
               </DropdownMenuLabel>
-              {memberships?.map(membership => (
+              {organizations?.map(organization => (
                 <DropdownMenuItem
-                  key={membership.organization.name}
-                  onClick={() =>
-                    handleSwitchOrganization(membership.organization.id)
-                  }
+                  key={organization.name}
+                  onClick={() => handleSwitchOrganization(organization.id)}
                   className="gap-2 p-2"
                 >
-                  <div className="flex size-6 items-center justify-center rounded-xs border">
+                  {/* <div className="flex size-6 items-center justify-center rounded-xs border">
                     <Avatar className="size-5 rounded-xs shadow-sm">
-                      <AvatarImage
-                        src={membership.organization.logo ?? undefined}
-                      />
+                      <AvatarImage src={organization.logo ?? undefined} />
                       <AvatarFallback className="text-xs">
-                        {getInitials(membership.organization.name)}
+                        {getInitials(organization.name)}
                       </AvatarFallback>
                     </Avatar>
-                  </div>
-                  {membership.organization.name}
-                  {/* <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut> */}
+                  </div> */}
+                  {organization.name}
                 </DropdownMenuItem>
               ))}
-              {/* <DropdownMenuSeparator />
+              <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2 p-2">
-                <div className="bg-background flex size-6 items-center justify-center rounded-md border">
+                <div className="bg-background flex size-6 items-center justify-center rounded-md border border-gray-600 dark:border-gray-700">
                   <Plus className="size-4" />
                 </div>
                 <div className="text-muted-foreground font-medium">
-                  Add team
+                  Agregar organización
                 </div>
-              </DropdownMenuItem> */}
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarMenuItem>

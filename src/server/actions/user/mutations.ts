@@ -19,38 +19,20 @@ export const switchOrganization = authActionClient
   )
   .action(async ({ parsedInput: { organizationId } }) => {
     try {
-      // Get the current user
-      const user = await getCurrentUser()
+      const data = await auth.api.setActiveOrganization({
+        body: {
+          organizationId
+        },
+        headers: await headers()
+      })
 
-      if (!user) {
+      if (!data) {
         return {
           failure: {
-            reason: "No se pudo obtener el usuario actual"
+            reason: "No se pudo cambiar de organización"
           }
         }
       }
-
-      // Get the membership
-      const membership = await prisma.membership.findFirst({
-        where: {
-          userId: user.id,
-          organizationId,
-          isActive: true
-        }
-      })
-
-      if (!membership) {
-        return {
-          failure: {
-            reason: "No se encontro la membresía para esa organización"
-          }
-        }
-      }
-
-      // Set the current organization
-      ;(await cookies()).set(appConfig.cookieOrg, organizationId, {
-        maxAge: 60 * 60 * 24 * 365
-      })
 
       return { success: true }
     } catch (error) {
