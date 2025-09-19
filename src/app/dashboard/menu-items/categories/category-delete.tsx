@@ -26,7 +26,7 @@ export default function ItemDelete({
 }) {
   const { execute, reset } = useAction(deleteCategory, {
     onExecute: () => {
-      toast("Eliminando categoría")
+      toast("Eliminando categoría...", { icon: "🗑️" })
     },
     onSuccess: async ({ data }) => {
       // onSuccess not triggered when using revalidateTag in the action

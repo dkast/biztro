@@ -2,13 +2,14 @@
 
 import { Prisma } from "@prisma/client"
 import { revalidatePath, revalidateTag } from "next/cache"
-import { headers } from "next/headers"
 import { z } from "zod/v4"
 
 import { getMenuCount } from "@/server/actions/menu/queries"
-import { isProMember } from "@/server/actions/user/queries"
+import {
+  getCurrentOrganization,
+  isProMember
+} from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
-import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import { BasicPlanLimits, menuSchema } from "@/lib/types"
@@ -26,9 +27,7 @@ import { BasicPlanLimits, menuSchema } from "@/lib/types"
 export const createMenu = authActionClient
   .inputSchema(menuSchema)
   .action(async ({ parsedInput: { name, description, status } }) => {
-    const currentOrg = await auth.api.getFullOrganization({
-      headers: await headers()
-    })
+    const currentOrg = await getCurrentOrganization()
 
     if (!currentOrg) {
       return {
@@ -303,9 +302,7 @@ export const duplicateMenu = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
-    const currentOrg = await auth.api.getFullOrganization({
-      headers: await headers()
-    })
+    const currentOrg = await getCurrentOrganization()
 
     if (!currentOrg) {
       return {

@@ -8,9 +8,8 @@ import { z } from "zod/v4"
 import { getItemCount } from "@/server/actions/item/queries"
 import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
-import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
-import { authActionClient, authMemberActionClient } from "@/lib/safe-actions"
+import { authMemberActionClient } from "@/lib/safe-actions"
 import {
   BasicPlanLimits,
   bulkMenuItemSchema,
@@ -360,8 +359,8 @@ export const updateItem = authMemberActionClient
 export const deleteItem = authMemberActionClient
   .inputSchema(
     z.object({
-      id: z.cuid(),
-      organizationId: z.cuid()
+      id: z.string(),
+      organizationId: z.string()
     })
   )
   .action(async ({ parsedInput: { id, organizationId }, ctx: { member } }) => {
@@ -621,8 +620,8 @@ export const createVariant = authMemberActionClient
 export const deleteVariant = authMemberActionClient
   .inputSchema(
     z.object({
-      id: z.cuid(),
-      menuItemId: z.cuid()
+      id: z.string(),
+      menuItemId: z.string()
     })
   )
   .action(async ({ parsedInput: { id, menuItemId } }) => {
@@ -659,9 +658,9 @@ export const deleteVariant = authMemberActionClient
 export const bulkUpdateCategory = authMemberActionClient
   .inputSchema(
     z.object({
-      ids: z.array(z.cuid()),
-      categoryId: z.cuid(),
-      organizationId: z.cuid()
+      ids: z.array(z.string()),
+      categoryId: z.string(),
+      organizationId: z.string()
     })
   )
   .action(
@@ -701,8 +700,8 @@ export const bulkUpdateCategory = authMemberActionClient
 export const bulkDeleteItems = authMemberActionClient
   .inputSchema(
     z.object({
-      ids: z.array(z.cuid()),
-      organizationId: z.cuid()
+      ids: z.array(z.string()),
+      organizationId: z.string()
     })
   )
   .action(async ({ parsedInput: { ids, organizationId }, ctx: { member } }) => {
@@ -754,9 +753,9 @@ export const bulkDeleteItems = authMemberActionClient
 export const bulkToggleFeature = authMemberActionClient
   .inputSchema(
     z.object({
-      ids: z.array(z.cuid()),
+      ids: z.array(z.string()),
       featured: z.boolean(),
-      organizationId: z.cuid()
+      organizationId: z.string()
     })
   )
   .action(

@@ -1,18 +1,17 @@
 "use server"
 
 import { unstable_cache as cache } from "next/cache"
-import { headers } from "next/headers"
 
-import { getCurrentMembership } from "@/server/actions/user/queries"
-import { auth } from "@/lib/auth"
+import {
+  getCurrentMembership,
+  getCurrentOrganization
+} from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { MenuStatus, SubscriptionStatus } from "@/lib/types"
 import { env } from "@/env.mjs"
 
 export async function getMenus() {
-  const currentOrg = await auth.api.getFullOrganization({
-    headers: await headers()
-  })
+  const currentOrg = await getCurrentOrganization()
 
   if (!currentOrg) {
     return []

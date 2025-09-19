@@ -153,8 +153,12 @@ function SingleVariantForm({
               {...field}
               id={"variants.0.price"}
               type="number"
+              inputMode="decimal"
+              step="any"
               placeholder="Precio"
               className="w-1/3"
+              onChange={e => field.onChange(Number(e.target.value))}
+              value={field.value ?? ""}
             />
           </FormControl>
           <FormMessage />

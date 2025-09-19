@@ -272,7 +272,7 @@ export const hoursSchema = z.object({
 })
 
 export const variantSchema = z.object({
-  id: z.cuid().optional(),
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>
@@ -286,11 +286,11 @@ export const variantSchema = z.object({
     }),
   description: z.string().optional(),
   price: z.number().min(0, { error: "Precio no puede ser negativo" }),
-  menuItemId: z.cuid().optional()
+  menuItemId: z.string().optional()
 })
 
 export const menuItemSchema = z.object({
-  id: z.cuid().optional(),
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>
@@ -306,7 +306,7 @@ export const menuItemSchema = z.object({
   description: z.string().optional(),
   image: z.url().optional(),
   categoryId: z.string().optional(),
-  organizationId: z.cuid().optional(),
+  organizationId: z.string().optional(),
   featured: z.boolean().prefault(false).optional(),
   variants: z.tuple([variantSchema], variantSchema),
   allergens: z.string().optional()
@@ -343,7 +343,7 @@ export const menuSchema = z.object({
     }),
   description: z.string().optional(),
   status: z.enum(["PUBLISHED", "DRAFT"]),
-  organizationId: z.cuid().optional(),
+  organizationId: z.string().optional(),
   serialData: string().optional()
 })
 
