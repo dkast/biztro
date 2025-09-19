@@ -20,6 +20,25 @@
 - Turso - Edge database solution
 - Bun - JavaScript runtime and package manager
 
+## Available scripts
+
+- `build` — Runs the Next.js production build (next build).
+- `dev` — Starts the development server with Turbopack (next dev --turbopack).
+- `postinstall` — Generates the Prisma client after package install (prisma generate).
+- `lint` — Runs Next.js/ESLint checks (next lint).
+- `start` — Starts the Next.js production server (next start).
+- `format` — Formats source files with Prettier using the project config (prettier ... --write).
+- `lint:fix` — Runs ESLint with automatic fixes on source files (eslint --fix ...).
+- `typecheck` — Runs TypeScript compiler for type checking (tsc --project ./tsconfig.json).
+- `prepare` — Runs Husky to install git hooks (husky).
+- `prebuild` — Generates the Prisma client before building (prisma generate).
+- `predev` — Generates the Prisma client before starting dev (prisma generate).
+- `prisma:migrate` — Applies Prisma database migrations in deploy mode (prisma migrate deploy).
+- `db:dev` — Starts a local Turso development database using local.db (turso dev --db-file local.db).
+- `email` — Runs the email dev tooling to preview/build emails from src/emails (email dev --dir src/emails).
+- `build:content` — Builds Contentlayer content (contentlayer2 build).
+- `stripe:listen` — Listens for Stripe events and forwards them to the local webhook endpoint (stripe listen --forward-to=localhost:3000/api/webhooks/stripe)
+
 ## Code Style and Structure
 
 - Write concise, technical TypeScript code with accurate examples.
