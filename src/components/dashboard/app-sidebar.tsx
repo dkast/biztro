@@ -110,40 +110,41 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarContent>
             <SidebarMenu>
-              {navigation.map(item => (
-                <Fragment key={item.title}>
-                  {item.items ? (
-                    <Collapsible
-                      asChild
-                      defaultOpen
-                      className="group/collapsible"
-                    >
+              {currentOrg &&
+                navigation.map(item => (
+                  <Fragment key={item.title}>
+                    {item.items ? (
+                      <Collapsible
+                        asChild
+                        defaultOpen
+                        className="group/collapsible"
+                      >
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton tooltip={item.title}>
+                              {item.icon && <item.icon />}
+                              <span>{item.title}</span>
+                              <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {item.items?.map(subItem => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                  <SidebarSubLink item={subItem} />
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    ) : (
                       <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton tooltip={item.title}>
-                            {item.icon && <item.icon />}
-                            <span>{item.title}</span>
-                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {item.items?.map(subItem => (
-                              <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarSubLink item={subItem} />
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
+                        <SidebarLink item={item} />
                       </SidebarMenuItem>
-                    </Collapsible>
-                  ) : (
-                    <SidebarMenuItem>
-                      <SidebarLink item={item} />
-                    </SidebarMenuItem>
-                  )}
-                </Fragment>
-              ))}
+                    )}
+                  </Fragment>
+                ))}
             </SidebarMenu>
           </SidebarContent>
         </SidebarGroup>
@@ -260,13 +261,25 @@ function SidebarWorkgroup() {
     })
   }
 
-  if (!currentOrg || status === "executing" || isPending)
+  if (status === "executing" || isPending)
     return (
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="flex flex-row items-center gap-2 p-1.5">
             <Skeleton className="size-8 bg-gray-200" />
             <Skeleton className="h-6 w-24 bg-gray-200" />
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+    )
+
+  if (!currentOrg)
+    return (
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem className="flex flex-row items-center gap-2 p-1.5">
+            <div className="border-sidebar-border size-8 rounded-sm border shadow-sm" />
+            <div className="truncate">Sin organización</div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
