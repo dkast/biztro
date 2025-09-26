@@ -10,8 +10,7 @@ const libsql = createClient({
 })
 
 // Cast to any to avoid a type mismatch between different @libsql/client copies.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const adapter = new PrismaLibSQL(libsql as any)
+const adapter = new PrismaLibSQL(libsql)
 const prisma = new PrismaClient({
   adapter,
   log:

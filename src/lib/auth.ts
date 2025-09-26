@@ -89,13 +89,13 @@ export const auth = betterAuth({
         const baseUrl = getBaseUrl()
         const inviteLink = `${baseUrl}/invite/${data.id}`
         console.log("Invite link:", inviteLink)
-        // sendOrganizationInvitation({
-        //   email: data.email,
-        //   invitedByUsername: data.inviter.user.name,
-        //   invitedByEmail: data.inviter.user.email,
-        //   teamName: data.organization.name,
-        //   inviteLink
-        // })
+        sendOrganizationInvitation({
+          email: data.email,
+          invitedByUsername: data.inviter.user.name,
+          invitedByEmail: data.inviter.user.email,
+          teamName: data.organization.name,
+          inviteLink
+        })
       }
     })
   ]
