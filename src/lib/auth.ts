@@ -1,16 +1,20 @@
-import { PrismaClient } from "@prisma/client"
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { nextCookies } from "better-auth/next-js"
 import { organization } from "better-auth/plugins"
 
 import { getActiveOrganization } from "@/server/actions/user/queries"
+import prisma from "@/lib/prisma"
 import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
-
-const prisma = new PrismaClient()
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "sqlite" }),
+  // Adjust trusted origins for your deployment
+  trustedOrigins: [
+    "https://biztro.co",
+    "https://preview.biztro.co",
+    "http://localhost:3000"
+  ],
   databaseHooks: {
     session: {
       create: {
