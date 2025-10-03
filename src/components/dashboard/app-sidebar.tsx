@@ -277,10 +277,14 @@ function SidebarWorkgroup() {
     return (
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem className="flex flex-row items-center gap-2 p-1.5">
-            <div className="border-sidebar-border size-8 rounded-sm border shadow-sm" />
-            <div className="truncate">Sin organización</div>
-          </SidebarMenuItem>
+          <SidebarMenuButton asChild size="lg">
+            <Link href="/new-org">
+              <div className="border-sidebar-border grid size-8 place-items-center rounded-sm border shadow-sm">
+                <Plus className="size-4" />
+              </div>
+              <span className="truncate font-semibold">Crear organización</span>
+            </Link>
+          </SidebarMenuButton>
         </SidebarMenu>
       </SidebarHeader>
     )

@@ -26,7 +26,7 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
 
   const { execute, reset } = useAction(deleteOrganization, {
     onExecute: () => {
-      toast.loading("Eliminando organización")
+      toast("Eliminando organización...", { icon: "🗑️", duration: 2000 })
     },
     onSuccess: ({ data }) => {
       toast.dismiss()

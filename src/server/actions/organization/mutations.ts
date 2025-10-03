@@ -328,7 +328,7 @@ export const joinWaitlist = actionClient
 export const deleteOrganization = authActionClient
   .inputSchema(
     z.object({
-      id: z.cuid()
+      id: z.string()
     })
   )
   .action(async ({ parsedInput: { id } }) => {
@@ -346,18 +346,23 @@ export const deleteOrganization = authActionClient
           }
         }
       } else {
-        // Remove cookie
-        const cookieStore = await cookies()
-        cookieStore.delete(appConfig.cookieOrg)
-
-        // Delete organization and revalidate cache
-        await prisma.organization.delete({
-          where: {
-            id
-          }
+        // Delete organization through Better Auth server API and revalidate cache
+        const deleted = await auth.api.deleteOrganization({
+          body: { organizationId: id },
+          headers: await headers()
         })
 
+        console.log("Deleted organization:", deleted)
+        if (!deleted) {
+          return {
+            failure: {
+              reason: "No se pudo eliminar la organización"
+            }
+          }
+        }
+
         revalidateTag(`organization-${id}`)
+        revalidateTag(`memberships-${id}`)
 
         return {
           success: true
