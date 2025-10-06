@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import slugify from "@sindresorhus/slugify"
-import confetti from "canvas-confetti"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
@@ -34,15 +33,6 @@ import { bootstrapOrg } from "@/server/actions/organization/mutations"
 import { orgSchema, Plan, SubscriptionStatus } from "@/lib/types"
 
 export default function NewOrgForm() {
-  useEffect(() => {
-    confetti({
-      particleCount: 200,
-      spread: 180,
-      origin: { y: 0.1 },
-      ticks: 150
-    })
-  }, [])
-
   const form = useForm<z.infer<typeof orgSchema>>({
     resolver: zodResolver(orgSchema),
     defaultValues: {

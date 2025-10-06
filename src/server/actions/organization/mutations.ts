@@ -1,5 +1,6 @@
 "use server"
 
+import { he } from "date-fns/locale"
 import { revalidateTag } from "next/cache"
 import { cookies, headers } from "next/headers"
 import { z } from "zod/v4"
@@ -71,6 +72,12 @@ export const bootstrapOrg = authActionClient
             }
           }
         }
+
+        // Set the new organization as the active one
+        const data = await auth.api.setActiveOrganization({
+          body: { organizationId: org.id },
+          headers: await headers()
+        })
 
         revalidateTag(`organization-${org.id}`)
         revalidateTag(`organization-${org.slug}`)
