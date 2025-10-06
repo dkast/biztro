@@ -228,7 +228,7 @@ function SidebarWorkgroup() {
     queryFn: getCurrentOrganization
   })
 
-  const { data: organizations } = authClient.useListOrganizations()
+  const { data: organizations, refetch } = authClient.useListOrganizations()
 
   const queryClient = useQueryClient()
   const [isPending, startTransition] = useTransition()
@@ -243,6 +243,7 @@ function SidebarWorkgroup() {
         })
         // router.replace("/dashboard")
         startTransition(() => {
+          refetch()
           router.replace("/dashboard")
         })
       } else if (data?.failure?.reason) {
@@ -261,7 +262,7 @@ function SidebarWorkgroup() {
     })
   }
 
-  if (status === "executing" || isPending)
+  if (isPending)
     return (
       <SidebarHeader>
         <SidebarMenu>
@@ -273,12 +274,12 @@ function SidebarWorkgroup() {
       </SidebarHeader>
     )
 
-  if (!currentOrg)
+  if (!currentOrg && organizations?.length === 0)
     return (
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuButton asChild size="lg">
-            <Link href="/new-org">
+            <Link href="/dashboard/create-org">
               <div className="border-sidebar-border grid size-8 place-items-center rounded-sm border shadow-sm">
                 <Plus className="size-4" />
               </div>
@@ -299,22 +300,30 @@ function SidebarWorkgroup() {
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Avatar className="size-8 rounded-sm shadow-sm">
-                    <AvatarImage src={currentOrg.logo ?? undefined} />
-                    <AvatarFallback className="text-xs">
-                      {getInitials(currentOrg.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                {currentOrg ? (
+                  <>
+                    <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                      <Avatar className="size-8 rounded-sm shadow-sm">
+                        <AvatarImage src={currentOrg.logo ?? undefined} />
+                        <AvatarFallback className="text-xs">
+                          {getInitials(currentOrg.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-semibold">
+                        {currentOrg.name}
+                      </span>
+                      <span className="truncate text-xs">
+                        {currentOrg.plan === Plan.BASIC ? "Básico" : "Pro"}
+                      </span>
+                    </div>
+                  </>
+                ) : (
                   <span className="truncate font-semibold">
-                    {currentOrg.name}
+                    Selecciona un negocio
                   </span>
-                  <span className="truncate text-xs">
-                    {currentOrg.plan === Plan.BASIC ? "Básico" : "Pro"}
-                  </span>
-                </div>
+                )}
                 <ChevronsUpDown className="ml-auto" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
@@ -345,13 +354,18 @@ function SidebarWorkgroup() {
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 p-2">
-                <div className="bg-background flex size-6 items-center justify-center rounded-md border border-gray-600 dark:border-gray-700">
-                  <Plus className="size-4" />
-                </div>
-                <div className="text-muted-foreground font-medium">
-                  Agregar organización
-                </div>
+              <DropdownMenuItem asChild className="gap-2 p-2">
+                <Link
+                  href="/dashboard/create-org"
+                  className="flex items-center gap-2"
+                >
+                  <div className="bg-background flex size-6 items-center justify-center rounded-md border border-gray-600 dark:border-gray-700">
+                    <Plus className="size-4" />
+                  </div>
+                  <div className="text-muted-foreground font-medium">
+                    Agregar organización
+                  </div>
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
