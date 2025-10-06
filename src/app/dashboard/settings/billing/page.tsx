@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import { subscriptionsEnabled } from "@/flags"
 import { AlertCircle, Wallet } from "lucide-react"
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -9,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { getItemCount } from "@/server/actions/item/queries"
 import {
   getCurrentMembershipRole,
+  getCurrentOrganization,
   isProMember
 } from "@/server/actions/user/queries"
 import { BasicPlanView } from "@/app/dashboard/settings/billing/basic-plan-view"
@@ -20,12 +22,17 @@ export const metadata: Metadata = {
 }
 
 export default async function BillingPage() {
-  const [subsEnabled, role, isPro, itemCount] = await Promise.all([
+  const [subsEnabled, role, isPro, itemCount, currentOrg] = await Promise.all([
     subscriptionsEnabled(),
     getCurrentMembershipRole(),
     isProMember(),
-    getItemCount()
+    getItemCount(),
+    getCurrentOrganization()
   ])
+
+  if (!currentOrg) {
+    return notFound()
+  }
 
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">

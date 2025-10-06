@@ -97,11 +97,16 @@ export const getCurrentMembership = async () => {
 }
 
 export const getCurrentMembershipRole = async () => {
-  const { role } = await auth.api.getActiveMemberRole({
-    headers: await headers()
-  })
+  try {
+    const { role } = await auth.api.getActiveMemberRole({
+      headers: await headers()
+    })
 
-  return role
+    return role
+  } catch (err) {
+    console.error("Failed to get current membership role", err)
+    return null
+  }
 }
 
 export const getUserMemberships = async () => {
@@ -173,4 +178,21 @@ export const getInviteByToken = async (token: string) => {
 export async function isProMember() {
   const org = await getCurrentOrganization()
   return org?.plan === "PRO"
+}
+
+export async function safeHasPermission(
+  opts: Parameters<typeof auth.api.hasPermission>[0]
+) {
+  try {
+    // ensure headers are provided if not included
+    if (!opts.headers) {
+      opts.headers = await headers()
+    }
+
+    const result = await auth.api.hasPermission(opts)
+    return result
+  } catch (err) {
+    console.error("auth.api.hasPermission failed:", err)
+    return null
+  }
 }

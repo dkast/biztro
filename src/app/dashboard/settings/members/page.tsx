@@ -1,30 +1,41 @@
 import { Users } from "lucide-react"
 import type { Metadata } from "next"
 import { headers } from "next/headers"
+import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
-import { getMembers, isProMember } from "@/server/actions/user/queries"
+import {
+  getCurrentOrganization,
+  getMembers,
+  isProMember,
+  safeHasPermission
+} from "@/server/actions/user/queries"
 import MemberInvite from "@/app/dashboard/settings/members/member-invite"
 import MemberTable from "@/app/dashboard/settings/members/member-table"
-import { auth } from "@/lib/auth"
 
 export const metadata: Metadata = {
   title: "Miembros"
 }
 
 export default async function MembersPage() {
-  const [canInviteMember, canDeleteMember, data, isPro] = await Promise.all([
-    auth.api.hasPermission({
-      headers: await headers(),
-      body: { permissions: { invitation: ["create"] } }
-    }),
-    auth.api.hasPermission({
-      headers: await headers(),
-      body: { permissions: { member: ["delete"] } }
-    }),
-    getMembers(),
-    isProMember()
-  ])
+  const [canInviteMember, canDeleteMember, data, isPro, currentOrg] =
+    await Promise.all([
+      safeHasPermission({
+        headers: await headers(),
+        body: { permissions: { invitation: ["create"] } }
+      }),
+      safeHasPermission({
+        headers: await headers(),
+        body: { permissions: { member: ["delete"] } }
+      }),
+      getMembers(),
+      isProMember(),
+      getCurrentOrganization()
+    ])
+
+  if (!currentOrg) {
+    return notFound()
+  }
 
   const ROLES = ["member", "admin", "owner"] as const
   type Role = (typeof ROLES)[number]
@@ -54,10 +65,13 @@ export default async function MembersPage() {
         description="Administra a los miembros de tu equipo"
         Icon={Users}
       >
-        {canInviteMember.success && <MemberInvite isPro={isPro} />}
+        {canInviteMember?.success && <MemberInvite isPro={isPro} />}
       </PageSubtitle>
       <div className="mt-6">
-        <MemberTable data={members} canDeleteMember={canDeleteMember.success} />
+        <MemberTable
+          data={members}
+          canDeleteMember={!!canDeleteMember?.success}
+        />
       </div>
     </div>
   )
