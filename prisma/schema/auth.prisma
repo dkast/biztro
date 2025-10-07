@@ -47,7 +47,6 @@ model User {
   emailVerified Boolean?     @default(false)
   image         String?
   accounts      Account[]
-  memberships   Membership[] @relation("Memberships")
   sessions      Session[]
   createdAt     DateTime
   updatedAt     DateTime
@@ -63,72 +62,31 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Planned to remove once the organization plugin is fully integrated
-model Membership {
-  id             String         @id @default(cuid())
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  role           String         @default("OWNER")
-  userId         String
-  isActive       Boolean        @default(true)
-  organizationId String
-  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user           User           @relation("Memberships", fields: [userId], references: [id], onDelete: Cascade)
-  teamInvites    TeamInvite[]
-  subscriptions  Subscription[]
-  customer       Customer[]
-
-  @@unique([organizationId, userId])
-  @@index([userId])
-}
-
 model Organization {
-  id            String         @id @default(cuid())
-  name          String         @unique
-  description   String?
-  logo          String?
-  banner        String?
-  status        String         @default("ACTIVE")
-  plan          String         @default("BASIC")
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id           String     @id @default(cuid())
+  name         String     @unique
+  description  String?
+  logo         String?
+  banner       String?
+  status       String     @default("ACTIVE")
+  plan         String     @default("BASIC")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   // subdomain     String         @unique
-  customDomain  String?        @unique
-  categories    Category[]
-  location      Location[]
-  memberships   Membership[]
-  menus         Menu[]
-  menuItems     MenuItem[]
-  themes        Theme[]
-  teamInvite    TeamInvite[]
-  subscriptions Subscription[]
+  customDomain String?    @unique
+  categories   Category[]
+  location     Location[]
+  menus        Menu[]
+  menuItems    MenuItem[]
+  themes       Theme[]
 
-  slug        String?
-  metadata    String?
-  members     Member[]
-  invitations Invitation[]
+  slug                 String?
+  metadata             String?
+  members              Member[]
+  invitations          Invitation[]
+  Subscription_Removed Subscription_Removed[]
 
   @@index([slug])
-}
-
-// Planned to remove and use the invitation system from BetterAuth
-model TeamInvite {
-  id             String       @id @default(cuid())
-  email          String
-  token          String       @unique
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  role           String       @default("MEMBER")
-  status         String       @default("PENDING")
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  expiresAt      DateTime
-  acceptedAt     DateTime?
-  invitedById    String
-  invitedBy      Membership   @relation(fields: [invitedById], references: [id])
-
-  @@unique([organizationId, email])
-  @@index([token])
 }
 
 model Member {

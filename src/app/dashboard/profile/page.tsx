@@ -10,7 +10,6 @@ import {
   getCurrentMembership,
   getCurrentOrganization
 } from "@/server/actions/user/queries"
-import { getCurrentUser } from "@/lib/session"
 import { MembershipRole } from "@/lib/types"
 import { getInitials } from "@/lib/utils"
 

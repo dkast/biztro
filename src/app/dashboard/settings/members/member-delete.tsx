@@ -46,7 +46,7 @@ export default function MemberDelete({
   })
 
   const onDeleteMember = () => {
-    execute({ memberId: member.id })
+    execute({ id: member.id })
   }
 
   return (

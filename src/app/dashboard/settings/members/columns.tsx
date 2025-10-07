@@ -19,7 +19,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import MemberDeactivate from "@/app/dashboard/settings/members/member-deactivate"
 import MemberDelete from "@/app/dashboard/settings/members/member-delete"
 import type { AuthMember } from "@/lib/auth"
 
@@ -104,7 +103,6 @@ function ActionsColumn({
 }) {
   const member = row.original
   const [openDelete, setOpenDelete] = useState(false)
-  const [openDeactivate, setOpenDeactivate] = useState(false)
 
   if (!canDeleteMember) return null
 
@@ -123,13 +121,6 @@ function ActionsColumn({
         <DropdownMenuContent>
           <DropdownMenuLabel>Acciones</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {/* <DropdownMenuItem
-            onClick={() => {
-              setOpenDeactivate(true)
-            }}
-          >
-            <span>Desactivar</span>
-          </DropdownMenuItem> */}
           <DropdownMenuItem
             onClick={() => {
               setOpenDelete(true)
@@ -139,11 +130,6 @@ function ActionsColumn({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <MemberDeactivate
-        open={openDeactivate}
-        setOpen={setOpenDeactivate}
-        member={member}
-      />
       <MemberDelete open={openDelete} setOpen={setOpenDelete} member={member} />
     </>
   )

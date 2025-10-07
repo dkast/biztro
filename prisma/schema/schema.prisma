@@ -120,15 +120,15 @@ model Invite {
   @@index([email])
 }
 
-model Customer {
-  stripeCustomerId String     @id
-  membership       Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
-  membershipId     String     @unique
+// Planned to remove in the future
+model Customer_Removed {
+  stripeCustomerId String @id
+  membershipId     String @unique
 
   @@index([membershipId])
 }
 
-model Subscription {
+model Subscription_Removed {
   id                 String       @id
   status             String
   metadata           String
@@ -143,7 +143,6 @@ model Subscription {
   canceledAt         DateTime?
   trialStart         DateTime?
   trialEnd           DateTime?
-  membership         Membership   @relation(fields: [membershipId], references: [id])
   membershipId       String
   organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId     String

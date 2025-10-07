@@ -5,7 +5,6 @@ import { headers } from "next/headers"
 
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
-import { getCurrentUser } from "@/lib/session"
 import { env } from "@/env.mjs"
 
 // Get current organization for the user
@@ -107,37 +106,6 @@ export const getCurrentMembershipRole = async () => {
     console.error("Failed to get current membership role", err)
     return null
   }
-}
-
-export const getUserMemberships = async () => {
-  const user = await getCurrentUser()
-
-  if (!user) {
-    return []
-  }
-
-  const memberships = await prisma.membership.findMany({
-    where: {
-      userId: user.id,
-      isActive: true
-    },
-    include: {
-      organization: true
-    },
-    orderBy: {
-      organization: {
-        name: "asc"
-      }
-    }
-  })
-
-  memberships.forEach(membership => {
-    if (membership.organization.logo) {
-      membership.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${membership.organization.logo}`
-    }
-  })
-
-  return memberships
 }
 
 export const getInviteByToken = async (token: string) => {

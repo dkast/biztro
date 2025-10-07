@@ -234,7 +234,7 @@ function SidebarWorkgroup() {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
-  const { execute, status } = useAction(switchOrganization, {
+  const { execute } = useAction(switchOrganization, {
     onSuccess: ({ data }) => {
       if (data?.success) {
         // Revalidate the current organization
