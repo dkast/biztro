@@ -12,6 +12,7 @@ import { clsx, type ClassValue } from "clsx"
 import { Resend } from "resend"
 import { twMerge } from "tailwind-merge"
 
+import { authClient } from "@/lib/auth-client"
 import { env } from "@/env.mjs"
 
 export function cn(...inputs: ClassValue[]) {
@@ -171,7 +172,7 @@ export const sendOrganizationInvitation = async ({
 
   const baseUrl = getBaseUrl()
 
-  const { data, error } = await resend.emails.send({
+  const { error } = await resend.emails.send({
     from: "noreply@biztro.co",
     to: email,
     subject: `Invitación a unirse a ${teamName}`,
@@ -187,5 +188,43 @@ export const sendOrganizationInvitation = async ({
 
   if (error) {
     console.error("Error sending invitation email:", error)
+  }
+}
+
+export async function upgradeOrganizationPlan(
+  organizationId: string,
+  newPlan: "BASIC" | "PRO"
+) {
+  try {
+    console.log("Upgrading organization plan:", organizationId, newPlan)
+    const { data, error } = await authClient.organization.update({
+      data: {
+        plan: newPlan
+      },
+      organizationId: organizationId as string
+    })
+
+    if (error || !data) {
+      console.error("Error upgrading organization plan:", error)
+      return {
+        failure: {
+          reason: "No se pudo actualizar el plan de la organización"
+        }
+      }
+    }
+
+    return { success: true }
+  } catch (error) {
+    let message
+    if (typeof error === "string") {
+      message = error
+    } else if (error instanceof Error) {
+      message = error.message
+    }
+    return {
+      failure: {
+        reason: message
+      }
+    }
   }
 }

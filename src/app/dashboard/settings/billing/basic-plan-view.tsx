@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { checkoutWithStripe } from "@/server/actions/subscriptions/mutations"
 import { appConfig } from "@/app/config"
+import { authClient } from "@/lib/auth-client"
 import { getStripeClient } from "@/lib/stripe-client"
 import { Plan, Tiers } from "@/lib/types"
 
@@ -31,43 +32,16 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
     "monthly"
   )
 
+  const { data: activeOrganization } = authClient.useActiveOrganization()
+
   const handleStripeCheckout = async () => {
-    const tier = Tiers.find(tier => tier.id === Plan.PRO)
-
-    if (!tier) {
-      throw new Error("Tier not found")
-    }
-
-    const priceId =
-      billingInterval === "monthly" ? tier.priceMonthlyId : tier.priceYearlyId
-
-    if (!priceId) {
-      toast.error("No existe configuración de precio")
-      return
-    }
-
-    setpriceIdLoading(priceId)
-
-    const { errorRedirect, sessionId } = await checkoutWithStripe(
-      priceId,
-      "/dashboard/settings/billing"
-    )
-
-    if (errorRedirect) {
-      setpriceIdLoading(undefined)
-      return router.push(errorRedirect)
-    }
-
-    if (!sessionId) {
-      setpriceIdLoading(undefined)
-      toast.error("Error al crear la sesión de pago")
-      return null
-    }
-
-    const stripe = await getStripeClient()
-    stripe?.redirectToCheckout({ sessionId })
-
-    setpriceIdLoading(undefined)
+    const { data, error } = await authClient.subscription.upgrade({
+      plan: Plan.PRO,
+      annual: billingInterval === "yearly",
+      referenceId: activeOrganization?.id,
+      successUrl: "/dashboard/settings/billing",
+      cancelUrl: "/dashboard/settings/billing"
+    })
   }
 
   return (

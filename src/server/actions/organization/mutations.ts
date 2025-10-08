@@ -1,12 +1,10 @@
 "use server"
 
-import { he } from "date-fns/locale"
 import { revalidateTag } from "next/cache"
-import { cookies, headers } from "next/headers"
+import { headers } from "next/headers"
 import { z } from "zod/v4"
 
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
-import { appConfig } from "@/app/config"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { actionClient, authActionClient } from "@/lib/safe-actions"

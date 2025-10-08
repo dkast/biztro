@@ -7,7 +7,11 @@ import Stripe from "stripe"
 
 import { getActiveOrganization } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
-import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
+import {
+  getBaseUrl,
+  sendOrganizationInvitation,
+  upgradeOrganizationPlan
+} from "@/lib/utils"
 
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-08-27.basil"
@@ -121,7 +125,7 @@ export const auth = betterAuth({
         enabled: true,
         plans: [
           {
-            name: "basic",
+            name: "BASIC",
             priceId: "price_1SFlpfEx6h9wDx2iHBMXleOI",
             limits: {
               menus: 1,
@@ -129,7 +133,7 @@ export const auth = betterAuth({
             }
           },
           {
-            name: "pro",
+            name: "PRO",
             priceId: "price_1QHe5WEx6h9wDx2iLqP5S1sg",
             annualDiscountPriceId: "price_1QHr5cEx6h9wDx2iuhTQX1Mp",
             limits: {
@@ -140,7 +144,30 @@ export const auth = betterAuth({
               days: 30
             }
           }
-        ]
+        ],
+        onSubscriptionComplete: async ({
+          event,
+          subscription,
+          stripeSubscription,
+          plan
+        }) => {
+          const result = await upgradeOrganizationPlan(
+            subscription.referenceId,
+            plan.name as "BASIC" | "PRO"
+          )
+          console.log("upgradeOrganizationPlan result:", result)
+        },
+        authorizeReference: async ({ user, referenceId, action }) => {
+          // Ensure the user is authorized to manage the organization
+          const member = await prisma.member.findFirst({
+            where: {
+              userId: user.id,
+              organizationId: referenceId
+            }
+          })
+
+          return member?.role === "owner" || member?.role === "admin"
+        }
       }
     })
   ]
