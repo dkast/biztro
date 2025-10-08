@@ -1,3 +1,6 @@
+import { AlertCircle } from "lucide-react"
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -40,7 +43,7 @@ export async function ProPlanView() {
                 return <Badge variant="destructive">Cancelado</Badge>
               case "incomplete":
                 return <Badge variant="yellow">Incompleto</Badge>
-              case "incomplete_Expired":
+              case "incomplete_expired":
                 return <Badge variant="destructive">Incompleto Expirado</Badge>
               case "past_due":
                 return <Badge variant="yellow">Vencido</Badge>
@@ -89,14 +92,17 @@ export async function ProPlanView() {
             </div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Activo desde</div>
+            <div className="text-sm text-gray-500">Periodo activo</div>
             <div className="text-base font-medium">
-              {subscription?.created
-                ? new Date(subscription.created).toLocaleDateString("es-MX", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric"
-                  })
+              {subscription?.periodStart
+                ? new Date(subscription.periodStart).toLocaleDateString(
+                    "es-MX",
+                    {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric"
+                    }
+                  )
                 : "N/A"}
             </div>
           </div>
@@ -104,8 +110,8 @@ export async function ProPlanView() {
             <div>
               <div className="text-sm text-gray-500">Cancela el</div>
               <div className="text-base font-medium">
-                {subscription?.cancelAt
-                  ? new Date(subscription.cancelAt).toLocaleDateString(
+                {subscription?.periodEnd
+                  ? new Date(subscription.periodEnd).toLocaleDateString(
                       "es-MX",
                       {
                         day: "numeric",
@@ -120,8 +126,8 @@ export async function ProPlanView() {
             <div>
               <div className="text-sm text-gray-500">Próxima renovación</div>
               <div className="text-base font-medium">
-                {subscription?.currentPeriodEnd
-                  ? new Date(subscription.currentPeriodEnd).toLocaleDateString(
+                {subscription?.periodEnd
+                  ? new Date(subscription.periodEnd).toLocaleDateString(
                       "es-MX",
                       {
                         day: "numeric",
@@ -134,11 +140,29 @@ export async function ProPlanView() {
             </div>
           )}
         </div>
+        {subscription?.cancelAtPeriodEnd && (
+          <Alert variant="warning" className="mt-4">
+            <AlertCircle className="size-4" />
+            <AlertTitle>Suscripción programada para finalizar</AlertTitle>
+            <AlertDescription>
+              Tu suscripción está configurada para terminar el{" "}
+              {subscription?.periodEnd
+                ? new Date(subscription.periodEnd).toLocaleDateString("es-MX", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric"
+                  })
+                : "N/A"}
+              . Tendrás acceso hasta esa fecha. Si deseas reactivar tu
+              suscripción, ve al portal de pagos.
+            </AlertDescription>
+          </Alert>
+        )}
       </CardContent>
       <Separator />
       <CardFooter className="items-center justify-between py-4">
         <p className="text-sm text-gray-500">Maneja tu suscripción en Stripe</p>
-        <CustomerPortalButton />
+        <CustomerPortalButton referenceId={org.id} />
       </CardFooter>
     </Card>
   )

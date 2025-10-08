@@ -7,11 +7,7 @@ import Stripe from "stripe"
 
 import { getActiveOrganization } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
-import {
-  getBaseUrl,
-  sendOrganizationInvitation,
-  upgradeOrganizationPlan
-} from "@/lib/utils"
+import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
 
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-08-27.basil"
@@ -145,19 +141,7 @@ export const auth = betterAuth({
             }
           }
         ],
-        onSubscriptionComplete: async ({
-          event,
-          subscription,
-          stripeSubscription,
-          plan
-        }) => {
-          const result = await upgradeOrganizationPlan(
-            subscription.referenceId,
-            plan.name as "BASIC" | "PRO"
-          )
-          console.log("upgradeOrganizationPlan result:", result)
-        },
-        authorizeReference: async ({ user, referenceId, action }) => {
+        authorizeReference: async ({ user, referenceId }) => {
           // Ensure the user is authorized to manage the organization
           const member = await prisma.member.findFirst({
             where: {

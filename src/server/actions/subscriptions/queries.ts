@@ -1,16 +1,19 @@
-import prisma from "@/lib/prisma"
+import { headers } from "next/headers"
+
+import { auth } from "@/lib/auth"
 
 // Get the current active subscription in the organization
 export const getCurrentSubscription = async (organizationId: string) => {
-  const subscriptions = await prisma.subscription.findMany({
-    where: {
-      organizationId
+  const subscriptions = await auth.api.listActiveSubscriptions({
+    query: {
+      referenceId: organizationId
     },
-    orderBy: {
-      created: "desc"
-    },
-    take: 1
+    headers: await headers()
   })
 
-  return subscriptions[0]
+  const activeSubscription = subscriptions.find(
+    sub => sub.status === "active" || sub.status === "trialing"
+  )
+
+  return activeSubscription
 }

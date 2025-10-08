@@ -145,7 +145,38 @@ export const getInviteByToken = async (token: string) => {
 
 export async function isProMember() {
   const org = await getCurrentOrganization()
-  return org?.plan === "PRO"
+
+  const subscriptions = await auth.api.listActiveSubscriptions({
+    query: { referenceId: org?.id },
+    headers: await headers()
+  })
+
+  const activeSubscription = subscriptions.find(
+    sub => sub.status === "active" || sub.status === "trialing"
+  )
+
+  // Update the plan in the organization record if it differs from the subscription plan
+  if (
+    org &&
+    activeSubscription &&
+    org.plan?.toUpperCase() !== activeSubscription.plan?.toUpperCase()
+  ) {
+    try {
+      await auth.api.updateOrganization({
+        body: {
+          data: {
+            plan: activeSubscription.plan
+          },
+          organizationId: org.id
+        },
+        headers: await headers()
+      })
+    } catch (error) {
+      console.error("Failed to update organization plan", error)
+    }
+  }
+
+  return activeSubscription?.plan.toUpperCase() === "PRO"
 }
 
 export async function safeHasPermission(
