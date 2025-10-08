@@ -41,17 +41,18 @@ model Session {
 }
 
 model User {
-  id            String       @id @default(cuid())
-  name          String
-  email         String?      @unique
-  emailVerified Boolean?     @default(false)
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  createdAt     DateTime
-  updatedAt     DateTime
-  members       Member[]
-  invitations   Invitation[]
+  id               String       @id @default(cuid())
+  name             String
+  email            String?      @unique
+  emailVerified    Boolean?     @default(false)
+  image            String?
+  stripeCustomerId String?
+  accounts         Account[]
+  sessions         Session[]
+  createdAt        DateTime
+  updatedAt        DateTime
+  members          Member[]
+  invitations      Invitation[]
 }
 
 model VerificationToken {
@@ -109,4 +110,19 @@ model Invitation {
   expiresAt      DateTime
   inviterId      String
   user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id                   String    @id
+  plan                 String
+  referenceId          String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  status               String?
+  periodStart          DateTime?
+  periodEnd            DateTime?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  cancelAtPeriodEnd    Boolean?  @default(false)
+  seats                Int?
 }

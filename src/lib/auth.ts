@@ -1,11 +1,17 @@
+import { stripe } from "@better-auth/stripe"
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { nextCookies } from "better-auth/next-js"
 import { organization } from "better-auth/plugins"
+import Stripe from "stripe"
 
 import { getActiveOrganization } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
+
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2025-08-27.basil"
+})
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "sqlite" }),
@@ -101,6 +107,40 @@ export const auth = betterAuth({
           teamName: data.organization.name,
           inviteLink
         })
+      }
+    }),
+    // Stripe billing integration via Better Auth plugin (server-side)
+    stripe({
+      // Pass an initialized Stripe client (recommended by the plugin docs)
+      stripeClient: stripeClient,
+      // Webhook signing secret for verifying Stripe webhook payloads
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+      // Create a Stripe customer automatically when users sign up
+      createCustomerOnSignUp: true,
+      subscription: {
+        enabled: true,
+        plans: [
+          {
+            name: "basic",
+            priceId: "price_1SFlpfEx6h9wDx2iHBMXleOI",
+            limits: {
+              menus: 1,
+              products: 10
+            }
+          },
+          {
+            name: "pro",
+            priceId: "price_1QHe5WEx6h9wDx2iLqP5S1sg",
+            annualDiscountPriceId: "price_1QHr5cEx6h9wDx2iuhTQX1Mp",
+            limits: {
+              menus: 100,
+              products: 1000
+            },
+            freeTrial: {
+              days: 30
+            }
+          }
+        ]
       }
     })
   ]
