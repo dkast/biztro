@@ -77,6 +77,14 @@ export const bootstrapOrg = authActionClient
           headers: await headers()
         })
 
+        if (!data) {
+          return {
+            failure: {
+              reason: "No se pudo establecer la organización activa"
+            }
+          }
+        }
+
         revalidateTag(`organization-${org.id}`)
         revalidateTag(`organization-${org.slug}`)
         revalidateTag(`memberships-${org.id}`)
@@ -329,7 +337,6 @@ export const joinWaitlist = actionClient
     }
   })
 
-// TODO: Implement deleteOrganization action once Subscription Plugin is ready
 export const deleteOrganization = authActionClient
   .inputSchema(
     z.object({

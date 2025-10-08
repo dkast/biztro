@@ -1,10 +1,8 @@
 "use server"
 
 import { revalidateTag } from "next/cache"
-import { cookies } from "next/headers"
 
 import { getCurrentOrganization } from "@/server/actions/user/queries"
-import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import { hoursSchema, locationSchema } from "@/lib/types"

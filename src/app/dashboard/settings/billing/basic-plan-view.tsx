@@ -3,9 +3,7 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { Gauge } from "@suyalcinkaya/gauge"
-import { Loader } from "lucide-react"
 import { useTheme } from "next-themes"
-import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -18,16 +16,12 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { checkoutWithStripe } from "@/server/actions/subscriptions/mutations"
 import { appConfig } from "@/app/config"
 import { authClient } from "@/lib/auth-client"
-import { getStripeClient } from "@/lib/stripe-client"
 import { Plan, Tiers } from "@/lib/types"
 
 export function BasicPlanView({ itemCount }: { itemCount: number }) {
   const theme = useTheme()
-  const router = useRouter()
-  const [priceIdLoading, setpriceIdLoading] = useState<string>()
   const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">(
     "monthly"
   )
@@ -35,13 +29,19 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
   const { data: activeOrganization } = authClient.useActiveOrganization()
 
   const handleStripeCheckout = async () => {
-    const { data, error } = await authClient.subscription.upgrade({
+    const { error } = await authClient.subscription.upgrade({
       plan: Plan.PRO,
       annual: billingInterval === "yearly",
       referenceId: activeOrganization?.id,
       successUrl: "/dashboard/settings/billing",
       cancelUrl: "/dashboard/settings/billing"
     })
+
+    if (error) {
+      console.error("Error creating checkout session:", error)
+      toast.error("Error al iniciar el proceso de pago. Inténtalo de nuevo.")
+      return
+    }
   }
 
   return (
@@ -131,15 +131,8 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
       </CardContent>
       <Separator />
       <CardFooter className="justify-end py-4">
-        <Button
-          disabled={priceIdLoading !== undefined}
-          onClick={handleStripeCheckout}
-        >
-          {priceIdLoading ? (
-            <Loader className="size-4 animate-spin" />
-          ) : (
-            `Obtener Pro ${billingInterval === "monthly" ? "Mensual" : "Anual"}`
-          )}
+        <Button onClick={handleStripeCheckout}>
+          `Obtener Pro ${billingInterval === "monthly" ? "Mensual" : "Anual"}`
         </Button>
       </CardFooter>
     </Card>
