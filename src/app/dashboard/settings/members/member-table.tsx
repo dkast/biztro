@@ -12,7 +12,6 @@ export default function MemberTable({
   data: AuthMember[]
   canDeleteMember: boolean
 }) {
-  console.dir(data)
 
   const cols = getColumns(canDeleteMember)
 
