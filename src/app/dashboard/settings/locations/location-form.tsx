@@ -107,7 +107,6 @@ export default function LocationForm({
 
   const onSubmit = (values: z.infer<typeof locationSchema>) => {
     if (data) {
-      console.dir("Updating location", values)
       executeUpdate(values)
     } else {
       executeCreate(values)
