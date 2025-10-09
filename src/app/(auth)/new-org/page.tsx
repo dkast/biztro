@@ -7,9 +7,7 @@ import NewOrgForm from "@/app/(auth)/new-org/new-org-form"
 export default async function NewOrgPage() {
   const currentOrg = await getCurrentOrganization()
 
-  // console.log("currentOrg", currentOrg)
   if (currentOrg) {
-    // console.log("redirecting to dashboard")
     redirect("/dashboard")
   }
 

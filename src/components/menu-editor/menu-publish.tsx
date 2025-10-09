@@ -439,9 +439,6 @@ function QrCodeEditor({
     }
   }, [logoURL])
 
-  console.log(logoURL)
-  console.log(logoBase64)
-
   return (
     <div>
       <div className="my-6 flex flex-row items-start justify-between">

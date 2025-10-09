@@ -30,7 +30,6 @@ export async function getCurrentOrganization() {
 }
 
 export async function getActiveOrganization(userId: string) {
-  console.log("Fetching active organization for user:", userId)
   const member = await prisma.member.findFirst({
     where: {
       userId
@@ -39,17 +38,6 @@ export async function getActiveOrganization(userId: string) {
       organization: true
     }
   })
-
-  // console.log("Member:", member)
-
-  console.log("Current Organization:", member?.organization)
-
-  // DEBUG: Count the number of records for member and organization tables
-  // const memberCount = await prisma.member.count()
-  // const organizationCount = await prisma.organization.count()
-  // console.log(
-  //   `Member count: ${memberCount}, Organization count: ${organizationCount}`
-  // )
 
   return member?.organization
 }

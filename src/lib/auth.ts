@@ -99,10 +99,9 @@ export const auth = betterAuth({
         organization: { name: string }
       }) {
         // Implement your email sending logic here
-        console.log("Sending invitation email...")
         const baseUrl = getBaseUrl()
         const inviteLink = `${baseUrl}/invite/${data.id}`
-        console.log("Invite link:", inviteLink)
+        // console.log("Invite link:", inviteLink)
         sendOrganizationInvitation({
           email: data.email,
           invitedByUsername: data.inviter.user.name,

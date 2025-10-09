@@ -37,8 +37,6 @@ export const bootstrapOrg = authActionClient
           headers: await headers()
         })
 
-        console.log("Checking existing organization slug:", slug, existingOrg)
-
         if (!existingOrg.status) {
           return {
             failure: {
@@ -48,7 +46,6 @@ export const bootstrapOrg = authActionClient
         }
 
         // Create the organization
-        console.log("Creating organization:", { name, slug, userId: user.id })
         const org = await auth.api.createOrganization({
           body: {
             name,
@@ -364,7 +361,6 @@ export const deleteOrganization = authActionClient
           headers: await headers()
         })
 
-        console.log("Deleted organization:", deleted)
         if (!deleted) {
           return {
             failure: {

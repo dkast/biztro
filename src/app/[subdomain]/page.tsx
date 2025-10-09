@@ -114,8 +114,6 @@ export default async function SitePage(props: {
   const siteMenu = await getMenuByOrgSubdomain(params.subdomain)
 
   if (!params.subdomain || !siteMenu) {
-    console.log(params.subdomain)
-    console.dir(siteMenu)
     return notFound()
   }
 
