@@ -125,7 +125,8 @@ export const auth = betterAuth({
         plans: [
           {
             name: "BASIC",
-            priceId: "price_1SFlpfEx6h9wDx2iHBMXleOI",
+            // skipcq: JS-0339
+            priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC!,
             limits: {
               menus: 1,
               products: 10
@@ -133,8 +134,11 @@ export const auth = betterAuth({
           },
           {
             name: "PRO",
-            priceId: "price_1QHe5WEx6h9wDx2iLqP5S1sg",
-            annualDiscountPriceId: "price_1QHr5cEx6h9wDx2iuhTQX1Mp",
+            // skipcq: JS-0339
+            priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY!,
+            // skipcq: JS-0339
+            annualDiscountPriceId:
+              process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY!,
             limits: {
               menus: 100,
               products: 1000
