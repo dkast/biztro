@@ -55,8 +55,6 @@ export default async function MembersPage() {
     })
   )
 
-  console.dir(canDeleteMember)
-  console.dir(canInviteMember)
 
   return (
     <div className="mx-auto grow px-4 sm:px-6">
