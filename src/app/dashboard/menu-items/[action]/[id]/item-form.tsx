@@ -178,7 +178,6 @@ export default function ItemForm({
   })
 
   const onSubmit = (data: z.infer<typeof menuItemSchema>) => {
-    console.log("Submitting data:", data)
     // Ensure price is a number before submitting
     if (data.variants) {
       const mapped = data.variants.map(variant => ({
