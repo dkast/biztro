@@ -1,173 +1,185 @@
 "use server"
 
-import { unstable_cache as cache } from "next/cache"
-import { cookies } from "next/headers"
+// removed unstable_cache usage — functions now fetch directly
+import { headers } from "next/headers"
 
-import { appConfig } from "@/app/config"
+import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
-import { getCurrentUser } from "@/lib/session"
 import { env } from "@/env.mjs"
 
 // Get current organization for the user
 export async function getCurrentOrganization() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
-
-  if (currentOrg) {
-    // return await cache(
-    //   async () => {
-    const org = await prisma.organization.findUnique({
-      where: {
-        id: currentOrg
-      }
+  try {
+    const currentOrg = await auth.api.getFullOrganization({
+      headers: await headers()
     })
 
-    if (org?.banner) {
-      org.banner = `${env.R2_CUSTOM_DOMAIN}/${org.banner}`
+    if (currentOrg?.banner) {
+      currentOrg.banner = `${env.R2_CUSTOM_DOMAIN}/${currentOrg.banner}`
     }
 
-    if (org?.logo) {
-      org.logo = `${env.R2_CUSTOM_DOMAIN}/${org.logo}`
+    if (currentOrg?.logo) {
+      currentOrg.logo = `${env.R2_CUSTOM_DOMAIN}/${currentOrg.logo}`
     }
 
-    return org
-    //   },
-    //   [`organization-${currentOrg}`],
-    //   {
-    //     revalidate: 900,
-    //     tags: [`organization-${currentOrg}`]
-    //   }
-    // )()
-  } else {
-    // Return first organization for the user
-    const user = await getCurrentUser()
+    return currentOrg
+  } catch (err) {
+    console.error("Failed to get current organization", err)
+    return null
+  }
+}
 
-    console.log("current user", user)
-    const membership = await prisma.membership.findFirst({
-      where: {
-        userId: user?.id
-      },
-      include: {
-        organization: true
-      }
+export async function getActiveOrganization(userId: string) {
+  const member = await prisma.member.findFirst({
+    where: {
+      userId
+    },
+    include: {
+      organization: true
+    }
+  })
+
+  return member?.organization
+}
+
+export async function hasOrganizations(): Promise<number> {
+  try {
+    const data = await auth.api.listOrganizations({
+      headers: await headers()
     })
-
-    if (!membership) {
-      return null
-    }
-    return membership.organization
+    if (!Array.isArray(data)) return 0
+    return data.length
+  } catch (err) {
+    console.error("Failed to list organizations", err)
+    return 0
   }
 }
 
 export const getMembers = async () => {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const currentOrg = await getCurrentOrganization()
 
   if (!currentOrg) {
     return []
   }
 
-  return await cache(
-    async () => {
-      const members = await prisma.membership.findMany({
-        where: {
-          organizationId: currentOrg
-        },
-        include: {
-          user: true
-        }
-      })
+  // Direct fetch without Next.js unstable cache wrapper
+  const members = await auth.api.listMembers({
+    headers: await headers()
+  })
 
-      return members
-    },
-    [`members-${currentOrg}`],
-    {
-      revalidate: 900,
-      tags: [`members-${currentOrg}`]
-    }
-  )()
+  return members
 }
 
 export const getCurrentMembership = async () => {
-  const user = await getCurrentUser()
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  try {
+    const member = await auth.api.getActiveMember({
+      headers: await headers()
+    })
 
-  return await prisma.membership.findFirst({
-    where: {
-      userId: user?.id,
-      organizationId: currentOrg
-    },
-    include: {
-      organization: {
-        select: {
-          name: true,
-          subdomain: true
-        }
-      }
-    }
-  })
+    return member
+  } catch (err) {
+    console.error("Failed to get current membership", err)
+    return null
+  }
 }
 
-export const getUserMemberships = async () => {
-  const user = await getCurrentUser()
+export const getCurrentMembershipRole = async () => {
+  try {
+    const { role } = await auth.api.getActiveMemberRole({
+      headers: await headers()
+    })
 
-  if (!user) {
-    return []
+    return role
+  } catch (err) {
+    console.error("Failed to get current membership role", err)
+    return null
   }
-
-  return await cache(
-    async () => {
-      const memberships = await prisma.membership.findMany({
-        where: {
-          userId: user.id,
-          isActive: true
-        },
-        include: {
-          organization: true
-        },
-        orderBy: {
-          organization: {
-            name: "asc"
-          }
-        }
-      })
-
-      memberships.forEach(membership => {
-        if (membership.organization.logo) {
-          membership.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${membership.organization.logo}`
-        }
-      })
-
-      return memberships
-    },
-    [`memberships-${user.id}`],
-    {
-      revalidate: 900,
-      tags: [`memberships-${user.id}`]
-    }
-  )()
 }
 
 export const getInviteByToken = async (token: string) => {
-  return await prisma.teamInvite.findUnique({
-    where: {
-      token
-    },
-    select: {
-      id: true,
-      email: true,
-      expiresAt: true,
-      organizationId: true,
-      status: true,
-      organization: {
-        select: {
-          name: true,
-          subdomain: true
-        }
+  try {
+    const data = await auth.api.getInvitation({
+      query: { id: token },
+      headers: await headers()
+    })
+
+    return {
+      data,
+      error: null
+    }
+  } catch (err) {
+    console.error("Failed to get invitation by token", err)
+    // If err has a message property, return it; otherwise stringify
+    if (err && typeof err === "object" && "message" in err) {
+      return {
+        data: null,
+        error: (err as Error).message
       }
     }
-  })
+
+    try {
+      return {
+        data: null,
+        error: String(err)
+      }
+    } catch {
+      return {
+        data: null,
+        error: "An unknown error occurred"
+      }
+    }
+  }
 }
 
 export async function isProMember() {
   const org = await getCurrentOrganization()
-  return org?.plan === "PRO"
+
+  const subscriptions = await auth.api.listActiveSubscriptions({
+    query: { referenceId: org?.id },
+    headers: await headers()
+  })
+
+  const activeSubscription = subscriptions.find(
+    sub => sub.status === "active" || sub.status === "trialing"
+  )
+
+  // Update the plan in the organization record if it differs from the subscription plan
+  if (
+    org &&
+    activeSubscription &&
+    org.plan?.toUpperCase() !== activeSubscription.plan?.toUpperCase()
+  ) {
+    try {
+      await auth.api.updateOrganization({
+        body: {
+          data: {
+            plan: activeSubscription.plan
+          },
+          organizationId: org.id
+        },
+        headers: await headers()
+      })
+    } catch (error) {
+      console.error("Failed to update organization plan", error)
+    }
+  }
+
+  return activeSubscription?.plan.toUpperCase() === "PRO"
+}
+
+export async function safeHasPermission(
+  opts: Parameters<typeof auth.api.hasPermission>[0]
+) {
+  try {
+    // ensure headers are provided if not included
+    if (!opts.headers) {
+      opts.headers = await headers()
+    }
+
+    const result = await auth.api.hasPermission(opts)
+    return result
+  } catch (err) {
+    console.error("auth.api.hasPermission failed:", err)
+    return null
+  }
 }

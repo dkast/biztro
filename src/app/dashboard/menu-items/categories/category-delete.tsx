@@ -26,14 +26,15 @@ export default function ItemDelete({
 }) {
   const { execute, reset } = useAction(deleteCategory, {
     onExecute: () => {
-      toast.loading("Eliminando Categoría...")
+      toast("Eliminando categoría...", { icon: "🗑️" })
     },
-    onSuccess: ({ data }) => {
-      if (data?.failure?.reason) {
-        toast.dismiss()
-        toast.error(data.failure.reason)
-      } else if (data?.success) {
-        toast.dismiss()
+    onSuccess: async ({ data }) => {
+      // onSuccess not triggered when using revalidateTag in the action
+      // see https://github.com/TheEdoRan/next-safe-action/issues/376
+      if (data?.success) {
+        toast.success("Categoría eliminada")
+      } else if (data?.failure?.reason) {
+        toast.error(data?.failure?.reason)
       }
       reset()
     },

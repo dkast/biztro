@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import slugify from "@sindresorhus/slugify"
-import confetti from "canvas-confetti"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
@@ -34,39 +33,30 @@ import { bootstrapOrg } from "@/server/actions/organization/mutations"
 import { orgSchema, Plan, SubscriptionStatus } from "@/lib/types"
 
 export default function NewOrgForm() {
-  useEffect(() => {
-    confetti({
-      particleCount: 200,
-      spread: 180,
-      origin: { y: 0.1 },
-      ticks: 150
-    })
-  }, [])
-
   const form = useForm<z.infer<typeof orgSchema>>({
     resolver: zodResolver(orgSchema),
     defaultValues: {
       name: "",
       description: "",
-      subdomain: "",
+      slug: "",
       status: SubscriptionStatus.ACTIVE,
       plan: Plan.BASIC
     }
   })
   const router = useRouter()
 
-  const subdomain = form.watch("name", "mi-negocio")
+  const slug = form.watch("name", "mi-negocio")
 
   useEffect(() => {
-    form.setValue("subdomain", slugify(subdomain))
-  }, [subdomain]) // eslint-disable-line react-hooks/exhaustive-deps
+    form.setValue("slug", slugify(slug))
+  }, [slug]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { execute, status, reset } = useAction(bootstrapOrg, {
     onSuccess: ({ data }) => {
       if (data?.failure) {
         toast.error(data.failure.reason ?? "Ocurrió un error")
         return
-      } else if (!data?.success) {
+      } else if (data?.success) {
         router.push("/dashboard")
       }
       reset()
@@ -129,10 +119,10 @@ export default function NewOrgForm() {
               />
               <FormField
                 control={form.control}
-                name="subdomain"
+                name="slug"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="subdomain">Sitio web</FormLabel>
+                    <FormLabel htmlFor="slug">Sitio web</FormLabel>
                     <FormControl>
                       <div className="flex flex-row items-center">
                         <span className="flex h-10 items-center rounded-md rounded-r-none border border-r-0 bg-gray-50 px-2 text-sm text-gray-500">
@@ -140,7 +130,7 @@ export default function NewOrgForm() {
                         </span>
                         <Input
                           {...field}
-                          id="subdomain"
+                          id="slug"
                           placeholder="Sitio web"
                           className="rounded-l-none"
                         />

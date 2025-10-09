@@ -1,48 +1,52 @@
-You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, Radix UI, React Hook Forms, Next Safe Action, Zod, and Tailwind.
+# Copilot / AI Agent Instructions for Biztro
 
-Code Style and Structure
+These are concise, actionable rules and repo-specific conventions for AI coding agents working on this codebase.
 
-- Write concise, technical TypeScript code with accurate examples.
-- Use functional and declarative programming patterns; avoid classes.
-- Prefer iteration and modularization over code duplication.
-- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
-- Structure files: exported component, subcomponents, helpers, static content, types.
+Global agent rules (preserve):
 
-Naming Conventions
+- Always finish the user's query before returning control; continue until the task is resolved.
+- Do not guess file contents — read files with tools before editing. Use exact paths: `AGENTS.md`, `package.json`, `src/`, `prisma/`, `src/env.mjs`, `src/middleware.ts`.
+- Keep edits minimal and safe; prefer small, reversible changes and include tests when non-trivial.
 
-- Use lowercase with dashes for directories (e.g., components/auth-wizard).
-- Favor named exports for components.
+Project overview (short):
 
-Syntax and Formatting
+- Next.js (App Router) + TypeScript + React. Server-first components are preferred; minimize `use client`.
+- UI: shadcn / Radix / Tailwind. Forms: React Hook Form + Zod. State: `nuqs` used for URL-search state.
+- Auth: `better-auth` + middleware in `src/middleware.ts` protects routes via session cookie.
+- DB: Prisma with Turso for local dev (`db:dev`); `prisma generate` runs in lifecycle scripts.
 
-- Use the "function" keyword for pure functions.
-- Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
-- Use declarative JSX.
+Non-obvious developer workflows (exact commands):
 
-UI and Styling
+- Dev: `bun run dev` (project uses `next dev --turbopack` via `npm/yarn/bun` scripts) — check `package.json` for `dev`.
+- Ensure `prisma generate` has been run: lifecycle scripts include `postinstall`, `predev`, `prebuild` that call it.
+- Local DB: `bun run db:dev` runs `turso dev --db-file local.db`.
+- Stripe local webhook: `bun run stripe:listen` forwards events to `/api/webhooks/stripe` during dev.
+- Content build: `bun run build:content` uses `contentlayer2 build`.
 
-- Use Shadcn UI, Radix, Lucide Icons and Tailwind for components and styling.
-- Always try to use the components available in "@/componentes/ui" folder.
-- Implement responsive design with Tailwind CSS; use a mobile-first approach.
-- Use React Hook Forms with Zod validation when creating Forms.
+Conventions & integration points (quick references):
 
-Performance Optimization
+- Use `next-safe-action` for server actions (server-side form handlers and mutations).
+- Use `nuqs` for URL search state (see `src/app/providers.tsx` and usages in `src/app/**` like filter toolbars).
+- Centralized env: `src/env.mjs` (uses createEnv + zod); reference it for R2 keys, TURSO DB URL, and analytics keys.
+- Auth: `src/middleware.ts` uses `better-auth/cookies` to guard routes — prefer using provided helpers.
+- Prefer server components; if `use client` is required, keep the component small and well-scoped.
 
-- Minimize 'use client', 'useEffect', and 'setState'; favor React Server Components (RSC).
-- Wrap client components in Suspense with fallback.
-- Use dynamic loading for non-critical components.
-- Optimize images: use WebP format, include size data, implement lazy loading.
+Files to inspect first when asked to implement or change features:
 
-Key Conventions
+- `AGENTS.md` (canonical agent rules and expanded context)
+- `package.json` (scripts and lifecycle hooks)
+- `src/env.mjs` (env schema and runtime values)
+- `src/middleware.ts` (auth rules)
+- `prisma/` (schema & migrations)
+- `src/app/providers.tsx` (nuqs provider)
 
-- Use 'nuqs' for URL search parameter state management.
-- Use 'next-safe-action' for server actions.
-- Optimize Web Vitals (LCP, CLS, FID).
-- Limit 'use client':
-  - Favor server components and Next.js SSR.
-  - Use only for Web API access in small components.
-  - Avoid for data fetching or state management.
+Edge cases to watch for:
 
-Commit messages
+- Missing env vars (use `src/env.mjs` schema to validate presence).
+- DB migrations vs local dev DB state (use `prisma generate` and `db:dev` appropriately).
+- Routes protected by middleware — changes may require middleware/config updates.
+- Large client bundles — avoid moving large logic from server to client.
 
-- Use the commitlint convention when creating new commit messages
+When in doubt, preserve behavior and add tests or small migrations. If changes touch DB schema or auth, mention migration steps and required env updates in the PR.
+
+Reference: See `AGENTS.md` for full, normative agent rules.

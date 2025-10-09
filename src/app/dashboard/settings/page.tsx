@@ -1,16 +1,17 @@
 import { Store } from "lucide-react"
 import type { Metadata } from "next"
+import { headers } from "next/headers"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Badge } from "@/components/ui/badge"
 import {
-  getCurrentMembership,
-  getCurrentOrganization
+  getCurrentOrganization,
+  safeHasPermission
 } from "@/server/actions/user/queries"
 import OrganizationDelete from "@/app/dashboard/settings/organization-delete"
 import OrganizationForm from "@/app/dashboard/settings/organization-form"
-import { MembershipRole, SubscriptionStatus } from "@/lib/types"
+import { SubscriptionStatus } from "@/lib/types"
 
 export const metadata: Metadata = {
   title: "Mi Negocio"
@@ -48,9 +49,12 @@ function StatusBadge({ status }: { status: SubscriptionStatus }) {
 }
 
 export default async function SettingsPage() {
-  const [membership, currentOrg] = await Promise.all([
-    getCurrentMembership(),
-    getCurrentOrganization()
+  const [currentOrg, canDeleteOrg] = await Promise.all([
+    getCurrentOrganization(),
+    safeHasPermission({
+      headers: await headers(),
+      body: { permissions: { organization: ["delete"] } }
+    })
   ])
 
   if (!currentOrg) {
@@ -68,7 +72,7 @@ export default async function SettingsPage() {
         <StatusBadge status={currentOrg.status as SubscriptionStatus} />
       </div>
       <OrganizationForm data={currentOrg} enabled />
-      {membership?.role === MembershipRole.OWNER && (
+      {canDeleteOrg?.success && (
         <OrganizationDelete organizationId={currentOrg.id} />
       )}
     </div>

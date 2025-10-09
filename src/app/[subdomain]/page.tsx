@@ -28,8 +28,8 @@ export const dynamicParams = true
 // Add generateStaticParams to pre-render specific paths
 export async function generateStaticParams() {
   const organizations = await getAllActiveOrganizations()
-  return organizations.map(({ subdomain }) => ({
-    subdomain
+  return organizations.map(({ slug }) => ({
+    slug
   }))
 }
 
@@ -114,8 +114,6 @@ export default async function SitePage(props: {
   const siteMenu = await getMenuByOrgSubdomain(params.subdomain)
 
   if (!params.subdomain || !siteMenu) {
-    console.log(params.subdomain)
-    console.dir(siteMenu)
     return notFound()
   }
 

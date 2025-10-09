@@ -4,6 +4,7 @@ import { FlatCompat } from "@eslint/eslintrc"
 import js from "@eslint/js"
 import typescriptEslint from "@typescript-eslint/eslint-plugin"
 import tsParser from "@typescript-eslint/parser"
+import { globalIgnores } from "eslint/config"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -15,6 +16,9 @@ const compat = new FlatCompat({
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default [
+  // globally ignore Next.js generated declaration file which breaks type-aware rules
+  globalIgnores(["**/next-env.d.ts", "next-env.d.ts"]),
+
   ...compat.extends(
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended",
@@ -31,7 +35,9 @@ export default [
       sourceType: "script",
 
       parserOptions: {
-        project: true
+        // provide the actual tsconfig path so type-aware rules that require type information work
+        project: ["./tsconfig.json"],
+        tsconfigRootDir: __dirname
       }
     },
 

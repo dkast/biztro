@@ -1,7 +1,13 @@
 import { OnboardingCards } from "@/components/dashboard/onboarding-cards"
 import { getOrganizationOnboardingStatus } from "@/server/actions/organization/queries"
 
-export default async function OnboardingStatus({ orgId }: { orgId: string }) {
+export default async function OnboardingStatus({
+  orgId
+}: {
+  orgId: string | undefined
+}) {
+  if (!orgId) return null
+
   const orgData = await getOrganizationOnboardingStatus(orgId)
 
   const orgReady = Boolean(orgData?.logo)

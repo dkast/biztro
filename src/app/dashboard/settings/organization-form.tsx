@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { Organization } from "@prisma/client"
+import type { Prisma } from "@prisma/client"
 import { DialogTitle } from "@radix-ui/react-dialog"
 import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
@@ -34,6 +34,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { updateOrg } from "@/server/actions/organization/mutations"
+import type { getCurrentOrganization } from "@/server/actions/user/queries"
 import {
   ImageType,
   orgSchema,
@@ -46,7 +47,7 @@ export default function OrganizationForm({
   data,
   enabled
 }: {
-  data: Organization
+  data: NonNullable<Prisma.PromiseReturnType<typeof getCurrentOrganization>>
   enabled: boolean
 }) {
   const form = useForm<z.infer<typeof orgSchema>>({
@@ -55,7 +56,7 @@ export default function OrganizationForm({
       id: data.id,
       name: data.name,
       description: data.description ?? undefined,
-      subdomain: data.subdomain,
+      slug: data.slug,
       status: data.status as SubscriptionStatus,
       plan: data.plan as Plan
     }
@@ -95,7 +96,7 @@ export default function OrganizationForm({
               {data.logo && (
                 <AvatarImage
                   src={data.logo}
-                  className="rounded-xl border border-gray-200"
+                  className="rounded-xl border border-gray-200 dark:border-gray-700"
                 />
               )}
               <AvatarFallback className="text-3xl">
@@ -171,10 +172,10 @@ export default function OrganizationForm({
           />
           <FormField
             control={form.control}
-            name="subdomain"
+            name="slug"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="subdomain">Sitio web</FormLabel>
+                <FormLabel htmlFor="slug">Sitio web</FormLabel>
                 <FormControl>
                   <div className="flex flex-row items-center">
                     <span className="flex h-9 items-center rounded-md rounded-r-none border border-r-0 border-gray-200 bg-gray-50 px-2 text-sm text-gray-500">
@@ -182,7 +183,7 @@ export default function OrganizationForm({
                     </span>
                     <Input
                       {...field}
-                      id="subdomain"
+                      id="slug"
                       placeholder="Sitio web"
                       className="rounded-l-none"
                     />

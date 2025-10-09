@@ -1,5 +1,5 @@
 import { useNode } from "@craftjs/core"
-import type { Organization, Prisma } from "@prisma/client"
+import type { Prisma } from "@prisma/client"
 import { type RgbaColor } from "@uiw/react-color"
 import { ChevronDown, Clock, Phone } from "lucide-react"
 import Image from "next/image"
@@ -19,6 +19,7 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
+import type { getCurrentOrganization } from "@/server/actions/user/queries"
 import {
   cn,
   getFormattedTime,
@@ -28,7 +29,9 @@ import {
 
 export type HeaderBlockProps = {
   layout: "classic" | "modern"
-  organization: Organization
+  organization: NonNullable<
+    Prisma.PromiseReturnType<typeof getCurrentOrganization>
+  >
   location?: Prisma.PromiseReturnType<typeof getDefaultLocation>
   fontFamily?: string
   accentColor?: RgbaColor

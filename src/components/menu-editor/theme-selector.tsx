@@ -212,7 +212,7 @@ export default function ThemeSelector({
   const updateColorTheme = (colorThemeId: string) => {
     const selectedTheme = colorThemes.find(theme => theme.id === colorThemeId)
     if (!selectedTheme) {
-      console.log("Theme not found")
+      console.error("Theme not found")
       return
     }
 
@@ -503,13 +503,9 @@ export default function ThemeSelector({
                     setOpenColorThemeEditor(false)
                   }}
                   removeTheme={(themeId: string) => {
-                    console.log("colorThemes", colorThemes)
                     const index = colorThemes.findIndex(t => t.id === themeId)
-                    console.log("index", index)
                     // Remove the theme from the list
                     colorThemes.splice(index, 1)
-                    console.log("themeId", themeId)
-                    console.log("colorThemes", colorThemes)
                     setColorThemes([...colorThemes])
 
                     queryClient.invalidateQueries({

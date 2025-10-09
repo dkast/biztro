@@ -27,7 +27,7 @@ export default function ItemDelete({
 }) {
   const { execute, reset } = useAction(deleteItem, {
     onExecute: () => {
-      toast.loading("Eliminando Producto...")
+      toast("Eliminando Producto...", { icon: "🗑️" })
     },
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
@@ -39,6 +39,7 @@ export default function ItemDelete({
       reset()
     },
     onError: () => {
+      toast.dismiss()
       toast.error("Algo salió mal")
       reset()
     }

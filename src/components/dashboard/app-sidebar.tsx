@@ -10,11 +10,11 @@ import {
   ChevronsUpDown,
   LayoutTemplate,
   Megaphone,
+  Plus,
   Settings,
   ShoppingBag,
   type LucideIcon
 } from "lucide-react"
-import { useSession } from "next-auth/react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import {
@@ -42,6 +42,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import {
@@ -60,10 +61,8 @@ import {
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { switchOrganization } from "@/server/actions/user/mutations"
-import {
-  getCurrentOrganization,
-  getUserMemberships
-} from "@/server/actions/user/queries"
+import { getCurrentOrganization } from "@/server/actions/user/queries"
+import { authClient } from "@/lib/auth-client"
 import { Plan } from "@/lib/types"
 import { getInitials } from "@/lib/utils"
 
@@ -111,40 +110,41 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarContent>
             <SidebarMenu>
-              {navigation.map(item => (
-                <Fragment key={item.title}>
-                  {item.items ? (
-                    <Collapsible
-                      asChild
-                      defaultOpen
-                      className="group/collapsible"
-                    >
+              {currentOrg &&
+                navigation.map(item => (
+                  <Fragment key={item.title}>
+                    {item.items ? (
+                      <Collapsible
+                        asChild
+                        defaultOpen
+                        className="group/collapsible"
+                      >
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton tooltip={item.title}>
+                              {item.icon && <item.icon />}
+                              <span>{item.title}</span>
+                              <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {item.items?.map(subItem => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                  <SidebarSubLink item={subItem} />
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    ) : (
                       <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton tooltip={item.title}>
-                            {item.icon && <item.icon />}
-                            <span>{item.title}</span>
-                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {item.items?.map(subItem => (
-                              <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarSubLink item={subItem} />
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
+                        <SidebarLink item={item} />
                       </SidebarMenuItem>
-                    </Collapsible>
-                  ) : (
-                    <SidebarMenuItem>
-                      <SidebarLink item={item} />
-                    </SidebarMenuItem>
-                  )}
-                </Fragment>
-              ))}
+                    )}
+                  </Fragment>
+                ))}
             </SidebarMenu>
           </SidebarContent>
         </SidebarGroup>
@@ -228,16 +228,13 @@ function SidebarWorkgroup() {
     queryFn: getCurrentOrganization
   })
 
-  const { data: memberships } = useQuery({
-    queryKey: ["workgroup", "memberships"],
-    queryFn: getUserMemberships
-  })
+  const { data: organizations, refetch } = authClient.useListOrganizations()
 
   const queryClient = useQueryClient()
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
-  const { execute, status } = useAction(switchOrganization, {
+  const { execute } = useAction(switchOrganization, {
     onSuccess: ({ data }) => {
       if (data?.success) {
         // Revalidate the current organization
@@ -246,6 +243,7 @@ function SidebarWorkgroup() {
         })
         // router.replace("/dashboard")
         startTransition(() => {
+          refetch()
           router.replace("/dashboard")
         })
       } else if (data?.failure?.reason) {
@@ -264,7 +262,7 @@ function SidebarWorkgroup() {
     })
   }
 
-  if (!currentOrg || status === "executing" || isPending)
+  if (isPending)
     return (
       <SidebarHeader>
         <SidebarMenu>
@@ -272,6 +270,22 @@ function SidebarWorkgroup() {
             <Skeleton className="size-8 bg-gray-200" />
             <Skeleton className="h-6 w-24 bg-gray-200" />
           </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+    )
+
+  if (!currentOrg && organizations?.length === 0)
+    return (
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuButton asChild size="lg">
+            <Link href="/dashboard/create-org">
+              <div className="border-sidebar-border grid size-8 place-items-center rounded-sm border shadow-sm">
+                <Plus className="size-4" />
+              </div>
+              <span className="truncate font-semibold">Crear organización</span>
+            </Link>
+          </SidebarMenuButton>
         </SidebarMenu>
       </SidebarHeader>
     )
@@ -286,22 +300,30 @@ function SidebarWorkgroup() {
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Avatar className="size-8 rounded-sm shadow-sm">
-                    <AvatarImage src={currentOrg.logo ?? undefined} />
-                    <AvatarFallback className="text-xs">
-                      {getInitials(currentOrg.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                {currentOrg ? (
+                  <>
+                    <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                      <Avatar className="size-8 rounded-sm shadow-sm">
+                        <AvatarImage src={currentOrg.logo ?? undefined} />
+                        <AvatarFallback className="text-xs">
+                          {getInitials(currentOrg.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-semibold">
+                        {currentOrg.name}
+                      </span>
+                      <span className="truncate text-xs">
+                        {currentOrg.plan === Plan.BASIC ? "Básico" : "Pro"}
+                      </span>
+                    </div>
+                  </>
+                ) : (
                   <span className="truncate font-semibold">
-                    {currentOrg.name}
+                    Selecciona un negocio
                   </span>
-                  <span className="truncate text-xs">
-                    {currentOrg.plan === Plan.BASIC ? "Básico" : "Pro"}
-                  </span>
-                </div>
+                )}
                 <ChevronsUpDown className="ml-auto" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
@@ -314,37 +336,37 @@ function SidebarWorkgroup() {
               <DropdownMenuLabel className="text-muted-foreground text-xs">
                 Organizaciones
               </DropdownMenuLabel>
-              {memberships?.map(membership => (
+              {organizations?.map(organization => (
                 <DropdownMenuItem
-                  key={membership.organization.name}
-                  onClick={() =>
-                    handleSwitchOrganization(membership.organization.id)
-                  }
+                  key={organization.name}
+                  onClick={() => handleSwitchOrganization(organization.id)}
                   className="gap-2 p-2"
                 >
-                  <div className="flex size-6 items-center justify-center rounded-xs border">
+                  {/* <div className="flex size-6 items-center justify-center rounded-xs border">
                     <Avatar className="size-5 rounded-xs shadow-sm">
-                      <AvatarImage
-                        src={membership.organization.logo ?? undefined}
-                      />
+                      <AvatarImage src={organization.logo ?? undefined} />
                       <AvatarFallback className="text-xs">
-                        {getInitials(membership.organization.name)}
+                        {getInitials(organization.name)}
                       </AvatarFallback>
                     </Avatar>
-                  </div>
-                  {membership.organization.name}
-                  {/* <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut> */}
+                  </div> */}
+                  {organization.name}
                 </DropdownMenuItem>
               ))}
-              {/* <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 p-2">
-                <div className="bg-background flex size-6 items-center justify-center rounded-md border">
-                  <Plus className="size-4" />
-                </div>
-                <div className="text-muted-foreground font-medium">
-                  Add team
-                </div>
-              </DropdownMenuItem> */}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild className="gap-2 p-2">
+                <Link
+                  href="/dashboard/create-org"
+                  className="flex items-center gap-2"
+                >
+                  <div className="bg-background flex size-6 items-center justify-center rounded-md border border-gray-600 dark:border-gray-700">
+                    <Plus className="size-4" />
+                  </div>
+                  <div className="text-muted-foreground font-medium">
+                    Agregar organización
+                  </div>
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarMenuItem>
@@ -362,7 +384,7 @@ function AttachToFeedbackButton() {
   }, [])
 
   // Set the Sentry user based on the current user.
-  const { data: session } = useSession()
+  const { data: session } = authClient.useSession()
 
   useEffect(() => {
     if (Sentry) {

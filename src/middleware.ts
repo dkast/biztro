@@ -1,26 +1,16 @@
-import authConfig from "@/auth.config"
-import NextAuth from "next-auth"
+import { getSessionCookie } from "better-auth/cookies"
+import type { NextRequest } from "next/server"
+import { NextResponse } from "next/server"
 
-const { auth: middleware } = NextAuth(authConfig)
-
-export default middleware(req => {
-  const { nextUrl } = req
-  const isLoggedIn = !!req.auth
-
-  if (!isLoggedIn) {
-    let callbackUrl = nextUrl.pathname
-    if (nextUrl.search) {
-      callbackUrl += nextUrl.search
-    }
-
-    const encodedCallbackUrl = encodeURIComponent(callbackUrl)
-
-    return Response.redirect(
-      new URL(`/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-    )
+export async function middleware(request: NextRequest) {
+  const sessionCookie = getSessionCookie(request)
+  if (!sessionCookie) {
+    return NextResponse.redirect(new URL("/login", request.url))
   }
-})
+  return NextResponse.next()
+}
 
+// Update matcher to the routes you want to protect
 export const config = {
-  matcher: ["/dashboard/:path*", "/menu-editor/:path*"]
+  matcher: ["/dashboard/:path*"]
 }

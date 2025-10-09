@@ -1,0 +1,127 @@
+// Better Auth related models moved here
+
+model Account {
+  id                       String    @id @default(cuid())
+  userId                   String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?
+  refresh_token_expires_in Int?
+  access_token             String?
+  expires_at               DateTime?
+  scope                    String?
+  id_token                 String?
+  oauth_token_secret       String?
+  oauth_token              String?
+  user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  password  String?
+  createdAt DateTime
+  updatedAt DateTime
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+
+  activeOrganizationId String?
+
+  @@index([userId])
+}
+
+model User {
+  id               String       @id @default(cuid())
+  name             String
+  email            String?      @unique
+  emailVerified    Boolean?     @default(false)
+  image            String?
+  stripeCustomerId String?
+  accounts         Account[]
+  sessions         Session[]
+  createdAt        DateTime
+  updatedAt        DateTime
+  members          Member[]
+  invitations      Invitation[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Organization {
+  id           String     @id @default(cuid())
+  name         String     @unique
+  description  String?
+  logo         String?
+  banner       String?
+  status       String     @default("ACTIVE")
+  plan         String     @default("BASIC")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  // subdomain     String         @unique
+  customDomain String?    @unique
+  categories   Category[]
+  location     Location[]
+  menus        Menu[]
+  menuItems    MenuItem[]
+  themes       Theme[]
+
+  slug        String?
+  metadata    String?
+  members     Member[]
+  invitations Invitation[]
+
+  @@index([slug])
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String
+  createdAt      DateTime
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String
+  expiresAt      DateTime
+  inviterId      String
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id                   String    @id
+  plan                 String
+  referenceId          String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  status               String?
+  periodStart          DateTime?
+  periodEnd            DateTime?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  cancelAtPeriodEnd    Boolean?  @default(false)
+  seats                Int?
+}

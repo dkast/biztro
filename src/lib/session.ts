@@ -1,8 +1,13 @@
-import { cache } from "react"
-import { auth } from "@/auth"
+import { headers } from "next/headers"
 
-export const getCurrentUser = cache(async () => {
-  const session = await auth()
+import { auth } from "@/lib/auth"
 
-  return session?.user ?? null
-})
+export async function getCurrentUser() {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() })
+    return session?.user ?? null
+  } catch (error) {
+    console.error("Error fetching current user:", error)
+    return null
+  }
+}

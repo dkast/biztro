@@ -15,8 +15,8 @@ export const env = createEnv({
         ? z.string().min(1)
         : z.string().min(1).optional(),
     AUTH_URL: z.preprocess(
-      // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
-      // Since NextAuth.js automatically uses the VERCEL_URL if present.
+  // This makes Vercel deployments not fail if you don't set the auth URL
+  // Since better-auth can use VERCEL_URL if present.
       str => process.env.VERCEL_URL ?? str,
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string().min(1) : z.url()
@@ -32,7 +32,18 @@ export const env = createEnv({
     AUTH_GOOGLE_ID: z.string().min(1),
     RESEND_API_KEY: z.string().min(1),
     STRIPE_SECRET_KEY: z.string().min(1),
-    STRIPE_WEBHOOK_SECRET: z.string().min(1)
+    STRIPE_WEBHOOK_SECRET: z.string().min(1),
+    BETTER_AUTH_SECRET:
+      process.env.NODE_ENV === "production"
+        ? z.string().min(1)
+        : z.string().min(1).optional(),
+    BETTER_AUTH_URL: z.preprocess(
+  // This makes Vercel deployments not fail if you don't set the auth URL
+  // Since better-auth can use VERCEL_URL if present.
+      str => process.env.VERCEL_URL ?? str,
+      // VERCEL_URL doesn't include `https` so it cant be validated as a URL
+      process.env.VERCEL ? z.string().min(1) : z.url()
+    )
   },
 
   /**
@@ -78,7 +89,9 @@ export const env = createEnv({
     NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY:
       process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY,
     NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY:
-      process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY
+      process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY,
+    BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+    BETTER_AUTH_URL: process.env.BETTER_AUTH_URL
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

@@ -9,10 +9,11 @@ const libsql = createClient({
   authToken: `${env.TURSO_AUTH_TOKEN}`
 })
 
+// Cast to any to avoid a type mismatch between different @libsql/client copies.
 const adapter = new PrismaLibSQL(libsql)
 const prisma = new PrismaClient({
-  adapter
-  // log: env.NODE_ENV === "development" ? ["error", "warn"] : ["error"]
+  adapter,
+  log: env.NODE_ENV === "development" ? ["info", "warn", "error"] : ["error"]
 })
 
 export default prisma

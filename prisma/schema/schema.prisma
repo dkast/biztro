@@ -1,0 +1,132 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters", "relationJoins", "prismaSchemaFolder"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../../local.db"
+}
+
+// Non-auth domain models. Auth-related models moved to `auth.prisma`.
+
+model Location {
+  id             String         @id @default(cuid())
+  name           String         @default("Main")
+  description    String?
+  address        String
+  phone          String?
+  facebook       String?
+  instagram      String?
+  twitter        String?
+  tiktok         String?
+  whatsapp       String?
+  website        String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  openingHours   OpeningHours[]
+}
+
+model OpeningHours {
+  id         String   @id @default(cuid())
+  day        String
+  startTime  String?
+  endTime    String?
+  allDay     Boolean
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+}
+
+model Menu {
+  id             String       @id @default(cuid())
+  name           String
+  description    String?
+  status         String       @default("DRAFT")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String
+  serialData     String?
+  publishedData  String?
+  publishedAt    DateTime?
+  fontTheme      String       @default("DEFAULT")
+  colorTheme     String       @default("DEFAULT")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model Theme {
+  id             String        @id @default(cuid())
+  name           String
+  scope          String        @default("CUSTOM")
+  themeType      String        @default("FONT")
+  themeJSON      String        @default("{}")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, name, scope])
+}
+
+model MenuItem {
+  id             String       @id @default(cuid())
+  name           String
+  description    String?
+  image          String?
+  status         String       @default("DRAFT")
+  featured       Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  categoryId     String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category       Category?    @relation(fields: [categoryId], references: [id])
+  variants       Variant[]
+  allergens      String?
+
+  @@unique([organizationId, name])
+}
+
+model Category {
+  id             String       @id @default(cuid())
+  name           String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  menuItems      MenuItem[]
+}
+
+model Variant {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  menuItemId  String
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+}
+
+// Invitation requests from the landing page. Drop in the future
+model Invite {
+  id      String  @id @default(cuid())
+  email   String  @unique
+  enabled Boolean @default(false)
+
+  @@index([email])
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+}
+
+// `Member` and `Invitation` models are defined in `auth.prisma`

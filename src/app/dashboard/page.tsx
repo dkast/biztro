@@ -1,13 +1,16 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { redirect } from "next/navigation"
 
 import InfoHelper from "@/components/dashboard/info-helper"
 import OnboardingStatus from "@/components/dashboard/onboarding-status"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getMenus } from "@/server/actions/menu/queries"
-import { getCurrentOrganization } from "@/server/actions/user/queries"
+import {
+  getCurrentOrganization,
+  hasOrganizations
+} from "@/server/actions/user/queries"
 import MenuList from "@/app/dashboard/menu-list"
 
 export const metadata: Metadata = {
@@ -15,13 +18,14 @@ export const metadata: Metadata = {
 }
 
 export default async function DashboardPage() {
-  const [currentOrg, data] = await Promise.all([
+  const [orgAvailable, currentOrg, menus] = await Promise.all([
+    hasOrganizations(),
     getCurrentOrganization(),
     getMenus()
   ])
 
-  if (!currentOrg) {
-    notFound()
+  if (!orgAvailable) {
+    redirect("/new-org")
   }
 
   return (
@@ -29,7 +33,7 @@ export default async function DashboardPage() {
       <div className="mx-auto grid grow auto-rows-min justify-center gap-10 px-4 py-10 sm:grid-cols-300 sm:px-6 sm:py-12">
         <div className="col-span-full">
           <Suspense fallback={<OnboardingSkeleton />}>
-            <OnboardingStatus orgId={currentOrg.id} />
+            <OnboardingStatus orgId={currentOrg?.id} />
           </Suspense>
         </div>
         <div className="col-span-full">
@@ -41,7 +45,7 @@ export default async function DashboardPage() {
             </InfoHelper>
           </PageSubtitle>
         </div>
-        <MenuList menus={data} />
+        <MenuList menus={menus} />
       </div>
     </div>
   )

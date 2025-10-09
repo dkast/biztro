@@ -1,6 +1,8 @@
 import { Logger } from "next-axiom"
 import { createSafeActionClient } from "next-safe-action"
+import { redirect } from "next/navigation"
 
+import { getCurrentMembership } from "@/server/actions/user/queries"
 import { getCurrentUser } from "@/lib/session"
 
 export const actionClient = createSafeActionClient({
@@ -16,8 +18,18 @@ export const authActionClient = actionClient.use(async ({ next }) => {
   const user = await getCurrentUser()
 
   if (!user) {
-    throw new Error("Failed to authenticate")
+    redirect("/login")
   }
 
   return next({ ctx: { user } })
+})
+
+export const authMemberActionClient = authActionClient.use(async ({ next }) => {
+  const member = await getCurrentMembership()
+
+  if (!member?.user) {
+    redirect("/login")
+  }
+
+  return next({ ctx: { member } })
 })

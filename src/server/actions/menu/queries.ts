@@ -1,15 +1,17 @@
 "use server"
 
 import { unstable_cache as cache } from "next/cache"
-import { cookies } from "next/headers"
 
-import { appConfig } from "@/app/config"
+import {
+  getCurrentMembership,
+  getCurrentOrganization
+} from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { MenuStatus, SubscriptionStatus } from "@/lib/types"
 import { env } from "@/env.mjs"
 
 export async function getMenus() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const currentOrg = await getCurrentOrganization()
 
   if (!currentOrg) {
     return []
@@ -18,7 +20,7 @@ export async function getMenus() {
   //   async () => {
   return await prisma.menu.findMany({
     where: {
-      organizationId: currentOrg
+      organizationId: currentOrg.id
     },
     orderBy: {
       publishedAt: "desc"
@@ -70,7 +72,7 @@ export async function getMenuByOrgSubdomain(subdomain: string) {
         where: {
           status: MenuStatus.PUBLISHED,
           organization: {
-            subdomain,
+            slug: subdomain,
             OR: [
               { status: SubscriptionStatus.ACTIVE },
               { status: SubscriptionStatus.TRIALING }
@@ -91,7 +93,8 @@ export async function getMenuByOrgSubdomain(subdomain: string) {
 }
 
 export async function getThemes({ themeType }: { themeType: string }) {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const membership = await getCurrentMembership()
+  const currentOrg = membership?.organizationId
   // return await cache(
   //   async () => {
   return await prisma.theme.findMany({
@@ -118,7 +121,8 @@ export async function getThemes({ themeType }: { themeType: string }) {
 }
 
 export async function getMenuCount() {
-  const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  const membership = await getCurrentMembership()
+  const currentOrg = membership?.organizationId
   return await prisma.menu.count({
     where: {
       organizationId: currentOrg

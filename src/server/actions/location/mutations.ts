@@ -1,9 +1,8 @@
 "use server"
 
 import { revalidateTag } from "next/cache"
-import { cookies } from "next/headers"
 
-import { appConfig } from "@/app/config"
+import { getCurrentOrganization } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 import { hoursSchema, locationSchema } from "@/lib/types"
@@ -39,7 +38,7 @@ export const createLocation = authActionClient
       }
     }) => {
       try {
-        const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+        const currentOrg = await getCurrentOrganization()
 
         if (!currentOrg) {
           return {
@@ -62,13 +61,13 @@ export const createLocation = authActionClient
             whatsapp,
             organization: {
               connect: {
-                id: currentOrg
+                id: currentOrg.id
               }
             }
           }
         })
 
-        revalidateTag(`default-location-${currentOrg}`)
+        revalidateTag(`default-location-${currentOrg.id}`)
 
         return { success: location }
       } catch (error) {
@@ -214,6 +213,16 @@ export const updateHours = authActionClient
       }
     }
 
+    // Get current orgization ID
+    const currentOrg = await getCurrentOrganization()
+    if (!currentOrg) {
+      return {
+        failure: {
+          reason: "No se pudo obtener la organización actual"
+        }
+      }
+    }
+
     try {
       await prisma.openingHours.deleteMany({
         where: {
@@ -231,7 +240,7 @@ export const updateHours = authActionClient
         }))
       })
 
-      revalidateTag(`default-location-${locationId}`)
+      revalidateTag(`default-location-${currentOrg.id}`)
 
       return { success: hours }
     } catch (error) {

@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect } from "react"
-import { useSession } from "next-auth/react"
 import posthog from "posthog-js"
 import { PostHogProvider } from "posthog-js/react"
 
+import { useSession } from "@/lib/auth-client"
 import { env } from "@/env.mjs"
 
 if (typeof window !== "undefined") {

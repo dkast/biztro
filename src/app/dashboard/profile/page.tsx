@@ -6,8 +6,10 @@ import PageHeader from "@/components/dashboard/page-header"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Label } from "@/components/ui/label"
-import { getCurrentMembership } from "@/server/actions/user/queries"
-import { getCurrentUser } from "@/lib/session"
+import {
+  getCurrentMembership,
+  getCurrentOrganization
+} from "@/server/actions/user/queries"
 import { MembershipRole } from "@/lib/types"
 import { getInitials } from "@/lib/utils"
 
@@ -16,12 +18,12 @@ export const metadata: Metadata = {
 }
 
 export default async function ProfilePage() {
-  const [user, membership] = await Promise.all([
-    getCurrentUser(),
+  const [organization, membership] = await Promise.all([
+    getCurrentOrganization(),
     getCurrentMembership()
   ])
 
-  if (!user) return notFound()
+  if (!membership) return notFound()
 
   const roleLabel = (() => {
     switch (membership?.role) {
@@ -49,18 +51,22 @@ export default async function ProfilePage() {
             <div className="bg-dot-pattern dark:bg-dot-pattern-white absolute inset-0 size-full mask-t-from-50%" />
             <div className="flex h-36 items-center overflow-hidden px-7">
               <Avatar className="size-20 shadow-lg">
-                {user.image && <AvatarImage src={user.image} />}
+                {membership.user.image && (
+                  <AvatarImage src={membership.user.image} />
+                )}
                 <AvatarFallback className="text-2xl">
-                  {getInitials(user.name)}
+                  {getInitials(
+                    membership.user.name ?? membership.user.email ?? "U"
+                  )}
                 </AvatarFallback>
               </Avatar>
             </div>
             <div className="relative pr-8 pb-8 pl-8">
               <h3 className="text-xl leading-none font-semibold">
-                {user.name}
+                {membership.user.name}
               </h3>
               <p className="mt-1.5 leading-none font-medium text-gray-600 dark:text-gray-400">
-                {user.email}
+                {membership.user.email}
               </p>
             </div>
           </div>
@@ -75,7 +81,7 @@ export default async function ProfilePage() {
                   <div>
                     <Label>Organización</Label>
                     <h4 className="text-gray-500">
-                      {membership.organization.name}
+                      {organization?.name || "N/A"}
                     </h4>
                   </div>
                   <div>

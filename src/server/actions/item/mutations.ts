@@ -3,14 +3,13 @@
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { Prisma } from "@prisma/client"
 import { revalidateTag } from "next/cache"
-import { cookies } from "next/headers"
 import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
 import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
-import { authActionClient } from "@/lib/safe-actions"
+import { authMemberActionClient } from "@/lib/safe-actions"
 import {
   BasicPlanLimits,
   bulkMenuItemSchema,
@@ -37,7 +36,7 @@ const R2 = new S3Client({
  * @param {menuItemSchema} itemData - The data for the new item.
  * @returns {Promise<{ success: menuItemSchema } | { failure: { reason: string } }>} - A promise that resolves to an object with either a success or failure property.
  */
-export const createItem = authActionClient
+export const createItem = authMemberActionClient
   .inputSchema(menuItemSchema)
   .action(
     async ({
@@ -50,11 +49,12 @@ export const createItem = authActionClient
         variants,
         featured,
         allergens
-      }
+      },
+      ctx: { member }
     }) => {
-      const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+      const currentOrgId = member.organizationId
 
-      if (!currentOrg) {
+      if (!currentOrgId) {
         return {
           failure: {
             reason: "No se pudo obtener la organización actual"
@@ -80,7 +80,7 @@ export const createItem = authActionClient
       const existingItem = await prisma.menuItem.findFirst({
         where: {
           name,
-          organizationId: currentOrg
+          organizationId: currentOrgId
         }
       })
 
@@ -97,7 +97,7 @@ export const createItem = authActionClient
             categoryId: categoryId === "" ? null : categoryId,
             featured,
             allergens,
-            organizationId: currentOrg,
+            organizationId: currentOrgId,
             variants: {
               create: [
                 {
@@ -109,7 +109,7 @@ export const createItem = authActionClient
           }
         })
 
-        revalidateTag(`menuItems-${currentOrg}`)
+        revalidateTag(`menuItems-${currentOrgId}`)
         revalidateTag(`menuItem-${item.id}`)
 
         return { success: item }
@@ -138,12 +138,12 @@ export const createItem = authActionClient
 /**
  * Creates multiple items in bulk.
  */
-export const bulkCreateItems = authActionClient
+export const bulkCreateItems = authMemberActionClient
   .inputSchema(bulkMenuItemSchema)
-  .action(async ({ parsedInput: items }) => {
-    const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
+  .action(async ({ parsedInput: items, ctx: { member } }) => {
+    const currentOrgId = member.organizationId
 
-    if (!currentOrg) {
+    if (!currentOrgId) {
       return {
         failure: {
           reason: "No se pudo obtener la organización actual"
@@ -170,7 +170,7 @@ export const bulkCreateItems = authActionClient
         // First, fetch all existing categories for the organization
         const existingCategories = await tx.category.findMany({
           where: {
-            organizationId: currentOrg
+            organizationId: currentOrgId
           }
         })
 
@@ -196,14 +196,14 @@ export const bulkCreateItems = authActionClient
         await tx.category.createMany({
           data: Array.from(newCategoryNames).map(name => ({
             name,
-            organizationId: currentOrg
+            organizationId: currentOrgId
           }))
         })
 
         // Refresh category map with new categories
         const updatedCategories = await tx.category.findMany({
           where: {
-            organizationId: currentOrg
+            organizationId: currentOrgId
           }
         })
         const updatedCategoryMap = new Map(
@@ -225,7 +225,7 @@ export const bulkCreateItems = authActionClient
                 description: item.description || "",
                 status: item.status || MenuItemStatus.ACTIVE,
                 categoryId,
-                organizationId: currentOrg,
+                organizationId: currentOrgId,
                 variants: {
                   create: [
                     {
@@ -240,8 +240,8 @@ export const bulkCreateItems = authActionClient
         )
       })
 
-      revalidateTag(`menuItems-${currentOrg}`)
-      revalidateTag(`categories-${currentOrg}`)
+      revalidateTag(`menuItems-${currentOrgId}`)
+      revalidateTag(`categories-${currentOrgId}`)
       return { success: createdItems }
     } catch (error) {
       // Add type checking for better error handling
@@ -278,7 +278,7 @@ export const bulkCreateItems = authActionClient
  * @param variants - An array of variants to update or create.
  * @returns An object with the updated item on success, or a failure object with a reason on failure.
  */
-export const updateItem = authActionClient
+export const updateItem = authMemberActionClient
   .inputSchema(menuItemSchema)
   .action(
     async ({
@@ -292,8 +292,10 @@ export const updateItem = authActionClient
         variants,
         featured,
         allergens
-      }
+      },
+      ctx: { member }
     }) => {
+      const currentOrgId = member.organizationId
       try {
         const item = await prisma.menuItem.update({
           where: { id },
@@ -320,7 +322,7 @@ export const updateItem = authActionClient
           }
         })
 
-        revalidateTag(`menuItems-${organizationId}`)
+        revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
         revalidateTag(`menuItem-${item.id}`)
 
         return { success: item }
@@ -354,14 +356,15 @@ export const updateItem = authActionClient
  * @param organizationId - The ID of the organization the item belongs to.
  * @returns An object indicating the success or failure of the deletion operation.
  */
-export const deleteItem = authActionClient
+export const deleteItem = authMemberActionClient
   .inputSchema(
     z.object({
-      id: z.cuid(),
-      organizationId: z.cuid()
+      id: z.string(),
+      organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, organizationId } }) => {
+  .action(async ({ parsedInput: { id, organizationId }, ctx: { member } }) => {
+    const currentOrgId = member.organizationId
     try {
       // Delete the image from the storage if exists
       const item = await prisma.menuItem.findUnique({
@@ -381,7 +384,7 @@ export const deleteItem = authActionClient
         where: { id }
       })
 
-      revalidateTag(`menuItems-${organizationId}`)
+      revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
       revalidateTag(`menuItem-${id}`)
 
       return { success: true }
@@ -409,12 +412,11 @@ export const deleteItem = authActionClient
  * @param name - The name of the category.
  * @returns An object with either a success property containing the created category, or a failure property containing the reason for failure.
  */
-export const createCategory = authActionClient
+export const createCategory = authMemberActionClient
   .inputSchema(categorySchema)
-  .action(async ({ parsedInput: { name } }) => {
-    const currentOrg = (await cookies()).get(appConfig.cookieOrg)?.value
-
-    if (!currentOrg) {
+  .action(async ({ parsedInput: { name }, ctx: { member } }) => {
+    const currentOrgId = member.organizationId
+    if (!currentOrgId) {
       return {
         failure: {
           reason: "No se pudo obtener la organización actual"
@@ -426,11 +428,11 @@ export const createCategory = authActionClient
       const category = await prisma.category.create({
         data: {
           name,
-          organizationId: currentOrg
+          organizationId: currentOrgId
         }
       })
 
-      revalidateTag(`categories-${currentOrg}`)
+      revalidateTag(`categories-${currentOrgId}`)
 
       return { success: category }
     } catch (error) {
@@ -463,41 +465,44 @@ export const createCategory = authActionClient
  * @param organizationId - The ID of the organization the category belongs to.
  * @returns An object with the updated category if successful, or a failure object with a reason if an error occurs.
  */
-export const updateCategory = authActionClient
+export const updateCategory = authMemberActionClient
   .inputSchema(categorySchema)
-  .action(async ({ parsedInput: { id, name, organizationId } }) => {
-    try {
-      const category = await prisma.category.update({
-        where: { id },
-        data: {
-          name
-        }
-      })
+  .action(
+    async ({ parsedInput: { id, name, organizationId }, ctx: { member } }) => {
+      const currentOrgId = member.organizationId
+      try {
+        const category = await prisma.category.update({
+          where: { id },
+          data: {
+            name
+          }
+        })
 
-      revalidateTag(`categories-${organizationId}`)
+        revalidateTag(`categories-${organizationId ?? currentOrgId}`)
 
-      return { success: category }
-    } catch (error) {
-      let message
-      if (typeof error === "string") {
-        message = error
-      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        console.error(error)
-        if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
-          message = "Ya existe una categoría con ese nombre"
-        } else {
+        return { success: category }
+      } catch (error) {
+        let message
+        if (typeof error === "string") {
+          message = error
+        } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error(error)
+          if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
+            message = "Ya existe una categoría con ese nombre"
+          } else {
+            message = error.message
+          }
+        } else if (error instanceof Error) {
           message = error.message
         }
-      } else if (error instanceof Error) {
-        message = error.message
-      }
-      return {
-        failure: {
-          reason: message
+        return {
+          failure: {
+            reason: message
+          }
         }
       }
     }
-  })
+  )
 
 /**
  * Deletes a category.
@@ -506,14 +511,15 @@ export const updateCategory = authActionClient
  * @param {string} organizationId - The ID of the organization the category belongs to.
  * @returns {Promise<{ success: boolean } | { failure: { reason: string } }>} - A promise that resolves to an object indicating the success or failure of the deletion operation.
  */
-export const deleteCategory = authActionClient
+export const deleteCategory = authMemberActionClient
   .inputSchema(
     z.object({
-      id: z.cuid(),
-      organizationId: z.cuid()
+      id: z.string(),
+      organizationId: z.string()
     })
   )
   .action(async ({ parsedInput: { id, organizationId } }) => {
+    // const currentOrgId = member.organizationId
     try {
       // Check if the category is being used by any item
       const items = await prisma.menuItem.findMany({
@@ -562,7 +568,7 @@ export const deleteCategory = authActionClient
  * @param menuItemId - The ID of the associated menu item.
  * @returns An object with either a success property containing the created variant, or a failure property containing the reason for failure.
  */
-export const createVariant = authActionClient
+export const createVariant = authMemberActionClient
   .inputSchema(variantSchema)
   .action(async ({ parsedInput: { name, price, menuItemId } }) => {
     if (!menuItemId) {
@@ -611,11 +617,11 @@ export const createVariant = authActionClient
  * @param {string} menuItemId - The ID of the menu item associated with the variant.
  * @returns {Promise<{ success: boolean } | { failure: { reason: string } }>} - A promise that resolves to an object indicating the success or failure of the deletion operation.
  */
-export const deleteVariant = authActionClient
+export const deleteVariant = authMemberActionClient
   .inputSchema(
     z.object({
-      id: z.cuid(),
-      menuItemId: z.cuid()
+      id: z.string(),
+      menuItemId: z.string()
     })
   )
   .action(async ({ parsedInput: { id, menuItemId } }) => {
@@ -649,50 +655,57 @@ export const deleteVariant = authActionClient
 /**
  * Updates the category of multiple items at once.
  */
-export const bulkUpdateCategory = authActionClient
+export const bulkUpdateCategory = authMemberActionClient
   .inputSchema(
     z.object({
-      ids: z.array(z.cuid()),
-      categoryId: z.cuid(),
-      organizationId: z.cuid()
+      ids: z.array(z.string()),
+      categoryId: z.string(),
+      organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { ids, categoryId, organizationId } }) => {
-    try {
-      await prisma.menuItem.updateMany({
-        where: {
-          id: { in: ids }
-        },
-        data: {
-          categoryId
-        }
-      })
+  .action(
+    async ({
+      parsedInput: { ids, categoryId, organizationId },
+      ctx: { member }
+    }) => {
+      const currentOrgId = member.organizationId
+      try {
+        await prisma.menuItem.updateMany({
+          where: {
+            id: { in: ids }
+          },
+          data: {
+            categoryId
+          }
+        })
 
-      revalidateTag(`menuItems-${organizationId}`)
-      ids.forEach(id => revalidateTag(`menuItem-${id}`))
+        revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
+        ids.forEach(id => revalidateTag(`menuItem-${id}`))
 
-      return { success: true }
-    } catch (error) {
-      console.error(error)
-      return {
-        failure: {
-          reason: "Error al actualizar las categorías"
+        return { success: true }
+      } catch (error) {
+        console.error(error)
+        return {
+          failure: {
+            reason: "Error al actualizar las categorías"
+          }
         }
       }
     }
-  })
+  )
 
 /**
  * Deletes multiple items at once.
  */
-export const bulkDeleteItems = authActionClient
+export const bulkDeleteItems = authMemberActionClient
   .inputSchema(
     z.object({
-      ids: z.array(z.cuid()),
-      organizationId: z.cuid()
+      ids: z.array(z.string()),
+      organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { ids, organizationId } }) => {
+  .action(async ({ parsedInput: { ids, organizationId }, ctx: { member } }) => {
+    const currentOrgId = member.organizationId
     try {
       // First get all items to delete their images
       const items = await prisma.menuItem.findMany({
@@ -720,7 +733,7 @@ export const bulkDeleteItems = authActionClient
         }
       })
 
-      revalidateTag(`menuItems-${organizationId}`)
+      revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
       ids.forEach(id => revalidateTag(`menuItem-${id}`))
 
       return { success: true }
@@ -737,35 +750,41 @@ export const bulkDeleteItems = authActionClient
 /**
  * Toggles the featured status of multiple items at once.
  */
-export const bulkToggleFeature = authActionClient
+export const bulkToggleFeature = authMemberActionClient
   .inputSchema(
     z.object({
-      ids: z.array(z.cuid()),
+      ids: z.array(z.string()),
       featured: z.boolean(),
-      organizationId: z.cuid()
+      organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { ids, featured, organizationId } }) => {
-    try {
-      await prisma.menuItem.updateMany({
-        where: {
-          id: { in: ids }
-        },
-        data: {
-          featured
-        }
-      })
+  .action(
+    async ({
+      parsedInput: { ids, featured, organizationId },
+      ctx: { member }
+    }) => {
+      const currentOrgId = member.organizationId
+      try {
+        await prisma.menuItem.updateMany({
+          where: {
+            id: { in: ids }
+          },
+          data: {
+            featured
+          }
+        })
 
-      revalidateTag(`menuItems-${organizationId}`)
-      ids.forEach(id => revalidateTag(`menuItem-${id}`))
+        revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
+        ids.forEach(id => revalidateTag(`menuItem-${id}`))
 
-      return { success: true }
-    } catch (error) {
-      console.error(error)
-      return {
-        failure: {
-          reason: "Error al actualizar los productos destacados"
+        return { success: true }
+      } catch (error) {
+        console.error(error)
+        return {
+          failure: {
+            reason: "Error al actualizar los productos destacados"
+          }
         }
       }
     }
-  })
+  )

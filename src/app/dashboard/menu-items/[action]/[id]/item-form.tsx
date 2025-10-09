@@ -178,6 +178,18 @@ export default function ItemForm({
   })
 
   const onSubmit = (data: z.infer<typeof menuItemSchema>) => {
+    // Ensure price is a number before submitting
+    if (data.variants) {
+      const mapped = data.variants.map(variant => ({
+        ...variant,
+        price: Number(variant.price)
+      }))
+      // menuItemSchema may type variants as a non-empty tuple; assert to the expected type
+      data.variants = mapped as unknown as z.infer<
+        typeof menuItemSchema
+      >["variants"]
+    }
+
     execute(data)
   }
 

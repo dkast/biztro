@@ -8,14 +8,14 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { createStripePortal } from "@/server/actions/subscriptions/mutations"
 
-export function CustomerPortalButton() {
+export function CustomerPortalButton({ referenceId }: { referenceId: string }) {
   const router = useRouter()
   const [isSubmitting, setisSubmitting] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   const handleStripePortal = async () => {
     setisSubmitting(true)
-    const redirectUrl = await createStripePortal()
+    const redirectUrl = await createStripePortal(referenceId)
     if (!redirectUrl) {
       toast.error("No se pudo redirigir al portal de clientes")
       setisSubmitting(false)

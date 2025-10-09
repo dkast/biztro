@@ -160,7 +160,8 @@ export enum SubscriptionStatus {
 }
 
 export const orgSchema = z.object({
-  id: z.cuid().optional(),
+  // Accept string ids from external auth provider; keep optional for creation
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>
@@ -177,7 +178,19 @@ export const orgSchema = z.object({
   banner: z.url().optional(),
   status: z.enum(SubscriptionStatus),
   plan: z.enum(["BASIC", "PRO"]),
+  // Deprecated: `subdomain` will be replaced by `slug` - kept for backwards compatibility
   subdomain: z
+    .string()
+    .min(3, {
+      error: "Subdominio muy corto"
+    })
+    .trim()
+    .regex(/^[a-z0-9-]+$/i, {
+      error: "Solo letras, números y guiones son permitidos"
+    })
+    .optional(),
+  // New preferred field replacing subdomain
+  slug: z
     .string()
     .min(3, {
       error: "Subdominio muy corto"
@@ -189,7 +202,7 @@ export const orgSchema = z.object({
 })
 
 export const locationSchema = z.object({
-  id: z.cuid().optional(),
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>
@@ -220,15 +233,15 @@ export const locationSchema = z.object({
   tiktok: z.string().optional(),
   whatsapp: z.string().optional(),
   website: z.url().optional(),
-  organizationId: z.cuid().optional()
+  organizationId: z.string().optional()
 })
 
 export const hoursSchema = z.object({
-  locationId: z.cuid().optional(),
+  locationId: z.string().optional(),
   items: z.array(
     z
       .object({
-        id: z.cuid().optional(),
+        id: z.string().optional(),
         day: z.enum([
           "MONDAY",
           "TUESDAY",
@@ -259,7 +272,7 @@ export const hoursSchema = z.object({
 })
 
 export const variantSchema = z.object({
-  id: z.cuid().optional(),
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>
@@ -273,11 +286,11 @@ export const variantSchema = z.object({
     }),
   description: z.string().optional(),
   price: z.number().min(0, { error: "Precio no puede ser negativo" }),
-  menuItemId: z.cuid().optional()
+  menuItemId: z.string().optional()
 })
 
 export const menuItemSchema = z.object({
-  id: z.cuid().optional(),
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>
@@ -293,14 +306,14 @@ export const menuItemSchema = z.object({
   description: z.string().optional(),
   image: z.url().optional(),
   categoryId: z.string().optional(),
-  organizationId: z.cuid().optional(),
+  organizationId: z.string().optional(),
   featured: z.boolean().prefault(false).optional(),
   variants: z.tuple([variantSchema], variantSchema),
   allergens: z.string().optional()
 })
 
 export const categorySchema = z.object({
-  id: z.cuid().optional(),
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>
@@ -312,11 +325,11 @@ export const categorySchema = z.object({
     .max(100, {
       error: "Nombre muy largo"
     }),
-  organizationId: z.cuid().optional()
+  organizationId: z.string().optional()
 })
 
 export const menuSchema = z.object({
-  id: z.cuid().optional(),
+  id: z.string().optional(),
   name: z
     .string({
       error: issue =>
@@ -330,7 +343,7 @@ export const menuSchema = z.object({
     }),
   description: z.string().optional(),
   status: z.enum(["PUBLISHED", "DRAFT"]),
-  organizationId: z.cuid().optional(),
+  organizationId: z.string().optional(),
   serialData: string().optional()
 })
 
@@ -361,9 +374,9 @@ export const enum ImageType {
 }
 
 export const enum MembershipRole {
-  ADMIN = "ADMIN",
-  MEMBER = "MEMBER",
-  OWNER = "OWNER"
+  ADMIN = "admin",
+  MEMBER = "member",
+  OWNER = "owner"
 }
 
 export const enum ActionType {

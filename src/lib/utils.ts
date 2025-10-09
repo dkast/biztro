@@ -1,3 +1,4 @@
+import InviteUserEmail from "@/emails/invite"
 import {
   getLocalTimeZone,
   parseTime,
@@ -8,7 +9,11 @@ import {
 } from "@internationalized/date"
 import type { OpeningHours } from "@prisma/client"
 import { clsx, type ClassValue } from "clsx"
+import { Resend } from "resend"
 import { twMerge } from "tailwind-merge"
+
+import { authClient } from "@/lib/auth-client"
+import { env } from "@/env.mjs"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -144,4 +149,82 @@ export const toDateTime = (secs: number) => {
   const t = new Date(+0) // Unix epoch start.
   t.setSeconds(secs)
   return t
+}
+
+export const sendOrganizationInvitation = async ({
+  email,
+  invitedByUsername,
+  invitedByEmail,
+  teamName,
+  inviteLink
+}: {
+  email: string
+  invitedByUsername: string
+  invitedByEmail: string
+  teamName: string
+  inviteLink: string
+}) => {
+  // Send email invitation
+  const resend = new Resend(env.RESEND_API_KEY)
+
+  // Extract shortname from email address
+  const shortname = email.split("@")[0]
+
+  const baseUrl = getBaseUrl()
+
+  const { error } = await resend.emails.send({
+    from: "noreply@biztro.co",
+    to: email,
+    subject: `Invitación a unirse a ${teamName}`,
+    react: InviteUserEmail({
+      username: shortname,
+      invitedByUsername,
+      invitedByEmail,
+      teamName,
+      inviteLink,
+      baseUrl
+    })
+  })
+
+  if (error) {
+    console.error("Error sending invitation email:", error)
+  }
+}
+
+export async function upgradeOrganizationPlan(
+  organizationId: string,
+  newPlan: "BASIC" | "PRO"
+) {
+  try {
+    
+    const { data, error } = await authClient.organization.update({
+      data: {
+        plan: newPlan
+      },
+      organizationId: organizationId as string
+    })
+
+    if (error || !data) {
+      console.error("Error upgrading organization plan:", error)
+      return {
+        failure: {
+          reason: "No se pudo actualizar el plan de la organización"
+        }
+      }
+    }
+
+    return { success: true }
+  } catch (error) {
+    let message
+    if (typeof error === "string") {
+      message = error
+    } else if (error instanceof Error) {
+      message = error.message
+    }
+    return {
+      failure: {
+        reason: message
+      }
+    }
+  }
 }

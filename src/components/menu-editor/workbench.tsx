@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
-import type { Organization, Prisma } from "@prisma/client"
+import type { Prisma } from "@prisma/client"
 import { useAtom, useSetAtom } from "jotai"
 import lz from "lzutf8"
 
@@ -42,6 +42,7 @@ import type {
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
+import type { getCurrentOrganization } from "@/server/actions/user/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorThemeAtom, fontThemeAtom, frameSizeAtom } from "@/lib/atoms"
 import { FrameSize } from "@/lib/types"
@@ -63,7 +64,7 @@ export default function Workbench({
   featuredItems
 }: {
   menu: Prisma.PromiseReturnType<typeof getMenuById>
-  organization: Organization
+  organization: Prisma.PromiseReturnType<typeof getCurrentOrganization>
   location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
   categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
   soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
@@ -84,7 +85,7 @@ export default function Workbench({
     setColorThemeId(menu?.colorTheme ?? "DEFAULT")
   }, []) // Empty dependency array ensures this runs once
 
-  if (!menu || !categories) return null
+  if (!menu || !categories || !organization) return null
 
   // Extract the serialized data from the menu
   let json

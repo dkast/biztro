@@ -142,13 +142,14 @@ export default function MenuPublish({
   }, [store.history.timeline.length, lastSavedTimelineLength, nodes])
 
   if (!menu) return null
+  const orgSlug = menu.organization.slug ?? ""
 
   const handleUpdateStatus = (status: MenuStatus) => {
     const json = query.serialize()
     const serialData = lz.encodeBase64(lz.compress(json))
     execute({
       id: menu?.id,
-      subdomain: menu.organization.subdomain,
+      subdomain: orgSlug,
       status,
       fontTheme,
       colorTheme,
@@ -207,17 +208,17 @@ export default function MenuPublish({
               Al escanear el código con la cámara de tu móvil o aplicación QR te
               llevará a la siguiente dirección:{" "}
               <Link
-                href={`${getBaseUrl()}/${menu.organization.subdomain}`}
+                href={`${getBaseUrl()}/${orgSlug}`}
                 className="text-blue-600 hover:text-blue-800"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {`${getBaseUrl()}/${menu.organization.subdomain}`}
+                {`${getBaseUrl()}/${orgSlug}`}
               </Link>
             </DialogDescription>
           </DialogHeader>
           <QrCodeEditor
-            value={`${getBaseUrl()}/${menu.organization.subdomain}`}
+            value={`${getBaseUrl()}/${orgSlug}`}
             logoURL={menu.organization.logo ?? undefined}
           />
           {menu.status === MenuStatus.DRAFT && (
@@ -287,12 +288,12 @@ export default function MenuPublish({
                 <span className="text-sm font-medium">Liga Menú</span>
                 <div className="flex flex-row items-center gap-1">
                   <Link
-                    href={`/${menu.organization.subdomain}`}
+                    href={`/${orgSlug}`}
                     className="flex flex-row items-center justify-center gap-2"
                     target="_blank"
                   >
                     <span className="text-xs">
-                      {getBaseUrl()}/{menu.organization.subdomain}
+                      {getBaseUrl()}/{orgSlug}
                     </span>
                     <ExternalLink className="size-3.5 text-gray-500" />
                   </Link>
@@ -437,9 +438,6 @@ function QrCodeEditor({
       setIsLoading(false)
     }
   }, [logoURL])
-
-  console.log(logoURL)
-  console.log(logoBase64)
 
   return (
     <div>

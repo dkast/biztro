@@ -3,9 +3,7 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { Gauge } from "@suyalcinkaya/gauge"
-import { Loader } from "lucide-react"
 import { useTheme } from "next-themes"
-import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -18,56 +16,31 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { checkoutWithStripe } from "@/server/actions/subscriptions/mutations"
 import { appConfig } from "@/app/config"
-import { getStripeClient } from "@/lib/stripe-client"
+import { authClient } from "@/lib/auth-client"
 import { Plan, Tiers } from "@/lib/types"
 
 export function BasicPlanView({ itemCount }: { itemCount: number }) {
   const theme = useTheme()
-  const router = useRouter()
-  const [priceIdLoading, setpriceIdLoading] = useState<string>()
   const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">(
     "monthly"
   )
 
+  const { data: activeOrganization } = authClient.useActiveOrganization()
+
   const handleStripeCheckout = async () => {
-    const tier = Tiers.find(tier => tier.id === Plan.PRO)
+    const { error } = await authClient.subscription.upgrade({
+      plan: Plan.PRO,
+      annual: billingInterval === "yearly",
+      referenceId: activeOrganization?.id,
+      successUrl: "/dashboard/settings/billing",
+      cancelUrl: "/dashboard/settings/billing"
+    })
 
-    if (!tier) {
-      throw new Error("Tier not found")
+    if (error) {
+      console.error("Error creating checkout session:", error)
+      toast.error("Error al iniciar el proceso de pago. Inténtalo de nuevo.")
     }
-
-    const priceId =
-      billingInterval === "monthly" ? tier.priceMonthlyId : tier.priceYearlyId
-
-    if (!priceId) {
-      toast.error("No existe configuración de precio")
-      return
-    }
-
-    setpriceIdLoading(priceId)
-
-    const { errorRedirect, sessionId } = await checkoutWithStripe(
-      priceId,
-      "/dashboard/settings/billing"
-    )
-
-    if (errorRedirect) {
-      setpriceIdLoading(undefined)
-      return router.push(errorRedirect)
-    }
-
-    if (!sessionId) {
-      setpriceIdLoading(undefined)
-      toast.error("Error al crear la sesión de pago")
-      return null
-    }
-
-    const stripe = await getStripeClient()
-    stripe?.redirectToCheckout({ sessionId })
-
-    setpriceIdLoading(undefined)
   }
 
   return (
@@ -106,12 +79,18 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
               onValueChange={value =>
                 value && setBillingInterval(value as "monthly" | "yearly")
               }
-              className="w-full justify-center border border-gray-200 dark:border-gray-800"
+              className="w-full justify-center gap-0.5 rounded-lg border border-gray-200 p-1 dark:border-gray-800"
             >
-              <ToggleGroupItem value="monthly" className="text-sm">
+              <ToggleGroupItem
+                value="monthly"
+                className="rounded-xs text-sm data-[state=on]:bg-violet-500 data-[state=on]:text-white"
+              >
                 Mensual
               </ToggleGroupItem>
-              <ToggleGroupItem value="yearly" className="text-sm">
+              <ToggleGroupItem
+                value="yearly"
+                className="rounded-xs text-sm data-[state=on]:bg-violet-500 data-[state=on]:text-white"
+              >
                 Anual
                 <span className="ml-1.5 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-600 dark:bg-green-900 dark:text-green-300">
                   -20%
@@ -157,15 +136,8 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
       </CardContent>
       <Separator />
       <CardFooter className="justify-end py-4">
-        <Button
-          disabled={priceIdLoading !== undefined}
-          onClick={handleStripeCheckout}
-        >
-          {priceIdLoading ? (
-            <Loader className="size-4 animate-spin" />
-          ) : (
-            `Obtener Pro ${billingInterval === "monthly" ? "Mensual" : "Anual"}`
-          )}
+        <Button onClick={handleStripeCheckout} className="w-full sm:w-auto">
+          Obtener Pro {billingInterval === "monthly" ? "Mensual" : "Anual"}
         </Button>
       </CardFooter>
     </Card>

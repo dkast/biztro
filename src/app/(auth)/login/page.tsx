@@ -1,27 +1,23 @@
 import { Suspense } from "react"
 import { type Metadata } from "next"
-// import { getProviders } from "next-auth/react"
 import Image from "next/image"
 import Link from "next/link"
 
-// import { notFound } from "next/navigation"
-
-// import Logo from "@/components/logo"
 import Spinner from "@/components/ui/spinner"
 import LoginForm from "@/app/(auth)/login/login-form"
-import { providers } from "@/lib/types"
 
 export const metadata: Metadata = {
   title: "Iniciar sesión",
   description: "Iniciar sesión en Biztro"
 }
 
-export default function LoginPage() {
-  // const providers = await getProviders()
-
-  // if (!providers) {
-  //   return notFound()
-  // }
+export default async function LoginPage({
+  searchParams
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const callbackUrl =
+    ((await searchParams)?.callbackUrl as string) ?? "/dashboard"
 
   return (
     <div className="flex min-h-full flex-1">
@@ -31,17 +27,16 @@ export default function LoginPage() {
             <Link href="/">
               <Image src="/logo-bistro.svg" alt="Logo" width={44} height={44} />
             </Link>
-            <h2 className="mt-4 font-display text-3xl font-medium leading-9 tracking-tight text-gray-900 dark:text-gray-200">
+            <h2 className="font-display mt-4 text-3xl leading-9 font-medium tracking-tight text-gray-900 dark:text-gray-200">
               Bienvenido
             </h2>
             <span className="mt-2 block text-sm text-gray-600 dark:text-gray-400">
               Inicia sesión con tu cuenta de Biztro
             </span>
           </div>
-
           <div className="mt-10">
             <Suspense fallback={<Loading />}>
-              <LoginForm providers={providers} />
+              <LoginForm callbackUrl={callbackUrl} />
             </Suspense>
           </div>
         </div>
