@@ -9,7 +9,7 @@ export const createStripePortal = async (referenceId: string) => {
   try {
     const data = await auth.api.createBillingPortal({
       body: {
-        referenceId: referenceId,
+        referenceId,
         returnUrl: `${getBaseUrl()}/dashboard/settings/billing`
       },
       headers: await headers()

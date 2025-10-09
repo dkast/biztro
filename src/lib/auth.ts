@@ -9,6 +9,7 @@ import { getActiveOrganization } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
 
+// skipcq: JS-0339
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-08-27.basil"
 })
@@ -62,7 +63,9 @@ export const auth = betterAuth({
   socialProviders: {
     google: {
       prompt: "select_account",
+      // skipcq: JS-0339
       clientId: process.env.AUTH_GOOGLE_ID!,
+      // skipcq: JS-0339
       clientSecret: process.env.AUTH_GOOGLE_SECRET!
     }
   },
@@ -112,8 +115,9 @@ export const auth = betterAuth({
     // Stripe billing integration via Better Auth plugin (server-side)
     stripe({
       // Pass an initialized Stripe client (recommended by the plugin docs)
-      stripeClient: stripeClient,
+      stripeClient,
       // Webhook signing secret for verifying Stripe webhook payloads
+      // skipcq: JS-0339
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
       // Create a Stripe customer automatically when users sign up
       createCustomerOnSignUp: true,

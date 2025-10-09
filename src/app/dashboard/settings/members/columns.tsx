@@ -41,9 +41,9 @@ export function getColumns(canDeleteMember: boolean): ColumnDef<AuthMember>[] {
         </Button>
       ),
       cell: ({ row }) => {
-        const m = row.original
-        const name = m.user?.name ?? m.user?.email ?? "Usuario"
-        const email = m.user?.email ?? ""
+        const member = row.original
+        const name = member.user?.name ?? member.user?.email ?? "Usuario"
+        const email = member.user?.email ?? ""
         const initials = name
           .split(/\s+/)
           .filter(Boolean)
@@ -54,7 +54,7 @@ export function getColumns(canDeleteMember: boolean): ColumnDef<AuthMember>[] {
         return (
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={m.user?.image ?? undefined} alt={name} />
+              <AvatarImage src={member.user?.image ?? undefined} alt={name} />
               <AvatarFallback>{initials || "?"}</AvatarFallback>
             </Avatar>
             <div className="flex min-w-0 flex-col">

@@ -40,7 +40,6 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
     if (error) {
       console.error("Error creating checkout session:", error)
       toast.error("Error al iniciar el proceso de pago. Inténtalo de nuevo.")
-      return
     }
   }
 

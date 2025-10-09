@@ -17,7 +17,7 @@ export default function MemberTable({
   const cols = getColumns(canDeleteMember)
 
   const { table, globalFilter, setGlobalFilter } = useDataTable({
-    data: data,
+    data,
     columns: cols
   })
 
