@@ -81,11 +81,10 @@ model Organization {
   menuItems    MenuItem[]
   themes       Theme[]
 
-  slug                 String?
-  metadata             String?
-  members              Member[]
-  invitations          Invitation[]
-  Subscription_Removed Subscription_Removed[]
+  slug        String?
+  metadata    String?
+  members     Member[]
+  invitations Invitation[]
 
   @@index([slug])
 }

@@ -120,36 +120,6 @@ model Invite {
   @@index([email])
 }
 
-// Planned to remove in the future
-model Customer_Removed {
-  stripeCustomerId String @id
-  membershipId     String @unique
-
-  @@index([membershipId])
-}
-
-model Subscription_Removed {
-  id                 String       @id
-  status             String
-  metadata           String
-  priceId            String?
-  quantity           Int
-  cancelAtPeriodEnd  Boolean      @default(false)
-  created            DateTime     @default(now())
-  currentPeriodStart DateTime     @default(now())
-  currentPeriodEnd   DateTime     @default(now())
-  endedAt            DateTime?
-  cancelAt           DateTime?
-  canceledAt         DateTime?
-  trialStart         DateTime?
-  trialEnd           DateTime?
-  membershipId       String
-  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  organizationId     String
-
-  @@index([membershipId])
-}
-
 model Verification {
   id         String    @id
   identifier String
