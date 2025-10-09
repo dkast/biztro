@@ -196,7 +196,7 @@ export async function upgradeOrganizationPlan(
   newPlan: "BASIC" | "PRO"
 ) {
   try {
-    console.log("Upgrading organization plan:", organizationId, newPlan)
+    
     const { data, error } = await authClient.organization.update({
       data: {
         plan: newPlan
