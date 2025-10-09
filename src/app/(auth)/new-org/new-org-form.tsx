@@ -69,7 +69,6 @@ export default function NewOrgForm() {
   })
 
   const onSubmit = (data: z.infer<typeof orgSchema>) => {
-    console.log("Submitting form with data:", data)
     execute(data)
   }
 
