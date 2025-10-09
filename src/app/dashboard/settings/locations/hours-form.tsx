@@ -108,7 +108,7 @@ export default function HoursForm({
 
   const onSubmit = (values: z.infer<typeof hoursSchema>) => {
     execute({
-      locationId: values.locationId,
+      locationId: data?.id,
       items: values.items.map(item => ({
         day: item.day,
         startTime: item.startTime,
@@ -121,7 +121,10 @@ export default function HoursForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="mt-10 space-y-6">
-        <div className="grid grid-cols-3 gap-4">
+        <fieldset
+          className="grid grid-cols-3 gap-4"
+          disabled={data?.id === undefined}
+        >
           {fields.map((field, index) => (
             <Fragment key={field.id}>
               <div className="flex flex-row items-center gap-3">
@@ -192,7 +195,7 @@ export default function HoursForm({
               />
             </Fragment>
           ))}
-        </div>
+        </fieldset>
         <Button type="submit" disabled={status === "executing"}>
           {status === "executing" ? (
             <>

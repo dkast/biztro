@@ -80,12 +80,18 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
               onValueChange={value =>
                 value && setBillingInterval(value as "monthly" | "yearly")
               }
-              className="w-full justify-center border border-gray-200 dark:border-gray-800"
+              className="w-full justify-center gap-0.5 rounded-lg border border-gray-200 p-1 dark:border-gray-800"
             >
-              <ToggleGroupItem value="monthly" className="text-sm">
+              <ToggleGroupItem
+                value="monthly"
+                className="rounded-xs text-sm data-[state=on]:bg-violet-500 data-[state=on]:text-white"
+              >
                 Mensual
               </ToggleGroupItem>
-              <ToggleGroupItem value="yearly" className="text-sm">
+              <ToggleGroupItem
+                value="yearly"
+                className="rounded-xs text-sm data-[state=on]:bg-violet-500 data-[state=on]:text-white"
+              >
                 Anual
                 <span className="ml-1.5 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-600 dark:bg-green-900 dark:text-green-300">
                   -20%
@@ -132,7 +138,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
       <Separator />
       <CardFooter className="justify-end py-4">
         <Button onClick={handleStripeCheckout}>
-          `Obtener Pro ${billingInterval === "monthly" ? "Mensual" : "Anual"}`
+          Obtener Pro {billingInterval === "monthly" ? "Mensual" : "Anual"}
         </Button>
       </CardFooter>
     </Card>

@@ -213,6 +213,16 @@ export const updateHours = authActionClient
       }
     }
 
+    // Get current orgization ID
+    const currentOrg = await getCurrentOrganization()
+    if (!currentOrg) {
+      return {
+        failure: {
+          reason: "No se pudo obtener la organización actual"
+        }
+      }
+    }
+
     try {
       await prisma.openingHours.deleteMany({
         where: {
@@ -230,7 +240,7 @@ export const updateHours = authActionClient
         }))
       })
 
-      revalidateTag(`default-location-${locationId}`)
+      revalidateTag(`default-location-${currentOrg.id}`)
 
       return { success: hours }
     } catch (error) {

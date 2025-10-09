@@ -7,6 +7,7 @@ import type { Location } from "@prisma/client"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import type { z } from "zod/v4"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -52,6 +53,8 @@ export default function LocationForm({
     }
   })
 
+  const router = useRouter()
+
   const {
     execute: executeCreate,
     status: statusCreate,
@@ -60,6 +63,7 @@ export default function LocationForm({
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Sucursal actualizada")
+        router.refresh()
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
