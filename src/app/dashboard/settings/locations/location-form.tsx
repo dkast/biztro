@@ -7,8 +7,7 @@ import type { Location } from "@prisma/client"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
-import type { z } from "zod/v4"
+import { type z } from "zod/v4"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Button } from "@/components/ui/button"
@@ -53,8 +52,6 @@ export default function LocationForm({
     }
   })
 
-  const router = useRouter()
-
   const {
     execute: executeCreate,
     status: statusCreate,
@@ -63,7 +60,22 @@ export default function LocationForm({
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Sucursal actualizada")
-        router.refresh()
+        // Reload the form with the latest data
+        const result = data?.success
+        form.reset({
+          id: result.id,
+          name: result.name,
+          description: result.description ?? undefined,
+          address: result.address ?? undefined,
+          phone: result.phone ?? undefined,
+          facebook: result.facebook ?? undefined,
+          instagram: result.instagram ?? undefined,
+          twitter: result.twitter ?? undefined,
+          tiktok: result.tiktok ?? undefined,
+          whatsapp: result.whatsapp ?? undefined,
+          website: result.website ?? undefined,
+          organizationId: result.organizationId ?? undefined
+        })
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
@@ -86,7 +98,6 @@ export default function LocationForm({
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
-
       resetUpdate()
     },
     onError: () => {
@@ -96,6 +107,7 @@ export default function LocationForm({
 
   const onSubmit = (values: z.infer<typeof locationSchema>) => {
     if (data) {
+      console.dir("Updating location", values)
       executeUpdate(values)
     } else {
       executeCreate(values)
@@ -165,7 +177,7 @@ export default function LocationForm({
                     {...field}
                     id="phone"
                     className="sm:w-1/2"
-                    placeholder="Teléfono"
+                    placeholder="Teléfono (opcional)"
                   />
                 </FormControl>
                 <FormDescription>

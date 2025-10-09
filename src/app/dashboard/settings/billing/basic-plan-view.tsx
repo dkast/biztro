@@ -137,7 +137,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
       </CardContent>
       <Separator />
       <CardFooter className="justify-end py-4">
-        <Button onClick={handleStripeCheckout}>
+        <Button onClick={handleStripeCheckout} className="w-full sm:w-auto">
           Obtener Pro {billingInterval === "monthly" ? "Mensual" : "Anual"}
         </Button>
       </CardFooter>
