@@ -4,7 +4,7 @@ import PageSubtitle from "@/components/dashboard/page-subtitle"
 import NewOrgForm from "../../(auth)/new-org/new-org-form"
 
 export const metadata = {
-  title: "Crear Negocio",
+  title: "Crear Organización",
   description: "Crea y configura tu negocio en Biztro"
 }
 
@@ -13,7 +13,7 @@ export default function Page() {
     <div className="flex grow py-4">
       <div className="mx-auto flex max-w-2xl grow flex-col gap-4 px-4 sm:px-0">
         <PageSubtitle
-          title="Crear Negocio"
+          title="Crear Organización"
           description="Información básica del negocio"
           Icon={Store}
         />

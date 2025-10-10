@@ -125,7 +125,8 @@ export async function getAllActiveOrganizations() {
         where: {
           OR: [
             { status: SubscriptionStatus.ACTIVE },
-            { status: SubscriptionStatus.TRIALING }
+            { status: SubscriptionStatus.TRIALING },
+            { status: SubscriptionStatus.SPONSORED }
           ]
         },
         select: {

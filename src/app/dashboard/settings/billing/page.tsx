@@ -15,6 +15,7 @@ import {
 } from "@/server/actions/user/queries"
 import { BasicPlanView } from "@/app/dashboard/settings/billing/basic-plan-view"
 import { ProPlanView } from "@/app/dashboard/settings/billing/pro-plan-view"
+import RevalidateStatus from "@/app/dashboard/settings/billing/revalidate-status"
 import { MembershipRole } from "@/lib/types"
 
 export const metadata: Metadata = {
@@ -46,13 +47,13 @@ export default async function BillingPage() {
           {isPro ? (
             <Suspense fallback={<Skeleton className="h-48" />}>
               <ProPlanView />
+              <RevalidateStatus />
             </Suspense>
           ) : (
             <div className="flex flex-col gap-6">
               <Suspense fallback={<Skeleton className="h-48" />}>
                 <BasicPlanView itemCount={itemCount} />
               </Suspense>
-              {/* <TierSelector /> */}
             </div>
           )}
         </div>

@@ -156,7 +156,8 @@ export enum SubscriptionStatus {
   INCOMPLETE_EXPIRED = "INCOMPLETE_EXPIRED",
   PAST_DUE = "PAST_DUE",
   UNPAID = "UNPAID",
-  PAUSED = "PAUSED"
+  PAUSED = "PAUSED",
+  SPONSORED = "SPONSORED" // Custom, not part of Stripe
 }
 
 export const orgSchema = z.object({
