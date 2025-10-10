@@ -14,7 +14,8 @@ import OrganizationForm from "@/app/dashboard/settings/organization-form"
 import { SubscriptionStatus } from "@/lib/types"
 
 export const metadata: Metadata = {
-  title: "Mi Negocio"
+  title: "Mi Organización",
+  description: "Información general del negocio"
 }
 
 function StatusBadge({ status }: { status: SubscriptionStatus }) {
@@ -41,7 +42,8 @@ function StatusBadge({ status }: { status: SubscriptionStatus }) {
       variant: "yellow"
     },
     [SubscriptionStatus.UNPAID]: { label: "No pagado", variant: "destructive" },
-    [SubscriptionStatus.PAUSED]: { label: "Pausado", variant: "yellow" }
+    [SubscriptionStatus.PAUSED]: { label: "Pausado", variant: "yellow" },
+    [SubscriptionStatus.SPONSORED]: { label: "Patrocinado", variant: "green" }
   }
 
   const { label, variant } = variants[status]
@@ -65,7 +67,7 @@ export default async function SettingsPage() {
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
       <div className="flex items-center justify-between">
         <PageSubtitle
-          title="Mi Negocio"
+          title="Mi Organización"
           description="Información general del negocio"
           Icon={Store}
         />

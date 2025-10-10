@@ -5,6 +5,7 @@ import { headers } from "next/headers"
 
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
+import { SubscriptionStatus } from "@/lib/types"
 import { env } from "@/env.mjs"
 
 // Get current organization for the user
@@ -143,17 +144,20 @@ export async function isProMember() {
     sub => sub.status === "active" || sub.status === "trialing"
   )
 
-  // Update the plan in the organization record if it differs from the subscription plan
+  // Update the plan in the organization record if it differs from the subscription plan, if the status is sponsored,
+  // it means the organization is on a sponsored PRO plan
   if (
     org &&
     activeSubscription &&
-    org.plan?.toUpperCase() !== activeSubscription.plan?.toUpperCase()
+    org.plan?.toUpperCase() !== activeSubscription.plan?.toUpperCase() &&
+    org.status !== SubscriptionStatus.SPONSORED
   ) {
     try {
       await auth.api.updateOrganization({
         body: {
           data: {
-            plan: activeSubscription.plan
+            plan: activeSubscription.plan.toUpperCase(),
+            status: activeSubscription.status.toUpperCase()
           },
           organizationId: org.id
         },
@@ -164,7 +168,10 @@ export async function isProMember() {
     }
   }
 
-  return activeSubscription?.plan.toUpperCase() === "PRO"
+  return (
+    activeSubscription?.plan.toUpperCase() === "PRO" ||
+    org?.status === SubscriptionStatus.SPONSORED
+  )
 }
 
 export async function safeHasPermission(

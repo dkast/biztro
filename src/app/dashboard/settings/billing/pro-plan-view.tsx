@@ -1,4 +1,4 @@
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, HeartHandshake } from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import { CustomerPortalButton } from "@/app/dashboard/settings/billing/customer-portal-button"
-import { Tiers } from "@/lib/types"
+import { SubscriptionStatus, Tiers } from "@/lib/types"
 
 export async function ProPlanView() {
   const org = await getCurrentOrganization()
@@ -22,6 +22,19 @@ export async function ProPlanView() {
     return null
   }
   const subscription = await getCurrentSubscription(org?.id)
+
+  if (org.status === SubscriptionStatus.SPONSORED) {
+    return (
+      <Alert variant="success">
+        <HeartHandshake className="size-5" />
+        <AlertTitle>Organización patrocinada</AlertTitle>
+        <AlertDescription>
+          Tu organización está en un plan PRO patrocinado. Disfruta de todas las
+          funciones de Biztro Pro sin costo alguno.
+        </AlertDescription>
+      </Alert>
+    )
+  }
 
   if (!subscription) {
     return null
