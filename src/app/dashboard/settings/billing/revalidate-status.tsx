@@ -19,8 +19,10 @@ export default function RevalidateStatus() {
           queryKey: ["workgroup", "current"]
         })
       } finally {
-        if (!mounted) return
-        setIsRunning(false)
+        // Avoid using returns inside finally blocks — only update state if still mounted
+        if (mounted) {
+          setIsRunning(false)
+        }
       }
     }
 
