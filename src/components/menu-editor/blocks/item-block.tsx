@@ -179,7 +179,7 @@ export function ItemView({
                 <h3
                   style={{
                     fontSize: `${itemFontSize}px`,
-                    color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                    color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
                     fontWeight: itemFontWeight
                   }}
                 >
@@ -189,7 +189,7 @@ export function ItemView({
                 {item.allergens && (
                   <div
                     style={{
-                      color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                      color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
                     }}
                   >
                     <Allergens allergens={item.allergens.split(",")} />
@@ -200,7 +200,7 @@ export function ItemView({
                 <span
                   className="line-clamp-3 text-sm text-pretty"
                   style={{
-                    color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                    color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
                   }}
                 >
                   {item.description}
@@ -219,7 +219,7 @@ export function ItemView({
                     <span
                       className="text-sm"
                       style={{
-                        color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                        color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
                       }}
                     >
                       {variant.name}
@@ -230,7 +230,7 @@ export function ItemView({
                       style={{
                         fontFamily: priceFontFamily,
                         fontSize: `${priceFontSize}px`,
-                        color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                        color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
                         fontWeight: priceFontWeight
                       }}
                     >
@@ -248,7 +248,7 @@ export function ItemView({
                 style={{
                   fontFamily: priceFontFamily,
                   fontSize: `${priceFontSize}px`,
-                  color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })}`,
+                  color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
                   fontWeight: priceFontWeight
                 }}
               >

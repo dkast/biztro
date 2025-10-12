@@ -45,7 +45,8 @@ export async function generateMetadata(
   if (
     org &&
     (org.status === SubscriptionStatus.ACTIVE ||
-      org.status === SubscriptionStatus.TRIALING)
+      org.status === SubscriptionStatus.TRIALING ||
+      org.status === SubscriptionStatus.SPONSORED)
   ) {
     const description =
       org.description && org.description.length > 0
