@@ -46,6 +46,7 @@ export function getOpenHoursStatus(openingHours: OpeningHours[]) {
     new Time(now.getHours(), now.getMinutes())
   )
   const startWeek = startOfWeek(currentDate, "es-MX")
+  // console.log("startWeek", startWeek)
 
   for (const day of openingHours) {
     // convert day to date based on the week start
@@ -70,7 +71,7 @@ export function getOpenHoursStatus(openingHours: OpeningHours[]) {
         weekDayNbr = 6
         break
       case "SUNDAY":
-        weekDayNbr = 7
+        weekDayNbr = 0
         break
       default:
         break
@@ -196,7 +197,6 @@ export async function upgradeOrganizationPlan(
   newPlan: "BASIC" | "PRO"
 ) {
   try {
-    
     const { data, error } = await authClient.organization.update({
       data: {
         plan: newPlan
