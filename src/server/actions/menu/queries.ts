@@ -65,17 +65,18 @@ export async function getMenuById(id: string) {
   // )()
 }
 
-export async function getMenuByOrgSubdomain(subdomain: string) {
+export async function getActiveMenuByOrganizationSlug(slug: string) {
   return await cache(
     async () => {
       return await prisma.menu.findFirst({
         where: {
           status: MenuStatus.PUBLISHED,
           organization: {
-            slug: subdomain,
+            slug,
             OR: [
               { status: SubscriptionStatus.ACTIVE },
-              { status: SubscriptionStatus.TRIALING }
+              { status: SubscriptionStatus.TRIALING },
+              { status: SubscriptionStatus.SPONSORED }
             ]
           }
         },
@@ -84,10 +85,10 @@ export async function getMenuByOrgSubdomain(subdomain: string) {
         }
       })
     },
-    [`site-${subdomain}`],
+    [`site-${slug}`],
     {
       revalidate: 900,
-      tags: [`site-${subdomain}`]
+      tags: [`site-${slug}`]
     }
   )()
 }

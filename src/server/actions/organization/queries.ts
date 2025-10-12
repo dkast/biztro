@@ -45,12 +45,12 @@ export async function getOrganization(id: string) {
  * @param subdomain - The subdomain of the organization.
  * @returns A promise that resolves to the organization object.
  */
-export async function getOrganizationBySubdomain(subdomain: string) {
+export async function getOrganizationBySlug(slug: string) {
   return await cache(
     async () => {
       const org = await prisma.organization.findFirst({
         where: {
-          slug: subdomain
+          slug
         }
       })
 
@@ -64,10 +64,10 @@ export async function getOrganizationBySubdomain(subdomain: string) {
 
       return org
     },
-    [`organization-${subdomain}`],
+    [`organization-${slug}`],
     {
       revalidate: 900,
-      tags: [`organization-${subdomain}`]
+      tags: [`organization-${slug}`]
     }
   )()
 }

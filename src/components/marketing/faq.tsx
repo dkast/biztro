@@ -38,9 +38,9 @@ const FAQ = [
 
 export default function Faq() {
   return (
-    <section id="faq" className="pb-28 pt-20 sm:py-32">
+    <section id="faq" className="pt-20 pb-28 sm:py-32">
       <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-4 sm:grid-cols-2 sm:gap-12 sm:px-6 lg:max-w-7xl lg:gap-16 lg:px-8">
-        <h2 className="text-balance font-display text-3xl tracking-tight text-gray-950 dark:text-white sm:text-4xl md:text-5xl">
+        <h2 className="font-display text-3xl tracking-tight text-balance text-gray-950 sm:text-4xl md:text-5xl dark:text-white">
           Preguntas y Respuestas
         </h2>
         <div>
@@ -65,10 +65,10 @@ export default function Faq() {
           <p className="text-center">
             ¿Tienes más preguntas? Envianos un correo a{" "}
             <a
-              href="mailto:hola@biztro.co"
+              href="mailto:contacto@biztro.co"
               className="text-violet-500 hover:underline"
             >
-              hola@biztro.co
+              contacto@biztro.co
             </a>
           </p>
         </div>

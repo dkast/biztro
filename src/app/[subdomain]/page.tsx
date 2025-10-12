@@ -7,10 +7,10 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import GradientBlur from "@/components/flare-ui/gradient-blur"
-import { getMenuByOrgSubdomain } from "@/server/actions/menu/queries"
+import { getActiveMenuByOrganizationSlug } from "@/server/actions/menu/queries"
 import {
   getAllActiveOrganizations,
-  getOrganizationBySubdomain
+  getOrganizationBySlug
 } from "@/server/actions/organization/queries"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { SubscriptionStatus } from "@/lib/types"
@@ -40,7 +40,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const params = await props.params
-  const org = await getOrganizationBySubdomain(params.subdomain)
+  const org = await getOrganizationBySlug(params.subdomain)
 
   if (
     org &&
@@ -66,7 +66,7 @@ export async function generateViewport(props: {
   params: Promise<{ subdomain: string }>
 }): Promise<Viewport> {
   const params = await props.params
-  const siteMenu = await getMenuByOrgSubdomain(params.subdomain)
+  const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
 
   if (!params.subdomain || !siteMenu) {
     return {
@@ -111,7 +111,7 @@ export default async function SitePage(props: {
   params: Promise<{ subdomain: string }>
 }) {
   const params = await props.params
-  const siteMenu = await getMenuByOrgSubdomain(params.subdomain)
+  const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
 
   if (!params.subdomain || !siteMenu) {
     return notFound()
