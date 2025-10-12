@@ -48,15 +48,6 @@ export default async function BillingPage() {
             <Suspense fallback={<Skeleton className="h-48" />}>
               <ProPlanView />
               <RevalidateStatus />
-              <div className="mt-2 text-center text-sm">
-                ¿Tienes algún problema con tu suscripción? Envía un correo a{" "}
-                <a
-                  href="mailto:contacto@biztro.co"
-                  className="text-violet-500 hover:underline"
-                >
-                  contacto@biztro.co
-                </a>
-              </div>
             </Suspense>
           ) : (
             <div className="flex flex-col gap-6">
