@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server"
 
-import { getOrganizationBySubdomain } from "@/server/actions/organization/queries"
+import { getOrganizationBySlug } from "@/server/actions/organization/queries"
 
 export const dynamic = "force-dynamic"
 
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     return new NextResponse("Unauthorized", { status: 401 })
   }
 
-  const org = await getOrganizationBySubdomain(subdomain)
+  const org = await getOrganizationBySlug(subdomain)
   if (!org) return NextResponse.json(null)
 
   // If fields param is present, return only those fields

@@ -63,10 +63,10 @@ const config = {
   // Allow builds to succeed even when TypeScript or ESLint report errors.
   // This is useful for CI or when incremental migration is in progress.
   typescript: {
-    ignoreBuildErrors: true
+    ignoreBuildErrors: false
   },
   eslint: {
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: false
   },
   compiler: {
     removeConsole:
