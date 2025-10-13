@@ -11,7 +11,7 @@ import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
 
 // skipcq: JS-0339
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-08-27.basil"
+  apiVersion: "2025-09-30.clover"
 })
 
 export const auth = betterAuth({
