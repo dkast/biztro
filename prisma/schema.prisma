@@ -1,6 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters", "relationJoins", "prismaSchemaFolder"]
+  output          = "../src/generated/prisma-client"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
