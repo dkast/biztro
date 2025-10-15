@@ -40,5 +40,5 @@
     ".contentlayer/generated",
     "src/app/.well-known/**/*"
   ],
-  "exclude": ["node_modules", ".next", "out", "public"]
+  "exclude": ["node_modules", ".next", "out", "public", "generated"]
 }

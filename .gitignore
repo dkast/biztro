@@ -52,4 +52,4 @@ yarn-error.log*
 .content-collections
 
 # prisma generated client
-src/generated
+generated
