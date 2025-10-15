@@ -16,9 +16,18 @@ const compat = new FlatCompat({
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default [
-  // globally ignore Next.js generated declaration file which breaks type-aware rules
+  {
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "src/generated/**",
+      ".content-collections/**",
+      "next-env.d.ts"
+    ]
+  }, // globally ignore Next.js generated declaration file which breaks type-aware rules
   globalIgnores(["**/next-env.d.ts", "next-env.d.ts"]),
-
   ...compat.extends(
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended",

@@ -6,7 +6,7 @@
     "build": "next build",
     "dev": "next dev --turbopack",
     "postinstall": "prisma generate",
-    "lint": "next lint",
+    "lint": "eslint .",
     "start": "next start",
     "format": "prettier \"src/**/*.{ts,tsx,js,jsx,css,json}\" --write --config prettier.config.mjs",
     "lint:fix": "eslint --fix \"src/**/*.{ts,tsx,js,jsx}\"",
