@@ -1,7 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   engineType      = "client"
-  output          = "../generated/prisma-client"
+  // output          = "../generated/prisma-client"
   previewFeatures = ["relationJoins"]
 }
 
