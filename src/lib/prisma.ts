@@ -1,5 +1,5 @@
+import { PrismaClient } from "@/generated/prisma-client/client"
 import { PrismaLibSQL } from "@prisma/adapter-libsql"
-import { PrismaClient } from "@prisma/client"
 
 import { env } from "@/env.mjs"
 
