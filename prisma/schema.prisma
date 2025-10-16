@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:../../local.db"
+  url      = "file:../local.db"
 }
 
 // Non-auth domain models. Auth-related models moved to `auth.prisma`.

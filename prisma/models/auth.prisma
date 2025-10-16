@@ -65,7 +65,7 @@ model VerificationToken {
 
 model Organization {
   id           String     @id @default(cuid())
-  name         String     @unique
+  name         String
   description  String?
   logo         String?
   banner       String?
@@ -73,7 +73,6 @@ model Organization {
   plan         String     @default("BASIC")
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  // subdomain     String         @unique
   customDomain String?    @unique
   categories   Category[]
   location     Location[]
