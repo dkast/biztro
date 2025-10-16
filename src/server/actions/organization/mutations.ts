@@ -93,6 +93,9 @@ export const bootstrapOrg = authActionClient
           message = error
         } else if (error instanceof Error) {
           message = error.message
+          if (message.includes("slug")) {
+            message = "El subdominio ya está en uso"
+          }
         }
         console.error("Error bootstrapping organization:", error)
         return {
