@@ -59,7 +59,11 @@ const config = {
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
   // pageExtensions: ["md", "mdx", "js", "jsx", "ts", "tsx"]
-  serverExternalPackages: ["import-in-the-middle"],
+  serverExternalPackages: [
+    "import-in-the-middle",
+    "@prisma/adapter-libsql",
+    "@libsql/client"
+  ],
   // Allow builds to succeed even when TypeScript or ESLint report errors.
   // This is useful for CI or when incremental migration is in progress.
   typescript: {

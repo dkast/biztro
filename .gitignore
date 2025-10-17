@@ -50,3 +50,6 @@ yarn-error.log*
 
 # Content Collections
 .content-collections
+
+# prisma generated client
+generated
