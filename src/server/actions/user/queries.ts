@@ -190,3 +190,22 @@ export async function safeHasPermission(
     return null
   }
 }
+
+export async function isInviteEnabled(email?: string | null) {
+  const normalizedEmail = email?.trim()?.toLowerCase()
+
+  if (!normalizedEmail) {
+    return false
+  }
+
+  const invite = await prisma.invite.findFirst({
+    where: {
+      email: {
+        equals: normalizedEmail
+      },
+      enabled: true
+    }
+  })
+
+  return Boolean(invite?.enabled)
+}

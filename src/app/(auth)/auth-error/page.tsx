@@ -12,8 +12,12 @@ export default async function Page(props: {
   const searchParams = await props.searchParams
   let typeError: string | undefined
 
-  if (searchParams.error) {
-    typeError = searchParams.error as string
+  const rawError = searchParams.typeError ?? searchParams.error
+
+  if (Array.isArray(rawError)) {
+    typeError = rawError[0]
+  } else if (typeof rawError === "string") {
+    typeError = rawError
   }
 
   if (typeError === "AccessDenied") {
@@ -31,7 +35,7 @@ export default async function Page(props: {
                 unoptimized
               />
               <div className="text-center">
-                <h2 className="font-display text-3xl font-medium leading-9">
+                <h2 className="font-display text-3xl leading-9 font-medium">
                   Estamos casi listos
                 </h2>
                 <p className="mt-4 text-balance text-gray-500 dark:text-gray-400">
@@ -68,7 +72,7 @@ export default async function Page(props: {
       <div className="flex h-dvh w-full flex-col">
         <Navbar />
         <div className="flex h-96 grow flex-col items-center justify-center gap-6 sm:gap-12">
-          <h1 className="font-display text-6xl font-medium slashed-zero text-gray-800 dark:text-gray-200 sm:text-8xl">
+          <h1 className="font-display text-6xl font-medium text-gray-800 slashed-zero sm:text-8xl dark:text-gray-200">
             Oh no...
           </h1>
           <div className="space-y-2 text-center text-gray-500">

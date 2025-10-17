@@ -1,13 +1,59 @@
 import { stripe } from "@better-auth/stripe"
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
+import { createAuthMiddleware } from "better-auth/api"
 import { nextCookies } from "better-auth/next-js"
 import { organization } from "better-auth/plugins"
 import Stripe from "stripe"
 
-import { getActiveOrganization } from "@/server/actions/user/queries"
+import {
+  getActiveOrganization,
+  isInviteEnabled
+} from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
+
+const INVITE_CHECK_PATH_PREFIXES = [
+  "/sign-in",
+  "/sign-up",
+  "/oauth",
+  "/callback"
+]
+const INVITE_DENIED_REDIRECT = "/auth-error?typeError=AccessDenied"
+
+function extractEmailFromContext(ctx: Record<string, unknown> | undefined) {
+  if (!ctx) {
+    return null
+  }
+
+  const body = ctx.body as Record<string, unknown> | undefined
+  const query = ctx.query as Record<string, unknown> | undefined
+  const innerContext = ctx.context as Record<string, unknown> | undefined
+  const session = innerContext?.session as Record<string, unknown> | undefined
+  const sessionUser = session?.user as Record<string, unknown> | undefined
+  const user = innerContext?.user as Record<string, unknown> | undefined
+  const oauth = innerContext?.oauth as Record<string, unknown> | undefined
+  const oauthUser = oauth?.user as Record<string, unknown> | undefined
+  const oauthProfile = oauth?.profile as Record<string, unknown> | undefined
+  const bodyUser = body?.user as Record<string, unknown> | undefined
+
+  const candidates = [
+    body?.email,
+    body?.identifier,
+    bodyUser?.email,
+    query?.email,
+    sessionUser?.email,
+    user?.email,
+    oauthUser?.email,
+    oauthProfile?.email
+  ]
+
+  const found = candidates.find(
+    value => typeof value === "string" && value.trim().length > 0
+  )
+
+  return found ? String(found).trim().toLowerCase() : null
+}
 
 // skipcq: JS-0339
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -22,6 +68,34 @@ export const auth = betterAuth({
     "https://preview.biztro.co",
     "http://localhost:3000"
   ],
+  hooks: {
+    before: createAuthMiddleware(async ctx => {
+      const path = ctx.path ?? ""
+
+      console.log("Auth middleware path:", path)
+      const shouldCheck = INVITE_CHECK_PATH_PREFIXES.some(prefix =>
+        path.startsWith(prefix)
+      )
+
+      if (!shouldCheck) {
+        return
+      }
+
+      console.log("Checking invite status for path:", path)
+      const email = extractEmailFromContext(ctx)
+
+      if (!email) {
+        return
+      }
+
+      console.log("Extracted email:", email)
+      const enabled = await isInviteEnabled(email)
+
+      if (!enabled) {
+        throw ctx.redirect(INVITE_DENIED_REDIRECT)
+      }
+    })
+  },
   databaseHooks: {
     session: {
       create: {
