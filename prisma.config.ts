@@ -2,6 +2,8 @@ import path from "path"
 import { PrismaLibSQL } from "@prisma/adapter-libsql"
 import type { PrismaConfig } from "prisma"
 
+import "dotenv/config"
+
 export default {
   experimental: {
     adapter: true
