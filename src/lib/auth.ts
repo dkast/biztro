@@ -2,24 +2,22 @@ import { stripe } from "@better-auth/stripe"
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { createAuthMiddleware } from "better-auth/api"
+// Note: we intentionally avoid a global `before` middleware and instead use
+// database hooks on user creation. No need to import createAuthMiddleware.
 import { nextCookies } from "better-auth/next-js"
 import { organization } from "better-auth/plugins"
 import Stripe from "stripe"
 
 import {
   getActiveOrganization,
-  isInviteEnabled
+  isWaitlistEnabled
 } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
 
-const INVITE_CHECK_PATH_PREFIXES = [
-  "/sign-in",
-  "/sign-up",
-  "/oauth",
-  "/callback"
-]
-const INVITE_DENIED_REDIRECT = "/auth-error?typeError=AccessDenied"
+// Waitlist checks are enforced at user create time via database hooks below.
+// The old path-based check is intentionally removed.
+const WAITLIST_DENIED_REDIRECT = "/auth-error?type=access_denied"
 
 function extractEmailFromContext(ctx: Record<string, unknown> | undefined) {
   if (!ctx) {
@@ -68,35 +66,47 @@ export const auth = betterAuth({
     "https://preview.biztro.co",
     "http://localhost:3000"
   ],
-  hooks: {
-    before: createAuthMiddleware(async ctx => {
-      const path = ctx.path ?? ""
-
-      console.log("Auth middleware path:", path)
-      const shouldCheck = INVITE_CHECK_PATH_PREFIXES.some(prefix =>
-        path.startsWith(prefix)
-      )
-
-      if (!shouldCheck) {
-        return
-      }
-
-      console.log("Checking invite status for path:", path)
-      const email = extractEmailFromContext(ctx)
-
-      if (!email) {
-        return
-      }
-
-      console.log("Extracted email:", email)
-      const enabled = await isInviteEnabled(email)
-
-      if (!enabled) {
-        throw ctx.redirect(INVITE_DENIED_REDIRECT)
-      }
-    })
-  },
+  // Intentionally not using a global `before` hook here. Instead we enforce
+  // invite-only access at user creation time via a database hook below. This
+  // ensures the check runs exactly when an account would be created and has
+  // access to the creation payload and the Better Auth context (Context7).
   databaseHooks: {
+    user: {
+      create: {
+        before: async (
+          payload: Record<string, unknown> & {
+            data?: Record<string, unknown>
+            ctx?: Record<string, unknown>
+            context?: Record<string, unknown>
+            request?: Record<string, unknown>
+          }
+        ) => {
+          // Normalise the payload into `data` and `ctx` objects.
+          const data = (payload.data ?? payload) as Record<string, unknown>
+          const ctx = (payload.ctx ?? payload.context ?? payload.request) as
+            | Record<string, unknown>
+            | undefined
+
+          const emailFromData = data?.email as unknown
+          const email =
+            typeof emailFromData === "string" && emailFromData.trim().length > 0
+              ? String(emailFromData).trim().toLowerCase()
+              : extractEmailFromContext(ctx)
+
+          if (email) {
+            const enabled = await isWaitlistEnabled(email)
+
+            if (!enabled) {
+              // Block creation by throwing a distinct error that our before
+              // middleware will map to a redirect.
+              throw new Error("AccessDenied")
+            }
+          }
+
+          return { data }
+        }
+      }
+    },
     session: {
       create: {
         before: async session => {
@@ -115,6 +125,26 @@ export const auth = betterAuth({
         maxAge: 5 * 60 // 5 minutes
       }
     }
+  },
+  hooks: {
+    before: createAuthMiddleware(async ctx => {
+      const path = ctx.path ?? ""
+
+      // If the request path includes 'error' we assume an upstream thrown
+      // error was intended to be handled by a redirect flow. Forward the
+      // client to the invite denied page.
+      if (path.includes("error")) {
+        const queryString = new URLSearchParams(
+          ctx.query as Record<string, string>
+        )
+        if (
+          queryString.has("error") &&
+          queryString.get("error") === "unable_to_create_user"
+        ) {
+          throw ctx.redirect(WAITLIST_DENIED_REDIRECT)
+        }
+      }
+    })
   },
   emailAndPassword: { enabled: false },
   // Map existing NextAuth columns to Better Auth fields to avoid schema changes

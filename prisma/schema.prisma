@@ -113,8 +113,8 @@ model Variant {
   menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
 }
 
-// Invitation requests from the landing page. Drop in the future
-model Invite {
+// Waitlist requests from the landing page. Drop in the future
+model Waitlist {
   id      String  @id @default(cuid())
   email   String  @unique
   enabled Boolean @default(false)

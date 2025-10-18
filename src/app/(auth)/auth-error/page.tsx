@@ -12,7 +12,7 @@ export default async function Page(props: {
   const searchParams = await props.searchParams
   let typeError: string | undefined
 
-  const rawError = searchParams.typeError ?? searchParams.error
+  const rawError = searchParams.type ?? searchParams.error
 
   if (Array.isArray(rawError)) {
     typeError = rawError[0]
@@ -20,7 +20,7 @@ export default async function Page(props: {
     typeError = rawError
   }
 
-  if (typeError === "AccessDenied") {
+  if (typeError === "access_denied") {
     return (
       <div className="flex h-dvh">
         <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">

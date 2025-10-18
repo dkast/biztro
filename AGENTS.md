@@ -78,6 +78,7 @@
 - Use 'next-safe-action' for server actions.
 - Use 'better-auth' for authentication-related tasks.
 - Use 'bun' as a package manager for JavaScript and TypeScript projects.
+- Use 'bun' scripts for common tasks like building, linting, formatting, type checking, and database management.
 - Optimize Web Vitals (LCP, CLS, FID).
 - Limit 'use client':
   - Favor server components and Next.js SSR.
@@ -90,4 +91,4 @@
 
 ## Additional Resources
 
-- **Better Auth Reference**: For comprehensive Better Auth guidance and best practices, see the official Better Auth llms.txt file: https://www.better-auth.com/llms.txt
+use the tools provided by context7 MCP to gather more information about libraries used in this project.

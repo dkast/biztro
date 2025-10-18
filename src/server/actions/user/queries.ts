@@ -191,14 +191,14 @@ export async function safeHasPermission(
   }
 }
 
-export async function isInviteEnabled(email?: string | null) {
+export async function isWaitlistEnabled(email?: string | null) {
   const normalizedEmail = email?.trim()?.toLowerCase()
 
   if (!normalizedEmail) {
     return false
   }
 
-  const invite = await prisma.invite.findFirst({
+  const waitlist = await prisma.waitlist.findFirst({
     where: {
       email: {
         equals: normalizedEmail
@@ -207,5 +207,5 @@ export async function isInviteEnabled(email?: string | null) {
     }
   })
 
-  return Boolean(invite?.enabled)
+  return Boolean(waitlist?.enabled)
 }
