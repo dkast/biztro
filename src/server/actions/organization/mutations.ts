@@ -299,17 +299,17 @@ export const joinWaitlist = actionClient
   )
   .action(async ({ parsedInput: { email } }) => {
     try {
-      const invite = await prisma.invite.findUnique({
+      const waitlist = await prisma.waitlist.findUnique({
         where: {
           email: email
         }
       })
 
-      if (invite) {
+      if (waitlist) {
         throw new Error("Ya estás en la lista de espera")
       }
 
-      await prisma.invite.create({
+      await prisma.waitlist.create({
         data: {
           email: email
         }

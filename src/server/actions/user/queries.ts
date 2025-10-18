@@ -190,3 +190,22 @@ export async function safeHasPermission(
     return null
   }
 }
+
+export async function isWaitlistEnabled(email?: string | null) {
+  const normalizedEmail = email?.trim()?.toLowerCase()
+
+  if (!normalizedEmail) {
+    return false
+  }
+
+  const waitlist = await prisma.waitlist.findFirst({
+    where: {
+      email: {
+        equals: normalizedEmail
+      },
+      enabled: true
+    }
+  })
+
+  return Boolean(waitlist?.enabled)
+}
