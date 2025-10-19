@@ -4,6 +4,7 @@ import { revalidateTag } from "next/cache"
 import { headers } from "next/headers"
 import { z } from "zod/v4"
 
+import { getOrganizationBySlug } from "@/server/actions/organization/queries"
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
@@ -232,12 +233,7 @@ export const updateOrg = authActionClient
         // checkOrganizationSlug returns status: true when available
         if (!existingSlug?.status) {
           // If slug appears taken or check failed, verify it's not taken by this same org
-          const maybeOrg = await auth.api
-            .getFullOrganization({
-              query: { organizationSlug: slug },
-              headers: await headers()
-            })
-            .catch(() => null)
+          const maybeOrg = await getOrganizationBySlug(slug)
 
           if (maybeOrg && maybeOrg.id !== id) {
             throw new Error("El subdominio ya está en uso")
