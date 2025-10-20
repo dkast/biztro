@@ -7,11 +7,16 @@
     "config": "tailwind.config.ts",
     "css": "styles/globals.css",
     "baseColor": "gray",
-    "cssVariables": false,
+    "cssVariables": true,
     "prefix": ""
   },
+  "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
-    "utils": "@/lib/utils"
-  }
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "registries": {}
 }
