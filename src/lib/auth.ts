@@ -58,8 +58,6 @@ const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-09-30.clover"
 })
 
-type SessionShape = { userId?: string; [key: string]: unknown }
-
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "sqlite" }),
   // Adjust trusted origins for your deployment
@@ -111,7 +109,7 @@ export const auth = betterAuth({
     },
     session: {
       create: {
-        before: async (session: SessionShape) => {
+        before: async session => {
           // Perform any necessary transformations or validations on the session data
           if (!session.userId) {
             return { data: session }
