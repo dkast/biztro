@@ -32,7 +32,7 @@ export default function HeadingSettings() {
     <SideSection title="Texto">
       <div className="grid grid-cols-3 items-center gap-2">
         <dt>
-          <Label size="sm">Tamaño</Label>
+          <Label size="xs">Tamaño</Label>
         </dt>
         <dd className="col-span-2 flex items-center">
           <Select
@@ -57,7 +57,7 @@ export default function HeadingSettings() {
           </Select>
         </dd>
         <dt>
-          <Label size="sm">Estilo</Label>
+          <Label size="xs">Estilo</Label>
         </dt>
         <dd className="col-span-2 flex items-center">
           <Select
@@ -80,7 +80,7 @@ export default function HeadingSettings() {
           </Select>
         </dd>
         <dt>
-          <Label size="sm">Alineación</Label>
+          <Label size="xs">Alineación</Label>
         </dt>
         <dd className="col-span-2">
           <Tabs

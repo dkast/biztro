@@ -330,7 +330,7 @@ export function ColorThemeEditor({
           <legend className="-ml-1 px-1 text-sm font-medium">Colores</legend>
           <div className="grid grid-cols-4 items-center gap-2">
             <dt>
-              <Label size="sm">Fondo</Label>
+              <Label size="xs">Fondo</Label>
             </dt>
             <dd className="flex items-center">
               {isMobile ? (
@@ -368,7 +368,7 @@ export function ColorThemeEditor({
               )}
             </dd>
             <dt>
-              <Label size="sm">Marca</Label>
+              <Label size="xs">Marca</Label>
             </dt>
             <dd className="flex items-center">
               {isMobile ? (
@@ -406,7 +406,7 @@ export function ColorThemeEditor({
               )}
             </dd>
             <dt>
-              <Label size="sm">Acento</Label>
+              <Label size="xs">Acento</Label>
             </dt>
             <dd className="flex items-center">
               {isMobile ? (
@@ -444,7 +444,7 @@ export function ColorThemeEditor({
               )}
             </dd>
             <dt>
-              <Label size="sm">Texto</Label>
+              <Label size="xs">Texto</Label>
             </dt>
             <dd className="flex items-center">
               {isMobile ? (
@@ -482,7 +482,7 @@ export function ColorThemeEditor({
               )}
             </dd>
             <dt>
-              <Label size="sm">Tenue</Label>
+              <Label size="xs">Tenue</Label>
             </dt>
             <dd className="flex items-center">
               {isMobile ? (

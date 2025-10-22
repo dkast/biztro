@@ -22,7 +22,7 @@ const DrawerPortal = DrawerPrimitive.Portal
 
 const DrawerClose = DrawerPrimitive.Close
 
-const DrawerNested = DrawerPrimitive.Nested
+const DrawerNested = DrawerPrimitive.NestedRoot
 
 const DrawerOverlay = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Overlay>,
