@@ -354,7 +354,7 @@ function SidebarWorkgroup() {
                   href="/dashboard/create-org"
                   className="flex items-center gap-2"
                 >
-                  <div className="bg-background flex size-6 items-center justify-center rounded-md border border-gray-600 dark:border-gray-700">
+                  <div className="border-sidebar-border flex size-6 items-center justify-center rounded-md border">
                     <Plus className="size-4" />
                   </div>
                   <div className="text-muted-foreground font-medium">
