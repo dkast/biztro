@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import MemberDelete from "@/app/dashboard/settings/members/member-delete"
 import type { AuthMember } from "@/lib/auth"
+import { getInitials } from "@/lib/utils"
 
 export function getColumns(canDeleteMember: boolean): ColumnDef<AuthMember>[] {
   return [
@@ -44,12 +45,7 @@ export function getColumns(canDeleteMember: boolean): ColumnDef<AuthMember>[] {
         const member = row.original
         const name = member.user?.name ?? member.user?.email ?? "Usuario"
         const email = member.user?.email ?? ""
-        const initials = name
-          .split(/\s+/)
-          .filter(Boolean)
-          .slice(0, 2)
-          .map(w => w[0]?.toUpperCase() ?? "")
-          .join("")
+        const initials = getInitials(name)
 
         return (
           <div className="flex items-center gap-3">
