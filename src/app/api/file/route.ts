@@ -1,10 +1,8 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { revalidateTag } from "next/cache"
-import { headers } from "next/headers"
 import { NextResponse, type NextRequest } from "next/server"
 
-import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { ImageType } from "@/lib/types"
 import { env } from "@/env.mjs"
@@ -37,28 +35,18 @@ export async function POST(req: NextRequest) {
   // Save key file to database so we can retrieve it later
   switch (imageType) {
     case ImageType.LOGO:
-      // Update organization through Better Auth server API instead of direct DB update
-      await auth.api.updateOrganization({
-        body: {
-          data: {
-            logo: `orgId_${organizationId}/${objectId}/${filename}`
-          },
-          organizationId: organizationId as string
-        },
-        headers: await headers()
+      // Update organization using Prisma
+      await prisma.organization.update({
+        where: { id: organizationId as string },
+        data: { logo: `orgId_${organizationId}/${objectId}/${filename}` }
       })
       revalidateTag(`organization-${organizationId}`)
       break
     case ImageType.BANNER:
-      // Update organization through Better Auth server API instead of direct DB update
-      await auth.api.updateOrganization({
-        body: {
-          data: {
-            banner: `orgId_${organizationId}/${objectId}/${filename}`
-          },
-          organizationId: organizationId as string
-        },
-        headers: await headers()
+      // Update organization using Prisma
+      await prisma.organization.update({
+        where: { id: organizationId as string },
+        data: { banner: `orgId_${organizationId}/${objectId}/${filename}` }
       })
       revalidateTag(`organization-${organizationId}`)
       break
