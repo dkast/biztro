@@ -22,6 +22,17 @@ import type { z } from "zod/v4"
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { ImageField } from "@/components/dashboard/image-field"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
+import {
+  Tags,
+  TagsContent,
+  TagsEmpty,
+  TagsGroup,
+  TagsInput,
+  TagsItem,
+  TagsList,
+  TagsTrigger,
+  TagsValue
+} from "@/components/kibo-ui/tags"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -48,7 +59,6 @@ import {
   FieldLabel
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { MultiSelect } from "@/components/ui/multi-select"
 import {
   Select,
   SelectContent,
@@ -307,7 +317,7 @@ export default function ItemForm({
               <CardFooter className="justify-center dark:border-gray-800">
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="outline"
                   onClick={handleOpenVariant}
                   className="w-full gap-1"
                 >
@@ -431,28 +441,63 @@ export default function ItemForm({
                 <Controller
                   name="allergens"
                   control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field>
-                      <MultiSelect
-                        options={Allergens.map(allergen => ({
-                          label: allergen.label,
-                          value: allergen.value
-                        }))}
-                        defaultValue={
-                          field.value?.split(",").filter(Boolean) || []
-                        }
-                        onValueChange={values => {
-                          form.setValue("allergens", values.join(","))
-                        }}
-                        placeholder="Seleccionar alérgenos"
-                        variant="default"
-                        maxCount={4}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
+                  render={({ field, fieldState }) => {
+                    const values =
+                      ((field.value ?? "")
+                        .split(",")
+                        .filter(Boolean) as string[]) || []
+
+                    return (
+                      <Field>
+                        <Tags
+                          value={field.value}
+                          setValue={(v: string) =>
+                            form.setValue("allergens", v)
+                          }
+                        >
+                          <TagsTrigger placeholder="Buscar o añadir alérgenos">
+                            {values.map(val => (
+                              <TagsValue
+                                variant="indigo"
+                                key={val}
+                                onRemove={() => {
+                                  const next = values.filter(v => v !== val)
+                                  form.setValue("allergens", next.join(","))
+                                }}
+                              >
+                                {Allergens.find(a => a.value === val)?.label ??
+                                  val}
+                              </TagsValue>
+                            ))}
+                          </TagsTrigger>
+                          <TagsContent>
+                            <TagsInput placeholder="Buscar o añadir alérgenos" />
+                            <TagsList>
+                              <TagsEmpty className="p-2" />
+                              <TagsGroup>
+                                {Allergens.map(allergen => (
+                                  <TagsItem
+                                    key={allergen.value}
+                                    onSelect={() => {
+                                      const next = Array.from(
+                                        new Set([...values, allergen.value])
+                                      )
+                                      form.setValue("allergens", next.join(","))
+                                    }}
+                                  >
+                                    {allergen.label}
+                                  </TagsItem>
+                                ))}
+                              </TagsGroup>
+                            </TagsList>
+                          </TagsContent>
+                        </Tags>
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </Field>
+                    )
+                  }}
                 />
               </CardContent>
             </Card>
@@ -525,20 +570,22 @@ export default function ItemForm({
                   name="featured"
                   control={form.control}
                   render={({ field, fieldState }) => (
-                    <Field className="mt-4 flex flex-row items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-800">
-                      <div className="space-y-0.5">
+                    <Field className="mt-4 grid grid-cols-3 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+                      <div className="col-span-2 grow space-y-0.5">
                         <FieldLabel>Recomendado</FieldLabel>
                         <FieldDescription>
                           Mostrar producto en la sección de recomendados
                         </FieldDescription>
                       </div>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
+                      <div>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </div>
                     </Field>
                   )}
                 />

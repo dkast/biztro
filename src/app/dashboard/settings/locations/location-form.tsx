@@ -196,13 +196,8 @@ export default function LocationForm({
                   />
                   Facebook
                 </FieldLabel>
-                <FieldContent>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    placeholder="usuario"
-                    className="col-span-2 w-full"
-                  />
+                <FieldContent className="col-span-2 w-full">
+                  <Input {...field} id={field.name} placeholder="usuario" />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -227,13 +222,8 @@ export default function LocationForm({
                   />
                   Instagram
                 </FieldLabel>
-                <FieldContent>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    placeholder="usuario"
-                    className="col-span-2 w-full"
-                  />
+                <FieldContent className="col-span-2 w-full">
+                  <Input {...field} id={field.name} placeholder="usuario" />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -258,13 +248,8 @@ export default function LocationForm({
                   />
                   Twitter
                 </FieldLabel>
-                <FieldContent>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    placeholder="usuario"
-                    className="col-span-2 w-full"
-                  />
+                <FieldContent className="col-span-2 w-full">
+                  <Input {...field} id={field.name} placeholder="usuario" />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -289,13 +274,8 @@ export default function LocationForm({
                   />
                   TikTok
                 </FieldLabel>
-                <FieldContent>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    placeholder="usuario"
-                    className="col-span-2 w-full"
-                  />
+                <FieldContent className="col-span-2 w-full">
+                  <Input {...field} id={field.name} placeholder="usuario" />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -320,12 +300,11 @@ export default function LocationForm({
                   />
                   WhatsApp
                 </FieldLabel>
-                <FieldContent>
+                <FieldContent className="col-span-2 w-full">
                   <Input
                     {...field}
                     id={field.name}
                     placeholder="Número de teléfono"
-                    className="col-span-2 w-full"
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />

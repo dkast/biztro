@@ -157,7 +157,10 @@ export default function HoursForm({
               render={({ field: ctlField, fieldState }) => (
                 <Field className="flex flex-row items-center gap-2 space-y-0">
                   <FieldLabel className="hidden sm:inline">Desde</FieldLabel>
+                  {/* disable time inputs when the corresponding allDay switch is on */}
                   <TimeField
+                    /* disable time inputs when the corresponding allDay switch is unchecked */
+                    isDisabled={!form.watch(`items.${index}.allDay`)}
                     value={
                       ctlField.value ? parseTime(ctlField.value) : undefined
                     }
@@ -178,6 +181,7 @@ export default function HoursForm({
                 <Field className="flex flex-row items-center gap-2 space-y-0">
                   <FieldLabel className="hidden sm:inline">Hasta</FieldLabel>
                   <TimeField
+                    isDisabled={!form.watch(`items.${index}.allDay`)}
                     value={
                       ctlField.value ? parseTime(ctlField.value) : undefined
                     }
