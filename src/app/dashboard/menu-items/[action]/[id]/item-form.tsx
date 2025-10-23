@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { useFieldArray, useForm } from "react-hook-form"
+import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
@@ -40,15 +40,13 @@ import {
   ComboBoxItem,
   ComboBoxList
 } from "@/components/ui/combobox"
+// legacy Form helpers removed in favor of Field primitives
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { MultiSelect } from "@/components/ui/multi-select"
 import {
@@ -225,334 +223,330 @@ export default function ItemForm({
 
   return (
     <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <PageSubtitle
-            title={title}
-            className="sticky top-0 z-10 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-xs dark:border-gray-800 dark:bg-gray-950"
-          >
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => router.back()}
-                ref={saveRef}
-              >
-                Cerrar
-              </Button>
-              <Button disabled={status === "executing"} size="sm" type="submit">
-                {status === "executing" ? (
-                  <>
-                    <Loader className="mr-2 size-4 animate-spin" />
-                    {"Guardando"}
-                  </>
-                ) : (
-                  "Guardar"
-                )}
-              </Button>
-            </div>
-          </PageSubtitle>
-          <div className="mt-10 grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
-            <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Detalles del Producto</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel htmlFor="name">Nombre</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            id="name"
-                            placeholder="Nombre del producto"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel htmlFor="description">Descripción</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            id="description"
-                            placeholder="Agrega una descripción. Describe detalles como ingredientes, sabor, etc."
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Variantes</CardTitle>
-                  <CardDescription>
-                    Agrega variantes para mostrar diferentes opciones de un
-                    mismo producto
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <VariantForm fieldArray={fields} parentForm={form} />
-                </CardContent>
-                <CardFooter className="justify-center dark:border-gray-800">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={handleOpenVariant}
-                    className="w-full gap-1"
-                  >
-                    <PlusCircle className="size-3.5" />
-                    Crear variante
-                  </Button>
-                </CardFooter>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Categoría</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <FormField
-                    control={form.control}
-                    name="categoryId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center space-x-2">
-                          <ComboBox
-                            open={openCategory}
-                            setOpen={setOpenCategory}
-                            trigger={
-                              <FormControl>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  role="combobox"
-                                  className={cn(
-                                    "flex w-[300px] justify-between",
-                                    field.value ?? "text-gray-500"
-                                  )}
-                                >
-                                  {field.value
-                                    ? categories.find(
-                                        category => category.id === field.value
-                                      )?.name
-                                    : "Seleccionar Categoría"}
-                                  <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            }
-                          >
-                            <ComboBoxInput
-                              value={searchCategory}
-                              onValueChange={setSearchCategory}
-                              placeholder="Buscar categoría..."
-                            />
-                            <ComboBoxList className="max-h-full sm:max-h-[300px]">
-                              <ComboBoxEmpty className="p-2">
-                                <Button
-                                  type="button"
-                                  disabled={statusCategory === "executing"}
-                                  variant="ghost"
-                                  className="w-full"
-                                  size="xs"
-                                  onClick={handleAddCategory}
-                                >
-                                  {statusCategory === "executing" ? (
-                                    <Loader className="mr-2 size-4 animate-spin" />
-                                  ) : (
-                                    <PlusIcon className="mr-2 size-4" />
-                                  )}
-                                  {searchCategory
-                                    ? `Agregar "${searchCategory}"`
-                                    : "Agregar"}
-                                </Button>
-                              </ComboBoxEmpty>
-                              <ComboBoxGroup className="overflow-y-auto sm:max-h-[300px]">
-                                {categories.map(category => (
-                                  <ComboBoxItem
-                                    value={category.name}
-                                    key={category.id}
-                                    onSelect={() => {
-                                      if (category.id) {
-                                        form.setValue("categoryId", category.id)
-                                        setOpenCategory(false)
-                                      }
-                                    }}
-                                    className="py-2 text-base sm:py-1.5 sm:text-sm"
-                                  >
-                                    <Check
-                                      className={cn(
-                                        "mr-2 size-4",
-                                        category.id === field.value
-                                          ? "opacity-100"
-                                          : "opacity-0"
-                                      )}
-                                    />
-                                    {category.name}
-                                  </ComboBoxItem>
-                                ))}
-                              </ComboBoxGroup>
-                            </ComboBoxList>
-                          </ComboBox>
-                          {field.value && (
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <PageSubtitle
+          title={title}
+          className="sticky top-0 z-10 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-xs dark:border-gray-800 dark:bg-gray-950"
+        >
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => router.back()}
+              ref={saveRef}
+            >
+              Cerrar
+            </Button>
+            <Button disabled={status === "executing"} size="sm" type="submit">
+              {status === "executing" ? (
+                <>
+                  <Loader className="mr-2 size-4 animate-spin" />
+                  {"Guardando"}
+                </>
+              ) : (
+                "Guardar"
+              )}
+            </Button>
+          </div>
+        </PageSubtitle>
+        <div className="mt-10 grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
+          <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Detalles del Producto</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Controller
+                  name="name"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
+                      <Input
+                        {...field}
+                        id={field.name}
+                        placeholder="Nombre del producto"
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name="description"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
+                      <Textarea
+                        {...field}
+                        id={field.name}
+                        placeholder="Agrega una descripción. Describe detalles como ingredientes, sabor, etc."
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Variantes</CardTitle>
+                <CardDescription>
+                  Agrega variantes para mostrar diferentes opciones de un mismo
+                  producto
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <VariantForm fieldArray={fields} parentForm={form} />
+              </CardContent>
+              <CardFooter className="justify-center dark:border-gray-800">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={handleOpenVariant}
+                  className="w-full gap-1"
+                >
+                  <PlusCircle className="size-3.5" />
+                  Crear variante
+                </Button>
+              </CardFooter>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Categoría</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Controller
+                  name="categoryId"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field>
+                      <div className="flex items-center space-x-2">
+                        <ComboBox
+                          open={openCategory}
+                          setOpen={setOpenCategory}
+                          trigger={
                             <Button
                               type="button"
                               variant="outline"
-                              size="icon"
-                              onClick={() => {
-                                form.setValue("categoryId", "")
-                              }}
+                              role="combobox"
+                              className={cn(
+                                "flex w-[300px] justify-between",
+                                field.value ?? "text-gray-500"
+                              )}
                             >
-                              <X className="size-4" />
+                              {field.value
+                                ? categories.find(
+                                    category => category.id === field.value
+                                  )?.name
+                                : "Seleccionar Categoría"}
+                              <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
                             </Button>
-                          )}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Alérgenos e Indicadores</CardTitle>
-                  <CardDescription>
-                    Selecciona los alérgenos o indicadores especiales para este
-                    producto
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <FormField
-                    control={form.control}
-                    name="allergens"
-                    render={({ field }) => (
-                      <FormItem>
-                        <MultiSelect
-                          options={Allergens.map(allergen => ({
-                            label: allergen.label,
-                            value: allergen.value
-                          }))}
-                          defaultValue={
-                            field.value?.split(",").filter(Boolean) || []
                           }
-                          onValueChange={values => {
-                            form.setValue("allergens", values.join(","))
-                          }}
-                          placeholder="Seleccionar alérgenos"
-                          variant="default"
-                          maxCount={4}
-                        />
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-            </div>
-            <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Imágen del Producto</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {item?.image ? (
-                    <ImageField
-                      src={item.image}
-                      organizationId={item.organizationId}
-                      imageType={ImageType.MENUITEM}
-                      objectId={item.id}
-                      onUploadSuccess={() => {
-                        router.refresh()
-                      }}
-                    />
-                  ) : (
-                    <EmptyImageField
-                      organizationId={item.organizationId}
-                      imageType={ImageType.MENUITEM}
-                      objectId={item.id}
-                      onUploadSuccess={() => {
-                        router.refresh()
-                      }}
-                    />
-                  )}
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Status del Producto</CardTitle>
-                  <CardDescription>
-                    Cambia el estado del producto para mostrarlo u ocultarlo en
-                    el menú
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
                         >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar estado" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value={MenuItemStatus.ACTIVE}>
-                              Activo
-                            </SelectItem>
-                            <SelectItem value={MenuItemStatus.DRAFT}>
-                              Borrador
-                            </SelectItem>
-                            <SelectItem value={MenuItemStatus.ARCHIVED}>
-                              Archivado
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="featured"
-                    render={({ field }) => (
-                      <FormItem className="mt-4 flex flex-row items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-800">
-                        <div className="space-y-0.5">
-                          <FormLabel>Recomendado</FormLabel>
-                          <FormDescription>
-                            Mostrar producto en la sección de recomendados
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
+                          <ComboBoxInput
+                            value={searchCategory}
+                            onValueChange={setSearchCategory}
+                            placeholder="Buscar categoría..."
                           />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-            </div>
+                          <ComboBoxList className="max-h-full sm:max-h-[300px]">
+                            <ComboBoxEmpty className="p-2">
+                              <Button
+                                type="button"
+                                disabled={statusCategory === "executing"}
+                                variant="ghost"
+                                className="w-full"
+                                size="xs"
+                                onClick={handleAddCategory}
+                              >
+                                {statusCategory === "executing" ? (
+                                  <Loader className="mr-2 size-4 animate-spin" />
+                                ) : (
+                                  <PlusIcon className="mr-2 size-4" />
+                                )}
+                                {searchCategory
+                                  ? `Agregar "${searchCategory}"`
+                                  : "Agregar"}
+                              </Button>
+                            </ComboBoxEmpty>
+                            <ComboBoxGroup className="overflow-y-auto sm:max-h-[300px]">
+                              {categories.map(category => (
+                                <ComboBoxItem
+                                  value={category.name}
+                                  key={category.id}
+                                  onSelect={() => {
+                                    if (category.id) {
+                                      form.setValue("categoryId", category.id)
+                                      setOpenCategory(false)
+                                    }
+                                  }}
+                                  className="py-2 text-base sm:py-1.5 sm:text-sm"
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 size-4",
+                                      category.id === field.value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                  {category.name}
+                                </ComboBoxItem>
+                              ))}
+                            </ComboBoxGroup>
+                          </ComboBoxList>
+                        </ComboBox>
+                        {field.value && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              form.setValue("categoryId", "")
+                            }}
+                          >
+                            <X className="size-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </Field>
+                  )}
+                />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Alérgenos e Indicadores</CardTitle>
+                <CardDescription>
+                  Selecciona los alérgenos o indicadores especiales para este
+                  producto
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Controller
+                  name="allergens"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field>
+                      <MultiSelect
+                        options={Allergens.map(allergen => ({
+                          label: allergen.label,
+                          value: allergen.value
+                        }))}
+                        defaultValue={
+                          field.value?.split(",").filter(Boolean) || []
+                        }
+                        onValueChange={values => {
+                          form.setValue("allergens", values.join(","))
+                        }}
+                        placeholder="Seleccionar alérgenos"
+                        variant="default"
+                        maxCount={4}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </CardContent>
+            </Card>
           </div>
-        </form>
-      </Form>
+          <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Imágen del Producto</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {item?.image ? (
+                  <ImageField
+                    src={item.image}
+                    organizationId={item.organizationId}
+                    imageType={ImageType.MENUITEM}
+                    objectId={item.id}
+                    onUploadSuccess={() => {
+                      router.refresh()
+                    }}
+                  />
+                ) : (
+                  <EmptyImageField
+                    organizationId={item.organizationId}
+                    imageType={ImageType.MENUITEM}
+                    objectId={item.id}
+                    onUploadSuccess={() => {
+                      router.refresh()
+                    }}
+                  />
+                )}
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Status del Producto</CardTitle>
+                <CardDescription>
+                  Cambia el estado del producto para mostrarlo u ocultarlo en el
+                  menú
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Controller
+                  name="status"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={MenuItemStatus.ACTIVE}>
+                            Activo
+                          </SelectItem>
+                          <SelectItem value={MenuItemStatus.DRAFT}>
+                            Borrador
+                          </SelectItem>
+                          <SelectItem value={MenuItemStatus.ARCHIVED}>
+                            Archivado
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name="featured"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field className="mt-4 flex flex-row items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+                      <div className="space-y-0.5">
+                        <FieldLabel>Recomendado</FieldLabel>
+                        <FieldDescription>
+                          Mostrar producto en la sección de recomendados
+                        </FieldDescription>
+                      </div>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </form>
       <VariantCreate
         menuItemId={item.id}
         open={openVariant}
