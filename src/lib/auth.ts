@@ -1,5 +1,5 @@
 import { stripe } from "@better-auth/stripe"
-import { betterAuth, type Session } from "better-auth"
+import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { createAuthMiddleware } from "better-auth/api"
 // Note: we intentionally avoid a global `before` middleware and instead use
@@ -109,7 +109,7 @@ export const auth = betterAuth({
     },
     session: {
       create: {
-        before: async (session: Session) => {
+        before: async session => {
           // Perform any necessary transformations or validations on the session data
           if (!session.userId) {
             return { data: session }
