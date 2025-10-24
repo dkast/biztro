@@ -11,7 +11,6 @@ const labelVariants = cva(
   {
     variants: {
       size: {
-        default: "text-sm",
         xs: "text-xs",
         lg: "text-lg"
       }
@@ -26,7 +25,7 @@ const Label = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <LabelPrimitive.Root
     ref={ref}
-    className={cn(labelVariants(), className)}
+    className={cn(labelVariants({ size: props.size }), className)}
     {...props}
   />
 ))

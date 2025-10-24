@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
@@ -25,6 +25,7 @@ import * as z from "zod/v4"
 
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { Button } from "@/components/ui/button"
+import { ButtonGroup } from "@/components/ui/button-group"
 import {
   Dialog,
   DialogClose,
@@ -41,14 +42,8 @@ import {
   DrawerNested,
   DrawerTitle
 } from "@/components/ui/drawer"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
+// legacy Form helpers removed in favor of Field primitives
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -521,11 +516,10 @@ export function ColorThemeEditor({
             </dd>
           </div>
         </fieldset>
-        <div className="grid grid-cols-3 gap-y-3 pb-12 sm:gap-y-1">
+        <div className="flex flex-col gap-y-3 pb-12 sm:gap-y-1">
           <Button
-            variant="secondary"
+            variant="outline"
             size={isMobile ? "default" : "sm"}
-            className="col-span-3"
             onClick={extractColorsFromImage}
             disabled={isExtracting}
           >
@@ -537,69 +531,70 @@ export function ColorThemeEditor({
             Extraer colores
           </Button>
           <Button
-            variant="secondary"
+            variant="outline"
             size={isMobile ? "default" : "sm"}
-            className="col-span-3"
             onClick={invertColors}
           >
             <Contrast className="mr-2 size-4" />
             Invertir colores
           </Button>
 
-          <Button
-            variant="outline"
-            size={isMobile ? "default" : "sm"}
-            className="rounded-r-none border-r-0"
-            disabled={
-              status === "executing" ||
-              updateStatus === "executing" ||
-              deleteStatus === "executing"
-            }
-            onClick={() => setIsDialogOpen(true)}
-          >
-            <FilePlus className="mr-2 size-4" />
-            Nuevo
-          </Button>
-          <Button
-            variant="outline"
-            size={isMobile ? "default" : "sm"}
-            className="rounded-none border-r-0"
-            disabled={
-              status === "executing" ||
-              updateStatus === "executing" ||
-              deleteStatus === "executing" ||
-              themeState.scope === "GLOBAL"
-            }
-            onClick={handleUpdateTheme}
-          >
-            {status === "executing" || updateStatus === "executing" ? (
-              <Loader className="mr-2 size-4 animate-spin" />
-            ) : (
-              <Save className="mr-2 size-4" />
-            )}
-            Guardar
-          </Button>
-          <Button
-            variant="outline"
-            size={isMobile ? "default" : "sm"}
-            className="rounded-l-none"
-            disabled={
-              status === "executing" ||
-              updateStatus === "executing" ||
-              deleteStatus === "executing" ||
-              themeState.scope === "GLOBAL"
-            }
-            onClick={() => {
-              deleteTheme({ id: themeState.id })
-            }}
-          >
-            {deleteStatus === "executing" ? (
-              <Loader className="mr-2 size-4 animate-spin" />
-            ) : (
-              <Trash2 className="mr-2 size-4" />
-            )}
-            Eliminar
-          </Button>
+          <ButtonGroup className="w-full">
+            <Button
+              variant="outline"
+              size={isMobile ? "default" : "sm"}
+              className="flex-1"
+              disabled={
+                status === "executing" ||
+                updateStatus === "executing" ||
+                deleteStatus === "executing"
+              }
+              onClick={() => setIsDialogOpen(true)}
+            >
+              <FilePlus className="mr-2 size-4" />
+              Nuevo
+            </Button>
+            <Button
+              variant="outline"
+              size={isMobile ? "default" : "sm"}
+              className="flex-1"
+              disabled={
+                status === "executing" ||
+                updateStatus === "executing" ||
+                deleteStatus === "executing" ||
+                themeState.scope === "GLOBAL"
+              }
+              onClick={handleUpdateTheme}
+            >
+              {status === "executing" || updateStatus === "executing" ? (
+                <Loader className="mr-2 size-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 size-4" />
+              )}
+              Guardar
+            </Button>
+            <Button
+              variant="outline"
+              size={isMobile ? "default" : "sm"}
+              className="flex-1"
+              disabled={
+                status === "executing" ||
+                updateStatus === "executing" ||
+                deleteStatus === "executing" ||
+                themeState.scope === "GLOBAL"
+              }
+              onClick={() => {
+                deleteTheme({ id: themeState.id })
+              }}
+            >
+              {deleteStatus === "executing" ? (
+                <Loader className="mr-2 size-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-2 size-4" />
+              )}
+              Eliminar
+            </Button>
+          </ButtonGroup>
         </div>
       </div>
     </>
@@ -731,28 +726,26 @@ export function ThemeNameDialog({
             </DrawerDescription>
           </DrawerHeader>
           <div className="px-4 pb-4">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleFormSubmit)}>
-                <FormField
-                  name="name"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nombre Tema</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Nombre Tema" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="mt-6 flex">
-                  <Button type="submit" className="w-full">
-                    Guardar
-                  </Button>
-                </div>
-              </form>
-            </Form>
+            <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+              <Controller
+                name="name"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel>Nombre Tema</FieldLabel>
+                    <Input {...field} placeholder="Nombre Tema" />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <div className="mt-6 flex">
+                <Button type="submit" className="w-full">
+                  Guardar
+                </Button>
+              </div>
+            </form>
           </div>
         </DrawerContent>
       </Drawer>
@@ -768,31 +761,29 @@ export function ThemeNameDialog({
             Por favor, ingresa un nombre para el tema.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleFormSubmit)}>
-            <FormField
-              name="name"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre Tema</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Nombre Tema" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="mt-6 flex justify-end gap-2">
-              <DialogClose asChild>
-                <Button variant="secondary" type="button">
-                  Cancelar
-                </Button>
-              </DialogClose>
-              <Button type="submit">Guardar</Button>
-            </div>
-          </form>
-        </Form>
+        <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+          <Controller
+            name="name"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel>Nombre Tema</FieldLabel>
+                <Input {...field} placeholder="Nombre Tema" />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <div className="mt-6 flex justify-end gap-2">
+            <DialogClose asChild>
+              <Button variant="secondary" type="button">
+                Cancelar
+              </Button>
+            </DialogClose>
+            <Button type="submit">Guardar</Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   )

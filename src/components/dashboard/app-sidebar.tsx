@@ -262,8 +262,8 @@ function SidebarWorkgroup() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="flex flex-row items-center gap-2 p-1.5">
-            <Skeleton className="size-8 bg-gray-200" />
-            <Skeleton className="h-6 w-24 bg-gray-200" />
+            <Skeleton className="size-8" />
+            <Skeleton className="h-6 w-24" />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

@@ -169,7 +169,7 @@ export default function MenuPublish({
   }
 
   return (
-    <div className="editor-published flex justify-end gap-4 sm:gap-2">
+    <div className="editor-published flex h-8 justify-end gap-4 sm:gap-2">
       <TooltipHelper content="Vista previa">
         <div>
           <GuardLink href={`/menu-editor/${menu.id}/preview`}>
@@ -231,10 +231,7 @@ export default function MenuPublish({
           )}
         </DialogContent>
       </Dialog>
-      <Separator
-        orientation="vertical"
-        className="mr-2 h-100 border-l dark:border-gray-700"
-      />
+      <Separator orientation="vertical" className="mr-2" />
       <Popover>
         <div className="relative">
           <PopoverTrigger asChild>
