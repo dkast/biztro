@@ -31,7 +31,7 @@ export function UpgradeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-linear-to-t from-violet-500/30 via-transparent to-transparent">
+      <DialogContent className="bg-linear-to-t from-indigo-500/30 via-transparent to-transparent">
         <DialogHeader className="flex items-center gap-4 pb-6">
           <div className="rounded-full bg-linear-to-b from-amber-100 to-transparent p-2.5 dark:from-transparent dark:to-amber-900/40">
             <div className="rounded-full border border-amber-200 bg-amber-50 p-3 text-amber-400 shadow-xs dark:border-amber-800 dark:bg-amber-900/50 dark:text-amber-500">
@@ -39,7 +39,7 @@ export function UpgradeDialog({
             </div>
           </div>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription className="text-center dark:text-violet-300">
+          <DialogDescription className="text-center dark:text-indigo-300">
             {description}
           </DialogDescription>
         </DialogHeader>

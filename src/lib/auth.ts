@@ -109,7 +109,6 @@ export const auth = betterAuth({
     },
     session: {
       create: {
-        // @ts-expect-error type mismatch that needs fixing in better-auth
         before: async session => {
           // Perform any necessary transformations or validations on the session data
           if (!session.userId) {
