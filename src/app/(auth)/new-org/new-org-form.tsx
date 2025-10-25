@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import slugify from "@sindresorhus/slugify"
@@ -19,15 +19,19 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel
+} from "@/components/ui/field"
+import { Form } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText
+} from "@/components/ui/input-group"
 import { Textarea } from "@/components/ui/textarea"
 import { bootstrapOrg } from "@/server/actions/organization/mutations"
 import { orgSchema, Plan, SubscriptionStatus } from "@/lib/types"
@@ -80,67 +84,70 @@ export default function NewOrgForm() {
           </CardHeader>
           <CardContent>
             <fieldset className="space-y-4">
-              <FormField
-                control={form.control}
+              <Controller
                 name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel htmlFor="name">Nombre del negocio</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        id="name"
-                        placeholder="Nombre del negocio"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel htmlFor={field.name}>
+                      Nombre del negocio
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      placeholder="Nombre del negocio"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
                 )}
               />
-              <FormField
-                control={form.control}
+              <Controller
                 name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel htmlFor="description">Descripción</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        id="description"
-                        placeholder="Descripción"
-                      />
-                    </FormControl>
-                    <FormDescription>
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
+                    <Textarea
+                      {...field}
+                      id={field.name}
+                      placeholder="Descripción"
+                    />
+                    <FieldDescription>
                       Escribe una breve descripción de tu negocio
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
+                    </FieldDescription>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
                 )}
               />
-              <FormField
-                control={form.control}
+              <Controller
                 name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel htmlFor="slug">Sitio web</FormLabel>
-                    <FormControl>
-                      <div className="flex flex-row items-center">
-                        <span className="flex h-10 items-center rounded-md rounded-r-none border border-r-0 bg-gray-50 px-2 text-sm text-gray-500">
-                          https://.biztro.co/
-                        </span>
-                        <Input
-                          {...field}
-                          id="slug"
-                          placeholder="Sitio web"
-                          className="rounded-l-none"
-                        />
-                      </div>
-                    </FormControl>
-                    <FormDescription>
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel htmlFor={field.name}>Sitio web</FieldLabel>
+                    <InputGroup>
+                      <InputGroupInput
+                        {...field}
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        placeholder="tu-sitio"
+                        className="!pl-1"
+                      />
+                      <InputGroupAddon>
+                        <InputGroupText>https://.biztro.co/</InputGroupText>
+                      </InputGroupAddon>
+                    </InputGroup>
+                    <FieldDescription>
                       Este será el nombre de tu sitio web
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
+                    </FieldDescription>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
                 )}
               />
             </fieldset>

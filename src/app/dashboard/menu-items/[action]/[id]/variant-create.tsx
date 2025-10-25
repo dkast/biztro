@@ -1,6 +1,6 @@
 "use client"
 
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
@@ -23,14 +23,8 @@ import {
   DrawerHeader,
   DrawerTitle
 } from "@/components/ui/drawer"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
+// legacy Form helpers removed in favor of Field primitives
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { createVariant } from "@/server/actions/item/mutations"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -125,57 +119,51 @@ export function VariantCreateForm({
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="name">Nombre</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  id="name"
-                  placeholder="Nombre de la variante"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="price">Precio</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  id="price"
-                  type="number"
-                  inputMode="decimal"
-                  placeholder="Precio"
-                  onChange={e => field.onChange(Number(e.target.value))}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button disabled={status === "executing"} type="submit">
-          {status === "executing" ? (
-            <>
-              <Loader className="mr-2 size-4 animate-spin" />
-              {"Creando..."}
-            </>
-          ) : (
-            "Crear variante"
-          )}
-        </Button>
-      </form>
-    </Form>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <Controller
+        name="name"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
+            <Input
+              {...field}
+              id={field.name}
+              placeholder="Nombre de la variante"
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+      <Controller
+        name="price"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel htmlFor={field.name}>Precio</FieldLabel>
+            <Input
+              {...field}
+              id={field.name}
+              type="number"
+              inputMode="decimal"
+              placeholder="Precio"
+              onChange={e => field.onChange(Number(e.target.value))}
+              value={field.value ?? ""}
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+      <Button disabled={status === "executing"} type="submit">
+        {status === "executing" ? (
+          <>
+            <Loader className="mr-2 size-4 animate-spin" />
+            {"Creando..."}
+          </>
+        ) : (
+          "Crear variante"
+        )}
+      </Button>
+    </form>
   )
 }

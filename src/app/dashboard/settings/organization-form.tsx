@@ -1,6 +1,6 @@
 "use client"
 
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
@@ -23,15 +23,18 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog"
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText
+} from "@/components/ui/input-group"
 import { Textarea } from "@/components/ui/textarea"
 import { updateOrg } from "@/server/actions/organization/mutations"
 import type { getCurrentOrganization } from "@/server/actions/user/queries"
@@ -88,154 +91,149 @@ export default function OrganizationForm({
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <fieldset disabled={!enabled} className="mt-10 space-y-6">
-          <div className="flex items-center gap-x-8">
-            <Avatar className="h-24 w-24 rounded-xl">
-              {data.logo && (
-                <AvatarImage
-                  src={data.logo}
-                  className="rounded-xl border border-gray-200 dark:border-gray-700"
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <fieldset disabled={!enabled} className="mt-10 space-y-6">
+        <div className="flex items-center gap-x-8">
+          <Avatar className="h-24 w-24 rounded-xl">
+            {data.logo && (
+              <AvatarImage
+                src={data.logo}
+                className="rounded-xl border border-gray-200 dark:border-gray-700"
+              />
+            )}
+            <AvatarFallback className="text-3xl">
+              {getInitials(data.name)}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button type="button" variant="outline">
+                  Cambiar imágen
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-xl">
+                <DialogHeader>
+                  <DialogTitle>Subir imágen</DialogTitle>
+                </DialogHeader>
+                <FileUploader
+                  organizationId={data.id}
+                  imageType={ImageType.LOGO}
+                  objectId={ImageType.LOGO}
+                  limitDimension={500}
+                  onUploadSuccess={() => {
+                    queryClient.invalidateQueries({
+                      queryKey: ["workgroup", "current"]
+                    })
+                    router.refresh()
+                  }}
                 />
-              )}
-              <AvatarFallback className="text-3xl">
-                {getInitials(data.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button type="button" variant="outline">
-                    Cambiar imágen
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-xl">
-                  <DialogHeader>
-                    <DialogTitle>Subir imágen</DialogTitle>
-                  </DialogHeader>
-                  <FileUploader
-                    organizationId={data.id}
-                    imageType={ImageType.LOGO}
-                    objectId={ImageType.LOGO}
-                    limitDimension={500}
-                    onUploadSuccess={() => {
-                      queryClient.invalidateQueries({
-                        queryKey: ["workgroup", "current"]
-                      })
-                      router.refresh()
-                    }}
-                  />
-                </DialogContent>
-              </Dialog>
-              <FormDescription className="mt-2 text-xs">
-                Se recomienda un tamaño de 500x500 en formato JPG o PNG.
-              </FormDescription>
-            </div>
+              </DialogContent>
+            </Dialog>
+            <p className="mt-2 text-xs">
+              Se recomienda un tamaño de 500x500 en formato JPG o PNG.
+            </p>
           </div>
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="name">Nombre del negocio</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    id="name"
-                    placeholder="Nombre del negocio"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="description">Descripción</FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    id="description"
-                    placeholder="Descripción"
-                  />
-                </FormControl>
-                <FormDescription>
-                  Escribe una breve descripción de tu negocio
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="slug">Sitio web</FormLabel>
-                <FormControl>
-                  <div className="flex flex-row items-center">
-                    <span className="flex h-9 items-center rounded-md rounded-r-none border border-r-0 border-gray-200 bg-gray-50 px-2 text-sm text-gray-500">
-                      https://.biztro.co/
-                    </span>
-                    <Input
-                      {...field}
-                      id="slug"
-                      placeholder="Sitio web"
-                      className="rounded-l-none"
-                    />
-                  </div>
-                </FormControl>
-                <FormDescription>
-                  Este es el nombre de tu sitio web. Cambiarlo puede afectar tu
-                  SEO
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="space-y-2">
-            <FormLabel>Imágen de portada</FormLabel>
-            {data.banner ? (
-              <ImageField
-                src={data.banner}
-                organizationId={data.id}
-                imageType={ImageType.BANNER}
-                objectId={ImageType.BANNER}
-                onUploadSuccess={() => {
-                  router.refresh()
-                }}
+        </div>
+        <Controller
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>Nombre del negocio</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                placeholder="Nombre del negocio"
               />
-            ) : (
-              <EmptyImageField
-                organizationId={data.id}
-                imageType={ImageType.BANNER}
-                objectId={ImageType.BANNER}
-                onUploadSuccess={() => {
-                  router.refresh()
-                }}
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="description"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
+              <Textarea
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                placeholder="Descripción"
               />
-            )}
-            <FormDescription>
-              La imágen de portada se mostrará en tu sitio web de manera
-              prominente. Se recomienda un tamaño de 1200x800 en formato JPG.
-            </FormDescription>
-          </div>
-          <Button disabled={status === "executing"} type="submit">
-            {status === "executing" ? (
-              <>
-                <Loader className="mr-2 size-4 animate-spin" />
-                {"Guardando..."}
-              </>
-            ) : (
-              "Guardar"
-            )}
-          </Button>
-        </fieldset>
-      </form>
-    </Form>
+              <FieldDescription>
+                Escribe una breve descripción de tu negocio
+              </FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="slug"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>Sitio web</FieldLabel>
+              <InputGroup>
+                <InputGroupInput
+                  {...field}
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  placeholder="tu-sitio"
+                  className="!pl-1"
+                />
+                <InputGroupAddon>
+                  <InputGroupText>https://.biztro.co/</InputGroupText>
+                </InputGroupAddon>
+              </InputGroup>
+              <FieldDescription>
+                Este es el nombre de tu sitio web. Cambiarlo puede afectar tu
+                SEO
+              </FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <div className="space-y-2">
+          <FieldLabel>Imágen de portada</FieldLabel>
+          {data.banner ? (
+            <ImageField
+              src={data.banner}
+              organizationId={data.id}
+              imageType={ImageType.BANNER}
+              objectId={ImageType.BANNER}
+              onUploadSuccess={() => {
+                router.refresh()
+              }}
+            />
+          ) : (
+            <EmptyImageField
+              organizationId={data.id}
+              imageType={ImageType.BANNER}
+              objectId={ImageType.BANNER}
+              onUploadSuccess={() => {
+                router.refresh()
+              }}
+            />
+          )}
+          <FieldDescription>
+            La imágen de portada se mostrará en tu sitio web de manera
+            prominente. Se recomienda un tamaño de 1200x800 en formato JPG.
+          </FieldDescription>
+        </div>
+        <Button disabled={status === "executing"} type="submit">
+          {status === "executing" ? (
+            <>
+              <Loader className="mr-2 size-4 animate-spin" />
+              {"Guardando..."}
+            </>
+          ) : (
+            "Guardar"
+          )}
+        </Button>
+      </fieldset>
+    </form>
   )
 }

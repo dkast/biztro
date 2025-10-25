@@ -193,7 +193,7 @@ export async function ProPlanView() {
         ¿Tienes algún problema con tu suscripción? Envía un correo a{" "}
         <a
           href="mailto:contacto@biztro.co"
-          className="text-violet-500 hover:underline"
+          className="text-indigo-500 hover:underline"
         >
           contacto@biztro.co
         </a>

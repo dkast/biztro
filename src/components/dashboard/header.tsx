@@ -15,10 +15,7 @@ export default function Header({
 }) {
   return (
     <header
-      className={cn(
-        "z-50 flex h-16 border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950",
-        className
-      )}
+      className={cn("border-border bg-card z-50 flex h-16 border-b", className)}
     >
       <div className="mx-auto flex w-full items-center justify-between px-4 sm:px-6 lg:px-8">
         {showLogo && (

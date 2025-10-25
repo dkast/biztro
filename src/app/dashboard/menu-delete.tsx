@@ -14,7 +14,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from "@/components/ui/alert-dialog"
+import { buttonVariants } from "@/components/ui/button"
 import { deleteMenu } from "@/server/actions/menu/mutations"
+import { cn } from "@/lib/utils"
 
 export default function MenuDelete({
   menu,
@@ -60,7 +62,7 @@ export default function MenuDelete({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
-            variant="destructive"
+            className={cn(buttonVariants({ variant: "destructive" }))}
             onClick={() => onDeleteMenu()}
           >
             Eliminar

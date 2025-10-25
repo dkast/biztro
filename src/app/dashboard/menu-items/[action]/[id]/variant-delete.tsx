@@ -14,7 +14,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
+import { buttonVariants } from "@/components/ui/button"
 import { deleteVariant } from "@/server/actions/item/mutations"
+import { cn } from "@/lib/utils"
 
 export default function VariantDelete({
   children,
@@ -67,7 +69,7 @@ export default function VariantDelete({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
-            variant="destructive"
+            className={cn(buttonVariants({ variant: "destructive" }))}
             onClick={() => onDeleteVariant()}
           >
             Eliminar

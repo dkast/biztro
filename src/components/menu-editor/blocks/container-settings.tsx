@@ -129,7 +129,7 @@ export default function ContainerSettings() {
     <SideSection title="Sitio">
       <div className="grid grid-cols-3 items-center gap-2">
         <dt>
-          <Label size="sm">Fondo</Label>
+          <Label size="xs">Fondo</Label>
         </dt>
         <dd className="col-span-2">
           {isMobile ? (

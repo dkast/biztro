@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -31,6 +31,7 @@ import {
   bulkUpdateCategory
 } from "@/server/actions/item/mutations"
 import type { getMenuItems } from "@/server/actions/item/queries"
+import { cn } from "@/lib/utils"
 
 function FloatingToolbar({
   table,
@@ -125,11 +126,11 @@ function FloatingToolbar({
 
   return (
     <div className="mx-auto flex w-fit items-center gap-2">
-      <div className="flex h-7 items-center rounded-full border border-dashed border-gray-600 pl-2.5 pr-1 dark:border-gray-700">
-        <span className="whitespace-nowrap text-xs">
+      <div className="flex h-7 items-center rounded-full border border-dashed border-gray-600 pr-1 pl-2.5 dark:border-gray-700">
+        <span className="text-xs whitespace-nowrap">
           {rows.length} seleccionado(s)
         </span>
-        <Separator orientation="vertical" className="ml-2 mr-1 bg-gray-600" />
+        <Separator orientation="vertical" className="mr-1 ml-2 bg-gray-600" />
         <TooltipHelper content="Deseleccionar todo">
           <Button
             variant="ghost"
@@ -211,7 +212,10 @@ function FloatingToolbar({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} variant="destructive">
+            <AlertDialogAction
+              className={cn(buttonVariants({ variant: "destructive" }))}
+              onClick={handleDelete}
+            >
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>

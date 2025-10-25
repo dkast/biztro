@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
@@ -25,14 +25,7 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from "@/components/ui/drawer"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { createCategory, updateCategory } from "@/server/actions/item/mutations"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -161,38 +154,31 @@ function CategoryEditForm({
   }
 
   return (
-    <Form {...form}>
-      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="name">Categoría</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Nombre" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button
-          disabled={
-            statusInsert === "executing" || statusUpdate === "executing"
-          }
-          onClick={form.handleSubmit(onSubmit)}
-          className="w-full"
-        >
-          {statusInsert === "executing" || statusUpdate === "executing" ? (
-            <>
-              <Loader className="mr-2 h-4 w-4 animate-spin" />{" "}
-              {"Guardarando..."}
-            </>
-          ) : (
-            "Guardar"
-          )}
-        </Button>
-      </form>
-    </Form>
+    <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+      <Controller
+        name="name"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel htmlFor={field.name}>Categoría</FieldLabel>
+            <Input {...field} placeholder="Nombre" />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+      <Button
+        disabled={statusInsert === "executing" || statusUpdate === "executing"}
+        onClick={form.handleSubmit(onSubmit)}
+        className="w-full"
+      >
+        {statusInsert === "executing" || statusUpdate === "executing" ? (
+          <>
+            <Loader className="mr-2 h-4 w-4 animate-spin" /> {"Guardarando..."}
+          </>
+        ) : (
+          "Guardar"
+        )}
+      </Button>
+    </form>
   )
 }

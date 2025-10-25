@@ -1,6 +1,6 @@
 "use client"
 
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Location } from "@prisma/client"
@@ -12,14 +12,12 @@ import { type z } from "zod/v4"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Button } from "@/components/ui/button"
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
   createLocation,
@@ -114,245 +112,226 @@ export default function LocationForm({
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <fieldset disabled={!enabled} className="mt-10 space-y-6">
-          <FormField
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <fieldset disabled={!enabled} className="mt-10 space-y-6">
+        <Controller
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field>
+              <FieldLabel htmlFor={field.name}>
+                Nombre de la sucursal
+              </FieldLabel>
+              <Input {...field} id={field.name} placeholder="Nombre" />
+              <FieldDescription>
+                Nombre de referencia para la sucursal, no será visible para los
+                clientes
+              </FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="description"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field>
+              <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
+              <Input
+                {...field}
+                id={field.name}
+                placeholder="Descripción (opcional)"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="address"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field>
+              <FieldLabel htmlFor={field.name}>Dirección</FieldLabel>
+              <Input {...field} id={field.name} placeholder="Dirección" />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="phone"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field>
+              <FieldLabel htmlFor={field.name}>Teléfono</FieldLabel>
+              <Input
+                type="tel"
+                {...field}
+                id={field.name}
+                className="sm:w-1/2"
+                placeholder="Teléfono (opcional)"
+              />
+              <FieldDescription>
+                Número de teléfono de la sucursal sin espacios ni guiones
+              </FieldDescription>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <PageSubtitle title="Redes sociales" />
+        <div className="flex flex-col gap-4">
+          <Controller
+            name="facebook"
             control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="name">Nombre de la sucursal</FormLabel>
-                <FormControl>
-                  <Input {...field} id="name" placeholder="Nombre" />
-                </FormControl>
-                <FormDescription>
-                  Nombre de referencia para la sucursal, no será visible para
-                  los clientes
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
+            render={({ field, fieldState }) => (
+              <Field className="grid grid-cols-3 items-center sm:gap-4">
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="flex items-center gap-3"
+                >
+                  <Image
+                    src="/facebook.svg"
+                    alt="Facebook"
+                    width={24}
+                    height={24}
+                  />
+                  Facebook
+                </FieldLabel>
+                <FieldContent className="col-span-2 w-full">
+                  <Input {...field} id={field.name} placeholder="usuario" />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+              </Field>
             )}
           />
-          <FormField
+          <Controller
+            name="instagram"
             control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="description">Descripción</FormLabel>
-                <FormControl>
+            render={({ field, fieldState }) => (
+              <Field className="grid grid-cols-3 items-center sm:gap-4">
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="flex items-center gap-3"
+                >
+                  <Image
+                    src="/instagram.svg"
+                    alt="Instagram"
+                    width={24}
+                    height={24}
+                  />
+                  Instagram
+                </FieldLabel>
+                <FieldContent className="col-span-2 w-full">
+                  <Input {...field} id={field.name} placeholder="usuario" />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+              </Field>
+            )}
+          />
+          <Controller
+            name="twitter"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field className="grid grid-cols-3 items-center sm:gap-4">
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="flex items-center gap-3"
+                >
+                  <Image
+                    src="/twitter.svg"
+                    alt="Twitter"
+                    width={24}
+                    height={24}
+                  />
+                  Twitter
+                </FieldLabel>
+                <FieldContent className="col-span-2 w-full">
+                  <Input {...field} id={field.name} placeholder="usuario" />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+              </Field>
+            )}
+          />
+          <Controller
+            name="tiktok"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field className="grid grid-cols-3 items-center sm:gap-4">
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="flex items-center gap-3"
+                >
+                  <Image
+                    src="/tiktok.svg"
+                    alt="TikTok"
+                    width={24}
+                    height={24}
+                  />
+                  TikTok
+                </FieldLabel>
+                <FieldContent className="col-span-2 w-full">
+                  <Input {...field} id={field.name} placeholder="usuario" />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+              </Field>
+            )}
+          />
+          <Controller
+            name="whatsapp"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field className="grid grid-cols-3 items-center sm:gap-4">
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="flex items-center gap-3"
+                >
+                  <Image
+                    src="/whatsapp.svg"
+                    alt="WhatsApp"
+                    width={24}
+                    height={24}
+                  />
+                  WhatsApp
+                </FieldLabel>
+                <FieldContent className="col-span-2 w-full">
                   <Input
                     {...field}
-                    id="description"
-                    placeholder="Descripción (opcional)"
+                    id={field.name}
+                    placeholder="Número de teléfono"
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+              </Field>
             )}
           />
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="address">Dirección</FormLabel>
-                <FormControl>
-                  <Input {...field} id="address" placeholder="Dirección" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="phone">Teléfono</FormLabel>
-                <FormControl>
-                  <Input
-                    type="tel"
-                    {...field}
-                    id="phone"
-                    className="sm:w-1/2"
-                    placeholder="Teléfono (opcional)"
-                  />
-                </FormControl>
-                <FormDescription>
-                  Número de teléfono de la sucursal sin espacios ni guiones
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <PageSubtitle title="Redes sociales" />
-          <div className="flex flex-col gap-4">
-            <FormField
-              control={form.control}
-              name="facebook"
-              render={({ field }) => (
-                <FormItem className="grid grid-cols-3 items-center sm:gap-4">
-                  <FormLabel
-                    htmlFor="facebook"
-                    className="flex items-center gap-3"
-                  >
-                    <Image
-                      src="/facebook.svg"
-                      alt="Facebook"
-                      width={24}
-                      height={24}
-                    />
-                    Facebook
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      id="facebook"
-                      placeholder="usuario"
-                      className="col-span-2"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="instagram"
-              render={({ field }) => (
-                <FormItem className="grid grid-cols-3 items-center sm:gap-4">
-                  <FormLabel
-                    htmlFor="instagram"
-                    className="flex items-center gap-3"
-                  >
-                    <Image
-                      src="/instagram.svg"
-                      alt="Instagram"
-                      width={24}
-                      height={24}
-                    />
-                    Instagram
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      id="instagram"
-                      placeholder="usuario"
-                      className="col-span-2"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="twitter"
-              render={({ field }) => (
-                <FormItem className="grid grid-cols-3 items-center sm:gap-4">
-                  <FormLabel
-                    htmlFor="twitter"
-                    className="flex items-center gap-3"
-                  >
-                    <Image
-                      src="/twitter.svg"
-                      alt="Twitter"
-                      width={24}
-                      height={24}
-                    />
-                    Twitter
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      id="twitter"
-                      placeholder="usuario"
-                      className="col-span-2"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="tiktok"
-              render={({ field }) => (
-                <FormItem className="grid grid-cols-3 items-center sm:gap-4">
-                  <FormLabel
-                    htmlFor="tiktok"
-                    className="flex items-center gap-3"
-                  >
-                    <Image
-                      src="/tiktok.svg"
-                      alt="TikTok"
-                      width={24}
-                      height={24}
-                    />
-                    TikTok
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      id="tiktok"
-                      placeholder="usuario"
-                      className="col-span-2"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="whatsapp"
-              render={({ field }) => (
-                <FormItem className="grid grid-cols-3 items-center sm:gap-4">
-                  <FormLabel
-                    htmlFor="whatsapp"
-                    className="flex items-center gap-3"
-                  >
-                    <Image
-                      src="/whatsapp.svg"
-                      alt="WhatsApp"
-                      width={24}
-                      height={24}
-                    />
-                    WhatsApp
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      id="whatsapp"
-                      placeholder="Número de teléfono"
-                      className="col-span-2"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <Button
-            type="submit"
-            disabled={
-              statusUpdate === "executing" || statusCreate === "executing"
-            }
-          >
-            {statusUpdate === "executing" || statusCreate === "executing" ? (
-              <>
-                <Loader className="mr-2 size-4 animate-spin" />
-                {"Guardando..."}
-              </>
-            ) : data ? (
-              "Actualizar sucursal"
-            ) : (
-              "Crear sucursal"
-            )}
-          </Button>
-        </fieldset>
-      </form>
-    </Form>
+        </div>
+        <Button
+          type="submit"
+          disabled={
+            statusUpdate === "executing" || statusCreate === "executing"
+          }
+        >
+          {statusUpdate === "executing" || statusCreate === "executing" ? (
+            <>
+              <Loader className="mr-2 size-4 animate-spin" />
+              {"Guardando..."}
+            </>
+          ) : data ? (
+            "Actualizar sucursal"
+          ) : (
+            "Crear sucursal"
+          )}
+        </Button>
+      </fieldset>
+    </form>
   )
 }

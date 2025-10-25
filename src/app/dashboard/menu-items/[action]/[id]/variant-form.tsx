@@ -1,6 +1,8 @@
 "use client"
 
+// legacy Form helpers removed in favor of Field primitives
 import {
+  Controller,
   type Control,
   type FieldArrayWithId,
   type UseFormReturn
@@ -9,13 +11,7 @@ import { Trash } from "lucide-react"
 import type { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
   Table,
@@ -66,54 +62,48 @@ function MultiVariantForm({
         {fieldArray.map((field, index) => (
           <TableRow key={field.id}>
             <TableCell>
-              <FormField
-                control={parentForm.control}
+              <Controller
                 name={`variants.${index}.name`}
-                render={({ field }) => (
-                  <FormItem className="space-y-0">
-                    <FormLabel
-                      htmlFor={`variants.${index}.name`}
-                      className="sr-only"
-                    >
+                control={parentForm.control}
+                render={({ field, fieldState }) => (
+                  <Field className="space-y-0">
+                    <FieldLabel htmlFor={field.name} className="sr-only">
                       Nombre
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        id={`variants.${index}.name`}
-                        placeholder="Nombre de la variante"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      placeholder="Nombre de la variante"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
                 )}
               />
             </TableCell>
             <TableCell>
-              <FormField
-                control={parentForm.control}
+              <Controller
                 name={`variants.${index}.price`}
-                render={({ field }) => (
-                  <FormItem className="space-y-0">
-                    <FormLabel
-                      htmlFor={`variants.${index}.price`}
-                      className="sr-only"
-                    >
+                control={parentForm.control}
+                render={({ field, fieldState }) => (
+                  <Field className="space-y-0">
+                    <FieldLabel htmlFor={field.name} className="sr-only">
                       Precio
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        id={`variants.${index}.price`}
-                        type="number"
-                        inputMode="decimal"
-                        placeholder="Precio"
-                        onChange={e => field.onChange(Number(e.target.value))}
-                        value={field.value ?? ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      type="number"
+                      inputMode="decimal"
+                      placeholder="Precio"
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      value={field.value ?? ""}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
                 )}
               />
             </TableCell>
@@ -142,27 +132,25 @@ function SingleVariantForm({
   control: Control<z.infer<typeof menuItemSchema>>
 }) {
   return (
-    <FormField
-      control={control}
+    <Controller
       name={"variants.0.price"}
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel htmlFor={"variants.0.price"}>Precio</FormLabel>
-          <FormControl>
-            <Input
-              {...field}
-              id={"variants.0.price"}
-              type="number"
-              inputMode="decimal"
-              step="any"
-              placeholder="Precio"
-              className="w-1/3"
-              onChange={e => field.onChange(Number(e.target.value))}
-              value={field.value ?? ""}
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
+      control={control}
+      render={({ field, fieldState }) => (
+        <Field>
+          <FieldLabel htmlFor={field.name}>Precio</FieldLabel>
+          <Input
+            {...field}
+            id={field.name}
+            type="number"
+            inputMode="decimal"
+            step="any"
+            placeholder="Precio"
+            className="w-1/3"
+            onChange={e => field.onChange(Number(e.target.value))}
+            value={field.value ?? ""}
+          />
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
       )}
     />
   )

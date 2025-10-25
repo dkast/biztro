@@ -161,20 +161,15 @@ export default function AppSidebar() {
       <SidebarFooter>
         {currentOrg?.plan === Plan.BASIC && (
           <div className="p-1">
-            <Card className="gap-3 border-pink-400/50 bg-radial-[at_0%_100%] from-pink-500/50 via-violet-500/20 to-transparent shadow-none">
-              <CardHeader className="p-3 pb-1">
+            <Card className="border-indigo-400/50 bg-radial-[at_0%_100%] from-pink-500/50 via-indigo-500/20 to-transparent shadow-none">
+              <CardHeader className="p-3 pb-2">
                 <CardTitle className="text-sm">Actualiza a Pro</CardTitle>
                 <CardDescription className="text-xs">
                   Productos y menús ilimitados, componentes adicionales y más.
                 </CardDescription>
               </CardHeader>
               <CardFooter className="px-3">
-                <Button
-                  size="xs"
-                  variant="secondary"
-                  className="w-full border border-gray-200 bg-white text-xs dark:border-gray-700"
-                  asChild
-                >
+                <Button size="xs" variant="default" className="w-full" asChild>
                   <Link href="/dashboard/settings/billing">
                     Actualiza ahora
                   </Link>
@@ -267,8 +262,8 @@ function SidebarWorkgroup() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="flex flex-row items-center gap-2 p-1.5">
-            <Skeleton className="size-8 bg-gray-200" />
-            <Skeleton className="h-6 w-24 bg-gray-200" />
+            <Skeleton className="bg-sidebar-accent size-8" />
+            <Skeleton className="bg-sidebar-accent h-6 w-24" />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -359,7 +354,7 @@ function SidebarWorkgroup() {
                   href="/dashboard/create-org"
                   className="flex items-center gap-2"
                 >
-                  <div className="bg-background flex size-6 items-center justify-center rounded-md border border-gray-600 dark:border-gray-700">
+                  <div className="border-sidebar-border flex size-6 items-center justify-center rounded-md border">
                     <Plus className="size-4" />
                   </div>
                   <div className="text-muted-foreground font-medium">

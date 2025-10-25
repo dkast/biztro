@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
@@ -11,13 +11,8 @@ import { z } from "zod/v4"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem
-  // FormMessage
-} from "@/components/ui/form"
+import { Field } from "@/components/ui/field"
+import { Form } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { joinWaitlist } from "@/server/actions/organization/mutations"
 
@@ -58,21 +53,18 @@ export default function Waitlist() {
         {/* <span className="text-gray-500">Unirse a la lista de espera</span> */}
         {!isSubmitted ? (
           <div className="flex flex-row items-center justify-center gap-x-2 rounded-full bg-gray-800 p-1 shadow-lg">
-            <FormField
+            <Controller
               name="email"
               control={form.control}
               render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="nombre@correo.com"
-                      className="placeholder:text-gray-340 h-8 max-w-[300px] rounded-full border-0 bg-transparent text-white focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-transparent"
-                      {...field}
-                    />
-                  </FormControl>
-                  {/* <FormMessage /> */}
-                </FormItem>
+                <Field>
+                  <Input
+                    type="email"
+                    placeholder="nombre@correo.com"
+                    className="placeholder:text-gray-340 h-8 max-w-[300px] rounded-full border-0 bg-transparent text-white focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-transparent"
+                    {...field}
+                  />
+                </Field>
               )}
             />
             <Button

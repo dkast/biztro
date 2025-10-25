@@ -111,7 +111,13 @@ export const auth = betterAuth({
       create: {
         before: async session => {
           // Perform any necessary transformations or validations on the session data
-          const organization = await getActiveOrganization(session.userId)
+          if (!session.userId) {
+            return { data: session }
+          }
+
+          const organization = await getActiveOrganization(
+            String(session.userId)
+          )
           return {
             data: {
               ...session,

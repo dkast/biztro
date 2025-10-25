@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
@@ -10,14 +10,8 @@ import { useOptimisticAction } from "next-safe-action/hooks"
 import { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
+import { Form } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
   Popover,
@@ -83,22 +77,22 @@ export default function MenuTitle({
       <PopoverContent className="space-y-2">
         <Form {...form}>
           <form className="space-y-2" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
+            <Controller
               name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel htmlFor="name">Nombre</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      id="name"
-                      className="h-8"
-                      placeholder="Nombre"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    className="h-8"
+                    placeholder="Nombre"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
               )}
             />
           </form>

@@ -144,7 +144,7 @@ export default function Workbench({
   return (
     <div className="absolute inset-0">
       {isMobile ? (
-        <div className={cn("flex h-full flex-col bg-gray-50 dark:bg-gray-800")}>
+        <div className={cn("bg-background flex h-full flex-col")}>
           <Editor
             resolver={{
               ContainerBlock,
@@ -209,7 +209,7 @@ export default function Workbench({
             <MenuTour />
           </Header>
           <ResizablePanelGroup
-            className="grow pt-16 dark:bg-gray-950"
+            className="bg-card grow pt-16"
             direction="horizontal"
           >
             <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
@@ -238,7 +238,7 @@ export default function Workbench({
             <ResizablePanel defaultSize={70}>
               <div
                 id="editor-canvas"
-                className="no-scrollbar relative h-full w-full overflow-y-auto bg-gray-50 dark:bg-gray-900"
+                className="no-scrollbar bg-secondary relative h-full w-full overflow-y-auto"
               >
                 <SyncStatus
                   menu={menu}
