@@ -14,7 +14,7 @@ const data = [
     content:
       "Agregar la información del negocio, tus horarios de atención y redes sociales. Nuestro sistema se encargará de todo lo demás.",
     image: "/configuration.png",
-    icon: <Store className="text-primary h-6 w-6" />
+    icon: <Store className="size-6" />
   },
   {
     id: 2,
@@ -22,7 +22,7 @@ const data = [
     content:
       "Captura tus productos, agrega una breve descripción, precio y estarás listo para crear tu menú.",
     image: "/products.png",
-    icon: <ShoppingBag className="text-primary h-6 w-6" />
+    icon: <ShoppingBag className="size-6" />
   },
   {
     id: 3,
@@ -30,7 +30,7 @@ const data = [
     content:
       "Personaliza tu menú con el editor web, publicalo y comparte el enlace y código QR con tus clientes. ¡Así de fácil!",
     image: "/editor.png",
-    icon: <Rocket className="text-primary h-6 w-6" />
+    icon: <Rocket className="size-6" />
   }
 ]
 
