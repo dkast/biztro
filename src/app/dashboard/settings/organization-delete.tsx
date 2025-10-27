@@ -16,10 +16,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { deleteOrganization } from "@/server/actions/organization/mutations"
+import { cn } from "@/lib/utils"
 
 function OrganizationDelete({ organizationId }: { organizationId: string }) {
   const router = useRouter()
@@ -91,7 +92,7 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
-                  variant="destructive"
+                  className={cn(buttonVariants({ variant: "destructive" }))}
                   onClick={() => {
                     handleDelete()
                   }}

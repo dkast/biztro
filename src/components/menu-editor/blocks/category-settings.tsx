@@ -46,7 +46,7 @@ export default function CategorySettings() {
       <SideSection title="General">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label size="sm">Fondo</Label>
+            <Label size="xs">Fondo</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -73,7 +73,7 @@ export default function CategorySettings() {
       <SideSection title="Categoría">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label size="sm">Tamaño</Label>
+            <Label size="xs">Tamaño</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -98,7 +98,7 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label size="sm">Estilo</Label>
+            <Label size="xs">Estilo</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -122,7 +122,7 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label size="sm">Alineación</Label>
+            <Label size="xs">Alineación</Label>
           </dt>
           <dd className="col-span-2">
             <Tabs
@@ -152,7 +152,7 @@ export default function CategorySettings() {
       <SideSection title="Producto">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label size="sm">Tamaño</Label>
+            <Label size="xs">Tamaño</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -177,7 +177,7 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label size="sm">Estilo</Label>
+            <Label size="xs">Estilo</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -204,7 +204,7 @@ export default function CategorySettings() {
       <SideSection title="Precio">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label size="sm">Tamaño</Label>
+            <Label size="xs">Tamaño</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -229,7 +229,7 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label size="sm">Estilo</Label>
+            <Label size="xs">Estilo</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -256,7 +256,7 @@ export default function CategorySettings() {
       <SideSection title="Imágen Producto">
         <div className="grid grid-cols-3 items-center gap-y-2">
           <dt>
-            <Label size="sm">Mostrar</Label>
+            <Label size="xs">Mostrar</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Switch

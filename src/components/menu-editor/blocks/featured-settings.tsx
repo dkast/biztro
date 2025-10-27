@@ -18,7 +18,7 @@ export default function FeaturedSettings() {
     <SideSection title="General">
       <div className="grid grid-cols-3 items-center gap-y-2">
         <dt className="col-span-2 flex items-start">
-          <Label size="sm">Auto play</Label>
+          <Label size="xs">Auto play</Label>
           <InfoHelper>
             Activa la auto reproducción para que los elementos destacados
             cambien automáticamente hasta que el usuario interactúe con ellos.

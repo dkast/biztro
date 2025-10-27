@@ -56,8 +56,8 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
               value={itemCount * 10}
               showAnimation
               size="sm"
-              primary="#8b5cf6"
-              secondary={theme.resolvedTheme === "dark" ? "#212121" : "#cfcfcf"}
+              primary="oklch(51.1% 0.262 276.966)"
+              secondary={theme.resolvedTheme === "dark" ? "#27272a" : "#cfcfcf"}
             />
           </div>
           <div className="flex flex-col justify-center gap-1">
@@ -83,13 +83,13 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
             >
               <ToggleGroupItem
                 value="monthly"
-                className="rounded-xs text-sm data-[state=on]:bg-violet-500 data-[state=on]:text-white"
+                className="w-1/2 text-sm data-[state=on]:bg-indigo-600 data-[state=on]:text-white"
               >
                 Mensual
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="yearly"
-                className="rounded-xs text-sm data-[state=on]:bg-violet-500 data-[state=on]:text-white"
+                className="w-1/2 text-sm data-[state=on]:bg-indigo-600 data-[state=on]:text-white"
               >
                 Anual
                 <span className="ml-1.5 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-600 dark:bg-green-900 dark:text-green-300">
@@ -103,7 +103,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
               key={tier.id}
               className={
                 tier.id === Plan.PRO
-                  ? "border-violet-500 dark:border-violet-500"
+                  ? "border-indigo-500 dark:border-indigo-500"
                   : "hidden border-dashed sm:block"
               }
             >

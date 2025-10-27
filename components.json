@@ -6,12 +6,20 @@
   "tailwind": {
     "config": "tailwind.config.ts",
     "css": "styles/globals.css",
-    "baseColor": "gray",
-    "cssVariables": false,
+    "baseColor": "neutral",
+    "cssVariables": true,
     "prefix": ""
   },
+  "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
-    "utils": "@/lib/utils"
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "registries": {
+    "@magicui": "https://magicui.design/r/{name}.json",
+    "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json"
   }
 }

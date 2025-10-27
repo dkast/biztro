@@ -72,7 +72,7 @@ export function OnboardingCards({
             <CardHeader className="flex flex-row items-center justify-between space-y-1 p-3 pb-1">
               <div className="flex flex-row items-center gap-2">
                 <Badge className="p-2" variant="violet">
-                  <Store className="text-muted-foreground size-4" />
+                  <Store className="size-4" />
                 </Badge>
                 <CardTitle className="text-lg font-medium">Negocio</CardTitle>
               </div>
@@ -107,7 +107,7 @@ export function OnboardingCards({
             <CardHeader className="flex flex-row items-center justify-between space-y-1 p-3 pb-1">
               <div className="flex flex-row items-center gap-2">
                 <Badge className="p-2" variant="destructive">
-                  <MapPin className="text-muted-foreground size-4" />
+                  <MapPin className="size-4" />
                 </Badge>
                 <CardTitle className="text-lg font-medium">Sucursal</CardTitle>
               </div>
@@ -142,7 +142,7 @@ export function OnboardingCards({
             <CardHeader className="flex flex-row items-center justify-between space-y-1 p-3 pb-1">
               <div className="flex flex-row items-center gap-2">
                 <Badge className="p-2" variant="green">
-                  <ShoppingBag className="text-muted-foreground size-4" />
+                  <ShoppingBag className="size-4" />
                 </Badge>
                 <CardTitle className="text-lg font-medium">Productos</CardTitle>
               </div>

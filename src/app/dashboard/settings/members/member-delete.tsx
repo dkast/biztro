@@ -13,8 +13,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from "@/components/ui/alert-dialog"
+import { buttonVariants } from "@/components/ui/button"
 import { removeMember } from "@/server/actions/user/mutations"
 import type { AuthMember } from "@/lib/auth"
+import { cn } from "@/lib/utils"
 
 export default function MemberDelete({
   member,
@@ -64,7 +66,7 @@ export default function MemberDelete({
             Cancelar
           </AlertDialogCancel>
           <AlertDialogAction
-            variant="destructive"
+            className={cn(buttonVariants({ variant: "destructive" }))}
             onClick={event => {
               event.stopPropagation()
               onDeleteMember()
