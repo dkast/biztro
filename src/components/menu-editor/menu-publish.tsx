@@ -6,7 +6,13 @@ import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
-import { rgbaToHex, rgbaToHsva, Sketch, type RgbaColor } from "@uiw/react-color"
+import {
+  Colorful,
+  rgbaToHex,
+  rgbaToHsva,
+  Sketch,
+  type RgbaColor
+} from "@uiw/react-color"
 import { differenceInMinutes, formatDate, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { useAtomValue, useSetAtom } from "jotai"
@@ -54,6 +60,7 @@ import {
 } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
 import useLocalStorage from "@/hooks/use-local-storage"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { colorThemeAtom, fontThemeAtom, tourModeAtom } from "@/lib/atoms"
 import exportAsImage from "@/lib/export-as-image"
 import { MenuStatus } from "@/lib/types"
@@ -411,6 +418,7 @@ function QrCodeEditor({
   const [showLogo, setShowLogo] = useLocalStorage<boolean>("logo", false)
   const [logoBase64, setLogoBase64] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     if (!logoURL) return
@@ -449,6 +457,8 @@ function QrCodeEditor({
                 logoImage={showLogo && logoBase64 ? logoBase64 : ""}
                 logoWidth={showLogo ? 60 : 0}
                 logoPadding={showLogo ? 4 : 0}
+                logoPaddingRadius={4}
+                logoOpacity={1}
                 removeQrCodeBehindLogo={showLogo}
                 enableCORS
                 fgColor={rgbaToHex(color)}
@@ -491,14 +501,26 @@ function QrCodeEditor({
                       }}
                     ></div>
                   </PopoverTrigger>
-                  <PopoverContent className="border-0 p-0 shadow-none">
-                    <Sketch
-                      disableAlpha
-                      color={rgbaToHsva(color)}
-                      onChange={color => {
-                        setColor(color.rgba)
-                      }}
-                    />
+                  <PopoverContent className="w-[208px] border-0 p-0 shadow-none sm:w-[218px]">
+                    {isMobile ? (
+                      <div className="p-1">
+                        <Colorful
+                          disableAlpha
+                          color={rgbaToHsva(color)}
+                          onChange={color => {
+                            setColor(color.rgba)
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <Sketch
+                        disableAlpha
+                        color={rgbaToHsva(color)}
+                        onChange={color => {
+                          setColor(color.rgba)
+                        }}
+                      />
+                    )}
                   </PopoverContent>
                 </Popover>
               </div>

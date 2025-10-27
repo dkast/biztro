@@ -100,7 +100,7 @@
 }
 
 .dark .w-color-sketch {
-  --sketch-background: #323232 !important;
+  --sketch-background: oklch(0.205 0 0) !important;
 }
 
 .dark .w-color-swatch {
