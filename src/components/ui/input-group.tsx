@@ -63,6 +63,7 @@ function InputGroupAddon({
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof inputGroupAddonVariants>) {
   return (
+    // skipcq: JS-0760 allow div with onClick
     <div
       role="group"
       data-slot="input-group-addon"
