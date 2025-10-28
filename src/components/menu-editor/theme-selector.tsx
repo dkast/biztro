@@ -205,10 +205,6 @@ export default function ThemeSelector({
     }
   }, [fontThemeId]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    updateColorTheme(colorThemeId)
-  }, [colorThemeId, colorThemes]) // eslint-disable-line react-hooks/exhaustive-deps
-
   const updateColorTheme = (colorThemeId: string) => {
     const selectedTheme = colorThemes.find(theme => theme.id === colorThemeId)
     if (!selectedTheme) {
@@ -295,6 +291,10 @@ export default function ThemeSelector({
       }
     }
   }
+
+  useEffect(() => {
+    updateColorTheme(colorThemeId)
+  }, [colorThemeId, colorThemes]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update the menu theme
   const {
