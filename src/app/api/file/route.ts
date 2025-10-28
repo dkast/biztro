@@ -1,6 +1,5 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
-import { revalidateTag } from "next/cache"
 import { NextResponse, type NextRequest } from "next/server"
 
 import prisma from "@/lib/prisma"
@@ -40,7 +39,6 @@ export async function POST(req: NextRequest) {
         where: { id: organizationId as string },
         data: { logo: `orgId_${organizationId}/${objectId}/${filename}` }
       })
-      revalidateTag(`organization-${organizationId}`)
       break
     case ImageType.BANNER:
       // Update organization using Prisma
@@ -48,14 +46,12 @@ export async function POST(req: NextRequest) {
         where: { id: organizationId as string },
         data: { banner: `orgId_${organizationId}/${objectId}/${filename}` }
       })
-      revalidateTag(`organization-${organizationId}`)
       break
     case ImageType.MENUITEM:
       await prisma.menuItem.update({
         where: { id: objectId as string },
         data: { image: `orgId_${organizationId}/${objectId}/${filename}` }
       })
-      revalidateTag(`menuItem-${objectId}`)
       break
     default:
       return new NextResponse("Invalid imageType", { status: 400 })

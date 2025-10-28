@@ -1,6 +1,5 @@
 "use server"
 
-import { revalidateTag } from "next/cache"
 import { headers } from "next/headers"
 import { z } from "zod/v4"
 
@@ -82,10 +81,6 @@ export const bootstrapOrg = authActionClient
             }
           }
         }
-
-        revalidateTag(`organization-${org.id}`)
-        revalidateTag(`organization-${org.slug}`)
-        revalidateTag(`memberships-${org.id}`)
 
         return { success: true }
       } catch (error) {
@@ -173,10 +168,6 @@ export const createOrg = authActionClient
           }
         }
 
-        revalidateTag(`organization-${org.id}`)
-        revalidateTag(`organization-${org.slug}`)
-        revalidateTag(`memberships-${org.id}`)
-
         return { success: true }
       } catch (error) {
         let message
@@ -261,9 +252,6 @@ export const updateOrg = authActionClient
           }
         }
       }
-
-      revalidateTag(`organization-${id}`)
-      revalidateTag(`organization-${org.slug}`)
 
       return { success: true }
     } catch (error) {
@@ -367,9 +355,6 @@ export const deleteOrganization = authActionClient
             }
           }
         }
-
-        revalidateTag(`organization-${id}`)
-        revalidateTag(`memberships-${id}`)
 
         return {
           success: true

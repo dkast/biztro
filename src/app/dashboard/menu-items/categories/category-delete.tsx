@@ -31,7 +31,6 @@ export default function ItemDelete({
       toast("Eliminando categoría...", { icon: "🗑️" })
     },
     onSuccess: async ({ data }) => {
-      // onSuccess not triggered when using revalidateTag in the action
       // see https://github.com/TheEdoRan/next-safe-action/issues/376
       if (data?.success) {
         toast.success("Categoría eliminada")

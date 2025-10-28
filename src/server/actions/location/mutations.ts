@@ -1,7 +1,5 @@
 "use server"
 
-import { revalidateTag } from "next/cache"
-
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
@@ -66,8 +64,6 @@ export const createLocation = authActionClient
             }
           }
         })
-
-        revalidateTag(`default-location-${currentOrg.id}`)
 
         return { success: location }
       } catch (error) {
@@ -136,8 +132,6 @@ export const updateLocation = authActionClient
           }
         })
 
-        revalidateTag(`default-location-${id}`)
-
         return { success: location }
       } catch (error) {
         let message
@@ -170,8 +164,6 @@ export const deleteLocation = authActionClient
           id
         }
       })
-
-      revalidateTag(`default-location-${id}`)
 
       return { success: true }
     } catch (error) {
@@ -239,8 +231,6 @@ export const updateHours = authActionClient
           allDay: item.allDay
         }))
       })
-
-      revalidateTag(`default-location-${currentOrg.id}`)
 
       return { success: hours }
     } catch (error) {

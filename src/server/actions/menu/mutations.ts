@@ -1,7 +1,7 @@
 "use server"
 
 import { Prisma } from "@prisma/client"
-import { revalidatePath, revalidateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import { z } from "zod/v4"
 
 import { getMenuCount } from "@/server/actions/menu/queries"
@@ -60,8 +60,6 @@ export const createMenu = authActionClient
         }
       })
 
-      revalidateTag(`menus-${currentOrg.id}`)
-
       return {
         success: menu
       }
@@ -106,9 +104,6 @@ export const updateMenuName = authActionClient
         where: { id },
         data: { name }
       })
-
-      // revalidateTag(`menus-${menu.organizationId}`)
-      revalidateTag(`menu-${id}`)
 
       return {
         name: menu.name
@@ -173,8 +168,6 @@ export const updateMenuStatus = authActionClient
           }
         })
 
-        revalidateTag(`menu-${id}`)
-        revalidateTag(`site-${subdomain}`)
         revalidatePath(`/${subdomain}`)
 
         return {
@@ -224,8 +217,6 @@ export const updateMenuSerialData = authActionClient
           data: { fontTheme, colorTheme, serialData }
         })
 
-        revalidateTag(`menu-${id}`)
-
         return {
           success: menu
         }
@@ -266,8 +257,6 @@ export const deleteMenu = authActionClient
       await prisma.menu.delete({
         where: { id, organizationId }
       })
-
-      revalidateTag(`menu-${id}`)
 
       return {
         success: true
@@ -350,8 +339,6 @@ export const duplicateMenu = authActionClient
         }
       })
 
-      revalidateTag(`menus-${currentOrg.id}`)
-
       return {
         success: duplicatedMenu
       }
@@ -408,8 +395,6 @@ export const createColorTheme = authActionClient
           }
         })
 
-        // revalidateTag(`themes-${themeType}-${organizationId}`)
-
         return {
           success: colorTheme
         }
@@ -456,10 +441,6 @@ export const updateColorTheme = authActionClient
         data: { name, themeJSON }
       })
 
-      // revalidateTag(
-      //   `themes-${colorTheme.themeType}-${colorTheme.organizationId}`
-      // )
-
       return {
         success: colorTheme
       }
@@ -504,8 +485,6 @@ export const deleteColorTheme = authActionClient
       await prisma.theme.delete({
         where: { id, organizationId: currentOrg }
       })
-
-      // revalidateTag(`themes-${id}-${currentOrg}`)
 
       return {
         success: true

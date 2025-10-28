@@ -2,7 +2,6 @@
 
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { Prisma } from "@prisma/client"
-import { revalidateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
@@ -108,9 +107,6 @@ export const createItem = authMemberActionClient
             }
           }
         })
-
-        revalidateTag(`menuItems-${currentOrgId}`)
-        revalidateTag(`menuItem-${item.id}`)
 
         return { success: item }
       } catch (error) {
@@ -240,8 +236,6 @@ export const bulkCreateItems = authMemberActionClient
         )
       })
 
-      revalidateTag(`menuItems-${currentOrgId}`)
-      revalidateTag(`categories-${currentOrgId}`)
       return { success: createdItems }
     } catch (error) {
       // Add type checking for better error handling
@@ -288,14 +282,12 @@ export const updateItem = authMemberActionClient
         description,
         status,
         categoryId,
-        organizationId,
+        organizationId: _organizationId,
         variants,
         featured,
         allergens
-      },
-      ctx: { member }
+      }
     }) => {
-      const currentOrgId = member.organizationId
       try {
         const item = await prisma.menuItem.update({
           where: { id },
@@ -321,9 +313,6 @@ export const updateItem = authMemberActionClient
             }
           }
         })
-
-        revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
-        revalidateTag(`menuItem-${item.id}`)
 
         return { success: item }
       } catch (error) {
@@ -363,8 +352,7 @@ export const deleteItem = authMemberActionClient
       organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, organizationId }, ctx: { member } }) => {
-    const currentOrgId = member.organizationId
+  .action(async ({ parsedInput: { id, organizationId: _organizationId } }) => {
     try {
       // Delete the image from the storage if exists
       const item = await prisma.menuItem.findUnique({
@@ -383,9 +371,6 @@ export const deleteItem = authMemberActionClient
       await prisma.menuItem.delete({
         where: { id }
       })
-
-      revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
-      revalidateTag(`menuItem-${id}`)
 
       return { success: true }
     } catch (error) {
@@ -432,8 +417,6 @@ export const createCategory = authMemberActionClient
         }
       })
 
-      revalidateTag(`categories-${currentOrgId}`)
-
       return { success: category }
     } catch (error) {
       let message
@@ -468,8 +451,7 @@ export const createCategory = authMemberActionClient
 export const updateCategory = authMemberActionClient
   .inputSchema(categorySchema)
   .action(
-    async ({ parsedInput: { id, name, organizationId }, ctx: { member } }) => {
-      const currentOrgId = member.organizationId
+    async ({ parsedInput: { id, name, organizationId: _organizationId } }) => {
       try {
         const category = await prisma.category.update({
           where: { id },
@@ -477,8 +459,6 @@ export const updateCategory = authMemberActionClient
             name
           }
         })
-
-        revalidateTag(`categories-${organizationId ?? currentOrgId}`)
 
         return { success: category }
       } catch (error) {
@@ -518,7 +498,7 @@ export const deleteCategory = authMemberActionClient
       organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, organizationId } }) => {
+  .action(async ({ parsedInput: { id, organizationId: _organizationId } }) => {
     // const currentOrgId = member.organizationId
     try {
       // Check if the category is being used by any item
@@ -538,8 +518,6 @@ export const deleteCategory = authMemberActionClient
       await prisma.category.delete({
         where: { id }
       })
-
-      revalidateTag(`categories-${organizationId}`)
 
       return { success: true }
     } catch (error) {
@@ -588,9 +566,6 @@ export const createVariant = authMemberActionClient
         }
       })
 
-      // revalidateTag(`variants-${menuItemId}`)
-      revalidateTag(`menuItem-${menuItemId}`)
-
       return { success: variant }
     } catch (error) {
       let message
@@ -624,14 +599,11 @@ export const deleteVariant = authMemberActionClient
       menuItemId: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, menuItemId } }) => {
+  .action(async ({ parsedInput: { id, menuItemId: _menuItemId } }) => {
     try {
       await prisma.variant.delete({
         where: { id }
       })
-
-      // revalidateTag(`variants-${menuItemId}`)
-      revalidateTag(`menuItem-${menuItemId}`)
 
       return { success: true }
     } catch (error) {
@@ -665,10 +637,8 @@ export const bulkUpdateCategory = authMemberActionClient
   )
   .action(
     async ({
-      parsedInput: { ids, categoryId, organizationId },
-      ctx: { member }
+      parsedInput: { ids, categoryId, organizationId: _organizationId }
     }) => {
-      const currentOrgId = member.organizationId
       try {
         await prisma.menuItem.updateMany({
           where: {
@@ -678,9 +648,6 @@ export const bulkUpdateCategory = authMemberActionClient
             categoryId
           }
         })
-
-        revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
-        ids.forEach(id => revalidateTag(`menuItem-${id}`))
 
         return { success: true }
       } catch (error) {
@@ -704,8 +671,7 @@ export const bulkDeleteItems = authMemberActionClient
       organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { ids, organizationId }, ctx: { member } }) => {
-    const currentOrgId = member.organizationId
+  .action(async ({ parsedInput: { ids, organizationId: _organizationId } }) => {
     try {
       // First get all items to delete their images
       const items = await prisma.menuItem.findMany({
@@ -733,9 +699,6 @@ export const bulkDeleteItems = authMemberActionClient
         }
       })
 
-      revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
-      ids.forEach(id => revalidateTag(`menuItem-${id}`))
-
       return { success: true }
     } catch (error) {
       console.error(error)
@@ -760,10 +723,8 @@ export const bulkToggleFeature = authMemberActionClient
   )
   .action(
     async ({
-      parsedInput: { ids, featured, organizationId },
-      ctx: { member }
+      parsedInput: { ids, featured, organizationId: _organizationId }
     }) => {
-      const currentOrgId = member.organizationId
       try {
         await prisma.menuItem.updateMany({
           where: {
@@ -773,9 +734,6 @@ export const bulkToggleFeature = authMemberActionClient
             featured
           }
         })
-
-        revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
-        ids.forEach(id => revalidateTag(`menuItem-${id}`))
 
         return { success: true }
       } catch (error) {
