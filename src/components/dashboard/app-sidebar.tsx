@@ -1,6 +1,13 @@
 "use client"
 
-import { Fragment, useEffect, useRef, useState, useTransition } from "react"
+import {
+  Fragment,
+  use,
+  useEffect,
+  useRef,
+  useState,
+  useTransition
+} from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import type { feedbackIntegration } from "@sentry/nextjs"
@@ -46,7 +53,6 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import {
-  Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
@@ -97,54 +103,54 @@ const navigation: NavigationItem[] = [
   }
 ]
 
-export default function AppSidebar() {
-  const { data: currentOrg } = useQuery({
-    queryKey: ["workgroup", "current"],
-    queryFn: getCurrentOrganization
-  })
+export default function AppSidebar({
+  promiseOrganization
+}: {
+  promiseOrganization: ReturnType<typeof getCurrentOrganization>
+}) {
+  const currentOrg = use(promiseOrganization)
 
   return (
-    <Sidebar className="border-gray-200 dark:border-gray-800">
+    <>
       <SidebarWorkgroup />
       <SidebarContent>
         <SidebarGroup>
           <SidebarContent>
             <SidebarMenu>
-              {currentOrg &&
-                navigation.map(item => (
-                  <Fragment key={item.title}>
-                    {item.items ? (
-                      <Collapsible
-                        asChild
-                        defaultOpen
-                        className="group/collapsible"
-                      >
-                        <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton tooltip={item.title}>
-                              {item.icon && <item.icon />}
-                              <span>{item.title}</span>
-                              <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub>
-                              {item.items?.map(subItem => (
-                                <SidebarMenuSubItem key={subItem.title}>
-                                  <SidebarSubLink item={subItem} />
-                                </SidebarMenuSubItem>
-                              ))}
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        </SidebarMenuItem>
-                      </Collapsible>
-                    ) : (
+              {navigation.map(item => (
+                <Fragment key={item.title}>
+                  {item.items ? (
+                    <Collapsible
+                      asChild
+                      defaultOpen
+                      className="group/collapsible"
+                    >
                       <SidebarMenuItem>
-                        <SidebarLink item={item} />
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton tooltip={item.title}>
+                            {item.icon && <item.icon />}
+                            <span>{item.title}</span>
+                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.items?.map(subItem => (
+                              <SidebarMenuSubItem key={subItem.title}>
+                                <SidebarSubLink item={subItem} />
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
                       </SidebarMenuItem>
-                    )}
-                  </Fragment>
-                ))}
+                    </Collapsible>
+                  ) : (
+                    <SidebarMenuItem>
+                      <SidebarLink item={item} />
+                    </SidebarMenuItem>
+                  )}
+                </Fragment>
+              ))}
             </SidebarMenu>
           </SidebarContent>
         </SidebarGroup>
@@ -179,7 +185,7 @@ export default function AppSidebar() {
           </div>
         )}
       </SidebarFooter>
-    </Sidebar>
+    </>
   )
 }
 
@@ -238,7 +244,6 @@ function SidebarWorkgroup() {
         })
         // router.replace("/dashboard")
         startTransition(() => {
-          refetch()
           router.replace("/dashboard")
         })
       } else if (data?.failure?.reason) {
@@ -248,6 +253,9 @@ function SidebarWorkgroup() {
     onError: error => {
       console.error(error)
       toast.error("No se pudo cambiar de organización")
+    },
+    onSettled: () => {
+      refetch()
     }
   })
 
@@ -257,17 +265,7 @@ function SidebarWorkgroup() {
     })
   }
 
-  if (isPending)
-    return (
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem className="flex flex-row items-center gap-2 p-1.5">
-            <Skeleton className="bg-sidebar-accent size-8" />
-            <Skeleton className="bg-sidebar-accent h-6 w-24" />
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-    )
+  if (isPending) return <SkeletonWorkgroup />
 
   if (!currentOrg && organizations?.length === 0)
     return (
@@ -315,9 +313,7 @@ function SidebarWorkgroup() {
                     </div>
                   </>
                 ) : (
-                  <span className="truncate font-semibold">
-                    Selecciona un negocio
-                  </span>
+                  <span className="truncate">Selecciona un negocio</span>
                 )}
                 <ChevronsUpDown className="ml-auto" />
               </SidebarMenuButton>
@@ -364,6 +360,19 @@ function SidebarWorkgroup() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarHeader>
+  )
+}
+
+export function SkeletonWorkgroup() {
+  return (
+    <SidebarHeader>
+      <SidebarMenu>
+        <SidebarMenuItem className="flex flex-row items-center gap-2 p-1.5">
+          <Skeleton className="bg-sidebar-accent size-8" />
+          <Skeleton className="bg-sidebar-accent h-6 w-24" />
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>
