@@ -37,19 +37,17 @@ export function MenuRename({
     resolver: zodResolver(nameSchema),
     defaultValues: { name: menu.name ?? "" }
   })
-  const queryClient = useQueryClient()
   const [name, setName] = useState(menu.name)
   const { execute } = useOptimisticAction(updateMenuName, {
     currentState: { name },
-    updateFn: (prev, next) => ({ ...prev, name: next.name })
+    updateFn: (prev, next) => {
+      return { ...prev, name: next.name }
+    }
   })
 
   const onSubmit = (data: z.infer<typeof nameSchema>) => {
     execute({ id: menu.id, name: data.name })
     setName(data.name)
-    queryClient.invalidateQueries({
-      queryKey: ["menu", menu.id]
-    })
     setOpen(false)
   }
 

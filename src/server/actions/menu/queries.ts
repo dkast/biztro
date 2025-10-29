@@ -1,22 +1,21 @@
 "use server"
 
-import {
-  getCurrentMembership,
-  getCurrentOrganization
-} from "@/server/actions/user/queries"
+import { cacheTag } from "next/cache"
+
+import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { MenuStatus, SubscriptionStatus } from "@/lib/types"
 import { env } from "@/env.mjs"
 
-export async function getMenus() {
-  const currentOrg = await getCurrentOrganization()
-
-  if (!currentOrg) {
+export async function getMenus(currentOrgId: string) {
+  "use cache"
+  cacheTag("menus-" + currentOrgId)
+  if (!currentOrgId) {
     return []
   }
   return await prisma.menu.findMany({
     where: {
-      organizationId: currentOrg.id
+      organizationId: currentOrgId
     },
     orderBy: {
       publishedAt: "desc"

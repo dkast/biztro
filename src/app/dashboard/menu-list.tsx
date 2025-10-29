@@ -6,6 +6,7 @@ import type { Menu } from "@prisma/client"
 import { CircleCheck, MoreHorizontal } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
+import Image from "next/image"
 import Link from "next/link"
 import gradient from "random-gradient"
 
@@ -57,7 +58,11 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
   const bgGradient = { background: gradient(menu.id) }
 
   const { execute: executeDuplicate } = useAction(duplicateMenu, {
+    onExecute: () => {
+      toast.loading("Duplicando Menú...")
+    },
     onSuccess: ({ data }) => {
+      toast.dismiss()
       if (data?.failure) {
         if (data.failure.code === BasicPlanLimits.MENU_LIMIT_REACHED) {
           setShowUpgrade(true)
@@ -91,10 +96,13 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
           className="row-span-3 flex items-center justify-center"
           style={bgGradient}
         >
-          <img
+          <Image
             src="safari-pinned-tab.svg"
             alt={menu.name}
             className="size-16 opacity-10"
+            unoptimized
+            width={64}
+            height={64}
           />
         </Link>
         <div className="row-span-2 flex flex-col justify-between gap-2 rounded-b-lg bg-white px-4 py-3 dark:bg-gray-900">

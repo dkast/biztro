@@ -23,11 +23,11 @@ export default async function DashboardPage() {
     getCurrentOrganization()
   ])
 
-  const menus = getMenus()
-
   if (!orgAvailable) {
     redirect("/new-org")
   }
+
+  const menus = getMenus(currentOrg?.id as string)
 
   return (
     <div className="flex grow bg-gray-50 pb-4 dark:bg-gray-950">

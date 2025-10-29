@@ -1,7 +1,7 @@
 "use server"
 
 import { Prisma } from "@prisma/client"
-import { refresh, revalidatePath } from "next/cache"
+import { refresh, revalidatePath, updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getMenuCount } from "@/server/actions/menu/queries"
@@ -105,6 +105,7 @@ export const updateMenuName = authActionClient
         data: { name }
       })
 
+      updateTag("menu-" + id)
       return {
         name: menu.name
       }
@@ -258,7 +259,7 @@ export const deleteMenu = authActionClient
         where: { id, organizationId }
       })
 
-      refresh()
+      updateTag("menus-" + organizationId)
       return {
         success: true
       }
@@ -292,16 +293,6 @@ export const duplicateMenu = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
-    const currentOrg = await getCurrentOrganization()
-
-    if (!currentOrg) {
-      return {
-        failure: {
-          reason: "No se pudo obtener la organización actual"
-        }
-      }
-    }
-
     const proMember = await isProMember()
     const menuCount = await getMenuCount()
 
@@ -333,13 +324,14 @@ export const duplicateMenu = authActionClient
           name: `${sourceMenu.name} (copia)`,
           description: sourceMenu.description,
           status: "DRAFT",
-          organizationId: currentOrg.id,
+          organizationId: sourceMenu.organizationId,
           fontTheme: sourceMenu.fontTheme,
           colorTheme: sourceMenu.colorTheme,
           serialData: sourceMenu.serialData
         }
       })
 
+      updateTag("menus-" + sourceMenu.organizationId)
       return {
         success: duplicatedMenu
       }
