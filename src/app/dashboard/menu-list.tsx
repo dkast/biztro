@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { use, useState } from "react"
 import toast from "react-hot-toast"
 import type { Menu } from "@prisma/client"
 import { CircleCheck, MoreHorizontal } from "lucide-react"
@@ -27,7 +27,12 @@ import MenuDelete from "@/app/dashboard/menu-delete"
 import { MenuRename } from "@/app/dashboard/menu-rename"
 import { BasicPlanLimits, MenuStatus } from "@/lib/types"
 
-export default function MenuList({ menus }: { menus: Menu[] }) {
+export default function MenuList({
+  promiseMenus
+}: {
+  promiseMenus: Promise<Menu[]>
+}) {
+  const menus = use(promiseMenus)
   return (
     <AnimatePresence mode="popLayout">
       {menus.map((menu, index) => (

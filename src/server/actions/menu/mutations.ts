@@ -1,7 +1,7 @@
 "use server"
 
 import { Prisma } from "@prisma/client"
-import { revalidatePath } from "next/cache"
+import { refresh, revalidatePath } from "next/cache"
 import { z } from "zod/v4"
 
 import { getMenuCount } from "@/server/actions/menu/queries"
@@ -258,6 +258,7 @@ export const deleteMenu = authActionClient
         where: { id, organizationId }
       })
 
+      refresh()
       return {
         success: true
       }
