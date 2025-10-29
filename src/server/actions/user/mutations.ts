@@ -1,5 +1,6 @@
 "use server"
 
+import { updateTag } from "next/cache"
 import { headers } from "next/headers"
 import { z } from "zod/v4"
 
@@ -29,6 +30,7 @@ export const switchOrganization = authActionClient
         }
       }
 
+      updateTag("menus-" + organizationId)
       return { success: true }
     } catch (error) {
       console.error("Error switching organization:", error)

@@ -40,7 +40,8 @@
     ".contentlayer/generated",
     "src/app/.well-known/**/*",
     ".next\\dev/types/**/*.ts",
-    ".next\\dev/types/**/*.ts"
+    ".next\\dev/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules", ".next", "out", "public", "generated"]
 }
