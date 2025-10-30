@@ -105,7 +105,7 @@ export const updateMenuName = authActionClient
         data: { name }
       })
 
-      updateTag("menu-" + id)
+      updateTag("menus-" + menu.organizationId)
       return {
         name: menu.name
       }

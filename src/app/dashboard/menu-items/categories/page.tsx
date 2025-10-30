@@ -15,14 +15,13 @@ export const metadata: Metadata = {
 }
 
 export default async function CategoriesPage() {
-  const [currentOrg, data] = await Promise.all([
-    getCurrentOrganization(),
-    getCategories()
-  ])
+  const currentOrg = await getCurrentOrganization()
 
   if (!currentOrg) {
     notFound()
   }
+
+  const data = await getCategories(currentOrg.id)
 
   return (
     <div className="mx-auto grow px-4 sm:px-6">

@@ -10,8 +10,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { getCategories, getMenuItemById } from "@/server/actions/item/queries"
 import ItemForm from "@/app/dashboard/menu-items/[action]/[id]/item-form"
 
-export const dynamic = "force-dynamic"
-
 export async function generateMetadata(props: {
   params: Promise<{ action: string; id: string }>
 }): Promise<Metadata> {
@@ -28,13 +26,6 @@ export default async function ItemPage(props: {
   const params = await props.params
   const item = await getMenuItemById(params.id)
 
-  const queryClient = new QueryClient()
-
-  await queryClient.prefetchQuery({
-    queryKey: ["categories"],
-    queryFn: () => getCategories()
-  })
-
   if (!item) {
     return (
       <div className="mx-auto max-w-2xl grow px-4 sm:px-6">
@@ -49,9 +40,16 @@ export default async function ItemPage(props: {
     )
   }
 
+  const queryClient = new QueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories(item.organizationId)
+  })
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="mx-auto max-w-[59rem] grow px-4 sm:px-6">
+      <div className="mx-auto max-w-236 grow px-4 sm:px-6">
         <ItemForm action={params.action} item={item} />
       </div>
     </HydrationBoundary>

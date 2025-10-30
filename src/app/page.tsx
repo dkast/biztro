@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 
 import Benefits from "@/components/marketing/benefits"
@@ -10,6 +11,7 @@ import Hero from "@/components/marketing/hero"
 import HowItWorks from "@/components/marketing/how-it-works"
 import Navbar from "@/components/marketing/nav-bar"
 import Pricing from "@/components/marketing/pricing"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export const metadata: Metadata = {
   title: "Biztro | Crea tu menú digital profesional en minutos",
@@ -31,7 +33,9 @@ export default function Page() {
       <Pricing />
       <Faq />
       <CTABanner />
-      <Footer />
+      <Suspense fallback={<Skeleton className="mt-10 h-20 w-full" />}>
+        <Footer />
+      </Suspense>
     </div>
   )
 }

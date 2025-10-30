@@ -1,21 +1,26 @@
 "use server"
 
+import { cacheTag } from "next/cache"
+
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import type { MenuItemQueryFilter } from "@/lib/types"
 import { env } from "@/env.mjs"
 
-export async function getMenuItems(filter: MenuItemQueryFilter) {
-  const membership = await getCurrentMembership()
-  const currentOrg = membership?.organizationId
+export async function getMenuItems(
+  filter: MenuItemQueryFilter,
+  organizationId: string
+) {
+  "use cache"
 
-  if (!currentOrg) {
+  if (!organizationId) {
     return []
   }
 
+  cacheTag("menu-items-" + organizationId)
   return await prisma.menuItem.findMany({
     where: {
-      organizationId: currentOrg,
+      organizationId,
       status: filter?.status ? { in: filter.status.split(",") } : undefined,
       categoryId: filter?.category
         ? { in: filter.category.split(",") }
@@ -46,16 +51,17 @@ export async function getMenuItemById(id: string) {
   return item
 }
 
-export async function getCategories() {
-  const membership = await getCurrentMembership()
-  const currentOrg = membership?.organizationId
-  if (!currentOrg) {
+export async function getCategories(organizationId: string) {
+  "use cache"
+
+  cacheTag("categories-" + organizationId)
+  if (!organizationId) {
     return []
   }
 
   return await prisma.category.findMany({
     where: {
-      organizationId: currentOrg
+      organizationId
     }
   })
 }

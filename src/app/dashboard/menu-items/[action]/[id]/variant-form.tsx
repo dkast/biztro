@@ -95,7 +95,7 @@ function MultiVariantForm({
                       {...field}
                       id={field.name}
                       type="number"
-                      inputMode="decimal"
+                      inputMode="numeric"
                       placeholder="Precio"
                       onChange={e => field.onChange(Number(e.target.value))}
                       value={field.value ?? ""}
@@ -142,8 +142,7 @@ function SingleVariantForm({
             {...field}
             id={field.name}
             type="number"
-            inputMode="decimal"
-            step="any"
+            inputMode="numeric"
             placeholder="Precio"
             className="w-1/3"
             onChange={e => field.onChange(Number(e.target.value))}

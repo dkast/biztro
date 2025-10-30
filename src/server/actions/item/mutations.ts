@@ -2,6 +2,7 @@
 
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { Prisma } from "@prisma/client"
+import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
@@ -83,8 +84,8 @@ export const createItem = authMemberActionClient
         }
       })
 
-      // If the item already exists, generate a new name for it
-      name = existingItem ? `${name} (2)` : name
+      // If the item already exists, generate a new name for it assigning a unique suffix
+      name = existingItem ? `${name} (${Date.now()})` : name
 
       try {
         const item = await prisma.menuItem.create({
@@ -108,6 +109,7 @@ export const createItem = authMemberActionClient
           }
         })
 
+        updateTag(`menu-items-${currentOrgId}`)
         return { success: item }
       } catch (error) {
         let message
@@ -282,7 +284,7 @@ export const updateItem = authMemberActionClient
         description,
         status,
         categoryId,
-        organizationId: _organizationId,
+        organizationId,
         variants,
         featured,
         allergens
@@ -314,6 +316,7 @@ export const updateItem = authMemberActionClient
           }
         })
 
+        updateTag(`menu-items-${organizationId}`)
         return { success: item }
       } catch (error) {
         let message
@@ -352,7 +355,7 @@ export const deleteItem = authMemberActionClient
       organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, organizationId: _organizationId } }) => {
+  .action(async ({ parsedInput: { id, organizationId } }) => {
     try {
       // Delete the image from the storage if exists
       const item = await prisma.menuItem.findUnique({
@@ -372,6 +375,7 @@ export const deleteItem = authMemberActionClient
         where: { id }
       })
 
+      updateTag(`menu-items-${organizationId}`)
       return { success: true }
     } catch (error) {
       let message
@@ -417,6 +421,7 @@ export const createCategory = authMemberActionClient
         }
       })
 
+      updateTag(`categories-${currentOrgId}`)
       return { success: category }
     } catch (error) {
       let message
@@ -460,6 +465,7 @@ export const updateCategory = authMemberActionClient
           }
         })
 
+        updateTag(`categories-${_organizationId}`)
         return { success: category }
       } catch (error) {
         let message
@@ -498,7 +504,7 @@ export const deleteCategory = authMemberActionClient
       organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, organizationId: _organizationId } }) => {
+  .action(async ({ parsedInput: { id, organizationId } }) => {
     // const currentOrgId = member.organizationId
     try {
       // Check if the category is being used by any item
@@ -519,6 +525,7 @@ export const deleteCategory = authMemberActionClient
         where: { id }
       })
 
+      updateTag(`categories-${organizationId}`)
       return { success: true }
     } catch (error) {
       let message

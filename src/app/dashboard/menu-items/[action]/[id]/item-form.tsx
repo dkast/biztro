@@ -88,28 +88,28 @@ export default function ItemForm({
   // categories,
   action
 }: {
-  item: Prisma.PromiseReturnType<typeof getMenuItemById>
+  item: NonNullable<Prisma.PromiseReturnType<typeof getMenuItemById>>
   // categories: Prisma.PromiseReturnType<typeof getCategories>
   action: string
 }) {
   const form = useForm<z.output<typeof menuItemSchema>>({
     resolver: zodResolver(menuItemSchema),
     defaultValues: {
-      id: item?.id,
-      name: item?.name,
-      description: item?.description ?? undefined,
-      status: item?.status as MenuItemStatus,
-      image: item?.image ?? undefined,
-      categoryId: item?.category?.id ?? undefined,
-      organizationId: item?.organizationId,
+      id: item.id,
+      name: item.name,
+      description: item.description ?? undefined,
+      status: item.status as MenuItemStatus,
+      image: item.image ?? undefined,
+      categoryId: item.category?.id ?? undefined,
+      organizationId: item.organizationId,
       featured: item?.featured ?? false,
       variants:
-        item?.variants.map(variant => ({
+        item.variants.map(variant => ({
           ...variant,
-          price: Number(variant.price),
+          price: variant.price,
           description: variant.description ?? undefined
         })) ?? [],
-      allergens: item?.allergens ?? undefined
+      allergens: item.allergens ?? undefined
     }
   })
   const [openCategory, setOpenCategory] = useState<boolean>(false)
@@ -118,7 +118,7 @@ export default function ItemForm({
 
   const { data: categories } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => getCategories(),
+    queryFn: () => getCategories(item.organizationId),
     initialData: [] // default value
   })
   const queryClient = useQueryClient()
