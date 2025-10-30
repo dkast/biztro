@@ -10,37 +10,41 @@ import { authActionClient } from "@/lib/safe-actions"
 export const switchOrganization = authActionClient
   .inputSchema(
     z.object({
-      organizationId: z.string()
+      organizationId: z.string(),
+      currentOrganizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { organizationId } }) => {
-    try {
-      const data = await auth.api.setActiveOrganization({
-        body: {
-          organizationId
-        },
-        headers: await headers()
-      })
+  .action(
+    async ({ parsedInput: { organizationId, currentOrganizationId } }) => {
+      try {
+        const data = await auth.api.setActiveOrganization({
+          body: {
+            organizationId
+          },
+          headers: await headers()
+        })
 
-      if (!data) {
+        if (!data) {
+          return {
+            failure: {
+              reason: "No se pudo cambiar de organización"
+            }
+          }
+        }
+
+        // Use the previous/current organization id to update the cache tag
+        updateTag("menus-" + currentOrganizationId)
+        return { success: true }
+      } catch (error) {
+        console.error("Error switching organization:", error)
         return {
           failure: {
-            reason: "No se pudo cambiar de organización"
+            reason: "Error cambiando de organización"
           }
         }
       }
-
-      updateTag("menus-" + organizationId)
-      return { success: true }
-    } catch (error) {
-      console.error("Error switching organization:", error)
-      return {
-        failure: {
-          reason: "Error cambiando de organización"
-        }
-      }
     }
-  })
+  )
 
 export const inviteMember = authActionClient
   .inputSchema(

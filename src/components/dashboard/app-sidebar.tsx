@@ -261,7 +261,8 @@ function SidebarWorkgroup() {
 
   const handleSwitchOrganization = async (organizationId: string) => {
     await execute({
-      organizationId
+      organizationId,
+      currentOrganizationId: currentOrg?.id ?? ""
     })
   }
 
