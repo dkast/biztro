@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import { DevTool } from "@hookform/devtools"
+// import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
@@ -602,7 +602,7 @@ export default function ItemForm({
         open={openVariant}
         setOpen={setOpenVariant}
       />
-      <DevTool control={form.control} /> {/* Remove this line in production */}
+      {/* <DevTool control={form.control} />  */}
     </div>
   )
 }

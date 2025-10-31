@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -90,6 +91,20 @@ export default function OrganizationForm({
     execute(values)
   }
 
+  // Refresh form when data changes
+  useEffect(() => {
+    form.reset({
+      id: data.id,
+      name: data.name,
+      description: data.description ?? undefined,
+      slug: data.slug,
+      status: data.status as SubscriptionStatus,
+      plan: data.plan as Plan
+    })
+  }, [data, form])
+
+  console.log("Logo URL in OrganizationForm:", data.logo)
+  console.log("Name in OrganizationForm:", data.name)
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <fieldset disabled={!enabled} className="mt-10 space-y-6">
@@ -98,7 +113,7 @@ export default function OrganizationForm({
             {data.logo && (
               <AvatarImage
                 src={data.logo}
-                className="rounded-xl border border-gray-200 dark:border-gray-700"
+                className="border-border rounded-xl border"
               />
             )}
             <AvatarFallback className="text-3xl">
@@ -182,7 +197,7 @@ export default function OrganizationForm({
                   id={field.name}
                   aria-invalid={fieldState.invalid}
                   placeholder="tu-sitio"
-                  className="!pl-1"
+                  className="pl-1!"
                 />
                 <InputGroupAddon>
                   <InputGroupText>https://.biztro.co/</InputGroupText>

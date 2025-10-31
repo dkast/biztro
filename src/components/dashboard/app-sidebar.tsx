@@ -224,12 +224,15 @@ function SidebarSubLink({ item }: { item: NavigationItem }) {
 }
 
 function SidebarWorkgroup() {
+  const { data: organizations, refetch } = authClient.useListOrganizations()
+
   const { data: currentOrg } = useQuery({
     queryKey: ["workgroup", "current"],
-    queryFn: getCurrentOrganization
+    queryFn: async () => {
+      refetch()
+      return await getCurrentOrganization()
+    }
   })
-
-  const { data: organizations, refetch } = authClient.useListOrganizations()
 
   const queryClient = useQueryClient()
   const [isPending, startTransition] = useTransition()

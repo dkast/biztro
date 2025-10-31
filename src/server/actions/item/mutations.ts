@@ -238,6 +238,8 @@ export const bulkCreateItems = authMemberActionClient
         )
       })
 
+      updateTag(`menu-items-${currentOrgId}`)
+      updateTag(`categories-${currentOrgId}`)
       return { success: createdItems }
     } catch (error) {
       // Add type checking for better error handling

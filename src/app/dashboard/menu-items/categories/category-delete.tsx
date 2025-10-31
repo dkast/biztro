@@ -33,7 +33,7 @@ export default function ItemDelete({
     onSuccess: async ({ data }) => {
       // see https://github.com/TheEdoRan/next-safe-action/issues/376
       if (data?.success) {
-        toast.success("Categoría eliminada")
+        // toast.success("Categoría eliminada")
       } else if (data?.failure?.reason) {
         toast.error(data?.failure?.reason)
       }
