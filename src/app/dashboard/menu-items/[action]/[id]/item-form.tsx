@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
+import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
@@ -173,7 +174,9 @@ export default function ItemForm({
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Producto actualizado")
-        // router.back()
+        form.reset(undefined, { keepValues: true, keepDirty: false })
+
+        router.refresh()
       } else if (data?.failure.reason) {
         toast.error(data?.failure.reason)
       }
@@ -599,6 +602,7 @@ export default function ItemForm({
         open={openVariant}
         setOpen={setOpenVariant}
       />
+      <DevTool control={form.control} /> {/* Remove this line in production */}
     </div>
   )
 }

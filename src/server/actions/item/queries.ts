@@ -34,6 +34,9 @@ export async function getMenuItems(
 }
 
 export async function getMenuItemById(id: string) {
+  "use cache"
+
+  cacheTag("menu-item-" + id)
   const item = await prisma.menuItem.findUnique({
     where: {
       id
