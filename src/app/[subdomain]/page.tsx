@@ -1,7 +1,10 @@
+"use cache"
+
 import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 import lz from "lzutf8"
 import type { Metadata, ResolvingMetadata } from "next"
 import { type Viewport } from "next"
+import { cacheLife, cacheTag } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -14,16 +17,6 @@ import {
 } from "@/server/actions/organization/queries"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { SubscriptionStatus } from "@/lib/types"
-
-// ISR configuration is correct:
-// - revalidate is set to 3600 (1 hour)
-// - dynamicParams is true and generateStaticParams properly returns prerender paths.
-
-// Add revalidation time (e.g., 1 hour)
-export const revalidate = 3600
-
-// Add dynamic params configuration
-export const dynamicParams = true
 
 // Add generateStaticParams to pre-render specific paths
 export async function generateStaticParams() {
@@ -39,8 +32,10 @@ export async function generateMetadata(
   },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  cacheLife("hours")
   const params = await props.params
   const org = await getOrganizationBySlug(params.subdomain)
+  cacheTag(`subdomain-${params.subdomain}`)
 
   if (
     org &&
@@ -66,8 +61,10 @@ export async function generateMetadata(
 export async function generateViewport(props: {
   params: Promise<{ subdomain: string }>
 }): Promise<Viewport> {
+  cacheLife("hours")
   const params = await props.params
   const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
+  cacheTag(`subdomain-${params.subdomain}`)
 
   if (!params.subdomain || !siteMenu) {
     return {
@@ -111,8 +108,10 @@ export async function generateViewport(props: {
 export default async function SitePage(props: {
   params: Promise<{ subdomain: string }>
 }) {
+  cacheLife("hours")
   const params = await props.params
   const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
+  cacheTag(`subdomain-${params.subdomain}`)
 
   if (!params.subdomain || !siteMenu) {
     return notFound()
