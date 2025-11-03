@@ -56,10 +56,8 @@ export async function hasOrganizations(): Promise<number> {
   }
 }
 
-export const getMembers = async () => {
-  const currentOrg = await getCurrentOrganization()
-
-  if (!currentOrg) {
+export const getMembers = async (organizationId: string) => {
+  if (!organizationId) {
     return []
   }
 

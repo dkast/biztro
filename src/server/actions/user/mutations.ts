@@ -1,6 +1,6 @@
 "use server"
 
-import { updateTag } from "next/cache"
+import { refresh, updateTag } from "next/cache"
 import { headers } from "next/headers"
 import { z } from "zod/v4"
 
@@ -64,6 +64,7 @@ export const inviteMember = authActionClient
       })
 
       if (data) {
+        refresh() // Refresh the current route to show the new member
         return { success: true }
       }
     } catch (error) {

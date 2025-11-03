@@ -1,14 +1,20 @@
 "use server"
 
-import { getCurrentMembership } from "@/server/actions/user/queries"
+import { cacheTag } from "next/cache"
+
 import prisma from "@/lib/prisma"
 
-export async function getDefaultLocation() {
-  const membership = await getCurrentMembership()
-  const currentOrgId = membership?.organizationId
+export async function getDefaultLocation(organizationId: string) {
+  "use cache"
+
+  if (!organizationId) {
+    return null
+  }
+
+  cacheTag(`locations-${organizationId}`)
   return await prisma.location.findFirst({
     where: {
-      organizationId: currentOrgId
+      organizationId
     },
     include: {
       openingHours: true

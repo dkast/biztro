@@ -14,14 +14,13 @@ export const metadata: Metadata = {
 }
 
 export default async function LocationPage() {
-  const [data, currentOrg] = await Promise.all([
-    getDefaultLocation(),
-    getCurrentOrganization()
-  ])
+  const currentOrg = await getCurrentOrganization()
 
   if (!currentOrg) {
     return notFound()
   }
+
+  const data = await getDefaultLocation(currentOrg.id)
 
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">

@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -110,6 +111,24 @@ export default function LocationForm({
       executeCreate(values)
     }
   }
+
+  // Refresh form when data changes
+  useEffect(() => {
+    form.reset({
+      id: data?.id,
+      name: data?.name,
+      description: data?.description ?? undefined,
+      address: data?.address ?? undefined,
+      phone: data?.phone ?? undefined,
+      facebook: data?.facebook ?? undefined,
+      instagram: data?.instagram ?? undefined,
+      twitter: data?.twitter ?? undefined,
+      tiktok: data?.tiktok ?? undefined,
+      whatsapp: data?.whatsapp ?? undefined,
+      website: data?.website ?? undefined,
+      organizationId: data?.organizationId ?? undefined
+    })
+  }, [data, form])
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
