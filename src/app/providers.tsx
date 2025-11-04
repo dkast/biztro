@@ -53,39 +53,37 @@ function Providers({ children }: { children: React.ReactNode }) {
   const forcedTheme = getForcedTheme(usePathname())
 
   return (
-    <Suspense fallback={<div />}>
-      <CSPostHogProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-          forcedTheme={forcedTheme}
-        >
-          <NuqsAdapter>
-            <QueryClientProvider client={queryClient}>
-              <Provider>
-                <UnsavedChangesProvider>
-                  <ReactQueryStreamedHydration>
-                    {children}
-                  </ReactQueryStreamedHydration>
-                </UnsavedChangesProvider>
-                <Toaster
-                  position="top-center"
-                  toastOptions={{
-                    style: {
-                      background: "#333",
-                      color: "#fff"
-                    }
-                  }}
-                />
-                <TailwindIndicator />
-              </Provider>
-            </QueryClientProvider>
-          </NuqsAdapter>
-        </ThemeProvider>
-      </CSPostHogProvider>
-    </Suspense>
+    <CSPostHogProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+        forcedTheme={forcedTheme}
+      >
+        <NuqsAdapter>
+          <QueryClientProvider client={queryClient}>
+            <Provider>
+              <UnsavedChangesProvider>
+                <ReactQueryStreamedHydration>
+                  {children}
+                </ReactQueryStreamedHydration>
+              </UnsavedChangesProvider>
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  style: {
+                    background: "#333",
+                    color: "#fff"
+                  }
+                }}
+              />
+              <TailwindIndicator />
+            </Provider>
+          </QueryClientProvider>
+        </NuqsAdapter>
+      </ThemeProvider>
+    </CSPostHogProvider>
   )
 }
 

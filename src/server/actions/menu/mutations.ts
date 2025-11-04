@@ -170,7 +170,7 @@ export const updateMenuStatus = authActionClient
         })
 
         revalidatePath(`/${subdomain}`)
-
+        updateTag("subdomain-" + menu.organizationId)
         return {
           success: menu
         }

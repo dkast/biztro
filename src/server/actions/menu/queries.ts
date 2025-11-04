@@ -45,6 +45,8 @@ export async function getMenuById(id: string) {
 }
 
 export async function getActiveMenuByOrganizationSlug(slug: string) {
+  "use cache"
+  cacheTag("subdomain-" + slug)
   return await prisma.menu.findFirst({
     where: {
       status: MenuStatus.PUBLISHED,

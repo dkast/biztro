@@ -30,10 +30,8 @@ export async function generateMetadata(
   },
   parent: ResolvingMetadata
 ): Promise<Metadata> {
-  cacheLife("hours")
   const params = await props.params
   const org = await getOrganizationBySlug(params.subdomain)
-  cacheTag(`subdomain-${params.subdomain}`)
 
   if (
     org &&
@@ -56,47 +54,50 @@ export async function generateMetadata(
   }
 }
 
-export async function generateViewport(props: {
-  params: Promise<{ subdomain: string }>
-}): Promise<Viewport> {
-  const params = await props.params
-  const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
-  cacheTag(`subdomain-${params.subdomain}`)
+// export async function generateViewport(props: {
+//   params: Promise<{ subdomain: string }>
+// }): Promise<Viewport> {
+//   "use cache"
 
-  if (!params.subdomain || !siteMenu) {
-    return {
-      themeColor: "#000000"
-    }
-  }
+//   const params = await props.params
+//   cacheTag("viewport-" + params.subdomain)
+//   cacheLife("hours")
+//   const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
 
-  let json
-  if (siteMenu.serialData) {
-    json = lz.decompress(lz.decodeBase64(siteMenu.serialData))
-  }
+//   if (!params.subdomain || !siteMenu) {
+//     return {
+//       themeColor: "#000000"
+//     }
+//   }
 
-  let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
+//   let json
+//   if (siteMenu.serialData) {
+//     json = lz.decompress(lz.decodeBase64(siteMenu.serialData))
+//   }
 
-  // Search container style (color)
-  const data = JSON.parse(json)
-  const keys = Object.keys(data)
-  keys.forEach(el => {
-    const node = data[el]
-    const { displayName } = node
-    if (displayName === "Sitio") {
-      backgroundColor = data[el]?.props?.backgroundColor
-    }
-  })
+//   let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
 
-  if (backgroundColor) {
-    return {
-      themeColor: rgbaToHex(backgroundColor)
-    }
-  } else {
-    return {
-      themeColor: "#000000"
-    }
-  }
-}
+//   // Search container style (color)
+//   const data = JSON.parse(json)
+//   const keys = Object.keys(data)
+//   keys.forEach(el => {
+//     const node = data[el]
+//     const { displayName } = node
+//     if (displayName === "Sitio") {
+//       backgroundColor = data[el]?.props?.backgroundColor
+//     }
+//   })
+
+//   if (backgroundColor) {
+//     return {
+//       themeColor: rgbaToHex(backgroundColor)
+//     }
+//   } else {
+//     return {
+//       themeColor: "#000000"
+//     }
+//   }
+// }
 
 // export const viewport: Viewport = {
 //   themeColor: "#000000"
