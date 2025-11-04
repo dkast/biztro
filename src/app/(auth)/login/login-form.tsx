@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { useSearchParams } from "next/navigation"
 
 // search params are provided by the page; only read error from window when needed
 
@@ -9,13 +10,17 @@ import { Button } from "@/components/ui/button"
 import { signIn } from "@/lib/auth-client"
 import { providers } from "@/lib/types"
 
-export default function LoginForm({
-  callbackUrl: propCallbackUrl
-}: {
-  callbackUrl?: string
-} = {}) {
+export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
+  const params = useSearchParams()
+
   // prefer the prop provided by the page; default to dashboard
-  const callbackUrl = propCallbackUrl ?? "/dashboard"
+  let defaultUrl = (params?.get("callbackUrl") as string) ?? "/dashboard"
+
+  if (callbackUrl) {
+    // If a callback URL is provided, use it
+    defaultUrl = callbackUrl
+  }
+
   // read `error` from the client URL if present (this file is client-side)
   let error: string | null = null
   if (typeof window !== "undefined") {
@@ -31,7 +36,7 @@ export default function LoginForm({
           onClick={() =>
             signIn.social({
               provider: provider.id,
-              callbackURL: callbackUrl ? callbackUrl : "/dashboard"
+              callbackURL: defaultUrl ? defaultUrl : "/dashboard"
             })
           }
           className="mt-4 w-full shadow-xs"

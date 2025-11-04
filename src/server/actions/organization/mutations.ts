@@ -1,5 +1,6 @@
 "use server"
 
+import { updateTag } from "next/cache"
 import { headers } from "next/headers"
 import { z } from "zod/v4"
 
@@ -81,6 +82,20 @@ export const bootstrapOrg = authActionClient
             }
           }
         }
+
+        updateTag("organizations-list")
+        updateTag("organization-current")
+        updateTag("membership-current")
+        updateTag("membership-current-role")
+        updateTag("permissions-all")
+        updateTag("page-settings")
+        updateTag("page-settings-members")
+        if (org?.id) {
+          updateTag(`organization-${org.id}`)
+          updateTag(`organization-${org.id}-members`)
+          updateTag(`organization-${org.id}-subscription`)
+        }
+        updateTag(`subscription-current`)
 
         return { success: true }
       } catch (error) {
@@ -168,6 +183,13 @@ export const createOrg = authActionClient
           }
         }
 
+        updateTag("organizations-list")
+        if (org.id) {
+          updateTag(`organization-${org.id}`)
+          updateTag(`organization-${org.id}-members`)
+          updateTag(`organization-${org.id}-subscription`)
+        }
+
         return { success: true }
       } catch (error) {
         let message
@@ -251,6 +273,20 @@ export const updateOrg = authActionClient
             reason: "No se pudo actualizar la organización"
           }
         }
+      }
+
+      updateTag("organizations-list")
+      updateTag("organization-current")
+      updateTag("page-settings")
+      updateTag("page-settings-members")
+      updateTag("subscription-current")
+      updateTag("permissions-all")
+      updateTag("membership-current")
+      updateTag("membership-current-role")
+      if (id) {
+        updateTag(`organization-${id}`)
+        updateTag(`organization-${id}-members`)
+        updateTag(`organization-${id}-subscription`)
       }
 
       return { success: true }
@@ -354,6 +390,18 @@ export const deleteOrganization = authActionClient
               reason: "No se pudo eliminar la organización"
             }
           }
+        }
+
+        updateTag("organizations-list")
+        updateTag("organization-current")
+        updateTag("membership-current")
+        updateTag("membership-current-role")
+        updateTag("permissions-all")
+        updateTag("subscription-current")
+        if (id) {
+          updateTag(`organization-${id}`)
+          updateTag(`organization-${id}-members`)
+          updateTag(`organization-${id}-subscription`)
         }
 
         return {

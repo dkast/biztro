@@ -1,5 +1,3 @@
-"use cache"
-
 import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 import lz from "lzutf8"
 import type { Metadata, ResolvingMetadata } from "next"
@@ -61,7 +59,6 @@ export async function generateMetadata(
 export async function generateViewport(props: {
   params: Promise<{ subdomain: string }>
 }): Promise<Viewport> {
-  cacheLife("hours")
   const params = await props.params
   const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
   cacheTag(`subdomain-${params.subdomain}`)
@@ -108,10 +105,12 @@ export async function generateViewport(props: {
 export default async function SitePage(props: {
   params: Promise<{ subdomain: string }>
 }) {
-  cacheLife("hours")
+  "use cache"
+
   const params = await props.params
   const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
   cacheTag(`subdomain-${params.subdomain}`)
+  cacheLife("hours")
 
   if (!params.subdomain || !siteMenu) {
     return notFound()
