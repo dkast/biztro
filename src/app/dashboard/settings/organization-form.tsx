@@ -62,7 +62,7 @@ export default function OrganizationForm({
       description: data.description ?? undefined,
       slug: data.slug,
       status: data.status as SubscriptionStatus,
-      plan: data.plan as Plan
+      plan: data.plan?.toUpperCase() as Plan
     }
   })
 
@@ -99,7 +99,7 @@ export default function OrganizationForm({
       description: data.description ?? undefined,
       slug: data.slug,
       status: data.status as SubscriptionStatus,
-      plan: data.plan as Plan
+      plan: data.plan?.toUpperCase() as Plan
     })
   }, [data, form])
 

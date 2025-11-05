@@ -41,7 +41,7 @@ export async function ProPlanView() {
   }
 
   return (
-    <div className="rounded-xl bg-gray-50 dark:bg-gray-900">
+    <div className="rounded-xl bg-gray-100 dark:bg-gray-900/70">
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Plan</CardTitle>
