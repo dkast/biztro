@@ -1,6 +1,6 @@
 import path from "node:path"
 import { fileURLToPath } from "node:url"
-import typescriptEslint from "@typescript-eslint/eslint-plugin"
+// import typescriptEslint from "@typescript-eslint/eslint-plugin"
 import tsParser from "@typescript-eslint/parser"
 import nextVitals from "eslint-config-next/core-web-vitals"
 import nextTs from "eslint-config-next/typescript"
@@ -14,9 +14,9 @@ export default defineConfig([
   ...nextTs,
   {
     files: ["**/*.{ts,tsx}"],
-    plugins: {
-      "@typescript-eslint": typescriptEslint
-    },
+    // plugins: {
+    //   "@typescript-eslint": typescriptEslint
+    // },
     languageOptions: {
       parser: tsParser,
       ecmaVersion: "latest",
