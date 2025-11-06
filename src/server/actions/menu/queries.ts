@@ -9,7 +9,7 @@ import { env } from "@/env.mjs"
 
 export async function getMenus(currentOrgId: string) {
   "use cache"
-  cacheTag("menus-" + currentOrgId)
+  cacheTag(`menus-${currentOrgId}`)
   if (!currentOrgId) {
     return []
   }
@@ -46,7 +46,7 @@ export async function getMenuById(id: string) {
 
 export async function getActiveMenuByOrganizationSlug(slug: string) {
   "use cache"
-  cacheTag("subdomain-" + slug)
+  cacheTag(`subdomain-${slug}`)
   return await prisma.menu.findFirst({
     where: {
       status: MenuStatus.PUBLISHED,

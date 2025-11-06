@@ -17,7 +17,7 @@ export async function getMenuItems(
     return []
   }
 
-  cacheTag("menu-items-" + organizationId)
+  cacheTag(`menu-items-${organizationId}`)
   return await prisma.menuItem.findMany({
     where: {
       organizationId,
@@ -36,7 +36,7 @@ export async function getMenuItems(
 export async function getMenuItemById(id: string) {
   "use cache"
 
-  cacheTag("menu-item-" + id)
+  cacheTag(`menu-item-${id}`)
   const item = await prisma.menuItem.findUnique({
     where: {
       id
@@ -57,7 +57,7 @@ export async function getMenuItemById(id: string) {
 export async function getCategories(organizationId: string) {
   "use cache"
 
-  cacheTag("categories-" + organizationId)
+  cacheTag(`categories-${organizationId}`)
   if (!organizationId) {
     return []
   }

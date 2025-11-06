@@ -105,7 +105,7 @@ export const updateMenuName = authActionClient
         data: { name }
       })
 
-      updateTag("menus-" + menu.organizationId)
+      updateTag(`menus-${menu.organizationId}`)
       return {
         name: menu.name
       }
@@ -170,7 +170,7 @@ export const updateMenuStatus = authActionClient
         })
 
         revalidatePath(`/${subdomain}`)
-        updateTag("subdomain-" + menu.organizationId)
+        updateTag(`subdomain-${menu.organizationId}`)
         return {
           success: menu
         }
@@ -259,7 +259,7 @@ export const deleteMenu = authActionClient
         where: { id, organizationId }
       })
 
-      updateTag("menus-" + organizationId)
+      updateTag(`menus-${organizationId}`)
       return {
         success: true
       }
@@ -331,7 +331,7 @@ export const duplicateMenu = authActionClient
         }
       })
 
-      updateTag("menus-" + sourceMenu.organizationId)
+      updateTag(`menus-${sourceMenu.organizationId}`)
       return {
         success: duplicatedMenu
       }
