@@ -1,7 +1,6 @@
 import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 import lz from "lzutf8"
 import type { Metadata, ResolvingMetadata } from "next"
-import { type Viewport } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
