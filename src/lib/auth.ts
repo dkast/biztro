@@ -55,7 +55,7 @@ function extractEmailFromContext(ctx: Record<string, unknown> | undefined) {
 
 // skipcq: JS-0339
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-09-30.clover"
+  apiVersion: "2025-10-29.clover"
 })
 
 export const auth = betterAuth({
