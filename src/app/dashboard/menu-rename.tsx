@@ -37,7 +37,7 @@ export function MenuRename({
     defaultValues: { name: menu.name ?? "" }
   })
   const [name, setName] = useState(menu.name)
-  const { execute } = useOptimisticAction(updateMenuName, {
+  const { execute, reset } = useOptimisticAction(updateMenuName, {
     currentState: { name },
     updateFn: (prev, next) => {
       return { ...prev, name: next.name }
@@ -48,6 +48,7 @@ export function MenuRename({
     execute({ id: menu.id, name: data.name })
     setName(data.name)
     setOpen(false)
+    reset()
   }
 
   return (

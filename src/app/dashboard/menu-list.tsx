@@ -57,7 +57,7 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
   const [showUpgrade, setShowUpgrade] = useState(false)
   const bgGradient = { background: gradient(menu.id) }
 
-  const { execute: executeDuplicate } = useAction(duplicateMenu, {
+  const { execute: executeDuplicate, reset } = useAction(duplicateMenu, {
     onExecute: () => {
       toast.loading("Duplicando Menú...")
     },
@@ -72,9 +72,11 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
         return
       }
       toast.success("Menú duplicado")
+      reset()
     },
     onError: () => {
       toast.error("No se pudo duplicar el menú")
+      reset()
     }
   })
 

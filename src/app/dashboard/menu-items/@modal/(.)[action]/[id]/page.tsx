@@ -42,8 +42,10 @@ export default async function ItemPage(props: {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Panel className="rounded-lg sm:m-2 sm:h-[95%]">
-        <div className="mx-auto h-full max-w-236 overflow-x-auto px-4 py-2 sm:px-6">
-          <ItemForm action={params.action} item={item} />
+        <div className="h-full overflow-x-auto">
+          <div className="max-w-236 px-4 py-2 sm:mx-auto sm:px-6">
+            <ItemForm action={params.action} item={item} />
+          </div>
         </div>
       </Panel>
     </HydrationBoundary>

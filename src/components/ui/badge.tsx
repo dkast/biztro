@@ -4,26 +4,37 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full ring-1 ring-inset px-2.5 py-0.5 text-xs font-medium transition-colors focus:outline-hidden focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 dark:border-gray-800 dark:focus:ring-gray-300",
+  "inline-flex items-center rounded-md inset-ring px-2 py-1 text-xs font-medium transition-colors focus:outline-hidden",
   {
     variants: {
       variant: {
+        // default: use the neutral/gray style from the snippet
         default:
-          "border-transparent bg-gray-900 text-gray-50 hover:bg-gray-900/80 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/80",
+          "bg-gray-50 text-gray-600 inset-ring-gray-500/10 dark:bg-gray-400/10 dark:text-gray-400 dark:inset-ring-gray-400/20",
+        // secondary kept same as neutral (alias)
         secondary:
-          "border-transparent bg-gray-100 text-gray-600 ring-gray-500/10 hover:bg-gray-100/80 dark:bg-gray-400/10 dark:text-gray-400 dark:hover:bg-gray-400/30",
+          "bg-gray-50 text-gray-600 inset-ring-gray-500/10 dark:bg-gray-400/10 dark:text-gray-400 dark:inset-ring-gray-400/20",
+        // red / destructive
         destructive:
-          "border-transparent bg-red-50 text-red-700 ring-red-600/10 hover:bg-red-500/80 dark:bg-red-400/10 dark:text-red-400 dark:hover:bg-red-400/30",
-        outline: "text-gray-950 dark:text-gray-50 ring-gray-500/60",
+          "bg-red-50 text-red-700 inset-ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:inset-ring-red-400/20",
+        // outline variant uses neutral text with subtle inset ring
+        outline: "text-gray-950 dark:text-gray-50 inset-ring-gray-500/60",
+        // violet / purple
         violet:
-          "border-transparent bg-violet-50 text-violet-700 ring-violet-700/10 hover:bg-violet-500/80 dark:bg-violet-400/10 dark:text-violet-400 dark:hover:bg-violet-400/30",
+          "bg-violet-50 text-violet-700 inset-ring-violet-700/10 dark:bg-violet-400/10 dark:text-violet-400 dark:inset-ring-violet-400/30",
+        // green
         green:
-          "border-transparent bg-green-50 text-green-700 ring-green-600/20 hover:bg-green-500/80 dark:bg-green-400/10 dark:text-green-400 dark:hover:bg-green-400/30",
+          "bg-green-50 text-green-700 inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-500/20",
+        // yellow
         yellow:
-          "border-transparent bg-amber-50 text-amber-700 ring-amber-600/20 hover:bg-amber-500/80 dark:bg-amber-400/10 dark:text-amber-400 dark:hover:bg-amber-400/30",
-        blue: "border-transparent bg-blue-50 text-blue-700 ring-blue-700/10 hover:bg-blue-500/80 dark:bg-blue-400/10 dark:text-blue-400 dark:hover:bg-blue-400/30",
+          "bg-yellow-50 text-yellow-800 inset-ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-500 dark:inset-ring-yellow-400/20",
+        // blue
+        blue: "bg-blue-50 text-blue-700 inset-ring-blue-700/10 dark:bg-blue-400/10 dark:text-blue-400 dark:inset-ring-blue-400/30",
+        // indigo
         indigo:
-          "border-transparent bg-indigo-50 text-indigo-700 ring-indigo-700/10 hover:bg-indigo-500/80 dark:bg-indigo-400/10 dark:text-indigo-400 dark:hover:bg-indigo-400/30"
+          "bg-indigo-50 text-indigo-700 inset-ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:inset-ring-indigo-400/30",
+        // pink
+        pink: "bg-pink-50 text-pink-700 inset-ring-pink-700/10 dark:bg-pink-400/10 dark:text-pink-400 dark:inset-ring-pink-400/20"
       }
     },
     defaultVariants: {
