@@ -9,7 +9,6 @@ import type { Prisma } from "@prisma/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   Check,
-  ChevronsUpDown,
   Loader,
   PlusCircle,
   PlusIcon,
@@ -24,6 +23,16 @@ import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { ImageField } from "@/components/dashboard/image-field"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxTrigger
+} from "@/components/kibo-ui/combobox"
+import {
   Tags,
   TagsContent,
   TagsEmpty,
@@ -36,22 +45,6 @@ import {
 } from "@/components/kibo-ui/tags"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card"
-import {
-  ComboBox,
-  ComboBoxEmpty,
-  ComboBoxGroup,
-  ComboBoxInput,
-  ComboBoxItem,
-  ComboBoxList
-} from "@/components/ui/combobox"
 // legacy Form helpers removed in favor of Field primitives
 import {
   Field,
@@ -433,80 +426,52 @@ export default function ItemForm({
                 render={({ field }) => (
                   <Field>
                     <div className="flex items-center space-x-2">
-                      <ComboBox
-                        open={openCategory}
-                        setOpen={setOpenCategory}
-                        trigger={
-                          <Button
-                            type="button"
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "flex w-[300px] justify-between",
-                              field.value ?? "text-gray-500"
-                            )}
-                          >
-                            {field.value
-                              ? categories.find(
-                                  category => category.id === field.value
-                                )?.name
-                              : "Seleccionar Categoría"}
-                            <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-                          </Button>
-                        }
+                      <Combobox
+                        data={categories.map(
+                          (c: { id: string; name: string }) => ({
+                            label: c.name,
+                            value: c.id
+                          })
+                        )}
+                        type="category"
+                        value={field.value}
+                        onValueChange={(val: string) => {
+                          form.setValue("categoryId", val)
+                        }}
                       >
-                        <ComboBoxInput
-                          value={searchCategory}
-                          onValueChange={setSearchCategory}
-                          placeholder="Buscar categoría..."
-                        />
-                        <ComboBoxList className="max-h-full sm:max-h-[300px]">
-                          <ComboBoxEmpty className="p-2">
-                            <Button
-                              type="button"
-                              disabled={statusCategory === "executing"}
-                              variant="ghost"
-                              className="w-full"
-                              size="xs"
-                              onClick={handleAddCategory}
-                            >
-                              {statusCategory === "executing" ? (
-                                <Loader className="mr-2 size-4 animate-spin" />
-                              ) : (
-                                <PlusIcon className="mr-2 size-4" />
+                        <ComboboxTrigger className="min-w-[300px]" />
+                        <ComboboxContent>
+                          <ComboboxInput
+                            value={searchCategory}
+                            onValueChange={setSearchCategory}
+                            placeholder="Buscar categoría..."
+                          />
+                          <ComboboxList>
+                            <ComboboxEmpty />
+                            <ComboboxGroup>
+                              {categories.map(
+                                (category: { id: string; name: string }) => (
+                                  <ComboboxItem
+                                    value={category.id}
+                                    key={category.id}
+                                    className="py-2 text-base sm:py-1.5 sm:text-sm"
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 size-4",
+                                        category.id === field.value
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                    {category.name}
+                                  </ComboboxItem>
+                                )
                               )}
-                              {searchCategory
-                                ? `Agregar "${searchCategory}"`
-                                : "Agregar"}
-                            </Button>
-                          </ComboBoxEmpty>
-                          <ComboBoxGroup className="overflow-y-auto sm:max-h-[300px]">
-                            {categories.map(category => (
-                              <ComboBoxItem
-                                value={category.name}
-                                key={category.id}
-                                onSelect={() => {
-                                  if (category.id) {
-                                    form.setValue("categoryId", category.id)
-                                    setOpenCategory(false)
-                                  }
-                                }}
-                                className="py-2 text-base sm:py-1.5 sm:text-sm"
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 size-4",
-                                    category.id === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {category.name}
-                              </ComboBoxItem>
-                            ))}
-                          </ComboBoxGroup>
-                        </ComboBoxList>
-                      </ComboBox>
+                            </ComboboxGroup>
+                          </ComboboxList>
+                        </ComboboxContent>
+                      </Combobox>
                       {field.value && (
                         <Button
                           type="button"
