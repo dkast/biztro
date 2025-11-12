@@ -327,7 +327,7 @@ export const ComboboxCreateNew = ({
       ) : (
         <>
           <PlusIcon className="text-muted-foreground h-4 w-4" />
-          <span>{`Create new ${type}: "${inputValue}"`}</span>
+          <span>{`Agregar ${type}: "${inputValue}"`}</span>
         </>
       )}
     </button>

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { use, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 // import { DevTool } from "@hookform/devtools"
@@ -25,6 +25,7 @@ import PageSubtitle from "@/components/dashboard/page-subtitle"
 import {
   Combobox,
   ComboboxContent,
+  ComboboxCreateNew,
   ComboboxEmpty,
   ComboboxGroup,
   ComboboxInput,
@@ -83,53 +84,75 @@ import {
 import { cn } from "@/lib/utils"
 
 export default function ItemForm({
-  item,
+  promiseItem,
   // categories,
   action
 }: {
-  item: NonNullable<Prisma.PromiseReturnType<typeof getMenuItemById>>
+  promiseItem: ReturnType<typeof getMenuItemById>
   // categories: Prisma.PromiseReturnType<typeof getCategories>
   action: string
 }) {
+  const item = use(promiseItem)
+
   const form = useForm<z.output<typeof menuItemSchema>>({
     resolver: zodResolver(menuItemSchema),
     defaultValues: {
-      id: item.id,
-      name: item.name,
-      description: item.description ?? undefined,
-      status: item.status as MenuItemStatus,
-      image: item.image ?? undefined,
-      categoryId: item.category?.id ?? undefined,
-      organizationId: item.organizationId,
+      id: item?.id ?? "",
+      name: item?.name ?? "",
+      description: item?.description ?? "",
+      status: (item?.status ?? MenuItemStatus.DRAFT) as MenuItemStatus,
+      image: item?.image ?? "",
+      categoryId: item?.category?.id ?? "",
+      organizationId: item?.organizationId ?? "",
       featured: item?.featured ?? false,
-      variants:
-        item.variants.map(variant => ({
-          ...variant,
-          price: variant.price,
-          description: variant.description ?? undefined
-        })) ?? [],
-      allergens: item.allergens ?? undefined
+      variants: (item?.variants ?? []).map(variant => ({
+        id: variant.id ?? "",
+        name: variant.name ?? "",
+        price: variant.price ?? 0,
+        description: variant.description ?? "",
+        menuItemId: variant.menuItemId ?? ""
+      })),
+      allergens: item?.allergens ?? ""
     }
   })
   const [openCategory, setOpenCategory] = useState<boolean>(false)
   const [searchCategory, setSearchCategory] = useState<string>("")
   const [openVariant, setOpenVariant] = useState<boolean>(false)
 
-  const { data: categories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: () => getCategories(item.organizationId),
-    initialData: [] // default value
-  })
-  const queryClient = useQueryClient()
-
-  const title = `${action === "new" ? "Crear" : "Editar"} Producto`
-
-  const router = useRouter()
-
   const { fields } = useFieldArray({
     control: form.control,
     name: "variants"
   })
+
+  useEffect(() => {
+    if (item?.variants && item.variants.length > 0) {
+      const mappedVariants = item.variants.map(variant => ({
+        name: variant.name,
+        price: variant.price,
+        id: variant.id,
+        description: variant.description ?? undefined,
+        menuItemId: variant.menuItemId
+      }))
+      form.setValue(
+        "variants",
+        mappedVariants as z.infer<typeof menuItemSchema>["variants"]
+      )
+    }
+  }, [item?.variants, form])
+
+  const queryClient = useQueryClient()
+
+  const router = useRouter()
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories(item?.organizationId ?? ""),
+    initialData: [] // default value
+  })
+
+  const saveRef = React.useRef<HTMLButtonElement>(null)
+
+  const title = `${action === "new" ? "Crear" : "Editar"} Producto`
 
   const {
     execute: executeCategory,
@@ -201,24 +224,6 @@ export default function ItemForm({
 
     execute(data)
   }
-
-  const saveRef = React.useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    if (item?.variants && item.variants.length > 0) {
-      const mappedVariants = item.variants.map(variant => ({
-        name: variant.name,
-        price: variant.price,
-        id: variant.id,
-        description: variant.description ?? undefined,
-        menuItemId: variant.menuItemId
-      }))
-      form.setValue(
-        "variants",
-        mappedVariants as z.infer<typeof menuItemSchema>["variants"]
-      )
-    }
-  }, [item?.variants, form])
 
   if (!item) {
     return (
@@ -433,7 +438,7 @@ export default function ItemForm({
                             value: c.id
                           })
                         )}
-                        type="category"
+                        type="Categoría"
                         value={field.value}
                         onValueChange={(val: string) => {
                           form.setValue("categoryId", val)
@@ -447,7 +452,11 @@ export default function ItemForm({
                             placeholder="Buscar categoría..."
                           />
                           <ComboboxList>
-                            <ComboboxEmpty />
+                            <ComboboxEmpty>
+                              <ComboboxCreateNew
+                                onCreateNew={handleAddCategory}
+                              />
+                            </ComboboxEmpty>
                             <ComboboxGroup>
                               {categories.map(
                                 (category: { id: string; name: string }) => (

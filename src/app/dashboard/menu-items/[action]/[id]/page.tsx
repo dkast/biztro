@@ -3,11 +3,11 @@ import {
   HydrationBoundary,
   QueryClient
 } from "@tanstack/react-query"
-import { TriangleAlert } from "lucide-react"
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { getCategories, getMenuItemById } from "@/server/actions/item/queries"
+import { getCurrentOrganization } from "@/server/actions/user/queries"
 import ItemForm from "@/app/dashboard/menu-items/[action]/[id]/item-form"
 
 export async function generateMetadata(props: {
@@ -24,33 +24,24 @@ export default async function ItemPage(props: {
   params: Promise<{ action: string; id: string }>
 }) {
   const params = await props.params
-  const item = await getMenuItemById(params.id)
+  const org = await getCurrentOrganization()
 
-  if (!item) {
-    return (
-      <div className="mx-auto max-w-2xl grow px-4 sm:px-6">
-        <Alert variant="warning">
-          <TriangleAlert className="size-4" />
-          <AlertTitle>Producto no encontrado</AlertTitle>
-          <AlertDescription>
-            El producto que buscas no existe o fue eliminado
-          </AlertDescription>
-        </Alert>
-      </div>
-    )
+  if (!org) {
+    return notFound()
   }
+  const item = getMenuItemById(params.id)
 
   const queryClient = new QueryClient()
 
   await queryClient.prefetchQuery({
     queryKey: ["categories"],
-    queryFn: () => getCategories(item.organizationId)
+    queryFn: () => getCategories(org.id)
   })
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="mx-auto max-w-4xl grow px-4 sm:px-6">
-        <ItemForm action={params.action} item={item} />
+        <ItemForm action={params.action} promiseItem={item} />
       </div>
     </HydrationBoundary>
   )
