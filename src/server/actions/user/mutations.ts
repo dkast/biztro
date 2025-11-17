@@ -33,26 +33,26 @@ export const switchOrganization = authActionClient
           }
         }
 
-        updateTag("organization:current")
-        updateTag("membership:current")
-        updateTag("membership:current:role")
-        updateTag("permissions:all")
-        updateTag(`organization:${organizationId}:subscription`)
+        updateTag("organization-current")
+        updateTag("membership-current")
+        updateTag("membership-current-role")
+        updateTag("permissions-all")
+        updateTag(`organization-${organizationId}-subscription`)
         if (currentOrganizationId) {
-          updateTag(`organization:${currentOrganizationId}:subscription`)
+          updateTag(`organization-${currentOrganizationId}-subscription`)
         }
-        updateTag(`organization:${organizationId}:members`)
+        updateTag(`organization-${organizationId}-members`)
         if (currentOrganizationId) {
-          updateTag(`organization:${currentOrganizationId}:members`)
+          updateTag(`organization-${currentOrganizationId}-members`)
         }
-        updateTag("subscription:current")
-        updateTag("page:settings")
-        updateTag("page:settings:members")
-        updateTag(`page:settings:${organizationId}`)
-        updateTag(`page:settings:members:${organizationId}`)
+        updateTag("subscription-current")
+        updateTag("page-settings")
+        updateTag("page-settings-members")
+        updateTag(`page-settings-${organizationId}`)
+        updateTag(`page-settings-members-${organizationId}`)
         if (currentOrganizationId) {
-          updateTag(`page:settings:${currentOrganizationId}`)
-          updateTag(`page:settings:members:${currentOrganizationId}`)
+          updateTag(`page-settings-${currentOrganizationId}`)
+          updateTag(`page-settings-members:${currentOrganizationId}`)
         }
         return { success: true }
       } catch (error) {

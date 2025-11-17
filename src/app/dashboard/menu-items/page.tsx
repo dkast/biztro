@@ -36,7 +36,6 @@ export default async function ItemsPage(props: {
     filter.category = searchParams.category as string
   }
 
-  console.log("Organization ID in ItemsPage:", currentOrg.id)
   const data = await getMenuItems(filter, currentOrg.id)
   const categories = await getCategories(currentOrg.id)
 

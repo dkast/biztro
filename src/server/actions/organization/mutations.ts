@@ -283,11 +283,9 @@ export const updateOrg = authActionClient
       updateTag("permissions-all")
       updateTag("membership-current")
       updateTag("membership-current-role")
-      if (id) {
-        updateTag(`organization-${id}`)
-        updateTag(`organization-${id}-members`)
-        updateTag(`organization-${id}-subscription`)
-      }
+      updateTag(`organization-${id}`)
+      updateTag(`organization-${id}-members`)
+      updateTag(`organization-${id}-subscription`)
 
       return { success: true }
     } catch (error) {

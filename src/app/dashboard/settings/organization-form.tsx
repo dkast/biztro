@@ -103,8 +103,6 @@ export default function OrganizationForm({
     })
   }, [data, form])
 
-  console.log("Logo URL in OrganizationForm:", data.logo)
-  console.log("Name in OrganizationForm:", data.name)
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <fieldset disabled={!enabled} className="mt-10 space-y-6">
