@@ -5,16 +5,8 @@ import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 // import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { Prisma } from "@prisma/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import {
-  Check,
-  Loader,
-  PlusCircle,
-  PlusIcon,
-  TriangleAlert,
-  X
-} from "lucide-react"
+import { Check, Loader, PlusCircle, TriangleAlert, X } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import type { z } from "zod/v4"
@@ -101,7 +93,7 @@ export default function ItemForm({
       name: item?.name ?? "",
       description: item?.description ?? "",
       status: (item?.status ?? MenuItemStatus.DRAFT) as MenuItemStatus,
-      image: item?.image ?? "",
+      image: item?.image ?? undefined,
       categoryId: item?.category?.id ?? "",
       organizationId: item?.organizationId ?? "",
       featured: item?.featured ?? false,
@@ -115,7 +107,6 @@ export default function ItemForm({
       allergens: item?.allergens ?? ""
     }
   })
-  const [openCategory, setOpenCategory] = useState<boolean>(false)
   const [searchCategory, setSearchCategory] = useState<string>("")
   const [openVariant, setOpenVariant] = useState<boolean>(false)
 
@@ -154,25 +145,24 @@ export default function ItemForm({
 
   const title = `${action === "new" ? "Crear" : "Editar"} Producto`
 
-  const {
-    execute: executeCategory,
-    status: statusCategory,
-    reset: resetCategory
-  } = useAction(createCategory, {
-    onSuccess: ({ data }) => {
-      if (data?.success) {
-        // toast.success("Categoría agregada")
-      } else if (data?.failure.reason) {
-        toast.error(data?.failure.reason)
-      }
+  const { execute: executeCategory, reset: resetCategory } = useAction(
+    createCategory,
+    {
+      onSuccess: ({ data }) => {
+        if (data?.success) {
+          // toast.success("Categoría agregada")
+        } else if (data?.failure.reason) {
+          toast.error(data?.failure.reason)
+        }
 
-      resetCategory()
-    },
-    onError: () => {
-      toast.error("No se pudo agregar la categoría")
-      resetCategory()
+        resetCategory()
+      },
+      onError: () => {
+        toast.error("No se pudo agregar la categoría")
+        resetCategory()
+      }
     }
-  })
+  )
 
   const handleAddCategory = () => {
     if (searchCategory) {

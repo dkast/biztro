@@ -164,9 +164,12 @@ export const auth = betterAuth({
     fields: {
       providerId: "provider", // NextAuth `provider` -> Better Auth `providerId`
       accountId: "providerAccountId", // NextAuth `providerAccountId` -> BA `accountId`
+      // skipcq: SCT-A000 This is a false positive, the mapping is correct.
       refreshToken: "refresh_token", // NextAuth `refresh_token` -> BA `refreshToken`
+      // skipcq: SCT-A000 This is a false positive, the mapping is correct.
       accessToken: "access_token", // NextAuth `access_token` -> BA `accessToken`
       accessTokenExpiresAt: "expires_at", // Now DateTime? in schema
+      // skipcq: SCT-A000 This is a false positive, the mapping is correct.
       idToken: "id_token" // NextAuth `id_token` -> BA `idToken`
     }
   },
