@@ -87,10 +87,10 @@ function ThemedSelector<T>({
   ) : (
     <Popover>
       <PopoverTrigger asChild>{triggerContent}</PopoverTrigger>
-      <PopoverAnchor asChild>
+      {/* <PopoverAnchor asChild>
         <div className="-ml-40 size-0" />
-      </PopoverAnchor>
-      <PopoverContent className="-mt-20 max-w-[250px]">
+      </PopoverAnchor> */}
+      <PopoverContent className="max-w-[250px]">
         <Label className="mb-4 block">{title}</Label>
         <div className="relative min-h-[400px]">
           <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
