@@ -151,7 +151,7 @@ export const ComboboxTrigger = ({
           <span className="flex w-full items-center justify-between gap-2">
             {value
               ? data.find(item => item.value === value)?.label
-              : `Select ${type}...`}
+              : `Selecciona ${type}...`}
             <ChevronsUpDownIcon
               className="text-muted-foreground shrink-0"
               size={16}
@@ -213,7 +213,7 @@ export const ComboboxInput = ({
   return (
     <CommandInput
       onValueChange={onValueChange}
-      placeholder={`Search ${type}...`}
+      placeholder={`Buscar ${type}...`}
       value={value}
       {...props}
     />
