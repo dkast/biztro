@@ -85,7 +85,32 @@ export const createItem = authMemberActionClient
       })
 
       // If the item already exists, generate a new name for it assigning a unique suffix
-      name = existingItem ? `${name} (${Date.now()})` : name
+      if (existingItem) {
+        let suffix = 1
+        let candidateName = `${name} (copia)`
+        
+        // Check if the name with "copia" suffix already exists
+        let nameExists = await prisma.menuItem.findFirst({
+          where: {
+            name: candidateName,
+            organizationId: currentOrgId
+          }
+        })
+        
+        // If it exists, try incrementing numbers until we find an available name
+        while (nameExists) {
+          suffix++
+          candidateName = `${name} (copia ${suffix})`
+          nameExists = await prisma.menuItem.findFirst({
+            where: {
+              name: candidateName,
+              organizationId: currentOrgId
+            }
+          })
+        }
+        
+        name = candidateName
+      }
 
       try {
         const item = await prisma.menuItem.create({
