@@ -60,7 +60,7 @@ export function DataTableFilter({
                 {value.length > 2 ? (
                   <Badge
                     variant="indigo"
-                    className="rounded-xs px-1 font-normal whitespace-nowrap"
+                    className="rounded-sm px-1 font-normal whitespace-nowrap"
                   >
                     {value.length} selecc.
                   </Badge>
@@ -71,7 +71,7 @@ export function DataTableFilter({
                       <Badge
                         variant="indigo"
                         key={option.value}
-                        className="rounded-xs px-1 font-normal whitespace-nowrap"
+                        className="rounded-sm px-1 font-normal whitespace-nowrap"
                       >
                         {option.label}
                       </Badge>
@@ -105,7 +105,7 @@ export function DataTableFilter({
                   >
                     <div
                       className={cn(
-                        "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-xs border",
+                        "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
                         isSelected
                           ? "bg-primary text-primary-foreground"
                           : "opacity-50 [&_svg]:invisible"

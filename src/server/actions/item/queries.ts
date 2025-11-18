@@ -1,24 +1,26 @@
 "use server"
 
-// import { unstable_cache as cache } from "next/cache"
+import { cacheTag } from "next/cache"
+
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import type { MenuItemQueryFilter } from "@/lib/types"
 import { env } from "@/env.mjs"
 
-export async function getMenuItems(filter: MenuItemQueryFilter) {
-  const membership = await getCurrentMembership()
-  const currentOrg = membership?.organizationId
-  // return cache(
-  //   async () => {
+export async function getMenuItems(
+  filter: MenuItemQueryFilter,
+  organizationId: string
+) {
+  "use cache"
 
-  if (!currentOrg) {
+  if (!organizationId) {
     return []
   }
 
+  cacheTag(`menu-items-${organizationId}`)
   return await prisma.menuItem.findMany({
     where: {
-      organizationId: currentOrg,
+      organizationId,
       status: filter?.status ? { in: filter.status.split(",") } : undefined,
       categoryId: filter?.category
         ? { in: filter.category.split(",") }
@@ -29,18 +31,12 @@ export async function getMenuItems(filter: MenuItemQueryFilter) {
       variants: true
     }
   })
-  //   },
-  //   [`menuItems-${currentOrg}`],
-  //   {
-  //     revalidate: 900,
-  //     tags: [`menuItems-${currentOrg}`]
-  //   }
-  // )()
 }
 
 export async function getMenuItemById(id: string) {
-  // return cache(
-  //   async () => {
+  "use cache"
+
+  cacheTag(`menu-item-${id}`)
   const item = await prisma.menuItem.findUnique({
     where: {
       id
@@ -56,43 +52,26 @@ export async function getMenuItemById(id: string) {
   }
 
   return item
-  //   },
-  //   [`menuItem-${id}`],
-  //   {
-  //     revalidate: 900,
-  //     tags: [`menuItem-${id}`]
-  //   }
-  // )()
 }
 
-export async function getCategories() {
-  const membership = await getCurrentMembership()
-  const currentOrg = membership?.organizationId
-  // return await cache(
-  //   async () => {
-  if (!currentOrg) {
+export async function getCategories(organizationId: string) {
+  "use cache"
+
+  cacheTag(`categories-${organizationId}`)
+  if (!organizationId) {
     return []
   }
 
   return await prisma.category.findMany({
     where: {
-      organizationId: currentOrg
+      organizationId
     }
   })
-  //   },
-  //   [`categories-${currentOrg}`],
-  //   {
-  //     revalidate: 900,
-  //     tags: [`categories-${currentOrg}`]
-  //   }
-  // )()
 }
 
 export async function getCategoriesWithItems() {
   const membership = await getCurrentMembership()
   const currentOrg = membership?.organizationId
-  // return await cache(
-  //   async () => {
   if (!currentOrg) {
     return []
   }
@@ -135,13 +114,6 @@ export async function getCategoriesWithItems() {
   }
 
   return data
-  //   },
-  //   [`categoriesWithItems-${currentOrg}`],
-  //   {
-  //     revalidate: 900,
-  //     tags: [`categoriesWithItems-${currentOrg}`]
-  //   }
-  // )()
 }
 
 export async function getMenuItemsWithoutCategory() {

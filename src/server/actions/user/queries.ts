@@ -1,6 +1,7 @@
 "use server"
 
 // removed unstable_cache usage — functions now fetch directly
+import { cacheLife, cacheTag } from "next/cache"
 import { headers } from "next/headers"
 
 import { auth } from "@/lib/auth"
@@ -10,10 +11,18 @@ import { env } from "@/env.mjs"
 
 // Get current organization for the user
 export async function getCurrentOrganization() {
+  "use cache: private"
+  cacheLife({ stale: 60 })
+
   try {
     const currentOrg = await auth.api.getFullOrganization({
       headers: await headers()
     })
+
+    if (!currentOrg) {
+      return null
+    }
+    cacheTag(`organization-${currentOrg.id}`)
 
     if (currentOrg?.banner) {
       currentOrg.banner = `${env.R2_CUSTOM_DOMAIN}/${currentOrg.banner}`
@@ -44,6 +53,10 @@ export async function getActiveOrganization(userId: string) {
 }
 
 export async function hasOrganizations(): Promise<number> {
+  "use cache: private"
+  cacheTag("organizations-list")
+  cacheLife({ stale: 60 })
+
   try {
     const data = await auth.api.listOrganizations({
       headers: await headers()
@@ -56,10 +69,12 @@ export async function hasOrganizations(): Promise<number> {
   }
 }
 
-export const getMembers = async () => {
-  const currentOrg = await getCurrentOrganization()
+export const getMembers = async (organizationId: string) => {
+  "use cache: private"
+  cacheTag(`organization-${organizationId}-members`)
+  cacheLife({ stale: 60 })
 
-  if (!currentOrg) {
+  if (!organizationId) {
     return []
   }
 
@@ -72,10 +87,18 @@ export const getMembers = async () => {
 }
 
 export const getCurrentMembership = async () => {
+  "use cache: private"
+  cacheLife({ stale: 60 })
+
   try {
     const member = await auth.api.getActiveMember({
       headers: await headers()
     })
+
+    if (member?.id) {
+      cacheTag(`membership-${member.id}`)
+    }
+    cacheTag("membership-current")
 
     return member
   } catch (err) {
@@ -85,10 +108,16 @@ export const getCurrentMembership = async () => {
 }
 
 export const getCurrentMembershipRole = async () => {
+  "use cache: private"
+  cacheLife({ stale: 60 })
+
   try {
+    const requestHeaders = await headers()
     const { role } = await auth.api.getActiveMemberRole({
-      headers: await headers()
+      headers: requestHeaders
     })
+
+    cacheTag("membership-current-role")
 
     return role
   } catch (err) {
@@ -98,6 +127,10 @@ export const getCurrentMembershipRole = async () => {
 }
 
 export const getInviteByToken = async (token: string) => {
+  "use cache: private"
+  cacheTag(`invitation-${token}`)
+  cacheLife({ stale: 60 })
+
   try {
     const data = await auth.api.getInvitation({
       query: { id: token },
@@ -133,7 +166,16 @@ export const getInviteByToken = async (token: string) => {
 }
 
 export async function isProMember() {
+  "use cache: private"
+  cacheLife({ stale: 60 })
+
   const org = await getCurrentOrganization()
+
+  if (!org) {
+    return false
+  }
+
+  cacheTag(`organization-${org.id}-subscription`)
 
   const subscriptions = await auth.api.listActiveSubscriptions({
     query: { referenceId: org?.id },
@@ -177,11 +219,34 @@ export async function isProMember() {
 export async function safeHasPermission(
   opts: Parameters<typeof auth.api.hasPermission>[0]
 ) {
+  "use cache: private"
+  cacheLife({ stale: 30 })
+
   try {
     // ensure headers are provided if not included
     if (!opts.headers) {
       opts.headers = await headers()
     }
+
+    const permissions = opts.body?.permissions ?? {}
+    const normalizedPermissions = Object.entries(permissions)
+      .map(([resource, actions]) => {
+        if (!Array.isArray(actions)) {
+          return `${resource}:${JSON.stringify(actions)}`
+        }
+
+        const sortedActions = [...actions].sort()
+        return `${resource}:${sortedActions.join("|")}`
+      })
+      .sort()
+      .join(";")
+
+    cacheTag("permissions-all")
+    cacheTag(
+      normalizedPermissions
+        ? `permissions-${normalizedPermissions}`
+        : "permissions-default"
+    )
 
     const result = await auth.api.hasPermission(opts)
     return result

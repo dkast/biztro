@@ -3,11 +3,11 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
+import { getCategories, getMenuItems } from "@/server/actions/item/queries"
+import { getCurrentOrganization } from "@/server/actions/user/queries"
 import ItemCreate from "@/app/dashboard/menu-items/item-create"
 import ItemImport from "@/app/dashboard/menu-items/item-import"
 import ItemTable from "@/app/dashboard/menu-items/item-table"
-import { getCategories, getMenuItems } from "@/server/actions/item/queries"
-import { getCurrentOrganization } from "@/server/actions/user/queries"
 import type { MenuItemQueryFilter } from "@/lib/types"
 
 export const metadata: Metadata = {
@@ -17,10 +17,9 @@ export const metadata: Metadata = {
 export default async function ItemsPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const [searchParams, currentOrg, categories] = await Promise.all([
+  const [searchParams, currentOrg] = await Promise.all([
     props.searchParams,
-    getCurrentOrganization(),
-    getCategories()
+    getCurrentOrganization()
   ])
 
   if (!currentOrg) {
@@ -37,7 +36,8 @@ export default async function ItemsPage(props: {
     filter.category = searchParams.category as string
   }
 
-  const data = await getMenuItems(filter)
+  const data = await getMenuItems(filter, currentOrg.id)
+  const categories = await getCategories(currentOrg.id)
 
   return (
     <div className="mx-auto grow px-4 sm:px-6">

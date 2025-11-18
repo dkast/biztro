@@ -1,43 +1,29 @@
 "use server"
 
-import { unstable_cache as cache } from "next/cache"
+import { cacheTag } from "next/cache"
 
-import {
-  getCurrentMembership,
-  getCurrentOrganization
-} from "@/server/actions/user/queries"
+import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { MenuStatus, SubscriptionStatus } from "@/lib/types"
 import { env } from "@/env.mjs"
 
-export async function getMenus() {
-  const currentOrg = await getCurrentOrganization()
-
-  if (!currentOrg) {
+export async function getMenus(currentOrgId: string) {
+  "use cache"
+  cacheTag(`menus-${currentOrgId}`)
+  if (!currentOrgId) {
     return []
   }
-  // return await cache(
-  //   async () => {
   return await prisma.menu.findMany({
     where: {
-      organizationId: currentOrg.id
+      organizationId: currentOrgId
     },
     orderBy: {
       publishedAt: "desc"
     }
   })
-  // },
-  //   [`menus-${currentOrg}`],
-  //   {
-  //     revalidate: 900,
-  //     tags: [`menus-${currentOrg}`]
-  //   }
-  // )()
 }
 
 export async function getMenuById(id: string) {
-  // return await cache(
-  //   async () => {
   const menu = await prisma.menu.findUnique({
     where: {
       id
@@ -56,48 +42,32 @@ export async function getMenuById(id: string) {
   }
 
   return menu
-  //   },
-  //   [`menu-${id}`],
-  //   {
-  //     revalidate: 900,
-  //     tags: [`menu-${id}`]
-  //   }
-  // )()
 }
 
 export async function getActiveMenuByOrganizationSlug(slug: string) {
-  return await cache(
-    async () => {
-      return await prisma.menu.findFirst({
-        where: {
-          status: MenuStatus.PUBLISHED,
-          organization: {
-            slug,
-            OR: [
-              { status: SubscriptionStatus.ACTIVE },
-              { status: SubscriptionStatus.TRIALING },
-              { status: SubscriptionStatus.SPONSORED }
-            ]
-          }
-        },
-        orderBy: {
-          publishedAt: "desc"
-        }
-      })
+  "use cache"
+  cacheTag(`subdomain-${slug}`)
+  return await prisma.menu.findFirst({
+    where: {
+      status: MenuStatus.PUBLISHED,
+      organization: {
+        slug,
+        OR: [
+          { status: SubscriptionStatus.ACTIVE },
+          { status: SubscriptionStatus.TRIALING },
+          { status: SubscriptionStatus.SPONSORED }
+        ]
+      }
     },
-    [`site-${slug}`],
-    {
-      revalidate: 900,
-      tags: [`site-${slug}`]
+    orderBy: {
+      publishedAt: "desc"
     }
-  )()
+  })
 }
 
 export async function getThemes({ themeType }: { themeType: string }) {
   const membership = await getCurrentMembership()
   const currentOrg = membership?.organizationId
-  // return await cache(
-  //   async () => {
   return await prisma.theme.findMany({
     where: {
       themeType,
@@ -112,13 +82,6 @@ export async function getThemes({ themeType }: { themeType: string }) {
       ]
     }
   })
-  //   },
-  //   [`themes-${themeType}-${currentOrg}`],
-  //   {
-  //     revalidate: 900,
-  //     tags: [`themes-${themeType}-${currentOrg}`]
-  //   }
-  // )()
 }
 
 export async function getMenuCount() {

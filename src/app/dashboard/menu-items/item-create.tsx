@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation"
 
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { Button } from "@/components/ui/button"
-import { appConfig } from "@/app/config"
 import { createItem } from "@/server/actions/item/mutations"
+import { appConfig } from "@/app/config"
 import { BasicPlanLimits, MenuItemStatus } from "@/lib/types"
 
 export default function ItemCreate() {
@@ -35,6 +35,7 @@ export default function ItemCreate() {
     onError: error => {
       console.error(error)
       toast.error("No se pudo crear el producto")
+      reset()
     }
   })
 

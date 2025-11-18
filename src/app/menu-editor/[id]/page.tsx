@@ -54,7 +54,7 @@ export default async function MenuEditorPage(props: {
     await Promise.all([
       getCategoriesWithItems(),
       getMenuItemsWithoutCategory(),
-      getDefaultLocation(),
+      getDefaultLocation(currentOrg.id),
       getFeaturedItems(),
       getMenuById(params.id)
     ])

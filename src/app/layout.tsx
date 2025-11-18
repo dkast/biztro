@@ -1,3 +1,4 @@
+import React, { Suspense } from "react"
 import { VercelToolbar } from "@vercel/toolbar/next"
 import { type Metadata, type Viewport } from "next"
 import { Inter, Sora } from "next/font/google"
@@ -5,9 +6,7 @@ import { Inter, Sora } from "next/font/google"
 import "../../styles/globals.css"
 import "../../styles/gradient-blur.css"
 
-import { AxiomWebVitals } from "next-axiom"
-
-// import "react-photo-view/dist/react-photo-view.css"
+// import { AxiomWebVitals } from "next-axiom"
 
 import Providers from "@/app/providers"
 
@@ -58,14 +57,19 @@ export default function RootLayout({
       suppressHydrationWarning
       lang="es-MX"
     >
-      <AxiomWebVitals />
+      {/* <AxiomWebVitals /> */}
       <body className="bg-white text-gray-950 dark:bg-gray-950 dark:text-white">
-        <Providers>
-          <div className="flex min-h-dvh flex-col">
-            {children}
-            {shouldInjectToolbar && <VercelToolbar />}
-          </div>
-        </Providers>
+        {/* Wrap Providers in a server-side Suspense boundary so any uncached
+            async data accessed by children or client components can suspend
+            without blocking the entire route (avoids "Blocking Route" errors). */}
+        <Suspense fallback={<div />}>
+          <Providers>
+            <div className="flex min-h-dvh flex-col">
+              {children}
+              {shouldInjectToolbar && <VercelToolbar />}
+            </div>
+          </Providers>
+        </Suspense>
       </body>
     </html>
   )

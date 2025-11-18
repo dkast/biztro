@@ -1,7 +1,7 @@
 "use server"
 
 import { Prisma } from "@prisma/client"
-import { revalidatePath, revalidateTag } from "next/cache"
+import { revalidatePath, updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getMenuCount } from "@/server/actions/menu/queries"
@@ -60,8 +60,6 @@ export const createMenu = authActionClient
         }
       })
 
-      revalidateTag(`menus-${currentOrg.id}`)
-
       return {
         success: menu
       }
@@ -107,9 +105,7 @@ export const updateMenuName = authActionClient
         data: { name }
       })
 
-      // revalidateTag(`menus-${menu.organizationId}`)
-      revalidateTag(`menu-${id}`)
-
+      updateTag(`menus-${menu.organizationId}`)
       return {
         name: menu.name
       }
@@ -173,10 +169,8 @@ export const updateMenuStatus = authActionClient
           }
         })
 
-        revalidateTag(`menu-${id}`)
-        revalidateTag(`site-${subdomain}`)
         revalidatePath(`/${subdomain}`)
-
+        updateTag(`subdomain-${menu.organizationId}`)
         return {
           success: menu
         }
@@ -224,8 +218,6 @@ export const updateMenuSerialData = authActionClient
           data: { fontTheme, colorTheme, serialData }
         })
 
-        revalidateTag(`menu-${id}`)
-
         return {
           success: menu
         }
@@ -267,8 +259,7 @@ export const deleteMenu = authActionClient
         where: { id, organizationId }
       })
 
-      revalidateTag(`menu-${id}`)
-
+      updateTag(`menus-${organizationId}`)
       return {
         success: true
       }
@@ -302,16 +293,6 @@ export const duplicateMenu = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
-    const currentOrg = await getCurrentOrganization()
-
-    if (!currentOrg) {
-      return {
-        failure: {
-          reason: "No se pudo obtener la organización actual"
-        }
-      }
-    }
-
     const proMember = await isProMember()
     const menuCount = await getMenuCount()
 
@@ -343,15 +324,14 @@ export const duplicateMenu = authActionClient
           name: `${sourceMenu.name} (copia)`,
           description: sourceMenu.description,
           status: "DRAFT",
-          organizationId: currentOrg.id,
+          organizationId: sourceMenu.organizationId,
           fontTheme: sourceMenu.fontTheme,
           colorTheme: sourceMenu.colorTheme,
           serialData: sourceMenu.serialData
         }
       })
 
-      revalidateTag(`menus-${currentOrg.id}`)
-
+      updateTag(`menus-${sourceMenu.organizationId}`)
       return {
         success: duplicatedMenu
       }
@@ -408,8 +388,6 @@ export const createColorTheme = authActionClient
           }
         })
 
-        // revalidateTag(`themes-${themeType}-${organizationId}`)
-
         return {
           success: colorTheme
         }
@@ -456,10 +434,6 @@ export const updateColorTheme = authActionClient
         data: { name, themeJSON }
       })
 
-      // revalidateTag(
-      //   `themes-${colorTheme.themeType}-${colorTheme.organizationId}`
-      // )
-
       return {
         success: colorTheme
       }
@@ -504,8 +478,6 @@ export const deleteColorTheme = authActionClient
       await prisma.theme.delete({
         where: { id, organizationId: currentOrg }
       })
-
-      // revalidateTag(`themes-${id}-${currentOrg}`)
 
       return {
         success: true

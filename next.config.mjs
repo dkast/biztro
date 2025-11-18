@@ -12,6 +12,10 @@ await import("./src/env.mjs")
 
 /** @type {import("next").NextConfig} */
 const config = {
+  experimental: {
+    turbopackFileSystemCacheForDev: true
+  },
+  cacheComponents: true,
   reactStrictMode: true,
   images: {
     remotePatterns: [
@@ -68,9 +72,6 @@ const config = {
   // This is useful for CI or when incremental migration is in progress.
   typescript: {
     ignoreBuildErrors: false
-  },
-  eslint: {
-    ignoreDuringBuilds: false
   },
   compiler: {
     removeConsole:

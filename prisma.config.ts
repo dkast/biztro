@@ -1,18 +1,16 @@
 import path from "path"
 import { PrismaLibSQL } from "@prisma/adapter-libsql"
-import type { PrismaConfig } from "prisma"
+import { defineConfig, env } from "prisma/config"
 
-import "dotenv/config"
-
-export default {
+export default defineConfig({
   experimental: {
     adapter: true
   },
   schema: path.join("prisma"),
   async adapter() {
     return new PrismaLibSQL({
-      url: process.env.TURSO_DATABASE_URL!,
-      authToken: process.env.TURSO_AUTH_TOKEN!
+      url: env("TURSO_DATABASE_URL"),
+      authToken: env("TURSO_AUTH_TOKEN")
     })
   }
-} satisfies PrismaConfig
+})

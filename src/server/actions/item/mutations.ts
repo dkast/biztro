@@ -2,7 +2,7 @@
 
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { Prisma } from "@prisma/client"
-import { revalidateTag } from "next/cache"
+import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
@@ -84,8 +84,33 @@ export const createItem = authMemberActionClient
         }
       })
 
-      // If the item already exists, generate a new name for it
-      name = existingItem ? `${name} (2)` : name
+      // If the item already exists, generate a new name for it assigning a unique suffix
+      if (existingItem) {
+        let suffix = 1
+        let candidateName = `${name} (copia)`
+        
+        // Check if the name with "copia" suffix already exists
+        let nameExists = await prisma.menuItem.findFirst({
+          where: {
+            name: candidateName,
+            organizationId: currentOrgId
+          }
+        })
+        
+        // If it exists, try incrementing numbers until we find an available name
+        while (nameExists) {
+          suffix++
+          candidateName = `${name} (copia ${suffix})`
+          nameExists = await prisma.menuItem.findFirst({
+            where: {
+              name: candidateName,
+              organizationId: currentOrgId
+            }
+          })
+        }
+        
+        name = candidateName
+      }
 
       try {
         const item = await prisma.menuItem.create({
@@ -109,9 +134,7 @@ export const createItem = authMemberActionClient
           }
         })
 
-        revalidateTag(`menuItems-${currentOrgId}`)
-        revalidateTag(`menuItem-${item.id}`)
-
+        updateTag(`menu-items-${currentOrgId}`)
         return { success: item }
       } catch (error) {
         let message
@@ -240,8 +263,8 @@ export const bulkCreateItems = authMemberActionClient
         )
       })
 
-      revalidateTag(`menuItems-${currentOrgId}`)
-      revalidateTag(`categories-${currentOrgId}`)
+      updateTag(`menu-items-${currentOrgId}`)
+      updateTag(`categories-${currentOrgId}`)
       return { success: createdItems }
     } catch (error) {
       // Add type checking for better error handling
@@ -292,10 +315,8 @@ export const updateItem = authMemberActionClient
         variants,
         featured,
         allergens
-      },
-      ctx: { member }
+      }
     }) => {
-      const currentOrgId = member.organizationId
       try {
         const item = await prisma.menuItem.update({
           where: { id },
@@ -322,9 +343,8 @@ export const updateItem = authMemberActionClient
           }
         })
 
-        revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
-        revalidateTag(`menuItem-${item.id}`)
-
+        updateTag(`menu-items-${organizationId}`)
+        updateTag(`menu-item-${id}`)
         return { success: item }
       } catch (error) {
         let message
@@ -363,8 +383,7 @@ export const deleteItem = authMemberActionClient
       organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, organizationId }, ctx: { member } }) => {
-    const currentOrgId = member.organizationId
+  .action(async ({ parsedInput: { id, organizationId } }) => {
     try {
       // Delete the image from the storage if exists
       const item = await prisma.menuItem.findUnique({
@@ -384,9 +403,7 @@ export const deleteItem = authMemberActionClient
         where: { id }
       })
 
-      revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
-      revalidateTag(`menuItem-${id}`)
-
+      updateTag(`menu-items-${organizationId}`)
       return { success: true }
     } catch (error) {
       let message
@@ -432,8 +449,7 @@ export const createCategory = authMemberActionClient
         }
       })
 
-      revalidateTag(`categories-${currentOrgId}`)
-
+      updateTag(`categories-${currentOrgId}`)
       return { success: category }
     } catch (error) {
       let message
@@ -467,42 +483,38 @@ export const createCategory = authMemberActionClient
  */
 export const updateCategory = authMemberActionClient
   .inputSchema(categorySchema)
-  .action(
-    async ({ parsedInput: { id, name, organizationId }, ctx: { member } }) => {
-      const currentOrgId = member.organizationId
-      try {
-        const category = await prisma.category.update({
-          where: { id },
-          data: {
-            name
-          }
-        })
+  .action(async ({ parsedInput: { id, name, organizationId } }) => {
+    try {
+      const category = await prisma.category.update({
+        where: { id },
+        data: {
+          name
+        }
+      })
 
-        revalidateTag(`categories-${organizationId ?? currentOrgId}`)
-
-        return { success: category }
-      } catch (error) {
-        let message
-        if (typeof error === "string") {
-          message = error
-        } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          console.error(error)
-          if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
-            message = "Ya existe una categoría con ese nombre"
-          } else {
-            message = error.message
-          }
-        } else if (error instanceof Error) {
+      updateTag(`categories-${organizationId}`)
+      return { success: category }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        console.error(error)
+        if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
+          message = "Ya existe una categoría con ese nombre"
+        } else {
           message = error.message
         }
-        return {
-          failure: {
-            reason: message
-          }
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
         }
       }
     }
-  )
+  })
 
 /**
  * Deletes a category.
@@ -539,8 +551,7 @@ export const deleteCategory = authMemberActionClient
         where: { id }
       })
 
-      revalidateTag(`categories-${organizationId}`)
-
+      updateTag(`categories-${organizationId}`)
       return { success: true }
     } catch (error) {
       let message
@@ -588,9 +599,7 @@ export const createVariant = authMemberActionClient
         }
       })
 
-      // revalidateTag(`variants-${menuItemId}`)
-      revalidateTag(`menuItem-${menuItemId}`)
-
+      updateTag(`menu-item-${menuItemId}`)
       return { success: variant }
     } catch (error) {
       let message
@@ -630,9 +639,7 @@ export const deleteVariant = authMemberActionClient
         where: { id }
       })
 
-      // revalidateTag(`variants-${menuItemId}`)
-      revalidateTag(`menuItem-${menuItemId}`)
-
+      updateTag(`menu-item-${menuItemId}`)
       return { success: true }
     } catch (error) {
       let message
@@ -663,36 +670,28 @@ export const bulkUpdateCategory = authMemberActionClient
       organizationId: z.string()
     })
   )
-  .action(
-    async ({
-      parsedInput: { ids, categoryId, organizationId },
-      ctx: { member }
-    }) => {
-      const currentOrgId = member.organizationId
-      try {
-        await prisma.menuItem.updateMany({
-          where: {
-            id: { in: ids }
-          },
-          data: {
-            categoryId
-          }
-        })
+  .action(async ({ parsedInput: { ids, categoryId, organizationId } }) => {
+    try {
+      await prisma.menuItem.updateMany({
+        where: {
+          id: { in: ids }
+        },
+        data: {
+          categoryId
+        }
+      })
 
-        revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
-        ids.forEach(id => revalidateTag(`menuItem-${id}`))
-
-        return { success: true }
-      } catch (error) {
-        console.error(error)
-        return {
-          failure: {
-            reason: "Error al actualizar las categorías"
-          }
+      updateTag(`menu-items-${organizationId}`)
+      return { success: true }
+    } catch (error) {
+      console.error(error)
+      return {
+        failure: {
+          reason: "Error al actualizar las categorías"
         }
       }
     }
-  )
+  })
 
 /**
  * Deletes multiple items at once.
@@ -704,8 +703,7 @@ export const bulkDeleteItems = authMemberActionClient
       organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { ids, organizationId }, ctx: { member } }) => {
-    const currentOrgId = member.organizationId
+  .action(async ({ parsedInput: { ids, organizationId } }) => {
     try {
       // First get all items to delete their images
       const items = await prisma.menuItem.findMany({
@@ -733,9 +731,7 @@ export const bulkDeleteItems = authMemberActionClient
         }
       })
 
-      revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
-      ids.forEach(id => revalidateTag(`menuItem-${id}`))
-
+      updateTag(`menu-items-${organizationId}`)
       return { success: true }
     } catch (error) {
       console.error(error)
@@ -758,33 +754,25 @@ export const bulkToggleFeature = authMemberActionClient
       organizationId: z.string()
     })
   )
-  .action(
-    async ({
-      parsedInput: { ids, featured, organizationId },
-      ctx: { member }
-    }) => {
-      const currentOrgId = member.organizationId
-      try {
-        await prisma.menuItem.updateMany({
-          where: {
-            id: { in: ids }
-          },
-          data: {
-            featured
-          }
-        })
+  .action(async ({ parsedInput: { ids, featured, organizationId } }) => {
+    try {
+      await prisma.menuItem.updateMany({
+        where: {
+          id: { in: ids }
+        },
+        data: {
+          featured
+        }
+      })
 
-        revalidateTag(`menuItems-${organizationId ?? currentOrgId}`)
-        ids.forEach(id => revalidateTag(`menuItem-${id}`))
-
-        return { success: true }
-      } catch (error) {
-        console.error(error)
-        return {
-          failure: {
-            reason: "Error al actualizar los productos destacados"
-          }
+      updateTag(`menu-items-${organizationId}`)
+      return { success: true }
+    } catch (error) {
+      console.error(error)
+      return {
+        failure: {
+          reason: "Error al actualizar los productos destacados"
         }
       }
     }
-  )
+  })

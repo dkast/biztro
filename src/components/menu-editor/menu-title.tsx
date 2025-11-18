@@ -4,7 +4,6 @@ import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import type { Prisma } from "@prisma/client"
-import { useQueryClient } from "@tanstack/react-query"
 import { ChevronDown } from "lucide-react"
 import { useOptimisticAction } from "next-safe-action/hooks"
 import { z } from "zod/v4"
@@ -35,15 +34,10 @@ export default function MenuTitle({
     defaultValues: { name: menu.name ?? "Sin nombre" },
     mode: "onBlur"
   })
-  const queryClient = useQueryClient()
   const [name, setName] = useState(menu.name)
   const { execute, result } = useOptimisticAction(updateMenuName, {
     currentState: { name },
     updateFn: (prev, next) => {
-      // setName(next.name)
-      // queryClient.invalidateQueries({
-      //   queryKey: ["menu", menu.id]
-      // })
       return { ...prev, name: next.name }
     }
   })
@@ -54,9 +48,6 @@ export default function MenuTitle({
         console.log("onClose", form.getValues())
         execute({ id: menu.id, name: data.name })
         setName(data.name)
-        queryClient.invalidateQueries({
-          queryKey: ["menu", menu.id]
-        })
       })()
     }
   }

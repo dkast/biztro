@@ -1,7 +1,7 @@
 import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 import lz from "lzutf8"
 import type { Metadata, ResolvingMetadata } from "next"
-import { type Viewport } from "next"
+import { cacheLife, cacheTag } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -14,16 +14,6 @@ import {
 } from "@/server/actions/organization/queries"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { SubscriptionStatus } from "@/lib/types"
-
-// ISR configuration is correct:
-// - revalidate is set to 3600 (1 hour)
-// - dynamicParams is true and generateStaticParams properly returns prerender paths.
-
-// Add revalidation time (e.g., 1 hour)
-export const revalidate = 3600
-
-// Add dynamic params configuration
-export const dynamicParams = true
 
 // Add generateStaticParams to pre-render specific paths
 export async function generateStaticParams() {
@@ -63,46 +53,50 @@ export async function generateMetadata(
   }
 }
 
-export async function generateViewport(props: {
-  params: Promise<{ subdomain: string }>
-}): Promise<Viewport> {
-  const params = await props.params
-  const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
+// export async function generateViewport(props: {
+//   params: Promise<{ subdomain: string }>
+// }): Promise<Viewport> {
+//   "use cache"
 
-  if (!params.subdomain || !siteMenu) {
-    return {
-      themeColor: "#000000"
-    }
-  }
+//   const params = await props.params
+//   cacheTag("viewport-" + params.subdomain)
+//   cacheLife("hours")
+//   const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
 
-  let json
-  if (siteMenu.serialData) {
-    json = lz.decompress(lz.decodeBase64(siteMenu.serialData))
-  }
+//   if (!params.subdomain || !siteMenu) {
+//     return {
+//       themeColor: "#000000"
+//     }
+//   }
 
-  let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
+//   let json
+//   if (siteMenu.serialData) {
+//     json = lz.decompress(lz.decodeBase64(siteMenu.serialData))
+//   }
 
-  // Search container style (color)
-  const data = JSON.parse(json)
-  const keys = Object.keys(data)
-  keys.forEach(el => {
-    const node = data[el]
-    const { displayName } = node
-    if (displayName === "Sitio") {
-      backgroundColor = data[el]?.props?.backgroundColor
-    }
-  })
+//   let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
 
-  if (backgroundColor) {
-    return {
-      themeColor: rgbaToHex(backgroundColor)
-    }
-  } else {
-    return {
-      themeColor: "#000000"
-    }
-  }
-}
+//   // Search container style (color)
+//   const data = JSON.parse(json)
+//   const keys = Object.keys(data)
+//   keys.forEach(el => {
+//     const node = data[el]
+//     const { displayName } = node
+//     if (displayName === "Sitio") {
+//       backgroundColor = data[el]?.props?.backgroundColor
+//     }
+//   })
+
+//   if (backgroundColor) {
+//     return {
+//       themeColor: rgbaToHex(backgroundColor)
+//     }
+//   } else {
+//     return {
+//       themeColor: "#000000"
+//     }
+//   }
+// }
 
 // export const viewport: Viewport = {
 //   themeColor: "#000000"
@@ -111,8 +105,12 @@ export async function generateViewport(props: {
 export default async function SitePage(props: {
   params: Promise<{ subdomain: string }>
 }) {
+  "use cache"
+
   const params = await props.params
   const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
+  cacheTag(`subdomain-${params.subdomain}`)
+  cacheLife("hours")
 
   if (!params.subdomain || !siteMenu) {
     return notFound()

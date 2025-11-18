@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 }
 
 export default async function MembersPage() {
-  const [canInviteMember, canDeleteMember, data, isPro, currentOrg] =
+  const [canInviteMember, canDeleteMember, isPro, currentOrg] =
     await Promise.all([
       safeHasPermission({
         headers: await headers(),
@@ -28,7 +28,6 @@ export default async function MembersPage() {
         headers: await headers(),
         body: { permissions: { member: ["delete"] } }
       }),
-      getMembers(),
       isProMember(),
       getCurrentOrganization()
     ])
@@ -36,6 +35,8 @@ export default async function MembersPage() {
   if (!currentOrg) {
     return notFound()
   }
+
+  const data = await getMembers(currentOrg.id)
 
   const ROLES = ["member", "admin", "owner"] as const
   type Role = (typeof ROLES)[number]
@@ -54,7 +55,6 @@ export default async function MembersPage() {
       role: toRole(m.role)
     })
   )
-
 
   return (
     <div className="mx-auto grow px-4 sm:px-6">

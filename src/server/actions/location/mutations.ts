@@ -1,10 +1,9 @@
 "use server"
 
-import { revalidateTag } from "next/cache"
+import { updateTag } from "next/cache"
 
-import { getCurrentOrganization } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
-import { authActionClient } from "@/lib/safe-actions"
+import { authActionClient, authMemberActionClient } from "@/lib/safe-actions"
 import { hoursSchema, locationSchema } from "@/lib/types"
 
 /**
@@ -21,7 +20,7 @@ import { hoursSchema, locationSchema } from "@/lib/types"
  * @param whatsapp - The WhatsApp number of the location.
  * @returns An object with either a success property containing the created location, or a failure property containing the reason for failure.
  */
-export const createLocation = authActionClient
+export const createLocation = authMemberActionClient
   .inputSchema(locationSchema)
   .action(
     async ({
@@ -35,12 +34,13 @@ export const createLocation = authActionClient
         twitter,
         tiktok,
         whatsapp
-      }
+      },
+      ctx: { member }
     }) => {
       try {
-        const currentOrg = await getCurrentOrganization()
+        const organizationId = member.organizationId
 
-        if (!currentOrg) {
+        if (!organizationId) {
           return {
             failure: {
               reason: "No se pudo obtener la organización actual"
@@ -61,14 +61,13 @@ export const createLocation = authActionClient
             whatsapp,
             organization: {
               connect: {
-                id: currentOrg.id
+                id: organizationId
               }
             }
           }
         })
 
-        revalidateTag(`default-location-${currentOrg.id}`)
-
+        updateTag(`locations-${organizationId}`)
         return { success: location }
       } catch (error) {
         let message
@@ -101,7 +100,7 @@ export const createLocation = authActionClient
  * @param whatsapp - The new WhatsApp number of the location.
  * @returns An object with the updated location if successful, or an object with the failure reason if an error occurs.
  */
-export const updateLocation = authActionClient
+export const updateLocation = authMemberActionClient
   .inputSchema(locationSchema)
   .action(
     async ({
@@ -116,9 +115,11 @@ export const updateLocation = authActionClient
         twitter,
         tiktok,
         whatsapp
-      }
+      },
+      ctx: { member }
     }) => {
       try {
+        const organizationId = member.organizationId
         const location = await prisma.location.update({
           where: {
             id
@@ -136,8 +137,7 @@ export const updateLocation = authActionClient
           }
         })
 
-        revalidateTag(`default-location-${id}`)
-
+        updateTag(`locations-${organizationId}`)
         return { success: location }
       } catch (error) {
         let message
@@ -171,8 +171,6 @@ export const deleteLocation = authActionClient
         }
       })
 
-      revalidateTag(`default-location-${id}`)
-
       return { success: true }
     } catch (error) {
       let message
@@ -201,9 +199,9 @@ export const deleteLocation = authActionClient
  * @param {boolean} input.items.allDay - Indicates if the location is open all day.
  * @returns {Promise<Object>} - A promise that resolves to an object with the updated opening hours or a failure reason.
  */
-export const updateHours = authActionClient
+export const updateHours = authMemberActionClient
   .inputSchema(hoursSchema)
-  .action(async ({ parsedInput: { locationId, items } }) => {
+  .action(async ({ parsedInput: { locationId, items }, ctx: { member } }) => {
     if (!locationId) {
       return {
         failure: {
@@ -214,8 +212,8 @@ export const updateHours = authActionClient
     }
 
     // Get current orgization ID
-    const currentOrg = await getCurrentOrganization()
-    if (!currentOrg) {
+    const organizationId = member.organizationId
+    if (!organizationId) {
       return {
         failure: {
           reason: "No se pudo obtener la organización actual"
@@ -240,8 +238,7 @@ export const updateHours = authActionClient
         }))
       })
 
-      revalidateTag(`default-location-${currentOrg.id}`)
-
+      updateTag(`locations-${organizationId}`)
       return { success: hours }
     } catch (error) {
       let message

@@ -32,6 +32,7 @@ export default function MenuCreate() {
     onError: error => {
       console.error(error)
       toast.error("No se pudo crear el menú")
+      reset()
     }
   })
 

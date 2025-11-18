@@ -1,6 +1,6 @@
 "use client"
 
-import { Fragment } from "react"
+import { Fragment, useEffect } from "react"
 import type { TimeValue } from "react-aria"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
@@ -110,6 +110,59 @@ export default function HoursForm({
       }))
     })
   }
+
+  // Refresh form when data changes
+  useEffect(() => {
+    form.reset({
+      locationId: data?.id,
+      items:
+        (data?.openingHours?.length ?? 0 > 0)
+          ? data?.openingHours.map(item => ({
+              id: item.id,
+              day: item.day as
+                | "MONDAY"
+                | "TUESDAY"
+                | "WEDNESDAY"
+                | "THURSDAY"
+                | "FRIDAY"
+                | "SATURDAY"
+                | "SUNDAY",
+              startTime: item.startTime ?? undefined,
+              endTime: item.endTime ?? undefined,
+              allDay: item.allDay
+            }))
+          : [
+              {
+                day: "MONDAY",
+                allDay: false
+              },
+              {
+                day: "TUESDAY",
+                allDay: false
+              },
+              {
+                day: "WEDNESDAY",
+                allDay: false
+              },
+              {
+                day: "THURSDAY",
+                allDay: false
+              },
+              {
+                day: "FRIDAY",
+                allDay: false
+              },
+              {
+                day: "SATURDAY",
+                allDay: false
+              },
+              {
+                day: "SUNDAY",
+                allDay: false
+              }
+            ]
+    })
+  }, [data, form])
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="mt-10 space-y-6">

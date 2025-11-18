@@ -4,7 +4,6 @@ import { useEffect, useState, type JSX } from "react"
 import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
-import { PopoverAnchor } from "@radix-ui/react-popover"
 import { useQueryClient } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtom } from "jotai"
@@ -87,10 +86,10 @@ function ThemedSelector<T>({
   ) : (
     <Popover>
       <PopoverTrigger asChild>{triggerContent}</PopoverTrigger>
-      <PopoverAnchor asChild>
+      {/* <PopoverAnchor asChild>
         <div className="-ml-40 size-0" />
-      </PopoverAnchor>
-      <PopoverContent className="-mt-20 max-w-[250px]">
+      </PopoverAnchor> */}
+      <PopoverContent className="max-w-[250px]">
         <Label className="mb-4 block">{title}</Label>
         <div className="relative min-h-[400px]">
           <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
@@ -205,10 +204,6 @@ export default function ThemeSelector({
     }
   }, [fontThemeId]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    updateColorTheme(colorThemeId)
-  }, [colorThemeId, colorThemes]) // eslint-disable-line react-hooks/exhaustive-deps
-
   const updateColorTheme = (colorThemeId: string) => {
     const selectedTheme = colorThemes.find(theme => theme.id === colorThemeId)
     if (!selectedTheme) {
@@ -295,6 +290,10 @@ export default function ThemeSelector({
       }
     }
   }
+
+  useEffect(() => {
+    updateColorTheme(colorThemeId)
+  }, [colorThemeId, colorThemes]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update the menu theme
   const {

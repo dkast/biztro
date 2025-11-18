@@ -33,7 +33,7 @@ type ImportError = {
 export default function ItemImport() {
   const [open, setOpen] = useState(false)
   const [errors, setErrors] = useState<ImportError[]>([])
-  const { execute, isPending } = useAction(bulkCreateItems, {
+  const { execute, isPending, reset } = useAction(bulkCreateItems, {
     onSuccess: response => {
       console.dir(response.data)
       if (response.data?.failure) {
@@ -44,10 +44,12 @@ export default function ItemImport() {
         `${response.data?.success?.length} productos importados correctamente`
       )
       setOpen(false)
+      reset()
     },
     onError: error => {
       console.error(error)
       toast.error("Error al importar los productos")
+      reset()
     }
   })
 

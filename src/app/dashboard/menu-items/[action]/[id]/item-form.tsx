@@ -1,20 +1,12 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { use, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
+// import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { Prisma } from "@prisma/client"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import {
-  Check,
-  ChevronsUpDown,
-  Loader,
-  PlusCircle,
-  PlusIcon,
-  TriangleAlert,
-  X
-} from "lucide-react"
+import { Check, Loader, PlusCircle, TriangleAlert, X } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import type { z } from "zod/v4"
@@ -22,6 +14,17 @@ import type { z } from "zod/v4"
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { ImageField } from "@/components/dashboard/image-field"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxCreateNew,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxTrigger
+} from "@/components/kibo-ui/combobox"
 import {
   Tags,
   TagsContent,
@@ -35,28 +38,17 @@ import {
 } from "@/components/kibo-ui/tags"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card"
-import {
-  ComboBox,
-  ComboBoxEmpty,
-  ComboBoxGroup,
-  ComboBoxInput,
-  ComboBoxItem,
-  ComboBoxList
-} from "@/components/ui/combobox"
 // legacy Form helpers removed in favor of Field primitives
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldError,
-  FieldLabel
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
@@ -84,73 +76,93 @@ import {
 import { cn } from "@/lib/utils"
 
 export default function ItemForm({
-  item,
+  promiseItem,
   // categories,
   action
 }: {
-  item: Prisma.PromiseReturnType<typeof getMenuItemById>
+  promiseItem: ReturnType<typeof getMenuItemById>
   // categories: Prisma.PromiseReturnType<typeof getCategories>
   action: string
 }) {
+  const item = use(promiseItem)
+
   const form = useForm<z.output<typeof menuItemSchema>>({
     resolver: zodResolver(menuItemSchema),
     defaultValues: {
-      id: item?.id,
-      name: item?.name,
-      description: item?.description ?? undefined,
-      status: item?.status as MenuItemStatus,
+      id: item?.id ?? "",
+      name: item?.name ?? "",
+      description: item?.description ?? "",
+      status: (item?.status ?? MenuItemStatus.DRAFT) as MenuItemStatus,
       image: item?.image ?? undefined,
-      categoryId: item?.category?.id ?? undefined,
-      organizationId: item?.organizationId,
+      categoryId: item?.category?.id ?? "",
+      organizationId: item?.organizationId ?? "",
       featured: item?.featured ?? false,
-      variants:
-        item?.variants.map(variant => ({
-          ...variant,
-          price: Number(variant.price),
-          description: variant.description ?? undefined
-        })) ?? [],
-      allergens: item?.allergens ?? undefined
+      variants: (item?.variants ?? []).map(variant => ({
+        id: variant.id ?? "",
+        name: variant.name ?? "",
+        price: variant.price ?? 0,
+        description: variant.description ?? "",
+        menuItemId: variant.menuItemId ?? ""
+      })),
+      allergens: item?.allergens ?? ""
     }
   })
-  const [openCategory, setOpenCategory] = useState<boolean>(false)
   const [searchCategory, setSearchCategory] = useState<string>("")
   const [openVariant, setOpenVariant] = useState<boolean>(false)
-
-  const { data: categories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: () => getCategories(),
-    initialData: [] // default value
-  })
-  const queryClient = useQueryClient()
-
-  const title = `${action === "new" ? "Crear" : "Editar"} Producto`
-
-  const router = useRouter()
 
   const { fields } = useFieldArray({
     control: form.control,
     name: "variants"
   })
 
-  const {
-    execute: executeCategory,
-    status: statusCategory,
-    reset: resetCategory
-  } = useAction(createCategory, {
-    onSuccess: ({ data }) => {
-      if (data?.success) {
-        // toast.success("Categoría agregada")
-      } else if (data?.failure.reason) {
-        toast.error(data?.failure.reason)
-      }
-
-      resetCategory()
-    },
-    onError: () => {
-      toast.error("No se pudo agregar la categoría")
-      resetCategory()
+  useEffect(() => {
+    if (item?.variants && item.variants.length > 0) {
+      const mappedVariants = item.variants.map(variant => ({
+        name: variant.name,
+        price: variant.price,
+        id: variant.id,
+        description: variant.description ?? undefined,
+        menuItemId: variant.menuItemId
+      }))
+      form.setValue(
+        "variants",
+        mappedVariants as z.infer<typeof menuItemSchema>["variants"]
+      )
     }
+  }, [item?.variants, form])
+
+  const queryClient = useQueryClient()
+
+  const router = useRouter()
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories(item?.organizationId ?? ""),
+    initialData: [] // default value
   })
+
+  const saveRef = React.useRef<HTMLButtonElement>(null)
+
+  const title = `${action === "new" ? "Crear" : "Editar"} Producto`
+
+  const { execute: executeCategory, reset: resetCategory } = useAction(
+    createCategory,
+    {
+      onSuccess: ({ data }) => {
+        if (data?.success) {
+          // toast.success("Categoría agregada")
+        } else if (data?.failure.reason) {
+          toast.error(data?.failure.reason)
+        }
+
+        resetCategory()
+      },
+      onError: () => {
+        toast.error("No se pudo agregar la categoría")
+        resetCategory()
+      }
+    }
+  )
 
   const handleAddCategory = () => {
     if (searchCategory) {
@@ -173,7 +185,9 @@ export default function ItemForm({
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Producto actualizado")
-        // router.back()
+        form.reset(undefined, { keepValues: true, keepDirty: false })
+
+        router.refresh()
       } else if (data?.failure.reason) {
         toast.error(data?.failure.reason)
       }
@@ -201,24 +215,6 @@ export default function ItemForm({
     execute(data)
   }
 
-  const saveRef = React.useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    if (item?.variants && item.variants.length > 0) {
-      const mappedVariants = item.variants.map(variant => ({
-        name: variant.name,
-        price: variant.price,
-        id: variant.id,
-        description: variant.description ?? undefined,
-        menuItemId: variant.menuItemId
-      }))
-      form.setValue(
-        "variants",
-        mappedVariants as z.infer<typeof menuItemSchema>["variants"]
-      )
-    }
-  }, [item?.variants, form])
-
   if (!item) {
     return (
       <Alert variant="warning">
@@ -232,11 +228,11 @@ export default function ItemForm({
   }
 
   return (
-    <div>
+    <div className="pb-20">
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <PageSubtitle
           title={title}
-          className="sticky top-0 z-10 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-xs dark:border-gray-800 dark:bg-gray-950"
+          className="border-border bg-background sticky top-0 z-10 rounded-xl border px-4 py-3 shadow-xs"
         >
           <div className="flex gap-2">
             <Button
@@ -260,290 +256,88 @@ export default function ItemForm({
             </Button>
           </div>
         </PageSubtitle>
-        <div className="mt-10 grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
-          <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Detalles del Producto</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Controller
-                  name="name"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field>
-                      <FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
-                      <Input
-                        {...field}
-                        id={field.name}
-                        placeholder="Nombre del producto"
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-                <Controller
-                  name="description"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field>
-                      <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
-                      <Textarea
-                        {...field}
-                        id={field.name}
-                        placeholder="Agrega una descripción. Describe detalles como ingredientes, sabor, etc."
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Variantes</CardTitle>
-                <CardDescription>
-                  Agrega variantes para mostrar diferentes opciones de un mismo
-                  producto
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <VariantForm fieldArray={fields} parentForm={form} />
-              </CardContent>
-              <CardFooter className="justify-center dark:border-gray-800">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleOpenVariant}
-                  className="w-full gap-1"
-                >
-                  <PlusCircle className="size-3.5" />
-                  Crear variante
-                </Button>
-              </CardFooter>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Categoría</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Controller
-                  name="categoryId"
-                  control={form.control}
-                  render={({ field }) => (
-                    <Field>
-                      <div className="flex items-center space-x-2">
-                        <ComboBox
-                          open={openCategory}
-                          setOpen={setOpenCategory}
-                          trigger={
-                            <Button
-                              type="button"
-                              variant="outline"
-                              role="combobox"
-                              className={cn(
-                                "flex w-[300px] justify-between",
-                                field.value ?? "text-gray-500"
-                              )}
-                            >
-                              {field.value
-                                ? categories.find(
-                                    category => category.id === field.value
-                                  )?.name
-                                : "Seleccionar Categoría"}
-                              <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-                            </Button>
-                          }
-                        >
-                          <ComboBoxInput
-                            value={searchCategory}
-                            onValueChange={setSearchCategory}
-                            placeholder="Buscar categoría..."
-                          />
-                          <ComboBoxList className="max-h-full sm:max-h-[300px]">
-                            <ComboBoxEmpty className="p-2">
-                              <Button
-                                type="button"
-                                disabled={statusCategory === "executing"}
-                                variant="ghost"
-                                className="w-full"
-                                size="xs"
-                                onClick={handleAddCategory}
-                              >
-                                {statusCategory === "executing" ? (
-                                  <Loader className="mr-2 size-4 animate-spin" />
-                                ) : (
-                                  <PlusIcon className="mr-2 size-4" />
-                                )}
-                                {searchCategory
-                                  ? `Agregar "${searchCategory}"`
-                                  : "Agregar"}
-                              </Button>
-                            </ComboBoxEmpty>
-                            <ComboBoxGroup className="overflow-y-auto sm:max-h-[300px]">
-                              {categories.map(category => (
-                                <ComboBoxItem
-                                  value={category.name}
-                                  key={category.id}
-                                  onSelect={() => {
-                                    if (category.id) {
-                                      form.setValue("categoryId", category.id)
-                                      setOpenCategory(false)
-                                    }
-                                  }}
-                                  className="py-2 text-base sm:py-1.5 sm:text-sm"
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 size-4",
-                                      category.id === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                  {category.name}
-                                </ComboBoxItem>
-                              ))}
-                            </ComboBoxGroup>
-                          </ComboBoxList>
-                        </ComboBox>
-                        {field.value && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => {
-                              form.setValue("categoryId", "")
-                            }}
-                          >
-                            <X className="size-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </Field>
-                  )}
-                />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Alérgenos e Indicadores</CardTitle>
-                <CardDescription>
-                  Selecciona los alérgenos o indicadores especiales para este
-                  producto
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Controller
-                  name="allergens"
-                  control={form.control}
-                  render={({ field, fieldState }) => {
-                    const values =
-                      ((field.value ?? "")
-                        .split(",")
-                        .filter(Boolean) as string[]) || []
-
-                    return (
+        <div className="mt-10">
+          <FieldGroup>
+            <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3">
+              <FieldSet className="lg:col-span-2">
+                <FieldLegend>Detalles del Producto</FieldLegend>
+                <FieldGroup>
+                  <Controller
+                    name="name"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
                       <Field>
-                        <Tags
-                          value={field.value}
-                          setValue={(v: string) =>
-                            form.setValue("allergens", v)
-                          }
-                        >
-                          <TagsTrigger placeholder="Buscar o añadir alérgenos">
-                            {values.map(val => (
-                              <TagsValue
-                                variant="indigo"
-                                key={val}
-                                onRemove={() => {
-                                  const next = values.filter(v => v !== val)
-                                  form.setValue("allergens", next.join(","))
-                                }}
-                              >
-                                {Allergens.find(a => a.value === val)?.label ??
-                                  val}
-                              </TagsValue>
-                            ))}
-                          </TagsTrigger>
-                          <TagsContent>
-                            <TagsInput placeholder="Buscar o añadir alérgenos" />
-                            <TagsList>
-                              <TagsEmpty className="p-2" />
-                              <TagsGroup>
-                                {Allergens.map(allergen => (
-                                  <TagsItem
-                                    key={allergen.value}
-                                    onSelect={() => {
-                                      const next = Array.from(
-                                        new Set([...values, allergen.value])
-                                      )
-                                      form.setValue("allergens", next.join(","))
-                                    }}
-                                  >
-                                    {allergen.label}
-                                  </TagsItem>
-                                ))}
-                              </TagsGroup>
-                            </TagsList>
-                          </TagsContent>
-                        </Tags>
+                        <FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
+                        <Input
+                          {...field}
+                          id={field.name}
+                          placeholder="Nombre del producto"
+                        />
                         {fieldState.invalid && (
                           <FieldError errors={[fieldState.error]} />
                         )}
                       </Field>
-                    )
-                  }}
-                />
-              </CardContent>
-            </Card>
-          </div>
-          <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Imágen del Producto</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {item?.image ? (
-                  <ImageField
-                    src={item.image}
-                    organizationId={item.organizationId}
-                    imageType={ImageType.MENUITEM}
-                    objectId={item.id}
-                    onUploadSuccess={() => {
-                      router.refresh()
-                    }}
+                    )}
                   />
-                ) : (
-                  <EmptyImageField
-                    organizationId={item.organizationId}
-                    imageType={ImageType.MENUITEM}
-                    objectId={item.id}
-                    onUploadSuccess={() => {
-                      router.refresh()
-                    }}
+                  <Controller
+                    name="description"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field>
+                        <FieldLabel htmlFor={field.name}>
+                          Descripción
+                        </FieldLabel>
+                        <Textarea
+                          {...field}
+                          id={field.name}
+                          placeholder="Agrega una descripción. Describe detalles como ingredientes, sabor, etc."
+                        />
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </Field>
+                    )}
                   />
-                )}
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Status del Producto</CardTitle>
-                <CardDescription>
-                  Cambia el estado del producto para mostrarlo u ocultarlo en el
-                  menú
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+                </FieldGroup>
+              </FieldSet>
+              <FieldSet>
+                <FieldLegend>Imágen del Producto</FieldLegend>
+                <div className="h-full">
+                  {item?.image ? (
+                    <ImageField
+                      className="h-full"
+                      src={item.image}
+                      organizationId={item.organizationId}
+                      imageType={ImageType.MENUITEM}
+                      objectId={item.id}
+                      onUploadSuccess={() => {
+                        router.refresh()
+                      }}
+                    />
+                  ) : (
+                    <EmptyImageField
+                      className="h-full"
+                      organizationId={item.organizationId}
+                      imageType={ImageType.MENUITEM}
+                      objectId={item.id}
+                      onUploadSuccess={() => {
+                        router.refresh()
+                      }}
+                    />
+                  )}
+                </div>
+              </FieldSet>
+            </div>
+            <FieldSet>
+              <FieldContent className="flex gap-4 sm:flex-row">
                 <Controller
                   name="status"
                   control={form.control}
                   render={({ field }) => (
-                    <Field>
+                    <Field className="border-border rounded-lg border p-4">
+                      <FieldLabel htmlFor={field.name}>
+                        Estatus del Producto
+                      </FieldLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
@@ -563,35 +357,205 @@ export default function ItemForm({
                           </SelectItem>
                         </SelectContent>
                       </Select>
+                      <FieldDescription>
+                        Cambia el estado del producto para mostrarlo u ocultarlo
+                        en el menú
+                      </FieldDescription>
                     </Field>
                   )}
                 />
                 <Controller
                   name="featured"
                   control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field className="mt-4 grid grid-cols-3 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
-                      <div className="col-span-2 grow space-y-0.5">
+                  render={({ field }) => (
+                    <Field
+                      className="border-border rounded-lg border p-4"
+                      orientation="horizontal"
+                    >
+                      <FieldContent>
                         <FieldLabel>Recomendado</FieldLabel>
                         <FieldDescription>
                           Mostrar producto en la sección de recomendados
                         </FieldDescription>
-                      </div>
-                      <div>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
-                      </div>
+                      </FieldContent>
+
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
                     </Field>
                   )}
                 />
-              </CardContent>
-            </Card>
-          </div>
+              </FieldContent>
+            </FieldSet>
+            <FieldSeparator />
+            <FieldSet>
+              <FieldLegend>Variantes</FieldLegend>
+              <FieldDescription>
+                Agrega variantes para mostrar diferentes opciones de un mismo
+                producto
+              </FieldDescription>
+              <FieldGroup className="md:max-w-md lg:max-w-lg">
+                <VariantForm fieldArray={fields} parentForm={form} />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleOpenVariant}
+                  className="w-full gap-1"
+                >
+                  <PlusCircle className="size-3.5" />
+                  Crear variante
+                </Button>
+              </FieldGroup>
+            </FieldSet>
+            <FieldSeparator />
+            <FieldSet>
+              <FieldLegend>Categoría</FieldLegend>
+              <FieldDescription>
+                Asigna una categoría para agrupar productos similares y
+                mostrarlos juntos en el menú.
+              </FieldDescription>
+              <Controller
+                name="categoryId"
+                control={form.control}
+                render={({ field }) => (
+                  <Field>
+                    <div className="flex items-center space-x-2">
+                      <Combobox
+                        data={categories.map(
+                          (c: { id: string; name: string }) => ({
+                            label: c.name,
+                            value: c.id
+                          })
+                        )}
+                        type="Categoría"
+                        value={field.value}
+                        onValueChange={(val: string) => {
+                          form.setValue("categoryId", val)
+                        }}
+                      >
+                        <ComboboxTrigger className="min-w-[300px]" />
+                        <ComboboxContent>
+                          <ComboboxInput
+                            value={searchCategory}
+                            onValueChange={setSearchCategory}
+                            placeholder="Buscar categoría..."
+                          />
+                          <ComboboxList>
+                            <ComboboxEmpty>
+                              <ComboboxCreateNew
+                                onCreateNew={handleAddCategory}
+                              />
+                            </ComboboxEmpty>
+                            <ComboboxGroup>
+                              {categories.map(
+                                (category: { id: string; name: string }) => (
+                                  <ComboboxItem
+                                    value={category.id}
+                                    key={category.id}
+                                    className="py-2 text-base sm:py-1.5 sm:text-sm"
+                                  >
+                                    <Check
+                                      className={cn(
+                                        "mr-2 size-4",
+                                        category.id === field.value
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                    {category.name}
+                                  </ComboboxItem>
+                                )
+                              )}
+                            </ComboboxGroup>
+                          </ComboboxList>
+                        </ComboboxContent>
+                      </Combobox>
+                      {field.value && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            form.setValue("categoryId", "")
+                          }}
+                        >
+                          <X className="size-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </Field>
+                )}
+              />
+            </FieldSet>
+            <FieldSeparator />
+            <FieldSet>
+              <FieldLegend>Alérgenos e Indicadores</FieldLegend>
+              <FieldDescription>
+                Selecciona los alérgenos o indicadores especiales para este
+                producto
+              </FieldDescription>
+              <Controller
+                name="allergens"
+                control={form.control}
+                render={({ field, fieldState }) => {
+                  const values =
+                    ((field.value ?? "")
+                      .split(",")
+                      .filter(Boolean) as string[]) || []
+
+                  return (
+                    <Field>
+                      <Tags
+                        value={field.value}
+                        setValue={(v: string) => form.setValue("allergens", v)}
+                      >
+                        <TagsTrigger placeholder="Buscar o añadir alérgenos">
+                          {values.map(val => (
+                            <TagsValue
+                              variant="indigo"
+                              key={val}
+                              onRemove={() => {
+                                const next = values.filter(v => v !== val)
+                                form.setValue("allergens", next.join(","))
+                              }}
+                            >
+                              {Allergens.find(a => a.value === val)?.label ??
+                                val}
+                            </TagsValue>
+                          ))}
+                        </TagsTrigger>
+                        <TagsContent>
+                          <TagsInput placeholder="Buscar o añadir alérgenos" />
+                          <TagsList>
+                            <TagsEmpty className="p-2" />
+                            <TagsGroup>
+                              {Allergens.map(allergen => (
+                                <TagsItem
+                                  key={allergen.value}
+                                  onSelect={() => {
+                                    const next = Array.from(
+                                      new Set([...values, allergen.value])
+                                    )
+                                    form.setValue("allergens", next.join(","))
+                                  }}
+                                >
+                                  {allergen.label}
+                                </TagsItem>
+                              ))}
+                            </TagsGroup>
+                          </TagsList>
+                        </TagsContent>
+                      </Tags>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )
+                }}
+              />
+            </FieldSet>
+          </FieldGroup>
         </div>
       </form>
       <VariantCreate
@@ -599,6 +563,7 @@ export default function ItemForm({
         open={openVariant}
         setOpen={setOpenVariant}
       />
+      {/* <DevTool control={form.control} />  */}
     </div>
   )
 }

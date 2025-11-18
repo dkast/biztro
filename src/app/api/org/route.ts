@@ -2,8 +2,6 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import { getOrganizationBySlug } from "@/server/actions/organization/queries"
 
-export const dynamic = "force-dynamic"
-
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
   const subdomain = searchParams.get("subdomain")

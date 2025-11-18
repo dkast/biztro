@@ -21,7 +21,7 @@ export function cn(...inputs: ClassValue[]) {
 
 // Get initials from name string
 export function getInitials(name: string | undefined | null) {
-  if (!name) return ""
+  if (!name) return "-"
   return name
     .split(" ")
     .map(word => word.charAt(0).toUpperCase())

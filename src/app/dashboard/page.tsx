@@ -18,15 +18,16 @@ export const metadata: Metadata = {
 }
 
 export default async function DashboardPage() {
-  const [orgAvailable, currentOrg, menus] = await Promise.all([
+  const [orgAvailable, currentOrg] = await Promise.all([
     hasOrganizations(),
-    getCurrentOrganization(),
-    getMenus()
+    getCurrentOrganization()
   ])
 
   if (!orgAvailable) {
     redirect("/new-org")
   }
+
+  const menus = getMenus(currentOrg?.id as string)
 
   return (
     <div className="flex grow bg-gray-50 pb-4 dark:bg-gray-950">
@@ -45,7 +46,9 @@ export default async function DashboardPage() {
             </InfoHelper>
           </PageSubtitle>
         </div>
-        <MenuList menus={menus} />
+        <Suspense fallback={<MenuListSkeleton />}>
+          <MenuList promiseMenus={menus} />
+        </Suspense>
       </div>
     </div>
   )
@@ -60,6 +63,17 @@ function OnboardingSkeleton() {
         <Skeleton className="h-28 w-full" />
         <Skeleton className="h-28 w-full" />
       </div>
+    </>
+  )
+}
+
+function MenuListSkeleton() {
+  return (
+    <>
+      <Skeleton className="h-[250px]" />
+      <Skeleton className="h-[250px]" />
+      <Skeleton className="h-[250px]" />
+      <Skeleton className="h-[250px]" />
     </>
   )
 }
