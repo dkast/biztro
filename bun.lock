@@ -103,6 +103,7 @@
         "react-contenteditable": "^3.3.7",
         "react-day-picker": "^9.11.1",
         "react-dom": "19.2.0",
+        "react-frame-component": "^5.2.7",
         "react-hook-form": "^7.66.1",
         "react-hot-toast": "^2.6.0",
         "react-joyride": "^3.0.0-7",
@@ -3115,6 +3116,8 @@
     "react-email": ["react-email@5.0.4", "", { "dependencies": { "@babel/parser": "^7.27.0", "@babel/traverse": "^7.27.0", "chokidar": "^4.0.3", "commander": "^13.0.0", "conf": "^15.0.2", "debounce": "^2.0.0", "esbuild": "^0.25.0", "glob": "^11.0.0", "jiti": "2.4.2", "log-symbols": "^7.0.0", "mime-types": "^3.0.0", "normalize-path": "^3.0.0", "nypm": "0.6.0", "ora": "^8.0.0", "prompts": "2.4.2", "socket.io": "^4.8.1", "tsconfig-paths": "4.2.0" }, "bin": { "email": "dist/index.js" } }, "sha512-pI6b4ePMWC1AFtyd0gyVMsJ6Nhg4nnmDxVo1EQP+r011WQafU8UGAUfPUiE5Wh7x28+3yFw7qXCnD33y71guUw=="],
 
     "react-floater": ["react-floater@0.9.5-4", "", { "dependencies": { "@popperjs/core": "^2.11.8", "deepmerge-ts": "^7.1.0", "is-lite": "^1.2.1", "tree-changes-hook": "^0.11.2" }, "peerDependencies": { "react": "16.8 - 19", "react-dom": "16.8 - 19" } }, "sha512-3CBOgMfqD18A5HvQRKRNR6pKT5rOCzcdqDzyOU7RYNFgpiGm6BrMjDTXJrstEpRjJ4fyL65dQ6wTRIE2UMQTmQ=="],
+
+    "react-frame-component": ["react-frame-component@5.2.7", "", { "peerDependencies": { "prop-types": "^15.5.9", "react": ">= 16.3", "react-dom": ">= 16.3" } }, "sha512-ROjHtSLoSVYUBfTieazj/nL8jIX9rZFmHC0yXEU+dx6Y82OcBEGgU9o7VyHMrBFUN9FuQ849MtIPNNLsb4krbg=="],
 
     "react-hook-form": ["react-hook-form@7.66.1", "", { "peerDependencies": { "react": "^16.8.0 || ^17 || ^18 || ^19" } }, "sha512-2KnjpgG2Rhbi+CIiIBQQ9Df6sMGH5ExNyFl4Hw9qO7pIqMBR8Bvu9RQyjl3JM4vehzCh9soiNUM/xYMswb2EiA=="],
 

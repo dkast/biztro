@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import type { Prisma } from "@prisma/client"
@@ -17,6 +18,7 @@ import ItemBlock from "@/components/menu-editor/blocks/item-block"
 import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import { BottomBar } from "@/components/menu-editor/bottom-bar"
+import CssStyles from "@/components/menu-editor/css-styles"
 import FloatingBar from "@/components/menu-editor/floating-bar"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
 import MenuPublish from "@/components/menu-editor/menu-publish"
@@ -88,7 +90,7 @@ export default function Workbench({
   if (!menu || !categories || !organization) return null
 
   // Extract the serialized data from the menu
-  let json
+  let json: string | undefined
   if (menu.serialData) json = lz.decompress(lz.decodeBase64(menu.serialData))
 
   const getPanelContent = () => {
@@ -266,16 +268,24 @@ export default function Workbench({
                       "flex min-h-[600px] flex-col border bg-white transition-all duration-300 ease-in-out dark:border-gray-700"
                     )}
                   >
-                    <Frame data={json}>
-                      <Element is={ContainerBlock} canvas>
-                        <HeaderBlock
-                          layout="modern"
-                          organization={organization}
-                          location={location ?? undefined}
-                          showBanner={organization.banner !== null}
-                        />
-                      </Element>
-                    </Frame>
+                    <IFrame className="grow">
+                      <FrameContextConsumer>
+                        {({ document: frameDocument }) => (
+                          <CssStyles frameDocument={frameDocument}>
+                            <Frame data={json}>
+                              <Element is={ContainerBlock} canvas>
+                                <HeaderBlock
+                                  layout="modern"
+                                  organization={organization}
+                                  location={location ?? undefined}
+                                  showBanner={organization.banner !== null}
+                                />
+                              </Element>
+                            </Frame>
+                          </CssStyles>
+                        )}
+                      </FrameContextConsumer>
+                    </IFrame>
                   </div>
                 </div>
                 <FloatingBar />
