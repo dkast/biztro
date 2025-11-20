@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
@@ -75,6 +75,7 @@ export default function Workbench({
   const isMobile = useIsMobile()
   const [isOpen, setIsOpen] = useState(false)
   const [activePanel, setActivePanel] = useState<PanelType | null>(null)
+  const [shouldRenderFrame, setShouldRenderFrame] = useState(true)
 
   // Initialize the atoms for the editor
   const [frameSize] = useAtom(frameSizeAtom)
@@ -85,7 +86,84 @@ export default function Workbench({
   useEffect(() => {
     setFontThemeId(menu?.fontTheme ?? "DEFAULT")
     setColorThemeId(menu?.colorTheme ?? "DEFAULT")
-  }, []) // Empty dependency array ensures this runs once
+  }, [menu?.fontTheme, menu?.colorTheme, setFontThemeId, setColorThemeId])
+
+  // Keep a ref to the frame document so we can clean up side effects (video/audio/iframes)
+  const frameDocRef = useRef<Document | null>(null)
+
+  // Use useLayoutEffect so cleanup runs immediately when Activity hides this component
+  useLayoutEffect(() => {
+    setShouldRenderFrame(true)
+    return () => {
+      setShouldRenderFrame(false)
+
+      const doc = frameDocRef.current
+      // Pause media elements in the iframe document (if present)
+      if (doc) {
+        try {
+          // Pause any playing audio/video elements inside the iframe's document
+          ;(
+            doc.querySelectorAll("video, audio") as NodeListOf<HTMLMediaElement>
+          ).forEach(el => {
+            try {
+              el.pause()
+            } catch {
+              // ignore
+            }
+          })
+
+          // If there are nested iframes inside the frame, try to pause their media as well
+          ;(
+            doc.querySelectorAll("iframe") as NodeListOf<HTMLIFrameElement>
+          ).forEach(iframe => {
+            try {
+              const win = iframe.contentWindow
+              // Try to post a message to the iframe content window to let it cleanup itself
+              win?.postMessage({ type: "react-activity-hidden" }, "*")
+              // As a fallback, attempt to set src to about:blank to ensure network/audio stops
+              // but avoid doing this by default to preserve state — only do if necessary.
+            } catch {
+              // ignore
+            }
+          })
+        } catch {
+          // ignore errors in cleanup
+        }
+      }
+
+      // Pause any playing audio/video elements inside the host document's editor area
+      try {
+        const container = document.getElementById("editor-canvas")
+        if (container) {
+          ;(
+            container.querySelectorAll(
+              "video, audio"
+            ) as NodeListOf<HTMLMediaElement>
+          ).forEach(el => {
+            try {
+              el.pause()
+            } catch {
+              // ignore
+            }
+          })
+          ;(
+            container.querySelectorAll(
+              "iframe"
+            ) as NodeListOf<HTMLIFrameElement>
+          ).forEach(iframe => {
+            try {
+              const win = iframe.contentWindow
+              win?.postMessage({ type: "react-activity-hidden" }, "*")
+            } catch {
+              // ignore
+            }
+          })
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }, [])
 
   if (!menu || !categories || !organization) return null
 
@@ -251,9 +329,7 @@ export default function Workbench({
                 />
                 <div
                   className={cn(
-                    frameSize === FrameSize.DESKTOP
-                      ? "w-[1024px]"
-                      : "w-[390px]",
+                    frameSize === FrameSize.DESKTOP ? "w-5xl" : "w-[390px]",
                     "editor-preview group mx-auto pt-10 pb-24 transition-all duration-300 ease-in-out"
                   )}
                 >
@@ -262,30 +338,38 @@ export default function Workbench({
                   </span>
                   <div
                     className={cn(
-                      frameSize === FrameSize.DESKTOP
-                        ? "w-[1024px]"
-                        : "w-[390px]",
-                      "flex min-h-[600px] flex-col border bg-white transition-all duration-300 ease-in-out dark:border-gray-700"
+                      frameSize === FrameSize.DESKTOP ? "w-5xl" : "w-[390px]",
+                      "flex min-h-[800px] flex-col border bg-white transition-all duration-300 ease-in-out dark:border-gray-700"
                     )}
                   >
-                    <IFrame className="grow">
-                      <FrameContextConsumer>
-                        {({ document: frameDocument }) => (
-                          <CssStyles frameDocument={frameDocument}>
-                            <Frame data={json}>
-                              <Element is={ContainerBlock} canvas>
-                                <HeaderBlock
-                                  layout="modern"
-                                  organization={organization}
-                                  location={location ?? undefined}
-                                  showBanner={organization.banner !== null}
-                                />
-                              </Element>
-                            </Frame>
-                          </CssStyles>
-                        )}
-                      </FrameContextConsumer>
-                    </IFrame>
+                    {shouldRenderFrame ? (
+                      <IFrame className="grow" key={`frame-${menu.id}`}>
+                        <FrameContextConsumer>
+                          {({ document: frameDocument }) => {
+                            // Store the frame document so the outer component can clean up side effects
+                            frameDocRef.current = frameDocument ?? null
+                            return (
+                              <CssStyles frameDocument={frameDocument}>
+                                <Frame data={json}>
+                                  <Element is={ContainerBlock} canvas>
+                                    <HeaderBlock
+                                      layout="modern"
+                                      organization={organization}
+                                      location={location ?? undefined}
+                                      showBanner={organization.banner !== null}
+                                    />
+                                  </Element>
+                                </Frame>
+                              </CssStyles>
+                            )
+                          }}
+                        </FrameContextConsumer>
+                      </IFrame>
+                    ) : (
+                      <div className="text-muted-foreground flex grow items-center justify-center text-sm">
+                        Vista previa pausada
+                      </div>
+                    )}
                   </div>
                 </div>
                 <FloatingBar />
