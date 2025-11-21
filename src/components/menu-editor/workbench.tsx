@@ -1,6 +1,13 @@
 "use client"
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type MutableRefObject
+} from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
@@ -76,6 +83,7 @@ export default function Workbench({
   const [isOpen, setIsOpen] = useState(false)
   const [activePanel, setActivePanel] = useState<PanelType | null>(null)
   const [shouldRenderFrame, setShouldRenderFrame] = useState(true)
+  const [iframeHeight, setIframeHeight] = useState(0)
 
   // Initialize the atoms for the editor
   const [frameSize] = useAtom(frameSizeAtom)
@@ -91,45 +99,44 @@ export default function Workbench({
   // Keep a ref to the frame document so we can clean up side effects (video/audio/iframes)
   const frameDocRef = useRef<Document | null>(null)
 
+  const getFrameContentHeight = useCallback((doc: Document) => {
+    const main = doc.querySelector("main") as HTMLElement | null
+    if (main) {
+      return Math.max(main.scrollHeight ?? 0, main.offsetHeight ?? 0)
+    }
+
+    const body = doc.body
+    const html = doc.documentElement
+    return Math.max(
+      body?.scrollHeight ?? 0,
+      body?.offsetHeight ?? 0,
+      html?.scrollHeight ?? 0,
+      html?.offsetHeight ?? 0
+    )
+  }, [])
+
+  const updateFrameHeight = useCallback(() => {
+    const doc = frameDocRef.current
+    if (!doc) return
+
+    const contentHeight = getFrameContentHeight(doc)
+    if (!contentHeight) return
+
+    setIframeHeight(prev => {
+      const nextHeight = Math.min(Math.max(contentHeight, 600), 1200)
+      return prev === nextHeight ? prev : nextHeight
+    })
+  }, [frameDocRef, getFrameContentHeight])
+
+  const handleNodesChange = useCallback(() => {
+    updateFrameHeight()
+  }, [updateFrameHeight])
+
   // Use useLayoutEffect so cleanup runs immediately when Activity hides this component
   useLayoutEffect(() => {
     setShouldRenderFrame(true)
     return () => {
       setShouldRenderFrame(false)
-
-      const doc = frameDocRef.current
-      // Pause media elements in the iframe document (if present)
-      if (doc) {
-        try {
-          // Pause any playing audio/video elements inside the iframe's document
-          ;(
-            doc.querySelectorAll("video, audio") as NodeListOf<HTMLMediaElement>
-          ).forEach(el => {
-            try {
-              el.pause()
-            } catch {
-              // ignore
-            }
-          })
-
-          // If there are nested iframes inside the frame, try to pause their media as well
-          ;(
-            doc.querySelectorAll("iframe") as NodeListOf<HTMLIFrameElement>
-          ).forEach(iframe => {
-            try {
-              const win = iframe.contentWindow
-              // Try to post a message to the iframe content window to let it cleanup itself
-              win?.postMessage({ type: "react-activity-hidden" }, "*")
-              // As a fallback, attempt to set src to about:blank to ensure network/audio stops
-              // but avoid doing this by default to preserve state — only do if necessary.
-            } catch {
-              // ignore
-            }
-          })
-        } catch {
-          // ignore errors in cleanup
-        }
-      }
 
       // Pause any playing audio/video elements inside the host document's editor area
       try {
@@ -283,6 +290,7 @@ export default function Workbench({
             FeaturedBlock
           }}
           onRender={RenderNode}
+          onNodesChange={handleNodesChange}
         >
           <Header className="fixed inset-x-0 top-0">
             <Toolbar menu={menu} />
@@ -339,28 +347,31 @@ export default function Workbench({
                   <div
                     className={cn(
                       frameSize === FrameSize.DESKTOP ? "w-5xl" : "w-[390px]",
-                      "flex min-h-[800px] flex-col border bg-white transition-all duration-300 ease-in-out dark:border-gray-700"
+                      "flex flex-col border bg-white transition-all duration-300 ease-in-out dark:border-gray-700"
                     )}
+                    style={{
+                      height: iframeHeight,
+                      minHeight: 600,
+                      maxHeight: 1200
+                    }}
                   >
                     {shouldRenderFrame ? (
-                      <IFrame className="grow" key={`frame-${menu.id}`}>
+                      <IFrame
+                        className="grow"
+                        key={`frame-${menu.id}`}
+                        style={{ height: "100%", width: "100%" }}
+                      >
                         <FrameContextConsumer>
                           {({ document: frameDocument }) => {
-                            // Store the frame document so the outer component can clean up side effects
-                            frameDocRef.current = frameDocument ?? null
                             return (
-                              <CssStyles frameDocument={frameDocument}>
-                                <Frame data={json}>
-                                  <Element is={ContainerBlock} canvas>
-                                    <HeaderBlock
-                                      layout="modern"
-                                      organization={organization}
-                                      location={location ?? undefined}
-                                      showBanner={organization.banner !== null}
-                                    />
-                                  </Element>
-                                </Frame>
-                              </CssStyles>
+                              <FramePreviewContent
+                                frameDocument={frameDocument}
+                                frameDocRef={frameDocRef}
+                                json={json}
+                                organization={organization}
+                                location={location}
+                                updateFrameHeight={updateFrameHeight}
+                              />
                             )
                           }}
                         </FrameContextConsumer>
@@ -393,5 +404,90 @@ export default function Workbench({
         </Editor>
       )}
     </div>
+  )
+}
+
+interface FramePreviewContentProps {
+  frameDocument: Document | null | undefined
+  frameDocRef: MutableRefObject<Document | null>
+  json?: string
+  organization: NonNullable<
+    Prisma.PromiseReturnType<typeof getCurrentOrganization>
+  >
+  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
+  updateFrameHeight: () => void
+}
+
+function pauseFrameMedia(doc: Document | null | undefined) {
+  if (!doc) return
+
+  try {
+    ;(
+      doc.querySelectorAll("video, audio") as NodeListOf<HTMLMediaElement>
+    ).forEach(el => {
+      try {
+        el.pause()
+      } catch {
+        // ignore
+      }
+    })
+    ;(doc.querySelectorAll("iframe") as NodeListOf<HTMLIFrameElement>).forEach(
+      iframe => {
+        try {
+          const win = iframe.contentWindow
+          win?.postMessage({ type: "react-activity-hidden" }, "*")
+        } catch {
+          // ignore
+        }
+      }
+    )
+  } catch {
+    // ignore
+  }
+}
+
+function FramePreviewContent({
+  frameDocument,
+  frameDocRef,
+  json,
+  organization,
+  location,
+  updateFrameHeight
+}: FramePreviewContentProps) {
+  useEffect(() => {
+    frameDocRef.current = frameDocument ?? null
+    if (!frameDocument) return
+
+    updateFrameHeight()
+    const win = frameDocument.defaultView
+    const target = frameDocument.body ?? frameDocument.documentElement
+    if (!target) return
+
+    const ResizeObserverClass = win?.ResizeObserver ?? window.ResizeObserver
+    if (!ResizeObserverClass) return
+
+    const resizeObserver = new ResizeObserverClass(() => {
+      updateFrameHeight()
+    })
+    resizeObserver.observe(target)
+    return () => {
+      resizeObserver.disconnect()
+      pauseFrameMedia(frameDocument)
+    }
+  }, [frameDocument, frameDocRef, updateFrameHeight])
+
+  return (
+    <CssStyles frameDocument={frameDocument}>
+      <Frame data={json}>
+        <Element is={ContainerBlock} canvas>
+          <HeaderBlock
+            layout="modern"
+            organization={organization}
+            location={location ?? undefined}
+            showBanner={organization.banner !== null}
+          />
+        </Element>
+      </Frame>
+    </CssStyles>
   )
 }
