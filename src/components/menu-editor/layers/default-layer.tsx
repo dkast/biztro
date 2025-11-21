@@ -14,10 +14,12 @@ export default function DefaultLayer({
     id,
     expanded,
     hovered,
+    actions,
     connectors: { layer }
   } = useLayer(layer => ({
     hovered: layer.event.hovered,
-    expanded: layer.expanded
+    expanded: layer.expanded,
+    actions: layer.actions
   }))
   const { hasChildCanvases } = useEditor((state, query) => {
     return {
@@ -32,6 +34,16 @@ export default function DefaultLayer({
       layer(divRef.current)
     }
   }, [layer])
+
+  // If layer has child canvases, expand the layer (do this in an effect
+  // to avoid performing side-effects during render)
+  useEffect(() => {
+    console.log("Checking whether to expand layer:", id, expanded)
+    if (id == "ROOT" && !expanded) {
+      console.log("Expanding layer with child canvases:", id)
+      actions.setExpandedState(true)
+    }
+  }, [])
 
   return (
     <div

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
@@ -136,6 +136,17 @@ export default function MenuPublish({
   const [lastSavedTimelineLength, setLastSavedTimelineLength] =
     useState<number>(store.history.timeline.length)
 
+  const handleUpdateSerialData = useCallback(() => {
+    const json = query.serialize()
+    const serialData = lz.encodeBase64(lz.compress(json))
+    updateSerialData({
+      id: menu!.id,
+      fontTheme,
+      colorTheme,
+      serialData
+    })
+  }, [query, menu, fontTheme, colorTheme, updateSerialData])
+
   useEffect(() => {
     // Check if the timeline has more changes since the last save
     if (store.history.timeline.length <= lastSavedTimelineLength) return
@@ -146,7 +157,12 @@ export default function MenuPublish({
     }, 10000)
 
     return () => clearTimeout(autoSaveTimer)
-  }, [store.history.timeline.length, lastSavedTimelineLength, nodes])
+  }, [
+    store.history.timeline.length,
+    lastSavedTimelineLength,
+    nodes,
+    handleUpdateSerialData
+  ])
 
   if (!menu) return null
   const orgSlug = menu.organization.slug ?? ""
@@ -155,20 +171,9 @@ export default function MenuPublish({
     const json = query.serialize()
     const serialData = lz.encodeBase64(lz.compress(json))
     execute({
-      id: menu?.id,
+      id: menu!.id,
       subdomain: orgSlug,
       status,
-      fontTheme,
-      colorTheme,
-      serialData
-    })
-  }
-
-  const handleUpdateSerialData = () => {
-    const json = query.serialize()
-    const serialData = lz.encodeBase64(lz.compress(json))
-    updateSerialData({
-      id: menu?.id,
       fontTheme,
       colorTheme,
       serialData

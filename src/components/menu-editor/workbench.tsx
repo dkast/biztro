@@ -44,6 +44,7 @@ import {
   ResizablePanelGroup
 } from "@/components/ui/resizable"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type {
   getCategoriesWithItems,
   getFeaturedItems,
@@ -301,8 +302,15 @@ export default function Workbench({
             direction="horizontal"
           >
             <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
-              <ResizablePanelGroup direction="vertical">
-                <ResizablePanel defaultSize={60}>
+              <Tabs defaultValue="toolbox">
+                <div className="mt-3 flex justify-center">
+                  <TabsList>
+                    <TabsTrigger value="toolbox">Elementos</TabsTrigger>
+                    <TabsTrigger value="layers">Secciones</TabsTrigger>
+                  </TabsList>
+                </div>
+
+                <TabsContent value="toolbox" className="h-full">
                   <ScrollArea className="h-full">
                     <ToolboxPanel
                       organization={organization}
@@ -310,17 +318,17 @@ export default function Workbench({
                       categories={categories}
                       soloItems={soloItems}
                       featuredItems={featuredItems}
-                      isPro={organization.plan === "PRO"} // Add this line
+                      isPro={organization.plan === "PRO"}
                     />
                   </ScrollArea>
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel defaultSize={35} minSize={10}>
+                </TabsContent>
+
+                <TabsContent value="layers" className="h-full">
                   <ScrollArea className="h-full">
                     <Layers renderLayer={DefaultLayer} />
                   </ScrollArea>
-                </ResizablePanel>
-              </ResizablePanelGroup>
+                </TabsContent>
+              </Tabs>
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={70}>
