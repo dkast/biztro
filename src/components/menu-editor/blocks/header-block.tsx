@@ -1,7 +1,7 @@
 import { useNode } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import { type RgbaColor } from "@uiw/react-color"
-import { ChevronDown, Clock, Phone } from "lucide-react"
+import { ChevronDown, Phone } from "lucide-react"
 import Image from "next/image"
 
 import GradientBlur from "@/components/flare-ui/gradient-blur"
@@ -24,6 +24,7 @@ import {
   cn,
   getFormattedTime,
   getInitials,
+  getOpenHoursLegend,
   getOpenHoursStatus
 } from "@/lib/utils"
 
@@ -133,7 +134,7 @@ export default function HeaderBlock({
             banner={organization.banner}
             isBannerVisible={showBanner ?? false}
           />
-          {showBanner && (
+          {showBanner && organization.banner && (
             <>
               <GradientBlur className="inset-x-0 bottom-0 h-2/3" />
               <div
@@ -290,9 +291,20 @@ function LocationData({
       {isOpenHoursVisible && location.openingHours && (
         <Popover>
           <PopoverTrigger>
-            <div className="flex flex-row items-center gap-1">
-              <Clock className="inline-block size-2.5" />
-              <span>{getOpenHoursStatus(location.openingHours)}</span>
+            <div className="border-border/30 flex flex-row items-center gap-1 rounded-full border-[0.5px] px-1 py-0.5 backdrop-blur-md">
+              {/* <Clock className="inline-block size-2.5" /> */}
+              <div className="dark">
+                {getOpenHoursStatus(location.openingHours) === "OPEN" ? (
+                  <div className="flex-none rounded-full bg-green-500/10 p-1 text-green-500 dark:bg-green-400/10 dark:text-green-400">
+                    <div className="size-2 rounded-full bg-current"></div>
+                  </div>
+                ) : (
+                  <div className="flex-none rounded-full bg-rose-500/10 p-1 text-rose-500 dark:bg-rose-400/10 dark:text-rose-400">
+                    <div className="size-2 rounded-full bg-current"></div>
+                  </div>
+                )}
+              </div>
+              <span>{getOpenHoursLegend(location.openingHours)}</span>
               <ChevronDown className="inline-block size-2.5" />
             </div>
           </PopoverTrigger>

@@ -461,7 +461,7 @@ export default function ThemeSelector({
             >
               <SheetTrigger asChild>
                 <Button variant="secondary" size="xs" className="w-full">
-                  Personalizar tema
+                  Personalizar colores
                 </Button>
               </SheetTrigger>
               <SheetContent
@@ -469,7 +469,7 @@ export default function ThemeSelector({
                 side={isMobile ? "bottom" : "right"}
               >
                 <SheetHeader>
-                  <SheetTitle>Personalizar tema</SheetTitle>
+                  <SheetTitle>Personalizar colores</SheetTitle>
                   <SheetDescription>
                     Personaliza los colores de tu menú
                   </SheetDescription>

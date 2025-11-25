@@ -552,7 +552,7 @@ export function ColorThemeEditor({
               onClick={() => setIsDialogOpen(true)}
             >
               <FilePlus className="mr-2 size-4" />
-              Nuevo
+              Crear
             </Button>
             <Button
               variant="outline"
