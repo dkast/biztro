@@ -100,7 +100,7 @@ export default function HeaderBlock({
           {/* Location data */}
           <div
             className={cn(
-              "flex flex-col",
+              "flex flex-row gap-1",
               showLogo ? "ml-20" : "pt-5",
               organization.banner && showBanner ? "" : "-mt-5"
             )}
@@ -112,6 +112,7 @@ export default function HeaderBlock({
               isBusinessInfoVisible={showAddress ?? false}
               isOpenHoursVisible={showAddress ?? false}
               location={location}
+              className="items-start"
             />
           </div>
         </div>
@@ -291,7 +292,7 @@ function LocationData({
       {isOpenHoursVisible && location.openingHours && (
         <Popover>
           <PopoverTrigger>
-            <div className="border-border/30 flex flex-row items-center gap-1 rounded-full border-[0.5px] px-1 py-0.5 backdrop-blur-md">
+            <div className="flex flex-row items-center gap-1 rounded-full border-[0.5px] border-white/10 px-1 py-0.5 backdrop-blur-md">
               {/* <Clock className="inline-block size-2.5" /> */}
               <div className="dark">
                 {getOpenHoursStatus(location.openingHours) === "OPEN" ? (
