@@ -6,7 +6,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  type MutableRefObject
+  type RefObject
 } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { Editor, Element, Frame } from "@craftjs/core"
@@ -33,6 +33,7 @@ import MenuTour from "@/components/menu-editor/menu-tour"
 import MenuTourMobile from "@/components/menu-editor/menu-tour-mobile"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
+import SideSection from "@/components/menu-editor/side-section"
 import SyncStatus from "@/components/menu-editor/sync-status"
 import ThemeSelector from "@/components/menu-editor/theme-selector"
 import Toolbar from "@/components/menu-editor/toolbar"
@@ -44,7 +45,6 @@ import {
   ResizablePanelGroup
 } from "@/components/ui/resizable"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type {
   getCategoriesWithItems,
   getFeaturedItems,
@@ -302,33 +302,19 @@ export default function Workbench({
             direction="horizontal"
           >
             <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
-              <Tabs defaultValue="toolbox">
-                <div className="mt-3 flex justify-center">
-                  <TabsList>
-                    <TabsTrigger value="toolbox">Elementos</TabsTrigger>
-                    <TabsTrigger value="layers">Secciones</TabsTrigger>
-                  </TabsList>
-                </div>
-
-                <TabsContent value="toolbox" className="h-full">
-                  <ScrollArea className="h-full">
-                    <ToolboxPanel
-                      organization={organization}
-                      location={location}
-                      categories={categories}
-                      soloItems={soloItems}
-                      featuredItems={featuredItems}
-                      isPro={organization.plan === "PRO"}
-                    />
-                  </ScrollArea>
-                </TabsContent>
-
-                <TabsContent value="layers" className="h-full">
-                  <ScrollArea className="h-full">
-                    <Layers renderLayer={DefaultLayer} />
-                  </ScrollArea>
-                </TabsContent>
-              </Tabs>
+              <ScrollArea className="h-full">
+                <ToolboxPanel
+                  organization={organization}
+                  location={location}
+                  categories={categories}
+                  soloItems={soloItems}
+                  featuredItems={featuredItems}
+                  isPro={organization.plan === "PRO"}
+                />
+                <SideSection title="Secciones" className="p-0 pb-2">
+                  <Layers renderLayer={DefaultLayer} />
+                </SideSection>
+              </ScrollArea>
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={70}>
@@ -395,18 +381,11 @@ export default function Workbench({
               </div>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel
-              defaultSize={15}
-              minSize={15}
-              maxSize={25}
-              className="flex"
-            >
-              <div className="flex w-full flex-col">
-                <ScrollArea className="h-full">
-                  <ThemeSelector menu={menu} />
-                  <SettingsPanel />
-                </ScrollArea>
-              </div>
+            <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
+              <ScrollArea className="h-full">
+                <ThemeSelector menu={menu} />
+                <SettingsPanel />
+              </ScrollArea>
             </ResizablePanel>
           </ResizablePanelGroup>
         </Editor>
@@ -417,7 +396,7 @@ export default function Workbench({
 
 interface FramePreviewContentProps {
   frameDocument: Document | null | undefined
-  frameDocRef: MutableRefObject<Document | null>
+  frameDocRef: RefObject<Document | null>
   json?: string
   organization: NonNullable<
     Prisma.PromiseReturnType<typeof getCurrentOrganization>
