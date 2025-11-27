@@ -67,6 +67,9 @@ HeadingElement.craft = {
     fontFamily: "Inter",
     text: "Encabezado"
   },
+  custom: {
+    iconKey: "heading"
+  },
   related: {
     settings: HeadingSettings
   }

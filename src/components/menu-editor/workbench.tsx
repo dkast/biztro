@@ -33,7 +33,6 @@ import MenuTour from "@/components/menu-editor/menu-tour"
 import MenuTourMobile from "@/components/menu-editor/menu-tour-mobile"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
-import SideSection from "@/components/menu-editor/side-section"
 import SyncStatus from "@/components/menu-editor/sync-status"
 import ThemeSelector from "@/components/menu-editor/theme-selector"
 import Toolbar from "@/components/menu-editor/toolbar"
@@ -45,6 +44,7 @@ import {
   ResizablePanelGroup
 } from "@/components/ui/resizable"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
 import type {
   getCategoriesWithItems,
   getFeaturedItems,
@@ -301,19 +301,20 @@ export default function Workbench({
             className="bg-card grow pt-16"
             direction="horizontal"
           >
-            <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
+            <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>
               <ScrollArea className="h-full">
-                <ToolboxPanel
-                  organization={organization}
-                  location={location}
-                  categories={categories}
-                  soloItems={soloItems}
-                  featuredItems={featuredItems}
-                  isPro={organization.plan === "PRO"}
-                />
-                <SideSection title="Secciones" className="p-0 pb-2">
+                <div className="pb-2">
+                  <ToolboxPanel
+                    organization={organization}
+                    location={location}
+                    categories={categories}
+                    soloItems={soloItems}
+                    featuredItems={featuredItems}
+                    isPro={organization.plan === "PRO"}
+                  />
+                  <Separator />
                   <Layers renderLayer={DefaultLayer} />
-                </SideSection>
+                </div>
               </ScrollArea>
             </ResizablePanel>
             <ResizableHandle />
@@ -381,7 +382,7 @@ export default function Workbench({
               </div>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel defaultSize={15} minSize={15} maxSize={25}>
+            <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>
               <ScrollArea className="h-full">
                 <ThemeSelector menu={menu} />
                 <SettingsPanel />

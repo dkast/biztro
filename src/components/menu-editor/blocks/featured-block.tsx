@@ -174,6 +174,9 @@ FeaturedBlock.craft = {
     priceFontFamily: "Inter",
     descriptionFontFamily: "Inter"
   },
+  custom: {
+    iconKey: "featured"
+  },
   related: {
     settings: FeaturedSettings
   }

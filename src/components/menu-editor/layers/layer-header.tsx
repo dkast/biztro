@@ -12,6 +12,11 @@ import {
   PenSquare
 } from "lucide-react"
 
+import {
+  getMenuBlockIconColor,
+  renderMenuBlockIcon,
+  type MenuBlockIconKey
+} from "@/components/menu-editor/block-icons"
 import { LayerName } from "@/components/menu-editor/layers/layer-name"
 import { Button } from "@/components/ui/button"
 import {
@@ -48,24 +53,36 @@ export default function LayerHeader() {
     }
   })
 
-  const { hidden, actions, selected, topLevel, nodes, parent, displayName } =
-    useEditor((state, query) => {
-      const selected = query.getEvent("selected").first() === id
-      const nodes = query.node(ROOT_NODE).descendants()
-      const parent = state.nodes[id]?.data.parent
-      const displayName = state.nodes[id]?.data.custom.displayName
-        ? state.nodes[id]?.data.custom.displayName
-        : state.nodes[id]?.data.displayName
+  const {
+    hidden,
+    actions,
+    selected,
+    topLevel,
+    nodes,
+    parent,
+    displayName,
+    iconKey
+  } = useEditor((state, query) => {
+    const selected = query.getEvent("selected").first() === id
+    const nodes = query.node(ROOT_NODE).descendants()
+    const parent = state.nodes[id]?.data.parent
+    const displayName = state.nodes[id]?.data.custom.displayName
+      ? state.nodes[id]?.data.custom.displayName
+      : state.nodes[id]?.data.displayName
+    const iconKey = state.nodes[id]?.data.custom.iconKey as
+      | MenuBlockIconKey
+      | undefined
 
-      return {
-        hidden: state.nodes[id]?.data.hidden,
-        selected,
-        topLevel: query.node(id).isTopLevelCanvas(),
-        nodes,
-        parent,
-        displayName
-      }
-    })
+    return {
+      hidden: state.nodes[id]?.data.hidden,
+      selected,
+      topLevel: query.node(id).isTopLevelCanvas(),
+      nodes,
+      parent,
+      displayName,
+      iconKey
+    }
+  })
 
   const currentIndex = nodes.findIndex((node: string) => node === id)
 
@@ -92,6 +109,9 @@ export default function LayerHeader() {
 
   const isMobile = useIsMobile()
 
+  const iconColor = getMenuBlockIconColor(iconKey)
+  const iconClass = `size-4 ${iconColor ?? "text-gray-500 dark:text-gray-300"}`
+
   return (
     <div
       ref={divRef}
@@ -115,7 +135,8 @@ export default function LayerHeader() {
           </div>
         ) : null}
 
-        <div className="layer-name grow text-sm">
+        <div className="layer-name flex grow items-center gap-2 text-xs">
+          {renderMenuBlockIcon(iconKey, iconClass)}
           <LayerName />
         </div>
 

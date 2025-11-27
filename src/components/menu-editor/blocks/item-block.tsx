@@ -49,9 +49,6 @@ export default function ItemBlock({
     connectors: { connect },
     actions: { setCustom }
   } = useNode()
-  const { isEditing } = useEditor(state => ({
-    isEditing: state.options.enabled
-  }))
 
   useEffect(() => {
     if (!item?.name) return
@@ -60,6 +57,10 @@ export default function ItemBlock({
       custom.displayName = item.name
     })
   }, [item?.name, setCustom])
+
+  const { isEditing } = useEditor(state => ({
+    isEditing: state.options.enabled
+  }))
 
   return (
     <div
@@ -278,6 +279,9 @@ ItemBlock.craft = {
     descriptionFontFamily: "Inter",
     descriptionColor: { r: 38, g: 50, b: 56, a: 1 },
     showImage: true
+  },
+  custom: {
+    iconKey: "item"
   },
   related: {
     settings: ItemSettings

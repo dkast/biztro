@@ -54,10 +54,11 @@ export default function CategoryBlock({
     actions: { setCustom },
     id
   } = useNode()
+
   useEffect(() => {
     if (!data?.name) return
 
-    setCustom((custom: { displayName: string }) => {
+    setCustom((custom: { displayName?: string }) => {
       custom.displayName = data.name
     })
   }, [data.name, setCustom])
@@ -140,6 +141,9 @@ CategoryBlock.craft = {
     descriptionFontFamily: "Inter",
     descriptionColor: { r: 38, g: 50, b: 56, a: 1 },
     showImage: true
+  },
+  custom: {
+    iconKey: "category"
   },
   related: {
     settings: CategorySettings

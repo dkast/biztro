@@ -37,9 +37,7 @@ export default function DefaultLayer({
   // If layer has child canvases, expand the layer (do this in an effect
   // to avoid performing side-effects during render)
   useEffect(() => {
-    console.log("Checking whether to expand layer:", id, expanded)
     if (id == "ROOT" && !expanded) {
-      console.log("Expanding layer with child canvases:", id)
       setExpandedState(true)
     }
   }, [])

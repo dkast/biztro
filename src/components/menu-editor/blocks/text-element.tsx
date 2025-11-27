@@ -63,6 +63,9 @@ TextElement.craft = {
     fontFamily: "Inter",
     text: "Texto"
   },
+  custom: {
+    iconKey: "text"
+  },
   related: {
     settings: TextSettings
   }

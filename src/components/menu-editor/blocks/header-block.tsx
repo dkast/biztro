@@ -419,6 +419,9 @@ HeaderBlock.craft = {
     showAddress: true,
     showSocialMedia: true
   },
+  custom: {
+    iconKey: "header"
+  },
   related: {
     settings: HeaderSettings
   },

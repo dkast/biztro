@@ -7,22 +7,11 @@ import type { Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtomValue, useSetAtom } from "jotai"
-import {
-  Diamond,
-  GripVertical,
-  Layers,
-  LetterText,
-  LinkIcon,
-  Lock,
-  PanelTop,
-  PlusSquare,
-  Star,
-  Type,
-  type LucideIcon
-} from "lucide-react"
+import { GripVertical, Lock, PlusSquare, type LucideIcon } from "lucide-react"
 import Link from "next/link"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
+import { menuBlockIconMeta } from "@/components/menu-editor/block-icons"
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import FeaturedBlock from "@/components/menu-editor/blocks/featured-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
@@ -185,7 +174,7 @@ export default function ToolboxPanel({
             >
               <ToolboxElement
                 title={category.name}
-                Icon={Layers}
+                Icon={menuBlockIconMeta.category.icon}
                 classNameIcon="text-orange-400"
                 addButton={
                   <AddButton
@@ -227,7 +216,7 @@ export default function ToolboxPanel({
             >
               <ToolboxElement
                 title={item.name}
-                Icon={Diamond}
+                Icon={menuBlockIconMeta.item.icon}
                 classNameIcon="text-purple-400"
                 addButton={
                   <AddButton
@@ -276,7 +265,7 @@ export default function ToolboxPanel({
         >
           <ToolboxElement
             title="Cabecera"
-            Icon={PanelTop}
+            Icon={menuBlockIconMeta.header.icon}
             addButton={
               <AddButton
                 onClick={() => {
@@ -299,7 +288,7 @@ export default function ToolboxPanel({
         >
           <ToolboxElement
             title="Navegación"
-            Icon={LinkIcon}
+            Icon={menuBlockIconMeta.navigator.icon}
             addButton={
               <AddButton
                 onClick={() => {
@@ -321,7 +310,7 @@ export default function ToolboxPanel({
           >
             <ToolboxElement
               title="Recomendados"
-              Icon={Star}
+              Icon={menuBlockIconMeta.featured.icon}
               addButton={
                 isPro && (
                   <AddButton
@@ -348,7 +337,7 @@ export default function ToolboxPanel({
           >
             <ToolboxElement
               title="Encabezado"
-              Icon={Type}
+              Icon={menuBlockIconMeta.heading.icon}
               addButton={
                 isPro && (
                   <AddButton
@@ -375,7 +364,7 @@ export default function ToolboxPanel({
           >
             <ToolboxElement
               title="Texto"
-              Icon={LetterText}
+              Icon={menuBlockIconMeta.text.icon}
               addButton={
                 isPro && (
                   <AddButton
