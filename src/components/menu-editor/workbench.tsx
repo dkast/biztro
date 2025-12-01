@@ -85,6 +85,8 @@ export default function Workbench({
   const [activePanel, setActivePanel] = useState<PanelType | null>(null)
   const [shouldRenderFrame, setShouldRenderFrame] = useState(true)
   const [iframeHeight, setIframeHeight] = useState(0)
+  // Key to force ScrollArea re-render after ResizablePanel establishes dimensions
+  const [scrollAreaKey, setScrollAreaKey] = useState(0)
 
   // Initialize the atoms for the editor
   const [frameSize] = useAtom(frameSizeAtom)
@@ -96,6 +98,21 @@ export default function Workbench({
     setFontThemeId(menu?.fontTheme ?? "DEFAULT")
     setColorThemeId(menu?.colorTheme ?? "DEFAULT")
   }, [menu?.fontTheme, menu?.colorTheme, setFontThemeId, setColorThemeId])
+
+  // Force ScrollArea re-render after ResizablePanel establishes dimensions
+  // Double RAF ensures we're past the paint phase when layout is complete
+  useEffect(() => {
+    let frameId: number
+    const doubleRAF = () => {
+      frameId = requestAnimationFrame(() => {
+        frameId = requestAnimationFrame(() => {
+          setScrollAreaKey(prev => prev + 1)
+        })
+      })
+    }
+    doubleRAF()
+    return () => cancelAnimationFrame(frameId)
+  }, [])
 
   // Keep a ref to the frame document so we can clean up side effects (video/audio/iframes)
   const frameDocRef = useRef<Document | null>(null)
@@ -302,7 +319,10 @@ export default function Workbench({
             direction="horizontal"
           >
             <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>
-              <ScrollArea className="h-full">
+              <ScrollArea
+                key={`left-panel-${scrollAreaKey}`}
+                className="h-full"
+              >
                 <div className="pb-2">
                   <ToolboxPanel
                     organization={organization}
@@ -310,7 +330,7 @@ export default function Workbench({
                     categories={categories}
                     soloItems={soloItems}
                     featuredItems={featuredItems}
-                    isPro={organization.plan === "PRO"}
+                    isPro={organization.plan?.toUpperCase() === "PRO"}
                   />
                   <Separator />
                   <Layers renderLayer={DefaultLayer} />
@@ -383,7 +403,10 @@ export default function Workbench({
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>
-              <ScrollArea className="h-full">
+              <ScrollArea
+                key={`right-panel-${scrollAreaKey}`}
+                className="h-full"
+              >
                 <ThemeSelector menu={menu} />
                 <SettingsPanel />
               </ScrollArea>
