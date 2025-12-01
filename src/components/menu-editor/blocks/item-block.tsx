@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
@@ -46,8 +46,18 @@ export default function ItemBlock({
   showImage
 }: ItemBlockProps) {
   const {
-    connectors: { connect }
+    connectors: { connect },
+    actions: { setCustom }
   } = useNode()
+
+  useEffect(() => {
+    if (!item?.name) return
+
+    setCustom((custom: { displayName?: string }) => {
+      custom.displayName = item.name
+    })
+  }, [item?.name, setCustom])
+
   const { isEditing } = useEditor(state => ({
     isEditing: state.options.enabled
   }))
@@ -83,32 +93,6 @@ export default function ItemBlock({
       )}
     </div>
   )
-}
-
-ItemBlock.craft = {
-  displayName: "Producto",
-  props: {
-    backgroundMode: "none",
-    categoryFontSize: 20,
-    categoryColor: { r: 38, g: 50, b: 56, a: 1 },
-    categoryFontWeight: "700",
-    categoryFontFamily: "Inter",
-    categoryTextAlign: "left",
-    itemFontSize: 16,
-    itemColor: { r: 38, g: 50, b: 56, a: 1 },
-    itemFontWeight: "500",
-    itemFontFamily: "Inter",
-    priceFontSize: 14,
-    priceColor: { r: 38, g: 50, b: 56, a: 1 },
-    priceFontWeight: "400",
-    priceFontFamily: "Inter",
-    descriptionFontFamily: "Inter",
-    descriptionColor: { r: 38, g: 50, b: 56, a: 1 },
-    showImage: true
-  },
-  related: {
-    settings: ItemSettings
-  }
 }
 
 export function ItemView({
@@ -273,4 +257,33 @@ export function ItemView({
       />
     </>
   )
+}
+
+ItemBlock.craft = {
+  displayName: "Producto",
+  props: {
+    backgroundMode: "none",
+    categoryFontSize: 20,
+    categoryColor: { r: 38, g: 50, b: 56, a: 1 },
+    categoryFontWeight: "700",
+    categoryFontFamily: "Inter",
+    categoryTextAlign: "left",
+    itemFontSize: 16,
+    itemColor: { r: 38, g: 50, b: 56, a: 1 },
+    itemFontWeight: "500",
+    itemFontFamily: "Inter",
+    priceFontSize: 14,
+    priceColor: { r: 38, g: 50, b: 56, a: 1 },
+    priceFontWeight: "400",
+    priceFontFamily: "Inter",
+    descriptionFontFamily: "Inter",
+    descriptionColor: { r: 38, g: 50, b: 56, a: 1 },
+    showImage: true
+  },
+  custom: {
+    iconKey: "item"
+  },
+  related: {
+    settings: ItemSettings
+  }
 }

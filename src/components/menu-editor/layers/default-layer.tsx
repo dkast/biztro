@@ -14,6 +14,7 @@ export default function DefaultLayer({
     id,
     expanded,
     hovered,
+    actions: { setExpandedState },
     connectors: { layer }
   } = useLayer(layer => ({
     hovered: layer.event.hovered,
@@ -32,6 +33,14 @@ export default function DefaultLayer({
       layer(divRef.current)
     }
   }, [layer])
+
+  // If layer has child canvases, expand the layer (do this in an effect
+  // to avoid performing side-effects during render)
+  useEffect(() => {
+    if (id == "ROOT" && !expanded) {
+      setExpandedState(true)
+    }
+  }, [])
 
   return (
     <div

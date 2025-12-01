@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useEditor } from "@craftjs/core"
 import { useAtom } from "jotai"
 import {
@@ -20,7 +20,7 @@ import { elementPropsAtom, frameSizeAtom } from "@/lib/atoms"
 import { FrameSize } from "@/lib/types"
 
 export default function FloatingBar() {
-  const { enabled, canUndo, canRedo, actions, query, selectedNodeId } =
+  const { enabled, canUndo, canRedo, actions, query, selectedNodeId, store } =
     useEditor((state, query) => ({
       enabled: state.options.enabled,
       canUndo: query.history.canUndo(),
@@ -28,6 +28,12 @@ export default function FloatingBar() {
       selectedNodeId: state.events.selected
     }))
   const [propsCopy, setPropsCopy] = useAtom(elementPropsAtom)
+
+  const [historyPointer, setHistoryPointer] = useState(store.history.pointer)
+
+  useEffect(() => {
+    return store.subscribe(_state => store.history.pointer, setHistoryPointer)
+  }, [store])
 
   const onPasteProps = (clonedProps: unknown) => {
     const values = selectedNodeId.values()
@@ -53,18 +59,20 @@ export default function FloatingBar() {
   const { setUnsavedChanges, clearUnsavedChanges } = useSetUnsavedChanges()
 
   useEffect(() => {
-    // console.log("canUndo", canUndo)
-    if (canUndo) {
+    if (canUndo && historyPointer >= 0) {
       setUnsavedChanges({
         message:
           "Tienes cambios sin guardar ¿Estás seguro de salir del Editor?",
         dismissButtonLabel: "Cancelar",
-        proceedLinkLabel: "Descartar cambios"
+        proceedLinkLabel: "Descartar cambios",
+        proceedAction: () => {
+          actions.history.clear()
+        }
       })
     } else {
       clearUnsavedChanges()
     }
-  }, [setUnsavedChanges, clearUnsavedChanges, canUndo])
+  }, [setUnsavedChanges, clearUnsavedChanges, canUndo, historyPointer])
 
   const [frameSize, setFrameSize] = useAtom(frameSizeAtom)
 

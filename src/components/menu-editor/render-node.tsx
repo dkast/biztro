@@ -54,7 +54,7 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
   const isMobile = useIsMobile()
 
   const [propsCopy, setPropsCopy] = useAtom(elementPropsAtom)
-  const [scrollPosition, setScrollPosition] = useState(0) // New state for scroll position
+  const [, setScrollPosition] = useState(0) // Track scroll timestamps for re-render
   const [index, setIndex] = useState<number>(-1) // Added state for index
   const [showDeleteDialog, setShowDeleteDialog] = useState(false) // New state for alert dialog
 
@@ -87,15 +87,46 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
     }
   }, [])
 
+  useEffect(() => {
+    const frameDocument = dom?.ownerDocument
+    const frameWindow = frameDocument?.defaultView
+    if (!frameDocument || !frameWindow) return
+
+    const handleScroll = debounce(() => {
+      setScrollPosition(Date.now())
+    }, 200)
+
+    frameDocument.addEventListener("scroll", handleScroll)
+    frameWindow.addEventListener("resize", handleScroll)
+
+    return () => {
+      frameDocument.removeEventListener("scroll", handleScroll)
+      frameWindow.removeEventListener("resize", handleScroll)
+    }
+  }, [dom])
+
   const getPos = useCallback(() => {
     const { top, left, bottom } = dom
       ? dom.getBoundingClientRect()
       : { top: 0, left: 0, bottom: 0 }
-    return {
-      top: `${top > 0 ? top : bottom}px`,
-      left: `${left}px`
+
+    const ownerWindow = dom?.ownerDocument?.defaultView
+    const frameEl = ownerWindow?.frameElement as HTMLElement | null
+
+    let computedTop = top > 0 ? top : bottom
+    let computedLeft = left
+
+    if (frameEl) {
+      const frameRect = frameEl.getBoundingClientRect()
+      computedTop += frameRect.top
+      computedLeft += frameRect.left
     }
-  }, [dom, scrollPosition]) // Added scrollPosition to dependencies to trigger re-render on scroll
+
+    return {
+      top: `${computedTop}px`,
+      left: `${computedLeft}px`
+    }
+  }, [dom])
 
   const onPasteProps = (clonedProps: unknown) => {
     actions.setProp(id, props => {

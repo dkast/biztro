@@ -48,6 +48,7 @@ export const LayerName = () => {
         actions.setCustom(id, custom => (custom.displayName = e.target.value))
       }}
       tagName="h2"
+      className="line-clamp-1"
       onDoubleClick={() => {
         if (!editingName) setEditingName(true)
       }}

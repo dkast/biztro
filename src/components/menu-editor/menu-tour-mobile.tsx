@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import JoyRide, {
   type BeaconRenderProps,
   type CallBackProps,
@@ -84,12 +84,19 @@ const steps: Step[] = [
 
 export default function MenuTourMobile() {
   const [tourMode, setTourMode] = useAtom(tourModeAtom)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const handleCallback = (data: CallBackProps) => {
     if (data.status === "finished" || data.status === "skipped") {
       setTourMode(false)
     }
   }
+
+  if (!isMounted) return null
 
   return (
     <JoyRide

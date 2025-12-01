@@ -51,6 +51,11 @@
   scrollbar-width: none; /* Firefox */
 }
 
+/* Fix Radix ScrollArea initial render issue - ensure viewport is scrollable immediately */
+[data-radix-scroll-area-viewport] {
+  overflow-y: scroll !important;
+}
+
 @utility mask-fade {
   -webkit-mask-image: linear-gradient(to left, transparent, black 20%);
   mask-image: linear-gradient(to left, transparent, black 20%);

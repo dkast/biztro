@@ -107,12 +107,9 @@ export default function OrganizationForm({
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <fieldset disabled={!enabled} className="mt-10 space-y-6">
         <div className="flex items-center gap-x-8">
-          <Avatar className="h-24 w-24 rounded-xl">
+          <Avatar className="border-border h-24 w-24 rounded-xl border">
             {data.logo && (
-              <AvatarImage
-                src={data.logo}
-                className="border-border rounded-xl border"
-              />
+              <AvatarImage src={data.logo} className="rounded-xl" />
             )}
             <AvatarFallback className="text-3xl">
               {getInitials(data.name)}

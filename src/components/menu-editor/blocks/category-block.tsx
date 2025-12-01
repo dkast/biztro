@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { useEditor, useNode } from "@craftjs/core"
 import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
@@ -49,8 +50,18 @@ export default function CategoryBlock({
   showImage
 }: CategoryBlockProps) {
   const {
-    connectors: { connect }
+    connectors: { connect },
+    actions: { setCustom },
+    id
   } = useNode()
+
+  useEffect(() => {
+    if (!data?.name) return
+
+    setCustom((custom: { displayName?: string }) => {
+      custom.displayName = data.name
+    })
+  }, [data.name, setCustom])
   const { isEditing } = useEditor(state => ({
     isEditing: state.options.enabled
   }))
@@ -65,7 +76,7 @@ export default function CategoryBlock({
     >
       <div>
         <h2
-          id={useNode().id}
+          id={id}
           className="p-2"
           style={{
             fontFamily: categoryFontFamily,
@@ -130,6 +141,9 @@ CategoryBlock.craft = {
     descriptionFontFamily: "Inter",
     descriptionColor: { r: 38, g: 50, b: 56, a: 1 },
     showImage: true
+  },
+  custom: {
+    iconKey: "category"
   },
   related: {
     settings: CategorySettings

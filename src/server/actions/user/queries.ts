@@ -222,12 +222,13 @@ export async function safeHasPermission(
   "use cache: private"
   cacheLife({ stale: 30 })
 
-  try {
-    // ensure headers are provided if not included
-    if (!opts.headers) {
-      opts.headers = await headers()
-    }
+  if (!opts) {
+    console.error("safeHasPermission called without opts")
+    return null
+  }
 
+  try {
+    const requestHeaders = opts.headers ?? (await headers())
     const permissions = opts.body?.permissions ?? {}
     const normalizedPermissions = Object.entries(permissions)
       .map(([resource, actions]) => {
@@ -248,7 +249,12 @@ export async function safeHasPermission(
         : "permissions-default"
     )
 
-    const result = await auth.api.hasPermission(opts)
+    const callOpts = {
+      ...opts,
+      headers: requestHeaders
+    } as Parameters<typeof auth.api.hasPermission>[0]
+
+    const result = await auth.api.hasPermission(callOpts)
     return result
   } catch (err) {
     console.error("auth.api.hasPermission failed:", err)

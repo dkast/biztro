@@ -36,7 +36,7 @@ export const getBaseUrl = () => {
   return "http://localhost:3000"
 }
 
-export function getOpenHoursStatus(openingHours: OpeningHours[]) {
+export function getOpenHoursLegend(openingHours: OpeningHours[]) {
   let status = "Cerrado"
 
   const currentDate = today(getLocalTimeZone())
@@ -108,6 +108,75 @@ export function getOpenHoursStatus(openingHours: OpeningHours[]) {
       currentTime.compare(closeDateTime) <= 0
     ) {
       status = `Abierto - Hasta ${endTime.hour === 1 ? "la" : "las"} ${formatClosed}`
+      break
+    }
+  }
+
+  return status
+}
+
+export function getOpenHoursStatus(openingHours: OpeningHours[]) {
+  let status = "CLOSED"
+  const currentDate = today(getLocalTimeZone())
+  const now = new Date()
+  const currentTime = toCalendarDateTime(
+    currentDate,
+    new Time(now.getHours(), now.getMinutes())
+  )
+
+  const startWeek = startOfWeek(currentDate, "es-MX")
+
+  for (const day of openingHours) {
+    // convert day to date based on the week start
+    let weekDayNbr = 0
+    switch (day.day) {
+      case "MONDAY":
+        weekDayNbr = 1
+        break
+      case "TUESDAY":
+        weekDayNbr = 2
+        break
+      case "WEDNESDAY":
+        weekDayNbr = 3
+        break
+      case "THURSDAY":
+        weekDayNbr = 4
+        break
+      case "FRIDAY":
+        weekDayNbr = 5
+        break
+      case "SATURDAY":
+        weekDayNbr = 6
+        break
+      case "SUNDAY":
+        weekDayNbr = 0
+        break
+      default:
+        break
+    }
+
+    if (!day.allDay) {
+      continue
+    }
+
+    const dayDate = startWeek.add({ days: weekDayNbr })
+    const startTime = parseTime(day.startTime ?? "")
+    const endTime = parseTime(day.endTime ?? "")
+
+    const openDateTime = toCalendarDateTime(dayDate, startTime)
+
+    let closeDateTime
+    if (endTime.hour < startTime.hour) {
+      closeDateTime = toCalendarDateTime(dayDate.add({ days: 1 }), endTime)
+    } else {
+      closeDateTime = toCalendarDateTime(dayDate, endTime)
+    }
+
+    if (
+      currentTime.compare(openDateTime) >= 0 &&
+      currentTime.compare(closeDateTime) <= 0
+    ) {
+      status = "OPEN"
       break
     }
   }
