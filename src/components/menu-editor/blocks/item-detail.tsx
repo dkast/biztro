@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client"
+import type { MenuItemGetPayload } from "@/generated/prisma-client/models/MenuItem"
 import Image from "next/image"
 
 import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
@@ -18,7 +18,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { useIsMobile } from "@/hooks/use-mobile"
 
-type DetailItem = Prisma.MenuItemGetPayload<{
+type DetailItem = MenuItemGetPayload<{
   include: {
     variants: true
   }

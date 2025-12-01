@@ -1,5 +1,4 @@
 import { useNode } from "@craftjs/core"
-import type { Prisma } from "@prisma/client"
 import { type RgbaColor } from "@uiw/react-color"
 import { ChevronDown, Phone } from "lucide-react"
 import Image from "next/image"
@@ -31,9 +30,9 @@ import {
 export type HeaderBlockProps = {
   layout: "classic" | "modern"
   organization: NonNullable<
-    Prisma.PromiseReturnType<typeof getCurrentOrganization>
+    Awaited<ReturnType<typeof getCurrentOrganization>>
   >
-  location?: Prisma.PromiseReturnType<typeof getDefaultLocation>
+  location?: Awaited<ReturnType<typeof getDefaultLocation>>
   fontFamily?: string
   accentColor?: RgbaColor
   backgroundColor?: RgbaColor
@@ -259,7 +258,7 @@ function LocationData({
 }: {
   isBusinessInfoVisible: boolean
   isOpenHoursVisible: boolean
-  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | undefined
+  location: Awaited<ReturnType<typeof getDefaultLocation>> | undefined
   className?: string
 }) {
   if (!location) return null
@@ -350,7 +349,7 @@ function SocialMedia({
   location,
   isVisible
 }: {
-  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | undefined
+  location: Awaited<ReturnType<typeof getDefaultLocation>> | undefined
   isVisible: boolean | undefined
 }) {
   if (!isVisible || !location) return null

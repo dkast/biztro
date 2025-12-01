@@ -1,7 +1,7 @@
 "use client"
 
 import { useDataTable } from "@/hooks/use-data-table"
-import type { Category } from "@prisma/client"
+import type { Category } from "@/generated/prisma-client/client"
 
 import { DataTable } from "@/components/data-table/data-table"
 import { columns } from "./columns"

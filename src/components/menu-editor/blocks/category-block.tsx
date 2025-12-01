@@ -1,6 +1,5 @@
 import { useEffect } from "react"
 import { useEditor, useNode } from "@craftjs/core"
-import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
 
 import CategorySettings from "@/components/menu-editor/blocks/category-settings"
@@ -9,7 +8,7 @@ import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 import { cn } from "@/lib/utils"
 
 export type CategoryBlockProps = {
-  data: Prisma.PromiseReturnType<typeof getCategoriesWithItems>[0]
+  data: Awaited<ReturnType<typeof getCategoriesWithItems>>[0]
   backgroundMode: "dark" | "light" | "none"
   categoryFontSize?: number
   categoryColor?: RgbaColor

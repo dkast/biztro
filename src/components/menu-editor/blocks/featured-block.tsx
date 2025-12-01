@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
-import type { Prisma } from "@prisma/client"
+import type { Prisma } from "@/generated/prisma-client/client"
 import type { RgbaColor } from "@uiw/react-color"
 import Autoplay from "embla-carousel-autoplay"
 import { CircleAlert } from "lucide-react"

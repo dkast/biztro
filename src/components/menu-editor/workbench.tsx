@@ -11,7 +11,6 @@ import {
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
-import type { Prisma } from "@prisma/client"
 import { useAtom, useSetAtom } from "jotai"
 import lz from "lzutf8"
 
@@ -73,12 +72,12 @@ export default function Workbench({
   soloItems,
   featuredItems
 }: {
-  menu: Prisma.PromiseReturnType<typeof getMenuById>
-  organization: Prisma.PromiseReturnType<typeof getCurrentOrganization>
-  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
-  categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
-  soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
-  featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
+  menu: Awaited<ReturnType<typeof getMenuById>>
+  organization: Awaited<ReturnType<typeof getCurrentOrganization>>
+  location: Awaited<ReturnType<typeof getDefaultLocation>> | null
+  categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
+  soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
+  featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
 }) {
   const isMobile = useIsMobile()
   const [isOpen, setIsOpen] = useState(false)
@@ -423,9 +422,9 @@ interface FramePreviewContentProps {
   frameDocRef: RefObject<Document | null>
   json?: string
   organization: NonNullable<
-    Prisma.PromiseReturnType<typeof getCurrentOrganization>
+    Awaited<ReturnType<typeof getCurrentOrganization>>
   >
-  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
+  location: Awaited<ReturnType<typeof getDefaultLocation>> | null
   updateFrameHeight: () => void
 }
 

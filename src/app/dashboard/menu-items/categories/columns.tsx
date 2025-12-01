@@ -1,6 +1,6 @@
 "use client"
 
-import type { Category } from "@prisma/client"
+import type { Category } from "@/generated/prisma-client/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   ChevronDown,
