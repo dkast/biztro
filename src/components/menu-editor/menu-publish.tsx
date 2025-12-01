@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
-import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   Colorful,
@@ -69,7 +68,7 @@ import { getBaseUrl } from "@/lib/utils"
 export default function MenuPublish({
   menu
 }: {
-  menu: Prisma.PromiseReturnType<typeof getMenuById>
+  menu: Awaited<ReturnType<typeof getMenuById>>
 }) {
   const { store, query, actions, nodes } = useEditor((state, query) => ({
     nodes: query.getSerializedNodes()

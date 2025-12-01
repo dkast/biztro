@@ -2,7 +2,6 @@ import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { Prisma } from "@prisma/client"
 import {
   Colorful,
   hexToHsva,
@@ -68,7 +67,7 @@ export function ColorThemeEditor({
   setTheme,
   removeTheme
 }: {
-  menu: Prisma.PromiseReturnType<typeof getMenuById>
+  menu: Awaited<ReturnType<typeof getMenuById>>
   fontDisplay?: string
   fontText?: string
   theme: (typeof colorThemes)[0]
@@ -607,7 +606,7 @@ function ThemePreview({
   fontText,
   theme
 }: {
-  menu: Prisma.PromiseReturnType<typeof getMenuById>
+  menu: Awaited<ReturnType<typeof getMenuById>>
   fontDisplay?: string
   fontText?: string
   theme: (typeof colorThemes)[0]

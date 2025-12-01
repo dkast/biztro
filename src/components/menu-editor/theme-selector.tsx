@@ -3,7 +3,6 @@
 import { useEffect, useState, type JSX } from "react"
 import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
-import type { Prisma } from "@prisma/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtom } from "jotai"
@@ -112,7 +111,7 @@ function ThemedSelector<T>({
 export default function ThemeSelector({
   menu
 }: {
-  menu: Prisma.PromiseReturnType<typeof getMenuById>
+  menu: Awaited<ReturnType<typeof getMenuById>>
 }) {
   const { nodes, actions, query } = useEditor(state => ({
     nodes: state.nodes

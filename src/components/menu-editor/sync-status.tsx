@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
-import type { Organization, Prisma } from "@prisma/client"
+import type { Organization } from "@/generated/prisma-client/client"
 import { RefreshCcw } from "lucide-react"
 import lz from "lzutf8"
 
@@ -19,11 +19,11 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import difference from "@/lib/difference"
 
 type MenuData = {
-  categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
-  featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
-  items: Prisma.PromiseReturnType<typeof getCategoriesWithItems>[0]["menuItems"]
+  categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
+  featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
+  items: Awaited<ReturnType<typeof getCategoriesWithItems>>[0]["menuItems"]
   organization: Organization | null
-  defaultLocation: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
+  defaultLocation: Awaited<ReturnType<typeof getDefaultLocation>> | null
 }
 
 type MenuComponent = {
@@ -73,7 +73,7 @@ function compareDates(date1: Date, date2: Date | string): boolean {
 
 function compareCategories(
   menuCategories: MenuData["categories"],
-  dbCategories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
+  dbCategories: Awaited<ReturnType<typeof getCategoriesWithItems>>
 ): boolean {
   // Check existing categories
   const areCategoriesEqual = menuCategories.every(menuCategory => {
@@ -131,8 +131,8 @@ function compareCategories(
 }
 
 function compareFeaturedItems(
-  menuItems: Prisma.PromiseReturnType<typeof getFeaturedItems>,
-  dbItems: Prisma.PromiseReturnType<typeof getFeaturedItems>,
+  menuItems: Awaited<ReturnType<typeof getFeaturedItems>>,
+  dbItems: Awaited<ReturnType<typeof getFeaturedItems>>,
   serialData?: string
 ): boolean {
   if (!serialData) return false
@@ -163,7 +163,7 @@ function compareFeaturedItems(
 
 function compareItems(
   menuItems: MenuData["items"],
-  soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
+  soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
 ): boolean {
   if (menuItems.length === 0 && soloItems.length === 0) return true
 
@@ -183,11 +183,11 @@ export default function SyncStatus({
   featuredItems,
   soloItems
 }: {
-  menu: Prisma.PromiseReturnType<typeof getMenuById>
-  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
-  categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
-  featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
-  soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
+  menu: Awaited<ReturnType<typeof getMenuById>>
+  location: Awaited<ReturnType<typeof getDefaultLocation>> | null
+  categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
+  featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
+  soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
 }) {
   const { actions } = useEditor()
   const [syncReq, setSyncReq] = useState(false)

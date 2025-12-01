@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
-import type { Prisma } from "@prisma/client"
+import type { MenuItemGetPayload } from "@/generated/prisma-client/models/MenuItem"
 import type { RgbaColor } from "@uiw/react-color"
 import Autoplay from "embla-carousel-autoplay"
 import { CircleAlert } from "lucide-react"
@@ -20,7 +20,7 @@ import {
 import { cn } from "@/lib/utils"
 
 export type FeaturedBlockProps = {
-  items: Prisma.MenuItemGetPayload<{
+  items: MenuItemGetPayload<{
     include: {
       variants: true
     }

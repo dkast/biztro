@@ -7,7 +7,6 @@ import toast from "react-hot-toast"
 // import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { parseTime } from "@internationalized/date"
-import type { Prisma } from "@prisma/client"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import type { z } from "zod/v4"
@@ -23,7 +22,7 @@ import { hoursSchema } from "@/lib/types"
 export default function HoursForm({
   data
 }: {
-  data: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
+  data: Awaited<ReturnType<typeof getDefaultLocation>> | null
 }) {
   const form = useForm<z.infer<typeof hoursSchema>>({
     resolver: zodResolver(hoursSchema),

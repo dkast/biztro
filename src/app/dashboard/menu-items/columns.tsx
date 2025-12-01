@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import type { Prisma } from "@prisma/client"
 import type { ColumnDef, Row } from "@tanstack/react-table"
 import {
   ChevronDown,
@@ -27,7 +26,7 @@ import ItemDelete from "@/app/dashboard/menu-items/item-delete"
 import { MenuItemStatus } from "@/lib/types"
 
 export const columns: ColumnDef<
-  Prisma.PromiseReturnType<typeof getMenuItemById>
+  Awaited<ReturnType<typeof getMenuItemById>>
 >[] = [
   {
     id: "select",
@@ -197,7 +196,7 @@ export const columns: ColumnDef<
 function ActionsColumn({
   row
 }: {
-  row: Row<Prisma.PromiseReturnType<typeof getMenuItemById>>
+  row: Row<Awaited<ReturnType<typeof getMenuItemById>>>
 }) {
   const item = row.original
   const [openDelete, setOpenDelete] = useState<boolean>(false)
