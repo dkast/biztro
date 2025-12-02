@@ -51,15 +51,15 @@ export default function EditorPreview() {
           // isMobile
           isMobile
             ? "after:[background:linear-gradient(to_top,#fff_10%,transparent)] dark:after:[background:linear-gradient(to_top,#0a0a0a_10%,transparent)]"
-            : "after:[background:linear-gradient(to_top,#fff_2%,transparent)] dark:after:[background:linear-gradient(to_top,#0a0a0a_2%,transparent)]"
+            : "after:[background:linear-gradient(to_top,#fff_0%,transparent)] dark:after:[background:linear-gradient(to_top,#0a0a0a_0%,transparent)]"
         )}
       >
         <div
           className={cn(
-            "absolute inset-0 bottom-1/2 h-full w-full transform-gpu [filter:blur(120px)]",
+            "absolute inset-0 bottom-1/3 h-full w-full transform-gpu [filter:blur(120px)]",
 
             // light styles
-            "[background-image:linear-gradient(to_bottom,#ffaa40,transparent_30%)]",
+            "[background-image:linear-gradient(to_bottom,#fb923c,transparent_30%)]",
 
             // dark styles
             "dark:[background-image:linear-gradient(to_bottom,#fda4af,transparent_30%)]"
@@ -68,18 +68,18 @@ export default function EditorPreview() {
 
         <Image
           src={editorLight}
-          className="relative block h-full w-full rounded-md border dark:hidden sm:rounded-xl"
+          className="relative block h-full w-full rounded-md border border-orange-300 sm:rounded-xl dark:hidden"
           alt="Imagen del editor de menús en web"
         />
         <Image
           src={editorDark}
-          className="relative hidden h-full w-full rounded-md border border-gray-700/70 dark:block sm:rounded-xl"
+          className="relative hidden h-full w-full rounded-md border border-gray-700/70 sm:rounded-xl dark:block"
           alt="Imagen del editor de menús en web"
         />
 
         {!isMobile && (
           <>
-            <GradientBlur className="inset-x-0 bottom-0 h-1/3" />
+            <GradientBlur className="inset-x-0 bottom-0 h-1/4" />
             <BorderBeam size={150} />
             {/* <BorderBeam size={150} delay={7} /> */}
           </>
