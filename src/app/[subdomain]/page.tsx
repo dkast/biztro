@@ -1,6 +1,6 @@
 import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 import lz from "lzutf8"
-import type { Metadata, ResolvingMetadata, Viewport } from "next"
+import type { Metadata, ResolvingMetadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
@@ -53,50 +53,50 @@ export async function generateMetadata(
   }
 }
 
-export async function generateViewport(props: {
-  params: Promise<{ subdomain: string }>
-}): Promise<Viewport> {
-  "use cache: private"
+// export async function generateViewport(props: {
+//   params: Promise<{ subdomain: string }>
+// }): Promise<Viewport> {
+//   "use cache: private"
 
-  const params = await props.params
-  cacheTag("viewport-" + params.subdomain)
-  cacheLife("hours")
-  const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
+//   const params = await props.params
+//   cacheTag("viewport-" + params.subdomain)
+//   cacheLife("hours")
+//   const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
 
-  if (!params.subdomain || !siteMenu) {
-    return {
-      themeColor: "#000000"
-    }
-  }
+//   if (!params.subdomain || !siteMenu) {
+//     return {
+//       themeColor: "#000000"
+//     }
+//   }
 
-  let json
-  if (siteMenu.serialData) {
-    json = lz.decompress(lz.decodeBase64(siteMenu.serialData))
-  }
+//   let json
+//   if (siteMenu.serialData) {
+//     json = lz.decompress(lz.decodeBase64(siteMenu.serialData))
+//   }
 
-  let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
+//   let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
 
-  // Search container style (color)
-  const data = JSON.parse(json)
-  const keys = Object.keys(data)
-  keys.forEach(el => {
-    const node = data[el]
-    const { displayName } = node
-    if (displayName === "Sitio") {
-      backgroundColor = data[el]?.props?.backgroundColor
-    }
-  })
+//   // Search container style (color)
+//   const data = JSON.parse(json)
+//   const keys = Object.keys(data)
+//   keys.forEach(el => {
+//     const node = data[el]
+//     const { displayName } = node
+//     if (displayName === "Sitio") {
+//       backgroundColor = data[el]?.props?.backgroundColor
+//     }
+//   })
 
-  if (backgroundColor) {
-    return {
-      themeColor: rgbaToHex(backgroundColor)
-    }
-  } else {
-    return {
-      themeColor: "#000000"
-    }
-  }
-}
+//   if (backgroundColor) {
+//     return {
+//       themeColor: rgbaToHex(backgroundColor)
+//     }
+//   } else {
+//     return {
+//       themeColor: "#000000"
+//     }
+//   }
+// }
 
 export default async function SitePage(props: {
   params: Promise<{ subdomain: string }>
