@@ -1,12 +1,12 @@
 import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 import lz from "lzutf8"
-import type { Metadata, ResolvingMetadata } from "next"
+import type { Metadata, ResolvingMetadata, Viewport } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import GradientBlur from "@/components/flare-ui/gradient-blur"
+// import GradientBlur from "@/components/flare-ui/gradient-blur"
 import { getActiveMenuByOrganizationSlug } from "@/server/actions/menu/queries"
 import {
   getAllActiveOrganizations,
@@ -53,54 +53,50 @@ export async function generateMetadata(
   }
 }
 
-// export async function generateViewport(props: {
-//   params: Promise<{ subdomain: string }>
-// }): Promise<Viewport> {
-//   "use cache"
+export async function generateViewport(props: {
+  params: Promise<{ subdomain: string }>
+}): Promise<Viewport> {
+  "use cache"
 
-//   const params = await props.params
-//   cacheTag("viewport-" + params.subdomain)
-//   cacheLife("hours")
-//   const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
+  const params = await props.params
+  cacheTag("viewport-" + params.subdomain)
+  cacheLife("hours")
+  const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
 
-//   if (!params.subdomain || !siteMenu) {
-//     return {
-//       themeColor: "#000000"
-//     }
-//   }
+  if (!params.subdomain || !siteMenu) {
+    return {
+      themeColor: "#000000"
+    }
+  }
 
-//   let json
-//   if (siteMenu.serialData) {
-//     json = lz.decompress(lz.decodeBase64(siteMenu.serialData))
-//   }
+  let json
+  if (siteMenu.serialData) {
+    json = lz.decompress(lz.decodeBase64(siteMenu.serialData))
+  }
 
-//   let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
+  let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
 
-//   // Search container style (color)
-//   const data = JSON.parse(json)
-//   const keys = Object.keys(data)
-//   keys.forEach(el => {
-//     const node = data[el]
-//     const { displayName } = node
-//     if (displayName === "Sitio") {
-//       backgroundColor = data[el]?.props?.backgroundColor
-//     }
-//   })
+  // Search container style (color)
+  const data = JSON.parse(json)
+  const keys = Object.keys(data)
+  keys.forEach(el => {
+    const node = data[el]
+    const { displayName } = node
+    if (displayName === "Sitio") {
+      backgroundColor = data[el]?.props?.backgroundColor
+    }
+  })
 
-//   if (backgroundColor) {
-//     return {
-//       themeColor: rgbaToHex(backgroundColor)
-//     }
-//   } else {
-//     return {
-//       themeColor: "#000000"
-//     }
-//   }
-// }
-
-// export const viewport: Viewport = {
-//   themeColor: "#000000"
-// }
+  if (backgroundColor) {
+    return {
+      themeColor: rgbaToHex(backgroundColor)
+    }
+  } else {
+    return {
+      themeColor: "#000000"
+    }
+  }
+}
 
 export default async function SitePage(props: {
   params: Promise<{ subdomain: string }>
@@ -139,48 +135,52 @@ export default async function SitePage(props: {
   })
 
   return (
-    <div
-      style={{
-        backgroundColor: `${rgbaToHex(backgroundColor)}`
-      }}
-      className="relative flex min-h-screen flex-col"
-    >
-      <div className="flex grow">
-        <ResolveEditor json={json} />
-      </div>
+    <>
+      <style>{`body { background-color: ${rgbaToHex(backgroundColor)} }`}</style>
       <div
-        className="fixed inset-x-0 bottom-0 flex items-center justify-between gap-x-4 p-2 text-xs"
         style={{
-          color: `${rgbaToHex(textColor)}`
+          backgroundColor: `${rgbaToHex(backgroundColor)}`
         }}
+        className="relative flex min-h-screen flex-col"
       >
-        <div className="z-20">
-          Últ. actualiazión:{" "}
-          {siteMenu.publishedAt
-            ? new Intl.DateTimeFormat("es-MX", {
-                year: "numeric",
-                month: "short",
-                day: "numeric"
-              }).format(new Date(siteMenu.publishedAt))
-            : ""}
+        <div className="flex grow">
+          <ResolveEditor json={json} />
         </div>
-        <Link href="https://biztro.co" target="_blank" className="z-20">
-          <div className="flex items-center justify-center gap-x-2 rounded-full bg-black/50 px-3 py-1">
-            <Image
-              src="/safari-pinned-tab.svg"
-              alt="Logo"
-              width={12}
-              height={12}
-              className="opacity-90 invert"
-              unoptimized
-            />
-            <span className="text-xs text-gray-100">
-              <em className="hidden not-italic sm:inline">Powered by </em>Biztro
-            </span>
+        <div
+          className="fixed inset-x-0 bottom-0 flex items-center justify-between gap-x-4 p-2 text-xs"
+          style={{
+            color: `${rgbaToHex(textColor)}`
+          }}
+        >
+          <div className="z-20 rounded-full px-3 py-1 backdrop-blur-md">
+            Últ. actualiazión:{" "}
+            {siteMenu.publishedAt
+              ? new Intl.DateTimeFormat("es-MX", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric"
+                }).format(new Date(siteMenu.publishedAt))
+              : ""}
           </div>
-        </Link>
-        <GradientBlur className="inset-0 md:hidden" />
+          <Link href="https://biztro.co" target="_blank" className="z-20">
+            <div className="flex items-center justify-center gap-x-2 rounded-full bg-black/50 px-3 py-1">
+              <Image
+                src="/safari-pinned-tab.svg"
+                alt="Logo"
+                width={12}
+                height={12}
+                className="opacity-90 invert"
+                unoptimized
+              />
+              <span className="text-xs text-gray-100">
+                <em className="hidden not-italic sm:inline">Powered by </em>
+                Biztro
+              </span>
+            </div>
+          </Link>
+          {/* <GradientBlur className="inset-0 md:hidden" /> */}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
