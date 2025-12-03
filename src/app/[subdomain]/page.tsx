@@ -56,7 +56,7 @@ export async function generateMetadata(
 export async function generateViewport(props: {
   params: Promise<{ subdomain: string }>
 }): Promise<Viewport> {
-  "use cache"
+  "use cache: private"
 
   const params = await props.params
   cacheTag("viewport-" + params.subdomain)
