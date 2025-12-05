@@ -32,7 +32,7 @@ export default function Hero() {
 
   return (
     <section id="hero">
-      <div className="relative h-full overflow-hidden py-14">
+      <div className="relative h-full overflow-hidden bg-[linear-gradient(to_top,#fff_0%,#fff_40%,rgba(255,255,255,0)_100%),linear-gradient(to_right,#fda4af,#5f29c7)] py-14">
         <div className="z-10 container flex flex-col">
           <div className="mt-20 grid grid-cols-1">
             <div className="flex flex-col items-center gap-6 pb-8 text-center">

@@ -51,7 +51,7 @@ export default function EditorPreview() {
           // isMobile
           isMobile
             ? "after:[background:linear-gradient(to_top,#fff_10%,transparent)] dark:after:[background:linear-gradient(to_top,#0a0a0a_10%,transparent)]"
-            : "after:[background:linear-gradient(to_top,#fff_0%,transparent)] dark:after:[background:linear-gradient(to_top,#0a0a0a_0%,transparent)]"
+            : "after:[background:linear-gradient(to_top,#fff_0%,transparent_50%)] dark:after:[background:linear-gradient(to_top,#0a0a0a_0%,transparent)]"
         )}
       >
         <div

@@ -1,3 +1,7 @@
+"use client"
+
+import React from "react"
+import { motion, useScroll, useTransform } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -10,9 +14,27 @@ export default function Navbar({
   children?: React.ReactNode
   showLinks?: boolean
 }) {
+  // Use Framer Motion's scroll tracking to derive animation values
+  const { scrollY } = useScroll()
+  const opacity = useTransform(scrollY, [0, 64], [0, 1], { clamp: true })
+  const boxShadow = useTransform(
+    scrollY,
+    [0, 64],
+    ["none", "0 6px 20px rgba(2,6,23,0.08)"],
+    { clamp: true }
+  )
+
   return (
-    <header className="fixed inset-x-0 top-0 z-50 flex h-16 bg-white/50 dark:bg-black/5">
-      <div className="glass"></div>
+    <motion.header
+      className="fixed inset-x-0 top-0 z-50 flex h-16 bg-transparent"
+      style={{ boxShadow }}
+    >
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-white/50 backdrop-blur-sm dark:bg-black/5"
+        style={{ opacity }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      />
       <div className="absolute inset-0 mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex flex-row items-center gap-2">
           <Image src="/logo-bistro.svg" alt="Logo" width={32} height={32} />
@@ -51,6 +73,6 @@ export default function Navbar({
           </Button>
         </Link>
       </div>
-    </header>
+    </motion.header>
   )
 }
