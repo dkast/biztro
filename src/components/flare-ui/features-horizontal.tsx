@@ -194,7 +194,7 @@ export default function Features({
                   >
                     {linePosition === "left" || linePosition === "right" ? (
                       <div
-                        className={`absolute top-0 bottom-0 h-full w-0.5 overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30 ${
+                        className={`absolute top-0 bottom-0 h-full w-0.5 overflow-hidden rounded-lg bg-gray-300/50 dark:bg-gray-300/30 ${
                           linePosition === "right"
                             ? "right-0 left-auto"
                             : "right-auto left-0"
@@ -216,7 +216,7 @@ export default function Features({
 
                     {linePosition === "top" || linePosition === "bottom" ? (
                       <div
-                        className={`absolute right-0 left-0 h-0.5 w-full overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30 ${
+                        className={`absolute right-0 left-0 h-0.5 w-full overflow-hidden rounded-lg bg-gray-300/50 dark:bg-gray-300/30 ${
                           linePosition === "bottom" ? "bottom-0" : "top-0"
                         }`}
                       >
@@ -238,13 +238,13 @@ export default function Features({
 
                     <AccordionTrigger>
                       <div className="relative flex flex-col items-center">
-                        <div className="item-box mx-2 flex size-16 shrink-0 items-center justify-center rounded-full bg-green-400/10 text-green-400 ring-1 ring-green-400/20 ring-inset sm:mx-6">
+                        <div className="item-box mx-2 flex size-16 shrink-0 items-center justify-center rounded-full bg-violet-400/10 text-violet-400 ring-1 ring-violet-400/20 ring-inset sm:mx-6">
                           {item.icon}
                         </div>
-                        <div className="my-3 text-xl font-bold">
+                        <div className="my-3 text-xl font-semibold text-gray-700 dark:text-gray-200">
                           {item.title}
                         </div>
-                        <div className="mb-4 justify-center text-center text-pretty dark:text-gray-400">
+                        <div className="mb-4 justify-center text-center text-pretty text-gray-500 dark:text-gray-400">
                           {item.content}
                         </div>
                       </div>
@@ -279,7 +279,7 @@ export default function Features({
                   muted
                 />
               ) : (
-                <div className="aspect-auto h-full min-h-[600px] w-full rounded-xl border border-neutral-300/50 bg-gray-200 p-1"></div>
+                <div className="aspect-auto h-full min-h-[600px] w-full rounded-xl border border-gray-300/50 bg-gray-200 p-1"></div>
               )}
             </div>
 
@@ -299,7 +299,7 @@ export default function Features({
                     scrollSnapAlign: "center"
                   }}
                 >
-                  <div className="absolute top-0 right-auto bottom-0 left-0 h-0.5 w-full overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30">
+                  <div className="absolute top-0 right-auto bottom-0 left-0 h-0.5 w-full overflow-hidden rounded-lg bg-gray-300/50 dark:bg-gray-300/30">
                     <div
                       className={`absolute top-0 left-0 h-full ${
                         currentIndex === index ? "w-full" : "w-0"

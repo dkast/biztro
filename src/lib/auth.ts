@@ -1,7 +1,7 @@
 import { stripe } from "@better-auth/stripe"
-import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { createAuthMiddleware } from "better-auth/api"
+import { betterAuth } from "better-auth/minimal"
 // Note: we intentionally avoid a global `before` middleware and instead use
 // database hooks on user creation. We import createAuthMiddleware for specific use cases as needed.
 import { nextCookies } from "better-auth/next-js"

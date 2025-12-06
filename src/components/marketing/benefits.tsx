@@ -59,10 +59,10 @@ export default function Benefits() {
   return (
     <section
       id="benefits"
-      className="relative bg-gray-50 pb-28 pt-20 dark:bg-transparent sm:py-32"
+      className="relative bg-gray-50 pt-20 pb-28 sm:py-32 dark:bg-transparent"
     >
       <div className="absolute inset-0 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#0a0a0a_40%,#63e_100%)]" />
-      <div className="relative z-10">
+      <div className="dark relative z-10">
         <TitleSection
           eyebrow="Por qué elegir Biztro"
           title="Transforma la experiencia de tus clientes y aumenta tus ingresos"
@@ -99,7 +99,7 @@ const BenefitItem = ({
         {title}
         {soon && (
           <div>
-            <Badge variant="violet" className="uppercase tracking-wide">
+            <Badge variant="violet" className="tracking-wide uppercase">
               Pronto
             </Badge>
           </div>

@@ -69,7 +69,7 @@ export default function Pricing() {
           className="mx-auto aspect-1155/678 w-[72.1875rem] bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30"
         />
       </div>
-      <div className="mx-auto max-w-2xl text-center lg:max-w-4xl">
+      <div className="dark mx-auto max-w-2xl text-center lg:max-w-4xl">
         <TitleSection
           eyebrow="Precios"
           title="Escoge el plan correcto para tí"

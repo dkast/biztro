@@ -44,19 +44,19 @@ export default function Navbar({
           <nav className="hidden space-x-6 text-sm md:flex">
             <Link
               href="#how-it-works"
-              className="text-gray-600 hover:text-violet-600 dark:text-gray-300 dark:hover:text-violet-400"
+              className="text-gray-800 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-indigo-400"
             >
               Cómo Funciona
             </Link>
             <Link
               href="#benefits"
-              className="text-gray-600 hover:text-violet-600 dark:text-gray-300 dark:hover:text-violet-400"
+              className="text-gray-800 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-indigo-400"
             >
               Beneficios
             </Link>
             <Link
               href="#pricing"
-              className="text-gray-600 hover:text-violet-600 dark:text-gray-300 dark:hover:text-violet-400"
+              className="text-gray-800 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-indigo-400"
             >
               Precios
             </Link>
@@ -65,7 +65,7 @@ export default function Navbar({
         {children}
         <Link href="/dashboard">
           <Button
-            variant="outline"
+            variant="default"
             size="xs"
             className="rounded-full px-3 shadow-xs"
           >
