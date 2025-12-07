@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, type ReactNode } from "react"
 import * as Accordion from "@radix-ui/react-accordion"
-import { motion, useInView } from "motion/react"
+import { AnimatePresence, motion, useInView } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
@@ -258,29 +258,43 @@ export default function Features({
                 ltr && "md:order-1"
               }`}
             >
-              {data[currentIndex]?.image ? (
-                <motion.img
-                  key={currentIndex}
-                  src={data[currentIndex].image}
-                  alt="feature"
-                  className="relative aspect-auto h-full w-full rounded-lg border object-cover shadow-lg dark:border-gray-800"
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                />
-              ) : data[currentIndex]?.video ? (
-                <video
-                  preload="auto"
-                  src={data[currentIndex].video}
-                  className="aspect-auto h-full w-full rounded-lg border object-cover shadow-lg"
-                  autoPlay
-                  loop
-                  muted
-                />
-              ) : (
-                <div className="aspect-auto h-full min-h-[600px] w-full rounded-xl border border-gray-300/50 bg-gray-200 p-1"></div>
-              )}
+              <AnimatePresence mode="sync">
+                {data[currentIndex]?.image ? (
+                  <motion.img
+                    key={currentIndex}
+                    src={data[currentIndex].image}
+                    alt="feature"
+                    className="absolute inset-0 aspect-auto h-full w-full rounded-lg border object-cover shadow-lg dark:border-gray-800"
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  />
+                ) : data[currentIndex]?.video ? (
+                  <motion.video
+                    key={currentIndex}
+                    preload="auto"
+                    src={data[currentIndex].video}
+                    className="absolute inset-0 aspect-auto h-full w-full rounded-lg border object-cover shadow-lg"
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    autoPlay
+                    loop
+                    muted
+                  />
+                ) : (
+                  <motion.div
+                    key={currentIndex}
+                    className="absolute inset-0 aspect-auto h-full min-h-[600px] w-full rounded-xl border border-gray-300/50 bg-gray-200 p-1"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
+              </AnimatePresence>
             </div>
 
             <ul

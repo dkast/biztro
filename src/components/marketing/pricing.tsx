@@ -103,7 +103,7 @@ export default function Pricing() {
           </TabsList>
         </Tabs>
       </div>
-      <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-pretty text-gray-400">
+      <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-pretty text-gray-500">
         Inicia con el plan gratuito, o desbloquea productos ilimitados y
         características con el plan Pro.
       </p>
@@ -113,7 +113,7 @@ export default function Pricing() {
             key={tier.id}
             className={cn(
               tier.featured
-                ? "relative bg-gray-900 shadow-2xl"
+                ? "relative bg-slate-900 shadow-2xl/30"
                 : "bg-white/60 ring-gray-300 sm:mx-8 lg:mx-0",
               tier.featured
                 ? ""

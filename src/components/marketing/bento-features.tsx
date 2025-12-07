@@ -85,7 +85,7 @@ export default function FeaturesBento() {
         <h2 className="font-display text-3xl tracking-tight text-balance sm:text-4xl md:text-5xl">
           Publica tú menú en Internet, fácil y rápido
         </h2>
-        <p className="mt-6 tracking-tight text-balance text-gray-400 sm:text-lg">
+        <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-pretty text-gray-500">
           Sin necesidad de conocimientos técnicos, crear tu menú utilizando una
           interfaz intuitiva y amigable, solo necesitas tu navegador web
         </p>
