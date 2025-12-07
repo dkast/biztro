@@ -57,11 +57,19 @@ const BENEFITS = [
 
 export default function Benefits() {
   return (
-    <section
-      id="benefits"
-      className="relative bg-gray-50 pt-20 pb-28 sm:py-32 dark:bg-transparent"
-    >
-      <div className="absolute inset-0 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#0a0a0a_40%,#63e_100%)]" />
+    <section id="benefits" className="relative pt-20 pb-28 sm:py-32">
+      <div
+        className="absolute inset-0 h-full w-full items-center px-5 py-24 sm:inset-x-4 sm:w-auto sm:rounded-3xl"
+        style={{
+          background: `
+          radial-gradient(ellipse 120% 80% at 70% 20%, rgba(255, 20, 147, 0.15), transparent 50%),
+          radial-gradient(ellipse 100% 60% at 30% 10%, rgba(0, 255, 255, 0.12), transparent 60%),
+          radial-gradient(ellipse 90% 70% at 50% 0%, rgba(138, 43, 226, 0.18), transparent 65%),
+          radial-gradient(ellipse 110% 50% at 80% 30%, rgba(255, 215, 0, 0.08), transparent 40%),
+          #000000
+        `
+        }}
+      />
       <div className="dark relative z-10">
         <TitleSection
           eyebrow="Por qué elegir Biztro"
@@ -89,13 +97,13 @@ const BenefitItem = ({
   soon: boolean
 }): JSX.Element => {
   return (
-    <div className="flex flex-col items-center gap-2 text-center sm:items-start sm:text-start">
+    <div className="flex flex-col items-center gap-2 text-center">
       <div className="mb-2">
         {Icon && (
-          <Icon className="size-10 rounded-xl bg-violet-500 p-2 text-violet-50" />
+          <Icon className="size-10 rounded-xl bg-orange-600 p-2 text-orange-50" />
         )}
       </div>
-      <h4 className="space-x-1 text-lg font-semibold text-violet-400">
+      <h4 className="space-x-1 text-lg font-semibold text-orange-400">
         {title}
         {soon && (
           <div>

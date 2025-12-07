@@ -238,7 +238,7 @@ export default function Features({
 
                     <AccordionTrigger>
                       <div className="relative flex flex-col items-center">
-                        <div className="item-box mx-2 flex size-16 shrink-0 items-center justify-center rounded-full bg-violet-400/10 text-violet-400 ring-1 ring-violet-400/20 ring-inset sm:mx-6">
+                        <div className="item-box mx-2 flex size-16 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-indigo-50 ring-1 ring-indigo-400/20 ring-inset sm:mx-6">
                           {item.icon}
                         </div>
                         <div className="my-3 text-xl font-semibold text-gray-700 dark:text-gray-200">
