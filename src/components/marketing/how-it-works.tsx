@@ -38,7 +38,7 @@ export default function Component() {
   return (
     <section
       id="how-it-works"
-      className="mx-auto max-w-5xl px-4 pt-20 sm:px-6 sm:py-32 sm:pb-28 lg:max-w-7xl lg:px-8"
+      className="mx-auto max-w-5xl px-4 pt-20 pb-8 sm:px-6 sm:py-32 sm:pb-28 lg:max-w-7xl lg:px-8"
     >
       <TitleSection
         eyebrow="Cómo funciona"
