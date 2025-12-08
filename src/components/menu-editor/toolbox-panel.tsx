@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { ROOT_NODE, useEditor } from "@craftjs/core"
-import type { Prisma } from "@prisma/client"
 import { useQuery } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtomValue, useSetAtom } from "jotai"
@@ -44,12 +43,12 @@ export default function ToolboxPanel({
   isPro // Add this prop
 }: {
   organization: NonNullable<
-    Prisma.PromiseReturnType<typeof getCurrentOrganization>
+    Awaited<ReturnType<typeof getCurrentOrganization>>
   >
-  location: Prisma.PromiseReturnType<typeof getDefaultLocation> | null
-  categories: Prisma.PromiseReturnType<typeof getCategoriesWithItems>
-  soloItems: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>
-  featuredItems: Prisma.PromiseReturnType<typeof getFeaturedItems>
+  location: Awaited<ReturnType<typeof getDefaultLocation>> | null
+  categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
+  soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
+  featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
   isPro: boolean
 }) {
   const { connectors, actions, query } = useEditor()

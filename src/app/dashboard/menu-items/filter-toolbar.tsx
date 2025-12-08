@@ -1,6 +1,6 @@
 "use client"
 
-import type { Category } from "@prisma/client"
+import type { Category } from "@/generated/prisma-client/client"
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
 
 import { DataTableFilter } from "@/components/data-table/data-table-filter"

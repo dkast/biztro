@@ -1,7 +1,7 @@
 "use client"
 
 import toast from "react-hot-toast"
-import type { Menu } from "@prisma/client"
+import type { Menu } from "@/generated/prisma-client/client"
 import { useAction } from "next-safe-action/hooks"
 
 import {

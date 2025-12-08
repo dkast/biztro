@@ -7,7 +7,7 @@ import {
   toCalendarDateTime,
   today
 } from "@internationalized/date"
-import type { OpeningHours } from "@prisma/client"
+import type { OpeningHours } from "@/generated/prisma-client/client"
 import { clsx, type ClassValue } from "clsx"
 import { Resend } from "resend"
 import { twMerge } from "tailwind-merge"

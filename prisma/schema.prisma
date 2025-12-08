@@ -1,13 +1,11 @@
 generator client {
   provider        = "prisma-client"
-  engineType      = "client"
   output          = "../src/generated/prisma-client"
   previewFeatures = ["relationJoins"]
 }
 
 datasource db {
   provider = "sqlite"
-  url      = "file:../local.db"
 }
 
 // Non-auth domain models. Auth-related models moved to `auth.prisma`.

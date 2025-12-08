@@ -1,7 +1,7 @@
 "use server"
 
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
-import { Prisma } from "@prisma/client"
+import { Prisma } from "@/generated/prisma-client/client"
 import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
