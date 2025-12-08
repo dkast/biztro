@@ -38,7 +38,7 @@ export default function Component() {
   return (
     <section
       id="how-it-works"
-      className="mx-auto max-w-5xl px-4 pt-20 sm:px-6 sm:py-32 sm:pb-28 lg:max-w-7xl lg:px-8"
+      className="mx-auto max-w-5xl px-4 pt-20 pb-8 sm:px-6 sm:py-32 sm:pb-28 lg:max-w-7xl lg:px-8"
     >
       <TitleSection
         eyebrow="Cómo funciona"
@@ -51,7 +51,7 @@ export default function Component() {
           <h3 className="mb-4 text-lg font-semibold sm:text-2xl lg:text-3xl">
             Genera y descarga tú código QR
           </h3>
-          <div className="flex flex-col gap-3 text-gray-400 sm:text-lg">
+          <div className="flex flex-col gap-3 text-gray-500 sm:text-lg">
             <p>
               Desde el editor de Biztro, puedes descarga tú código QR. Imprímelo
               y colócalo en un lugar visible en tú establecimiento.
@@ -59,7 +59,7 @@ export default function Component() {
             <p>
               Tus clientes podrán escanear el código QR con su teléfono móvil y
               acceder a tu menú digital.{" "}
-              <span className="text-white">
+              <span className="text-gray-900">
                 Puedes compartir el enlace de tu menú en redes sociales
               </span>{" "}
               o en tu página web.
@@ -76,7 +76,7 @@ export default function Component() {
             className="absolute inset-0 z-0 hidden size-full sm:block"
             squareSize={4}
             gridGap={6}
-            color="#6B7280"
+            color="#d4d4d8"
             maxOpacity={0.5}
             flickerChance={0.05}
             height={500}
@@ -91,11 +91,11 @@ export default function Component() {
               height={300}
             />
           </Link>
-          <span className="z-10 flex gap-2 text-gray-400">
+          <span className="z-10 flex gap-2 text-gray-600 text-shadow-white">
             Escanea para ver un{" "}
             <Link
               href="https://biztro.co/la-bella-italia"
-              className="underline underline-offset-2 hover:text-gray-50"
+              className="underline underline-offset-2 hover:text-violet-500"
             >
               ejemplo
             </Link>

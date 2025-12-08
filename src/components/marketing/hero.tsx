@@ -32,7 +32,7 @@ export default function Hero() {
 
   return (
     <section id="hero">
-      <div className="relative h-full overflow-hidden py-14">
+      <div className="relative h-full overflow-hidden bg-[linear-gradient(to_top,#fff_0%,#fff_40%,rgba(255,255,255,0)_100%),linear-gradient(to_right,#fecdd3,#c4b5fd)] py-14">
         <div className="z-10 container flex flex-col">
           <div className="mt-20 grid grid-cols-1">
             <div className="flex flex-col items-center gap-6 pb-8 text-center">
@@ -40,7 +40,7 @@ export default function Hero() {
               <div className="grid grid-cols-1 grid-rows-1">
                 <motion.div
                   className={cn(
-                    "group relative col-start-1 row-start-1 cursor-pointer rounded-full border border-black/10 bg-gray-50 transition-all ease-in hover:bg-gray-100 dark:border-white/5 dark:bg-gray-900 dark:hover:bg-gray-800"
+                    "group relative col-start-1 row-start-1 cursor-pointer rounded-full border border-white/30 bg-white/20 transition-all ease-in hover:bg-gray-100 dark:border-white/5 dark:bg-gray-900 dark:hover:bg-gray-800"
                   )}
                   animate={fadeInInView ? "animate" : "hidden"}
                   variants={fadeUpVariants}
@@ -81,7 +81,7 @@ export default function Hero() {
               </motion.h1>
 
               <motion.p
-                className="text-lg tracking-tight text-balance text-gray-400 md:text-xl"
+                className="text-lg tracking-tight text-balance text-gray-500 md:text-xl"
                 animate={fadeInInView ? "animate" : "initial"}
                 variants={fadeUpVariants}
                 initial={false}

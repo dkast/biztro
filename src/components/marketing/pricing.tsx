@@ -55,7 +55,7 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="relative isolate bg-gray-950 px-6 py-24 sm:py-32 lg:px-8"
+      className="relative isolate px-6 py-24 sm:py-32 lg:px-8"
     >
       <div
         aria-hidden="true"
@@ -84,23 +84,26 @@ export default function Pricing() {
           }
           className="w-fit"
         >
-          <TabsList className="grid w-full grid-cols-2 rounded-full bg-gray-800/60">
+          <TabsList className="grid w-full grid-cols-2 rounded-full bg-gray-200/60">
             <TabsTrigger
               value="monthly"
-              className="rounded-full data-[state=active]:bg-violet-600"
+              className="rounded-full data-[state=active]:bg-indigo-600 data-[state=active]:text-white"
             >
               Mensual
             </TabsTrigger>
             <TabsTrigger
               value="yearly"
-              className="rounded-full data-[state=active]:bg-violet-600"
+              className="rounded-full data-[state=active]:bg-indigo-600 data-[state=active]:text-white"
             >
-              Anual <span className="ml-1 text-violet-400">(−20%)</span>
+              Anual{" "}
+              <span className="ml-1 text-indigo-500 in-focus:text-white">
+                (−20%)
+              </span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
-      <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-pretty text-gray-400">
+      <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-pretty text-gray-500">
         Inicia con el plan gratuito, o desbloquea productos ilimitados y
         características con el plan Pro.
       </p>
@@ -110,8 +113,8 @@ export default function Pricing() {
             key={tier.id}
             className={cn(
               tier.featured
-                ? "relative bg-violet-700/70 shadow-2xl ring-violet-500/60"
-                : "bg-gray-800/60 ring-gray-300/10 sm:mx-8 lg:mx-0",
+                ? "relative bg-slate-900 shadow-2xl/30"
+                : "bg-white/60 ring-gray-300 sm:mx-8 lg:mx-0",
               tier.featured
                 ? ""
                 : tierIdx === 0
@@ -123,7 +126,7 @@ export default function Pricing() {
             <h3
               id={tier.id}
               className={cn(
-                tier.featured ? "text-violet-400" : "text-gray-400",
+                tier.featured ? "text-indigo-400" : "text-gray-600",
                 "text-base leading-7 font-semibold"
               )}
             >
@@ -132,7 +135,7 @@ export default function Pricing() {
             <p className="mt-4 flex items-baseline gap-x-2">
               <span
                 className={cn(
-                  tier.featured ? "text-white" : "text-gray-300",
+                  tier.featured ? "text-white" : "text-gray-900",
                   "text-5xl font-bold tracking-tight"
                 )}
               >
@@ -140,7 +143,7 @@ export default function Pricing() {
               </span>
               <span
                 className={cn(
-                  tier.featured ? "text-violet-400" : "text-gray-500",
+                  tier.featured ? "text-indigo-400" : "text-gray-500",
                   "text-base"
                 )}
               >
@@ -149,7 +152,7 @@ export default function Pricing() {
             </p>
             <p
               className={cn(
-                tier.featured ? "text-gray-300" : "text-gray-400",
+                tier.featured ? "text-gray-300" : "text-gray-600",
                 "mt-6 text-base leading-7"
               )}
             >
@@ -157,7 +160,7 @@ export default function Pricing() {
             </p>
             <ul
               className={cn(
-                tier.featured ? "text-gray-300" : "text-gray-400",
+                tier.featured ? "text-gray-300" : "text-gray-600",
                 "mt-8 space-y-3 text-sm leading-6 sm:mt-10"
               )}
             >
@@ -166,7 +169,7 @@ export default function Pricing() {
                   <Check
                     aria-hidden="true"
                     className={cn(
-                      tier.featured ? "text-violet-400" : "text-violet-600",
+                      tier.featured ? "text-indigo-400" : "text-indigo-600",
                       "h-6 w-5 flex-none"
                     )}
                   />
@@ -179,8 +182,8 @@ export default function Pricing() {
               aria-describedby={tier.id}
               className={cn(
                 tier.featured
-                  ? "bg-violet-500 text-white shadow-xs hover:bg-violet-400 focus-visible:outline-violet-500"
-                  : "text-gray-300 ring-1 ring-gray-700 ring-inset hover:ring-gray-500 focus-visible:outline-gray-600",
+                  ? "bg-indigo-500 text-white shadow-xs hover:bg-indigo-400 focus-visible:outline-indigo-500"
+                  : "text-indigo-600 ring-1 ring-indigo-200 ring-inset hover:ring-indigo-300 focus-visible:outline-indigo-600",
                 "mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:mt-10"
               )}
             >
