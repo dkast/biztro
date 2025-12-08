@@ -1,9 +1,10 @@
 import path from "path"
-import { defineConfig, env } from "prisma/config"
+import { defineConfig } from "prisma/config"
 
 export default defineConfig({
   schema: path.join("prisma"),
   datasource: {
-    url: env("TURSO_DATABASE_URL")
+    // Use process.env with fallback for prisma generate (which doesn't need a DB connection)
+    url: process.env.TURSO_DATABASE_URL ?? "file:./local.db"
   }
 })
