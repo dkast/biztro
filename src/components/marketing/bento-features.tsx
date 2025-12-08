@@ -90,7 +90,7 @@ export default function FeaturesBento() {
           interfaz intuitiva y amigable, solo necesitas tu navegador web
         </p>
       </section>
-      <section className="mx-auto my-16 max-w-5xl px-4 sm:my-32 sm:px-6 lg:px-8">
+      <section className="mx-auto mt-16 max-w-5xl px-4 sm:mt-32 sm:px-6 lg:px-8">
         <BentoGrid className="sm:grid-cols-2 sm:grid-rows-3">
           {features.map(feature => (
             <BentoCard key={feature.name} {...feature} />

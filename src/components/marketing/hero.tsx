@@ -40,7 +40,7 @@ export default function Hero() {
               <div className="grid grid-cols-1 grid-rows-1">
                 <motion.div
                   className={cn(
-                    "group relative col-start-1 row-start-1 cursor-pointer rounded-full border border-white/30 bg-white/20 transition-all ease-in hover:bg-gray-100 dark:border-white/5 dark:bg-gray-900 dark:hover:bg-gray-800"
+                    "group relative col-start-1 row-start-1 cursor-pointer rounded-full border border-white/50 bg-white/50 transition-all ease-in hover:bg-gray-100 dark:border-white/5 dark:bg-gray-900 dark:hover:bg-gray-800"
                   )}
                   animate={fadeInInView ? "animate" : "hidden"}
                   variants={fadeUpVariants}
