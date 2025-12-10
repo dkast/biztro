@@ -1,16 +1,10 @@
 import path from "path"
-import { PrismaLibSQL } from "@prisma/adapter-libsql"
-import { defineConfig, env } from "prisma/config"
+import { defineConfig } from "prisma/config"
 
 export default defineConfig({
-  experimental: {
-    adapter: true
-  },
   schema: path.join("prisma"),
-  async adapter() {
-    return new PrismaLibSQL({
-      url: env("TURSO_DATABASE_URL"),
-      authToken: env("TURSO_AUTH_TOKEN")
-    })
+  datasource: {
+    // Use process.env with fallback for prisma generate (which doesn't need a DB connection)
+    url: process.env.TURSO_DATABASE_URL ?? "file:./local.db"
   }
 })

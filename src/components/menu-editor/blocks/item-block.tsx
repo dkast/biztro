@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
-import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
 import Image from "next/image"
 
@@ -14,7 +13,7 @@ import type { getMenuItemsWithoutCategory } from "@/server/actions/item/queries"
 import { cn } from "@/lib/utils"
 
 export type ItemBlockProps = {
-  item: Prisma.PromiseReturnType<typeof getMenuItemsWithoutCategory>[0]
+  item: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>[0]
   backgroundMode: "dark" | "light" | "none"
   itemFontSize?: number
   itemColor?: RgbaColor

@@ -16,10 +16,10 @@ export default function TitleSection({
         className
       )}
     >
-      <small className="mb-4 block text-base font-semibold uppercase tracking-widest text-orange-600">
+      <small className="mb-4 block text-base font-semibold tracking-widest text-orange-600 uppercase">
         {eyebrow}
       </small>
-      <h2 className="text-balance font-display text-3xl tracking-tight text-gray-950 dark:text-white sm:text-4xl md:text-5xl">
+      <h2 className="font-display text-3xl tracking-tight text-balance text-gray-950 sm:text-4xl md:text-5xl dark:text-white">
         {title}
       </h2>
     </div>

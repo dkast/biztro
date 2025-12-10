@@ -15,7 +15,8 @@ const posts = defineCollection({
     date: z.iso.date(),
     author: z.string(),
     position: z.string(),
-    avatar: z.string()
+    avatar: z.string(),
+    content: z.string()
   }),
   transform: async (document, context) => {
     const body = await compileMDX(context, document, {

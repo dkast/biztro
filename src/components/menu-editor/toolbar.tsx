@@ -1,6 +1,5 @@
 "use client"
 
-import type { Prisma } from "@prisma/client"
 import { ChevronLeft } from "lucide-react"
 
 import { GuardLink } from "@/components/dashboard/unsaved-changes-provider"
@@ -12,7 +11,7 @@ import type { getMenuById } from "@/server/actions/menu/queries"
 export default function Toolbar({
   menu
 }: {
-  menu: Prisma.PromiseReturnType<typeof getMenuById>
+  menu: Awaited<ReturnType<typeof getMenuById>>
 }) {
   if (!menu) return null
   return (

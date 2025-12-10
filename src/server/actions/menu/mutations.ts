@@ -1,6 +1,6 @@
 "use server"
 
-import { Prisma } from "@prisma/client"
+import { Prisma } from "@/generated/prisma-client/client"
 import { revalidatePath, updateTag } from "next/cache"
 import { z } from "zod/v4"
 

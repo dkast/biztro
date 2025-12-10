@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { Prisma } from "@prisma/client"
 import { ChevronDown } from "lucide-react"
 import { useOptimisticAction } from "next-safe-action/hooks"
 import { z } from "zod/v4"
@@ -27,7 +26,7 @@ const nameSchema = z.object({
 export default function MenuTitle({
   menu
 }: {
-  menu: NonNullable<Prisma.PromiseReturnType<typeof getMenuById>>
+  menu: NonNullable<Awaited<ReturnType<typeof getMenuById>>>
 }) {
   const form = useForm<z.infer<typeof nameSchema>>({
     resolver: zodResolver(nameSchema),

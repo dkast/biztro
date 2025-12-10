@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import type { MenuItemGetPayload } from "@/generated/prisma-client/models/MenuItem"
 import { useEditor, useNode } from "@craftjs/core"
-import type { Prisma } from "@prisma/client"
 import type { RgbaColor } from "@uiw/react-color"
 import Autoplay from "embla-carousel-autoplay"
 import { CircleAlert } from "lucide-react"
@@ -17,10 +17,11 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 
 export type FeaturedBlockProps = {
-  items: Prisma.MenuItemGetPayload<{
+  items: MenuItemGetPayload<{
     include: {
       variants: true
     }
@@ -54,6 +55,8 @@ export default function FeaturedBlock({
   const [selectedItem, setSelectedItem] = useState<(typeof items)[0] | null>(
     null
   )
+
+  const isMobile = useIsMobile()
 
   if (!items?.length)
     return (
@@ -143,8 +146,12 @@ export default function FeaturedBlock({
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          {!isMobile && (
+            <>
+              <CarouselPrevious />
+              <CarouselNext />
+            </>
+          )}
         </Carousel>
       </div>
 

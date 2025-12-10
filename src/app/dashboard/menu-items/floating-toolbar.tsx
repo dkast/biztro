@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { toast } from "react-hot-toast"
-import type { Category, Prisma } from "@prisma/client"
+import type { Category } from "@/generated/prisma-client/client"
 import { SelectTrigger } from "@radix-ui/react-select"
 import type { Table } from "@tanstack/react-table"
 import { Combine, Loader, Star, Trash2, X } from "lucide-react"
@@ -37,7 +37,7 @@ function FloatingToolbar({
   table,
   categories
 }: {
-  table: Table<Prisma.PromiseReturnType<typeof getMenuItems>[0]>
+  table: Table<Awaited<ReturnType<typeof getMenuItems>>[0]>
   categories: Category[]
 }) {
   const { execute: executeBulkUpdate, isPending: updateIsPending } = useAction(

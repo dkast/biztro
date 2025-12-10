@@ -4,7 +4,6 @@ import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
-import type { Prisma } from "@prisma/client"
 import { DialogTitle } from "@radix-ui/react-dialog"
 import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
@@ -51,7 +50,7 @@ export default function OrganizationForm({
   data,
   enabled
 }: {
-  data: NonNullable<Prisma.PromiseReturnType<typeof getCurrentOrganization>>
+  data: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>
   enabled: boolean
 }) {
   const form = useForm<z.infer<typeof orgSchema>>({
