@@ -10,6 +10,7 @@ import { ItemDetail } from "@/components/menu-editor/blocks/item-detail"
 import ItemSettings from "@/components/menu-editor/blocks/item-settings"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import type { getMenuItemsWithoutCategory } from "@/server/actions/item/queries"
+import { formatPrice, resolveCurrency } from "@/lib/currency"
 import { cn } from "@/lib/utils"
 
 export type ItemBlockProps = {
@@ -217,9 +218,12 @@ export function ItemView({
                         fontWeight: priceFontWeight
                       }}
                     >
-                      {variant.price % 1 === 0
-                        ? variant.price
-                        : variant.price.toFixed(2)}
+                      {formatPrice(
+                        variant.price,
+                        resolveCurrency(
+                          (item as unknown as { currency?: string }).currency
+                        )
+                      )}
                     </span>
                   </FontWrapper>
                 </div>
@@ -236,9 +240,12 @@ export function ItemView({
                 }}
               >
                 {/* If it has decimal values, show them in the price as well with 2 decimal places */}
-                {(item.variants[0]?.price ?? 0) % 1 === 0
-                  ? item.variants[0]?.price
-                  : item.variants[0]?.price.toFixed(2)}
+                {formatPrice(
+                  (item.variants[0]?.price ?? 0) as number,
+                  resolveCurrency(
+                    (item as unknown as { currency?: string }).currency
+                  )
+                )}
               </span>
             </FontWrapper>
           )}

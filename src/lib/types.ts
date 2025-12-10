@@ -309,6 +309,7 @@ export const menuItemSchema = z.object({
   categoryId: z.string().optional(),
   organizationId: z.string().optional(),
   featured: z.boolean().prefault(false).optional(),
+  currency: z.enum(["MXN", "USD"]).default("MXN").optional(),
   variants: z.tuple([variantSchema], variantSchema),
   allergens: z.string().optional()
 })
@@ -664,6 +665,7 @@ export type BulkMenuItem = {
   price: number
   status?: string
   category?: string
+  currency?: "MXN" | "USD"
 }
 
 export const bulkMenuItemSchema = z.array(
@@ -672,7 +674,8 @@ export const bulkMenuItemSchema = z.array(
     description: z.string().optional(),
     price: z.number().min(0),
     status: z.string().optional(),
-    category: z.string().optional()
+    category: z.string().optional(),
+    currency: z.enum(["MXN", "USD"]).optional()
   })
 )
 

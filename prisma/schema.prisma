@@ -8,6 +8,11 @@ datasource db {
   provider = "sqlite"
 }
 
+enum Currency {
+  MXN
+  USD
+}
+
 // Non-auth domain models. Auth-related models moved to `auth.prisma`.
 
 model Location {
@@ -86,6 +91,7 @@ model MenuItem {
   category       Category?    @relation(fields: [categoryId], references: [id])
   variants       Variant[]
   allergens      String?
+  currency       Currency     @default(MXN)
 
   @@unique([organizationId, name])
 }

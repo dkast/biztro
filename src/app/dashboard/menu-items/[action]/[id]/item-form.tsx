@@ -104,7 +104,8 @@ export default function ItemForm({
         description: variant.description ?? "",
         menuItemId: variant.menuItemId ?? ""
       })),
-      allergens: item?.allergens ?? ""
+      allergens: item?.allergens ?? "",
+      currency: (item?.currency as "MXN" | "USD") ?? "MXN"
     }
   })
   const [searchCategory, setSearchCategory] = useState<string>("")
@@ -360,6 +361,30 @@ export default function ItemForm({
                       <FieldDescription>
                         Cambia el estado del producto para mostrarlo u ocultarlo
                         en el menú
+                      </FieldDescription>
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name="currency"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field className="border-border rounded-lg border p-4">
+                      <FieldLabel htmlFor={field.name}>Moneda</FieldLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar moneda" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={"MXN"}>MXN</SelectItem>
+                          <SelectItem value={"USD"}>USD</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FieldDescription>
+                        Selecciona la moneda del producto
                       </FieldDescription>
                     </Field>
                   )}

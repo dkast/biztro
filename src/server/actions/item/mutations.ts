@@ -1,7 +1,7 @@
 "use server"
 
-import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { Prisma } from "@/generated/prisma-client/client"
+import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
@@ -48,7 +48,8 @@ export const createItem = authMemberActionClient
         categoryId,
         variants,
         featured,
-        allergens
+        allergens,
+        currency
       },
       ctx: { member }
     }) => {
@@ -88,7 +89,7 @@ export const createItem = authMemberActionClient
       if (existingItem) {
         let suffix = 1
         let candidateName = `${name} (copia)`
-        
+
         // Check if the name with "copia" suffix already exists
         let nameExists = await prisma.menuItem.findFirst({
           where: {
@@ -96,7 +97,7 @@ export const createItem = authMemberActionClient
             organizationId: currentOrgId
           }
         })
-        
+
         // If it exists, try incrementing numbers until we find an available name
         while (nameExists) {
           suffix++
@@ -108,7 +109,7 @@ export const createItem = authMemberActionClient
             }
           })
         }
-        
+
         name = candidateName
       }
 
@@ -122,6 +123,7 @@ export const createItem = authMemberActionClient
             categoryId: categoryId === "" ? null : categoryId,
             featured,
             allergens,
+            currency: currency ?? "MXN",
             organizationId: currentOrgId,
             variants: {
               create: [
@@ -248,6 +250,9 @@ export const bulkCreateItems = authMemberActionClient
                 description: item.description || "",
                 status: item.status || MenuItemStatus.ACTIVE,
                 categoryId,
+                currency: item.currency
+                  ? (item.currency as "MXN" | "USD")
+                  : "MXN",
                 organizationId: currentOrgId,
                 variants: {
                   create: [
@@ -314,7 +319,8 @@ export const updateItem = authMemberActionClient
         organizationId,
         variants,
         featured,
-        allergens
+        allergens,
+        currency
       }
     }) => {
       try {
@@ -324,6 +330,7 @@ export const updateItem = authMemberActionClient
             name,
             description,
             status,
+            currency: currency ?? "MXN",
             categoryId: categoryId === "" ? null : categoryId,
             featured,
             allergens,
