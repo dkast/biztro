@@ -100,6 +100,7 @@ function MultiVariantForm({
                       min={0}
                       placeholder="Precio"
                       onChange={e => field.onChange(Number(e.target.value))}
+                      onFocus={e => (e.target as HTMLInputElement).select()}
                       value={field.value ?? ""}
                     />
                     {fieldState.invalid && (
@@ -148,6 +149,7 @@ function SingleVariantForm({
             placeholder="Precio"
             className="w-1/3"
             onChange={e => field.onChange(Number(e.target.value))}
+            onFocus={e => (e.target as HTMLInputElement).select()}
             value={field.value ?? ""}
           />
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
