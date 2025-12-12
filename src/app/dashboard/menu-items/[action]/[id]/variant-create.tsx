@@ -148,6 +148,7 @@ export function VariantCreateForm({
               inputMode="decimal"
               placeholder="Precio"
               onChange={e => field.onChange(Number(e.target.value))}
+              onFocus={e => (e.target as HTMLInputElement).select()}
               value={field.value ?? ""}
             />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

@@ -3,7 +3,7 @@
 import React, { use, useEffect, useState } from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import { DevTool } from "@hookform/devtools"
+// import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Check, Loader, PlusCircle, TriangleAlert, X } from "lucide-react"
@@ -186,7 +186,9 @@ export default function ItemForm({
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Producto actualizado")
-        form.reset(undefined, { keepValues: true, keepDirty: false })
+        // Reset the form using the current values so RHF updates defaultValues
+        // and clears the dirty state.
+        form.reset(form.getValues())
 
         router.refresh()
       } else if (data?.failure.reason) {
@@ -588,7 +590,7 @@ export default function ItemForm({
         open={openVariant}
         setOpen={setOpenVariant}
       />
-      <DevTool control={form.control} />
+      {/* <DevTool control={form.control} /> */}
     </div>
   )
 }
