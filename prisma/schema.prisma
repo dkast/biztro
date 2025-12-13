@@ -16,22 +16,30 @@ enum Currency {
 // Non-auth domain models. Auth-related models moved to `auth.prisma`.
 
 model Location {
-  id             String         @id @default(cuid())
-  name           String         @default("Main")
-  description    String?
-  address        String
-  phone          String?
-  facebook       String?
-  instagram      String?
-  twitter        String?
-  tiktok         String?
-  whatsapp       String?
-  website        String?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  organizationId String
-  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  openingHours   OpeningHours[]
+  id              String         @id @default(cuid())
+  name            String         @default("Main")
+  description     String?
+  address         String
+  phone           String?
+  facebook        String?
+  instagram       String?
+  twitter         String?
+  tiktok          String?
+  whatsapp        String?
+  website         String?
+  // Services
+  serviceDelivery Boolean        @default(false)
+  serviceTakeout  Boolean        @default(false)
+  serviceDineIn   Boolean        @default(false)
+  // Delivery fee: 0 = free
+  deliveryFee     Float          @default(0)
+  // Default currency for this location
+  currency        Currency       @default(MXN)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  organizationId  String
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  openingHours    OpeningHours[]
 }
 
 model OpeningHours {

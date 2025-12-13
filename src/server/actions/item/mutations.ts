@@ -114,6 +114,12 @@ export const createItem = authMemberActionClient
       }
 
       try {
+        // Resolve default currency from the organization's default location if not provided
+        const defaultLocation = await prisma.location.findFirst({
+          where: { organizationId: currentOrgId }
+        })
+        const itemCurrency =
+          currency ?? (defaultLocation?.currency as "MXN" | "USD") ?? "MXN"
         const item = await prisma.menuItem.create({
           data: {
             name,
@@ -123,7 +129,7 @@ export const createItem = authMemberActionClient
             categoryId: categoryId === "" ? null : categoryId,
             featured,
             allergens,
-            currency: currency ?? "MXN",
+            currency: itemCurrency,
             organizationId: currentOrgId,
             variants: {
               create: [
@@ -192,6 +198,10 @@ export const bulkCreateItems = authMemberActionClient
 
     try {
       const createdItems = await prisma.$transaction(async tx => {
+        // Resolve default currency from the organization's default location
+        const defaultLocation = await tx.location.findFirst({
+          where: { organizationId: currentOrgId }
+        })
         // First, fetch all existing categories for the organization
         const existingCategories = await tx.category.findMany({
           where: {
@@ -252,7 +262,7 @@ export const bulkCreateItems = authMemberActionClient
                 categoryId,
                 currency: item.currency
                   ? (item.currency as "MXN" | "USD")
-                  : "MXN",
+                  : ((defaultLocation?.currency as "MXN" | "USD") ?? "MXN"),
                 organizationId: currentOrgId,
                 variants: {
                   create: [

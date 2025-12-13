@@ -33,7 +33,12 @@ export const createLocation = authMemberActionClient
         instagram,
         twitter,
         tiktok,
-        whatsapp
+        whatsapp,
+        serviceDelivery,
+        serviceTakeout,
+        serviceDineIn,
+        deliveryFee,
+        currency
       },
       ctx: { member }
     }) => {
@@ -59,6 +64,11 @@ export const createLocation = authMemberActionClient
             twitter,
             tiktok,
             whatsapp,
+            serviceDelivery,
+            serviceTakeout,
+            serviceDineIn,
+            deliveryFee,
+            currency,
             organization: {
               connect: {
                 id: organizationId
@@ -114,7 +124,12 @@ export const updateLocation = authMemberActionClient
         instagram,
         twitter,
         tiktok,
-        whatsapp
+        whatsapp,
+        serviceDelivery,
+        serviceTakeout,
+        serviceDineIn,
+        deliveryFee,
+        currency
       },
       ctx: { member }
     }) => {
@@ -133,7 +148,12 @@ export const updateLocation = authMemberActionClient
             instagram,
             twitter,
             tiktok,
-            whatsapp
+            whatsapp,
+            serviceDelivery,
+            serviceTakeout,
+            serviceDineIn,
+            deliveryFee,
+            currency
           }
         })
 

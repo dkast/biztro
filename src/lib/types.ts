@@ -234,7 +234,15 @@ export const locationSchema = z.object({
   tiktok: z.string().optional(),
   whatsapp: z.string().optional(),
   website: z.url().optional(),
-  organizationId: z.string().optional()
+  organizationId: z.string().optional(),
+  // Services offered by this location
+  serviceDelivery: z.boolean().default(false).optional(),
+  serviceTakeout: z.boolean().default(false).optional(),
+  serviceDineIn: z.boolean().default(false).optional(),
+  // Delivery fee: 0 means free
+  deliveryFee: z.number().min(0).default(0).optional(),
+  // Default currency for the location
+  currency: z.enum(["MXN", "USD"]).default("MXN").optional()
 })
 
 export const hoursSchema = z.object({

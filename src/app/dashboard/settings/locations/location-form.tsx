@@ -3,8 +3,8 @@
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import { zodResolver } from "@hookform/resolvers/zod"
 import type { Location } from "@/generated/prisma-client/client"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
@@ -20,6 +20,14 @@ import {
   FieldLabel
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import {
   createLocation,
   updateLocation
@@ -47,6 +55,11 @@ export default function LocationForm({
       tiktok: data?.tiktok ?? undefined,
       whatsapp: data?.whatsapp ?? undefined,
       website: data?.website ?? undefined,
+      serviceDelivery: data?.serviceDelivery ?? false,
+      serviceTakeout: data?.serviceTakeout ?? false,
+      serviceDineIn: data?.serviceDineIn ?? false,
+      deliveryFee: data?.deliveryFee ?? 0,
+      currency: (data?.currency as "MXN" | "USD") ?? "MXN",
       organizationId: data?.organizationId ?? undefined
     }
   })
@@ -73,6 +86,11 @@ export default function LocationForm({
           tiktok: result.tiktok ?? undefined,
           whatsapp: result.whatsapp ?? undefined,
           website: result.website ?? undefined,
+          serviceDelivery: result.serviceDelivery ?? false,
+          serviceTakeout: result.serviceTakeout ?? false,
+          serviceDineIn: result.serviceDineIn ?? false,
+          deliveryFee: result.deliveryFee ?? 0,
+          currency: (result.currency as "MXN" | "USD") ?? "MXN",
           organizationId: result.organizationId ?? undefined
         })
       } else if (data?.failure.reason) {
@@ -126,6 +144,11 @@ export default function LocationForm({
       tiktok: data?.tiktok ?? undefined,
       whatsapp: data?.whatsapp ?? undefined,
       website: data?.website ?? undefined,
+      serviceDelivery: data?.serviceDelivery ?? false,
+      serviceTakeout: data?.serviceTakeout ?? false,
+      serviceDineIn: data?.serviceDineIn ?? false,
+      deliveryFee: data?.deliveryFee ?? 0,
+      currency: (data?.currency as "MXN" | "USD") ?? "MXN",
       organizationId: data?.organizationId ?? undefined
     })
   }, [data, form])
@@ -328,6 +351,106 @@ export default function LocationForm({
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
+                </FieldContent>
+              </Field>
+            )}
+          />
+        </div>
+        <PageSubtitle title="Servicios" />
+        <div className="flex flex-col gap-4">
+          <Controller
+            name="currency"
+            control={form.control}
+            render={({ field }) => (
+              <Field className="grid grid-cols-3 items-center sm:gap-4">
+                <FieldLabel htmlFor={field.name}>Moneda por defecto</FieldLabel>
+                <FieldContent className="col-span-2 w-full">
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar moneda" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={"MXN"}>MXN</SelectItem>
+                      <SelectItem value={"USD"}>USD</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
+            )}
+          />
+          <Controller
+            name="serviceDelivery"
+            control={form.control}
+            render={({ field }) => (
+              <Field
+                className="grid grid-cols-3 items-center sm:gap-4"
+                orientation="horizontal"
+              >
+                <FieldLabel htmlFor={field.name}>Delivery</FieldLabel>
+                <FieldContent className="col-span-2 flex w-full items-center justify-between">
+                  <FieldDescription>
+                    Habilitar entrega a domicilio
+                  </FieldDescription>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FieldContent>
+              </Field>
+            )}
+          />
+          <Controller
+            name="deliveryFee"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field className="grid grid-cols-3 items-center sm:gap-4">
+                <FieldLabel htmlFor={field.name}>Costo de delivery</FieldLabel>
+                <FieldContent className="col-span-2 w-full">
+                  <Input {...field} id={field.name} type="number" min={0} />
+                  <FieldDescription>0 = Gratis</FieldDescription>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </FieldContent>
+              </Field>
+            )}
+          />
+          <Controller
+            name="serviceTakeout"
+            control={form.control}
+            render={({ field }) => (
+              <Field
+                className="grid grid-cols-3 items-center sm:gap-4"
+                orientation="horizontal"
+              >
+                <FieldLabel htmlFor={field.name}>Para llevar</FieldLabel>
+                <FieldContent className="col-span-2 flex w-full items-center justify-between">
+                  <FieldDescription>Habilitar para llevar</FieldDescription>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FieldContent>
+              </Field>
+            )}
+          />
+          <Controller
+            name="serviceDineIn"
+            control={form.control}
+            render={({ field }) => (
+              <Field
+                className="grid grid-cols-3 items-center sm:gap-4"
+                orientation="horizontal"
+              >
+                <FieldLabel htmlFor={field.name}>Comer aquí</FieldLabel>
+                <FieldContent className="col-span-2 flex w-full items-center justify-between">
+                  <FieldDescription>
+                    Habilitar consumo en local
+                  </FieldDescription>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
                 </FieldContent>
               </Field>
             )}
