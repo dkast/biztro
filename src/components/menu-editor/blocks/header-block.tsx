@@ -3,7 +3,6 @@
 import * as React from "react"
 import { useNode } from "@craftjs/core"
 import { type RgbaColor } from "@uiw/react-color"
-import { ChevronDown, Phone } from "lucide-react"
 import Image from "next/image"
 
 import GradientBlur from "@/components/flare-ui/gradient-blur"
@@ -16,22 +15,9 @@ import HeaderSettings from "@/components/menu-editor/blocks/header-settings"
 import LocationData from "@/components/menu-editor/blocks/location-data"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle
-} from "@/components/ui/drawer"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getCurrentOrganization } from "@/server/actions/user/queries"
-import { useIsMobile } from "@/hooks/use-mobile"
-import {
-  cn,
-  getFormattedTime,
-  getInitials,
-  getOpenHoursLegend,
-  getOpenHoursStatus
-} from "@/lib/utils"
+import { cn, getInitials } from "@/lib/utils"
 
 export type HeaderBlockProps = {
   layout: "classic" | "modern"
