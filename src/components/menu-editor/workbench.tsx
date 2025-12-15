@@ -32,7 +32,7 @@ import MenuTour from "@/components/menu-editor/menu-tour"
 import MenuTourMobile from "@/components/menu-editor/menu-tour-mobile"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
-import SyncStatus from "@/components/menu-editor/sync-status"
+import SyncStatusBanner from "@/components/menu-editor/sync-status-banner"
 import ThemeSelector from "@/components/menu-editor/theme-selector"
 import Toolbar from "@/components/menu-editor/toolbar"
 import ToolboxPanel from "@/components/menu-editor/toolbox-panel"
@@ -265,7 +265,7 @@ export default function Workbench({
             <Header className="editor-topbar relative py-4">
               <MenuPublish menu={menu} />
             </Header>
-            <SyncStatus
+            <SyncStatusBanner
               menu={menu}
               location={location}
               categories={categories}
@@ -342,7 +342,7 @@ export default function Workbench({
                 id="editor-canvas"
                 className="no-scrollbar bg-secondary relative h-full w-full overflow-y-auto"
               >
-                <SyncStatus
+                <SyncStatusBanner
                   menu={menu}
                   location={location}
                   categories={categories}
@@ -421,9 +421,7 @@ interface FramePreviewContentProps {
   frameDocument: Document | null | undefined
   frameDocRef: RefObject<Document | null>
   json?: string
-  organization: NonNullable<
-    Awaited<ReturnType<typeof getCurrentOrganization>>
-  >
+  organization: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>
   location: Awaited<ReturnType<typeof getDefaultLocation>> | null
   updateFrameHeight: () => void
 }
