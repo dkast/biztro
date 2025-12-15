@@ -70,7 +70,7 @@ export default function LocationData({
       onClick={
         isMobile ? () => setIsDrawerOpen(true) : () => setIsDialogOpen(true)
       }
-      className="flex flex-row items-center gap-1 rounded-full border-[0.5px] border-white/50 bg-white/50 px-1 py-0.5 backdrop-blur-md"
+      className="flex flex-row items-center gap-1 rounded-full border-[0.5px] border-white/50 bg-white/20 px-1 py-0.5 backdrop-blur-md"
       aria-label="Ver horario"
     >
       <div className="dark">
