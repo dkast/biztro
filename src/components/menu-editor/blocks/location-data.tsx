@@ -1,7 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { ChevronDown, Phone } from "lucide-react"
+import {
+  ChevronDown,
+  HandPlatter,
+  Motorbike,
+  Phone,
+  ShoppingBag
+} from "lucide-react"
 
 import {
   Dialog,
@@ -17,6 +23,13 @@ import {
   DrawerHeader,
   DrawerTitle
 } from "@/components/ui/drawer"
+import {
+  Item,
+  ItemContent,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle
+} from "@/components/ui/item"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
 import {
@@ -90,7 +103,7 @@ export default function LocationData({
   )
 
   const hoursList = (
-    <div className="flex flex-col divide-y dark:divide-gray-800">
+    <div className="flex flex-col divide-y px-4 dark:divide-gray-800">
       {location.openingHours?.map(day => (
         <div key={day.day} className="grid grid-cols-3 py-2 text-xs">
           <span className="font-medium">
@@ -122,26 +135,55 @@ export default function LocationData({
   const servicesList = (
     <div className="mt-3 text-sm">
       <div className="font-medium">Servicios</div>
-      <ul className="mt-2 space-y-1">
+      <ItemGroup className="mt-2 gap-1">
         {location.serviceDelivery && (
-          <li>
-            Delivery —{" "}
-            {location.deliveryFee === 0
-              ? "Gratis"
-              : formatCurrency(
-                  location.deliveryFee,
-                  location.currency as "MXN" | "USD"
-                )}
-          </li>
+          <Item size="sm" variant="outline">
+            <ItemMedia variant="icon">
+              <Motorbike />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>
+                Entrega a domicilio —{" "}
+                <span className="text-muted-foreground">
+                  {location.deliveryFee === 0
+                    ? "Gratis"
+                    : formatCurrency(
+                        location.deliveryFee,
+                        location.currency as "MXN" | "USD"
+                      )}
+                </span>
+              </ItemTitle>
+            </ItemContent>
+          </Item>
         )}
-        {location.serviceTakeout && <li>Takeout</li>}
-        {location.serviceDineIn && <li>Dining</li>}
-      </ul>
+
+        {location.serviceTakeout && (
+          <Item size="sm" variant="outline">
+            <ItemMedia variant="icon">
+              <ShoppingBag />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>Para llevar</ItemTitle>
+            </ItemContent>
+          </Item>
+        )}
+
+        {location.serviceDineIn && (
+          <Item size="sm" variant="outline">
+            <ItemMedia variant="icon">
+              <HandPlatter />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>Comer en el lugar</ItemTitle>
+            </ItemContent>
+          </Item>
+        )}
+      </ItemGroup>
     </div>
   )
 
   return (
-    <div className={cn("flex flex-col gap-1 text-xs", className)}>
+    <div className={cn("flex flex-col gap-2 text-xs", className)}>
       {isBusinessInfoVisible && (
         <>
           <a
