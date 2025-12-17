@@ -5,7 +5,6 @@ import {
   ChevronDown,
   ExternalLink,
   HandPlatter,
-  MapPin,
   Motorbike,
   Phone,
   ShoppingBag
@@ -217,9 +216,6 @@ export default function LocationData({
 
   const address = location.address ? (
     <Item size="sm" variant="muted" className="py-2">
-      {/* <ItemMedia variant="icon">
-        <MapPin />
-      </ItemMedia> */}
       <ItemContent>
         <ItemTitle>Dirección</ItemTitle>
         <ItemDescription>{location.address}</ItemDescription>
