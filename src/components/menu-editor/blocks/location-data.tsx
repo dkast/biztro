@@ -3,7 +3,9 @@
 import * as React from "react"
 import {
   ChevronDown,
+  ExternalLink,
   HandPlatter,
+  MapPin,
   Motorbike,
   Phone,
   ShoppingBag
@@ -25,7 +27,9 @@ import {
 } from "@/components/ui/drawer"
 import {
   Item,
+  ItemActions,
   ItemContent,
+  ItemDescription,
   ItemGroup,
   ItemMedia,
   ItemTitle
@@ -103,32 +107,61 @@ export default function LocationData({
   )
 
   const hoursList = (
-    <div className="flex flex-col divide-y px-4 dark:divide-gray-800">
-      {location.openingHours?.map(day => (
-        <div key={day.day} className="grid grid-cols-3 py-2 text-xs">
-          <span className="font-medium">
-            {day.day === "MONDAY" && "Lunes"}
-            {day.day === "TUESDAY" && "Martes"}
-            {day.day === "WEDNESDAY" && "Miércoles"}
-            {day.day === "THURSDAY" && "Jueves"}
-            {day.day === "FRIDAY" && "Viernes"}
-            {day.day === "SATURDAY" && "Sábado"}
-            {day.day === "SUNDAY" && "Domingo"}
-          </span>
-          <span
-            className={cn(
-              day.allDay
-                ? "text-gray-600 dark:text-gray-400"
-                : "text-gray-400 dark:text-gray-600",
-              "col-span-2 tabular-nums"
-            )}
-          >
-            {day.allDay
-              ? `${getFormattedTime(day.startTime)} - ${getFormattedTime(day.endTime)}`
-              : "Cerrado"}
-          </span>
-        </div>
-      ))}
+    <div className="flex flex-col divide-y">
+      {(() => {
+        const DAY_INDEX_TO_NAME = [
+          "SUNDAY",
+          "MONDAY",
+          "TUESDAY",
+          "WEDNESDAY",
+          "THURSDAY",
+          "FRIDAY",
+          "SATURDAY"
+        ] as const
+        const todayName = DAY_INDEX_TO_NAME[new Date().getDay()]
+
+        return location.openingHours?.map(day => {
+          const isToday = day.day === todayName
+
+          return (
+            <div
+              key={day.day}
+              className={cn(
+                "grid grid-cols-3 px-4 py-2 text-xs",
+                isToday && "bg-indigo-50 dark:bg-indigo-900/20"
+              )}
+            >
+              <span
+                className={cn(
+                  "font-medium",
+                  isToday && "text-indigo-700 dark:text-indigo-300"
+                )}
+              >
+                {day.day === "MONDAY" && "Lunes"}
+                {day.day === "TUESDAY" && "Martes"}
+                {day.day === "WEDNESDAY" && "Miércoles"}
+                {day.day === "THURSDAY" && "Jueves"}
+                {day.day === "FRIDAY" && "Viernes"}
+                {day.day === "SATURDAY" && "Sábado"}
+                {day.day === "SUNDAY" && "Domingo"}
+              </span>
+              <span
+                className={cn(
+                  day.allDay
+                    ? "text-gray-600 dark:text-gray-400"
+                    : "text-gray-400 dark:text-gray-600",
+                  "col-span-2 tabular-nums",
+                  isToday && "text-indigo-700 dark:text-indigo-300"
+                )}
+              >
+                {day.allDay
+                  ? `${getFormattedTime(day.startTime)} - ${getFormattedTime(day.endTime)}`
+                  : "Cerrado"}
+              </span>
+            </div>
+          )
+        })
+      })()}
     </div>
   )
 
@@ -182,6 +215,28 @@ export default function LocationData({
     </div>
   )
 
+  const address = location.address ? (
+    <Item size="sm" variant="muted" className="py-2">
+      {/* <ItemMedia variant="icon">
+        <MapPin />
+      </ItemMedia> */}
+      <ItemContent>
+        <ItemTitle>Dirección</ItemTitle>
+        <ItemDescription>{location.address}</ItemDescription>
+      </ItemContent>
+      <ItemActions>
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location.address)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          <ExternalLink className="size-5" />
+        </a>
+      </ItemActions>
+    </Item>
+  ) : null
+
   return (
     <div className={cn("flex flex-col gap-2 text-xs", className)}>
       {isBusinessInfoVisible && (
@@ -215,9 +270,10 @@ export default function LocationData({
               <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
                 <DrawerContent className="px-4 pb-8">
                   <DrawerHeader>
-                    <DrawerTitle>Horarios</DrawerTitle>
+                    <DrawerTitle>Información</DrawerTitle>
                     <p className="text-muted-foreground text-xs">{legend}</p>
                   </DrawerHeader>
+                  {address}
                   {hoursList}
                   {servicesList}
                 </DrawerContent>
@@ -233,6 +289,7 @@ export default function LocationData({
                     {legend}
                   </DialogDescription>
                 </DialogHeader>
+                {address}
                 {hoursList}
                 {servicesList}
               </DialogContent>
