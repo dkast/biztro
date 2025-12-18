@@ -70,7 +70,9 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
               </span>
             </p>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive">Eliminar Organización</Button>
+              <Button variant="destructive" className="w-full sm:w-auto">
+                Eliminar Organización
+              </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>

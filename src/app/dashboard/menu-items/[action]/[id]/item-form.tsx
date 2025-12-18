@@ -104,7 +104,8 @@ export default function ItemForm({
         description: variant.description ?? "",
         menuItemId: variant.menuItemId ?? ""
       })),
-      allergens: item?.allergens ?? ""
+      allergens: item?.allergens ?? "",
+      currency: (item?.currency as "MXN" | "USD") ?? "MXN"
     }
   })
   const [searchCategory, setSearchCategory] = useState<string>("")
@@ -185,7 +186,9 @@ export default function ItemForm({
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Producto actualizado")
-        form.reset(undefined, { keepValues: true, keepDirty: false })
+        // Reset the form using the current values so RHF updates defaultValues
+        // and clears the dirty state.
+        form.reset(form.getValues())
 
         router.refresh()
       } else if (data?.failure.reason) {
@@ -360,6 +363,30 @@ export default function ItemForm({
                       <FieldDescription>
                         Cambia el estado del producto para mostrarlo u ocultarlo
                         en el menú
+                      </FieldDescription>
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name="currency"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field className="border-border rounded-lg border p-4">
+                      <FieldLabel htmlFor={field.name}>Moneda</FieldLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar moneda" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={"MXN"}>MXN</SelectItem>
+                          <SelectItem value={"USD"}>USD</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FieldDescription>
+                        Selecciona la moneda del producto
                       </FieldDescription>
                     </Field>
                   )}
@@ -563,7 +590,7 @@ export default function ItemForm({
         open={openVariant}
         setOpen={setOpenVariant}
       />
-      {/* <DevTool control={form.control} />  */}
+      {/* <DevTool control={form.control} /> */}
     </div>
   )
 }

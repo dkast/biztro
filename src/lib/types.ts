@@ -234,7 +234,15 @@ export const locationSchema = z.object({
   tiktok: z.string().optional(),
   whatsapp: z.string().optional(),
   website: z.url().optional(),
-  organizationId: z.string().optional()
+  organizationId: z.string().optional(),
+  // Services offered by this location
+  serviceDelivery: z.boolean().default(false).optional(),
+  serviceTakeout: z.boolean().default(false).optional(),
+  serviceDineIn: z.boolean().default(false).optional(),
+  // Delivery fee: 0 means free
+  deliveryFee: z.number().min(0).default(0).optional(),
+  // Default currency for the location
+  currency: z.enum(["MXN", "USD"]).default("MXN").optional()
 })
 
 export const hoursSchema = z.object({
@@ -309,6 +317,7 @@ export const menuItemSchema = z.object({
   categoryId: z.string().optional(),
   organizationId: z.string().optional(),
   featured: z.boolean().prefault(false).optional(),
+  currency: z.enum(["MXN", "USD"]).default("MXN").optional(),
   variants: z.tuple([variantSchema], variantSchema),
   allergens: z.string().optional()
 })
@@ -664,6 +673,7 @@ export type BulkMenuItem = {
   price: number
   status?: string
   category?: string
+  currency?: "MXN" | "USD"
 }
 
 export const bulkMenuItemSchema = z.array(
@@ -672,7 +682,8 @@ export const bulkMenuItemSchema = z.array(
     description: z.string().optional(),
     price: z.number().min(0),
     status: z.string().optional(),
-    category: z.string().optional()
+    category: z.string().optional(),
+    currency: z.enum(["MXN", "USD"]).optional()
   })
 )
 

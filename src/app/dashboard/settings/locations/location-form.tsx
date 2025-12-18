@@ -3,23 +3,34 @@
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import { zodResolver } from "@hookform/resolvers/zod"
 import type { Location } from "@/generated/prisma-client/client"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
 import { type z } from "zod/v4"
 
-import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Button } from "@/components/ui/button"
 import {
   Field,
   FieldContent,
   FieldDescription,
   FieldError,
-  FieldLabel
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+  FieldTitle
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import {
   createLocation,
   updateLocation
@@ -47,6 +58,11 @@ export default function LocationForm({
       tiktok: data?.tiktok ?? undefined,
       whatsapp: data?.whatsapp ?? undefined,
       website: data?.website ?? undefined,
+      serviceDelivery: data?.serviceDelivery ?? false,
+      serviceTakeout: data?.serviceTakeout ?? false,
+      serviceDineIn: data?.serviceDineIn ?? false,
+      deliveryFee: data?.deliveryFee ?? 0,
+      currency: (data?.currency as "MXN" | "USD") ?? "MXN",
       organizationId: data?.organizationId ?? undefined
     }
   })
@@ -73,6 +89,11 @@ export default function LocationForm({
           tiktok: result.tiktok ?? undefined,
           whatsapp: result.whatsapp ?? undefined,
           website: result.website ?? undefined,
+          serviceDelivery: result.serviceDelivery ?? false,
+          serviceTakeout: result.serviceTakeout ?? false,
+          serviceDineIn: result.serviceDineIn ?? false,
+          deliveryFee: result.deliveryFee ?? 0,
+          currency: (result.currency as "MXN" | "USD") ?? "MXN",
           organizationId: result.organizationId ?? undefined
         })
       } else if (data?.failure.reason) {
@@ -126,83 +147,103 @@ export default function LocationForm({
       tiktok: data?.tiktok ?? undefined,
       whatsapp: data?.whatsapp ?? undefined,
       website: data?.website ?? undefined,
+      serviceDelivery: data?.serviceDelivery ?? false,
+      serviceTakeout: data?.serviceTakeout ?? false,
+      serviceDineIn: data?.serviceDineIn ?? false,
+      deliveryFee: data?.deliveryFee ?? 0,
+      currency: (data?.currency as "MXN" | "USD") ?? "MXN",
       organizationId: data?.organizationId ?? undefined
     })
   }, [data, form])
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <fieldset disabled={!enabled} className="mt-10 space-y-6">
-        <Controller
-          name="name"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field>
-              <FieldLabel htmlFor={field.name}>
-                Nombre de la sucursal
-              </FieldLabel>
-              <Input {...field} id={field.name} placeholder="Nombre" />
-              <FieldDescription>
-                Nombre de referencia para la sucursal, no será visible para los
-                clientes
-              </FieldDescription>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-        <Controller
-          name="description"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field>
-              <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
-              <Input
-                {...field}
-                id={field.name}
-                placeholder="Descripción (opcional)"
-              />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-        <Controller
-          name="address"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field>
-              <FieldLabel htmlFor={field.name}>Dirección</FieldLabel>
-              <Input {...field} id={field.name} placeholder="Dirección" />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-        <Controller
-          name="phone"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field>
-              <FieldLabel htmlFor={field.name}>Teléfono</FieldLabel>
-              <Input
-                type="tel"
-                {...field}
-                id={field.name}
-                className="sm:w-1/2"
-                placeholder="Teléfono (opcional)"
-              />
-              <FieldDescription>
-                Número de teléfono de la sucursal sin espacios ni guiones
-              </FieldDescription>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-        <PageSubtitle title="Redes sociales" />
-        <div className="flex flex-col gap-4">
+      <FieldSet disabled={!enabled} className="mt-10">
+        <FieldGroup>
+          <Controller
+            name="name"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel htmlFor={field.name}>
+                  Nombre de la sucursal
+                </FieldLabel>
+                <Input {...field} id={field.name} placeholder="Nombre" />
+                <FieldDescription>
+                  Nombre de referencia para la sucursal, no será visible para
+                  los clientes
+                </FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            name="description"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder="Descripción (opcional)"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            name="address"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel htmlFor={field.name}>Dirección</FieldLabel>
+                <Input {...field} id={field.name} placeholder="Dirección" />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            name="phone"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel htmlFor={field.name}>Teléfono</FieldLabel>
+                <Input
+                  type="tel"
+                  {...field}
+                  id={field.name}
+                  className="sm:w-1/2"
+                  placeholder="Teléfono (opcional)"
+                />
+                <FieldDescription>
+                  Número de teléfono de la sucursal sin espacios ni guiones
+                </FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+        </FieldGroup>
+      </FieldSet>
+      <FieldSet disabled={!enabled} className="mt-10">
+        <FieldLegend>Redes sociales y contacto</FieldLegend>
+        <FieldDescription>
+          Agrega las redes sociales y métodos de contacto de esta sucursal
+        </FieldDescription>
+        <FieldGroup>
           <Controller
             name="facebook"
             control={form.control}
             render={({ field, fieldState }) => (
-              <Field className="grid grid-cols-3 items-center sm:gap-4">
+              <Field orientation="responsive">
                 <FieldLabel
                   htmlFor={field.name}
                   className="flex items-center gap-3"
@@ -215,12 +256,10 @@ export default function LocationForm({
                   />
                   Facebook
                 </FieldLabel>
-                <FieldContent className="col-span-2 w-full">
-                  <Input {...field} id={field.name} placeholder="usuario" />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </FieldContent>
+                <Input {...field} id={field.name} placeholder="usuario" />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -228,7 +267,7 @@ export default function LocationForm({
             name="instagram"
             control={form.control}
             render={({ field, fieldState }) => (
-              <Field className="grid grid-cols-3 items-center sm:gap-4">
+              <Field orientation="responsive">
                 <FieldLabel
                   htmlFor={field.name}
                   className="flex items-center gap-3"
@@ -241,12 +280,10 @@ export default function LocationForm({
                   />
                   Instagram
                 </FieldLabel>
-                <FieldContent className="col-span-2 w-full">
-                  <Input {...field} id={field.name} placeholder="usuario" />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </FieldContent>
+                <Input {...field} id={field.name} placeholder="usuario" />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -254,7 +291,7 @@ export default function LocationForm({
             name="twitter"
             control={form.control}
             render={({ field, fieldState }) => (
-              <Field className="grid grid-cols-3 items-center sm:gap-4">
+              <Field orientation="responsive">
                 <FieldLabel
                   htmlFor={field.name}
                   className="flex items-center gap-3"
@@ -267,12 +304,10 @@ export default function LocationForm({
                   />
                   Twitter
                 </FieldLabel>
-                <FieldContent className="col-span-2 w-full">
-                  <Input {...field} id={field.name} placeholder="usuario" />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </FieldContent>
+                <Input {...field} id={field.name} placeholder="usuario" />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -280,7 +315,7 @@ export default function LocationForm({
             name="tiktok"
             control={form.control}
             render={({ field, fieldState }) => (
-              <Field className="grid grid-cols-3 items-center sm:gap-4">
+              <Field orientation="responsive">
                 <FieldLabel
                   htmlFor={field.name}
                   className="flex items-center gap-3"
@@ -293,12 +328,10 @@ export default function LocationForm({
                   />
                   TikTok
                 </FieldLabel>
-                <FieldContent className="col-span-2 w-full">
-                  <Input {...field} id={field.name} placeholder="usuario" />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </FieldContent>
+                <Input {...field} id={field.name} placeholder="usuario" />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -306,7 +339,7 @@ export default function LocationForm({
             name="whatsapp"
             control={form.control}
             render={({ field, fieldState }) => (
-              <Field className="grid grid-cols-3 items-center sm:gap-4">
+              <Field orientation="responsive">
                 <FieldLabel
                   htmlFor={field.name}
                   className="flex items-center gap-3"
@@ -319,38 +352,150 @@ export default function LocationForm({
                   />
                   WhatsApp
                 </FieldLabel>
-                <FieldContent className="col-span-2 w-full">
-                  <Input
-                    {...field}
-                    id={field.name}
-                    placeholder="Número de teléfono"
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </FieldContent>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder="Número de teléfono"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
-        </div>
-        <Button
-          type="submit"
-          disabled={
-            statusUpdate === "executing" || statusCreate === "executing"
-          }
-        >
-          {statusUpdate === "executing" || statusCreate === "executing" ? (
-            <>
-              <Loader className="mr-2 size-4 animate-spin" />
-              {"Guardando..."}
-            </>
-          ) : data ? (
-            "Actualizar sucursal"
-          ) : (
-            "Crear sucursal"
-          )}
-        </Button>
-      </fieldset>
+        </FieldGroup>
+      </FieldSet>
+      <FieldSet disabled={!enabled} className="mt-10">
+        <FieldLegend>Servicios</FieldLegend>
+        <FieldDescription>
+          Configura los servicios que ofrece esta sucursal
+        </FieldDescription>
+        <FieldGroup>
+          <Controller
+            name="serviceDineIn"
+            control={form.control}
+            render={({ field }) => (
+              <FieldLabel htmlFor={field.name}>
+                <Field orientation="horizontal">
+                  <FieldContent>
+                    <FieldTitle>Comer aquí</FieldTitle>
+                    <FieldDescription>
+                      Habilitar consumo en local
+                    </FieldDescription>
+                  </FieldContent>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </Field>
+              </FieldLabel>
+            )}
+          />
+          <Controller
+            name="serviceTakeout"
+            control={form.control}
+            render={({ field }) => (
+              <FieldLabel htmlFor={field.name}>
+                <Field orientation="horizontal">
+                  <FieldContent>
+                    <FieldTitle>Para llevar</FieldTitle>
+                    <FieldDescription>Habilitar para llevar</FieldDescription>
+                  </FieldContent>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </Field>
+              </FieldLabel>
+            )}
+          />
+          <Controller
+            name="serviceDelivery"
+            control={form.control}
+            render={({ field }) => (
+              <FieldLabel htmlFor={field.name}>
+                <Field orientation="horizontal">
+                  <FieldContent>
+                    <FieldTitle>A domicilio</FieldTitle>
+                    <FieldDescription>
+                      Habilitar entrega a domicilio
+                    </FieldDescription>
+                  </FieldContent>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </Field>
+              </FieldLabel>
+            )}
+          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Controller
+              name="deliveryFee"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>
+                    Costo de envío a domicilio
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="number"
+                    min={0}
+                    onChange={e => field.onChange(Number(e.target.value))}
+                    onFocus={e => (e.target as HTMLInputElement).select()}
+                    inputMode="decimal"
+                  />
+                  <FieldDescription>0 = Gratis</FieldDescription>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="currency"
+              control={form.control}
+              render={({ field }) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>
+                    Moneda por defecto
+                  </FieldLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar moneda" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={"MXN"}>MXN</SelectItem>
+                      <SelectItem value={"USD"}>USD</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+              )}
+            />
+          </div>
+          <Field orientation="responsive">
+            <Button
+              type="submit"
+              disabled={
+                statusUpdate === "executing" || statusCreate === "executing"
+              }
+            >
+              {statusUpdate === "executing" || statusCreate === "executing" ? (
+                <>
+                  <Loader className="mr-2 size-4 animate-spin" />
+                  {"Guardando..."}
+                </>
+              ) : data ? (
+                "Actualizar sucursal"
+              ) : (
+                "Crear sucursal"
+              )}
+            </Button>
+          </Field>
+        </FieldGroup>
+      </FieldSet>
     </form>
   )
 }

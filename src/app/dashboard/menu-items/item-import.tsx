@@ -23,6 +23,7 @@ type CSVRow = {
   descripcion?: string
   precio: string
   categoria?: string
+  moneda?: string
 }
 
 type ImportError = {
@@ -69,6 +70,13 @@ export default function ItemImport() {
       }
     }
 
+    if (row.moneda) {
+      const m = row.moneda.trim().toUpperCase()
+      if (!(m === "MXN" || m === "USD")) {
+        errors.push("Moneda inválida (usar MXN o USD)")
+      }
+    }
+
     return errors
   }
 
@@ -108,12 +116,14 @@ export default function ItemImport() {
               errors: rowErrors
             })
           } else {
+            const currency = (row.moneda ?? "MXN").trim().toUpperCase()
             validItems.push({
               name: row.nombre,
               description: row.descripcion,
               price: parseFloat(row.precio),
               status: MenuItemStatus.ACTIVE,
-              category: row.categoria
+              category: row.categoria,
+              currency: currency === "USD" ? "USD" : "MXN"
             })
           }
         })
@@ -139,7 +149,8 @@ export default function ItemImport() {
         nombre: "Producto ejemplo",
         descripcion: "Descripcion del producto",
         precio: "100.00",
-        categoria: "Categoria (opcional)"
+        categoria: "Categoria (opcional)",
+        moneda: "MXN"
       }
     ]
 

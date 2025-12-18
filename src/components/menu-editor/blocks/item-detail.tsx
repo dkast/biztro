@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { formatPrice, resolveCurrency } from "@/lib/currency"
 
 type DetailItem = MenuItemGetPayload<{
   include: {
@@ -93,10 +94,12 @@ export function ItemDetail({
                   item.variants.length === 1 ? "w-full text-left text-lg" : ""
                 }
               >
-                $
-                {variant.price % 1 === 0
-                  ? variant.price
-                  : variant.price.toFixed(2)}
+                {formatPrice(
+                  variant.price,
+                  resolveCurrency(
+                    (item as unknown as { currency?: string }).currency
+                  )
+                )}
               </span>
             </div>
           ))}

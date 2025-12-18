@@ -20,9 +20,11 @@ export default function MenuCreate() {
       if (data?.failure?.reason) {
         if (data.failure.code === BasicPlanLimits.MENU_LIMIT_REACHED) {
           setShowUpgrade(true)
+          reset()
           return
         } else {
           toast.error(data.failure.reason)
+          reset()
           return
         }
       }
