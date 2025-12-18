@@ -20,37 +20,53 @@ export async function POST(req: NextRequest) {
   const { organizationId, imageType, objectId, filename, contentType } =
     await req.json()
 
+  // Use deterministic storage keys to enable overwriting and prevent orphaned files
+  let storageKey: string
+  switch (imageType) {
+    case ImageType.LOGO:
+      storageKey = `orgs/${organizationId}/branding/logo`
+      break
+    case ImageType.BANNER:
+      storageKey = `orgs/${organizationId}/branding/banner`
+      break
+    case ImageType.MENUITEM:
+      storageKey = `orgs/${organizationId}/menu-items/${objectId}/image`
+      break
+    default:
+      return new NextResponse("Invalid imageType", { status: 400 })
+  }
+
   // Create a signed URL for a PUT request
   const signedUrl = await getSignedUrl(
     R2,
     new PutObjectCommand({
       Bucket: env.R2_BUCKET_NAME,
-      Key: `orgId_${organizationId}/${objectId}/${filename}`,
+      Key: storageKey,
       ContentType: contentType as string
     }),
     { expiresIn: 3600 }
   )
 
-  // Save key file to database so we can retrieve it later
+  // Save storage key to database so we can retrieve it later
   switch (imageType) {
     case ImageType.LOGO:
       // Update organization using Prisma
       await prisma.organization.update({
         where: { id: organizationId as string },
-        data: { logo: `orgId_${organizationId}/${objectId}/${filename}` }
+        data: { logo: storageKey }
       })
       break
     case ImageType.BANNER:
       // Update organization using Prisma
       await prisma.organization.update({
         where: { id: organizationId as string },
-        data: { banner: `orgId_${organizationId}/${objectId}/${filename}` }
+        data: { banner: storageKey }
       })
       break
     case ImageType.MENUITEM:
       await prisma.menuItem.update({
         where: { id: objectId as string },
-        data: { image: `orgId_${organizationId}/${objectId}/${filename}` }
+        data: { image: storageKey }
       })
       break
     default:

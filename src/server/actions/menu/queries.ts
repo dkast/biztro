@@ -34,11 +34,15 @@ export async function getMenuById(id: string) {
   })
 
   if (menu?.organization?.banner) {
-    menu.organization.banner = `${env.R2_CUSTOM_DOMAIN}/${menu.organization.banner}`
+    // Add cache-busting query parameter based on updatedAt
+    const timestamp = menu.organization.updatedAt.getTime()
+    menu.organization.banner = `${env.R2_CUSTOM_DOMAIN}/${menu.organization.banner}?v=${timestamp}`
   }
 
   if (menu?.organization?.logo) {
-    menu.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${menu.organization.logo}`
+    // Add cache-busting query parameter based on updatedAt
+    const timestamp = menu.organization.updatedAt.getTime()
+    menu.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${menu.organization.logo}?v=${timestamp}`
   }
 
   return menu

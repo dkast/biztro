@@ -48,7 +48,9 @@ export async function getMenuItemById(id: string) {
   })
 
   if (item?.image) {
-    item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}`
+    // Add cache-busting query parameter based on updatedAt
+    const timestamp = item.updatedAt.getTime()
+    item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}?v=${timestamp}`
   }
 
   return item
@@ -108,7 +110,9 @@ export async function getCategoriesWithItems() {
   for (const category of data) {
     for (const item of category.menuItems) {
       if (item.image) {
-        item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}`
+        // Add cache-busting query parameter based on updatedAt
+        const timestamp = item.updatedAt.getTime()
+        item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}?v=${timestamp}`
       }
     }
   }
@@ -144,7 +148,9 @@ export async function getMenuItemsWithoutCategory() {
   // Get the image URL for each item
   for (const item of data) {
     if (item.image) {
-      item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}`
+      // Add cache-busting query parameter based on updatedAt
+      const timestamp = item.updatedAt.getTime()
+      item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}?v=${timestamp}`
     }
   }
 
@@ -194,7 +200,9 @@ export async function getFeaturedItems() {
   // Get the image URL for each item
   for (const item of data) {
     if (item.image) {
-      item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}`
+      // Add cache-busting query parameter based on updatedAt
+      const timestamp = item.updatedAt.getTime()
+      item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}?v=${timestamp}`
     }
   }
 

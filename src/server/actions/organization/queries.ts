@@ -18,11 +18,15 @@ export async function getOrganization(id: string) {
   })
 
   if (org?.banner) {
-    org.banner = `${env.R2_CUSTOM_DOMAIN}/${org.banner}`
+    // Add cache-busting query parameter based on updatedAt
+    const timestamp = org.updatedAt.getTime()
+    org.banner = `${env.R2_CUSTOM_DOMAIN}/${org.banner}?v=${timestamp}`
   }
 
   if (org?.logo) {
-    org.logo = `${env.R2_CUSTOM_DOMAIN}/${org.logo}`
+    // Add cache-busting query parameter based on updatedAt
+    const timestamp = org.updatedAt.getTime()
+    org.logo = `${env.R2_CUSTOM_DOMAIN}/${org.logo}?v=${timestamp}`
   }
 
   return org
@@ -42,11 +46,15 @@ export async function getOrganizationBySlug(slug: string) {
   })
 
   if (org?.banner) {
-    org.banner = `${env.R2_CUSTOM_DOMAIN}/${org.banner}`
+    // Add cache-busting query parameter based on updatedAt
+    const timestamp = org.updatedAt.getTime()
+    org.banner = `${env.R2_CUSTOM_DOMAIN}/${org.banner}?v=${timestamp}`
   }
 
   if (org?.logo) {
-    org.logo = `${env.R2_CUSTOM_DOMAIN}/${org.logo}`
+    // Add cache-busting query parameter based on updatedAt
+    const timestamp = org.updatedAt.getTime()
+    org.logo = `${env.R2_CUSTOM_DOMAIN}/${org.logo}?v=${timestamp}`
   }
 
   return org
