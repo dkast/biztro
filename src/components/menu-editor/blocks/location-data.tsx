@@ -35,24 +35,13 @@ import {
 } from "@/components/ui/item"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { formatPrice } from "@/lib/currency"
 import {
   cn,
   getFormattedTime,
   getOpenHoursLegend,
   getOpenHoursStatus
 } from "@/lib/utils"
-
-function formatCurrency(amount: number, currency: "MXN" | "USD" | undefined) {
-  const locale = currency === "USD" ? "en-US" : "es-MX"
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency: currency ?? "MXN"
-    }).format(amount)
-  } catch {
-    return `${amount} ${currency ?? "MXN"}`
-  }
-}
 
 export default function LocationData({
   isBusinessInfoVisible,
@@ -179,7 +168,7 @@ export default function LocationData({
                 <span className="text-muted-foreground">
                   {location.deliveryFee === 0
                     ? "Gratis"
-                    : formatCurrency(
+                    : formatPrice(
                         location.deliveryFee,
                         location.currency as "MXN" | "USD"
                       )}

@@ -4,7 +4,10 @@ export function formatPrice(amount: number, currency: Currency): string {
   const locale = currency === "MXN" ? "es-MX" : "en-US"
   const formatted = new Intl.NumberFormat(locale, {
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
+    style: "currency",
+    currency,
+    currencyDisplay: "symbol"
   }).format(amount)
 
   return `${formatted} ${currency}`
