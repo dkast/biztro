@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma"
 import { SubscriptionStatus } from "@/lib/types"
+import { getCacheBustedImageUrl } from "@/lib/utils"
 import { env } from "@/env.mjs"
 
 /**
@@ -18,15 +19,11 @@ export async function getOrganization(id: string) {
   })
 
   if (org?.banner) {
-    // Add cache-busting query parameter based on updatedAt
-    const timestamp = org.updatedAt.getTime()
-    org.banner = `${env.R2_CUSTOM_DOMAIN}/${org.banner}?v=${timestamp}`
+    org.banner = getCacheBustedImageUrl(org.banner, org.updatedAt)
   }
 
   if (org?.logo) {
-    // Add cache-busting query parameter based on updatedAt
-    const timestamp = org.updatedAt.getTime()
-    org.logo = `${env.R2_CUSTOM_DOMAIN}/${org.logo}?v=${timestamp}`
+    org.logo = getCacheBustedImageUrl(org.logo, org.updatedAt)
   }
 
   return org
@@ -46,15 +43,11 @@ export async function getOrganizationBySlug(slug: string) {
   })
 
   if (org?.banner) {
-    // Add cache-busting query parameter based on updatedAt
-    const timestamp = org.updatedAt.getTime()
-    org.banner = `${env.R2_CUSTOM_DOMAIN}/${org.banner}?v=${timestamp}`
+    org.banner = getCacheBustedImageUrl(org.banner, org.updatedAt)
   }
 
   if (org?.logo) {
-    // Add cache-busting query parameter based on updatedAt
-    const timestamp = org.updatedAt.getTime()
-    org.logo = `${env.R2_CUSTOM_DOMAIN}/${org.logo}?v=${timestamp}`
+    org.logo = getCacheBustedImageUrl(org.logo, org.updatedAt)
   }
 
   return org

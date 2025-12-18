@@ -5,6 +5,7 @@ import { cacheTag } from "next/cache"
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import type { MenuItemQueryFilter } from "@/lib/types"
+import { getCacheBustedImageUrl } from "@/lib/utils"
 import { env } from "@/env.mjs"
 
 export async function getMenuItems(
@@ -48,9 +49,7 @@ export async function getMenuItemById(id: string) {
   })
 
   if (item?.image) {
-    // Add cache-busting query parameter based on updatedAt
-    const timestamp = item.updatedAt.getTime()
-    item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}?v=${timestamp}`
+    item.image = getCacheBustedImageUrl(item.image, item.updatedAt)
   }
 
   return item
@@ -110,9 +109,7 @@ export async function getCategoriesWithItems() {
   for (const category of data) {
     for (const item of category.menuItems) {
       if (item.image) {
-        // Add cache-busting query parameter based on updatedAt
-        const timestamp = item.updatedAt.getTime()
-        item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}?v=${timestamp}`
+        item.image = getCacheBustedImageUrl(item.image, item.updatedAt)
       }
     }
   }
@@ -200,9 +197,7 @@ export async function getFeaturedItems() {
   // Get the image URL for each item
   for (const item of data) {
     if (item.image) {
-      // Add cache-busting query parameter based on updatedAt
-      const timestamp = item.updatedAt.getTime()
-      item.image = `${env.R2_CUSTOM_DOMAIN}/${item.image}?v=${timestamp}`
+      item.image = getCacheBustedImageUrl(item.image, item.updatedAt)
     }
   }
 

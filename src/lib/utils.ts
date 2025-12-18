@@ -1,4 +1,5 @@
 import InviteUserEmail from "@/emails/invite"
+import type { OpeningHours } from "@/generated/prisma-client/client"
 import {
   getLocalTimeZone,
   parseTime,
@@ -7,7 +8,6 @@ import {
   toCalendarDateTime,
   today
 } from "@internationalized/date"
-import type { OpeningHours } from "@/generated/prisma-client/client"
 import { clsx, type ClassValue } from "clsx"
 import { Resend } from "resend"
 import { twMerge } from "tailwind-merge"
@@ -296,4 +296,21 @@ export async function upgradeOrganizationPlan(
       }
     }
   }
+}
+
+/**
+ * Generates a cache-busted image URL for R2 assets.
+ * Appends a version query parameter based on the entity's updatedAt timestamp
+ * to ensure fresh images are loaded when content is replaced.
+ *
+ * @param storageKey - The R2 storage key (e.g., "orgs/123/menu-items/456/image")
+ * @param updatedAt - The entity's last updated timestamp
+ * @returns The full URL with cache-busting query parameter
+ */
+export function getCacheBustedImageUrl(
+  storageKey: string,
+  updatedAt: Date
+): string {
+  const timestamp = updatedAt.getTime()
+  return `${env.R2_CUSTOM_DOMAIN}/${storageKey}?v=${timestamp}`
 }
