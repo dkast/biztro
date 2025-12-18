@@ -377,7 +377,7 @@ export default function ThemeSelector({
           onValueChange={setFontThemeId}
           triggerContent={
             <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-200 px-4 py-2 text-left shadow-xs transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
-              <div>
+              <div className="flex flex-col">
                 <FontWrapper fontFamily={selectedFontTheme?.fontDisplay}>
                   <span className="text-base font-medium">
                     {selectedFontTheme?.fontDisplay}
@@ -396,7 +396,7 @@ export default function ThemeSelector({
               className="cursor-pointer [&:has([data-state=checked])>div]:border-indigo-400 [&:has([data-state=checked])>div]:bg-indigo-50 dark:[&:has([data-state=checked])>div]:border-indigo-700 dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
             >
               <RadioGroupItem value={theme.name} className="sr-only" />
-              <div className="w-full rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
+              <div className="flex w-full flex-col rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
                 <FontWrapper fontFamily={theme.fontDisplay}>
                   <span className="text-base font-medium">
                     {theme.fontDisplay}
