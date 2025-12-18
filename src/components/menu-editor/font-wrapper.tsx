@@ -2,6 +2,8 @@
 
 import React, { useEffect } from "react"
 
+import { cn } from "@/lib/utils"
+
 // import WebFont from "webfontloader"
 
 export default function FontWrapper({
@@ -44,7 +46,7 @@ export default function FontWrapper({
 
   return (
     <div
-      className={className}
+      className={cn(className, "contents")}
       style={{
         fontFamily: `'${fontFamily}'`
       }}

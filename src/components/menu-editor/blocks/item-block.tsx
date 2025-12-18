@@ -217,6 +217,7 @@ export function ItemView({
                         color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
                         fontWeight: priceFontWeight
                       }}
+                      className="text-nowrap"
                     >
                       {formatPrice(
                         variant.price,
@@ -238,6 +239,7 @@ export function ItemView({
                   color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
                   fontWeight: priceFontWeight
                 }}
+                className="text-nowrap"
               >
                 {/* If it has decimal values, show them in the price as well with 2 decimal places */}
                 {formatPrice(
