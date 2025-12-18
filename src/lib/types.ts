@@ -383,6 +383,26 @@ export const enum ImageType {
   MENUITEM = "MENUITEM"
 }
 
+export const enum MediaAssetType {
+  IMAGE = "IMAGE",
+  VIDEO = "VIDEO",
+  DOCUMENT = "DOCUMENT"
+}
+
+export const enum MediaAssetScope {
+  MENU_ITEM_IMAGE = "MENU_ITEM_IMAGE",
+  ORG_LOGO = "ORG_LOGO",
+  ORG_BANNER = "ORG_BANNER",
+  PROMO = "PROMO",
+  OTHER = "OTHER"
+}
+
+export const enum MediaUsageEntityType {
+  MENU_ITEM = "MENU_ITEM",
+  ORGANIZATION = "ORGANIZATION",
+  PROMO = "PROMO"
+}
+
 export const enum MembershipRole {
   ADMIN = "admin",
   MEMBER = "member",
