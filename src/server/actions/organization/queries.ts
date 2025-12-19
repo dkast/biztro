@@ -3,7 +3,6 @@
 import prisma from "@/lib/prisma"
 import { SubscriptionStatus } from "@/lib/types"
 import { getCacheBustedImageUrl } from "@/lib/utils"
-import { env } from "@/env.mjs"
 
 /**
  * Retrieves an organization by its ID.

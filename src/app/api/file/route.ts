@@ -1,5 +1,6 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import { revalidateTag } from "next/cache"
 import { NextResponse, type NextRequest } from "next/server"
 
 import prisma from "@/lib/prisma"
@@ -129,6 +130,20 @@ export async function POST(req: NextRequest) {
         break
     }
   })
+
+  // Refresh relevant cache tags
+  // Note: Cache tags are only refreshed after successful transaction
+  switch (imageType) {
+    case ImageType.LOGO:
+    case ImageType.BANNER:
+      // Organization branding changed
+      revalidateTag(`organization-${organizationId}`, "max")
+      break
+    case ImageType.MENUITEM:
+      // Menu item image changed
+      revalidateTag(`menu-item-${objectId}`, "max")
+      break
+  }
 
   // Return the signed URL to the client for a PUT request
   // @see https://developers.cloudflare.com/r2/examples/aws/aws-sdk-js-v3/#generate-presigned-urls

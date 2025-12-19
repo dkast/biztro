@@ -7,6 +7,7 @@ import { headers } from "next/headers"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { SubscriptionStatus } from "@/lib/types"
+import { getCacheBustedImageUrl } from "@/lib/utils"
 import { env } from "@/env.mjs"
 
 // Get current organization for the user
@@ -24,12 +25,17 @@ export async function getCurrentOrganization() {
     }
     cacheTag(`organization-${currentOrg.id}`)
 
+    // updatedAt is now available from better-auth API response
+    const updatedAt = currentOrg.updatedAt
+      ? new Date(currentOrg.updatedAt)
+      : new Date()
+
     if (currentOrg?.banner) {
-      currentOrg.banner = `${env.R2_CUSTOM_DOMAIN}/${currentOrg.banner}`
+      currentOrg.banner = getCacheBustedImageUrl(currentOrg.banner, updatedAt)
     }
 
     if (currentOrg?.logo) {
-      currentOrg.logo = `${env.R2_CUSTOM_DOMAIN}/${currentOrg.logo}`
+      currentOrg.logo = getCacheBustedImageUrl(currentOrg.logo, updatedAt)
     }
 
     return currentOrg
