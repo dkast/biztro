@@ -235,7 +235,7 @@ export default function ItemForm({
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <PageSubtitle
           title={title}
-          className="border-border bg-background sticky top-0 z-10 rounded-xl border px-4 py-3 shadow-xs"
+          className="border-border bg-background sticky top-18 z-10 rounded-xl border px-4 py-3 shadow-xs group-[.is-dialog]:top-0"
         >
           <div className="flex gap-2">
             <Button
@@ -396,7 +396,7 @@ export default function ItemForm({
                   control={form.control}
                   render={({ field }) => (
                     <Field
-                      className="border-border rounded-lg border p-4"
+                      className="border-border has-data-[state=checked]:bg-primary/10 has-data-[state=checked]:border-primary rounded-lg border p-4"
                       orientation="horizontal"
                     >
                       <FieldContent>
