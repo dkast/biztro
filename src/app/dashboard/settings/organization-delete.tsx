@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import toast from "react-hot-toast"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
@@ -18,12 +19,18 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { deleteOrganization } from "@/server/actions/organization/mutations"
 import { cn } from "@/lib/utils"
 
+const CONFIRMATION_WORD = "ELIMINAR"
+
 function OrganizationDelete({ organizationId }: { organizationId: string }) {
   const router = useRouter()
+  const [confirmation, setConfirmation] = useState("")
+
+  const hasConfirmed = confirmation.trim().toUpperCase() === CONFIRMATION_WORD
 
   const { execute, reset } = useAction(deleteOrganization, {
     onExecute: () => {
@@ -36,7 +43,7 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
           data.failure.reason ?? "No se pudo eliminar la organización"
         )
       } else {
-        router.push("/dashboard")
+        router.push("/")
         reset()
       }
     },
@@ -47,8 +54,13 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
   })
 
   const handleDelete = () => {
+    if (!hasConfirmed) {
+      return
+    }
+
     execute({
-      id: organizationId
+      id: organizationId,
+      confirmation
     })
   }
 
@@ -77,29 +89,42 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Eliminar Organización</AlertDialogTitle>
-                <AlertDialogDescription>
-                  ¿Estás seguro que deseas eliminar la organización? Esta acción
-                  es irreversible. Todos los datos asociados a la organización
-                  serán eliminados y no podrán ser recuperados. Asegurese de
-                  haber descargado todos los datos que desea conservar antes de
-                  continuar.{" "}
-                  <Link
-                    href="settings/billing"
-                    className="text-blue-600 underline underline-offset-2 hover:text-blue-800"
-                  >
-                    Cancele su suscripción antes de eliminar la organización.
-                  </Link>
+                <AlertDialogDescription className="flex flex-col gap-4">
+                  <div>
+                    ¿Estás seguro que deseas eliminar la organización? Esta
+                    acción es irreversible. Todos los datos asociados a la
+                    organización serán eliminados y no podrán ser recuperados.
+                    Asegurese de haber descargado todos los datos que desea
+                    conservar antes de continuar.{" "}
+                    <Link
+                      href="settings/billing"
+                      className="text-blue-600 underline underline-offset-2 hover:text-blue-800"
+                    >
+                      Cancele su suscripción antes de eliminar la organización.
+                    </Link>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-muted-foreground text-xs">
+                      Por seguridad escribe <strong>{CONFIRMATION_WORD}</strong>{" "}
+                      y presiona eliminar.
+                    </p>
+                    <Input
+                      placeholder={CONFIRMATION_WORD}
+                      value={confirmation}
+                      onChange={event => setConfirmation(event.target.value)}
+                      aria-label="Confirma escribiendo ELIMINAR"
+                    />
+                  </div>
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
+              <AlertDialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-end sm:gap-4">
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
+                  disabled={!hasConfirmed}
+                  onClick={handleDelete}
                   className={cn(buttonVariants({ variant: "destructive" }))}
-                  onClick={() => {
-                    handleDelete()
-                  }}
                 >
-                  Eliminar
+                  Eliminar Organización
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

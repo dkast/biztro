@@ -2,12 +2,14 @@
 
 import { updateTag } from "next/cache"
 import { headers } from "next/headers"
+import { redirect } from "next/navigation"
 import { z } from "zod/v4"
 
 import { getOrganizationBySlug } from "@/server/actions/organization/queries"
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
+import { deleteOrganizationAssetsFromR2 } from "@/lib/r2"
 import { actionClient, authActionClient } from "@/lib/safe-actions"
 import { orgSchema } from "@/lib/types"
 
@@ -56,7 +58,8 @@ export const bootstrapOrg = authActionClient
             description,
             status: "ACTIVE",
             plan: "BASIC",
-            banner: ""
+            banner: "",
+            updatedAt: new Date().toISOString()
           },
           headers: await headers()
         })
@@ -358,12 +361,24 @@ export const joinWaitlist = actionClient
 export const deleteOrganization = authActionClient
   .inputSchema(
     z.object({
-      id: z.string()
+      id: z.string(),
+      confirmation: z.string()
     })
   )
-  .action(async ({ parsedInput: { id } }) => {
+  .action(async ({ parsedInput: { id, confirmation } }) => {
     // Delete organization
     try {
+      const normalizedConfirmation = confirmation?.trim().toUpperCase()
+
+      if (normalizedConfirmation !== "ELIMINAR") {
+        return {
+          failure: {
+            reason:
+              "Confirma escribiendo ELIMINAR antes de eliminar la organización"
+          }
+        }
+      }
+
       const subscription = await getCurrentSubscription(id)
       if (
         subscription &&
@@ -376,6 +391,8 @@ export const deleteOrganization = authActionClient
           }
         }
       } else {
+        await deleteOrganizationAssetsFromR2(id)
+
         // Delete organization through Better Auth server API and revalidate cache
         const deleted = await auth.api.deleteOrganization({
           body: { organizationId: id },
@@ -400,6 +417,16 @@ export const deleteOrganization = authActionClient
           updateTag(`organization-${id}`)
           updateTag(`organization-${id}-members`)
           updateTag(`organization-${id}-subscription`)
+        }
+
+        // Attempt to sign out the current session via Better Auth API so the
+        // client session cookie is cleared after the organization is deleted.
+        try {
+          // Call signOut directly per docs. Best-effort: log and continue on error.
+          await auth.api.signOut({ headers: await headers() })
+          redirect("/")
+        } catch (err) {
+          console.warn("Failed to sign out after organization deletion:", err)
         }
 
         return {
