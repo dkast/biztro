@@ -13,6 +13,26 @@ enum Currency {
   USD
 }
 
+enum MediaAssetType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+}
+
+enum MediaAssetScope {
+  MENU_ITEM_IMAGE
+  ORG_LOGO
+  ORG_BANNER
+  PROMO
+  OTHER
+}
+
+enum MediaUsageEntityType {
+  MENU_ITEM
+  ORGANIZATION
+  PROMO
+}
+
 // Non-auth domain models. Auth-related models moved to `auth.prisma`.
 
 model Location {
@@ -89,6 +109,8 @@ model MenuItem {
   name           String
   description    String?
   image          String?
+  imageAssetId   String?
+  imageAsset     MediaAsset?  @relation("MenuItemImageAsset", fields: [imageAssetId], references: [id], onDelete: SetNull)
   status         String       @default("DRAFT")
   featured       Boolean      @default(false)
   createdAt      DateTime     @default(now())
@@ -123,6 +145,46 @@ model Variant {
   updatedAt   DateTime @updatedAt
   menuItemId  String
   menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+}
+
+// Media asset management models for tracking R2 storage
+model MediaAsset {
+  id             String            @id @default(cuid())
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  storageKey     String            @unique
+  publicUrl      String?
+  type           MediaAssetType    @default(IMAGE)
+  scope          MediaAssetScope?
+  bytes          Int?
+  contentType    String?
+  width          Int?
+  height         Int?
+  deletedAt      DateTime?
+  unattachedAt   DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  usages         MediaUsage[]
+  menuItems      MenuItem[]        @relation("MenuItemImageAsset")
+  orgLogos       Organization[]    @relation("OrganizationLogoAsset")
+  orgBanners     Organization[]    @relation("OrganizationBannerAsset")
+
+  @@index([organizationId])
+  @@index([storageKey])
+}
+
+model MediaUsage {
+  id         String               @id @default(cuid())
+  assetId    String
+  asset      MediaAsset           @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  entityType MediaUsageEntityType
+  entityId   String
+  field      String?
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@unique([assetId, entityType, entityId, field])
+  @@index([entityType, entityId])
 }
 
 // Waitlist requests from the landing page. Drop in the future

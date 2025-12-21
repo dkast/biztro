@@ -60,6 +60,7 @@ export const createMenu = authActionClient
         }
       })
 
+      updateTag(`menus-${currentOrg.id}`)
       return {
         success: menu
       }
@@ -469,9 +470,8 @@ export const deleteColorTheme = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
-    const { getCurrentMembership } = await import(
-      "@/server/actions/user/queries"
-    )
+    const { getCurrentMembership } =
+      await import("@/server/actions/user/queries")
     const membership = await getCurrentMembership()
     const currentOrg = membership?.organizationId
     try {

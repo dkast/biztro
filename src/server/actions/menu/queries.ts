@@ -5,7 +5,7 @@ import { cacheTag } from "next/cache"
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { MenuStatus, SubscriptionStatus } from "@/lib/types"
-import { env } from "@/env.mjs"
+import { getCacheBustedImageUrl } from "@/lib/utils"
 
 export async function getMenus(currentOrgId: string) {
   "use cache"
@@ -34,11 +34,17 @@ export async function getMenuById(id: string) {
   })
 
   if (menu?.organization?.banner) {
-    menu.organization.banner = `${env.R2_CUSTOM_DOMAIN}/${menu.organization.banner}`
+    menu.organization.banner = getCacheBustedImageUrl(
+      menu.organization.banner,
+      menu.organization.updatedAt
+    )
   }
 
   if (menu?.organization?.logo) {
-    menu.organization.logo = `${env.R2_CUSTOM_DOMAIN}/${menu.organization.logo}`
+    menu.organization.logo = getCacheBustedImageUrl(
+      menu.organization.logo,
+      menu.organization.updatedAt
+    )
   }
 
   return menu

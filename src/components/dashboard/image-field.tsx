@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ImageUp } from "lucide-react"
+import Image from "next/image"
 
 import { FileUploader } from "@/components/dashboard/file-uploader"
 import { Button } from "@/components/ui/button"
@@ -38,13 +39,15 @@ export function ImageField({
         className
       )}
     >
-      <img
+      <Image
         src={src}
         alt="Foto"
         className="h-full w-full object-cover"
         loading="lazy"
+        fill
+        unoptimized
       />
-      <div className="absolute inset-0 hidden bg-black bg-opacity-50 group-hover:block">
+      <div className="absolute inset-0 hidden bg-black/50 backdrop-blur group-hover:block">
         <div className="absolute inset-0 flex items-center justify-center">
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>

@@ -201,7 +201,8 @@ export const auth = betterAuth({
             },
             banner: { column: "banner", type: "string", nullable: true },
             status: { column: "status", type: "string", default: "ACTIVE" },
-            plan: { column: "plan", type: "string", default: "BASIC" }
+            plan: { column: "plan", type: "string", default: "BASIC" },
+            updatedAt: { column: "updatedAt", type: "string" }
           }
         }
       },

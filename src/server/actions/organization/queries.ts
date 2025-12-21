@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma"
 import { SubscriptionStatus } from "@/lib/types"
-import { env } from "@/env.mjs"
+import { getCacheBustedImageUrl } from "@/lib/utils"
 
 /**
  * Retrieves an organization by its ID.
@@ -18,11 +18,11 @@ export async function getOrganization(id: string) {
   })
 
   if (org?.banner) {
-    org.banner = `${env.R2_CUSTOM_DOMAIN}/${org.banner}`
+    org.banner = getCacheBustedImageUrl(org.banner, org.updatedAt)
   }
 
   if (org?.logo) {
-    org.logo = `${env.R2_CUSTOM_DOMAIN}/${org.logo}`
+    org.logo = getCacheBustedImageUrl(org.logo, org.updatedAt)
   }
 
   return org
@@ -42,11 +42,11 @@ export async function getOrganizationBySlug(slug: string) {
   })
 
   if (org?.banner) {
-    org.banner = `${env.R2_CUSTOM_DOMAIN}/${org.banner}`
+    org.banner = getCacheBustedImageUrl(org.banner, org.updatedAt)
   }
 
   if (org?.logo) {
-    org.logo = `${env.R2_CUSTOM_DOMAIN}/${org.logo}`
+    org.logo = getCacheBustedImageUrl(org.logo, org.updatedAt)
   }
 
   return org

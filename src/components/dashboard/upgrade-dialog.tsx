@@ -49,7 +49,11 @@ export function UpgradeDialog({
           >
             Actualizar a Pro
           </RainbowButton>
-          <Button variant="link" onClick={onClose}>
+          <Button
+            variant="link"
+            onClick={onClose}
+            className="dark:text-indigo-300"
+          >
             Seguir en el plan gratuito
           </Button>
         </DialogFooter>

@@ -26,8 +26,8 @@ export default async function Layout({
             <AppSidebar promiseOrganization={organization} />
           </Suspense>
         </Sidebar>
-        <main className="flex grow flex-col">
-          <Header showLogo={false}>
+        <main className="relative flex grow flex-col">
+          <Header showLogo={false} className="sticky top-0 z-10 w-full">
             <SidebarTrigger className="size-5 text-gray-400 dark:text-gray-500" />
           </Header>
           {children}

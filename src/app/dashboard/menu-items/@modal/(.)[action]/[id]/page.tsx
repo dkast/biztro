@@ -46,7 +46,7 @@ export default async function ItemPage(props: {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Panel className="rounded-lg sm:m-2 sm:h-[95%]">
         <div className="h-full overflow-x-auto">
-          <div className="max-w-236 px-4 py-2 sm:mx-auto sm:px-6">
+          <div className="group is-dialog max-w-236 px-4 py-2 sm:mx-auto sm:px-6">
             <Suspense fallback={<LoadingItemSkeleton />}>
               <ItemForm action={params.action} promiseItem={item} />
             </Suspense>

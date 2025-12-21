@@ -64,21 +64,26 @@ model VerificationToken {
 }
 
 model Organization {
-  id           String     @id @default(cuid())
-  name         String
-  description  String?
-  logo         String?
-  banner       String?
-  status       String     @default("ACTIVE")
-  plan         String     @default("BASIC")
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  customDomain String?    @unique
-  categories   Category[]
-  location     Location[]
-  menus        Menu[]
-  menuItems    MenuItem[]
-  themes       Theme[]
+  id              String       @id @default(cuid())
+  name            String
+  description     String?
+  logo            String?
+  logoAssetId     String?
+  logoAsset       MediaAsset?  @relation("OrganizationLogoAsset", fields: [logoAssetId], references: [id], onDelete: SetNull)
+  banner          String?
+  bannerAssetId   String?
+  bannerAsset     MediaAsset?  @relation("OrganizationBannerAsset", fields: [bannerAssetId], references: [id], onDelete: SetNull)
+  status          String       @default("ACTIVE")
+  plan            String       @default("BASIC")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  customDomain    String?      @unique
+  categories      Category[]
+  location        Location[]
+  menus           Menu[]
+  menuItems       MenuItem[]
+  themes          Theme[]
+  mediaAssets     MediaAsset[]
 
   slug        String?
   metadata    String?
