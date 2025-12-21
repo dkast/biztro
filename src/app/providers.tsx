@@ -61,27 +61,29 @@ function Providers({ children }: { children: React.ReactNode }) {
         disableTransitionOnChange
         forcedTheme={forcedTheme}
       >
-        <NuqsAdapter>
-          <QueryClientProvider client={queryClient}>
-            <Provider>
-              <UnsavedChangesProvider>
-                <ReactQueryStreamedHydration>
-                  {children}
-                </ReactQueryStreamedHydration>
-              </UnsavedChangesProvider>
-              <Toaster
-                position="top-center"
-                toastOptions={{
-                  style: {
-                    background: "#333",
-                    color: "#fff"
-                  }
-                }}
-              />
-              <TailwindIndicator />
-            </Provider>
-          </QueryClientProvider>
-        </NuqsAdapter>
+        <React.Suspense fallback={null}>
+          <NuqsAdapter>
+            <QueryClientProvider client={queryClient}>
+              <Provider>
+                <UnsavedChangesProvider>
+                  <ReactQueryStreamedHydration>
+                    {children}
+                  </ReactQueryStreamedHydration>
+                </UnsavedChangesProvider>
+                <Toaster
+                  position="top-center"
+                  toastOptions={{
+                    style: {
+                      background: "#333",
+                      color: "#fff"
+                    }
+                  }}
+                />
+                <TailwindIndicator />
+              </Provider>
+            </QueryClientProvider>
+          </NuqsAdapter>
+        </React.Suspense>
       </ThemeProvider>
     </CSPostHogProvider>
   )

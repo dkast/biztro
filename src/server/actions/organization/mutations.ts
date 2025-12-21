@@ -2,7 +2,6 @@
 
 import { updateTag } from "next/cache"
 import { headers } from "next/headers"
-import { redirect } from "next/navigation"
 import { z } from "zod/v4"
 
 import { getOrganizationBySlug } from "@/server/actions/organization/queries"
@@ -424,7 +423,6 @@ export const deleteOrganization = authActionClient
         try {
           // Call signOut directly per docs. Best-effort: log and continue on error.
           await auth.api.signOut({ headers: await headers() })
-          redirect("/")
         } catch (err) {
           console.warn("Failed to sign out after organization deletion:", err)
         }

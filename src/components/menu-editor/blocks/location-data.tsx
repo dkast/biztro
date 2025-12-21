@@ -155,7 +155,7 @@ export default function LocationData({
 
   const servicesList = (
     <div className="mt-3 text-sm">
-      <div className="font-medium">Servicios</div>
+      <div className="font-medium">Servicios disponibles</div>
       <ItemGroup className="mt-2 gap-1">
         {location.serviceDelivery && (
           <Item size="sm" variant="outline">

@@ -89,31 +89,35 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Eliminar Organización</AlertDialogTitle>
-                <AlertDialogDescription className="flex flex-col gap-4">
-                  <div>
-                    ¿Estás seguro que deseas eliminar la organización? Esta
-                    acción es irreversible. Todos los datos asociados a la
-                    organización serán eliminados y no podrán ser recuperados.
-                    Asegurese de haber descargado todos los datos que desea
-                    conservar antes de continuar.{" "}
-                    <Link
-                      href="settings/billing"
-                      className="text-blue-600 underline underline-offset-2 hover:text-blue-800"
-                    >
-                      Cancele su suscripción antes de eliminar la organización.
-                    </Link>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <p className="text-muted-foreground text-xs">
-                      Por seguridad escribe <strong>{CONFIRMATION_WORD}</strong>{" "}
-                      y presiona eliminar.
-                    </p>
-                    <Input
-                      placeholder={CONFIRMATION_WORD}
-                      value={confirmation}
-                      onChange={event => setConfirmation(event.target.value)}
-                      aria-label="Confirma escribiendo ELIMINAR"
-                    />
+                <AlertDialogDescription asChild>
+                  <div className="flex flex-col gap-8">
+                    <div>
+                      ¿Estás seguro que deseas eliminar la organización? Esta
+                      acción es irreversible. Todos los datos asociados a la
+                      organización serán eliminados y no podrán ser recuperados.
+                      Asegurese de haber descargado todos los datos que desea
+                      conservar antes de continuar.{" "}
+                      <Link
+                        href="settings/billing"
+                        className="text-blue-600 underline underline-offset-2 hover:text-blue-800"
+                      >
+                        Cancele su suscripción antes de eliminar la
+                        organización.
+                      </Link>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <p className="text-muted-foreground text-xs">
+                        Por seguridad escribe{" "}
+                        <strong>{CONFIRMATION_WORD}</strong> y presiona
+                        eliminar.
+                      </p>
+                      <Input
+                        placeholder={CONFIRMATION_WORD}
+                        value={confirmation}
+                        onChange={event => setConfirmation(event.target.value)}
+                        aria-label="Confirma escribiendo ELIMINAR"
+                      />
+                    </div>
                   </div>
                 </AlertDialogDescription>
               </AlertDialogHeader>

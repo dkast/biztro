@@ -184,6 +184,7 @@
     "*.{ts,tsx,js,jsx,css,json,md,mdx}": "prettier --write"
   },
   "overrides": {
+    "prettier": "3.7.4",
     "import-in-the-middle": "1.13.1",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3"
