@@ -8,7 +8,6 @@ import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { SubscriptionStatus } from "@/lib/types"
 import { getCacheBustedImageUrl } from "@/lib/utils"
-import { env } from "@/env.mjs"
 
 // Get current organization for the user
 export async function getCurrentOrganization() {

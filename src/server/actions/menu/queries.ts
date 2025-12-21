@@ -6,7 +6,6 @@ import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { MenuStatus, SubscriptionStatus } from "@/lib/types"
 import { getCacheBustedImageUrl } from "@/lib/utils"
-import { env } from "@/env.mjs"
 
 export async function getMenus(currentOrgId: string) {
   "use cache"

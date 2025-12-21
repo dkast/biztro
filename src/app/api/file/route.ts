@@ -128,6 +128,9 @@ export async function POST(req: NextRequest) {
           data: { image: storageKey, imageAssetId: asset.id }
         })
         break
+      default:
+        // Should not reach here due to earlier validation
+        break
     }
   })
 
@@ -142,6 +145,9 @@ export async function POST(req: NextRequest) {
     case ImageType.MENUITEM:
       // Menu item image changed
       revalidateTag(`menu-item-${objectId}`, "max")
+      break
+    default:
+      // No cache tag to revalidate for unknown imageType
       break
   }
 
