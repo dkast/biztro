@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import AwsS3, { type AwsS3UploadParameters } from "@uppy/aws-s3"
 import Compressor from "@uppy/compressor"
 import Uppy, {
@@ -107,8 +107,8 @@ export function FileUploader({
       })
   )
 
-  useEffect(() => {
-    const handleFileAdded = async (file: UppyFile<Meta, Body>) => {
+  const handleFileAdded = useCallback(
+    async (file: UppyFile<Meta, Body>) => {
       // If the file is an image, get the dimensions
       if (file.type?.startsWith("image/")) {
         // console.log("Loading image")
@@ -140,34 +140,20 @@ export function FileUploader({
         uppy.info("El archivo no es una imagen", "error", 3000)
         uppy.removeFile(file.id)
       }
-    }
+    },
+    [uppy, limitDimension]
+  )
 
-    const handleComplete = (result: UploadResult<Meta, Body>) => {
-      onUploadSuccess(result)
-    }
-
+  useEffect(() => {
     uppy.on("file-added", handleFileAdded)
-    uppy.on("complete", handleComplete)
+    uppy.on("complete", onUploadSuccess)
 
     return () => {
       uppy.off("file-added", handleFileAdded)
-      uppy.off("complete", handleComplete)
-    }
-  }, [
-    uppy,
-    imageType,
-    objectId,
-    onUploadSuccess,
-    organizationId,
-    limitDimension
-  ])
-
-  // Cleanup Uppy instance on unmount
-  useEffect(() => {
-    return () => {
+      uppy.off("complete", onUploadSuccess)
       uppy.destroy()
     }
-  }, [uppy])
+  }, [uppy, handleFileAdded, onUploadSuccess])
 
   return (
     <Dashboard
