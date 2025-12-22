@@ -12,11 +12,11 @@ import Spanish from "@uppy/locales/lib/es_MX"
 import Dashboard from "@uppy/react/dashboard"
 
 // Uppy styles
-import "@uppy/core/dist/style.min.css"
-import "@uppy/dashboard/dist/style.min.css"
-import "@uppy/image-editor/dist/style.min.css"
+import "@uppy/core/css/style.css"
+import "@uppy/dashboard/css/style.css"
+import "@uppy/image-editor/css/style.css"
 
-// import "@uppy/webcam/dist/style.min.css"
+// import "@uppy/webcam/css/style.css"
 
 // import Webcam from "@uppy/webcam"
 import { useTheme } from "next-themes"
