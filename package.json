@@ -61,7 +61,6 @@
     "@react-email/components": "^1.0.2",
     "@sentry/nextjs": "^10.32.1",
     "@sindresorhus/slugify": "^3.0.0",
-    "@stripe/stripe-js": "^8.2.0",
     "@suyalcinkaya/gauge": "^0.1.0",
     "@t3-oss/env-nextjs": "^0.13.10",
     "@tanstack/match-sorter-utils": "^8.19.4",

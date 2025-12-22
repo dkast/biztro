@@ -45,7 +45,6 @@
         "@react-email/components": "^1.0.2",
         "@sentry/nextjs": "^10.32.1",
         "@sindresorhus/slugify": "^3.0.0",
-        "@stripe/stripe-js": "^8.2.0",
         "@suyalcinkaya/gauge": "^0.1.0",
         "@t3-oss/env-nextjs": "^0.13.10",
         "@tanstack/match-sorter-utils": "^8.19.4",
@@ -1397,8 +1396,6 @@
     "@standard-schema/spec": ["@standard-schema/spec@1.0.0", "", {}, "sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA=="],
 
     "@standard-schema/utils": ["@standard-schema/utils@0.3.0", "", {}, "sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g=="],
-
-    "@stripe/stripe-js": ["@stripe/stripe-js@8.3.0", "", {}, "sha512-hmC3u0anySPI+As+wFGrKG38pXnXAUqyiitnYeYknEOslcDM96AkBdMNxKYOopecuP/v1HMbclUEq8/DKKn+6w=="],
 
     "@suyalcinkaya/gauge": ["@suyalcinkaya/gauge@0.1.0", "", { "peerDependencies": { "react": "^16.8 || ^17.0 || ^18.0", "react-dom": "^16.8 || ^17.0 || ^18.0" } }, "sha512-DjjcinO+9YjBXalsIcdNERf2oikvoCh9rI4zH1an74JSxpFYKE3fKL22lkjfvLkW2SVggQBuFIf9Gavs3s1bWQ=="],
 
