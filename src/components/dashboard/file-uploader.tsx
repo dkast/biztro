@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import AwsS3, { type AwsS3UploadParameters } from "@uppy/aws-s3"
 import Compressor from "@uppy/compressor"
 import Uppy, {
@@ -9,14 +9,14 @@ import Uppy, {
 } from "@uppy/core"
 import ImageEditor from "@uppy/image-editor"
 import Spanish from "@uppy/locales/lib/es_MX"
-import { Dashboard } from "@uppy/react"
+import Dashboard from "@uppy/react/dashboard"
 
 // Uppy styles
-import "@uppy/core/dist/style.min.css"
-import "@uppy/dashboard/dist/style.min.css"
-import "@uppy/image-editor/dist/style.min.css"
+import "@uppy/core/css/style.css"
+import "@uppy/dashboard/css/style.css"
+import "@uppy/image-editor/css/style.css"
 
-// import "@uppy/webcam/dist/style.min.css"
+// import "@uppy/webcam/css/style.css"
 
 // import Webcam from "@uppy/webcam"
 import { useTheme } from "next-themes"
@@ -107,25 +107,31 @@ export function FileUploader({
       })
   )
 
-  useEffect(() => {
-    uppy.on("file-added", async file => {
+  const handleFileAdded = useCallback(
+    async (file: UppyFile<Meta, Body>) => {
       // If the file is an image, get the dimensions
       if (file.type?.startsWith("image/")) {
         // console.log("Loading image")
-        const image = await getImageDimensions(file)
-        // console.log(image.width, image.height)
+        try {
+          const image = await getImageDimensions(file)
+          // console.log(image.width, image.height)
 
-        // If the image dimensions are too big, show an error
-        if (
-          (image.width as number) > limitDimension ||
-          (image.height as number) > limitDimension
-        ) {
-          console.error("Image too big")
-          uppy.info(
-            `La imagen es demasiado grande, el tamaño máximo es de ${limitDimension}x${limitDimension} píxeles`,
-            "error",
-            3000
-          )
+          // If the image dimensions are too big, show an error
+          if (
+            (image.width as number) > limitDimension ||
+            (image.height as number) > limitDimension
+          ) {
+            console.error("Image too big")
+            uppy.info(
+              `La imagen es demasiado grande, el tamaño máximo es de ${limitDimension}x${limitDimension} píxeles`,
+              "error",
+              3000
+            )
+            uppy.removeFile(file.id)
+          }
+        } catch (error) {
+          console.error("Error loading image dimensions:", error)
+          uppy.info("Error al cargar la imagen", "error", 3000)
           uppy.removeFile(file.id)
         }
       } else {
@@ -134,18 +140,20 @@ export function FileUploader({
         uppy.info("El archivo no es una imagen", "error", 3000)
         uppy.removeFile(file.id)
       }
-    })
-    uppy.on("complete", result => {
-      onUploadSuccess(result)
-    })
-  }, [
-    uppy,
-    imageType,
-    objectId,
-    onUploadSuccess,
-    organizationId,
-    limitDimension
-  ])
+    },
+    [uppy, limitDimension]
+  )
+
+  useEffect(() => {
+    uppy.on("file-added", handleFileAdded)
+    uppy.on("complete", onUploadSuccess)
+
+    return () => {
+      uppy.off("file-added", handleFileAdded)
+      uppy.off("complete", onUploadSuccess)
+      uppy.destroy()
+    }
+  }, [uppy, handleFileAdded, onUploadSuccess])
 
   return (
     <Dashboard
@@ -162,7 +170,16 @@ export function FileUploader({
 function getImageDimensions(
   imgFile: UppyFile<Meta, Body>
 ): Promise<{ width: number; height: number }> {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
+    if (!imgFile.data) {
+      reject(new Error("File data is not available"))
+      return
+    }
+    // Check if data is actually a Blob or File (not just an object with size)
+    if (!(imgFile.data instanceof Blob) && !(imgFile.data instanceof File)) {
+      reject(new Error("File data is not a valid Blob or File"))
+      return
+    }
     const url = URL.createObjectURL(imgFile.data)
     const img = new Image()
     img.onload = function () {
@@ -171,6 +188,10 @@ function getImageDimensions(
         width: img.width,
         height: img.height
       })
+    }
+    img.onerror = function () {
+      URL.revokeObjectURL(img.src)
+      reject(new Error("Failed to load image"))
     }
     img.src = url
   })
