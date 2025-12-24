@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { toast } from "react-hot-toast"
 import type { Category } from "@/generated/prisma-client/client"
-import { SelectTrigger } from "@radix-ui/react-select"
 import type { Table } from "@tanstack/react-table"
 import { Combine, Loader, Star, Trash2, X } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
@@ -19,11 +18,13 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem
-} from "@/components/ui/select"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import {
   bulkDeleteItems,
@@ -83,6 +84,7 @@ function FloatingToolbar({
   const rows = table.getFilteredSelectedRowModel().rows
   const selectedIds = rows.map(row => row.original.id)
   const orgId = rows[0]?.original.organizationId
+  const hasSelection = selectedIds.length > 0
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
@@ -126,7 +128,10 @@ function FloatingToolbar({
 
   return (
     <div className="mx-auto flex w-fit items-center gap-2">
-      <div className="flex h-7 items-center rounded-full border border-dashed border-gray-600 pr-1 pl-2.5 dark:border-gray-700">
+      <div
+        className="flex h-7 items-center rounded-full border border-dashed
+          border-gray-600 pr-1 pl-2.5 dark:border-gray-700"
+      >
         <span className="text-xs whitespace-nowrap">
           {rows.length} seleccionado(s)
         </span>
@@ -143,14 +148,14 @@ function FloatingToolbar({
         </TooltipHelper>
       </div>
       <Separator orientation="vertical" className="mx-1" />
-      <Select onValueChange={handleUpdateCategory}>
+      <DropdownMenu>
         <TooltipHelper content="Actualizar categoría">
-          <SelectTrigger asChild>
+          <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
               className="size-7 rounded-full"
-              disabled={updateIsPending}
+              disabled={updateIsPending || !hasSelection}
             >
               {updateIsPending ? (
                 <Loader className="size-3.5 animate-spin" />
@@ -158,18 +163,22 @@ function FloatingToolbar({
                 <Combine className="size-3.5" />
               )}
             </Button>
-          </SelectTrigger>
+          </DropdownMenuTrigger>
         </TooltipHelper>
-        <SelectContent align="center">
-          <SelectGroup>
-            {categories.map(category => (
-              <SelectItem key={category.id} value={category.id}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>Categorías</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {categories.map(category => (
+            <DropdownMenuItem
+              key={category.id}
+              onSelect={() => handleUpdateCategory(category.id)}
+              disabled={updateIsPending || !hasSelection}
+            >
+              {category.name}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       <TooltipHelper content="Recomendado">
         <Button
           variant="ghost"
