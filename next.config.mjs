@@ -12,9 +12,6 @@ await import("./src/env.mjs")
 
 /** @type {import("next").NextConfig} */
 const config = {
-  experimental: {
-    turbopackFileSystemCacheForDev: true
-  },
   cacheComponents: true,
   reactStrictMode: true,
   images: {

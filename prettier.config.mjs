@@ -8,7 +8,9 @@ const config = {
   endOfLine: "lf",
   plugins: [
     "@ianvs/prettier-plugin-sort-imports",
-    "prettier-plugin-tailwindcss"
+    "prettier-plugin-tailwindcss",
+    "prettier-plugin-classnames",
+    "prettier-plugin-merge"
   ],
   importOrder: [
     "^react",

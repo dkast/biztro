@@ -182,7 +182,7 @@ export default function ItemImport() {
         ) : (
           <Upload className="size-4" />
         )}
-        Importar CSV
+        Importar Productos
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -224,7 +224,10 @@ export default function ItemImport() {
             type="file"
             accept=".csv"
             onChange={handleFileUpload}
-            className="file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:px-4 file:py-2 file:text-sm file:font-semibold"
+            className="file:bg-primary file:text-primary-foreground
+              hover:file:bg-primary/90 cursor-pointer file:mr-4
+              file:cursor-pointer file:rounded-md file:border-0 file:px-4
+              file:py-2 file:text-sm file:font-semibold"
           />
         </DialogContent>
       </Dialog>
