@@ -54,6 +54,12 @@ export default function ItemImport() {
     }
   })
 
+  const handleDialogOpenChange = (value: boolean) => {
+    if (value || !isPending) {
+      setOpen(value)
+    }
+  }
+
   const validateRow = (row: CSVRow, _index: number): string[] => {
     const errors: string[] = []
 
@@ -88,7 +94,7 @@ export default function ItemImport() {
     Papa.parse<CSVRow>(file, {
       header: true,
       skipEmptyLines: true,
-      encoding: "iso-8859-1",
+      encoding: "utf-8",
       complete: results => {
         if (results.data.length === 0) {
           setErrors([{ row: 0, errors: ["El archivo está vacío"] }])
@@ -185,8 +191,18 @@ export default function ItemImport() {
         Importar Productos
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleDialogOpenChange}>
         <DialogContent>
+          {isPending && (
+            <div
+              className="absolute inset-0 z-10 flex flex-col items-center
+                justify-center gap-2 rounded-lg bg-white/80 text-gray-900
+                backdrop-blur dark:bg-gray-950/80 dark:text-gray-100"
+            >
+              <Loader className="size-6 animate-spin" />
+              <p className="text-sm font-medium">Importando productos...</p>
+            </div>
+          )}
           <DialogHeader>
             <DialogTitle>Importar productos desde CSV</DialogTitle>
             <DialogDescription>
@@ -199,6 +215,7 @@ export default function ItemImport() {
             variant="link"
             className="mb-4 h-fit w-fit p-0 text-green-500 dark:text-green-400"
             onClick={handleDownloadTemplate}
+            disabled={isPending}
           >
             <FileSpreadsheet className="mr-1" />
             Descargar plantilla CSV de ejemplo
@@ -224,10 +241,13 @@ export default function ItemImport() {
             type="file"
             accept=".csv"
             onChange={handleFileUpload}
+            disabled={isPending}
+            aria-busy={isPending}
             className="file:bg-primary file:text-primary-foreground
               hover:file:bg-primary/90 cursor-pointer file:mr-4
               file:cursor-pointer file:rounded-md file:border-0 file:px-4
-              file:py-2 file:text-sm file:font-semibold"
+              file:py-2 file:text-sm file:font-semibold
+              disabled:cursor-not-allowed"
           />
         </DialogContent>
       </Dialog>
