@@ -119,14 +119,21 @@ export default function ItemImport() {
           if (prices.length > 0) {
             const minPrice = Math.min(...prices)
             const maxPrice = Math.max(...prices)
-            priceValue = `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`
+            // Only show range if prices differ, otherwise show single price
+            priceValue =
+              minPrice === maxPrice
+                ? minPrice.toFixed(2)
+                : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`
           } else {
             // Fallback if no valid prices found
             priceValue = "0.00"
           }
         } else {
-          const price = item.variants?.[0]?.price ?? 0
-          priceValue = price.toFixed(2)
+          // Single variant case - validate price before using it
+          const price = item.variants?.[0]?.price
+          const validPrice =
+            typeof price === "number" && !isNaN(price) ? price : 0
+          priceValue = validPrice.toFixed(2)
         }
 
         return {
