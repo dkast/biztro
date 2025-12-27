@@ -106,11 +106,39 @@ export default function ItemImport() {
       }
 
       const csvRows: CSVRow[] = items.map(item => {
-        const price = item.variants?.[0]?.price ?? 0
+        // For items with multiple variants, export price range (min - max)
+        // For items with single variant, export the single price
+        let priceValue: string
+        if (item.variants && item.variants.length > 1) {
+          // Filter out any variants with invalid prices and map to price values in one pass
+          const prices = item.variants
+            .filter(v => typeof v.price === "number" && !isNaN(v.price))
+            .map(v => v.price)
+          
+          if (prices.length > 0) {
+            const minPrice = Math.min(...prices)
+            const maxPrice = Math.max(...prices)
+            // Only show range if prices differ, otherwise show single price
+            priceValue =
+              minPrice === maxPrice
+                ? minPrice.toFixed(2)
+                : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`
+          } else {
+            // Fallback if no valid prices found
+            priceValue = "0.00"
+          }
+        } else {
+          // Single variant case - validate price before using it
+          const price = item.variants?.[0]?.price
+          const validPrice =
+            typeof price === "number" && !isNaN(price) ? price : 0
+          priceValue = validPrice.toFixed(2)
+        }
+
         return {
           nombre: item.name,
           descripcion: item.description ?? "",
-          precio: price.toFixed(2),
+          precio: priceValue,
           categoria: item.category?.name,
           moneda: item.currency ?? "MXN"
         }
