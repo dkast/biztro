@@ -15,8 +15,8 @@ export const env = createEnv({
         ? z.string().min(1)
         : z.string().min(1).optional(),
     AUTH_URL: z.preprocess(
-  // This makes Vercel deployments not fail if you don't set the auth URL
-  // Since better-auth can use VERCEL_URL if present.
+      // This makes Vercel deployments not fail if you don't set the auth URL
+      // Since better-auth can use VERCEL_URL if present.
       str => process.env.VERCEL_URL ?? str,
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string().min(1) : z.url()
@@ -38,8 +38,8 @@ export const env = createEnv({
         ? z.string().min(1)
         : z.string().min(1).optional(),
     BETTER_AUTH_URL: z.preprocess(
-  // This makes Vercel deployments not fail if you don't set the auth URL
-  // Since better-auth can use VERCEL_URL if present.
+      // This makes Vercel deployments not fail if you don't set the auth URL
+      // Since better-auth can use VERCEL_URL if present.
       str => process.env.VERCEL_URL ?? str,
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string().min(1) : z.url()
@@ -54,7 +54,6 @@ export const env = createEnv({
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
     NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1),
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().min(1),
     NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY: z.string().min(1),
     NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY: z.string().min(1)
   },
@@ -84,8 +83,6 @@ export const env = createEnv({
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     STRIPE_PRICE_PRO_MONTHLY: process.env.STRIPE_PRICE_PRO_MONTHLY,
     STRIPE_PRICE_PRO_YEARLY: process.env.STRIPE_PRICE_PRO_YEARLY,
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
-      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY:
       process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY,
     NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY:

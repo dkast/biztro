@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -69,6 +69,7 @@ export default function OrganizationForm({
 
   const router = useRouter()
   const queryClient = useQueryClient()
+  const [isUploadDialogOpen, setUploadDialogOpen] = useState(false)
 
   const { execute, status, reset } = useAction(updateOrg, {
     onSuccess: ({ data }) => {
@@ -90,6 +91,14 @@ export default function OrganizationForm({
 
   const onSubmit = (values: z.infer<typeof orgSchema>) => {
     execute(values)
+  }
+
+  const handleLogoUploadSuccess = () => {
+    setUploadDialogOpen(false)
+    queryClient.invalidateQueries({
+      queryKey: ["workgroup", "current"]
+    })
+    router.refresh()
   }
 
   // Refresh form when data changes
@@ -118,7 +127,10 @@ export default function OrganizationForm({
               </AvatarFallback>
             </Avatar>
             <div>
-              <Dialog>
+              <Dialog
+                open={isUploadDialogOpen}
+                onOpenChange={setUploadDialogOpen}
+              >
                 <DialogTrigger asChild>
                   <Button type="button" variant="outline">
                     Cambiar imágen
@@ -133,12 +145,7 @@ export default function OrganizationForm({
                     imageType={ImageType.LOGO}
                     objectId={ImageType.LOGO}
                     limitDimension={500}
-                    onUploadSuccess={() => {
-                      queryClient.invalidateQueries({
-                        queryKey: ["workgroup", "current"]
-                      })
-                      router.refresh()
-                    }}
+                    onUploadSuccess={handleLogoUploadSuccess}
                   />
                 </DialogContent>
               </Dialog>

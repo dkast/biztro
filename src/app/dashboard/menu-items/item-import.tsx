@@ -2,12 +2,20 @@
 
 import { useState } from "react"
 import toast from "react-hot-toast"
-import { AlertCircle, FileSpreadsheet, Loader, Upload } from "lucide-react"
+import {
+  AlertCircle,
+  ChevronDown,
+  Download,
+  FileSpreadsheet,
+  Loader,
+  Upload
+} from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Papa from "papaparse"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { ButtonGroup } from "@/components/ui/button-group"
 import {
   Dialog,
   DialogContent,
@@ -15,7 +23,16 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
-import { bulkCreateItems } from "@/server/actions/item/mutations"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import {
+  bulkCreateItems,
+  exportMenuItems
+} from "@/server/actions/item/mutations"
 import { MenuItemStatus, type BulkMenuItem } from "@/lib/types"
 
 type CSVRow = {
@@ -29,6 +46,21 @@ type CSVRow = {
 type ImportError = {
   row: number
   errors: string[]
+}
+
+const downloadCsvFile = (rows: CSVRow[], fileName: string) => {
+  const csv = Papa.unparse(rows)
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
+  const link = document.createElement("a")
+  const url = URL.createObjectURL(blob)
+
+  link.setAttribute("href", url)
+  link.setAttribute("download", fileName)
+  link.style.visibility = "hidden"
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
 }
 
 export default function ItemImport() {
@@ -53,6 +85,79 @@ export default function ItemImport() {
       reset()
     }
   })
+
+  const handleDialogOpenChange = (value: boolean) => {
+    if (value || !isPending) {
+      setOpen(value)
+    }
+  }
+
+  const {
+    execute: exportItems,
+    isPending: isExporting,
+    reset: resetExport
+  } = useAction(exportMenuItems, {
+    onSuccess: response => {
+      const items = response.data?.success ?? []
+      if (items.length === 0) {
+        toast.error("No hay productos para exportar")
+        resetExport()
+        return
+      }
+
+      const csvRows: CSVRow[] = items.map(item => {
+        // For items with multiple variants, export price range (min - max)
+        // For items with single variant, export the single price
+        let priceValue: string
+        if (item.variants && item.variants.length > 1) {
+          // Filter out any variants with invalid prices and map to price values in one pass
+          const prices = item.variants
+            .filter(v => typeof v.price === "number" && !isNaN(v.price))
+            .map(v => v.price)
+          
+          if (prices.length > 0) {
+            const minPrice = Math.min(...prices)
+            const maxPrice = Math.max(...prices)
+            // Only show range if prices differ, otherwise show single price
+            priceValue =
+              minPrice === maxPrice
+                ? minPrice.toFixed(2)
+                : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`
+          } else {
+            // Fallback if no valid prices found
+            priceValue = "0.00"
+          }
+        } else {
+          // Single variant case - validate price before using it
+          const price = item.variants?.[0]?.price
+          const validPrice =
+            typeof price === "number" && !isNaN(price) ? price : 0
+          priceValue = validPrice.toFixed(2)
+        }
+
+        return {
+          nombre: item.name,
+          descripcion: item.description ?? "",
+          precio: priceValue,
+          categoria: item.category?.name,
+          moneda: item.currency ?? "MXN"
+        }
+      })
+
+      downloadCsvFile(csvRows, "productos-exportados.csv")
+      toast.success("CSV generado correctamente")
+      resetExport()
+    },
+    onError: error => {
+      console.error(error)
+      toast.error("No se pudo exportar los productos")
+      resetExport()
+    }
+  })
+
+  const handleExportMenu = async () => {
+    await exportItems()
+  }
 
   const validateRow = (row: CSVRow, _index: number): string[] => {
     const errors: string[] = []
@@ -88,7 +193,7 @@ export default function ItemImport() {
     Papa.parse<CSVRow>(file, {
       header: true,
       skipEmptyLines: true,
-      encoding: "iso-8859-1",
+      encoding: "utf-8",
       complete: results => {
         if (results.data.length === 0) {
           setErrors([{ row: 0, errors: ["El archivo está vacío"] }])
@@ -144,7 +249,7 @@ export default function ItemImport() {
   }
 
   const handleDownloadTemplate = () => {
-    const template = [
+    const template: CSVRow[] = [
       {
         nombre: "Producto ejemplo",
         descripcion: "Descripcion del producto",
@@ -154,39 +259,67 @@ export default function ItemImport() {
       }
     ]
 
-    const csv = Papa.unparse(template)
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
-    const link = document.createElement("a")
-    const url = URL.createObjectURL(blob)
-
-    link.setAttribute("href", url)
-    link.setAttribute("download", "plantilla-productos.csv")
-    link.style.visibility = "hidden"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    downloadCsvFile(template, "plantilla-productos.csv")
   }
 
   return (
     <>
-      <Button
-        variant="secondary"
-        className="gap-2"
-        onClick={() => {
-          setErrors([])
-          setOpen(true)
-        }}
-      >
-        {isPending ? (
-          <Loader className="size-4 animate-spin" />
-        ) : (
-          <Upload className="size-4" />
-        )}
-        Importar CSV
-      </Button>
+      <ButtonGroup className="gap-0">
+        <Button
+          variant="outline"
+          className="gap-2"
+          onClick={() => {
+            setErrors([])
+            setOpen(true)
+          }}
+          disabled={isExporting}
+        >
+          {isPending ? (
+            <Loader className="size-4 animate-spin" />
+          ) : (
+            <Upload className="size-4" />
+          )}
+          Importar Productos
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Más acciones"
+              disabled={isPending || isExporting}
+            >
+              {isExporting ? (
+                <Loader className="size-4 animate-spin" />
+              ) : (
+                <ChevronDown className="size-4" />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onSelect={handleExportMenu}
+              disabled={isPending || isExporting}
+            >
+              <Download className="size-4" />
+              Exportar Productos
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </ButtonGroup>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={handleDialogOpenChange}>
         <DialogContent>
+          {isPending && (
+            <div
+              className="absolute inset-0 z-10 flex flex-col items-center
+                justify-center gap-2 rounded-lg bg-white/80 text-gray-900
+                backdrop-blur dark:bg-gray-950/80 dark:text-gray-100"
+            >
+              <Loader className="size-6 animate-spin" />
+              <p className="text-sm font-medium">Importando productos...</p>
+            </div>
+          )}
           <DialogHeader>
             <DialogTitle>Importar productos desde CSV</DialogTitle>
             <DialogDescription>
@@ -197,8 +330,9 @@ export default function ItemImport() {
 
           <Button
             variant="link"
-            className="mb-4 h-fit w-fit p-0 text-green-500 dark:text-green-400"
+            className="mb-4 h-fit w-fit p-0 text-green-600 dark:text-green-400"
             onClick={handleDownloadTemplate}
+            disabled={isPending}
           >
             <FileSpreadsheet className="mr-1" />
             Descargar plantilla CSV de ejemplo
@@ -224,7 +358,13 @@ export default function ItemImport() {
             type="file"
             accept=".csv"
             onChange={handleFileUpload}
-            className="file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:px-4 file:py-2 file:text-sm file:font-semibold"
+            disabled={isPending}
+            aria-busy={isPending}
+            className="file:bg-primary file:text-primary-foreground
+              hover:file:bg-primary/90 cursor-pointer file:mr-4
+              file:cursor-pointer file:rounded-md file:border-0 file:px-4
+              file:py-2 file:text-sm file:font-semibold
+              disabled:cursor-not-allowed"
           />
         </DialogContent>
       </Dialog>

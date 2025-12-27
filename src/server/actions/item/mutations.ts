@@ -304,6 +304,48 @@ export const bulkCreateItems = authMemberActionClient
     }
   })
 
+export const exportMenuItems = authMemberActionClient.action(
+  async ({ ctx: { member } }) => {
+    const currentOrgId = member.organizationId
+
+    if (!currentOrgId) {
+      return {
+        failure: {
+          reason: "No se pudo obtener la organización actual"
+        }
+      }
+    }
+
+    try {
+      const items = await prisma.menuItem.findMany({
+        where: {
+          organizationId: currentOrgId
+        },
+        include: {
+          category: true,
+          variants: {
+            orderBy: {
+              price: "asc"
+            }
+          }
+        },
+        orderBy: {
+          name: "asc"
+        }
+      })
+
+      return { success: items }
+    } catch (error) {
+      console.error("Error exporting items:", error)
+      return {
+        failure: {
+          reason: error instanceof Error ? error.message : "Error desconocido"
+        }
+      }
+    }
+  }
+)
+
 /**
  * Updates an item.
  *
