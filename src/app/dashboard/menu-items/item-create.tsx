@@ -19,7 +19,6 @@ export default function ItemCreate() {
   const { execute, status, reset } = useAction(createItem, {
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
-        // console.error(data.failure.reason)
         if (data.failure.code === BasicPlanLimits.ITEM_LIMIT_REACHED) {
           setShowUpgrade(true)
         } else {
