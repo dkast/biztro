@@ -106,11 +106,24 @@ export default function ItemImport() {
       }
 
       const csvRows: CSVRow[] = items.map(item => {
-        const price = item.variants?.[0]?.price ?? 0
+        // For items with multiple variants, export price range (min - max)
+        // For items with single variant, export the single price
+        // Variants are ordered by price ascending from the API
+        let priceValue: string
+        if (item.variants && item.variants.length > 1) {
+          const prices = item.variants.map(v => v.price)
+          const minPrice = Math.min(...prices)
+          const maxPrice = Math.max(...prices)
+          priceValue = `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`
+        } else {
+          const price = item.variants?.[0]?.price ?? 0
+          priceValue = price.toFixed(2)
+        }
+
         return {
           nombre: item.name,
           descripcion: item.description ?? "",
-          precio: price.toFixed(2),
+          precio: priceValue,
           categoria: item.category?.name,
           moneda: item.currency ?? "MXN"
         }
