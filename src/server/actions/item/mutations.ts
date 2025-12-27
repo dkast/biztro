@@ -304,8 +304,9 @@ export const bulkCreateItems = authMemberActionClient
     }
   })
 
-export const exportMenuItems = authMemberActionClient.action(
-  async ({ ctx: { member } }) => {
+export const exportMenuItems = authMemberActionClient
+  .inputSchema(z.object({}))
+  .action(async ({ ctx: { member } }) => {
     const currentOrgId = member.organizationId
 
     if (!currentOrgId) {
