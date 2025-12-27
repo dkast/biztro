@@ -112,10 +112,12 @@ export default async function SitePage(props: {
     return notFound()
   }
 
-  let json
-  if (siteMenu.serialData) {
-    json = lz.decompress(lz.decodeBase64(siteMenu.serialData))
+  const snapshot = siteMenu.publishedData ?? siteMenu.serialData
+  if (!snapshot) {
+    return notFound()
   }
+
+  const json = lz.decompress(lz.decodeBase64(snapshot))
 
   let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
   let textColor: RgbaColor = { r: 0, g: 0, b: 0, a: 1 }
@@ -147,7 +149,8 @@ export default async function SitePage(props: {
           <ResolveEditor json={json} />
         </div>
         <div
-          className="fixed inset-x-0 bottom-0 flex items-center justify-between gap-x-4 p-2 text-xs"
+          className="fixed inset-x-0 bottom-0 flex items-center justify-between
+            gap-x-4 p-2 text-xs"
           style={{
             color: `${rgbaToHex(textColor)}`
           }}
@@ -163,7 +166,10 @@ export default async function SitePage(props: {
               : ""}
           </div>
           <Link href="https://biztro.co" target="_blank" className="z-20">
-            <div className="flex items-center justify-center gap-x-2 rounded-full bg-black/50 px-3 py-1">
+            <div
+              className="flex items-center justify-center gap-x-2 rounded-full
+                bg-black/50 px-3 py-1"
+            >
               <Image
                 src="/safari-pinned-tab.svg"
                 alt="Logo"

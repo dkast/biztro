@@ -54,6 +54,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import {
+  revertMenuToPublished,
   updateMenuSerialData,
   updateMenuStatus
 } from "@/server/actions/menu/mutations"
@@ -77,6 +78,8 @@ export default function MenuPublish({
   const queryClient = useQueryClient()
   const fontTheme = useAtomValue(fontThemeAtom)
   const colorTheme = useAtomValue(colorThemeAtom)
+  const setFontTheme = useSetAtom(fontThemeAtom)
+  const setColorTheme = useSetAtom(colorThemeAtom)
   const setMenuTour = useSetAtom(tourModeAtom)
 
   const { execute, status, reset } = useAction(updateMenuStatus, {
@@ -132,10 +135,66 @@ export default function MenuPublish({
     }
   })
 
+  const {
+    execute: revertToPublished,
+    status: statusRevert,
+    reset: resetRevert
+  } = useAction(revertMenuToPublished, {
+    onSuccess: ({ data }) => {
+      if (data?.success?.publishedData) {
+        try {
+          const serialized = lz.decompress(
+            lz.decodeBase64(data.success.publishedData)
+          )
+          actions.deserialize(serialized)
+          actions.history.clear()
+          // Update selected themes to match published state
+          const publishedFontTheme =
+            data.success.publishedFontTheme ?? data.success.fontTheme
+          const publishedColorTheme =
+            data.success.publishedColorTheme ?? data.success.colorTheme
+
+          if (publishedFontTheme) {
+            setFontTheme(publishedFontTheme)
+          }
+          if (publishedColorTheme) {
+            setColorTheme(publishedColorTheme)
+          }
+          setPendingValidationTriggered(false)
+          setTimelineLength(store.history.timeline.length)
+          setLastSavedTimelineLength(store.history.timeline.length)
+          clearUnsavedChanges()
+          toast.success("Menú revertido al último publicado")
+          queryClient.invalidateQueries({
+            queryKey: ["menu", menu?.id]
+          })
+        } catch (error) {
+          console.error(error)
+          toast.error("No se pudo revertir el menú publicado")
+        }
+      } else if (data?.failure?.reason) {
+        toast.error(data.failure.reason)
+      } else {
+        toast.error("No hay una versión publicada para revertir")
+      }
+      resetRevert()
+    },
+    onError: () => {
+      toast.error("Ocurrió un error al revertir")
+      resetRevert()
+    }
+  })
+
   const [lastSavedTimelineLength, setLastSavedTimelineLength] =
     useState<number>(store.history.timeline.length)
+  const [pendingValidationTriggered, setPendingValidationTriggered] =
+    useState(false)
+  const [timelineLength, setTimelineLength] = useState<number>(
+    store.history.timeline.length
+  )
 
   const handleUpdateSerialData = useCallback(() => {
+    setPendingValidationTriggered(true)
     const json = query.serialize()
     const serialData = lz.encodeBase64(lz.compress(json))
     updateSerialData({
@@ -144,27 +203,61 @@ export default function MenuPublish({
       colorTheme,
       serialData
     })
-  }, [query, menu, fontTheme, colorTheme, updateSerialData])
+  }, [
+    query,
+    menu,
+    fontTheme,
+    colorTheme,
+    updateSerialData,
+    setPendingValidationTriggered
+  ])
+
+  const handleRevertToPublished = useCallback(() => {
+    if (!menu?.id) return
+    revertToPublished({ id: menu.id })
+  }, [menu, revertToPublished])
 
   useEffect(() => {
-    // Check if the timeline has more changes since the last save
-    if (store.history.timeline.length <= lastSavedTimelineLength) return
+    // Subscribe to store changes so autosave can react reliably
+    const unsubscribe = store.subscribe(
+      () => store.history.timeline.length,
+      setTimelineLength
+    )
+
+    return () => {
+      unsubscribe()
+    }
+  }, [store])
+
+  useEffect(() => {
+    // Auto-save once after 10s when there are unsaved timeline entries
+    if (timelineLength <= lastSavedTimelineLength) return
 
     const autoSaveTimer = setTimeout(() => {
       handleUpdateSerialData()
-      setLastSavedTimelineLength(store.history.timeline.length)
+      setLastSavedTimelineLength(timelineLength)
     }, 10000)
 
     return () => clearTimeout(autoSaveTimer)
-  }, [
-    store.history.timeline.length,
-    lastSavedTimelineLength,
-    nodes,
-    handleUpdateSerialData
-  ])
+  }, [timelineLength, lastSavedTimelineLength, handleUpdateSerialData])
+
+  const orgSlug = menu?.organization.slug ?? ""
+
+  const hasPendingPublishChanges = Boolean(
+    menu?.publishedAt &&
+    menu?.updatedAt &&
+    differenceInMinutes(menu.updatedAt, menu.publishedAt) >= 1
+  )
+  const showPendingPublishIndicator =
+    hasPendingPublishChanges || pendingValidationTriggered
+
+  useEffect(() => {
+    if (!hasPendingPublishChanges) {
+      setPendingValidationTriggered(false)
+    }
+  }, [hasPendingPublishChanges])
 
   if (!menu) return null
-  const orgSlug = menu.organization.slug ?? ""
 
   const handleUpdateStatus = (status: MenuStatus) => {
     const json = query.serialize()
@@ -248,13 +341,18 @@ export default function MenuPublish({
           <PopoverTrigger asChild>
             <Button size="xs">Publicar</Button>
           </PopoverTrigger>
-          {menu.publishedAt &&
-            differenceInMinutes(menu.updatedAt, menu.publishedAt) >= 1 && (
-              <>
-                <span className="absolute -top-1 -right-1 h-3 w-3 animate-[ping_1s_ease-in-out_5] rounded-full bg-rose-400"></span>
-                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-rose-500"></span>
-              </>
-            )}
+          {menu.publishedAt && showPendingPublishIndicator && (
+            <>
+              <span
+                className="absolute -top-1 -right-1 h-3 w-3
+                  animate-[ping_1s_ease-in-out_5] rounded-full bg-rose-400"
+              ></span>
+              <span
+                className="absolute -top-1 -right-1 h-3 w-3 rounded-full
+                  bg-rose-500"
+              ></span>
+            </>
+          )}
         </div>
         <PopoverContent className="w-80">
           <AnimatePresence initial={false} mode="wait">
@@ -266,7 +364,11 @@ export default function MenuPublish({
                 exit={{ opacity: 0, y: 10 }}
                 className="flex flex-col items-center gap-2"
               >
-                <span className="rounded-full bg-indigo-50 p-2 text-indigo-700 ring-1 ring-indigo-600/20 ring-inset dark:bg-indigo-900/70 dark:text-indigo-500">
+                <span
+                  className="rounded-full bg-indigo-50 p-2 text-indigo-700
+                    ring-1 ring-indigo-600/20 ring-inset dark:bg-indigo-900/70
+                    dark:text-indigo-500"
+                >
                   <Globe className="size-6" />
                 </span>
                 <span className="text-sm font-medium">Publicar Menú</span>
@@ -308,42 +410,41 @@ export default function MenuPublish({
                 </div>
                 <div className="space-y-2">
                   <AnimatePresence>
-                    {menu.publishedAt &&
-                      differenceInMinutes(menu.updatedAt, menu.publishedAt) >=
-                        1 && (
-                        <motion.p
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{
-                            height: "auto",
-                            opacity: 1,
-                            transition: {
-                              height: {
-                                duration: 0.2
-                              },
-                              opacity: {
-                                duration: 0.1,
-                                delay: 0.05
-                              }
+                    {menu.publishedAt && showPendingPublishIndicator && (
+                      <motion.p
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{
+                          height: "auto",
+                          opacity: 1,
+                          transition: {
+                            height: {
+                              duration: 0.2
+                            },
+                            opacity: {
+                              duration: 0.1,
+                              delay: 0.05
                             }
-                          }}
-                          exit={{
-                            height: 0,
-                            opacity: 0,
-                            transition: {
-                              height: {
-                                duration: 0.2
-                              },
-                              opacity: {
-                                duration: 0.1
-                              }
+                          }
+                        }}
+                        exit={{
+                          height: 0,
+                          opacity: 0,
+                          transition: {
+                            height: {
+                              duration: 0.2
+                            },
+                            opacity: {
+                              duration: 0.1
                             }
-                          }}
-                          className="my-3 text-xs text-gray-500 dark:text-gray-400"
-                        >
-                          Existen cambios sin publicar. <br /> Publica los
-                          cambios para actualizar tu menú.
-                        </motion.p>
-                      )}
+                          }
+                        }}
+                        className="my-3 text-xs text-gray-500
+                          dark:text-gray-400"
+                      >
+                        Existen cambios sin publicar. <br /> Publica los cambios
+                        para actualizar tu menú.
+                      </motion.p>
+                    )}
                   </AnimatePresence>
                   <Button
                     size="xs"
@@ -358,6 +459,21 @@ export default function MenuPublish({
                       "Publicar cambios"
                     )}
                   </Button>
+                  {menu.publishedAt && (
+                    <Button
+                      size="xs"
+                      className="w-full"
+                      variant="outline"
+                      disabled={statusRevert === "executing"}
+                      onClick={handleRevertToPublished}
+                    >
+                      {statusRevert === "executing" ? (
+                        <Loader className="size-4 animate-spin" />
+                      ) : (
+                        "Revertir a publicado"
+                      )}
+                    </Button>
+                  )}
                   <Button
                     size="xs"
                     className="w-full"
@@ -376,7 +492,10 @@ export default function MenuPublish({
                         : ""
                     }
                   >
-                    <p className="pt-2 text-center text-xs text-gray-500 dark:text-gray-400">
+                    <p
+                      className="pt-2 text-center text-xs text-gray-500
+                        dark:text-gray-400"
+                    >
                       Publicado{" "}
                       {menu.publishedAt
                         ? formatDistanceToNow(menu.publishedAt, {
@@ -452,7 +571,10 @@ function QrCodeEditor({
     <div>
       <div className="my-6 flex flex-row items-start justify-between">
         <div className="flex grow items-center justify-center">
-          <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-500">
+          <div
+            className="rounded-lg border-2 border-dashed border-gray-300
+              dark:border-gray-500"
+          >
             <div ref={exportRef} className="p-1">
               <QRCode
                 value={value}
@@ -490,7 +612,10 @@ function QrCodeEditor({
         </div>
         <div className="sm:min-w-40">
           <form className="grid w-full items-start gap-6">
-            <fieldset className="grid gap-6 rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+            <fieldset
+              className="grid gap-6 rounded-lg border border-gray-200 p-4
+                dark:border-gray-800"
+            >
               <legend className="-ml-1 px-1 text-sm font-medium">
                 Ajustes
               </legend>
@@ -499,13 +624,16 @@ function QrCodeEditor({
                 <Popover>
                   <PopoverTrigger>
                     <div
-                      className="h-6 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      className="h-6 w-12 rounded-sm border border-black/20
+                        dark:border-white/20"
                       style={{
                         backgroundColor: `rgb(${Object.values(color)})`
                       }}
                     ></div>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[208px] border-0 p-0 shadow-none sm:w-[218px]">
+                  <PopoverContent
+                    className="w-52 border-0 p-0 shadow-none sm:w-56"
+                  >
                     {isMobile ? (
                       <div className="p-1">
                         <Colorful

@@ -75,19 +75,21 @@ model OpeningHours {
 }
 
 model Menu {
-  id             String       @id @default(cuid())
-  name           String
-  description    String?
-  status         String       @default("DRAFT")
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  organizationId String
-  serialData     String?
-  publishedData  String?
-  publishedAt    DateTime?
-  fontTheme      String       @default("DEFAULT")
-  colorTheme     String       @default("DEFAULT")
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  id                  String       @id @default(cuid())
+  name                String
+  description         String?
+  status              String       @default("DRAFT")
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  organizationId      String
+  serialData          String?
+  publishedData       String?
+  publishedAt         DateTime?
+  fontTheme           String       @default("DEFAULT")
+  colorTheme          String       @default("DEFAULT")
+  publishedFontTheme  String?
+  publishedColorTheme String?
+  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 model Theme {
@@ -149,12 +151,12 @@ model Variant {
 
 // Media asset management models for tracking R2 storage
 model MediaAsset {
-  id             String            @id @default(cuid())
+  id             String           @id @default(cuid())
   organizationId String
-  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  storageKey     String            @unique
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  storageKey     String           @unique
   publicUrl      String?
-  type           MediaAssetType    @default(IMAGE)
+  type           MediaAssetType   @default(IMAGE)
   scope          MediaAssetScope?
   bytes          Int?
   contentType    String?
@@ -162,12 +164,12 @@ model MediaAsset {
   height         Int?
   deletedAt      DateTime?
   unattachedAt   DateTime?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   usages         MediaUsage[]
-  menuItems      MenuItem[]        @relation("MenuItemImageAsset")
-  orgLogos       Organization[]    @relation("OrganizationLogoAsset")
-  orgBanners     Organization[]    @relation("OrganizationBannerAsset")
+  menuItems      MenuItem[]       @relation("MenuItemImageAsset")
+  orgLogos       Organization[]   @relation("OrganizationLogoAsset")
+  orgBanners     Organization[]   @relation("OrganizationBannerAsset")
 
   @@index([organizationId])
   @@index([storageKey])
