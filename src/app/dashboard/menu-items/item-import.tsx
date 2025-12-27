@@ -108,7 +108,6 @@ export default function ItemImport() {
       const csvRows: CSVRow[] = items.map(item => {
         // For items with multiple variants, export price range (min - max)
         // For items with single variant, export the single price
-        // Variants are ordered by price ascending from the API
         let priceValue: string
         if (item.variants && item.variants.length > 1) {
           // Filter out any variants with invalid prices and map to price values in one pass
