@@ -111,10 +111,19 @@ export default function ItemImport() {
         // Variants are ordered by price ascending from the API
         let priceValue: string
         if (item.variants && item.variants.length > 1) {
-          const prices = item.variants.map(v => v.price)
-          const minPrice = Math.min(...prices)
-          const maxPrice = Math.max(...prices)
-          priceValue = `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`
+          // Filter out any variants with invalid prices and map to price values in one pass
+          const prices = item.variants
+            .filter(v => typeof v.price === "number" && !isNaN(v.price))
+            .map(v => v.price)
+          
+          if (prices.length > 0) {
+            const minPrice = Math.min(...prices)
+            const maxPrice = Math.max(...prices)
+            priceValue = `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`
+          } else {
+            // Fallback if no valid prices found
+            priceValue = "0.00"
+          }
         } else {
           const price = item.variants?.[0]?.price ?? 0
           priceValue = price.toFixed(2)
