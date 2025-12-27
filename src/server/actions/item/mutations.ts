@@ -6,6 +6,11 @@ import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
+import {
+  applyMenuSyncAfterChange,
+  persistMenuSyncPreference,
+  resolveMenuSyncPreference
+} from "@/server/actions/menu/sync"
 import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
@@ -372,7 +377,9 @@ export const updateItem = authMemberActionClient
         variants,
         featured,
         allergens,
-        currency
+        currency,
+        updatePublishedMenus,
+        rememberPublishedChoice
       }
     }) => {
       try {
@@ -404,7 +411,42 @@ export const updateItem = authMemberActionClient
 
         updateTag(`menu-items-${organizationId}`)
         updateTag(`menu-item-${id}`)
-        return { success: item }
+
+        const preference = await resolveMenuSyncPreference(organizationId ?? "")
+        const hasUserChoice = typeof updatePublishedMenus === "boolean"
+        const shouldUpdatePublished = hasUserChoice
+          ? updatePublishedMenus
+          : preference === true
+        const shouldSkipSync = !hasUserChoice && preference === null
+
+        const syncResult =
+          organizationId && !shouldSkipSync
+            ? await applyMenuSyncAfterChange({
+                organizationId,
+                updatePublished: shouldUpdatePublished
+              })
+            : { draftsUpdated: 0, publishedUpdated: 0 }
+
+        if (
+          rememberPublishedChoice &&
+          typeof shouldUpdatePublished === "boolean"
+        ) {
+          await persistMenuSyncPreference(
+            organizationId ?? "",
+            shouldUpdatePublished
+          )
+        }
+
+        return {
+          success: {
+            item,
+            sync: {
+              draftsUpdated: syncResult.draftsUpdated,
+              publishedUpdated: syncResult.publishedUpdated,
+              needsPublishedDecision: shouldSkipSync
+            }
+          }
+        }
       } catch (error) {
         let message
         if (typeof error === "string") {
@@ -542,38 +584,84 @@ export const createCategory = authMemberActionClient
  */
 export const updateCategory = authMemberActionClient
   .inputSchema(categorySchema)
-  .action(async ({ parsedInput: { id, name, organizationId } }) => {
-    try {
-      const category = await prisma.category.update({
-        where: { id },
-        data: {
-          name
-        }
-      })
+  .action(
+    async ({
+      parsedInput: {
+        id,
+        name,
+        organizationId,
+        updatePublishedMenus,
+        rememberPublishedChoice
+      }
+    }) => {
+      try {
+        const category = await prisma.category.update({
+          where: { id },
+          data: {
+            name
+          }
+        })
 
-      updateTag(`categories-${organizationId}`)
-      return { success: category }
-    } catch (error) {
-      let message
-      if (typeof error === "string") {
-        message = error
-      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        console.error(error)
-        if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
-          message = "Ya existe una categoría con ese nombre"
-        } else {
+        updateTag(`categories-${organizationId}`)
+        updateTag(`menu-items-${organizationId}`)
+
+        const preference = await resolveMenuSyncPreference(organizationId ?? "")
+        const hasUserChoice = typeof updatePublishedMenus === "boolean"
+        const shouldUpdatePublished = hasUserChoice
+          ? updatePublishedMenus
+          : preference === true
+        const shouldSkipSync = !hasUserChoice && preference === null
+
+        const syncResult =
+          organizationId && !shouldSkipSync
+            ? await applyMenuSyncAfterChange({
+                organizationId,
+                updatePublished: shouldUpdatePublished
+              })
+            : { draftsUpdated: 0, publishedUpdated: 0 }
+
+        if (
+          rememberPublishedChoice &&
+          typeof shouldUpdatePublished === "boolean"
+        ) {
+          await persistMenuSyncPreference(
+            organizationId ?? "",
+            shouldUpdatePublished
+          )
+        }
+
+        return {
+          success: {
+            category,
+            sync: {
+              draftsUpdated: syncResult.draftsUpdated,
+              publishedUpdated: syncResult.publishedUpdated,
+              needsPublishedDecision: shouldSkipSync
+            }
+          }
+        }
+      } catch (error) {
+        let message
+        if (typeof error === "string") {
+          message = error
+        } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error(error)
+          if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
+            message = "Ya existe una categoría con ese nombre"
+          } else {
+            message = error.message
+          }
+        } else if (error instanceof Error) {
           message = error.message
         }
-      } else if (error instanceof Error) {
-        message = error.message
-      }
-      return {
-        failure: {
-          reason: message
+        return {
+          failure: {
+            reason: message
+          }
         }
       }
     }
-  })
+  )
 
 /**
  * Deletes a category.

@@ -37,7 +37,18 @@ import {
   TagsValue
 } from "@/components/kibo-ui/tags"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 // legacy Form helpers removed in favor of Field primitives
 import {
   Field,
@@ -59,12 +70,14 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch" // Add this import
+
 import { Textarea } from "@/components/ui/textarea"
 import { createCategory, updateItem } from "@/server/actions/item/mutations"
 import {
   getCategories,
   type getMenuItemById
 } from "@/server/actions/item/queries"
+import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
 import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
 import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
 import {
@@ -110,6 +123,11 @@ export default function ItemForm({
   })
   const [searchCategory, setSearchCategory] = useState<string>("")
   const [openVariant, setOpenVariant] = useState<boolean>(false)
+  const [syncPrompt, setSyncPrompt] = useState({
+    open: false,
+    organizationId: item?.organizationId ?? "",
+    rememberChoice: false
+  })
 
   const { fields } = useFieldArray({
     control: form.control,
@@ -182,10 +200,48 @@ export default function ItemForm({
     setOpenVariant(true)
   }
 
+  const {
+    execute: executeSyncMenus,
+    status: statusSyncMenus,
+    reset: resetSyncMenus
+  } = useAction(syncMenusAfterCatalogChange, {
+    onSuccess: ({ data }) => {
+      if (data?.success) {
+        const { draftsUpdated, publishedUpdated } = data.success
+        if (draftsUpdated || publishedUpdated) {
+          toast.success("Menú actualizado")
+        }
+      } else if (data?.failure?.reason) {
+        toast.error(data.failure.reason)
+      }
+      resetSyncMenus()
+      setSyncPrompt(prev => ({ ...prev, open: false, rememberChoice: false }))
+    },
+    onError: () => {
+      toast.error("No se pudo actualizar los menús")
+      setSyncPrompt(prev => ({ ...prev, open: false }))
+    }
+  })
+
   const { execute, status, reset } = useAction(updateItem, {
     onSuccess: ({ data }) => {
       if (data?.success) {
+        const syncMeta = data.success.sync
         toast.success("Producto actualizado")
+
+        if (syncMeta?.publishedUpdated) {
+          toast.success("Menú publicado actualizado")
+        }
+
+        if (syncMeta?.needsPublishedDecision) {
+          setSyncPrompt(prev => ({
+            ...prev,
+            open: true,
+            rememberChoice: false,
+            organizationId: item?.organizationId ?? ""
+          }))
+        }
+
         // Reset the form using the current values so RHF updates defaultValues
         // and clears the dirty state.
         form.reset(form.getValues())
@@ -218,6 +274,24 @@ export default function ItemForm({
     execute(data)
   }
 
+  const handleSyncChoice = (updatePublished: boolean) => {
+    if (!syncPrompt.organizationId) {
+      setSyncPrompt(prev => ({ ...prev, open: false }))
+      return
+    }
+
+    if (!syncPrompt.rememberChoice && updatePublished === false) {
+      setSyncPrompt(prev => ({ ...prev, open: false }))
+      return
+    }
+
+    executeSyncMenus({
+      organizationId: syncPrompt.organizationId,
+      updatePublished,
+      rememberChoice: syncPrompt.rememberChoice
+    })
+  }
+
   if (!item) {
     return (
       <Alert variant="warning">
@@ -235,7 +309,8 @@ export default function ItemForm({
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <PageSubtitle
           title={title}
-          className="border-border bg-background sticky top-18 z-10 rounded-xl border px-4 py-3 shadow-xs group-[.is-dialog]:top-0"
+          className="border-border bg-background sticky top-18 z-10 rounded-xl
+            border px-4 py-3 shadow-xs group-[.is-dialog]:top-0"
         >
           <div className="flex gap-2">
             <Button
@@ -396,7 +471,10 @@ export default function ItemForm({
                   control={form.control}
                   render={({ field }) => (
                     <Field
-                      className="border-border has-data-[state=checked]:bg-primary/10 has-data-[state=checked]:border-primary rounded-lg border p-4"
+                      className="border-border
+                        has-data-[state=checked]:bg-primary/10
+                        has-data-[state=checked]:border-primary rounded-lg
+                        border p-4"
                       orientation="horizontal"
                     >
                       <FieldContent>
@@ -480,7 +558,8 @@ export default function ItemForm({
                                   <ComboboxItem
                                     value={category.id}
                                     key={category.id}
-                                    className="py-2 text-base sm:py-1.5 sm:text-sm"
+                                    className="py-2 text-base sm:py-1.5
+                                      sm:text-sm"
                                   >
                                     <Check
                                       className={cn(
@@ -585,6 +664,56 @@ export default function ItemForm({
           </FieldGroup>
         </div>
       </form>
+      <AlertDialog
+        open={syncPrompt.open}
+        onOpenChange={open =>
+          setSyncPrompt(prev => ({ ...prev, open, rememberChoice: false }))
+        }
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Actualizar menús publicados?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se detectaron cambios en tus productos. ¿Quieres aplicar los
+              cambios al menú publicado?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="remember-published-choice"
+              checked={syncPrompt.rememberChoice}
+              onCheckedChange={checked =>
+                setSyncPrompt(prev => ({
+                  ...prev,
+                  rememberChoice: checked === true
+                }))
+              }
+            />
+            <label
+              htmlFor="remember-published-choice"
+              className="text-muted-foreground text-sm"
+            >
+              No volver a preguntar
+            </label>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => handleSyncChoice(false)}
+              disabled={statusSyncMenus === "executing"}
+            >
+              No ahora
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => handleSyncChoice(true)}
+              disabled={statusSyncMenus === "executing"}
+            >
+              {statusSyncMenus === "executing"
+                ? "Actualizando..."
+                : "Actualizar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <VariantCreate
         menuItemId={item.id}
         open={openVariant}
