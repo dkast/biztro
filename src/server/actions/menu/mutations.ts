@@ -187,6 +187,7 @@ export const updateMenuStatus = authActionClient
 
         revalidatePath(`/${subdomain}`)
         updateTag(`subdomain-${menu.organizationId}`)
+        updateTag(`menu-${menu.id}`)
         return {
           success: menu
         }
@@ -234,6 +235,7 @@ export const updateMenuSerialData = authActionClient
           data: { fontTheme, colorTheme, serialData }
         })
 
+        updateTag(`menu-${menu.id}`)
         return {
           success: menu
         }
@@ -304,6 +306,7 @@ export const revertMenuToPublished = authActionClient
         } as any
       })) as any
 
+      updateTag(`menu-${id}`)
       return {
         success: updatedMenu
       }

@@ -369,6 +369,7 @@ async function rehydrateMenusForOrganization({
             data: { serialData }
           })
           draftsUpdated += 1
+          updateTag(`menu-${menu.id}`)
         }
       }
     }
@@ -394,6 +395,7 @@ async function rehydrateMenusForOrganization({
             data: { publishedData }
           })
           publishedUpdated += 1
+          updateTag(`menu-${menu.id}`)
         }
       }
     }

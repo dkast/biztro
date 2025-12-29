@@ -814,31 +814,73 @@ export const bulkUpdateCategory = authMemberActionClient
     z.object({
       ids: z.array(z.string()),
       categoryId: z.string(),
-      organizationId: z.string()
+      organizationId: z.string(),
+      updatePublishedMenus: z.boolean().optional(),
+      rememberPublishedChoice: z.boolean().optional()
     })
   )
-  .action(async ({ parsedInput: { ids, categoryId, organizationId } }) => {
-    try {
-      await prisma.menuItem.updateMany({
-        where: {
-          id: { in: ids }
-        },
-        data: {
-          categoryId
-        }
-      })
+  .action(
+    async ({
+      parsedInput: {
+        ids,
+        categoryId,
+        organizationId,
+        updatePublishedMenus,
+        rememberPublishedChoice
+      }
+    }) => {
+      try {
+        await prisma.menuItem.updateMany({
+          where: {
+            id: { in: ids }
+          },
+          data: {
+            categoryId
+          }
+        })
 
-      updateTag(`menu-items-${organizationId}`)
-      return { success: true }
-    } catch (error) {
-      console.error(error)
-      return {
-        failure: {
-          reason: "Error al actualizar las categorías"
+        updateTag(`menu-items-${organizationId}`)
+
+        const preference = await resolveMenuSyncPreference(organizationId)
+        const hasUserChoice = typeof updatePublishedMenus === "boolean"
+        const shouldUpdatePublished = hasUserChoice
+          ? updatePublishedMenus
+          : preference === true
+        const shouldSkipSync = !hasUserChoice && preference === null
+
+        const syncResult = !shouldSkipSync
+          ? await applyMenuSyncAfterChange({
+              organizationId,
+              updatePublished: shouldUpdatePublished
+            })
+          : { draftsUpdated: 0, publishedUpdated: 0 }
+
+        if (
+          rememberPublishedChoice &&
+          typeof shouldUpdatePublished === "boolean"
+        ) {
+          await persistMenuSyncPreference(organizationId, shouldUpdatePublished)
+        }
+
+        return {
+          success: {
+            sync: {
+              draftsUpdated: syncResult.draftsUpdated,
+              publishedUpdated: syncResult.publishedUpdated,
+              needsPublishedDecision: shouldSkipSync
+            }
+          }
+        }
+      } catch (error) {
+        console.error(error)
+        return {
+          failure: {
+            reason: "Error al actualizar las categorías"
+          }
         }
       }
     }
-  })
+  )
 
 /**
  * Deletes multiple items at once.
@@ -898,28 +940,70 @@ export const bulkToggleFeature = authMemberActionClient
     z.object({
       ids: z.array(z.string()),
       featured: z.boolean(),
-      organizationId: z.string()
+      organizationId: z.string(),
+      updatePublishedMenus: z.boolean().optional(),
+      rememberPublishedChoice: z.boolean().optional()
     })
   )
-  .action(async ({ parsedInput: { ids, featured, organizationId } }) => {
-    try {
-      await prisma.menuItem.updateMany({
-        where: {
-          id: { in: ids }
-        },
-        data: {
-          featured
-        }
-      })
+  .action(
+    async ({
+      parsedInput: {
+        ids,
+        featured,
+        organizationId,
+        updatePublishedMenus,
+        rememberPublishedChoice
+      }
+    }) => {
+      try {
+        await prisma.menuItem.updateMany({
+          where: {
+            id: { in: ids }
+          },
+          data: {
+            featured
+          }
+        })
 
-      updateTag(`menu-items-${organizationId}`)
-      return { success: true }
-    } catch (error) {
-      console.error(error)
-      return {
-        failure: {
-          reason: "Error al actualizar los productos destacados"
+        updateTag(`menu-items-${organizationId}`)
+
+        const preference = await resolveMenuSyncPreference(organizationId)
+        const hasUserChoice = typeof updatePublishedMenus === "boolean"
+        const shouldUpdatePublished = hasUserChoice
+          ? updatePublishedMenus
+          : preference === true
+        const shouldSkipSync = !hasUserChoice && preference === null
+
+        const syncResult = !shouldSkipSync
+          ? await applyMenuSyncAfterChange({
+              organizationId,
+              updatePublished: shouldUpdatePublished
+            })
+          : { draftsUpdated: 0, publishedUpdated: 0 }
+
+        if (
+          rememberPublishedChoice &&
+          typeof shouldUpdatePublished === "boolean"
+        ) {
+          await persistMenuSyncPreference(organizationId, shouldUpdatePublished)
+        }
+
+        return {
+          success: {
+            sync: {
+              draftsUpdated: syncResult.draftsUpdated,
+              publishedUpdated: syncResult.publishedUpdated,
+              needsPublishedDecision: shouldSkipSync
+            }
+          }
+        }
+      } catch (error) {
+        console.error(error)
+        return {
+          failure: {
+            reason: "Error al actualizar los productos destacados"
+          }
         }
       }
     }
-  })
+  )
