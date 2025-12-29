@@ -252,11 +252,72 @@ const CarouselNext = React.forwardRef<
 })
 CarouselNext.displayName = "CarouselNext"
 
+const CarouselDots = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  const { api } = useCarousel()
+  const [selectedIndex, setSelectedIndex] = React.useState(0)
+  const [slides, setSlides] = React.useState(0)
+
+  React.useEffect(() => {
+    if (!api) return
+
+    const update = () => {
+      try {
+        setSelectedIndex(api.selectedScrollSnap())
+        setSlides(api.scrollSnapList().length)
+      } catch (e) {
+        /* ignore */
+      }
+    }
+
+    update()
+    api.on("reInit", update)
+    api.on("select", update)
+
+    return () => {
+      api.off("reInit", update)
+      api.off("select", update)
+    }
+  }, [api])
+
+  if (!slides) return null
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        `mx-auto mt-3 flex w-fit items-center justify-center gap-2 rounded-full
+        bg-black/50 p-2`,
+        className
+      )}
+      {...props}
+    >
+      {Array.from({ length: slides }).map((_, idx) => (
+        <button
+          key={idx}
+          type="button"
+          className={cn(
+            "size-2 rounded-full transition-colors",
+            idx === selectedIndex ? "bg-white" : "bg-white/50"
+          )}
+          onClick={() => api?.scrollTo(idx)}
+          aria-label={`Go to slide ${idx + 1}`}
+          aria-current={idx === selectedIndex ? "true" : undefined}
+        />
+      ))}
+    </div>
+  )
+})
+CarouselDots.displayName = "CarouselDots"
+
 export {
   type CarouselApi,
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
-  CarouselNext
+  CarouselNext,
+  CarouselDots
 }
