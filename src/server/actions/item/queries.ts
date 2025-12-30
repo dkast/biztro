@@ -71,7 +71,7 @@ export async function getCategories(organizationId: string) {
 }
 
 export async function getCategoriesWithItems() {
-  "use cache"
+  "use cache: private"
 
   const membership = await getCurrentMembership()
   const currentOrg = membership?.organizationId
@@ -122,7 +122,7 @@ export async function getCategoriesWithItems() {
 }
 
 export async function getMenuItemsWithoutCategory() {
-  "use cache"
+  "use cache: private"
 
   const membership = await getCurrentMembership()
   const currentOrg = membership?.organizationId
@@ -178,7 +178,7 @@ export async function getItemCount() {
 }
 
 export async function getFeaturedItems() {
-  "use cache"
+  "use cache: private"
 
   const membership = await getCurrentMembership()
   const currentOrg = membership?.organizationId
