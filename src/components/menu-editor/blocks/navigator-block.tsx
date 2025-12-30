@@ -137,9 +137,13 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
         }
         navRef.current = ref
       }}
-      className={cn("sticky top-0 z-10 p-4 transition delay-150 ease-in-out", {
-        "bg-black/60 text-white! backdrop-blur-md": isSticky
-      })}
+      className={cn(
+        `sticky top-0 z-10 col-span-1 p-4 transition delay-150 ease-in-out
+        md:col-span-2`,
+        {
+          "bg-black/60 text-white! backdrop-blur-md": isSticky
+        }
+      )}
       style={{
         color: `rgb(${Object.values(color ?? { r: 255, g: 255, b: 255, a: 1 })})`
       }}
@@ -177,7 +181,8 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 10 }}
                 transition={{ duration: 0.3 }}
-                className="pointer-events-none absolute top-0 right-0 flex h-full items-center"
+                className="pointer-events-none absolute top-0 right-0 flex
+                  h-full items-center"
               >
                 <ChevronsRight className="size-4" />
               </motion.div>

@@ -82,7 +82,7 @@ export default function FeaturedBlock({
             connect(ref)
           }
         }}
-        className="@container/feat w-full p-2"
+        className="@container/feat col-span-1 w-full p-2 md:col-span-2"
       >
         <Carousel
           opts={{

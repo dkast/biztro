@@ -156,29 +156,28 @@ export function ItemView({
               ></Image>
             )}
             <div>
-              <FontWrapper
-                fontFamily={itemFontFamily}
-                className="flex flex-row gap-3"
-              >
-                <h3
-                  style={{
-                    fontSize: `${itemFontSize}px`,
-                    color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
-                    fontWeight: itemFontWeight
-                  }}
-                >
-                  {item.name}
-                </h3>
-
-                {item.allergens && (
-                  <div
+              <FontWrapper fontFamily={itemFontFamily}>
+                <div className="flex flex-row gap-3">
+                  <h3
                     style={{
-                      color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+                      fontSize: `${itemFontSize}px`,
+                      color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
+                      fontWeight: itemFontWeight
                     }}
                   >
-                    <Allergens allergens={item.allergens.split(",")} />
-                  </div>
-                )}
+                    {item.name}
+                  </h3>
+
+                  {item.allergens && (
+                    <div
+                      style={{
+                        color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+                      }}
+                    >
+                      <Allergens allergens={item.allergens.split(",")} />
+                    </div>
+                  )}
+                </div>
               </FontWrapper>
               <FontWrapper fontFamily={descriptionFontFamily}>
                 <span
