@@ -227,7 +227,7 @@ export default function Workbench({
               categories={categories}
               soloItems={soloItems}
               featuredItems={featuredItems}
-              isPro={organization.plan === "PRO"}
+              isPro={organization.plan?.toUpperCase() === "PRO"}
             />
           </>
         )
@@ -340,7 +340,8 @@ export default function Workbench({
             <ResizablePanel defaultSize={70}>
               <div
                 id="editor-canvas"
-                className="no-scrollbar bg-secondary relative h-full w-full overflow-y-auto"
+                className="no-scrollbar bg-secondary relative h-full w-full
+                  overflow-y-auto"
               >
                 <SyncStatusBanner
                   menu={menu}
@@ -352,16 +353,21 @@ export default function Workbench({
                 <div
                   className={cn(
                     frameSize === FrameSize.DESKTOP ? "w-5xl" : "w-[390px]",
-                    "editor-preview group mx-auto pt-10 pb-24 transition-all duration-300 ease-in-out"
+                    `editor-preview group mx-auto pt-10 pb-24 transition-all
+                      duration-300 ease-in-out`
                   )}
                 >
-                  <span className="editor-size block p-2 text-center text-sm text-gray-400">
+                  <span
+                    className="editor-size block p-2 text-center text-sm
+                      text-gray-400"
+                  >
                     {frameSize === FrameSize.DESKTOP ? "Escritorio" : "Móvil"}
                   </span>
                   <div
                     className={cn(
                       frameSize === FrameSize.DESKTOP ? "w-5xl" : "w-[390px]",
-                      "flex flex-col border bg-white transition-all duration-300 ease-in-out dark:border-gray-700"
+                      `flex flex-col border bg-white transition-all duration-300
+                        ease-in-out dark:border-gray-700`
                     )}
                     style={{
                       height: iframeHeight,
@@ -391,7 +397,10 @@ export default function Workbench({
                         </FrameContextConsumer>
                       </IFrame>
                     ) : (
-                      <div className="text-muted-foreground flex grow items-center justify-center text-sm">
+                      <div
+                        className="text-muted-foreground flex grow items-center
+                          justify-center text-sm"
+                      >
                         Vista previa pausada
                       </div>
                     )}

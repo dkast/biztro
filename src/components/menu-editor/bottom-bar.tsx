@@ -20,12 +20,16 @@ export function BottomBar({
 }: BottomBarProps) {
   return (
     <>
-      <div className="editor-bottombar fixed bottom-0 z-10 flex w-full flex-row items-center justify-between border-t bg-gray-50 px-8 pb-5 pt-1 dark:border-gray-700 dark:bg-gray-800">
+      <div
+        className="editor-bottombar fixed bottom-0 z-10 flex w-full flex-row
+          items-center justify-between border-t bg-gray-50 px-8 pt-1 pb-3
+          dark:border-gray-700 dark:bg-gray-800"
+      >
         <div className="flex flex-col items-center">
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full"
+            className="rounded-full [&_svg]:size-6"
             onClick={() => {
               setActivePanel(PanelType.TOOLBOX)
               setIsOpen(true)
@@ -41,7 +45,7 @@ export function BottomBar({
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full"
+            className="rounded-full [&_svg]:size-6"
             onClick={() => {
               setActivePanel(PanelType.THEME)
               setIsOpen(true)
@@ -57,7 +61,7 @@ export function BottomBar({
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full"
+            className="rounded-full [&_svg]:size-6"
             onClick={() => {
               setActivePanel(PanelType.LAYERS)
               setIsOpen(true)
@@ -73,7 +77,7 @@ export function BottomBar({
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full"
+            className="rounded-full [&_svg]:size-6"
             onClick={() => {
               setActivePanel(PanelType.SETTINGS)
               setIsOpen(true)
