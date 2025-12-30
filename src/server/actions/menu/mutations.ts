@@ -163,7 +163,7 @@ export const updateMenuStatus = authActionClient
           where: { id },
           data:
             status === "PUBLISHED"
-              ? ({
+              ? {
                   status,
                   fontTheme,
                   colorTheme,
@@ -172,8 +172,8 @@ export const updateMenuStatus = authActionClient
                   publishedAt: new Date(),
                   publishedFontTheme: fontTheme,
                   publishedColorTheme: colorTheme
-                } as any)
-              : ({
+                }
+              : {
                   status,
                   fontTheme,
                   colorTheme,
@@ -182,7 +182,7 @@ export const updateMenuStatus = authActionClient
                   publishedAt: null,
                   publishedFontTheme: null,
                   publishedColorTheme: null
-                } as any)
+                }
         })
 
         revalidatePath(`/${subdomain}`)

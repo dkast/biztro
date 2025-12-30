@@ -140,12 +140,7 @@ function pruneNode(nodes: NodeMap, nodeId: string) {
 async function getOrganizationWithAssets(organizationId: string) {
   if (!organizationId) return null
   const organization = await prisma.organization.findUnique({
-    where: { id: organizationId },
-    include: {
-      menuItems: false,
-      categories: false,
-      menus: false
-    }
+    where: { id: organizationId }
   })
 
   if (!organization) return null
