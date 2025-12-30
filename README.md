@@ -95,3 +95,4 @@ For contributor guidance and agent rules see `AGENTS.md`.
 ---
 
 _This README was updated to include stack and local configuration steps._
+# Progress update
