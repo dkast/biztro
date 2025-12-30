@@ -8,18 +8,8 @@ import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import type { z } from "zod/v4"
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle
-} from "@/components/ui/alert-dialog"
+import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -250,56 +240,21 @@ function CategoryEditForm({
           "Guardar"
         )}
       </Button>
-      <AlertDialog
+      <MenuSyncDialog
         open={syncPrompt.open}
         onOpenChange={open =>
           setSyncPrompt(prev => ({ ...prev, open, rememberChoice: false }))
         }
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Actualizar menús publicados?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Se detectaron cambios en las categorías. ¿Quieres aplicar los
-              cambios al menú publicado?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="remember-published-choice-category"
-              checked={syncPrompt.rememberChoice}
-              onCheckedChange={checked =>
-                setSyncPrompt(prev => ({
-                  ...prev,
-                  rememberChoice: checked === true
-                }))
-              }
-            />
-            <label
-              htmlFor="remember-published-choice-category"
-              className="text-muted-foreground text-sm"
-            >
-              No volver a preguntar
-            </label>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => handleSyncChoice(false)}
-              disabled={statusSyncMenus === "executing"}
-            >
-              No ahora
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => handleSyncChoice(true)}
-              disabled={statusSyncMenus === "executing"}
-            >
-              {statusSyncMenus === "executing"
-                ? "Actualizando..."
-                : "Actualizar"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        rememberChoice={syncPrompt.rememberChoice}
+        onRememberChoiceChange={checked =>
+          setSyncPrompt(prev => ({ ...prev, rememberChoice: checked }))
+        }
+        onCancel={() => handleSyncChoice(false)}
+        onConfirm={() => handleSyncChoice(true)}
+        isLoading={statusSyncMenus === "executing"}
+        description="Se detectaron cambios en las categorías. ¿Quieres aplicar los cambios al menú publicado?"
+        checkboxId="remember-published-choice-category"
+      />
     </form>
   )
 }

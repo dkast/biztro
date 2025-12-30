@@ -13,6 +13,7 @@ import type { z } from "zod/v4"
 
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { ImageField } from "@/components/dashboard/image-field"
+import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import {
   Combobox,
@@ -37,18 +38,7 @@ import {
   TagsValue
 } from "@/components/kibo-ui/tags"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 // legacy Form helpers removed in favor of Field primitives
 import {
   Field,
@@ -664,56 +654,19 @@ export default function ItemForm({
           </FieldGroup>
         </div>
       </form>
-      <AlertDialog
+      <MenuSyncDialog
         open={syncPrompt.open}
         onOpenChange={open =>
           setSyncPrompt(prev => ({ ...prev, open, rememberChoice: false }))
         }
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Actualizar menús publicados?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Se detectaron cambios en tus productos. ¿Quieres aplicar los
-              cambios al menú publicado?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="remember-published-choice"
-              checked={syncPrompt.rememberChoice}
-              onCheckedChange={checked =>
-                setSyncPrompt(prev => ({
-                  ...prev,
-                  rememberChoice: checked === true
-                }))
-              }
-            />
-            <label
-              htmlFor="remember-published-choice"
-              className="text-muted-foreground text-sm"
-            >
-              No volver a preguntar
-            </label>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => handleSyncChoice(false)}
-              disabled={statusSyncMenus === "executing"}
-            >
-              No ahora
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => handleSyncChoice(true)}
-              disabled={statusSyncMenus === "executing"}
-            >
-              {statusSyncMenus === "executing"
-                ? "Actualizando..."
-                : "Actualizar"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        rememberChoice={syncPrompt.rememberChoice}
+        onRememberChoiceChange={checked =>
+          setSyncPrompt(prev => ({ ...prev, rememberChoice: checked }))
+        }
+        onCancel={() => handleSyncChoice(false)}
+        onConfirm={() => handleSyncChoice(true)}
+        isLoading={statusSyncMenus === "executing"}
+      />
       <VariantCreate
         menuItemId={item.id}
         open={openVariant}
