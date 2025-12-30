@@ -5,6 +5,7 @@ import type { Table } from "@tanstack/react-table"
 import { Combine, Loader, Star, Trash2, X } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 
+import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import {
   AlertDialog,
@@ -17,7 +18,6 @@ import {
   AlertDialogTitle
 } from "@/components/ui/alert-dialog"
 import { Button, buttonVariants } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -312,56 +312,20 @@ function FloatingToolbar({
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog
+      <MenuSyncDialog
         open={syncPrompt.open}
         onOpenChange={open =>
           setSyncPrompt(prev => ({ ...prev, open, rememberChoice: false }))
         }
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Actualizar menús publicados?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Se detectaron cambios en tus productos. ¿Quieres aplicar los
-              cambios al menú publicado?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="remember-published-choice-bulk"
-              checked={syncPrompt.rememberChoice}
-              onCheckedChange={checked =>
-                setSyncPrompt(prev => ({
-                  ...prev,
-                  rememberChoice: checked === true
-                }))
-              }
-            />
-            <label
-              htmlFor="remember-published-choice-bulk"
-              className="text-muted-foreground text-sm"
-            >
-              No volver a preguntar
-            </label>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => handleSyncChoice(false)}
-              disabled={statusSyncMenus === "executing"}
-            >
-              No ahora
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => handleSyncChoice(true)}
-              disabled={statusSyncMenus === "executing"}
-            >
-              {statusSyncMenus === "executing"
-                ? "Actualizando..."
-                : "Actualizar"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        rememberChoice={syncPrompt.rememberChoice}
+        onRememberChoiceChange={checked =>
+          setSyncPrompt(prev => ({ ...prev, rememberChoice: checked }))
+        }
+        onCancel={() => handleSyncChoice(false)}
+        onConfirm={() => handleSyncChoice(true)}
+        isLoading={statusSyncMenus === "executing"}
+        checkboxId="remember-published-choice-bulk"
+      />
     </div>
   )
 }
