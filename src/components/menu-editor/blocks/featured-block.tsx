@@ -13,6 +13,7 @@ import FontWrapper from "@/components/menu-editor/font-wrapper"
 import {
   Carousel,
   CarouselContent,
+  CarouselDots,
   CarouselItem,
   CarouselNext,
   CarouselPrevious
@@ -115,7 +116,10 @@ export default function FeaturedBlock({
                   tabIndex={0}
                 >
                   <div className="p-0">
-                    <div className="relative flex h-40 flex-col justify-end overflow-hidden rounded-lg border border-white/10">
+                    <div
+                      className="relative flex h-40 flex-col justify-end
+                        overflow-hidden rounded-lg border border-white/10"
+                    >
                       {item.image ? (
                         <div
                           className="absolute inset-0 bg-cover bg-center"
@@ -130,7 +134,10 @@ export default function FeaturedBlock({
                           }}
                         />
                       )}
-                      <div className="relative z-50 bg-linear-to-t from-black/80 to-transparent p-4">
+                      <div
+                        className="relative z-50 bg-linear-to-t from-black/80
+                          to-transparent p-4"
+                      >
                         <FontWrapper
                           fontFamily={itemFontFamily}
                           className="flex flex-row gap-3"
@@ -151,6 +158,10 @@ export default function FeaturedBlock({
               <CarouselPrevious />
               <CarouselNext />
             </>
+          )}
+
+          {items.length > 1 && isMobile && (
+            <CarouselDots className="@md/feat:mt-4" />
           )}
         </Carousel>
       </div>

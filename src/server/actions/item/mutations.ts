@@ -6,6 +6,7 @@ import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
+import { executeMenuSyncWithPreference } from "@/server/actions/menu/sync"
 import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
@@ -372,7 +373,9 @@ export const updateItem = authMemberActionClient
         variants,
         featured,
         allergens,
-        currency
+        currency,
+        updatePublishedMenus,
+        rememberPublishedChoice
       }
     }) => {
       try {
@@ -404,7 +407,19 @@ export const updateItem = authMemberActionClient
 
         updateTag(`menu-items-${organizationId}`)
         updateTag(`menu-item-${id}`)
-        return { success: item }
+
+        const sync = await executeMenuSyncWithPreference({
+          organizationId: organizationId ?? "",
+          updatePublishedMenus,
+          rememberPublishedChoice
+        })
+
+        return {
+          success: {
+            item,
+            sync
+          }
+        }
       } catch (error) {
         let message
         if (typeof error === "string") {
@@ -542,38 +557,61 @@ export const createCategory = authMemberActionClient
  */
 export const updateCategory = authMemberActionClient
   .inputSchema(categorySchema)
-  .action(async ({ parsedInput: { id, name, organizationId } }) => {
-    try {
-      const category = await prisma.category.update({
-        where: { id },
-        data: {
-          name
-        }
-      })
+  .action(
+    async ({
+      parsedInput: {
+        id,
+        name,
+        organizationId,
+        updatePublishedMenus,
+        rememberPublishedChoice
+      }
+    }) => {
+      try {
+        const category = await prisma.category.update({
+          where: { id },
+          data: {
+            name
+          }
+        })
 
-      updateTag(`categories-${organizationId}`)
-      return { success: category }
-    } catch (error) {
-      let message
-      if (typeof error === "string") {
-        message = error
-      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        console.error(error)
-        if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
-          message = "Ya existe una categoría con ese nombre"
-        } else {
+        updateTag(`categories-${organizationId}`)
+        updateTag(`menu-items-${organizationId}`)
+
+        const sync = await executeMenuSyncWithPreference({
+          organizationId: organizationId ?? "",
+          updatePublishedMenus,
+          rememberPublishedChoice
+        })
+
+        return {
+          success: {
+            category,
+            sync
+          }
+        }
+      } catch (error) {
+        let message
+        if (typeof error === "string") {
+          message = error
+        } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error(error)
+          if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
+            message = "Ya existe una categoría con ese nombre"
+          } else {
+            message = error.message
+          }
+        } else if (error instanceof Error) {
           message = error.message
         }
-      } else if (error instanceof Error) {
-        message = error.message
-      }
-      return {
-        failure: {
-          reason: message
+        return {
+          failure: {
+            reason: message
+          }
         }
       }
     }
-  })
+  )
 
 /**
  * Deletes a category.
@@ -726,31 +764,54 @@ export const bulkUpdateCategory = authMemberActionClient
     z.object({
       ids: z.array(z.string()),
       categoryId: z.string(),
-      organizationId: z.string()
+      organizationId: z.string(),
+      updatePublishedMenus: z.boolean().optional(),
+      rememberPublishedChoice: z.boolean().optional()
     })
   )
-  .action(async ({ parsedInput: { ids, categoryId, organizationId } }) => {
-    try {
-      await prisma.menuItem.updateMany({
-        where: {
-          id: { in: ids }
-        },
-        data: {
-          categoryId
-        }
-      })
+  .action(
+    async ({
+      parsedInput: {
+        ids,
+        categoryId,
+        organizationId,
+        updatePublishedMenus,
+        rememberPublishedChoice
+      }
+    }) => {
+      try {
+        await prisma.menuItem.updateMany({
+          where: {
+            id: { in: ids }
+          },
+          data: {
+            categoryId
+          }
+        })
 
-      updateTag(`menu-items-${organizationId}`)
-      return { success: true }
-    } catch (error) {
-      console.error(error)
-      return {
-        failure: {
-          reason: "Error al actualizar las categorías"
+        updateTag(`menu-items-${organizationId}`)
+
+        const sync = await executeMenuSyncWithPreference({
+          organizationId,
+          updatePublishedMenus,
+          rememberPublishedChoice
+        })
+
+        return {
+          success: {
+            sync
+          }
+        }
+      } catch (error) {
+        console.error(error)
+        return {
+          failure: {
+            reason: "Error al actualizar las categorías"
+          }
         }
       }
     }
-  })
+  )
 
 /**
  * Deletes multiple items at once.
@@ -810,28 +871,51 @@ export const bulkToggleFeature = authMemberActionClient
     z.object({
       ids: z.array(z.string()),
       featured: z.boolean(),
-      organizationId: z.string()
+      organizationId: z.string(),
+      updatePublishedMenus: z.boolean().optional(),
+      rememberPublishedChoice: z.boolean().optional()
     })
   )
-  .action(async ({ parsedInput: { ids, featured, organizationId } }) => {
-    try {
-      await prisma.menuItem.updateMany({
-        where: {
-          id: { in: ids }
-        },
-        data: {
-          featured
-        }
-      })
+  .action(
+    async ({
+      parsedInput: {
+        ids,
+        featured,
+        organizationId,
+        updatePublishedMenus,
+        rememberPublishedChoice
+      }
+    }) => {
+      try {
+        await prisma.menuItem.updateMany({
+          where: {
+            id: { in: ids }
+          },
+          data: {
+            featured
+          }
+        })
 
-      updateTag(`menu-items-${organizationId}`)
-      return { success: true }
-    } catch (error) {
-      console.error(error)
-      return {
-        failure: {
-          reason: "Error al actualizar los productos destacados"
+        updateTag(`menu-items-${organizationId}`)
+
+        const sync = await executeMenuSyncWithPreference({
+          organizationId,
+          updatePublishedMenus,
+          rememberPublishedChoice
+        })
+
+        return {
+          success: {
+            sync
+          }
+        }
+      } catch (error) {
+        console.error(error)
+        return {
+          failure: {
+            reason: "Error al actualizar los productos destacados"
+          }
         }
       }
     }
-  })
+  )

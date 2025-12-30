@@ -71,11 +71,15 @@ export async function getCategories(organizationId: string) {
 }
 
 export async function getCategoriesWithItems() {
+  "use cache: private"
+
   const membership = await getCurrentMembership()
   const currentOrg = membership?.organizationId
   if (!currentOrg) {
     return []
   }
+
+  cacheTag(`menu-items-${currentOrg}`)
 
   const data = await prisma.category.findMany({
     where: {
@@ -118,11 +122,15 @@ export async function getCategoriesWithItems() {
 }
 
 export async function getMenuItemsWithoutCategory() {
+  "use cache: private"
+
   const membership = await getCurrentMembership()
   const currentOrg = membership?.organizationId
   if (!currentOrg) {
     return []
   }
+
+  cacheTag(`menu-items-${currentOrg}`)
 
   const data = await prisma.menuItem.findMany({
     where: {
@@ -170,11 +178,15 @@ export async function getItemCount() {
 }
 
 export async function getFeaturedItems() {
+  "use cache: private"
+
   const membership = await getCurrentMembership()
   const currentOrg = membership?.organizationId
   if (!currentOrg) {
     return []
   }
+
+  cacheTag(`menu-items-${currentOrg}`)
 
   const data = await prisma.menuItem.findMany({
     where: {

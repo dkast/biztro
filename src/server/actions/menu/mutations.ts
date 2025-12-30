@@ -160,18 +160,33 @@ export const updateMenuStatus = authActionClient
       try {
         const menu = await prisma.menu.update({
           where: { id },
-          data: {
-            status,
-            fontTheme,
-            colorTheme,
-            serialData,
-            publishedData: serialData,
-            publishedAt: status === "PUBLISHED" ? new Date() : null
-          }
+          data:
+            status === "PUBLISHED"
+              ? {
+                  status,
+                  fontTheme,
+                  colorTheme,
+                  serialData,
+                  publishedData: serialData,
+                  publishedAt: new Date(),
+                  publishedFontTheme: fontTheme,
+                  publishedColorTheme: colorTheme
+                }
+              : {
+                  status,
+                  fontTheme,
+                  colorTheme,
+                  serialData,
+                  publishedData: null,
+                  publishedAt: null,
+                  publishedFontTheme: null,
+                  publishedColorTheme: null
+                }
         })
 
         revalidatePath(`/${subdomain}`)
         updateTag(`subdomain-${menu.organizationId}`)
+        updateTag(`menu-${menu.id}`)
         return {
           success: menu
         }
@@ -219,6 +234,7 @@ export const updateMenuSerialData = authActionClient
           data: { fontTheme, colorTheme, serialData }
         })
 
+        updateTag(`menu-${menu.id}`)
         return {
           success: menu
         }
@@ -239,6 +255,76 @@ export const updateMenuSerialData = authActionClient
       }
     }
   )
+
+export const revertMenuToPublished = authActionClient
+  .inputSchema(
+    z.object({
+      id: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { id } }) => {
+    try {
+      const menu = await prisma.menu.findUnique({
+        where: { id },
+        select: {
+          publishedData: true,
+          publishedFontTheme: true,
+          publishedColorTheme: true,
+          fontTheme: true,
+          colorTheme: true
+        }
+      })
+
+      if (!menu?.publishedData) {
+        return {
+          failure: {
+            reason: "No hay una versión publicada para revertir."
+          }
+        }
+      }
+
+      const publishedFontTheme =
+        menu.publishedFontTheme ?? menu.fontTheme ?? "DEFAULT"
+      const publishedColorTheme =
+        menu.publishedColorTheme ?? menu.colorTheme ?? "DEFAULT"
+
+      const updatedMenu = await prisma.menu.update({
+        where: { id },
+        data: {
+          serialData: menu.publishedData,
+          fontTheme: publishedFontTheme,
+          colorTheme: publishedColorTheme
+        },
+        select: {
+          id: true,
+          fontTheme: true,
+          colorTheme: true,
+          publishedFontTheme: true,
+          publishedColorTheme: true,
+          publishedData: true
+        }
+      })
+
+      updateTag(`menu-${id}`)
+      return {
+        success: updatedMenu
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        message = error.message
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  })
 
 /**
  * Deletes a menu based on the provided ID and organization ID.

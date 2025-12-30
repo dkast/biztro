@@ -5,6 +5,7 @@ import type { Table } from "@tanstack/react-table"
 import { Combine, Loader, Star, Trash2, X } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 
+import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import {
   AlertDialog,
@@ -32,6 +33,7 @@ import {
   bulkUpdateCategory
 } from "@/server/actions/item/mutations"
 import type { getMenuItems } from "@/server/actions/item/queries"
+import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
 import { cn } from "@/lib/utils"
 
 function FloatingToolbar({
@@ -41,6 +43,42 @@ function FloatingToolbar({
   table: Table<Awaited<ReturnType<typeof getMenuItems>>[0]>
   categories: Category[]
 }) {
+  const rows = table.getFilteredSelectedRowModel().rows
+  const selectedIds = rows.map(row => row.original.id)
+  const orgId = rows[0]?.original.organizationId
+  const hasSelection = selectedIds.length > 0
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [syncPrompt, setSyncPrompt] = useState({
+    open: false,
+    organizationId: orgId ?? "",
+    rememberChoice: false
+  })
+
+  const {
+    execute: executeSyncMenus,
+    status: statusSyncMenus,
+    reset: resetSyncMenus
+  } = useAction(syncMenusAfterCatalogChange, {
+    onSuccess: ({ data }) => {
+      if (data?.success) {
+        const { draftsUpdated, publishedUpdated } = data.success
+        if (draftsUpdated || publishedUpdated) {
+          toast.success("Menú actualizado")
+        }
+      } else if (data?.failure?.reason) {
+        toast.error(data.failure.reason)
+      }
+      resetSyncMenus()
+      setSyncPrompt(prev => ({ ...prev, open: false, rememberChoice: false }))
+      table.toggleAllRowsSelected(false)
+    },
+    onError: () => {
+      toast.error("No se pudo actualizar los menús")
+      setSyncPrompt(prev => ({ ...prev, open: false }))
+    }
+  })
+
   const { execute: executeBulkUpdate, isPending: updateIsPending } = useAction(
     bulkUpdateCategory,
     {
@@ -50,7 +88,22 @@ function FloatingToolbar({
           return
         }
         toast.success("Categorías actualizadas")
-        table.toggleAllRowsSelected(false)
+
+        const syncMeta = data?.success?.sync
+        if (syncMeta?.publishedUpdated) {
+          toast.success("Menú publicado actualizado")
+        }
+
+        if (syncMeta?.needsPublishedDecision) {
+          setSyncPrompt(prev => ({
+            ...prev,
+            open: true,
+            rememberChoice: false,
+            organizationId: orgId ?? ""
+          }))
+        } else {
+          table.toggleAllRowsSelected(false)
+        }
       }
     }
   )
@@ -77,16 +130,24 @@ function FloatingToolbar({
           return
         }
         toast.success("Productos actualizados")
-        table.toggleAllRowsSelected(false)
+
+        const syncMeta = data?.success?.sync
+        if (syncMeta?.publishedUpdated) {
+          toast.success("Menú publicado actualizado")
+        }
+
+        if (syncMeta?.needsPublishedDecision) {
+          setSyncPrompt(prev => ({
+            ...prev,
+            open: true,
+            rememberChoice: false,
+            organizationId: orgId ?? ""
+          }))
+        } else {
+          table.toggleAllRowsSelected(false)
+        }
       }
     })
-
-  const rows = table.getFilteredSelectedRowModel().rows
-  const selectedIds = rows.map(row => row.original.id)
-  const orgId = rows[0]?.original.organizationId
-  const hasSelection = selectedIds.length > 0
-
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const handleUpdateCategory = async (categoryId: string) => {
     if (!orgId || selectedIds.length === 0) return
@@ -123,6 +184,26 @@ function FloatingToolbar({
       ids: selectedIds,
       featured: newFeaturedStatus,
       organizationId: orgId
+    })
+  }
+
+  const handleSyncChoice = (updatePublished: boolean) => {
+    if (!syncPrompt.organizationId) {
+      setSyncPrompt(prev => ({ ...prev, open: false }))
+      table.toggleAllRowsSelected(false)
+      return
+    }
+
+    if (!syncPrompt.rememberChoice && updatePublished === false) {
+      setSyncPrompt(prev => ({ ...prev, open: false }))
+      table.toggleAllRowsSelected(false)
+      return
+    }
+
+    executeSyncMenus({
+      organizationId: syncPrompt.organizationId,
+      updatePublished,
+      rememberChoice: syncPrompt.rememberChoice
     })
   }
 
@@ -230,6 +311,21 @@ function FloatingToolbar({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <MenuSyncDialog
+        open={syncPrompt.open}
+        onOpenChange={open =>
+          setSyncPrompt(prev => ({ ...prev, open, rememberChoice: false }))
+        }
+        rememberChoice={syncPrompt.rememberChoice}
+        onRememberChoiceChange={checked =>
+          setSyncPrompt(prev => ({ ...prev, rememberChoice: checked }))
+        }
+        onCancel={() => handleSyncChoice(false)}
+        onConfirm={() => handleSyncChoice(true)}
+        isLoading={statusSyncMenus === "executing"}
+        checkboxId="remember-published-choice-bulk"
+      />
     </div>
   )
 }

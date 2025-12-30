@@ -24,6 +24,8 @@ export async function getMenus(currentOrgId: string) {
 }
 
 export async function getMenuById(id: string) {
+  "use cache"
+  cacheTag(`menu-${id}`)
   const menu = await prisma.menu.findUnique({
     where: {
       id

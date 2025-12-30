@@ -319,7 +319,9 @@ export const menuItemSchema = z.object({
   featured: z.boolean().prefault(false).optional(),
   currency: z.enum(["MXN", "USD"]).default("MXN").optional(),
   variants: z.tuple([variantSchema], variantSchema),
-  allergens: z.string().optional()
+  allergens: z.string().optional(),
+  updatePublishedMenus: z.boolean().optional(),
+  rememberPublishedChoice: z.boolean().optional()
 })
 
 export const categorySchema = z.object({
@@ -335,7 +337,9 @@ export const categorySchema = z.object({
     .max(100, {
       error: "Nombre muy largo"
     }),
-  organizationId: z.string().optional()
+  organizationId: z.string().optional(),
+  updatePublishedMenus: z.boolean().optional(),
+  rememberPublishedChoice: z.boolean().optional()
 })
 
 export const menuSchema = z.object({

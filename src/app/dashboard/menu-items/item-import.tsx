@@ -33,6 +33,7 @@ import {
   bulkCreateItems,
   exportMenuItems
 } from "@/server/actions/item/mutations"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { MenuItemStatus, type BulkMenuItem } from "@/lib/types"
 
 type CSVRow = {
@@ -66,6 +67,7 @@ const downloadCsvFile = (rows: CSVRow[], fileName: string) => {
 export default function ItemImport() {
   const [open, setOpen] = useState(false)
   const [errors, setErrors] = useState<ImportError[]>([])
+  const isMobile = useIsMobile()
   const { execute, isPending, reset } = useAction(bulkCreateItems, {
     onSuccess: response => {
       console.dir(response.data)
@@ -114,7 +116,7 @@ export default function ItemImport() {
           const prices = item.variants
             .filter(v => typeof v.price === "number" && !isNaN(v.price))
             .map(v => v.price)
-          
+
           if (prices.length > 0) {
             const minPrice = Math.min(...prices)
             const maxPrice = Math.max(...prices)
@@ -260,6 +262,10 @@ export default function ItemImport() {
     ]
 
     downloadCsvFile(template, "plantilla-productos.csv")
+  }
+
+  if (isMobile) {
+    return null
   }
 
   return (

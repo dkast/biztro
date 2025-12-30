@@ -8,6 +8,7 @@ import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import type { z } from "zod/v4"
 
+import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -28,6 +29,7 @@ import {
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { createCategory, updateCategory } from "@/server/actions/item/mutations"
+import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { ActionType, categorySchema } from "@/lib/types"
 
@@ -103,6 +105,11 @@ function CategoryEditForm({
       organizationId: category?.organizationId ?? undefined
     }
   })
+  const [syncPrompt, setSyncPrompt] = useState({
+    open: false,
+    organizationId: category?.organizationId ?? "",
+    rememberChoice: false
+  })
 
   const {
     execute: executeInsert,
@@ -132,8 +139,23 @@ function CategoryEditForm({
   } = useAction(updateCategory, {
     onSuccess: ({ data }) => {
       if (data?.success) {
+        const syncMeta = data.success.sync
         toast.success("Categoría actualizada")
-        onClose(false)
+
+        if (syncMeta?.publishedUpdated) {
+          toast.success("Menú publicado actualizado")
+        }
+
+        if (syncMeta?.needsPublishedDecision) {
+          setSyncPrompt(prev => ({
+            ...prev,
+            open: true,
+            rememberChoice: false,
+            organizationId: data.success.category.organizationId ?? ""
+          }))
+        } else {
+          onClose(false)
+        }
       } else if (data?.failure.reason) {
         toast.error(data?.failure.reason)
       }
@@ -145,12 +167,51 @@ function CategoryEditForm({
     }
   })
 
+  const {
+    execute: executeSyncMenus,
+    status: statusSyncMenus,
+    reset: resetSyncMenus
+  } = useAction(syncMenusAfterCatalogChange, {
+    onSuccess: ({ data }) => {
+      if (data?.success) {
+        toast.success("Menú actualizado")
+      } else if (data?.failure?.reason) {
+        toast.error(data.failure.reason)
+      }
+      resetSyncMenus()
+      setSyncPrompt(prev => ({ ...prev, open: false, rememberChoice: false }))
+    },
+    onError: () => {
+      toast.error("No se pudo actualizar los menús")
+      setSyncPrompt(prev => ({ ...prev, open: false }))
+    }
+  })
+
   const onSubmit = (data: z.infer<typeof categorySchema>) => {
     if (action === ActionType.CREATE) {
       executeInsert(data)
-    } else if (ActionType.UPDATE) {
+    } else if (action === ActionType.UPDATE) {
       executeUpdate(data)
     }
+  }
+
+  const handleSyncChoice = (updatePublished: boolean) => {
+    if (!syncPrompt.organizationId) {
+      setSyncPrompt(prev => ({ ...prev, open: false }))
+      return
+    }
+
+    if (!syncPrompt.rememberChoice && updatePublished === false) {
+      setSyncPrompt(prev => ({ ...prev, open: false }))
+      return
+    }
+
+    executeSyncMenus({
+      organizationId: syncPrompt.organizationId,
+      updatePublished,
+      rememberChoice: syncPrompt.rememberChoice
+    })
+    onClose(false)
   }
 
   return (
@@ -179,6 +240,21 @@ function CategoryEditForm({
           "Guardar"
         )}
       </Button>
+      <MenuSyncDialog
+        open={syncPrompt.open}
+        onOpenChange={open =>
+          setSyncPrompt(prev => ({ ...prev, open, rememberChoice: false }))
+        }
+        rememberChoice={syncPrompt.rememberChoice}
+        onRememberChoiceChange={checked =>
+          setSyncPrompt(prev => ({ ...prev, rememberChoice: checked }))
+        }
+        onCancel={() => handleSyncChoice(false)}
+        onConfirm={() => handleSyncChoice(true)}
+        isLoading={statusSyncMenus === "executing"}
+        description="Se detectaron cambios en las categorías. ¿Quieres aplicar los cambios al menú publicado?"
+        checkboxId="remember-published-choice-category"
+      />
     </form>
   )
 }
