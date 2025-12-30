@@ -1,6 +1,5 @@
 "use server"
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Prisma } from "@/generated/prisma-client/client"
 import { revalidatePath, updateTag } from "next/cache"
 import { z } from "zod/v4"
@@ -265,7 +264,7 @@ export const revertMenuToPublished = authActionClient
   )
   .action(async ({ parsedInput: { id } }) => {
     try {
-      const menu = (await prisma.menu.findUnique({
+      const menu = await prisma.menu.findUnique({
         where: { id },
         select: {
           publishedData: true,
@@ -273,8 +272,8 @@ export const revertMenuToPublished = authActionClient
           publishedColorTheme: true,
           fontTheme: true,
           colorTheme: true
-        } as any
-      })) as any
+        }
+      })
 
       if (!menu?.publishedData) {
         return {
@@ -289,7 +288,7 @@ export const revertMenuToPublished = authActionClient
       const publishedColorTheme =
         menu.publishedColorTheme ?? menu.colorTheme ?? "DEFAULT"
 
-      const updatedMenu = (await prisma.menu.update({
+      const updatedMenu = await prisma.menu.update({
         where: { id },
         data: {
           serialData: menu.publishedData,
@@ -303,8 +302,8 @@ export const revertMenuToPublished = authActionClient
           publishedFontTheme: true,
           publishedColorTheme: true,
           publishedData: true
-        } as any
-      })) as any
+        }
+      })
 
       updateTag(`menu-${id}`)
       return {
