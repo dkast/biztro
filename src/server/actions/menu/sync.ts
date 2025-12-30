@@ -467,3 +467,51 @@ export async function persistMenuSyncPreference(
 ) {
   await setMenuSyncPreference(organizationId, updatePublished)
 }
+
+/**
+ * Executes menu sync logic with preference handling.
+ * This helper consolidates the repeated pattern of:
+ * 1. Checking user preference
+ * 2. Determining whether to update published menus
+ * 3. Applying sync
+ * 4. Persisting preference if requested
+ *
+ * @param options - Configuration for sync execution
+ * @param options.organizationId - Organization ID to sync menus for
+ * @param options.updatePublishedMenus - User's explicit choice to update published menus (undefined if not chosen)
+ * @param options.rememberPublishedChoice - Whether to persist the user's choice as a preference
+ * @returns Sync results including counts and whether user needs to make a decision
+ */
+export async function executeMenuSyncWithPreference({
+  organizationId,
+  updatePublishedMenus,
+  rememberPublishedChoice
+}: {
+  organizationId: string
+  updatePublishedMenus?: boolean
+  rememberPublishedChoice?: boolean
+}) {
+  const preference = await resolveMenuSyncPreference(organizationId)
+  const hasUserChoice = typeof updatePublishedMenus === "boolean"
+  const shouldUpdatePublished = hasUserChoice
+    ? updatePublishedMenus
+    : preference === true
+  const shouldSkipSync = !hasUserChoice && preference === null
+
+  const syncResult = !shouldSkipSync
+    ? await applyMenuSyncAfterChange({
+        organizationId,
+        updatePublished: shouldUpdatePublished
+      })
+    : { draftsUpdated: 0, publishedUpdated: 0 }
+
+  if (rememberPublishedChoice && typeof shouldUpdatePublished === "boolean") {
+    await persistMenuSyncPreference(organizationId, shouldUpdatePublished)
+  }
+
+  return {
+    draftsUpdated: syncResult.draftsUpdated,
+    publishedUpdated: syncResult.publishedUpdated,
+    needsPublishedDecision: shouldSkipSync
+  }
+}
