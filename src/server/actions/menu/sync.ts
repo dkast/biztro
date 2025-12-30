@@ -505,7 +505,7 @@ export async function executeMenuSyncWithPreference({
       })
     : { draftsUpdated: 0, publishedUpdated: 0 }
 
-  if (rememberPublishedChoice && typeof shouldUpdatePublished === "boolean") {
+  if (rememberPublishedChoice) {
     await persistMenuSyncPreference(organizationId, shouldUpdatePublished)
   }
 
