@@ -6,11 +6,7 @@ import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
-import {
-  applyMenuSyncAfterChange,
-  persistMenuSyncPreference,
-  resolveMenuSyncPreference
-} from "@/server/actions/menu/sync"
+import { executeMenuSyncWithPreference } from "@/server/actions/menu/sync"
 import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
@@ -412,39 +408,16 @@ export const updateItem = authMemberActionClient
         updateTag(`menu-items-${organizationId}`)
         updateTag(`menu-item-${id}`)
 
-        const preference = await resolveMenuSyncPreference(organizationId ?? "")
-        const hasUserChoice = typeof updatePublishedMenus === "boolean"
-        const shouldUpdatePublished = hasUserChoice
-          ? updatePublishedMenus
-          : preference === true
-        const shouldSkipSync = !hasUserChoice && preference === null
-
-        const syncResult =
-          organizationId && !shouldSkipSync
-            ? await applyMenuSyncAfterChange({
-                organizationId,
-                updatePublished: shouldUpdatePublished
-              })
-            : { draftsUpdated: 0, publishedUpdated: 0 }
-
-        if (
-          rememberPublishedChoice &&
-          typeof shouldUpdatePublished === "boolean"
-        ) {
-          await persistMenuSyncPreference(
-            organizationId ?? "",
-            shouldUpdatePublished
-          )
-        }
+        const sync = await executeMenuSyncWithPreference({
+          organizationId: organizationId ?? "",
+          updatePublishedMenus,
+          rememberPublishedChoice
+        })
 
         return {
           success: {
             item,
-            sync: {
-              draftsUpdated: syncResult.draftsUpdated,
-              publishedUpdated: syncResult.publishedUpdated,
-              needsPublishedDecision: shouldSkipSync
-            }
+            sync
           }
         }
       } catch (error) {
@@ -605,39 +578,16 @@ export const updateCategory = authMemberActionClient
         updateTag(`categories-${organizationId}`)
         updateTag(`menu-items-${organizationId}`)
 
-        const preference = await resolveMenuSyncPreference(organizationId ?? "")
-        const hasUserChoice = typeof updatePublishedMenus === "boolean"
-        const shouldUpdatePublished = hasUserChoice
-          ? updatePublishedMenus
-          : preference === true
-        const shouldSkipSync = !hasUserChoice && preference === null
-
-        const syncResult =
-          organizationId && !shouldSkipSync
-            ? await applyMenuSyncAfterChange({
-                organizationId,
-                updatePublished: shouldUpdatePublished
-              })
-            : { draftsUpdated: 0, publishedUpdated: 0 }
-
-        if (
-          rememberPublishedChoice &&
-          typeof shouldUpdatePublished === "boolean"
-        ) {
-          await persistMenuSyncPreference(
-            organizationId ?? "",
-            shouldUpdatePublished
-          )
-        }
+        const sync = await executeMenuSyncWithPreference({
+          organizationId: organizationId ?? "",
+          updatePublishedMenus,
+          rememberPublishedChoice
+        })
 
         return {
           success: {
             category,
-            sync: {
-              draftsUpdated: syncResult.draftsUpdated,
-              publishedUpdated: syncResult.publishedUpdated,
-              needsPublishedDecision: shouldSkipSync
-            }
+            sync
           }
         }
       } catch (error) {
@@ -841,34 +791,15 @@ export const bulkUpdateCategory = authMemberActionClient
 
         updateTag(`menu-items-${organizationId}`)
 
-        const preference = await resolveMenuSyncPreference(organizationId)
-        const hasUserChoice = typeof updatePublishedMenus === "boolean"
-        const shouldUpdatePublished = hasUserChoice
-          ? updatePublishedMenus
-          : preference === true
-        const shouldSkipSync = !hasUserChoice && preference === null
-
-        const syncResult = !shouldSkipSync
-          ? await applyMenuSyncAfterChange({
-              organizationId,
-              updatePublished: shouldUpdatePublished
-            })
-          : { draftsUpdated: 0, publishedUpdated: 0 }
-
-        if (
-          rememberPublishedChoice &&
-          typeof shouldUpdatePublished === "boolean"
-        ) {
-          await persistMenuSyncPreference(organizationId, shouldUpdatePublished)
-        }
+        const sync = await executeMenuSyncWithPreference({
+          organizationId,
+          updatePublishedMenus,
+          rememberPublishedChoice
+        })
 
         return {
           success: {
-            sync: {
-              draftsUpdated: syncResult.draftsUpdated,
-              publishedUpdated: syncResult.publishedUpdated,
-              needsPublishedDecision: shouldSkipSync
-            }
+            sync
           }
         }
       } catch (error) {
@@ -967,34 +898,15 @@ export const bulkToggleFeature = authMemberActionClient
 
         updateTag(`menu-items-${organizationId}`)
 
-        const preference = await resolveMenuSyncPreference(organizationId)
-        const hasUserChoice = typeof updatePublishedMenus === "boolean"
-        const shouldUpdatePublished = hasUserChoice
-          ? updatePublishedMenus
-          : preference === true
-        const shouldSkipSync = !hasUserChoice && preference === null
-
-        const syncResult = !shouldSkipSync
-          ? await applyMenuSyncAfterChange({
-              organizationId,
-              updatePublished: shouldUpdatePublished
-            })
-          : { draftsUpdated: 0, publishedUpdated: 0 }
-
-        if (
-          rememberPublishedChoice &&
-          typeof shouldUpdatePublished === "boolean"
-        ) {
-          await persistMenuSyncPreference(organizationId, shouldUpdatePublished)
-        }
+        const sync = await executeMenuSyncWithPreference({
+          organizationId,
+          updatePublishedMenus,
+          rememberPublishedChoice
+        })
 
         return {
           success: {
-            sync: {
-              draftsUpdated: syncResult.draftsUpdated,
-              publishedUpdated: syncResult.publishedUpdated,
-              needsPublishedDecision: shouldSkipSync
-            }
+            sync
           }
         }
       } catch (error) {
