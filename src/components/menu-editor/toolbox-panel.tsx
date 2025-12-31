@@ -42,9 +42,7 @@ export default function ToolboxPanel({
   featuredItems,
   isPro // Add this prop
 }: {
-  organization: NonNullable<
-    Awaited<ReturnType<typeof getCurrentOrganization>>
-  >
+  organization: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>
   location: Awaited<ReturnType<typeof getDefaultLocation>> | null
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
   soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
@@ -157,6 +155,7 @@ export default function ToolboxPanel({
               priceFontFamily={selectedFontTheme.fontText}
               descriptionFontFamily={selectedFontTheme.fontText}
               categoryColor={hexToRgba(selectedColorTheme.accentColor)}
+              categoryHeadingBgColor={selectedColorTheme.brandColor}
               itemColor={hexToRgba(selectedColorTheme.textColor)}
               priceColor={hexToRgba(selectedColorTheme.accentColor)}
               descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
@@ -246,7 +245,10 @@ export default function ToolboxPanel({
               <Button
                 variant="outline"
                 size="xs"
-                className="dark:hover:bg-opacity-10 mt-2 w-full border-blue-500 bg-transparent text-blue-500 hover:bg-blue-50 hover:text-blue-900 dark:border-blue-400 dark:bg-transparent dark:text-blue-400 dark:hover:bg-blue-900"
+                className="dark:hover:bg-opacity-10 mt-2 w-full border-blue-500
+                  bg-transparent text-blue-500 hover:bg-blue-50
+                  hover:text-blue-900 dark:border-blue-400 dark:bg-transparent
+                  dark:text-blue-400 dark:hover:bg-blue-900"
               >
                 Ver productos
               </Button>
@@ -421,7 +423,11 @@ function ToolboxElement({
   addButton?: React.ReactNode
 }) {
   return (
-    <div className="group flex cursor-move items-center justify-between gap-2 rounded-sm bg-gray-100 p-4 hover:bg-gray-50 sm:p-2 sm:text-sm dark:bg-gray-800/50 dark:hover:bg-gray-800">
+    <div
+      className="group flex cursor-move items-center justify-between gap-2
+        rounded-sm bg-gray-100 p-4 hover:bg-gray-50 sm:p-2 sm:text-sm
+        dark:bg-gray-800/50 dark:hover:bg-gray-800"
+    >
       <div className="flex items-center gap-2">
         <Icon
           className={cn(
@@ -448,7 +454,9 @@ function AddButton({ onClick }: { onClick: () => void }) {
         <PlusSquare className="size-5 text-green-500 dark:text-green-400" />
       </Button>
 
-      <GripVertical className="hidden size-5 text-gray-400 sm:block dark:text-gray-600" />
+      <GripVertical
+        className="hidden size-5 text-gray-400 sm:block dark:text-gray-600"
+      />
     </>
   )
 }

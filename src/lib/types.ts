@@ -582,7 +582,7 @@ export const colorThemes = [
   {
     id: "TERRA_LIGHT",
     name: "Terra",
-    surfaceColor: "##fff8f6",
+    surfaceColor: "#fff8f6",
     brandColor: "#231917",
     accentColor: "#8f4c38",
     textColor: "#231917",
