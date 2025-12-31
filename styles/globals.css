@@ -104,6 +104,163 @@
   }
 }
 
+/* Category Heading Shape Utilities */
+/* Base class for all heading shapes - uses ::before pseudo-element so text isn't clipped */
+@utility heading-shape {
+  position: relative;
+  isolation: isolate;
+  padding: 0.5rem 0.5rem;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--heading-bg-color, transparent);
+  }
+}
+
+/* Rectangle (default) - simple background */
+@utility heading-shape-rectangle {
+  &::before {
+    /* No special shape, just the rectangle */
+  }
+}
+
+/* Rounded - simple border-radius */
+@utility heading-shape-rounded {
+  &::before {
+    border-radius: 0.5rem;
+  }
+}
+
+/* Rounded Pill - fully rounded sides */
+@utility heading-shape-pill {
+  &::before {
+    border-radius: 9999px;
+  }
+}
+
+/* Slanted Edge - diagonal cut on right side */
+@utility heading-shape-slanted {
+  &::before {
+    --slant: 20px;
+    clip-path: polygon(0 0, 100% 0, calc(100% - var(--slant)) 100%, 0 100%);
+  }
+}
+
+/* Parallelogram - both sides slanted */
+@utility heading-shape-parallelogram {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  &::before {
+    --slant: 20px;
+    clip-path: polygon(
+      var(--slant) 0,
+      100% 0,
+      calc(100% - var(--slant)) 100%,
+      0 100%
+    );
+  }
+}
+
+/* Chevron/Arrow - pointed ends */
+@utility heading-shape-chevron {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  &::before {
+    --point: 15px;
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--point)) 0,
+      100% 50%,
+      calc(100% - var(--point)) 100%,
+      0 100%,
+      var(--point) 50%
+    );
+  }
+}
+
+/* Rounded Tab - browser tab style with curved corners at bottom */
+@utility heading-shape-tab {
+  &::before {
+    --r: 12px;
+    border-radius: calc(2 * var(--r)) calc(2 * var(--r)) 0 0;
+    -webkit-mask:
+      radial-gradient(var(--r) at var(--r) 0, #0000 98%, #000 101%)
+        calc(-1 * var(--r)) 100% / 100% var(--r) repeat-x,
+      conic-gradient(#000 0 0) padding-box;
+    mask:
+      radial-gradient(var(--r) at var(--r) 0, #0000 98%, #000 101%)
+        calc(-1 * var(--r)) 100% / 100% var(--r) repeat-x,
+      conic-gradient(#000 0 0) padding-box;
+  }
+}
+
+/* Scooped Corners - inward curved corners using mask */
+@utility heading-shape-scooped {
+  &::before {
+    --r: 12px;
+    -webkit-mask:
+      radial-gradient(var(--r) at 0 0, #0000 98%, #000) 0 0,
+      radial-gradient(var(--r) at 100% 0, #0000 98%, #000) 100% 0,
+      radial-gradient(var(--r) at 0 100%, #0000 98%, #000) 0 100%,
+      radial-gradient(var(--r) at 100% 100%, #0000 98%, #000) 100% 100%;
+    mask:
+      radial-gradient(var(--r) at 0 0, #0000 98%, #000) 0 0,
+      radial-gradient(var(--r) at 100% 0, #0000 98%, #000) 100% 0,
+      radial-gradient(var(--r) at 0 100%, #0000 98%, #000) 0 100%,
+      radial-gradient(var(--r) at 100% 100%, #0000 98%, #000) 100% 100%;
+    -webkit-mask-size: 51% 51%;
+    mask-size: 51% 51%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+}
+
+/* Ribbon - decorative ribbon banner style */
+@utility heading-shape-ribbon {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  &::before {
+    --s: 0.6em;
+    --d: 0.35em;
+    --c: 0.35em;
+    inset: 0;
+    background:
+      conic-gradient(
+          at left var(--s) bottom var(--d),
+          #0000 25%,
+          #0008 0 37.5%,
+          #0004 0
+        )
+        0 / 50% 100% no-repeat,
+      conic-gradient(
+          at right var(--s) bottom var(--d),
+          #0004 62.5%,
+          #0008 0 75%,
+          #0000 0
+        )
+        100% / 50% 100% no-repeat,
+      var(--heading-bg-color, transparent);
+    clip-path: polygon(
+      0 var(--d),
+      var(--s) var(--d),
+      var(--s) 0,
+      calc(100% - var(--s)) 0,
+      calc(100% - var(--s)) var(--d),
+      100% var(--d),
+      calc(100% - var(--c)) calc(50% + var(--d) / 2),
+      100% 100%,
+      calc(100% - var(--s) - var(--d)) 100%,
+      calc(100% - var(--s) - var(--d)) calc(100% - var(--d)),
+      calc(var(--s) + var(--d)) calc(100% - var(--d)),
+      calc(var(--s) + var(--d)) 100%,
+      0 100%,
+      var(--c) calc(50% + var(--d) / 2)
+    );
+  }
+}
+
 .dark .w-color-sketch {
   --sketch-background: oklch(0.205 0 0) !important;
 }

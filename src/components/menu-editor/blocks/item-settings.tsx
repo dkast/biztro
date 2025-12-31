@@ -54,7 +54,7 @@ export default function ItemSettings() {
               }
             >
               <SelectTrigger
-                className="focus:ring-transparent sm:h-7 sm:text-xs"
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
@@ -82,7 +82,7 @@ export default function ItemSettings() {
               }
             >
               <SelectTrigger
-                className="focus:ring-transparent sm:h-7 sm:text-xs"
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
@@ -108,7 +108,7 @@ export default function ItemSettings() {
               }
             >
               <SelectTrigger
-                className="focus:ring-transparent sm:h-7 sm:text-xs"
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
@@ -138,7 +138,7 @@ export default function ItemSettings() {
               }
             >
               <SelectTrigger
-                className="focus:ring-transparent sm:h-7 sm:text-xs"
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
@@ -164,7 +164,7 @@ export default function ItemSettings() {
               }
             >
               <SelectTrigger
-                className="focus:ring-transparent sm:h-7 sm:text-xs"
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>

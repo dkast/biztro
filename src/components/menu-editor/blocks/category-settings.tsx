@@ -3,7 +3,10 @@ import { Colorful, hexToHsva, Sketch } from "@uiw/react-color"
 import { useAtomValue } from "jotai"
 import { AlignCenter, AlignLeft, AlignRight } from "lucide-react"
 
-import type { CategoryBlockProps } from "@/components/menu-editor/blocks/category-block"
+import type {
+  CategoryBlockProps,
+  CategoryHeadingShape
+} from "@/components/menu-editor/blocks/category-block"
 import SideSection from "@/components/menu-editor/side-section"
 import { Button } from "@/components/ui/button"
 import {
@@ -79,6 +82,7 @@ export default function CategorySettings() {
     categoryFontWeight,
     categoryTextAlign,
     categoryHeadingBgColor,
+    categoryHeadingShape,
     itemFontSize,
     itemFontWeight,
     priceFontSize,
@@ -91,6 +95,7 @@ export default function CategorySettings() {
     categoryFontWeight: node.data.props.categoryFontWeight,
     categoryTextAlign: node.data.props.categoryTextAlign,
     categoryHeadingBgColor: node.data.props.categoryHeadingBgColor,
+    categoryHeadingShape: node.data.props.categoryHeadingShape,
     itemFontSize: node.data.props.itemFontSize,
     itemColor: node.data.props.itemColor,
     itemFontWeight: node.data.props.itemFontWeight,
@@ -302,7 +307,7 @@ export default function CategorySettings() {
                     aria-label="Seleccionar color de fondo"
                   />
                 </PopoverTrigger>
-                <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
+                <PopoverContent className="w-[218px] p-0">
                   <div className="flex flex-col">
                     <Sketch
                       disableAlpha
@@ -338,6 +343,37 @@ export default function CategorySettings() {
                 </PopoverContent>
               </Popover>
             )}
+          </dd>
+          <dt>
+            <Label size="xs">Forma título</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={categoryHeadingShape ?? "rectangle"}
+              onValueChange={value =>
+                setProp(
+                  (props: CategoryBlockProps) =>
+                    (props.categoryHeadingShape = value as CategoryHeadingShape)
+                )
+              }
+            >
+              <SelectTrigger
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
+              >
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="rectangle">Rectángulo</SelectItem>
+                <SelectItem value="rounded">Redondeado</SelectItem>
+                <SelectItem value="pill">Píldora</SelectItem>
+                <SelectItem value="slanted">Inclinado</SelectItem>
+                <SelectItem value="parallelogram">Paralelogramo</SelectItem>
+                <SelectItem value="chevron">Chevron</SelectItem>
+                <SelectItem value="tab">Pestaña</SelectItem>
+                <SelectItem value="scooped">Esquinas cóncavas</SelectItem>
+                <SelectItem value="ribbon">Cinta</SelectItem>
+              </SelectContent>
+            </Select>
           </dd>
         </div>
       </SideSection>
