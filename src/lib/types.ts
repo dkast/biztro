@@ -658,6 +658,206 @@ export const colorThemes = [
     textColor: "#e8e2d4",
     mutedColor: "#bce3c6",
     scope: "GLOBAL"
+  },
+  {
+    id: "FUEGO_LIGHT",
+    name: "Fuego",
+    surfaceColor: "#fffaf5",
+    brandColor: "#1a0a00",
+    accentColor: "#ff6b00",
+    textColor: "#1a0a00",
+    mutedColor: "#994d1a",
+    scope: "GLOBAL"
+  },
+  {
+    id: "FUEGO_DARK",
+    name: "Fuego oscuro",
+    surfaceColor: "#0d0906",
+    brandColor: "#fff5eb",
+    accentColor: "#ff8c00",
+    textColor: "#fff5eb",
+    mutedColor: "#ffb366",
+    scope: "GLOBAL"
+  },
+  {
+    id: "CARMESI_LIGHT",
+    name: "Carmesi",
+    surfaceColor: "#fff5f5",
+    brandColor: "#2d0a0a",
+    accentColor: "#dc2626",
+    textColor: "#2d0a0a",
+    mutedColor: "#991b1b",
+    scope: "GLOBAL"
+  },
+  {
+    id: "CARMESI_DARK",
+    name: "Carmesi oscuro",
+    surfaceColor: "#1a0505",
+    brandColor: "#fef2f2",
+    accentColor: "#ef4444",
+    textColor: "#fef2f2",
+    mutedColor: "#fca5a5",
+    scope: "GLOBAL"
+  },
+  {
+    id: "OCEANO_LIGHT",
+    name: "Oceano",
+    surfaceColor: "#f0fdfa",
+    brandColor: "#042f2e",
+    accentColor: "#0d9488",
+    textColor: "#042f2e",
+    mutedColor: "#115e59",
+    scope: "GLOBAL"
+  },
+  {
+    id: "OCEANO_DARK",
+    name: "Oceano oscuro",
+    surfaceColor: "#021716",
+    brandColor: "#f0fdfa",
+    accentColor: "#2dd4bf",
+    textColor: "#f0fdfa",
+    mutedColor: "#5eead4",
+    scope: "GLOBAL"
+  },
+  {
+    id: "NEON_LIGHT",
+    name: "Neon",
+    surfaceColor: "#fafafa",
+    brandColor: "#0a0a0a",
+    accentColor: "#a855f7",
+    textColor: "#0a0a0a",
+    mutedColor: "#7c3aed",
+    scope: "GLOBAL"
+  },
+  {
+    id: "NEON_DARK",
+    name: "Neon oscuro",
+    surfaceColor: "#09090b",
+    brandColor: "#fafafa",
+    accentColor: "#c084fc",
+    textColor: "#fafafa",
+    mutedColor: "#e879f9",
+    scope: "GLOBAL"
+  },
+  {
+    id: "ESMERALDA_LIGHT",
+    name: "Esmeralda",
+    surfaceColor: "#ecfdf5",
+    brandColor: "#022c22",
+    accentColor: "#059669",
+    textColor: "#022c22",
+    mutedColor: "#047857",
+    scope: "GLOBAL"
+  },
+  {
+    id: "ESMERALDA_DARK",
+    name: "Esmeralda oscuro",
+    surfaceColor: "#021a14",
+    brandColor: "#ecfdf5",
+    accentColor: "#34d399",
+    textColor: "#ecfdf5",
+    mutedColor: "#6ee7b7",
+    scope: "GLOBAL"
+  },
+  {
+    id: "MOSTAZA_LIGHT",
+    name: "Mostaza",
+    surfaceColor: "#fefce8",
+    brandColor: "#1c1a00",
+    accentColor: "#ca8a04",
+    textColor: "#1c1a00",
+    mutedColor: "#a16207",
+    scope: "GLOBAL"
+  },
+  {
+    id: "MOSTAZA_DARK",
+    name: "Mostaza oscuro",
+    surfaceColor: "#0f0e00",
+    brandColor: "#fefce8",
+    accentColor: "#facc15",
+    textColor: "#fefce8",
+    mutedColor: "#fde047",
+    scope: "GLOBAL"
+  },
+  {
+    id: "RUBI_LIGHT",
+    name: "Rubi",
+    surfaceColor: "#fff1f2",
+    brandColor: "#1f0506",
+    accentColor: "#e11d48",
+    textColor: "#1f0506",
+    mutedColor: "#be123c",
+    scope: "GLOBAL"
+  },
+  {
+    id: "RUBI_DARK",
+    name: "Rubi oscuro",
+    surfaceColor: "#120304",
+    brandColor: "#fff1f2",
+    accentColor: "#fb7185",
+    textColor: "#fff1f2",
+    mutedColor: "#fda4af",
+    scope: "GLOBAL"
+  },
+  {
+    id: "COBALTO_LIGHT",
+    name: "Cobalto",
+    surfaceColor: "#eff6ff",
+    brandColor: "#0c1929",
+    accentColor: "#2563eb",
+    textColor: "#0c1929",
+    mutedColor: "#1d4ed8",
+    scope: "GLOBAL"
+  },
+  {
+    id: "COBALTO_DARK",
+    name: "Cobalto oscuro",
+    surfaceColor: "#030712",
+    brandColor: "#f8fafc",
+    accentColor: "#3b82f6",
+    textColor: "#f8fafc",
+    mutedColor: "#60a5fa",
+    scope: "GLOBAL"
+  },
+  {
+    id: "CITRICO_LIGHT",
+    name: "Citrico",
+    surfaceColor: "#fefffe",
+    brandColor: "#132a00",
+    accentColor: "#65a30d",
+    textColor: "#132a00",
+    mutedColor: "#4d7c0f",
+    scope: "GLOBAL"
+  },
+  {
+    id: "CITRICO_DARK",
+    name: "Citrico oscuro",
+    surfaceColor: "#0a1500",
+    brandColor: "#f7fee7",
+    accentColor: "#84cc16",
+    textColor: "#f7fee7",
+    mutedColor: "#a3e635",
+    scope: "GLOBAL"
+  },
+  {
+    id: "MAGENTA_LIGHT",
+    name: "Magenta",
+    surfaceColor: "#fdf4ff",
+    brandColor: "#270033",
+    accentColor: "#d946ef",
+    textColor: "#270033",
+    mutedColor: "#a21caf",
+    scope: "GLOBAL"
+  },
+  {
+    id: "MAGENTA_DARK",
+    name: "Magenta oscuro",
+    surfaceColor: "#120016",
+    brandColor: "#fdf4ff",
+    accentColor: "#e879f9",
+    textColor: "#fdf4ff",
+    mutedColor: "#f0abfc",
+    scope: "GLOBAL"
   }
 ]
 

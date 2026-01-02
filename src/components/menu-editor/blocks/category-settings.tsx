@@ -132,7 +132,7 @@ export default function CategorySettings() {
 
   return (
     <>
-      <SideSection title="General">
+      {/* <SideSection title="General">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
             <Label size="xs">Fondo</Label>
@@ -159,7 +159,7 @@ export default function CategorySettings() {
             </Select>
           </dd>
         </div>
-      </SideSection>
+      </SideSection> */}
       <SideSection title="Categoría">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
@@ -365,13 +365,13 @@ export default function CategorySettings() {
               <SelectContent>
                 <SelectItem value="rectangle">Rectángulo</SelectItem>
                 <SelectItem value="rounded">Redondeado</SelectItem>
-                <SelectItem value="pill">Píldora</SelectItem>
-                <SelectItem value="slanted">Inclinado</SelectItem>
-                <SelectItem value="parallelogram">Paralelogramo</SelectItem>
-                <SelectItem value="chevron">Chevron</SelectItem>
+                <SelectItem value="pill">Cápsula</SelectItem>
+                <SelectItem value="slanted">Corte diagonal</SelectItem>
+                <SelectItem value="parallelogram">Banda inclinada</SelectItem>
+                <SelectItem value="chevron">Flecha</SelectItem>
                 <SelectItem value="tab">Pestaña</SelectItem>
-                <SelectItem value="scooped">Esquinas cóncavas</SelectItem>
-                <SelectItem value="ribbon">Cinta</SelectItem>
+                <SelectItem value="scooped">Marco</SelectItem>
+                <SelectItem value="ribbon">Listón</SelectItem>
               </SelectContent>
             </Select>
           </dd>
