@@ -4,7 +4,62 @@ import React, { useEffect } from "react"
 
 import { cn } from "@/lib/utils"
 
-// import WebFont from "webfontloader"
+const PRELOADED_FONT_FAMILIES = new Set(["Inter", "Sora"])
+const loadedFontFamilies = new Set<string>()
+const loadingFontFamilies = new Map<string, Promise<void>>()
+
+function markFontAsReady(fontFamily: string) {
+  loadedFontFamilies.add(fontFamily)
+  loadingFontFamilies.delete(fontFamily)
+}
+
+// Cache font requests so multiple previews mounting at once only trigger one WebFontLoader call.
+function ensureFontLoaded(fontFamily: string) {
+  if (PRELOADED_FONT_FAMILIES.has(fontFamily)) {
+    loadedFontFamilies.add(fontFamily)
+    return Promise.resolve()
+  }
+
+  if (typeof document !== "undefined" && hasFontLoaded(fontFamily)) {
+    loadedFontFamilies.add(fontFamily)
+    return Promise.resolve()
+  }
+
+  if (loadedFontFamilies.has(fontFamily)) {
+    return Promise.resolve()
+  }
+
+  const pending = loadingFontFamilies.get(fontFamily)
+  if (pending) {
+    return pending
+  }
+
+  const promise = import("webfontloader")
+    .then(WebFont => {
+      return new Promise<void>(resolve => {
+        WebFont.default.load({
+          google: {
+            families: [`${fontFamily}:300,400,500,700`]
+          },
+          active: () => {
+            markFontAsReady(fontFamily)
+            resolve()
+          },
+          inactive: () => {
+            loadingFontFamilies.delete(fontFamily)
+            resolve()
+          }
+        })
+      })
+    })
+    .catch(err => {
+      loadingFontFamilies.delete(fontFamily)
+      console.error("Error loading WebFont:", err)
+    })
+
+  loadingFontFamilies.set(fontFamily, promise)
+  return promise
+}
 
 export default function FontWrapper({
   fontFamily,
@@ -18,30 +73,7 @@ export default function FontWrapper({
   useEffect(() => {
     if (!fontFamily) return
 
-    const isLoaded = hasFontLoaded(fontFamily)
-    if (isLoaded) {
-      // console.log(
-      //   `Font ${fontFamily} is ${isLoaded ? "loaded" : "not loaded"}.`
-      // )
-      return
-    }
-    if (typeof window !== "undefined") {
-      // Dynamic import
-      import("webfontloader")
-        .then(WebFont => {
-          WebFont.default.load({
-            google: {
-              families: [`${fontFamily}:300,400,500,700`]
-            },
-            inactive: () => {
-              console.warn(`Failed to load font: ${fontFamily}`)
-            }
-          })
-        })
-        .catch(err => {
-          console.error("Error loading WebFont:", err)
-        })
-    }
+    void ensureFontLoaded(fontFamily)
   }, [fontFamily])
 
   return (
@@ -58,6 +90,5 @@ export default function FontWrapper({
 
 export function hasFontLoaded(fontFamily: string): boolean {
   const className = `wf-${fontFamily.toLowerCase().replace(/ /g, "")}-n4-active`
-  // console.log("Checking for class", className)
   return document.documentElement.classList.contains(className)
 }

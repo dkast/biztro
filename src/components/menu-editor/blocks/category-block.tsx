@@ -165,7 +165,7 @@ CategoryBlock.craft = {
     categoryColor: { r: 38, g: 50, b: 56, a: 1 },
     categoryFontWeight: "700",
     categoryFontFamily: "Inter",
-    categoryTextAlign: "left",
+    categoryTextAlign: "center",
     categoryHeadingBgColor: undefined,
     categoryHeadingShape: "rectangle",
     itemFontSize: 16,

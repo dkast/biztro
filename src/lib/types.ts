@@ -524,7 +524,7 @@ export const fontThemes = [
   {
     name: "LISBOA",
     fontDisplay: "Pacifico",
-    fontText: "QuickSand"
+    fontText: "Quicksand"
   },
   {
     name: "MILAN",
@@ -565,6 +565,61 @@ export const fontThemes = [
     name: "OAKLAND",
     fontDisplay: "Teko",
     fontText: "Montserrat"
+  },
+  {
+    name: "ATLANTICO",
+    fontDisplay: "Goldman",
+    fontText: "Source Sans 3"
+  },
+  {
+    name: "NOMADA",
+    fontDisplay: "Unbounded",
+    fontText: "Space Grotesk"
+  },
+  {
+    name: "BOSQUE",
+    fontDisplay: "Cormorant Garamond",
+    fontText: "Spectral"
+  },
+  {
+    name: "LUMEN",
+    fontDisplay: "Great Vibes",
+    fontText: "Manrope"
+  },
+  {
+    name: "COSTA",
+    fontDisplay: "Rufina",
+    fontText: "Cabin"
+  },
+  {
+    name: "DESIERTO",
+    fontDisplay: "Alegreya SC",
+    fontText: "IBM Plex Sans"
+  },
+  {
+    name: "VERANO",
+    fontDisplay: "Bebas Neue",
+    fontText: "Assistant"
+  },
+  {
+    name: "POLAR",
+    fontDisplay: "Righteous",
+    fontText: "Fira Sans"
+  },
+  {
+    name: "ALDEA",
+    fontDisplay: "Aleo",
+    fontText: "Poppins"
+  },
+  {
+    name: "LAGO",
+    fontDisplay: "Koulen",
+    fontText: "Noto Sans"
+  },
+  {
+    name: "RIO",
+    fontDisplay: "Julius Sans One",
+    fontText: "Krub"
   }
 ]
 
