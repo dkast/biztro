@@ -384,7 +384,8 @@ export const enum Plan {
 export const enum ImageType {
   LOGO = "LOGO",
   BANNER = "BANNER",
-  MENUITEM = "MENUITEM"
+  MENUITEM = "MENUITEM",
+  MENU_BACKGROUND = "MENU_BACKGROUND"
 }
 
 export const enum MediaAssetType {

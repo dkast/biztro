@@ -18,6 +18,35 @@ export default function ContainerBlock({
     connectors: { connect }
   } = useNode()
 
+  // Determine background type:
+  // - "none": no background image
+  // - "bg-*": predefined photo background (e.g., bg-center, bg-top)
+  // - "*.svg" or pattern names: SVG patterns from /bg/
+  // - Contains "/" or starts with "http": uploaded image URL/storage key
+  const isUploadedImage =
+    backgroundImage &&
+    backgroundImage !== "none" &&
+    (backgroundImage.includes("/") || backgroundImage.startsWith("http"))
+  const isPredefinedPhoto = backgroundImage?.startsWith("bg")
+  const isPattern =
+    backgroundImage &&
+    backgroundImage !== "none" &&
+    !isUploadedImage &&
+    !isPredefinedPhoto
+
+  // Build the background URL
+  const getBackgroundUrl = () => {
+    if (!backgroundImage || backgroundImage === "none") return "none"
+    if (isUploadedImage) {
+      // Full URL or storage key transformed to URL by server
+      return `url(${backgroundImage})`
+    }
+    if (isPredefinedPhoto || isPattern) {
+      return `url(/bg/${backgroundImage})`
+    }
+    return "none"
+  }
+
   return (
     <div
       className="relative flex grow"
@@ -28,10 +57,7 @@ export default function ContainerBlock({
       }}
       style={{
         backgroundColor: `rgb(${Object.values(backgroundColor ?? { r: 255, g: 255, b: 255, a: 1 })})`,
-        backgroundImage:
-          backgroundImage === "none" || backgroundImage?.startsWith("bg")
-            ? "none"
-            : `url(/bg/${backgroundImage})`
+        backgroundImage: isPattern ? getBackgroundUrl() : "none"
       }}
     >
       <div
@@ -41,13 +67,13 @@ export default function ContainerBlock({
           group-[.editor-preview]:absolute group-[.editor-preview]:w-full"
         style={{
           backgroundImage:
-            backgroundImage === "none" || !backgroundImage?.startsWith("bg")
-              ? "none"
-              : `url(/bg/${backgroundImage})`,
-          backgroundPosition: backgroundImage?.split("-")[1]
+            isPredefinedPhoto || isUploadedImage ? getBackgroundUrl() : "none",
+          backgroundPosition: isPredefinedPhoto
+            ? backgroundImage?.split("-")[1]
+            : "top"
         }}
       >
-        {backgroundImage?.startsWith("bg") && (
+        {(isPredefinedPhoto || isUploadedImage) && (
           <div
             className="absolute inset-0 bg-linear-to-b from-black/20
               to-black/80"

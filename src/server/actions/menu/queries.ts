@@ -1,5 +1,6 @@
 "use server"
 
+import lz from "lzutf8"
 import { cacheTag } from "next/cache"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
@@ -47,6 +48,58 @@ export async function getMenuById(id: string) {
       menu.organization.logo,
       menu.organization.updatedAt
     )
+  }
+
+  // If serialData contains a menu background storage key, convert it to a
+  // cache-busted URL so clients render the uploaded background immediately.
+  if (menu?.serialData) {
+    try {
+      const serial = lz.decompress(lz.decodeBase64(menu.serialData))
+      const nodes = JSON.parse(serial) as Record<string, unknown>
+
+      let changed = false
+      for (const nodeId of Object.keys(nodes)) {
+        const component = nodes[nodeId]
+        if (!component || typeof component !== "object") continue
+        const compRec = component as Record<string, unknown>
+        const typeObj = compRec["type"] as Record<string, unknown> | undefined
+        const resolvedName =
+          typeof typeObj?.["resolvedName"] === "string"
+            ? (typeObj["resolvedName"] as string)
+            : undefined
+        if (resolvedName === "ContainerBlock") {
+          const propsObj = compRec["props"] as
+            | Record<string, unknown>
+            | undefined
+          const bg =
+            typeof propsObj?.["backgroundImage"] === "string"
+              ? (propsObj["backgroundImage"] as string)
+              : undefined
+          if (bg && bg !== "none" && !bg.startsWith("bg") && bg.includes("/")) {
+            // If already a full URL (uploaded image cached), leave it as-is
+            if (bg.startsWith("http")) {
+              continue
+            }
+
+            // bg is a storage key like "orgs/{orgId}/menus/{menuId}/background"
+            if (propsObj) {
+              propsObj["backgroundImage"] = getCacheBustedImageUrl(
+                bg,
+                menu.updatedAt
+              )
+              changed = true
+            }
+          }
+        }
+      }
+
+      if (changed) {
+        const updated = JSON.stringify(nodes)
+        menu.serialData = lz.encodeBase64(lz.compress(updated))
+      }
+    } catch (err) {
+      console.error("Failed to transform serialData backgrounds", err)
+    }
   }
 
   return menu
