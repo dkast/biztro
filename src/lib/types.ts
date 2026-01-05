@@ -28,6 +28,10 @@ export const BgImages = [
     name: "Burger"
   },
   {
+    image: "bg-bottom-burger-2.jpg",
+    name: "Burger 2"
+  },
+  {
     image: "bg-center-cafe-1.jpg",
     name: "Café"
   },
@@ -86,6 +90,14 @@ export const BgImages = [
   {
     image: "bg-top-tacos-1.jpg",
     name: "Pastor"
+  },
+  {
+    image: "bg-center-pizza-2.jpg",
+    name: "Pizza"
+  },
+  {
+    image: "bg-center-pizza-3.jpg",
+    name: "Pizza 2"
   },
   {
     image: "bg-center-sushi-1.jpg",
