@@ -77,7 +77,7 @@ function getColorButtonStyle(
 export default function CategorySettings() {
   const {
     actions: { setProp },
-    backgroundMode,
+    // backgroundMode,
     categoryFontSize,
     categoryFontWeight,
     categoryTextAlign,
@@ -89,7 +89,7 @@ export default function CategorySettings() {
     priceFontWeight,
     showImage
   } = useNode(node => ({
-    backgroundMode: node.data.props.backgroundMode,
+    // backgroundMode: node.data.props.backgroundMode,
     categoryFontSize: node.data.props.categoryFontSize,
     categoryColor: node.data.props.categoryColor,
     categoryFontWeight: node.data.props.categoryFontWeight,

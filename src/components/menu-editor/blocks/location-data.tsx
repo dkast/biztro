@@ -75,16 +75,23 @@ export default function LocationData({
       onClick={
         isMobile ? () => setIsDrawerOpen(true) : () => setIsDialogOpen(true)
       }
-      className="flex flex-row items-center gap-1 rounded-full border-[0.5px] border-white/50 bg-white/20 px-1 py-0.5 backdrop-blur-md"
+      className="flex flex-row items-center gap-1 rounded-full border-[0.5px]
+        border-white/50 bg-white/20 px-1 py-0.5 backdrop-blur-md"
       aria-label="Ver horario"
     >
       <div className="dark">
         {isOpenNow ? (
-          <div className="flex-none rounded-full bg-green-500/10 p-1 text-green-500 dark:bg-green-400/10 dark:text-green-400">
+          <div
+            className="flex-none rounded-full bg-green-500/10 p-1 text-green-500
+              dark:bg-green-400/10 dark:text-green-400"
+          >
             <div className="size-2 rounded-full bg-current"></div>
           </div>
         ) : (
-          <div className="flex-none rounded-full bg-rose-500/10 p-1 text-rose-500 dark:bg-rose-400/10 dark:text-rose-400">
+          <div
+            className="flex-none rounded-full bg-rose-500/10 p-1 text-rose-500
+              dark:bg-rose-400/10 dark:text-rose-400"
+          >
             <div className="size-2 rounded-full bg-current"></div>
           </div>
         )}
@@ -154,7 +161,7 @@ export default function LocationData({
   )
 
   const servicesList = (
-    <div className="mt-3 text-sm">
+    <div className="text-sm">
       <div className="font-medium">Servicios disponibles</div>
       <ItemGroup className="mt-2 gap-1">
         {location.serviceDelivery && (
@@ -253,7 +260,7 @@ export default function LocationData({
             <>
               {hoursTrigger}
               <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-                <DrawerContent className="px-4 pb-8">
+                <DrawerContent className="space-y-1 px-4 pb-8">
                   <DrawerHeader>
                     <DrawerTitle>Información</DrawerTitle>
                     <p className="text-muted-foreground text-xs">{legend}</p>

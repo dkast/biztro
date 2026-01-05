@@ -1,4 +1,7 @@
+"use cache"
+
 import type { Metadata } from "next"
+import { cacheLife } from "next/cache"
 
 import Benefits from "@/components/marketing/benefits"
 import FeaturesBento from "@/components/marketing/bento-features"
@@ -19,7 +22,8 @@ export const metadata: Metadata = {
     "menu digital, menu QR, restaurante, cafetería, hostelería, menú online"
 }
 
-export default function Page() {
+export default async function Page() {
+  cacheLife("weeks")
   return (
     <div className="relative dark:bg-gray-950">
       <Navbar showLinks />
