@@ -304,7 +304,7 @@ export default function ContainerSettings() {
         open={showUpgrade}
         onClose={() => setShowUpgrade(false)}
         title="Función Pro"
-        description="Subir imágen de fondo está disponible en el plan Pro. Actualiza para desbloquear esta función."
+        description="Subir imagen de fondo está disponible en el plan Pro. Actualiza para desbloquear esta función."
       />
     </SideSection>
   )

@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
       })
 
       if (!menu || menu.organizationId !== organizationId) {
-        return new NextResponse("Menu no encontrado", {
+        return new NextResponse("Menu not found", {
           status: 404,
           headers: corsHeaders
         })
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
   if (requiresProFeature) {
     const proMember = await isProMember()
     if (!proMember) {
-      return new NextResponse("Plan Pro requerido", {
+      return new NextResponse("Pro plan required", {
         status: 403,
         headers: corsHeaders
       })
