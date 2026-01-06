@@ -31,19 +31,30 @@ const HEADING_SHAPE_STYLES = `
 }
 
 /* Rectangle (default) */
-.heading-shape-rectangle::before {}
+.heading-shape-rectangle::before {
+  /* No special shape, just the rectangle */
+}
 
 /* Rounded */
+.heading-shape-rounded {
+  padding: 0.5rem;
+}
 .heading-shape-rounded::before {
   border-radius: 0.5rem;
 }
 
 /* Pill */
+.heading-shape-pill {
+  padding: 0.5rem;
+}
 .heading-shape-pill::before {
   border-radius: 9999px;
 }
 
 /* Slanted Edge - diagonal cut on right side */
+.heading-shape-slanted {
+  padding: 0.5rem;
+}
 .heading-shape-slanted::before {
   --slant: 20px;
   clip-path: polygon(0 0, 100% 0, calc(100% - var(--slant)) 100%, 0 100%);
@@ -70,6 +81,9 @@ const HEADING_SHAPE_STYLES = `
 }
 
 /* Rounded Tab */
+.heading-shape-tab {
+  padding: 0.5rem;
+}
 .heading-shape-tab::before {
   --r: 12px;
   border-radius: calc(2 * var(--r)) calc(2 * var(--r)) 0 0;
@@ -84,6 +98,9 @@ const HEADING_SHAPE_STYLES = `
 }
 
 /* Scooped Corners */
+.heading-shape-scooped {
+  padding: 0.5rem;
+}
 .heading-shape-scooped::before {
   --r: 12px;
   -webkit-mask:

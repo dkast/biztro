@@ -12,6 +12,20 @@ const config = {
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}"
   ],
+  // @ts-expect-error - Tailwind supports `safelist` but it's missing from the shipped types
+  safelist: [
+    // Heading shape utilities - dynamically generated class names
+    "heading-shape",
+    "heading-shape-rectangle",
+    "heading-shape-rounded",
+    "heading-shape-pill",
+    "heading-shape-slanted",
+    "heading-shape-parallelogram",
+    "heading-shape-chevron",
+    "heading-shape-tab",
+    "heading-shape-scooped",
+    "heading-shape-ribbon"
+  ],
   theme: {
     container: {
       center: true,
