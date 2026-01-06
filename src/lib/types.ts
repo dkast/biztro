@@ -749,7 +749,7 @@ export const colorThemes = [
   },
   {
     id: "CARMESI_LIGHT",
-    name: "Carmesi",
+    name: "Carmesí",
     surfaceColor: "#fff5f5",
     brandColor: "#2d0a0a",
     accentColor: "#dc2626",
@@ -769,7 +769,7 @@ export const colorThemes = [
   },
   {
     id: "OCEANO_LIGHT",
-    name: "Oceano",
+    name: "Océano",
     surfaceColor: "#f0fdfa",
     brandColor: "#042f2e",
     accentColor: "#0d9488",
@@ -849,7 +849,7 @@ export const colorThemes = [
   },
   {
     id: "RUBI_LIGHT",
-    name: "Rubi",
+    name: "Rubí",
     surfaceColor: "#fff1f2",
     brandColor: "#1f0506",
     accentColor: "#e11d48",
@@ -889,7 +889,7 @@ export const colorThemes = [
   },
   {
     id: "CITRICO_LIGHT",
-    name: "Citrico",
+    name: "Cítrico",
     surfaceColor: "#fefffe",
     brandColor: "#132a00",
     accentColor: "#65a30d",

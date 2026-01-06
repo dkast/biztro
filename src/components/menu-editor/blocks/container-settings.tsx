@@ -286,6 +286,7 @@ export default function ContainerSettings() {
               </DialogDescription>
             </DialogHeader>
             <FileUploader
+              // TODO: remove organizationId prop and get it from user session
               organizationId={""}
               imageType={ImageType.MENU_BACKGROUND}
               objectId={menuId as string}

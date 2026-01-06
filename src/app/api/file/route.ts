@@ -86,6 +86,12 @@ export async function POST(req: NextRequest) {
       field = "banner"
       break
     case ImageType.MENUITEM:
+      if (!objectId) {
+        return new NextResponse("Menu item id is required", {
+          status: 400,
+          headers: corsHeaders
+        })
+      }
       storageKey = `orgs/${organizationId}/menu-items/${objectId}/image`
       assetScope = MediaAssetScope.MENU_ITEM_IMAGE
       entityType = MediaUsageEntityType.MENU_ITEM
@@ -100,18 +106,7 @@ export async function POST(req: NextRequest) {
         })
       }
 
-      const menu = await prisma.menu.findUnique({
-        where: { id: objectId },
-        select: { organizationId: true }
-      })
-
-      if (!menu || menu.organizationId !== organizationId) {
-        return new NextResponse("Menu not found", {
-          status: 404,
-          headers: corsHeaders
-        })
-      }
-
+      // Removed DB lookup: use the active member's organizationId for validation
       storageKey = `orgs/${organizationId}/menus/${objectId}/background`
       assetScope = MediaAssetScope.OTHER
       entityType = MediaUsageEntityType.ORGANIZATION
