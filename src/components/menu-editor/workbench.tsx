@@ -13,7 +13,6 @@ import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import { useAtom, useSetAtom } from "jotai"
 import lz from "lzutf8"
-import { useDefaultLayout } from "react-resizable-panels"
 
 import Header from "@/components/dashboard/header"
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
@@ -71,7 +70,8 @@ export default function Workbench({
   location,
   categories,
   soloItems,
-  featuredItems
+  featuredItems,
+  defaultLayout: serverDefaultLayout
 }: {
   menu: Awaited<ReturnType<typeof getMenuById>>
   organization: Awaited<ReturnType<typeof getCurrentOrganization>>
@@ -79,6 +79,7 @@ export default function Workbench({
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
   soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
+  defaultLayout?: number[]
 }) {
   const isMobile = useIsMobile()
   const [isOpen, setIsOpen] = useState(false)
@@ -93,11 +94,10 @@ export default function Workbench({
   const setFontThemeId = useSetAtom(fontThemeAtom)
   const setColorThemeId = useSetAtom(colorThemeAtom)
 
-  // Setup persistent layout using localStorage
-  const { defaultLayout, onLayoutChange } = useDefaultLayout({
-    groupId: "menu-editor-workbench",
-    storage: typeof window !== "undefined" ? localStorage : undefined
-  })
+  // Setup persistent layout using cookies for SSR compatibility
+  const onLayoutChange = useCallback((sizes: number[]) => {
+    document.cookie = `react-resizable-panels:layout:menu-editor-workbench=${JSON.stringify(sizes)}; path=/; max-age=31536000`
+  }, [])
 
   // Initialize themes only on first load
   useEffect(() => {
@@ -323,7 +323,7 @@ export default function Workbench({
           <ResizablePanelGroup
             className="bg-card grow pt-16"
             orientation="horizontal"
-            defaultLayout={defaultLayout}
+            defaultLayout={serverDefaultLayout}
             onLayoutChange={onLayoutChange}
           >
             <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>

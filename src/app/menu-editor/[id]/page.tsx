@@ -4,6 +4,7 @@ import {
   QueryClient
 } from "@tanstack/react-query"
 import type { Metadata } from "next"
+import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 
 import Workbench from "@/components/menu-editor/workbench"
@@ -63,6 +64,13 @@ export default async function MenuEditorPage(props: {
     return notFound()
   }
 
+  // Read saved layout from cookies for SSR
+  const cookieStore = await cookies()
+  const layoutCookie = cookieStore.get("react-resizable-panels:layout:menu-editor-workbench")
+  const defaultLayout = layoutCookie?.value
+    ? JSON.parse(layoutCookie.value)
+    : undefined
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Workbench
@@ -72,6 +80,7 @@ export default async function MenuEditorPage(props: {
         categories={categories}
         soloItems={soloItems}
         featuredItems={featuredItems}
+        defaultLayout={defaultLayout}
       />
     </HydrationBoundary>
   )
