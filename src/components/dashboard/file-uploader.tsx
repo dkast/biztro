@@ -171,7 +171,7 @@ export function FileUploader({
         uppy.removeFile(file.id)
       }
     })
-    uppy.on("upload-error", (file, error, response) => {
+    uppy.on("upload-error", (file, error) => {
       // Guard against undefined file (Uppy may call this without a file)
       if (!file) return
 
