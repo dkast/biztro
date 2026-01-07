@@ -23,6 +23,16 @@ import { useTheme } from "next-themes"
 
 import type { ImageType } from "@/lib/types"
 
+// Explicit types for richer error and file meta handling
+interface HttpError extends Error {
+  status: number
+}
+
+interface UploadFileMeta extends Meta {
+  storageKey?: string
+  [key: string]: unknown
+}
+
 export async function getUploadParameters(
   file: UppyFile<Meta, Body>,
   organizationId: string,
@@ -42,7 +52,12 @@ export async function getUploadParameters(
       contentType: file.type
     })
   })
-  if (!response.ok) throw new Error("Unsuccessful request")
+  if (!response.ok) {
+    const error = new Error("Unsuccessful request") as HttpError
+    // Attach status code to the error object so it can be checked later
+    error.status = response.status
+    throw error
+  }
 
   // Parse the JSON response.
 
@@ -67,7 +82,8 @@ export async function getUploadParameters(
   // later access it in the `complete` handler.
   if (storageKey) {
     // mutate meta safely
-    ;(file.meta as Record<string, unknown>)["storageKey"] = storageKey
+    const meta = file.meta as UploadFileMeta
+    meta.storageKey = storageKey
   }
 
   return object
@@ -159,18 +175,13 @@ export function FileUploader({
       // Guard against undefined file (Uppy may call this without a file)
       if (!file) return
 
-      // Helper to safely extract numeric status code
-      const extractStatus = (obj: unknown): number | undefined => {
-        if (!obj || typeof obj !== "object") return undefined
-        const rec = obj as Record<string, unknown>
-        const s = rec["status"]
-        if (typeof s === "number") return s
-        const sc = rec["statusCode"]
-        if (typeof sc === "number") return sc
-        return undefined
-      }
+      console.dir(error)
 
-      const status = extractStatus(response) ?? extractStatus(error)
+      // Extract status code from error object (attached in getUploadParameters)
+      const status =
+        error && typeof error === "object" && "status" in error
+          ? (error as HttpError).status
+          : undefined
 
       if (status === 403) {
         uppy.info("Esta función requiere el plan Pro", "error", 4000)
@@ -188,6 +199,7 @@ export function FileUploader({
       }
     })
     uppy.on("complete", result => {
+      console.log("Upload complete:", result)
       onUploadSuccess(result)
     })
   }, [

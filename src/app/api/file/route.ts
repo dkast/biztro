@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
       entityType = MediaUsageEntityType.ORGANIZATION
       entityId = organizationId
       field = `menu-background-${objectId}`
-      requiresProFeature = true
+      requiresProFeature = false // Set to true if this becomes a Pro feature
       break
     }
     default:
