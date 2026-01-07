@@ -98,8 +98,8 @@ export default function Workbench({
     groupId: "menu-editor-workbench",
     storage: typeof window !== "undefined" ? localStorage : undefined
   })
-  // Initialize themes only on first load
 
+  // Initialize themes only on first load
   useEffect(() => {
     setFontThemeId(menu?.fontTheme ?? "DEFAULT")
     setColorThemeId(menu?.colorTheme ?? "DEFAULT")
