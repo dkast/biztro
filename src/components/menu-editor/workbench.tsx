@@ -96,7 +96,8 @@ export default function Workbench({
 
   // Setup persistent layout using cookies for SSR compatibility
   const onLayoutChange = useCallback((sizes: number[]) => {
-    document.cookie = `react-resizable-panels:layout:menu-editor-workbench=${JSON.stringify(sizes)}; path=/; max-age=31536000`
+    const cookieValue = encodeURIComponent(JSON.stringify(sizes))
+    document.cookie = `react-resizable-panels:layout:menu-editor-workbench=${cookieValue}; path=/; max-age=31536000`
   }, [])
 
   // Initialize themes only on first load

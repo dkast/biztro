@@ -67,9 +67,15 @@ export default async function MenuEditorPage(props: {
   // Read saved layout from cookies for SSR
   const cookieStore = await cookies()
   const layoutCookie = cookieStore.get("react-resizable-panels:layout:menu-editor-workbench")
-  const defaultLayout = layoutCookie?.value
-    ? JSON.parse(layoutCookie.value)
-    : undefined
+  let defaultLayout: number[] | undefined
+  if (layoutCookie?.value) {
+    try {
+      defaultLayout = JSON.parse(decodeURIComponent(layoutCookie.value))
+    } catch {
+      // If cookie is malformed, ignore and use default layout
+      defaultLayout = undefined
+    }
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
