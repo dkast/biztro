@@ -13,6 +13,7 @@ import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import { useAtom, useSetAtom } from "jotai"
 import lz from "lzutf8"
+import { useDefaultLayout } from "react-resizable-panels"
 
 import Header from "@/components/dashboard/header"
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
@@ -91,6 +92,12 @@ export default function Workbench({
   const [frameSize] = useAtom(frameSizeAtom)
   const setFontThemeId = useSetAtom(fontThemeAtom)
   const setColorThemeId = useSetAtom(colorThemeAtom)
+
+  // Setup persistent layout using localStorage
+  const { defaultLayout, onLayoutChange } = useDefaultLayout({
+    groupId: "menu-editor-workbench",
+    storage: typeof window !== "undefined" ? localStorage : undefined
+  })
   // Initialize themes only on first load
 
   useEffect(() => {
@@ -315,7 +322,9 @@ export default function Workbench({
           </Header>
           <ResizablePanelGroup
             className="bg-card grow pt-16"
-            direction="horizontal"
+            orientation="horizontal"
+            defaultLayout={defaultLayout}
+            onLayoutChange={onLayoutChange}
           >
             <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>
               <ScrollArea

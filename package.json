@@ -123,7 +123,7 @@
     "react-joyride": "^3.0.0-7",
     "react-photo-view": "^1.2.7",
     "react-qrcode-logo": "^4.0.0",
-    "react-resizable-panels": "^3.0.6",
+    "react-resizable-panels": "^4.3.0",
     "react-stately": "^3.43.0",
     "rehype-pretty-code": "^0.14.1",
     "remark": "^15.0.1",
