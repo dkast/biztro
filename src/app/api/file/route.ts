@@ -1,8 +1,11 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { revalidateTag } from "next/cache"
+import { headers } from "next/headers"
 import { NextResponse, type NextRequest } from "next/server"
 
+import { isProMember } from "@/server/actions/user/queries"
+import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import {
   ImageType,
@@ -23,7 +26,41 @@ const R2 = new S3Client({
 })
 
 export async function POST(req: NextRequest) {
-  const { organizationId, imageType, objectId, contentType } = await req.json()
+  const {
+    organizationId: requestedOrganizationId,
+    imageType,
+    objectId,
+    contentType
+  } = await req.json()
+
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*"
+  }
+
+  const requestHeaders = await headers()
+  const activeMember = await auth.api.getActiveMember({
+    headers: requestHeaders
+  })
+  const activeOrganizationId = activeMember?.organizationId
+
+  if (!activeOrganizationId) {
+    return new NextResponse("Unauthorized", {
+      status: 401,
+      headers: corsHeaders
+    })
+  }
+
+  if (
+    requestedOrganizationId &&
+    requestedOrganizationId !== activeOrganizationId
+  ) {
+    return new NextResponse("Invalid organization", {
+      status: 403,
+      headers: corsHeaders
+    })
+  }
+
+  const organizationId = activeOrganizationId
 
   // Use deterministic storage keys to enable overwriting and prevent orphaned files
   let storageKey: string
@@ -31,6 +68,7 @@ export async function POST(req: NextRequest) {
   let entityType: MediaUsageEntityType
   let entityId: string
   let field: string
+  let requiresProFeature = false
 
   switch (imageType) {
     case ImageType.LOGO:
@@ -48,14 +86,50 @@ export async function POST(req: NextRequest) {
       field = "banner"
       break
     case ImageType.MENUITEM:
+      if (!objectId) {
+        return new NextResponse("Menu item id is required", {
+          status: 400,
+          headers: corsHeaders
+        })
+      }
       storageKey = `orgs/${organizationId}/menu-items/${objectId}/image`
       assetScope = MediaAssetScope.MENU_ITEM_IMAGE
       entityType = MediaUsageEntityType.MENU_ITEM
       entityId = objectId
       field = "image"
       break
+    case ImageType.MENU_BACKGROUND: {
+      if (!objectId) {
+        return new NextResponse("Menu id is required", {
+          status: 400,
+          headers: corsHeaders
+        })
+      }
+
+      // Removed DB lookup: use the active member's organizationId for validation
+      storageKey = `orgs/${organizationId}/menus/${objectId}/background`
+      assetScope = MediaAssetScope.OTHER
+      entityType = MediaUsageEntityType.ORGANIZATION
+      entityId = organizationId
+      field = `menu-background-${objectId}`
+      requiresProFeature = false // Set to true if this becomes a Pro feature
+      break
+    }
     default:
-      return new NextResponse("Invalid imageType", { status: 400 })
+      return new NextResponse("Invalid imageType", {
+        status: 400,
+        headers: corsHeaders
+      })
+  }
+
+  if (requiresProFeature) {
+    const proMember = await isProMember()
+    if (!proMember) {
+      return new NextResponse("Pro plan required", {
+        status: 403,
+        headers: corsHeaders
+      })
+    }
   }
 
   // Create a signed URL for a PUT request
@@ -146,19 +220,22 @@ export async function POST(req: NextRequest) {
       // Menu item image changed
       revalidateTag(`menu-item-${objectId}`, "max")
       break
+    case ImageType.MENU_BACKGROUND:
+      revalidateTag(`organization-${organizationId}`, "max")
+      revalidateTag(`media-backgrounds-${organizationId}`, "max")
+      break
     default:
       // No cache tag to revalidate for unknown imageType
       break
   }
 
   // Return the signed URL to the client for a PUT request
+  // Also return the storageKey so clients can persist it in serialData
   // @see https://developers.cloudflare.com/r2/examples/aws/aws-sdk-js-v3/#generate-presigned-urls
   return NextResponse.json(
-    { url: signedUrl, method: "PUT" },
+    { url: signedUrl, method: "PUT", storageKey },
     {
-      headers: {
-        "Access-Control-Allow-Origin": "*" // Required for CORS support to work
-      }
+      headers: corsHeaders
     }
   )
 }

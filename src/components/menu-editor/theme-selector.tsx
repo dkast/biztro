@@ -68,7 +68,10 @@ function ThemedSelector<T>({
           <DrawerTitle>{title}</DrawerTitle>
         </DrawerHeader>
         <div className="relative min-h-[400px]">
-          <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
+          <div
+            className="no-scrollbar absolute inset-0 overflow-y-scroll
+              overscroll-contain"
+          >
             <div className="flex flex-col items-center gap-2">
               <RadioGroup
                 value={currentValue}
@@ -91,7 +94,10 @@ function ThemedSelector<T>({
       <PopoverContent className="max-w-[250px]">
         <Label className="mb-4 block">{title}</Label>
         <div className="relative min-h-[400px]">
-          <div className="no-scrollbar absolute inset-0 overflow-y-scroll overscroll-contain">
+          <div
+            className="no-scrollbar absolute inset-0 overflow-y-scroll
+              overscroll-contain"
+          >
             <div className="flex flex-col items-center gap-2">
               <RadioGroup
                 value={currentValue}
@@ -240,6 +246,7 @@ export default function ThemeSelector({
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {
                 categoryColor: hexToRgba(selectedTheme.accentColor),
+                // categoryHeadingBgColor: hexToRgba(selectedTheme.surfaceColor),
                 itemColor: hexToRgba(selectedTheme.textColor),
                 priceColor: hexToRgba(selectedTheme.accentColor),
                 descriptionColor: hexToRgba(selectedTheme.mutedColor)
@@ -376,7 +383,12 @@ export default function ThemeSelector({
           currentValue={fontThemeId}
           onValueChange={setFontThemeId}
           triggerContent={
-            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-200 px-4 py-2 text-left shadow-xs transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
+            <button
+              className="flex w-full flex-row items-center justify-between
+                rounded-lg border border-gray-200 px-4 py-2 text-left shadow-xs
+                transition-colors dark:border-gray-800 dark:bg-gray-950
+                dark:hover:bg-gray-800"
+            >
               <div className="flex flex-col">
                 <FontWrapper fontFamily={selectedFontTheme?.fontDisplay}>
                   <span className="text-base font-medium">
@@ -393,10 +405,18 @@ export default function ThemeSelector({
           renderItem={theme => (
             <label
               key={theme.name}
-              className="cursor-pointer [&:has([data-state=checked])>div]:border-indigo-400 [&:has([data-state=checked])>div]:bg-indigo-50 dark:[&:has([data-state=checked])>div]:border-indigo-700 dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
+              className="cursor-pointer
+                [&:has([data-state=checked])>div]:border-indigo-400
+                [&:has([data-state=checked])>div]:bg-indigo-50
+                dark:[&:has([data-state=checked])>div]:border-indigo-700
+                dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
             >
               <RadioGroupItem value={theme.name} className="sr-only" />
-              <div className="flex w-full flex-col rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
+              <div
+                className="flex w-full flex-col rounded-lg border
+                  border-gray-300 px-4 py-2 hover:border-gray-500
+                  dark:border-gray-800 dark:hover:border-gray-400"
+              >
                 <FontWrapper fontFamily={theme.fontDisplay}>
                   <span className="text-base font-medium">
                     {theme.fontDisplay}
@@ -418,7 +438,12 @@ export default function ThemeSelector({
           currentValue={colorThemeId}
           onValueChange={setColorThemeId}
           triggerContent={
-            <button className="flex w-full flex-row items-center justify-between rounded-lg border border-gray-200 px-4 py-2 text-left shadow-xs transition-colors dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800">
+            <button
+              className="flex w-full flex-row items-center justify-between
+                rounded-lg border border-gray-200 px-4 py-2 text-left shadow-xs
+                transition-colors dark:border-gray-800 dark:bg-gray-950
+                dark:hover:bg-gray-800"
+            >
               <div className="">
                 <div className="flex flex-row items-center gap-2">
                   <div className="isolate flex overflow-hidden">
@@ -436,10 +461,18 @@ export default function ThemeSelector({
           renderItem={theme => (
             <label
               key={theme.id}
-              className="cursor-pointer [&:has([data-state=checked])>div]:border-indigo-400 [&:has([data-state=checked])>div]:bg-indigo-50 dark:[&:has([data-state=checked])>div]:border-indigo-700 dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
+              className="cursor-pointer
+                [&:has([data-state=checked])>div]:border-indigo-400
+                [&:has([data-state=checked])>div]:bg-indigo-50
+                dark:[&:has([data-state=checked])>div]:border-indigo-700
+                dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
             >
               <RadioGroupItem value={theme.id} className="sr-only" />
-              <div className="flex w-full flex-col justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 hover:border-gray-500 dark:border-gray-800 dark:hover:border-gray-400">
+              <div
+                className="flex w-full flex-col justify-center gap-2 rounded-lg
+                  border border-gray-300 px-4 py-2 hover:border-gray-500
+                  dark:border-gray-800 dark:hover:border-gray-400"
+              >
                 <span className="text-xs font-medium">{theme.name}</span>
                 <div className="isolate mx-auto flex overflow-hidden">
                   <ColorChip color={theme.surfaceColor} />
@@ -529,7 +562,8 @@ export default function ThemeSelector({
 function ColorChip({ color }: { color: string | undefined }) {
   return (
     <div
-      className="h-6 w-4 border-y border-black/20 first:rounded-l first:border-l last:rounded-r last:border-r dark:border-white/10"
+      className="h-6 w-4 border-y border-black/20 first:rounded-l first:border-l
+        last:rounded-r last:border-r dark:border-white/10"
       style={{
         backgroundColor: color
       }}

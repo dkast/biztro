@@ -5,8 +5,8 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next/types"
 
 import { Button } from "@/components/ui/button"
-import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { getMenuById } from "@/server/actions/menu/queries"
+import { PreviewToggle } from "@/app/menu-editor/[id]/preview/preview-toggle"
 
 export const metadata: Metadata = {
   title: "Vista previa",
@@ -30,7 +30,7 @@ export default async function PreviewPage(props: {
 
   return (
     <div className="relative bg-gray-50 dark:bg-gray-800">
-      <div className="fixed left-2 top-2 z-50">
+      <div className="fixed top-2 left-2 z-50">
         <Link href={`/menu-editor/${params.id}`}>
           <Button variant="outline" size="icon" className="rounded-full">
             <ChevronLeft className="size-4" />
@@ -38,10 +38,12 @@ export default async function PreviewPage(props: {
         </Link>
       </div>
       <div className="flex min-h-dvh">
-        <ResolveEditor json={json} />
+        <PreviewToggle json={json} />
       </div>
       <div className="fixed inset-x-0 bottom-3 text-center">
-        <span className="rounded-full bg-amber-400 px-3 py-1 text-sm text-amber-950">
+        <span
+          className="rounded-full bg-amber-400 px-3 py-1 text-sm text-amber-950"
+        >
           <ScanEye className="mr-1 inline-block size-4 align-text-bottom" />
           Vista previa
         </span>

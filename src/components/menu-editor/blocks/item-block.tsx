@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 
 export type ItemBlockProps = {
   item: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>[0]
-  backgroundMode: "dark" | "light" | "none"
+  backgroundMode: "none" | "custom"
   itemFontSize?: number
   itemColor?: RgbaColor
   itemFontWeight?: string
@@ -126,8 +126,7 @@ export function ItemView({
         }}
         className={cn(
           "cursor-pointer rounded-xl p-3 transition-colors hover:bg-black/5",
-          backgroundMode === "dark" && "bg-black/50 backdrop-blur-md",
-          backgroundMode === "light" && "bg-white/50 backdrop-blur-md",
+          backgroundMode === "custom" && "bg-black/50 backdrop-blur-md",
           isEditing && "cursor-default hover:bg-transparent"
         )}
         role="button"
@@ -156,29 +155,28 @@ export function ItemView({
               ></Image>
             )}
             <div>
-              <FontWrapper
-                fontFamily={itemFontFamily}
-                className="flex flex-row gap-3"
-              >
-                <h3
-                  style={{
-                    fontSize: `${itemFontSize}px`,
-                    color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
-                    fontWeight: itemFontWeight
-                  }}
-                >
-                  {item.name}
-                </h3>
-
-                {item.allergens && (
-                  <div
+              <FontWrapper fontFamily={itemFontFamily}>
+                <div className="flex flex-row gap-3">
+                  <h3
                     style={{
-                      color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+                      fontSize: `${itemFontSize}px`,
+                      color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
+                      fontWeight: itemFontWeight
                     }}
                   >
-                    <Allergens allergens={item.allergens.split(",")} />
-                  </div>
-                )}
+                    {item.name}
+                  </h3>
+
+                  {item.allergens && (
+                    <div
+                      style={{
+                        color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+                      }}
+                    >
+                      <Allergens allergens={item.allergens.split(",")} />
+                    </div>
+                  )}
+                </div>
               </FontWrapper>
               <FontWrapper fontFamily={descriptionFontFamily}>
                 <span

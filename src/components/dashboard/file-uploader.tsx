@@ -23,6 +23,16 @@ import { useTheme } from "next-themes"
 
 import type { ImageType } from "@/lib/types"
 
+// Explicit types for richer error and file meta handling
+interface HttpError extends Error {
+  status: number
+}
+
+interface UploadFileMeta extends Meta {
+  storageKey?: string
+  [key: string]: unknown
+}
+
 export async function getUploadParameters(
   file: UppyFile<Meta, Body>,
   organizationId: string,
@@ -42,22 +52,40 @@ export async function getUploadParameters(
       contentType: file.type
     })
   })
-  if (!response.ok) throw new Error("Unsuccessful request")
+  if (!response.ok) {
+    const error = new Error("Unsuccessful request") as HttpError
+    // Attach status code to the error object so it can be checked later
+    error.status = response.status
+    throw error
+  }
 
   // Parse the JSON response.
 
-  const data: { url: string; method: "PUT" } = await response.json()
+  const raw = await response.json()
+  const url = typeof raw?.url === "string" ? raw.url : ""
+  const method = typeof raw?.method === "string" ? (raw.method as "PUT") : "PUT"
+  const storageKey =
+    typeof raw?.storageKey === "string" ? raw.storageKey : undefined
 
   // Return an object in the correct shape.
   const object: AwsS3UploadParameters = {
-    method: data.method,
-    url: data.url,
+    method,
+    url,
     fields: {}, // For presigned PUT uploads, this should be left empty.
     // Provide content type header required by S3
     headers: {
       "Content-Type": file.type ? file.type : "application/octet-stream"
     }
   }
+
+  // Store the storageKey (if supplied by server) in the file meta so we can
+  // later access it in the `complete` handler.
+  if (storageKey) {
+    // mutate meta safely
+    const meta = file.meta as UploadFileMeta
+    meta.storageKey = storageKey
+  }
+
   return object
 }
 
@@ -66,22 +94,30 @@ export function FileUploader({
   imageType,
   objectId,
   onUploadSuccess,
-  limitDimension = 1200
+  onUploadError,
+  onUpgradeRequired,
+  limitDimension = 1200,
+  maxFileSize
 }: {
   organizationId: string
   imageType: ImageType
   objectId: string
   onUploadSuccess: (result: UploadResult<Meta, Body>) => void
+  onUploadError?: (error: Error) => void
+  onUpgradeRequired?: () => void
   limitDimension?: number
+  maxFileSize?: number
 }) {
   const { theme } = useTheme()
+  const effectiveMaxFileSize = maxFileSize ?? 3 * 1024 * 1024
 
   const [uppy] = useState(() =>
     new Uppy({
       autoProceed: false,
       restrictions: {
         maxNumberOfFiles: 1,
-        allowedFileTypes: [".jpg", ".jpeg", ".png"]
+        allowedFileTypes: [".jpg", ".jpeg", ".png"],
+        maxFileSize: effectiveMaxFileSize
       },
       locale: Spanish
     })
@@ -135,7 +171,35 @@ export function FileUploader({
         uppy.removeFile(file.id)
       }
     })
+    uppy.on("upload-error", (file, error) => {
+      // Guard against undefined file (Uppy may call this without a file)
+      if (!file) return
+
+      console.dir(error)
+
+      // Extract status code from error object (attached in getUploadParameters)
+      const status =
+        error && typeof error === "object" && "status" in error
+          ? (error as HttpError).status
+          : undefined
+
+      if (status === 403) {
+        uppy.info("Esta función requiere el plan Pro", "error", 4000)
+        uppy.removeFile(file.id)
+        onUpgradeRequired?.()
+        return
+      }
+
+      if (onUploadError) {
+        onUploadError(
+          error instanceof Error
+            ? error
+            : new Error("No se pudo subir el archivo")
+        )
+      }
+    })
     uppy.on("complete", result => {
+      console.log("Upload complete:", result)
       onUploadSuccess(result)
     })
   }, [
@@ -144,7 +208,9 @@ export function FileUploader({
     objectId,
     onUploadSuccess,
     organizationId,
-    limitDimension
+    limitDimension,
+    onUploadError,
+    onUpgradeRequired
   ])
 
   return (

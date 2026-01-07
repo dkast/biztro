@@ -51,7 +51,7 @@ export default function HeadingElement({
           fontWeight,
           textAlign
         }}
-        className="px-4 py-2"
+        className="col-span-1 px-4 py-2 md:col-span-2"
       />
     </FontWrapper>
   )
@@ -62,7 +62,7 @@ HeadingElement.craft = {
   props: {
     fontSize: 20,
     color: { r: 38, g: 50, b: 56, a: 1 },
-    textAlign: "left",
+    textAlign: "center",
     fontWeight: "700",
     fontFamily: "Inter",
     text: "Encabezado"

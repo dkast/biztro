@@ -49,17 +49,18 @@ export default function ItemSettings() {
               onValueChange={value =>
                 setProp(
                   (props: CategoryBlockProps) =>
-                    (props.backgroundMode = value as "dark" | "light" | "none")
+                    (props.backgroundMode = value as "none" | "custom")
                 )
               }
             >
-              <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
+              <SelectTrigger
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
+              >
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">Ninguno</SelectItem>
-                <SelectItem value="light">Claro</SelectItem>
-                <SelectItem value="dark">Oscuro</SelectItem>
+                <SelectItem value="custom">Personalizado</SelectItem>
               </SelectContent>
             </Select>
           </dd>
@@ -80,7 +81,9 @@ export default function ItemSettings() {
                 )
               }
             >
-              <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
+              <SelectTrigger
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
+              >
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -104,7 +107,9 @@ export default function ItemSettings() {
                 )
               }
             >
-              <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
+              <SelectTrigger
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
+              >
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -132,7 +137,9 @@ export default function ItemSettings() {
                 )
               }
             >
-              <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
+              <SelectTrigger
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
+              >
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
@@ -156,7 +163,9 @@ export default function ItemSettings() {
                 )
               }
             >
-              <SelectTrigger className="focus:ring-transparent sm:h-7 sm:text-xs">
+              <SelectTrigger
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
+              >
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
