@@ -9,6 +9,7 @@ import {
   type RefObject
 } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
+import type { Layout } from "react-resizable-panels"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import { useAtom, useSetAtom } from "jotai"
@@ -79,7 +80,7 @@ export default function Workbench({
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
   soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
-  defaultLayout?: number[]
+  defaultLayout?: Layout
 }) {
   const isMobile = useIsMobile()
   const [isOpen, setIsOpen] = useState(false)
@@ -95,8 +96,9 @@ export default function Workbench({
   const setColorThemeId = useSetAtom(colorThemeAtom)
 
   // Setup persistent layout using cookies for SSR compatibility
-  const onLayoutChange = useCallback((sizes: number[]) => {
-    const cookieValue = encodeURIComponent(JSON.stringify(sizes))
+  const onLayoutChange = useCallback((layout: Layout) => {
+    // Store a JSON representation of the layout object (map of panelId -> size)
+    const cookieValue = encodeURIComponent(JSON.stringify(layout))
     const isSecure = window.location.protocol === "https:"
     const secureFlag = isSecure ? "; Secure" : ""
     document.cookie = `react-resizable-panels:layout:menu-editor-workbench=${cookieValue}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`
@@ -329,7 +331,7 @@ export default function Workbench({
             defaultLayout={serverDefaultLayout}
             onLayoutChange={onLayoutChange}
           >
-            <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>
+            <ResizablePanel defaultSize="18%" minSize="15%" maxSize="25%">
               <ScrollArea
                 key={`left-panel-${scrollAreaKey}`}
                 className="h-full"
@@ -349,7 +351,7 @@ export default function Workbench({
               </ScrollArea>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel defaultSize={70}>
+            <ResizablePanel defaultSize="70%">
               <div
                 id="editor-canvas"
                 className="no-scrollbar bg-secondary relative h-full w-full
@@ -422,7 +424,7 @@ export default function Workbench({
               </div>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>
+            <ResizablePanel defaultSize="18%" minSize="15%" maxSize="25%">
               <ScrollArea
                 key={`right-panel-${scrollAreaKey}`}
                 className="h-full"

@@ -1,3 +1,4 @@
+import type { Layout } from "react-resizable-panels"
 import {
   dehydrate,
   HydrationBoundary,
@@ -66,11 +67,27 @@ export default async function MenuEditorPage(props: {
 
   // Read saved layout from cookies for SSR
   const cookieStore = await cookies()
-  const layoutCookie = cookieStore.get("react-resizable-panels:layout:menu-editor-workbench")
-  let defaultLayout: number[] | undefined
+  const layoutCookie = cookieStore.get(
+    "react-resizable-panels:layout:menu-editor-workbench"
+  )
+  // Layout shape used by react-resizable-panels: { [panelId: string]: number }
+  // Accept either the legacy array shape (number[]) or the new map shape and normalize to Layout
+  let defaultLayout: Layout | undefined
   if (layoutCookie?.value) {
     try {
-      defaultLayout = JSON.parse(decodeURIComponent(layoutCookie.value))
+      const parsed = JSON.parse(decodeURIComponent(layoutCookie.value))
+      if (Array.isArray(parsed)) {
+        // Legacy format: convert array -> map with numeric string keys
+        const layout: Layout = {}
+        parsed.forEach((v: number, i: number) => {
+          layout[i.toString()] = v
+        })
+        defaultLayout = layout
+      } else if (parsed && typeof parsed === "object") {
+        defaultLayout = parsed as Layout
+      } else {
+        defaultLayout = undefined
+      }
     } catch {
       // If cookie is malformed, ignore and use default layout
       defaultLayout = undefined
