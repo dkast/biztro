@@ -5,17 +5,19 @@ import {
   useEffect,
   useLayoutEffect,
   useRef,
-  useState,
-  type RefObject
+  useState
 } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import type { Layout } from "react-resizable-panels"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import { useAtom, useSetAtom } from "jotai"
+import { ChevronLeft, SheetIcon } from "lucide-react"
 import lz from "lzutf8"
 
 import Header from "@/components/dashboard/header"
+import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
+import { GuardLink } from "@/components/dashboard/unsaved-changes-provider"
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import FeaturedBlock from "@/components/menu-editor/blocks/featured-block"
@@ -25,18 +27,19 @@ import ItemBlock from "@/components/menu-editor/blocks/item-block"
 import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import { BottomBar } from "@/components/menu-editor/bottom-bar"
-import CssStyles from "@/components/menu-editor/css-styles"
 import FloatingBar from "@/components/menu-editor/floating-bar"
+import { FramePreviewContent } from "@/components/menu-editor/frame-preview-content"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
 import MenuPublish from "@/components/menu-editor/menu-publish"
+import MenuTitle from "@/components/menu-editor/menu-title"
 import MenuTour from "@/components/menu-editor/menu-tour"
 import MenuTourMobile from "@/components/menu-editor/menu-tour-mobile"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
 import SyncStatusBanner from "@/components/menu-editor/sync-status-banner"
 import ThemeSelector from "@/components/menu-editor/theme-selector"
-import Toolbar from "@/components/menu-editor/toolbar"
 import ToolboxPanel from "@/components/menu-editor/toolbox-panel"
+import { Button } from "@/components/ui/button"
 import { DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import {
   ResizableHandle,
@@ -322,7 +325,23 @@ export default function Workbench({
           onNodesChange={handleNodesChange}
         >
           <Header className="fixed inset-x-0 top-0">
-            <Toolbar menu={menu} />
+            <div className="mx-10 grid grow grid-cols-3 items-center">
+              <div className="flex items-center">
+                <GuardLink href={"/dashboard"}>
+                  <Button variant="ghost" size="sm">
+                    <ChevronLeft className="size-5" />
+                    Regresar
+                  </Button>
+                </GuardLink>
+                <TooltipHelper content="Editar productos y categorías">
+                  <Button size="xs" variant="ghost" onClick={() => {}}>
+                    <SheetIcon className="size-4" />
+                  </Button>
+                </TooltipHelper>
+              </div>
+              <MenuTitle menu={menu} />
+              <MenuPublish menu={menu} />
+            </div>
             <MenuTour />
           </Header>
           <ResizablePanelGroup
@@ -331,7 +350,12 @@ export default function Workbench({
             defaultLayout={serverDefaultLayout}
             onLayoutChange={onLayoutChange}
           >
-            <ResizablePanel defaultSize="18%" minSize="15%" maxSize="25%">
+            <ResizablePanel
+              id="left"
+              defaultSize="18%"
+              minSize="15%"
+              maxSize="25%"
+            >
               <ScrollArea
                 key={`left-panel-${scrollAreaKey}`}
                 className="h-full"
@@ -351,7 +375,7 @@ export default function Workbench({
               </ScrollArea>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel defaultSize="70%">
+            <ResizablePanel id="center">
               <div
                 id="editor-canvas"
                 className="no-scrollbar bg-secondary relative h-full w-full
@@ -424,7 +448,12 @@ export default function Workbench({
               </div>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel defaultSize="18%" minSize="15%" maxSize="25%">
+            <ResizablePanel
+              id="right"
+              defaultSize="18%"
+              minSize="15%"
+              maxSize="25%"
+            >
               <ScrollArea
                 key={`right-panel-${scrollAreaKey}`}
                 className="h-full"
@@ -437,88 +466,5 @@ export default function Workbench({
         </Editor>
       )}
     </div>
-  )
-}
-
-interface FramePreviewContentProps {
-  frameDocument: Document | null | undefined
-  frameDocRef: RefObject<Document | null>
-  json?: string
-  organization: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>
-  location: Awaited<ReturnType<typeof getDefaultLocation>> | null
-  updateFrameHeight: () => void
-}
-
-function pauseFrameMedia(doc: Document | null | undefined) {
-  if (!doc) return
-
-  try {
-    ;(
-      doc.querySelectorAll("video, audio") as NodeListOf<HTMLMediaElement>
-    ).forEach(el => {
-      try {
-        el.pause()
-      } catch {
-        // ignore
-      }
-    })
-    ;(doc.querySelectorAll("iframe") as NodeListOf<HTMLIFrameElement>).forEach(
-      iframe => {
-        try {
-          const win = iframe.contentWindow
-          win?.postMessage({ type: "react-activity-hidden" }, "*")
-        } catch {
-          // ignore
-        }
-      }
-    )
-  } catch {
-    // ignore
-  }
-}
-
-function FramePreviewContent({
-  frameDocument,
-  frameDocRef,
-  json,
-  organization,
-  location,
-  updateFrameHeight
-}: FramePreviewContentProps) {
-  useEffect(() => {
-    frameDocRef.current = frameDocument ?? null
-    if (!frameDocument) return
-
-    updateFrameHeight()
-    const win = frameDocument.defaultView
-    const target = frameDocument.body ?? frameDocument.documentElement
-    if (!target) return
-
-    const ResizeObserverClass = win?.ResizeObserver ?? window.ResizeObserver
-    if (!ResizeObserverClass) return
-
-    const resizeObserver = new ResizeObserverClass(() => {
-      updateFrameHeight()
-    })
-    resizeObserver.observe(target)
-    return () => {
-      resizeObserver.disconnect()
-      pauseFrameMedia(frameDocument)
-    }
-  }, [frameDocument, frameDocRef, updateFrameHeight])
-
-  return (
-    <CssStyles frameDocument={frameDocument}>
-      <Frame data={json}>
-        <Element is={ContainerBlock} canvas>
-          <HeaderBlock
-            layout="modern"
-            organization={organization}
-            location={location ?? undefined}
-            showBanner={organization.banner !== null}
-          />
-        </Element>
-      </Frame>
-    </CssStyles>
   )
 }
