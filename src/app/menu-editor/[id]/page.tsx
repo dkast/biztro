@@ -1,9 +1,11 @@
+import type { Layout } from "react-resizable-panels"
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient
 } from "@tanstack/react-query"
 import type { Metadata } from "next"
+import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 
 import Workbench from "@/components/menu-editor/workbench"
@@ -63,6 +65,35 @@ export default async function MenuEditorPage(props: {
     return notFound()
   }
 
+  // Read saved layout from cookies for SSR
+  const cookieStore = await cookies()
+  const layoutCookie = cookieStore.get(
+    "react-resizable-panels:layout:menu-editor-workbench"
+  )
+  // Layout shape used by react-resizable-panels: { [panelId: string]: number }
+  // Accept either the legacy array shape (number[]) or the new map shape and normalize to Layout
+  let defaultLayout: Layout | undefined
+  if (layoutCookie?.value) {
+    try {
+      const parsed = JSON.parse(decodeURIComponent(layoutCookie.value))
+      if (Array.isArray(parsed)) {
+        // Legacy format: convert array -> map with numeric string keys
+        const layout: Layout = {}
+        parsed.forEach((v: number, i: number) => {
+          layout[i.toString()] = v
+        })
+        defaultLayout = layout
+      } else if (parsed && typeof parsed === "object") {
+        defaultLayout = parsed as Layout
+      } else {
+        defaultLayout = undefined
+      }
+    } catch {
+      // If cookie is malformed, ignore and use default layout
+      defaultLayout = undefined
+    }
+  }
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Workbench
@@ -72,6 +103,7 @@ export default async function MenuEditorPage(props: {
         categories={categories}
         soloItems={soloItems}
         featuredItems={featuredItems}
+        defaultLayout={defaultLayout}
       />
     </HydrationBoundary>
   )

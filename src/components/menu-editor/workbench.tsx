@@ -9,6 +9,7 @@ import {
   type RefObject
 } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
+import type { Layout } from "react-resizable-panels"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import { useAtom, useSetAtom } from "jotai"
@@ -70,7 +71,8 @@ export default function Workbench({
   location,
   categories,
   soloItems,
-  featuredItems
+  featuredItems,
+  defaultLayout: serverDefaultLayout
 }: {
   menu: Awaited<ReturnType<typeof getMenuById>>
   organization: Awaited<ReturnType<typeof getCurrentOrganization>>
@@ -78,6 +80,7 @@ export default function Workbench({
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
   soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
+  defaultLayout?: Layout
 }) {
   const isMobile = useIsMobile()
   const [isOpen, setIsOpen] = useState(false)
@@ -91,8 +94,17 @@ export default function Workbench({
   const [frameSize] = useAtom(frameSizeAtom)
   const setFontThemeId = useSetAtom(fontThemeAtom)
   const setColorThemeId = useSetAtom(colorThemeAtom)
-  // Initialize themes only on first load
 
+  // Setup persistent layout using cookies for SSR compatibility
+  const onLayoutChange = useCallback((layout: Layout) => {
+    // Store a JSON representation of the layout object (map of panelId -> size)
+    const cookieValue = encodeURIComponent(JSON.stringify(layout))
+    const isSecure = window.location.protocol === "https:"
+    const secureFlag = isSecure ? "; Secure" : ""
+    document.cookie = `react-resizable-panels:layout:menu-editor-workbench=${cookieValue}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`
+  }, [])
+
+  // Initialize themes only on first load
   useEffect(() => {
     setFontThemeId(menu?.fontTheme ?? "DEFAULT")
     setColorThemeId(menu?.colorTheme ?? "DEFAULT")
@@ -315,9 +327,11 @@ export default function Workbench({
           </Header>
           <ResizablePanelGroup
             className="bg-card grow pt-16"
-            direction="horizontal"
+            orientation="horizontal"
+            defaultLayout={serverDefaultLayout}
+            onLayoutChange={onLayoutChange}
           >
-            <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>
+            <ResizablePanel defaultSize="18%" minSize="15%" maxSize="25%">
               <ScrollArea
                 key={`left-panel-${scrollAreaKey}`}
                 className="h-full"
@@ -337,7 +351,7 @@ export default function Workbench({
               </ScrollArea>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel defaultSize={70}>
+            <ResizablePanel defaultSize="70%">
               <div
                 id="editor-canvas"
                 className="no-scrollbar bg-secondary relative h-full w-full
@@ -410,7 +424,7 @@ export default function Workbench({
               </div>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>
+            <ResizablePanel defaultSize="18%" minSize="15%" maxSize="25%">
               <ScrollArea
                 key={`right-panel-${scrollAreaKey}`}
                 className="h-full"
