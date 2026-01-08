@@ -1,6 +1,7 @@
 "use client"
 
 import {
+  Activity,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -90,6 +91,7 @@ export default function Workbench({
   const [activePanel, setActivePanel] = useState<PanelType | null>(null)
   const [shouldRenderFrame, setShouldRenderFrame] = useState(true)
   const [iframeHeight, setIframeHeight] = useState(0)
+  const [isDataGridView, setIsDataGridView] = useState(false)
   // Key to force ScrollArea re-render after ResizablePanel establishes dimensions
   const [scrollAreaKey, setScrollAreaKey] = useState(0)
 
@@ -334,7 +336,11 @@ export default function Workbench({
                   </Button>
                 </GuardLink>
                 <TooltipHelper content="Editar productos y categorías">
-                  <Button size="xs" variant="ghost" onClick={() => {}}>
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    onClick={() => setIsDataGridView(!isDataGridView)}
+                  >
                     <SheetIcon className="size-4" />
                   </Button>
                 </TooltipHelper>
@@ -350,32 +356,39 @@ export default function Workbench({
             defaultLayout={serverDefaultLayout}
             onLayoutChange={onLayoutChange}
           >
-            <ResizablePanel
-              id="left"
-              defaultSize="18%"
-              minSize="15%"
-              maxSize="25%"
-            >
-              <ScrollArea
-                key={`left-panel-${scrollAreaKey}`}
-                className="h-full"
+            <Activity mode={isDataGridView ? "hidden" : "visible"}>
+              <ResizablePanel
+                id="left"
+                defaultSize="18%"
+                minSize="15%"
+                maxSize="25%"
               >
-                <div className="pb-2">
-                  <ToolboxPanel
-                    organization={organization}
-                    location={location}
-                    categories={categories}
-                    soloItems={soloItems}
-                    featuredItems={featuredItems}
-                    isPro={organization.plan?.toUpperCase() === "PRO"}
-                  />
-                  <Separator />
-                  <Layers renderLayer={DefaultLayer} />
-                </div>
-              </ScrollArea>
-            </ResizablePanel>
+                <ScrollArea
+                  key={`left-panel-${scrollAreaKey}`}
+                  className="h-full"
+                >
+                  <div className="pb-2">
+                    <ToolboxPanel
+                      organization={organization}
+                      location={location}
+                      categories={categories}
+                      soloItems={soloItems}
+                      featuredItems={featuredItems}
+                      isPro={organization.plan?.toUpperCase() === "PRO"}
+                    />
+                    <Separator />
+                    <Layers renderLayer={DefaultLayer} />
+                  </div>
+                </ScrollArea>
+              </ResizablePanel>
+            </Activity>
+            <Activity mode={isDataGridView ? "visible" : "hidden"}>
+              <ResizablePanel id="data-grid" defaultSize="70%">
+                Test
+              </ResizablePanel>
+            </Activity>
             <ResizableHandle />
-            <ResizablePanel id="center">
+            <ResizablePanel id="canvas">
               <div
                 id="editor-canvas"
                 className="no-scrollbar bg-secondary relative h-full w-full
@@ -444,24 +457,28 @@ export default function Workbench({
                     )}
                   </div>
                 </div>
-                <FloatingBar />
+                <Activity mode={isDataGridView ? "hidden" : "visible"}>
+                  <FloatingBar />
+                </Activity>
               </div>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel
-              id="right"
-              defaultSize="18%"
-              minSize="15%"
-              maxSize="25%"
-            >
-              <ScrollArea
-                key={`right-panel-${scrollAreaKey}`}
-                className="h-full"
+            <Activity mode={isDataGridView ? "hidden" : "visible"}>
+              <ResizablePanel
+                id="right"
+                defaultSize="18%"
+                minSize="15%"
+                maxSize="25%"
               >
-                <ThemeSelector menu={menu} />
-                <SettingsPanel />
-              </ScrollArea>
-            </ResizablePanel>
+                <ScrollArea
+                  key={`right-panel-${scrollAreaKey}`}
+                  className="h-full"
+                >
+                  <ThemeSelector menu={menu} />
+                  <SettingsPanel />
+                </ScrollArea>
+              </ResizablePanel>
+            </Activity>
           </ResizablePanelGroup>
         </Editor>
       )}
