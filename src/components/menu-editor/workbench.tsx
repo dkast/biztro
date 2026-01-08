@@ -49,6 +49,7 @@ import {
 } from "@/components/ui/resizable"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { Toggle } from "@/components/ui/toggle"
 import type {
   getCategoriesWithItems,
   getFeaturedItems,
@@ -335,14 +336,24 @@ export default function Workbench({
                     Regresar
                   </Button>
                 </GuardLink>
-                <TooltipHelper content="Editar productos y categorías">
-                  <Button
-                    size="xs"
-                    variant="ghost"
-                    onClick={() => setIsDataGridView(!isDataGridView)}
-                  >
-                    <SheetIcon className="size-4" />
-                  </Button>
+                <TooltipHelper
+                  content={
+                    isDataGridView
+                      ? "Ocultar editor de productos"
+                      : "Mostrar editor de productos"
+                  }
+                >
+                  <div>
+                    <Toggle
+                      size="sm"
+                      variant="default"
+                      pressed={isDataGridView}
+                      onPressedChange={(v: boolean) => setIsDataGridView(v)}
+                      aria-label="Toggle data grid view"
+                    >
+                      <SheetIcon className="size-4" />
+                    </Toggle>
+                  </div>
                 </TooltipHelper>
               </div>
               <MenuTitle menu={menu} />
