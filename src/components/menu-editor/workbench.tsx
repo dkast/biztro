@@ -15,10 +15,14 @@ import { Layers } from "@craftjs/layers"
 import { useAtom, useSetAtom } from "jotai"
 import { ChevronLeft, SheetIcon } from "lucide-react"
 import lz from "lzutf8"
+import { toast } from "sonner"
 
 import Header from "@/components/dashboard/header"
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
-import { GuardLink } from "@/components/dashboard/unsaved-changes-provider"
+import {
+  GuardLink,
+  useSetUnsavedChanges
+} from "@/components/dashboard/unsaved-changes-provider"
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import FeaturedBlock from "@/components/menu-editor/blocks/featured-block"
@@ -31,6 +35,10 @@ import { BottomBar } from "@/components/menu-editor/bottom-bar"
 import FloatingBar from "@/components/menu-editor/floating-bar"
 import { FramePreviewContent } from "@/components/menu-editor/frame-preview-content"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
+import {
+  MenuItemsDataGrid,
+  type MenuItemRow
+} from "@/components/menu-editor/menu-items-data-grid"
 import MenuPublish from "@/components/menu-editor/menu-publish"
 import MenuTitle from "@/components/menu-editor/menu-title"
 import MenuTour from "@/components/menu-editor/menu-tour"
@@ -50,6 +58,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Toggle } from "@/components/ui/toggle"
+import { updateItem } from "@/server/actions/item/mutations"
 import type {
   getCategoriesWithItems,
   getFeaturedItems,
@@ -96,6 +105,15 @@ export default function Workbench({
   // Key to force ScrollArea re-render after ResizablePanel establishes dimensions
   const [scrollAreaKey, setScrollAreaKey] = useState(0)
 
+  // Data grid dirty tracking and batch save
+  const [gridDirtyItems, setGridDirtyItems] = useState<MenuItemRow[]>([])
+  const [isGridDirty, setIsGridDirty] = useState(false)
+  const [isBatchSaving, setIsBatchSaving] = useState(false)
+  const prevIsDataGridViewRef = useRef(isDataGridView)
+
+  // Unsaved changes context for grid dirty state
+  const { setUnsavedChanges, clearUnsavedChanges } = useSetUnsavedChanges()
+
   // Initialize the atoms for the editor
   const [frameSize] = useAtom(frameSizeAtom)
   const setFontThemeId = useSetAtom(fontThemeAtom)
@@ -109,6 +127,116 @@ export default function Workbench({
     const secureFlag = isSecure ? "; Secure" : ""
     document.cookie = `react-resizable-panels:layout:menu-editor-workbench=${cookieValue}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`
   }, [])
+
+  // Batch save function for grid items
+  const batchSaveGridItems = useCallback(
+    async (items: MenuItemRow[]) => {
+      if (items.length === 0) return
+
+      setIsBatchSaving(true)
+      let successCount = 0
+      let failCount = 0
+
+      for (const item of items) {
+        try {
+          const result = await updateItem({
+            id: item.id,
+            name: item.name,
+            description: item.description ?? "",
+            status: item.status,
+            categoryId: item.categoryId ?? "",
+            organizationId: item.organizationId,
+            featured: item.featured,
+            currency: item.currency,
+            variants: item.variants.map(v => ({
+              id: v.id,
+              name: v.name,
+              price: v.price,
+              description: v.description ?? undefined,
+              menuItemId: v.menuItemId
+            })) as [
+              {
+                id: string
+                name: string
+                price: number
+                description?: string
+                menuItemId: string
+              },
+              ...{
+                id: string
+                name: string
+                price: number
+                description?: string
+                menuItemId: string
+              }[]
+            ]
+          })
+
+          if (result?.data?.success) {
+            successCount++
+          } else {
+            failCount++
+          }
+        } catch (error) {
+          console.error("Error saving item:", item.id, error)
+          failCount++
+        }
+      }
+
+      setIsBatchSaving(false)
+      setGridDirtyItems([])
+      setIsGridDirty(false)
+      clearUnsavedChanges()
+
+      if (successCount > 0 && failCount === 0) {
+        toast.success(
+          `${successCount} producto${successCount > 1 ? "s" : ""} guardado${successCount > 1 ? "s" : ""}`
+        )
+      } else if (failCount > 0) {
+        toast.error(
+          `Error: ${failCount} producto${failCount > 1 ? "s" : ""} no se pudo${failCount > 1 ? "ieron" : ""} guardar`
+        )
+      }
+    },
+    [clearUnsavedChanges]
+  )
+
+  // Handle grid dirty state changes
+  const handleGridDirtyChange = useCallback(
+    (isDirty: boolean, dirtyItems?: MenuItemRow[]) => {
+      setIsGridDirty(isDirty)
+      if (dirtyItems) {
+        setGridDirtyItems(dirtyItems)
+      }
+      if (isDirty) {
+        setUnsavedChanges({
+          message:
+            "Tienes cambios sin guardar en el editor de productos. ¿Deseas guardarlos?",
+          dismissButtonLabel: "Cancelar",
+          proceedLinkLabel: "Descartar cambios"
+        })
+      } else {
+        clearUnsavedChanges()
+      }
+    },
+    [setUnsavedChanges, clearUnsavedChanges]
+  )
+
+  // Batch save when leaving grid view (falling edge of isDataGridView)
+  useEffect(() => {
+    const wasDataGridView = prevIsDataGridViewRef.current
+    prevIsDataGridViewRef.current = isDataGridView
+
+    // Detect falling edge: was true, now false
+    if (
+      wasDataGridView &&
+      !isDataGridView &&
+      isGridDirty &&
+      gridDirtyItems.length > 0
+    ) {
+      batchSaveGridItems(gridDirtyItems)
+    }
+  }, [isDataGridView, isGridDirty, gridDirtyItems, batchSaveGridItems])
 
   // Initialize themes only on first load
   useEffect(() => {
@@ -395,7 +523,16 @@ export default function Workbench({
             </Activity>
             <Activity mode={isDataGridView ? "visible" : "hidden"}>
               <ResizablePanel id="data-grid" defaultSize="70%">
-                Test
+                <MenuItemsDataGrid
+                  categories={categories}
+                  soloItems={soloItems}
+                  featuredItems={featuredItems}
+                  organizationId={organization.id}
+                  onDirtyChange={(isDirty, dirtyItems) =>
+                    handleGridDirtyChange(isDirty, dirtyItems)
+                  }
+                  isSaving={isBatchSaving}
+                />
               </ResizablePanel>
             </Activity>
             <ResizableHandle />
