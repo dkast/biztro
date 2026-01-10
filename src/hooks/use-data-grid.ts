@@ -1,4 +1,5 @@
 import * as React from "react"
+import { toast } from "react-hot-toast"
 import type {
   CellPosition,
   CellUpdate,
@@ -28,7 +29,6 @@ import {
   type Updater
 } from "@tanstack/react-table"
 import { useVirtualizer, type Virtualizer } from "@tanstack/react-virtual"
-import { toast } from "sonner"
 
 import { useAsRef } from "@/hooks/use-as-ref"
 import { useIsomorphicLayoutEffect } from "@/hooks/use-isomorphic-layout-effect"

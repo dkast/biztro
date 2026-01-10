@@ -100,7 +100,8 @@ export function MenuItemsDataGrid({
   featuredItems,
   organizationId,
   onDirtyChange,
-  isSaving
+  isSaving,
+  onManualSave
 }: MenuItemsDataGridProps) {
   // Flatten items into grid rows
   const initialData = React.useMemo(
@@ -113,6 +114,13 @@ export function MenuItemsDataGrid({
   const [data, setData] = React.useState<MenuItemRow[]>(initialData)
   const [dirtyIds, setDirtyIds] = React.useState<Set<string>>(new Set())
 
+  // Resync data when initialData changes (only if no dirty edits)
+  React.useEffect(() => {
+    if (dirtyIds.size === 0) {
+      setData(initialData)
+    }
+  }, [initialData, dirtyIds.size])
+
   // Dialog for editing variants
   const [variantsDialogOpen, setVariantsDialogOpen] = React.useState(false)
   const [selectedItemForVariants, setSelectedItemForVariants] =
@@ -120,7 +128,7 @@ export function MenuItemsDataGrid({
 
   // Build category options for select cell
   const categoryOptions: CellSelectOption[] = React.useMemo(() => {
-    const opts: CellSelectOption[] = [{ label: "Sin categoría", value: "" }]
+    const opts: CellSelectOption[] = []
     for (const cat of categories) {
       opts.push({ label: cat.name, value: cat.id })
     }
@@ -363,6 +371,17 @@ export function MenuItemsDataGrid({
                 {dirtyIds.size} cambio{dirtyIds.size > 1 ? "s" : ""} sin guardar
               </span>
             )}
+            <Button
+              size="sm"
+              variant="default"
+              disabled={dirtyIds.size === 0 || isSaving}
+              onClick={() => {
+                const dirtyItems = data.filter(row => dirtyIds.has(row.id))
+                onManualSave?.(dirtyItems)
+              }}
+            >
+              Guardar
+            </Button>
           </div>
         </div>
       </div>

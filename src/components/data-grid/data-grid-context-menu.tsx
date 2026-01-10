@@ -1,10 +1,10 @@
 "use client"
 
 import * as React from "react"
+import { toast } from "react-hot-toast"
 import type { CellUpdate, ContextMenuState } from "@/types/data-grid"
 import type { ColumnDef, TableMeta } from "@tanstack/react-table"
 import { CopyIcon, EraserIcon, ScissorsIcon, Trash2Icon } from "lucide-react"
-import { toast } from "sonner"
 
 import {
   DropdownMenu,

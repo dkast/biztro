@@ -38,6 +38,7 @@ export interface MenuItemsDataGridProps {
   organizationId: string
   onDirtyChange?: (isDirty: boolean, dirtyItems?: MenuItemRow[]) => void
   isSaving?: boolean
+  onManualSave?: (dirtyItems: MenuItemRow[]) => void
 }
 
 export interface MenuItemsDataGridRef {

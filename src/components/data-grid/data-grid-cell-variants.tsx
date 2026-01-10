@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
+import { toast } from "react-hot-toast"
 import type { DataGridCellProps, FileCellData } from "@/types/data-grid"
 import { Check, Upload, X } from "lucide-react"
-import { toast } from "sonner"
 
 import { DataGridCellWrapper } from "@/components/data-grid/data-grid-cell-wrapper"
 import { Badge } from "@/components/ui/badge"
@@ -673,10 +673,9 @@ export function UrlCell<TData>({
       const href = getUrlHref(value)
       if (!href) {
         event.preventDefault()
-        toast.error("Invalid URL", {
-          description:
-            "URL contains a dangerous protocol (javascript:, data:, vbscript:, or file:)"
-        })
+        toast.error(
+          "URL contains a dangerous protocol (javascript:, data:, vbscript:, or file:)"
+        )
         return
       }
 
@@ -1063,8 +1062,6 @@ export function MultiSelectCell<TData>({
       setSelectedValues(cellValue)
     }
   }, [cellValue])
-
-  const prevCellKeyRef = React.useRef(cellKey)
 
   React.useEffect(() => {
     if (prevCellKeyRef.current !== cellKey) {
@@ -1517,8 +1514,6 @@ export function FileCell<TData>({
     }
   }, [cellValue, files])
 
-  const prevCellKeyRef = React.useRef(cellKey)
-
   React.useEffect(() => {
     if (prevCellKeyRef.current !== cellKey) {
       prevCellKeyRef.current = cellKey
@@ -1590,13 +1585,15 @@ export function FileCell<TData>({
               : firstError.name
 
           if (rejectedFiles.length === 1) {
-            toast(firstError.reason, {
-              description: `"${truncatedName}" has been rejected`
-            })
+            toast.error(
+              `${firstError.reason} — "${truncatedName}" has been rejected`
+            )
           } else {
-            toast(firstError.reason, {
-              description: `"${truncatedName}" and ${rejectedFiles.length - 1} more rejected`
-            })
+            toast.error(
+              `${firstError.reason} — "${truncatedName}" and ${
+                rejectedFiles.length - 1
+              } more rejected`
+            )
           }
 
           setTimeout(() => {

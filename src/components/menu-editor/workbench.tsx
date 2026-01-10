@@ -9,13 +9,14 @@ import {
   useState
 } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
+import { toast } from "react-hot-toast"
 import type { Layout } from "react-resizable-panels"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import { useAtom, useSetAtom } from "jotai"
 import { ChevronLeft, SheetIcon } from "lucide-react"
 import lz from "lzutf8"
-import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 import Header from "@/components/dashboard/header"
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
@@ -97,6 +98,7 @@ export default function Workbench({
   defaultLayout?: Layout
 }) {
   const isMobile = useIsMobile()
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [activePanel, setActivePanel] = useState<PanelType | null>(null)
   const [shouldRenderFrame, setShouldRenderFrame] = useState(true)
@@ -148,6 +150,8 @@ export default function Workbench({
             organizationId: item.organizationId,
             featured: item.featured,
             currency: item.currency,
+            // Force draft menu sync even when preference is null
+            updatePublishedMenus: false,
             variants: item.variants.map(v => ({
               id: v.id,
               name: v.name,
@@ -192,13 +196,15 @@ export default function Workbench({
         toast.success(
           `${successCount} producto${successCount > 1 ? "s" : ""} guardado${successCount > 1 ? "s" : ""}`
         )
+        // Refresh server data to update preview and grid with latest DB state
+        router.refresh()
       } else if (failCount > 0) {
         toast.error(
           `Error: ${failCount} producto${failCount > 1 ? "s" : ""} no se pudo${failCount > 1 ? "ieron" : ""} guardar`
         )
       }
     },
-    [clearUnsavedChanges]
+    [clearUnsavedChanges, router]
   )
 
   // Handle grid dirty state changes
@@ -334,6 +340,20 @@ export default function Workbench({
       }
     }
   }, [])
+
+  // Refresh data when tab becomes visible (only if no dirty edits)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && !isGridDirty && gridDirtyItems.length === 0) {
+        router.refresh()
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  }, [isGridDirty, gridDirtyItems.length, router])
 
   if (!menu || !categories || !organization) return null
 
@@ -532,6 +552,7 @@ export default function Workbench({
                     handleGridDirtyChange(isDirty, dirtyItems)
                   }
                   isSaving={isBatchSaving}
+                  onManualSave={batchSaveGridItems}
                 />
               </ResizablePanel>
             </Activity>
