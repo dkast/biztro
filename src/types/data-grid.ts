@@ -48,6 +48,12 @@ export type CellOpts =
       accept?: string
       multiple?: boolean
     }
+  | {
+      variant: "price"
+      min?: number
+      max?: number
+      step?: number
+    }
 
 export interface CellUpdate {
   rowIndex: number
@@ -127,6 +133,7 @@ declare module "@tanstack/react-table" {
     pasteDialog?: PasteDialogState
     onPasteDialogOpenChange?: (open: boolean) => void
     readOnly?: boolean
+    onPriceCellAction?: (row: TData) => void
   }
 }
 

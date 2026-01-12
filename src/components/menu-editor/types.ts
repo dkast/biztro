@@ -38,7 +38,7 @@ export interface MenuItemsDataGridProps {
   organizationId: string
   onDirtyChange?: (isDirty: boolean, dirtyItems?: MenuItemRow[]) => void
   isSaving?: boolean
-  onManualSave?: (dirtyItems: MenuItemRow[]) => void
+  onManualSave?: (dirtyItems: MenuItemRow[]) => Promise<boolean | void>
 }
 
 export interface MenuItemsDataGridRef {

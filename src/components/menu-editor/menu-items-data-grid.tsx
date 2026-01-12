@@ -3,10 +3,10 @@
 import * as React from "react"
 import type { CellSelectOption } from "@/types/data-grid"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Pencil } from "lucide-react"
 
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
+import { DataGridSearch } from "@/components/data-grid/data-grid-search"
 import { Button } from "@/components/ui/button"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useDataGrid } from "@/hooks/use-data-grid"
@@ -48,9 +48,7 @@ function flattenMenuItems(
     },
     categoryName: string | null
   ) => {
-    if (itemMap.has(item.id)) return
-
-    itemMap.set(item.id, {
+    const nextRow: MenuItemRow = {
       id: item.id,
       name: item.name,
       description: item.description,
@@ -69,7 +67,35 @@ function flattenMenuItems(
         menuItemId: v.menuItemId
       })),
       organizationId: item.organizationId || organizationId
-    })
+    }
+
+    const existing = itemMap.get(item.id)
+    if (!existing) {
+      itemMap.set(item.id, nextRow)
+      return
+    }
+
+    // Merge duplicates: keep the most complete variant list and avoid losing category info.
+    // This matters because some queries may include only the first variant.
+    const shouldTakeVariants = nextRow.variantCount > existing.variantCount
+    const merged: MenuItemRow = {
+      ...existing,
+      // Prefer a known category name/id over null.
+      categoryId: existing.categoryId ?? nextRow.categoryId,
+      categoryName: existing.categoryName ?? nextRow.categoryName,
+      // Prefer the "featured" flag if any source says it is featured.
+      featured: existing.featured || nextRow.featured,
+      // Keep currency if missing on existing.
+      currency: existing.currency ?? nextRow.currency,
+      // Prefer the more complete variants payload.
+      variants: shouldTakeVariants ? nextRow.variants : existing.variants,
+      variantCount: shouldTakeVariants
+        ? nextRow.variantCount
+        : existing.variantCount,
+      price: shouldTakeVariants ? nextRow.price : existing.price
+    }
+
+    itemMap.set(item.id, merged)
   }
 
   // Add items from categories
@@ -157,25 +183,56 @@ export function MenuItemsDataGrid({
   // Handle data changes from grid
   const handleDataChange = React.useCallback(
     (newData: MenuItemRow[]) => {
-      // Find which rows changed
-      const newDirtyIds = new Set(dirtyIds)
-      for (let i = 0; i < newData.length; i++) {
-        const newRow = newData[i]
-        const oldRow = data[i]
-        if (
-          newRow &&
-          oldRow &&
-          JSON.stringify(newRow) !== JSON.stringify(oldRow)
-        ) {
-          newDirtyIds.add(newRow.id)
-          newRow._isDirty = true
+      // Normalize/sync derived fields.
+      // IMPORTANT: edits to `price` must update the underlying `variants[0].price`
+      // because the save payload uses `variants`, not `price`.
+      const prevById = new Map(data.map(row => [row.id, row]))
+      const normalizedData = newData.map(row => {
+        const safePrice =
+          typeof row.price === "number" && !Number.isNaN(row.price)
+            ? row.price
+            : 0
+
+        if (row.variantCount !== 1) {
+          return safePrice === row.price ? row : { ...row, price: safePrice }
         }
-      }
+
+        const variant0 = row.variants[0]
+        if (!variant0) {
+          return safePrice === row.price ? row : { ...row, price: safePrice }
+        }
+
+        const needsVariantSync = variant0.price !== safePrice
+        const needsPriceSync = safePrice !== row.price
+        if (!needsVariantSync && !needsPriceSync) return row
+
+        const nextVariants = [...row.variants]
+        nextVariants[0] = { ...variant0, price: safePrice }
+        return {
+          ...row,
+          price: safePrice,
+          variants: nextVariants
+        }
+      })
+
+      // Find which rows changed (compare by id to be robust to sorting/filtering)
+      const newDirtyIds = new Set(dirtyIds)
+      const nextDataWithDirty = normalizedData.map(row => {
+        const prev = prevById.get(row.id)
+        if (prev && JSON.stringify(row) !== JSON.stringify(prev)) {
+          newDirtyIds.add(row.id)
+          return { ...row, _isDirty: true }
+        }
+        return row
+      })
+
       setDirtyIds(newDirtyIds)
-      setData(newData)
+      setData(nextDataWithDirty)
 
       // Pass dirty items to parent
-      const dirtyItems = newData.filter(row => newDirtyIds.has(row.id))
+      const dirtyItems = nextDataWithDirty.filter(row =>
+        newDirtyIds.has(row.id)
+      )
       onDirtyChange?.(newDirtyIds.size > 0, dirtyItems)
     },
     [data, dirtyIds, onDirtyChange]
@@ -215,6 +272,21 @@ export function MenuItemsDataGrid({
     },
     [dirtyIds, onDirtyChange]
   )
+
+  const handleManualSave = React.useCallback(async () => {
+    if (dirtyIds.size === 0) return
+
+    const dirtyItems = data.filter(row => dirtyIds.has(row.id))
+    if (!onManualSave) return
+    const result = await onManualSave(dirtyItems)
+    const success = result ?? true
+
+    if (success) {
+      setDirtyIds(new Set())
+      setData(prev => prev.map(row => ({ ...row, _isDirty: undefined })))
+      onDirtyChange?.(false, [])
+    }
+  }, [data, dirtyIds, onDirtyChange, onManualSave])
 
   // Column definitions
   const columns: ColumnDef<MenuItemRow>[] = React.useMemo(
@@ -300,55 +372,32 @@ export function MenuItemsDataGrid({
         header: "Precio",
         size: 120,
         minSize: 100,
-        cell: ({ row }) => {
-          const item = row.original
-          // If multiple variants, show button to open dialog
-          if (item.variantCount > 1) {
-            return (
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground text-sm">
-                  {item.variantCount} variantes
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0"
-                  onClick={e => {
-                    e.stopPropagation()
-                    handleEditVariants(item)
-                  }}
-                >
-                  <Pencil className="h-3 w-3" />
-                </Button>
-              </div>
-            )
-          }
-          // Single variant: render price as number cell via default
-          return null // Let the default number cell render
-        },
         meta: {
           label: "Precio",
           cell: {
-            variant: "number" as const,
+            variant: "price" as const,
             min: 0,
             step: 0.01
           }
         }
       }
     ],
-    [categoryOptions, statusOptions, currencyOptions, handleEditVariants]
+    [categoryOptions, statusOptions, currencyOptions]
   )
 
   const { table, ...dataGridProps } = useDataGrid({
     data,
     columns,
     onDataChange: handleDataChange,
-    getRowId: row => row.id
+    getRowId: row => row.id,
+    meta: {
+      onPriceCellAction: handleEditVariants
+    }
   })
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="border-b px-4 py-2">
+    <div className="flex h-full flex-col px-2">
+      <div className="p-2">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium">
             Editar productos ({data.length})
@@ -373,12 +422,9 @@ export function MenuItemsDataGrid({
             )}
             <Button
               size="sm"
-              variant="default"
+              variant="outline"
               disabled={dirtyIds.size === 0 || isSaving}
-              onClick={() => {
-                const dirtyItems = data.filter(row => dirtyIds.has(row.id))
-                onManualSave?.(dirtyItems)
-              }}
+              onClick={handleManualSave}
             >
               Guardar
             </Button>
@@ -392,11 +438,12 @@ export function MenuItemsDataGrid({
         )}
       >
         <TooltipProvider>
-          <DataGridKeyboardShortcuts />
+          <DataGridKeyboardShortcuts enableSearch />
           <DataGrid
             table={table}
             {...dataGridProps}
             height={undefined}
+            columns={columns}
             stretchColumns
             className="h-full"
           />

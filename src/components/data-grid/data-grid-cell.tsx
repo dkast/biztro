@@ -10,6 +10,7 @@ import {
   LongTextCell,
   MultiSelectCell,
   NumberCell,
+  PriceCell,
   SelectCell,
   ShortTextCell,
   UrlCell
@@ -90,6 +91,9 @@ function DataGridCellImpl<TData>({
       break
     case "file":
       Comp = FileCell
+      break
+    case "price":
+      Comp = PriceCell
       break
 
     default:

@@ -3,7 +3,7 @@
 import * as React from "react"
 import { toast } from "react-hot-toast"
 import type { DataGridCellProps, FileCellData } from "@/types/data-grid"
-import { Check, Upload, X } from "lucide-react"
+import { Check, Pencil, Upload, X } from "lucide-react"
 
 import { DataGridCellWrapper } from "@/components/data-grid/data-grid-cell-wrapper"
 import { Badge } from "@/components/ui/badge"
@@ -430,7 +430,10 @@ export function NumberCell<TData>({
   const containerRef = React.useRef<HTMLDivElement>(null)
 
   const cellOpts = cell.column.columnDef.meta?.cell
-  const numberCellOpts = cellOpts?.variant === "number" ? cellOpts : null
+  const numberCellOpts =
+    cellOpts?.variant === "number" || cellOpts?.variant === "price"
+      ? cellOpts
+      : null
   const min = numberCellOpts?.min
   const max = numberCellOpts?.max
   const step = numberCellOpts?.step
@@ -539,8 +542,158 @@ export function NumberCell<TData>({
           onChange={onChange}
         />
       ) : (
-        <span data-slot="grid-cell-content">{value}</span>
+        <span data-slot="grid-cell-content">
+          {cellOpts?.variant === "price" &&
+          typeof initialValue === "number" &&
+          Number.isFinite(initialValue)
+            ? formatPriceValue(
+                initialValue,
+                (cell.row.original as unknown as { currency?: string | null })
+                  ?.currency ?? "MXN"
+              )
+            : value}
+        </span>
       )}
+    </DataGridCellWrapper>
+  )
+}
+
+function formatPriceValue(value: number, currency: string) {
+  return new Intl.NumberFormat("es-MX", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(value)
+}
+
+function getRangeLabel<TData>(row: TData) {
+  const typedRow = row as unknown as {
+    currency?: string | null
+    variants?: Array<{ price?: number | null }>
+  }
+
+  const prices = Array.isArray(typedRow.variants)
+    ? typedRow.variants
+        .map(variant => variant?.price)
+        .filter(
+          (price): price is number =>
+            typeof price === "number" && Number.isFinite(price)
+        )
+    : []
+
+  if (prices.length === 0) return "—"
+
+  const currency = (typedRow.currency as string | undefined) ?? "MXN"
+  const min = Math.min(...prices)
+  const max = Math.max(...prices)
+
+  if (min === max) return formatPriceValue(min, currency)
+  return `${formatPriceValue(min, currency)} – ${formatPriceValue(max, currency)}`
+}
+
+export function PriceCell<TData>({
+  cell,
+  tableMeta,
+  rowIndex,
+  columnId,
+  rowHeight,
+  isFocused,
+  isEditing,
+  isSelected,
+  isSearchMatch,
+  isActiveSearchMatch,
+  readOnly
+}: DataGridCellProps<TData>) {
+  const originalRow = cell.row.original as TData
+  const typedRow = originalRow as unknown as {
+    currency?: string | null
+    variantCount?: number
+    variants?: Array<{ price?: number | null }>
+  }
+
+  const variantCount = typedRow.variantCount ?? 0
+  const cellReadOnly = readOnly || variantCount > 1
+
+  const openVariantsDialog = React.useCallback(() => {
+    tableMeta?.onPriceCellAction?.(originalRow)
+    tableMeta?.onCellEditingStop?.()
+  }, [tableMeta, originalRow])
+
+  const onKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (variantCount <= 1) return
+
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault()
+        event.stopPropagation()
+        openVariantsDialog()
+      }
+    },
+    [openVariantsDialog, variantCount]
+  )
+
+  const onClick = React.useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (variantCount <= 1) return
+
+      event.preventDefault()
+      event.stopPropagation()
+      openVariantsDialog()
+    },
+    [openVariantsDialog, variantCount]
+  )
+
+  // Single variant: fall back to standard number cell for inline editing
+  if (variantCount <= 1) {
+    return (
+      <NumberCell
+        cell={cell}
+        tableMeta={tableMeta}
+        rowIndex={rowIndex}
+        columnId={columnId}
+        rowHeight={rowHeight}
+        isFocused={isFocused}
+        isEditing={isEditing}
+        isSelected={isSelected}
+        isSearchMatch={isSearchMatch}
+        isActiveSearchMatch={isActiveSearchMatch}
+        readOnly={readOnly}
+      />
+    )
+  }
+
+  const label = getRangeLabel(originalRow)
+  const variantLabel = `${variantCount} variante${variantCount === 1 ? "" : "s"}`
+
+  return (
+    <DataGridCellWrapper<TData>
+      cell={cell}
+      tableMeta={tableMeta}
+      rowIndex={rowIndex}
+      columnId={columnId}
+      rowHeight={rowHeight}
+      isEditing={false}
+      isFocused={isFocused}
+      isSelected={isSelected}
+      isSearchMatch={isSearchMatch}
+      isActiveSearchMatch={isActiveSearchMatch}
+      readOnly={cellReadOnly}
+      onKeyDown={onKeyDown}
+      onClick={onClick}
+      className="px-1.5"
+    >
+      <div className="flex size-full items-center justify-between gap-2">
+        <div className="min-w-0">
+          <div className="truncate text-sm font-medium tabular-nums">
+            {label}
+          </div>
+          <div className="text-muted-foreground truncate text-xs">
+            {variantLabel}
+          </div>
+        </div>
+        <Pencil className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
+      </div>
     </DataGridCellWrapper>
   )
 }
@@ -981,8 +1134,8 @@ export function SelectCell<TData>({
           >
             {displayLabel ? (
               <Badge
-                variant="secondary"
-                className="px-1.5 py-px whitespace-pre-wrap"
+                variant="default"
+                className="rounded-sm px-1.5 py-0.5 whitespace-pre-wrap"
               >
                 <SelectValue />
               </Badge>
@@ -1008,8 +1161,8 @@ export function SelectCell<TData>({
       ) : displayLabel ? (
         <Badge
           data-slot="grid-cell-content"
-          variant="secondary"
-          className="px-1.5 py-px whitespace-pre-wrap"
+          variant="default"
+          className="w-fit rounded-sm px-1.5 py-0.5 whitespace-pre-wrap"
         >
           {displayLabel}
         </Badge>
