@@ -178,7 +178,7 @@ function ContextMenuImpl<TData>({
     onDataUpdate?.(updates)
 
     toast.success(
-      `${updates.length} cell${updates.length !== 1 ? "s" : ""} cleared`
+      `${updates.length} celda${updates.length !== 1 ? "s" : ""} limpiada${updates.length !== 1 ? "s" : ""}`
     )
   }, [propsRef])
 
@@ -202,7 +202,9 @@ function ContextMenuImpl<TData>({
 
     await onRowsDelete?.(rowIndicesArray)
 
-    toast.success(`${rowCount} row${rowCount !== 1 ? "s" : ""} deleted`)
+    toast.success(
+      `${rowCount} fila${rowCount !== 1 ? "s" : ""} eliminada${rowCount !== 1 ? "s" : ""}`
+    )
   }, [propsRef])
 
   return (
@@ -219,15 +221,15 @@ function ContextMenuImpl<TData>({
       >
         <DropdownMenuItem onSelect={onCopy}>
           <CopyIcon />
-          Copy
+          Copiar
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={onCut} disabled={tableMeta?.readOnly}>
           <ScissorsIcon />
-          Cut
+          Cortar
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={onClear} disabled={tableMeta?.readOnly}>
           <EraserIcon />
-          Clear
+          Borrar
         </DropdownMenuItem>
         {onRowsDelete && (
           <>

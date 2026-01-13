@@ -83,11 +83,12 @@ function PasteDialogImpl({
     <Dialog open={pasteDialog.open} onOpenChange={onOpenChange}>
       <DialogContent data-grid-popover="">
         <DialogHeader>
-          <DialogTitle>Do you want to add more rows?</DialogTitle>
+          <DialogTitle>¿Deseas agregar más filas?</DialogTitle>
           <DialogDescription>
-            We need <strong>{pasteDialog.rowsNeeded}</strong> additional row
-            {pasteDialog.rowsNeeded !== 1 ? "s" : ""} to paste everything from
-            your clipboard.
+            Necesitamos <strong>{pasteDialog.rowsNeeded}</strong> fila
+            {pasteDialog.rowsNeeded !== 1 ? "s" : ""} adicional
+            {pasteDialog.rowsNeeded !== 1 ? "s" : ""} para pegar todo desde el
+            portapapeles.
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-3 py-1">
@@ -100,12 +101,12 @@ function PasteDialogImpl({
             />
             <div className="flex flex-col gap-1">
               <span className="text-sm leading-none font-medium">
-                Create new rows
+                Crear nuevas filas
               </span>
               <span className="text-muted-foreground text-sm">
-                Add {pasteDialog.rowsNeeded} new row
-                {pasteDialog.rowsNeeded !== 1 ? "s" : ""} to the table and paste
-                all data
+                Agregar {pasteDialog.rowsNeeded} fila
+                {pasteDialog.rowsNeeded !== 1 ? "s" : ""} a la tabla y pegar
+                todos los datos
               </span>
             </div>
           </label>
@@ -113,19 +114,19 @@ function PasteDialogImpl({
             <RadioItem name="expand-option" value="no-expand" />
             <div className="flex flex-col gap-1">
               <span className="text-sm leading-none font-medium">
-                Keep current rows
+                Mantener filas actuales
               </span>
               <span className="text-muted-foreground text-sm">
-                Paste only what fits in the existing rows
+                Pegar solo lo que quepa en las filas existentes
               </span>
             </div>
           </label>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onCancel}>
-            Cancel
+            Cancelar
           </Button>
-          <Button onClick={onContinue}>Continue</Button>
+          <Button onClick={onContinue}>Continuar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

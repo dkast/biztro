@@ -1,9 +1,22 @@
-## Global Rules
+## Biztro Agent Instructions (Canonical)
 
-- You are an agent - please keep going until the user's query is completely resolved, before ending your turn and yielding back to the user. Only terminate your turn when you are sure that the problem is solved.
-- If you are not sure about file content or codebase structure pertaining to the user's request, use your tools to read files and gather the relevant information: do NOT guess or make up an answer.
-- When making code changes, ensure that you only modify the relevant parts of the codebase to address the user's request. Avoid unnecessary changes.
-- Always validate your code changes by running linters, type checkers, and any relevant tests to ensure code quality and correctness.
+This file is the canonical set of repo rules for any coding agent (including GitHub Copilot).
+Copilot also reads `.github/copilot-instructions.md`, which should stay short and point here.
+
+- Keep going until the user's query is completely resolved; only stop when solved or genuinely blocked.
+- Do not guess file contents or structure; read files before editing.
+- Keep edits minimal and safe; avoid drive-by refactors.
+- Validate changes: lint + typecheck + the closest relevant runtime/test step.
+
+### Precedence
+
+- User instructions > this file.
+- If `.github/copilot-instructions.md` disagrees with this file, prefer this file and update the Copilot file to match.
+
+### Plan Mode
+
+- Make the plan extremely concise. Sacrifice grammar for the sake of concision.
+- At the end of each plan, give me a list of unresolved questions to answer, if any.
 
 ## Project Details
 
@@ -17,34 +30,27 @@
 - next-safe-action - server action handling
 - Zod - schema validation and type inference
 - Tailwind CSS - utility-first styling and responsive design
-- Better-auth - User authorization and authentication
+- better-auth - User authorization and authentication
 - Prisma ORM - Managing database interactions
 - Turso - Edge database solution
 - Bun - JavaScript runtime and package manager
 
 ## Available scripts
 
-- `build` — Runs the Next.js production build (next build).
-- `dev` — Starts the development server with Turbopack (next dev --turbopack).
-- `postinstall` — Generates the Prisma client after package install (prisma generate).
-- `lint` — Runs Next.js/ESLint checks (next lint).
-- `start` — Starts the Next.js production server (next start).
-- `format` — Formats source files with Prettier using the project config (prettier ... --write).
-- `lint:fix` — Runs ESLint with automatic fixes on source files (eslint --fix ...).
-- `typecheck` — Runs TypeScript compiler for type checking (tsc --project ./tsconfig.json).
-- `prepare` — Runs Husky to install git hooks (husky).
-- `prebuild` — Generates the Prisma client before building (prisma generate).
-- `predev` — Generates the Prisma client before starting dev (prisma generate).
-- `prisma:migrate` — Applies Prisma database migrations in deploy mode (prisma migrate deploy).
-- `db:dev` — Starts a local Turso development database using local.db (turso dev --db-file local.db).
-- `email` — Runs the email dev tooling to preview/build emails from src/emails (email dev --dir src/emails).
-- `build:content` — Builds Contentlayer content (contentlayer2 build).
-- `stripe:listen` — Listens for Stripe events and forwards them to the local webhook endpoint (stripe listen --forward-to=localhost:3000/api/webhooks/stripe)
+Use `bun run <script>` unless the user requests otherwise.
+
+- `dev` — Start dev server (Next.js Turbopack).
+- `lint` / `lint:fix` — ESLint.
+- `typecheck` — TypeScript typecheck.
+- `format` — Prettier.
+- `db:dev` — Local Turso DB (`local.db`).
+- `stripe:listen` — Forward Stripe webhooks to local.
+- `build:content` — Contentlayer build.
 
 ## Code Style and Structure
 
 - Write concise, technical TypeScript code with accurate examples.
-- Use functional and declarative programming patterns; avoid classes.
+- Use functional and declarative programming patterns; avoid classes unless the existing code does.
 - Prefer iteration and modularization over code duplication.
 - Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError).
 - Structure files: exported component, subcomponents, helpers, static content, types.
@@ -56,14 +62,14 @@
 
 ## Syntax and Formatting
 
-- Use the "function" keyword for pure functions.
+- Prefer the existing local style; do not mechanically rewrite function styles.
 - Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements.
 - Use declarative JSX.
 
 ## UI and Styling
 
 - Use Shadcn UI, Radix, Lucide Icons and Tailwind for components and styling.
-- Always try to use the components available in "@/componentes/ui" folder.
+- Prefer the existing components in `@/components/ui`.
 - Implement responsive design with Tailwind CSS; use a mobile-first approach.
 - Use React Hook Forms with Zod validation when creating Forms.
 
@@ -86,6 +92,14 @@
   - Favor server components and Next.js SSR.
   - Use only for Web API access in small components.
   - Avoid for data fetching or state management.
+
+## Practical repo guardrails
+
+- Prefer React Server Components; keep `use client` components small and scoped.
+- Use `src/env.mjs` as the source of truth for required env vars.
+- Auth rules/route protection live in `src/proxy.ts`; consult it before changing auth behavior.
+- Prisma schema/migrations live in `prisma/`; if changing schema, create a migration and mention the required command(s).
+- Avoid editing generated output under `src/generated/` unless that is explicitly the task.
 
 ## Commit messages
 

@@ -176,7 +176,7 @@ function DataGridSearchImpl({
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck={false}
-          placeholder="Find in table..."
+          placeholder="Buscar en la tabla..."
           className="h-8 w-64"
           ref={inputRef}
           value={searchQuery}
@@ -185,7 +185,7 @@ function DataGridSearchImpl({
         />
         <div className="flex items-center gap-1">
           <Button
-            aria-label="Previous match"
+            aria-label="Coincidencia anterior"
             variant="ghost"
             size="icon"
             className="size-7"
@@ -196,7 +196,7 @@ function DataGridSearchImpl({
             <ChevronUp />
           </Button>
           <Button
-            aria-label="Next match"
+            aria-label="Siguiente coincidencia"
             variant="ghost"
             size="icon"
             className="size-7"
@@ -207,7 +207,7 @@ function DataGridSearchImpl({
             <ChevronDown />
           </Button>
           <Button
-            aria-label="Close search"
+            aria-label="Cerrar búsqueda"
             variant="ghost"
             size="icon"
             className="size-7"
@@ -223,12 +223,12 @@ function DataGridSearchImpl({
       >
         {searchMatches.length > 0 ? (
           <span>
-            {matchIndex + 1} of {searchMatches.length}
+            {matchIndex + 1} de {searchMatches.length}
           </span>
         ) : searchQuery ? (
-          <span>No results</span>
+          <span>No hay resultados</span>
         ) : (
-          <span>Type to search</span>
+          <span>Escribe para buscar</span>
         )}
       </div>
     </div>

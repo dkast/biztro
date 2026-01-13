@@ -396,7 +396,7 @@ export function LongTextCell<TData>({
         onOpenAutoFocus={onOpenAutoFocus}
       >
         <Textarea
-          placeholder="Enter text..."
+          placeholder="Ingresa texto..."
           className="focus-visible:ring-ring max-h-[300px] min-h-[150px]
             resize-none overflow-y-auto rounded-none border-0 shadow-none
             focus-visible:ring-1"
@@ -827,7 +827,7 @@ export function UrlCell<TData>({
       if (!href) {
         event.preventDefault()
         toast.error(
-          "URL contains a dangerous protocol (javascript:, data:, vbscript:, or file:)"
+          "La URL contiene un protocolo peligroso (javascript:, data:, vbscript:, o file:)"
         )
         return
       }
@@ -1400,12 +1400,12 @@ export function MultiSelectCell<TData>({
                   value={searchValue}
                   onValueChange={setSearchValue}
                   onKeyDown={onInputKeyDown}
-                  placeholder="Search..."
+                  placeholder="Buscar..."
                   className="h-auto flex-1 p-0"
                 />
               </div>
               <CommandList className="max-h-full">
-                <CommandEmpty>No options found.</CommandEmpty>
+                <CommandEmpty>No se encontraron opciones.</CommandEmpty>
                 <CommandGroup
                   className="max-h-[300px] scroll-py-1 overflow-x-hidden
                     overflow-y-auto"
@@ -1443,7 +1443,7 @@ export function MultiSelectCell<TData>({
                         onSelect={clearAll}
                         className="text-muted-foreground justify-center"
                       >
-                        Clear all
+                        Borrar todo
                       </CommandItem>
                     </CommandGroup>
                   </>
@@ -1677,7 +1677,7 @@ export function FileCell<TData>({
   const validateFile = React.useCallback(
     (file: File): string | null => {
       if (maxFileSize && file.size > maxFileSize) {
-        return `File size exceeds ${formatFileSize(maxFileSize)}`
+        return `El tamaño del archivo excede ${formatFileSize(maxFileSize)}`
       }
       if (acceptedTypes) {
         const fileExtension = `.${file.name.split(".").pop()}`
@@ -1692,7 +1692,7 @@ export function FileCell<TData>({
           return file.type === type
         })
         if (!isAccepted) {
-          return "File type not accepted"
+          return "Tipo de archivo no aceptado"
         }
       }
       return null
@@ -2158,7 +2158,7 @@ export function FileCell<TData>({
           >
             <div className="flex flex-col gap-2 p-3">
               <span id={labelId} className="sr-only">
-                File upload
+                Carga de archivos
               </span>
               <div
                 role="region"
@@ -2188,10 +2188,12 @@ export function FileCell<TData>({
                 <Upload className="text-muted-foreground size-8" />
                 <div className="text-center text-sm">
                   <p className="font-medium">
-                    {isDragging ? "Drop files here" : "Drag files here"}
+                    {isDragging
+                      ? "Suelta los archivos aquí"
+                      : "Arrastra archivos aquí"}
                   </p>
                   <p className="text-muted-foreground text-xs">
-                    or click to browse
+                    o haz clic para buscar
                   </p>
                 </div>
                 <p id={descriptionId} className="text-muted-foreground text-xs">
@@ -2199,7 +2201,7 @@ export function FileCell<TData>({
                     ? `Max size: ${formatFileSize(maxFileSize)}${maxFiles ? ` • Max ${maxFiles} files` : ""}`
                     : maxFiles
                       ? `Max ${maxFiles} files`
-                      : "Select files to upload"}
+                      : "Selecciona archivos para subir"}
                 </p>
               </div>
               <input
@@ -2216,7 +2218,8 @@ export function FileCell<TData>({
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <p className="text-muted-foreground text-xs font-medium">
-                      {files.length} {files.length === 1 ? "file" : "files"}
+                      {files.length}{" "}
+                      {files.length === 1 ? "archivo" : "archivos"}
                     </p>
                     <Button
                       type="button"
@@ -2226,7 +2229,7 @@ export function FileCell<TData>({
                       onClick={clearAll}
                       disabled={isPending}
                     >
-                      Clear all
+                      Borrar todo
                     </Button>
                   </div>
                   <div className="max-h-[200px] space-y-1 overflow-y-auto">
@@ -2253,9 +2256,9 @@ export function FileCell<TData>({
                             <p className="truncate text-sm">{file.name}</p>
                             <p className="text-muted-foreground text-xs">
                               {isFileUploading
-                                ? "Uploading..."
+                                ? "Subiendo..."
                                 : isFileDeleting
-                                  ? "Deleting..."
+                                  ? "Eliminando..."
                                   : formatFileSize(file.size)}
                             </p>
                           </div>
@@ -2285,7 +2288,7 @@ export function FileCell<TData>({
             text-sm"
         >
           <Upload className="size-4" />
-          <span>Drop files here</span>
+          <span>Suelta archivos aquí</span>
         </div>
       ) : files.length > 0 ? (
         <div className="flex flex-wrap items-center gap-1 overflow-hidden">

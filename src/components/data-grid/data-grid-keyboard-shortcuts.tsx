@@ -89,175 +89,175 @@ function DataGridKeyboardShortcutsImpl({
   const shortcutGroups: ShortcutGroup[] = React.useMemo(
     () => [
       {
-        title: "Navigation",
+        title: "Navegación",
         shortcuts: [
           {
             keys: ["↑", "↓", "←", "→"],
-            description: "Navigate between cells"
+            description: "Navegar entre celdas"
           },
           {
             keys: ["Tab"],
-            description: "Move to next cell"
+            description: "Ir a la siguiente celda"
           },
           {
             keys: ["Shift", "Tab"],
-            description: "Move to previous cell"
+            description: "Ir a la celda anterior"
           },
           {
             keys: ["Home"],
-            description: "Move to first column"
+            description: "Ir a la primera columna"
           },
           {
             keys: ["End"],
-            description: "Move to last column"
+            description: "Ir a la última columna"
           },
           {
             keys: [modKey, "↑"],
-            description: "Move to first row (same column)"
+            description: "Ir a la primera fila (misma columna)"
           },
           {
             keys: [modKey, "↓"],
-            description: "Move to last row (same column)"
+            description: "Ir a la última fila (misma columna)"
           },
           {
             keys: [modKey, "←"],
-            description: "Move to first column (same row)"
+            description: "Ir a la primera columna (misma fila)"
           },
           {
             keys: [modKey, "→"],
-            description: "Move to last column (same row)"
+            description: "Ir a la última columna (misma fila)"
           },
           {
             keys: [modKey, "Home"],
-            description: "Move to first cell"
+            description: "Ir a la primera celda"
           },
           {
             keys: [modKey, "End"],
-            description: "Move to last cell"
+            description: "Ir a la última celda"
           },
           {
             keys: ["PgUp"],
-            description: "Move up one page"
+            description: "Subir una página"
           },
           {
             keys: ["PgDn"],
-            description: "Move down one page"
+            description: "Bajar una página"
           },
           {
             keys: ["⌥", "↑"],
-            description: "Scroll up one page"
+            description: "Desplazar hacia arriba una página"
           },
           {
             keys: ["⌥", "↓"],
-            description: "Scroll down one page"
+            description: "Desplazar hacia abajo una página"
           },
           {
             keys: ["⌥", "PgUp"],
-            description: "Scroll left one page of columns"
+            description: "Desplazar columnas hacia la izquierda una página"
           },
           {
             keys: ["⌥", "PgDn"],
-            description: "Scroll right one page of columns"
+            description: "Desplazar columnas hacia la derecha una página"
           }
         ]
       },
       {
-        title: "Selection",
+        title: "Selección",
         shortcuts: [
           {
             keys: ["Shift", "↑↓←→"],
-            description: "Extend selection"
+            description: "Extender selección"
           },
           {
             keys: [modKey, "Shift", "↑"],
-            description: "Select to top of table"
+            description: "Seleccionar hasta la parte superior"
           },
           {
             keys: [modKey, "Shift", "↓"],
-            description: "Select to bottom of table"
+            description: "Seleccionar hasta la parte inferior"
           },
           {
             keys: [modKey, "Shift", "←"],
-            description: "Select to first column"
+            description: "Seleccionar hasta la primera columna"
           },
           {
             keys: [modKey, "Shift", "→"],
-            description: "Select to last column"
+            description: "Seleccionar hasta la última columna"
           },
           {
             keys: [modKey, "A"],
-            description: "Select all cells"
+            description: "Seleccionar todas las celdas"
           },
           {
             keys: [modKey, "Click"],
-            description: "Toggle cell selection"
+            description: "Alternar selección de celda"
           },
           {
             keys: ["Shift", "Click"],
-            description: "Select range"
+            description: "Seleccionar rango"
           },
           {
             keys: ["Esc"],
-            description: "Clear selection"
+            description: "Borrar selección"
           }
         ]
       },
       {
-        title: "Editing",
+        title: "Edición",
         shortcuts: [
           {
             keys: ["Enter"],
-            description: "Start editing cell"
+            description: "Comenzar edición de celda"
           },
           {
             keys: ["F2"],
-            description: "Start editing cell"
+            description: "Comenzar edición de celda"
           },
           {
             keys: ["Double Click"],
-            description: "Start editing cell"
+            description: "Comenzar edición de celda"
           },
           ...(enableRowAdd
             ? [
                 {
                   keys: ["Shift", "Enter"],
-                  description: "Insert row below"
+                  description: "Insertar fila abajo"
                 }
               ]
             : []),
           {
             keys: [modKey, "C"],
-            description: "Copy selected cells"
+            description: "Copiar celdas seleccionadas"
           },
           {
             keys: [modKey, "X"],
-            description: "Cut selected cells"
+            description: "Cortar celdas seleccionadas"
           },
           ...(enablePaste
             ? [
                 {
                   keys: [modKey, "V"],
-                  description: "Paste cells"
+                  description: "Pegar celdas"
                 }
               ]
             : []),
           {
             keys: ["Delete"],
-            description: "Clear selected cells"
+            description: "Borrar celdas seleccionadas"
           },
           {
             keys: ["Backspace"],
-            description: "Clear selected cells"
+            description: "Borrar celdas seleccionadas"
           },
           ...(enableRowsDelete
             ? [
                 {
                   keys: [modKey, "Backspace"],
-                  description: "Delete selected rows"
+                  description: "Eliminar filas seleccionadas"
                 },
                 {
                   keys: [modKey, "Delete"],
-                  description: "Delete selected rows"
+                  description: "Eliminar filas seleccionadas"
                 }
               ]
             : []),
@@ -265,11 +265,11 @@ function DataGridKeyboardShortcutsImpl({
             ? [
                 {
                   keys: [modKey, "Z"],
-                  description: "Undo last action"
+                  description: "Deshacer la última acción"
                 },
                 {
                   keys: [modKey, "Shift", "Z"],
-                  description: "Redo last action"
+                  description: "Rehacer la última acción"
                 }
               ]
             : [])
@@ -278,59 +278,59 @@ function DataGridKeyboardShortcutsImpl({
       ...(enableSearch
         ? [
             {
-              title: "Search",
+              title: "Búsqueda",
               shortcuts: [
                 {
                   keys: [modKey, "F"],
-                  description: "Open search"
+                  description: "Abrir búsqueda"
                 },
                 {
                   keys: ["Enter"],
-                  description: "Next match"
+                  description: "Siguiente coincidencia"
                 },
                 {
                   keys: ["Shift", "Enter"],
-                  description: "Previous match"
+                  description: "Coincidencia anterior"
                 },
                 {
                   keys: ["Esc"],
-                  description: "Close search"
+                  description: "Cerrar búsqueda"
                 }
               ]
             }
           ]
         : []),
       {
-        title: "Filtering",
+        title: "Filtrado",
         shortcuts: [
           {
             keys: [modKey, "Shift", "F"],
-            description: "Toggle the filter menu"
+            description: "Alternar el menú de filtros"
           },
           {
             keys: ["Backspace"],
-            description: "Remove filter (when focused)"
+            description: "Eliminar filtro (cuando está enfocado)"
           },
           {
             keys: ["Delete"],
-            description: "Remove filter (when focused)"
+            description: "Eliminar filtro (cuando está enfocado)"
           }
         ]
       },
       {
-        title: "Sorting",
+        title: "Ordenamiento",
         shortcuts: [
           {
             keys: [modKey, "Shift", "S"],
-            description: "Toggle the sort menu"
+            description: "Alternar el menú de ordenamiento"
           },
           {
             keys: ["Backspace"],
-            description: "Remove sort (when focused)"
+            description: "Eliminar orden (cuando está enfocado)"
           },
           {
             keys: ["Delete"],
-            description: "Remove sort (when focused)"
+            description: "Eliminar orden (cuando está enfocado)"
           }
         ]
       },
@@ -339,7 +339,7 @@ function DataGridKeyboardShortcutsImpl({
         shortcuts: [
           {
             keys: [modKey, "/"],
-            description: "Show keyboard shortcuts"
+            description: "Mostrar atajos de teclado"
           }
         ]
       }
@@ -398,10 +398,10 @@ function DataGridKeyboardShortcutsImpl({
           </Button>
         </DialogClose>
         <DialogHeader className="px-6">
-          <DialogTitle>Keyboard shortcuts</DialogTitle>
+          <DialogTitle>Atajos de teclado</DialogTitle>
           <DialogDescription className="sr-only">
-            Use these keyboard shortcuts to navigate and interact with the data
-            grid more efficiently.
+            Usa estos atajos de teclado para navegar e interactuar con la tabla
+            de datos de forma más eficiente.
           </DialogDescription>
         </DialogHeader>
         <div className="px-6">
@@ -412,7 +412,7 @@ function DataGridKeyboardShortcutsImpl({
             />
             <Input
               ref={inputRef}
-              placeholder="Search shortcuts..."
+              placeholder="Buscar atajos..."
               className="h-8 ps-8"
               value={input}
               onChange={onInputChange}
@@ -437,10 +437,10 @@ function DataGridKeyboardShortcutsImpl({
               </div>
               <div className="flex flex-col gap-1">
                 <div className="text-lg font-medium tracking-tight">
-                  No shortcuts found
+                  No se encontraron atajos
                 </div>
                 <p className="text-muted-foreground text-sm">
-                  Try searching for a different term.
+                  Intenta buscar otro término.
                 </p>
               </div>
             </div>

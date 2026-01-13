@@ -107,7 +107,7 @@ export function DataGrid<TData>({
       <DataGridPasteDialog tableMeta={tableMeta} pasteDialog={pasteDialog} />
       <div
         role="grid"
-        aria-label="Data grid"
+        aria-label="Tabla de datos"
         aria-rowcount={rows.length + (onRowAddProp ? 1 : 0)}
         aria-colcount={columns.length}
         data-slot="grid"
@@ -276,7 +276,7 @@ export function DataGrid<TData>({
                     items-center gap-2 px-3"
                 >
                   <Plus className="size-3.5" />
-                  <span className="text-sm">Add row</span>
+                  <span className="text-sm">Agregar fila</span>
                 </div>
               </div>
             </div>
