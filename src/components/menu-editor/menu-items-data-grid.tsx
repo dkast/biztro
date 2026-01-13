@@ -3,11 +3,14 @@
 import * as React from "react"
 import type { CellSelectOption } from "@/types/data-grid"
 import type { ColumnDef } from "@tanstack/react-table"
+import { Sheet } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 
+import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
-import { DataGridSearch } from "@/components/data-grid/data-grid-search"
 import { Button } from "@/components/ui/button"
+import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useDataGrid } from "@/hooks/use-data-grid"
 import { cn } from "@/lib/utils"
@@ -288,6 +291,16 @@ export function MenuItemsDataGrid({
     }
   }, [data, dirtyIds, onDirtyChange, onManualSave])
 
+  const handleDiscardChanges = React.useCallback(() => {
+    if (dirtyIds.size === 0) return
+
+    setData(initialData)
+    setDirtyIds(new Set())
+    setSelectedItemForVariants(null)
+    setVariantsDialogOpen(false)
+    onDirtyChange?.(false, [])
+  }, [dirtyIds, initialData, onDirtyChange])
+
   // Column definitions
   const columns: ColumnDef<MenuItemRow>[] = React.useMemo(
     () => [
@@ -392,16 +405,22 @@ export function MenuItemsDataGrid({
     getRowId: row => row.id,
     meta: {
       onPriceCellAction: handleEditVariants
-    }
+    },
+    enableSearch: true
   })
+
+  const isMac =
+    typeof navigator !== "undefined"
+      ? /Mac|iPhone|iPad|iPod/.test(navigator.userAgent)
+      : false
+
+  const modKey = isMac ? "⌘" : "Ctrl"
 
   return (
     <div className="flex h-full flex-col px-2">
-      <div className="p-2">
+      <div className="py-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium">
-            Editar productos ({data.length})
-          </h3>
+          <PageSubtitle Icon={Sheet} title="Editar Productos del menú" />
           <div className="flex items-center gap-2">
             {isSaving && (
               <span
@@ -415,19 +434,38 @@ export function MenuItemsDataGrid({
                 Guardando...
               </span>
             )}
-            {!isSaving && dirtyIds.size > 0 && (
-              <span className="text-muted-foreground text-xs">
-                {dirtyIds.size} cambio{dirtyIds.size > 1 ? "s" : ""} sin guardar
-              </span>
-            )}
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={dirtyIds.size === 0 || isSaving}
-              onClick={handleManualSave}
-            >
-              Guardar
-            </Button>
+            <AnimatePresence initial={false} mode="wait">
+              {!isSaving && dirtyIds.size > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="flex items-center gap-2"
+                >
+                  <span className="text-muted-foreground text-xs">
+                    {dirtyIds.size} cambio{dirtyIds.size > 1 ? "s" : ""} sin
+                    guardar
+                  </span>
+
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={dirtyIds.size === 0 || isSaving}
+                    onClick={handleDiscardChanges}
+                  >
+                    Descartar cambios
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={dirtyIds.size === 0 || isSaving}
+                    onClick={handleManualSave}
+                  >
+                    Guardar
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
@@ -445,9 +483,20 @@ export function MenuItemsDataGrid({
             height={undefined}
             columns={columns}
             stretchColumns
-            className="h-full"
           />
         </TooltipProvider>
+        <div className="p-1">
+          <span className="text-muted-foreground text-xs">
+            Presiona <Kbd>Enter</Kbd> para iniciar cambios en una celda,{" "}
+            <Kbd>Esc</Kbd> para cancelar la edición.
+            <br />
+            Presiona{" "}
+            <KbdGroup>
+              <Kbd>{modKey}</Kbd> + <Kbd>/</Kbd>
+            </KbdGroup>{" "}
+            para mostrar la lista completa de comandos.
+          </span>
+        </div>
       </div>
 
       {/* Variants Edit Dialog */}
