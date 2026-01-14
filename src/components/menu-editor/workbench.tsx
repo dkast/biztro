@@ -784,8 +784,12 @@ export default function Workbench({
                 />
               </ResizablePanel>
             </Activity>
-            <ResizableHandle />
-            <ResizablePanel id="canvas">
+            <ResizableHandle withHandle={isDataGridView} />
+            <ResizablePanel
+              id="canvas"
+              minSize={320}
+              collapsible={isDataGridView}
+            >
               <div
                 id="editor-canvas"
                 className="no-scrollbar bg-secondary relative h-full w-full
