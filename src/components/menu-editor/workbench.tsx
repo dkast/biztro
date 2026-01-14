@@ -787,7 +787,7 @@ export default function Workbench({
             <ResizableHandle withHandle={isDataGridView} />
             <ResizablePanel
               id="canvas"
-              minSize={320}
+              minSize={340}
               collapsible={isDataGridView}
             >
               <div

@@ -417,10 +417,10 @@ export function MenuItemsDataGrid({
   const modKey = isMac ? "⌘" : "Ctrl"
 
   return (
-    <div className="flex h-full flex-col px-2">
+    <div className="flex h-full flex-col px-3">
       <div className="py-2">
         <div className="flex items-center justify-between">
-          <PageSubtitle Icon={Sheet} title="Editar Productos del menú" />
+          <h2 className="px-2 py-3">Editar Productos del menú</h2>
           <div className="flex items-center gap-2">
             {isSaving && (
               <span
@@ -448,7 +448,7 @@ export function MenuItemsDataGrid({
                   </span>
 
                   <Button
-                    size="sm"
+                    size="xs"
                     variant="ghost"
                     disabled={dirtyIds.size === 0 || isSaving}
                     onClick={handleDiscardChanges}
@@ -456,7 +456,7 @@ export function MenuItemsDataGrid({
                     Descartar cambios
                   </Button>
                   <Button
-                    size="sm"
+                    size="xs"
                     variant="outline"
                     disabled={dirtyIds.size === 0 || isSaving}
                     onClick={handleManualSave}
@@ -485,7 +485,7 @@ export function MenuItemsDataGrid({
             stretchColumns
           />
         </TooltipProvider>
-        <div className="p-1">
+        <div className="px-2 py-1">
           <span className="text-muted-foreground text-xs">
             Presiona <Kbd>Enter</Kbd> para iniciar cambios en una celda,{" "}
             <Kbd>Esc</Kbd> para cancelar la edición.
