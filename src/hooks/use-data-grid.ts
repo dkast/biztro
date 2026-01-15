@@ -43,6 +43,7 @@ import {
   parseCellKey,
   scrollCellIntoView
 } from "@/lib/data-grid"
+import { getFilterFn } from "@/lib/data-grid-filters"
 
 const DEFAULT_ROW_HEIGHT = "short"
 const OVERSCAN = 6
@@ -2064,14 +2065,17 @@ function useDataGrid<TData>({
     [store]
   )
 
+  const dataGridFilterFn = React.useMemo(() => getFilterFn<TData>(), [])
+
   const defaultColumn: Partial<ColumnDef<TData>> = React.useMemo(
     () => ({
       // Note: cell is rendered directly in DataGridRow to bypass flexRender's
       // unstable cell.getContext() (see TanStack Table issue #4794)
       minSize: MIN_COLUMN_SIZE,
-      maxSize: MAX_COLUMN_SIZE
+      maxSize: MAX_COLUMN_SIZE,
+      filterFn: dataGridFilterFn
     }),
-    []
+    [dataGridFilterFn]
   )
 
   const tableMeta = React.useMemo<TableMeta<TData>>(() => {

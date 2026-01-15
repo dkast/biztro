@@ -6,6 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { AnimatePresence, motion } from "motion/react"
 
 import { DataGrid } from "@/components/data-grid/data-grid"
+import { DataGridFilterMenu } from "@/components/data-grid/data-grid-filter-menu"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
 import { DataGridViewMenu } from "@/components/data-grid/data-grid-view-menu"
 import { Button } from "@/components/ui/button"
@@ -456,7 +457,7 @@ export function MenuItemsDataGrid({
                   </Button>
                   <Button
                     size="xs"
-                    variant="outline"
+                    variant="secondary"
                     disabled={dirtyIds.size === 0 || isSaving}
                     onClick={handleManualSave}
                   >
@@ -465,6 +466,7 @@ export function MenuItemsDataGrid({
                 </motion.div>
               )}
             </AnimatePresence>
+            <DataGridFilterMenu table={table} />
             <DataGridViewMenu table={table} />
           </div>
         </div>
