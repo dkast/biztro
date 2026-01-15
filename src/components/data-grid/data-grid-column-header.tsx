@@ -158,7 +158,7 @@ export function DataGridColumnHeader<TData, TValue>({
                 onClick={() => onSortingChange("asc")}
               >
                 <ChevronUpIcon />
-                Sort asc
+                Orden asc
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 className="[&_svg]:text-muted-foreground relative ltr:pr-8
@@ -170,12 +170,12 @@ export function DataGridColumnHeader<TData, TValue>({
                 onClick={() => onSortingChange("desc")}
               >
                 <ChevronDownIcon />
-                Sort desc
+                Orden desc
               </DropdownMenuCheckboxItem>
               {column.getIsSorted() && (
                 <DropdownMenuItem onClick={onSortRemove}>
                   <XIcon />
-                  Remove sort
+                  Eliminar orden
                 </DropdownMenuItem>
               )}
             </>
@@ -190,7 +190,7 @@ export function DataGridColumnHeader<TData, TValue>({
                   onClick={onUnpin}
                 >
                   <PinOffIcon />
-                  Unpin from left
+                  Desanclar de la izquierda
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem
@@ -198,7 +198,7 @@ export function DataGridColumnHeader<TData, TValue>({
                   onClick={onLeftPin}
                 >
                   <PinIcon />
-                  Pin to left
+                  Anclar a la izquierda
                 </DropdownMenuItem>
               )}
               {isPinnedRight ? (
@@ -207,7 +207,7 @@ export function DataGridColumnHeader<TData, TValue>({
                   onClick={onUnpin}
                 >
                   <PinOffIcon />
-                  Unpin from right
+                  Desanclar de la derecha
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem
@@ -215,7 +215,7 @@ export function DataGridColumnHeader<TData, TValue>({
                   onClick={onRightPin}
                 >
                   <PinIcon />
-                  Pin to right
+                  Anclar a la derecha
                 </DropdownMenuItem>
               )}
             </>
@@ -228,7 +228,7 @@ export function DataGridColumnHeader<TData, TValue>({
                 onClick={() => column.toggleVisibility(false)}
               >
                 <EyeOffIcon />
-                Hide column
+                Ocultar columna
               </DropdownMenuItem>
             </>
           )}

@@ -3,12 +3,11 @@
 import * as React from "react"
 import type { CellSelectOption } from "@/types/data-grid"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Sheet } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
-import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
+import { DataGridViewMenu } from "@/components/data-grid/data-grid-view-menu"
 import { Button } from "@/components/ui/button"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { TooltipProvider } from "@/components/ui/tooltip"
@@ -466,6 +465,7 @@ export function MenuItemsDataGrid({
                 </motion.div>
               )}
             </AnimatePresence>
+            <DataGridViewMenu table={table} />
           </div>
         </div>
       </div>
