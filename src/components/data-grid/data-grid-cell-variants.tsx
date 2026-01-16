@@ -664,7 +664,7 @@ export function PriceCell<TData>({
   }
 
   const label = getRangeLabel(originalRow)
-  const variantLabel = `${variantCount} variante${variantCount === 1 ? "" : "s"}`
+  const variantLabel = `${variantCount} variantes`
 
   return (
     <DataGridCellWrapper<TData>

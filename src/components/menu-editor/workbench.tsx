@@ -125,8 +125,12 @@ type UpdateItemOptimisticInput = {
   }[]
 }
 
+// Normalize categoryId values from form inputs: empty string, null, and undefined
+// are all treated as "no category" and stored as null to match a nullable FK in the DB.
 function normalizeCategoryId(categoryId: string | null | undefined) {
-  if (!categoryId || categoryId === "") return null
+  if (categoryId === undefined || categoryId === null || categoryId === "") {
+    return null
+  }
   return categoryId
 }
 
@@ -419,6 +423,8 @@ export default function Workbench({
 
         // Sync the canvas immediately using optimistic data, then reconcile from the server.
         setSyncEditorTrigger(prev => prev + 1)
+        // Intentionally not calling router.refresh() here to avoid a full page reload after a successful batch save.
+        // Re-enable router.refresh() below if server-rendered menu data must be refreshed immediately after saving.
         // router.refresh()
         return true
       }
