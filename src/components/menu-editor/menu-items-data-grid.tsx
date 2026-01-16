@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useDataGrid } from "@/hooks/use-data-grid"
+import { Allergens } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import type { MenuItemRow, MenuItemsDataGridProps } from "./types"
 import { VariantsEditDialog } from "./variants-edit-dialog"
@@ -28,6 +29,12 @@ function flattenMenuItems(
   featuredItems: MenuItemsDataGridProps["featuredItems"],
   organizationId: string
 ): MenuItemRow[] {
+  const parseAllergens = (value?: string | null) =>
+    (value ?? "")
+      .split(",")
+      .map(entry => entry.trim())
+      .filter(Boolean)
+
   const itemMap = new Map<string, MenuItemRow>()
 
   // Helper to add item to map (deduplicates by id)
@@ -40,6 +47,7 @@ function flattenMenuItems(
       status: string
       featured: boolean
       currency: string | null
+      allergens?: string | null
       organizationId: string
       variants: {
         id: string
@@ -55,6 +63,7 @@ function flattenMenuItems(
       id: item.id,
       name: item.name,
       description: item.description,
+      allergens: parseAllergens(item.allergens),
       categoryId: item.categoryId ?? null,
       categoryName,
       status: item.status as "ACTIVE" | "DRAFT" | "ARCHIVED",
@@ -90,6 +99,9 @@ function flattenMenuItems(
       featured: existing.featured || nextRow.featured,
       // Keep currency if missing on existing.
       currency: existing.currency ?? nextRow.currency,
+      // Prefer the most complete allergens list.
+      allergens:
+        existing.allergens.length > 0 ? existing.allergens : nextRow.allergens,
       // Prefer the more complete variants payload.
       variants: shouldTakeVariants ? nextRow.variants : existing.variants,
       variantCount: shouldTakeVariants
@@ -180,6 +192,15 @@ export function MenuItemsDataGrid({
       { label: "MXN", value: "MXN" },
       { label: "USD", value: "USD" }
     ],
+    []
+  )
+
+  const allergenOptions: CellSelectOption[] = React.useMemo(
+    () =>
+      Allergens.map(allergen => ({
+        label: allergen.label,
+        value: allergen.value
+      })),
     []
   )
 
@@ -327,6 +348,20 @@ export function MenuItemsDataGrid({
         }
       },
       {
+        id: "allergens",
+        accessorKey: "allergens",
+        header: "Alérgenos",
+        size: 200,
+        minSize: 140,
+        meta: {
+          label: "Alérgenos",
+          cell: {
+            variant: "multi-select" as const,
+            options: allergenOptions
+          }
+        }
+      },
+      {
         id: "categoryId",
         accessorKey: "categoryId",
         header: "Categoría",
@@ -395,7 +430,7 @@ export function MenuItemsDataGrid({
         }
       }
     ],
-    [categoryOptions, statusOptions, currencyOptions]
+    [categoryOptions, statusOptions, currencyOptions, allergenOptions]
   )
 
   const { table, ...dataGridProps } = useDataGrid({
@@ -422,18 +457,23 @@ export function MenuItemsDataGrid({
         <div className="flex items-center justify-between">
           <h2 className="px-2 py-3">Editar Productos del menú</h2>
           <div className="flex items-center gap-2">
-            {isSaving && (
-              <span
-                className="text-muted-foreground flex items-center gap-1
-                  text-xs"
-              >
-                <span
-                  className="h-3 w-3 animate-spin rounded-full border-2
-                    border-current border-t-transparent"
-                />
-                Guardando...
-              </span>
-            )}
+            <AnimatePresence initial={false} mode="wait">
+              {isSaving && (
+                <motion.span
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  className="text-muted-foreground flex items-center gap-1
+                    text-xs"
+                >
+                  <span
+                    className="h-3 w-3 animate-spin rounded-full border-2
+                      border-current border-t-transparent"
+                  />
+                  Guardando...
+                </motion.span>
+              )}
+            </AnimatePresence>
             <AnimatePresence initial={false} mode="wait">
               {!isSaving && dirtyIds.size > 0 && (
                 <motion.div

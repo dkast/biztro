@@ -6,7 +6,7 @@ Copilot also reads `.github/copilot-instructions.md`, which should stay short an
 - Keep going until the user's query is completely resolved; only stop when solved or genuinely blocked.
 - Do not guess file contents or structure; read files before editing.
 - Keep edits minimal and safe; avoid drive-by refactors.
-- Validate changes: lint + typecheck + the closest relevant runtime/test step.
+- Always validate your code changes by running linters, type checkers, and any relevant tests to ensure code quality and correctness
 
 ### Precedence
 

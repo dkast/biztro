@@ -11,6 +11,7 @@ export interface MenuItemRow {
   id: string
   name: string
   description: string | null
+  allergens: string[]
   categoryId: string | null
   categoryName: string | null
   status: "ACTIVE" | "DRAFT" | "ARCHIVED"

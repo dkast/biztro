@@ -99,6 +99,7 @@ type MenuItemBroad = Record<string, unknown> & {
   id: string
   name: string | null
   description: string | null
+  allergens?: string | null
   status: string
   categoryId: string | null
   featured: boolean
@@ -110,6 +111,7 @@ type UpdateItemOptimisticInput = {
   id?: string
   name: string
   description?: string
+  allergens?: string
   status: string
   categoryId?: string | null
   featured?: boolean
@@ -156,8 +158,6 @@ function applyOptimisticItemUpdate(
   const nextFeatured = Boolean(input.featured)
   const nextStatus = input.status
 
-  const nextDescription = input.description ?? ""
-
   // Find the existing item first (avoid relying on callback side-effects for TS control flow).
   let existingItem: MenuItemBroad | null = null
   for (const category of categories) {
@@ -197,6 +197,9 @@ function applyOptimisticItemUpdate(
     return state
   }
 
+  const nextDescription = input.description ?? ""
+  const nextAllergens = input.allergens ?? existingItem.allergens ?? ""
+
   // If item becomes non-ACTIVE, it should disappear from these lists (server queries filter by ACTIVE).
   if (nextStatus !== "ACTIVE") {
     return {
@@ -224,6 +227,7 @@ function applyOptimisticItemUpdate(
     ...existingItem,
     name: input.name,
     description: nextDescription,
+    allergens: nextAllergens,
     status: nextStatus,
     categoryId: nextCategoryId,
     featured: nextFeatured,
@@ -348,10 +352,15 @@ export default function Workbench({
 
       for (const item of items) {
         try {
+          const allergensValue = (item.allergens ?? [])
+            .map(entry => entry.trim())
+            .filter(Boolean)
+            .join(",")
           const result = await executeUpdateItemOptimistic({
             id: item.id,
             name: item.name,
             description: item.description ?? "",
+            allergens: allergensValue,
             status: item.status,
             categoryId: item.categoryId ?? "",
             organizationId: item.organizationId,
