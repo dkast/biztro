@@ -135,6 +135,33 @@ function flattenMenuItems(
   )
 }
 
+// Runtime assertion helpers to ensure the invariant that single-variant
+// items always have their `price` equal to `variants[0].price`. In
+// development this throws to surface bugs early, and in production it logs
+// an error.
+function assertSingleVariantPriceSyncedRow(row: MenuItemRow) {
+  if (row.variantCount === 1) {
+    const v0 = row.variants[0]
+    if (v0 && row.price !== v0.price) {
+      const msg = `Invariant violation: single-variant item ${row.id} price (${row.price}) !== variants[0].price (${v0.price})`
+      if (
+        typeof process !== "undefined" &&
+        process.env?.NODE_ENV === "development"
+      ) {
+        throw new Error(msg)
+      } else {
+        // Don't throw in production to avoid interrupting user flows, but log.
+         
+        console.error(msg)
+      }
+    }
+  }
+}
+
+function assertSingleVariantPrices(rows: MenuItemRow[]) {
+  for (const r of rows) assertSingleVariantPriceSyncedRow(r)
+}
+
 export function MenuItemsDataGrid({
   categories,
   soloItems,
@@ -145,11 +172,16 @@ export function MenuItemsDataGrid({
   onManualSave
 }: MenuItemsDataGridProps) {
   // Flatten items into grid rows
-  const initialData = React.useMemo(
-    () =>
-      flattenMenuItems(categories, soloItems, featuredItems, organizationId),
-    [categories, soloItems, featuredItems, organizationId]
-  )
+  const initialData = React.useMemo(() => {
+    const rows = flattenMenuItems(
+      categories,
+      soloItems,
+      featuredItems,
+      organizationId
+    )
+    assertSingleVariantPrices(rows)
+    return rows
+  }, [categories, soloItems, featuredItems, organizationId])
 
   // Local state for grid data with dirty tracking
   const [data, setData] = React.useState<MenuItemRow[]>(initialData)

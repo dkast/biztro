@@ -451,6 +451,29 @@ export function areLocationsInSync(
   )
 }
 
+/**
+ * Synchronize the editor's nodes with the current menu state.
+ *
+ * This function decodes serialized editor nodes stored on the menu (menu.serialData)
+ * and updates the editor via the provided actions. It will:
+ * - Update CategoryBlock nodes with the corresponding category data from `categories`,
+ *   or delete the node if the category no longer exists.
+ * - Update HeaderBlock nodes with the provided `organization` and `location`.
+ * - Update FeaturedBlock nodes with the provided `featuredItems`.
+ * - Update ItemBlock nodes with the corresponding item from `soloItems`,
+ *   or delete the node if the item no longer exists.
+ *
+ * @param {Object} params - Parameters to control the sync operation.
+ * @param {EditorActions} params.actions - Editor actions (setProp, delete) used to modify nodes.
+ * @param {Awaited<ReturnType<typeof getMenuById>>} params.menu - Menu record that contains serialData to decode.
+ * @param {Awaited<ReturnType<typeof getDefaultLocation>> | null} params.location - Default location used to update HeaderBlock.
+ * @param {Awaited<ReturnType<typeof getCategoriesWithItems>>} params.categories - Current categories and their items.
+ * @param {Awaited<ReturnType<typeof getFeaturedItems>>} params.featuredItems - Current featured items.
+ * @param {Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>} params.soloItems - Items without a category.
+ *
+ * @returns {boolean} True when nodes were decoded and the editor was synchronized; false when
+ * there is no menu.serialData or decoding fails.
+ */
 export function syncEditorWithMenuState({
   actions,
   menu,
