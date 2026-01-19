@@ -3,6 +3,7 @@
 import * as React from "react"
 import type { CellSelectOption } from "@/types/data-grid"
 import type { ColumnDef } from "@tanstack/react-table"
+import { Loader } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
 import { DataGrid } from "@/components/data-grid/data-grid"
@@ -151,7 +152,7 @@ function assertSingleVariantPriceSyncedRow(row: MenuItemRow) {
         throw new Error(msg)
       } else {
         // Don't throw in production to avoid interrupting user flows, but log.
-         
+
         console.error(msg)
       }
     }
@@ -487,25 +488,24 @@ export function MenuItemsDataGrid({
     <div className="flex h-full flex-col px-3">
       <div className="py-2">
         <div className="flex items-center justify-between">
-          <h2 className="px-2 py-3">Editar Productos del menú</h2>
-          <div className="flex items-center gap-2">
-            <AnimatePresence initial={false} mode="wait">
+          <div className="flex items-center gap-3">
+            <h2 className="px-2 py-3">Editar Productos del menú</h2>
+            <AnimatePresence initial={true} mode="wait">
               {isSaving && (
                 <motion.span
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
+                  initial={{ opacity: 0, x: -6 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -6 }}
                   className="text-muted-foreground flex items-center gap-1
                     text-xs"
                 >
-                  <span
-                    className="h-3 w-3 animate-spin rounded-full border-2
-                      border-current border-t-transparent"
-                  />
+                  <Loader className="size-4 animate-spin" />
                   Guardando...
                 </motion.span>
               )}
             </AnimatePresence>
+          </div>
+          <div className="flex items-center gap-2">
             <AnimatePresence initial={false} mode="wait">
               {!isSaving && dirtyIds.size > 0 && (
                 <motion.div

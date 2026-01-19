@@ -133,12 +133,17 @@ export default function SyncStatusBanner({
     <>
       {syncReq && (
         <div
-          className="z-50 bg-indigo-100 px-4 py-2 sm:m-2 sm:rounded-lg
-            dark:bg-indigo-900/50"
+          className="@container z-50 bg-indigo-100 px-4 py-2 sm:m-2
+            sm:rounded-lg dark:bg-indigo-900/50"
         >
-          <div className="flex flex-col justify-between gap-2 sm:flex-row">
+          <div
+            className="flex flex-col items-center justify-between gap-2
+              sm:flex-row"
+          >
             <div className="flex items-center gap-x-3">
-              <RefreshCcw className="size-8 text-indigo-400 sm:size-4" />
+              <RefreshCcw
+                className="hidden size-8 text-indigo-400 sm:size-4 @md:block"
+              />
               <span className="text-sm text-indigo-700 dark:text-indigo-300">
                 La información del negocio o productos ha cambiado, sincroniza
                 para aplicar los cambios
@@ -147,7 +152,7 @@ export default function SyncStatusBanner({
             <Button
               variant={isMobile ? "outline" : "link"}
               size="xs"
-              className="text-indigo-700 dark:text-indigo-300"
+              className="w-full text-indigo-700 @md:w-auto dark:text-indigo-300"
               onClick={() => syncState()}
             >
               Sincronizar

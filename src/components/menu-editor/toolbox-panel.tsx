@@ -154,8 +154,8 @@ export default function ToolboxPanel({
               itemFontFamily={selectedFontTheme.fontDisplay}
               priceFontFamily={selectedFontTheme.fontText}
               descriptionFontFamily={selectedFontTheme.fontText}
-              // categoryColor={hexToRgba(selectedColorTheme.accentColor)}
-              categoryHeadingBgColor={selectedColorTheme.brandColor}
+              categoryColor={hexToRgba(selectedColorTheme.accentColor)}
+              // categoryHeadingBgColor={selectedColorTheme.brandColor}
               itemColor={hexToRgba(selectedColorTheme.textColor)}
               priceColor={hexToRgba(selectedColorTheme.accentColor)}
               descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
