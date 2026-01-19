@@ -130,6 +130,7 @@ export default function SyncStatusBanner({
   }
 
   return (
+    /* skipcq: JS-0424 */
     <>
       {syncReq && (
         <div
