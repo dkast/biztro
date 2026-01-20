@@ -163,6 +163,57 @@ function assertSingleVariantPrices(rows: MenuItemRow[]) {
   for (const r of rows) assertSingleVariantPriceSyncedRow(r)
 }
 
+function areMenuItemRowsEqual(a: MenuItemRow[], b: MenuItemRow[]) {
+  if (a === b) return true
+  if (a.length !== b.length) return false
+
+  for (let i = 0; i < a.length; i++) {
+    const rowA = a[i]
+    const rowB = b[i]
+    if (!rowA || !rowB) return false
+
+    if (
+      rowA.id !== rowB.id ||
+      rowA.name !== rowB.name ||
+      rowA.description !== rowB.description ||
+      rowA.categoryId !== rowB.categoryId ||
+      rowA.categoryName !== rowB.categoryName ||
+      rowA.status !== rowB.status ||
+      rowA.featured !== rowB.featured ||
+      rowA.currency !== rowB.currency ||
+      rowA.price !== rowB.price ||
+      rowA.variantCount !== rowB.variantCount ||
+      rowA.organizationId !== rowB.organizationId
+    ) {
+      return false
+    }
+
+    if (rowA.allergens.length !== rowB.allergens.length) return false
+    for (let j = 0; j < rowA.allergens.length; j++) {
+      if (rowA.allergens[j] !== rowB.allergens[j]) return false
+    }
+
+    if (rowA.variants.length !== rowB.variants.length) return false
+    for (let j = 0; j < rowA.variants.length; j++) {
+      const variantA = rowA.variants[j]
+      const variantB = rowB.variants[j]
+      if (
+        !variantA ||
+        !variantB ||
+        variantA.id !== variantB.id ||
+        variantA.name !== variantB.name ||
+        variantA.price !== variantB.price ||
+        variantA.description !== variantB.description ||
+        variantA.menuItemId !== variantB.menuItemId
+      ) {
+        return false
+      }
+    }
+  }
+
+  return true
+}
+
 export function MenuItemsDataGrid({
   categories,
   soloItems,
@@ -172,7 +223,7 @@ export function MenuItemsDataGrid({
   isSaving,
   onManualSave
 }: MenuItemsDataGridProps) {
-  // Flatten items into grid rows
+  // Flatten items into grid rows - this is the source of truth from props
   const initialData = React.useMemo(() => {
     const rows = flattenMenuItems(
       categories,
@@ -184,16 +235,38 @@ export function MenuItemsDataGrid({
     return rows
   }, [categories, soloItems, featuredItems, organizationId])
 
-  // Local state for grid data with dirty tracking
-  const [data, setData] = React.useState<MenuItemRow[]>(initialData)
-  const [dirtyIds, setDirtyIds] = React.useState<Set<string>>(new Set())
+  // Store only the edits as an overlay on top of initialData
+  // Key: item id, Value: edited row data
+  const [edits, setEdits] = React.useState<Map<string, MenuItemRow>>(new Map())
 
-  // Resync data when initialData changes (only if no dirty edits)
+  // Compute display data: initialData with edits applied
+  const data = React.useMemo(() => {
+    if (edits.size === 0) return initialData
+    return initialData.map(row => edits.get(row.id) ?? row)
+  }, [initialData, edits])
+
+  // Dirty IDs derived from edits
+  const dirtyIds = React.useMemo(() => new Set(edits.keys()), [edits])
+
+  const [pendingDirtySnapshot, setPendingDirtySnapshot] = React.useState<{
+    isDirty: boolean
+    items: MenuItemRow[]
+  } | null>(null)
+
+  const onDirtyChangeRef = React.useRef(onDirtyChange)
+
   React.useEffect(() => {
-    if (dirtyIds.size === 0) {
-      setData(initialData)
-    }
-  }, [initialData, dirtyIds.size])
+    onDirtyChangeRef.current = onDirtyChange
+  }, [onDirtyChange])
+
+  React.useEffect(() => {
+    if (!pendingDirtySnapshot) return
+    onDirtyChangeRef.current?.(
+      pendingDirtySnapshot.isDirty,
+      pendingDirtySnapshot.items
+    )
+    setPendingDirtySnapshot(null)
+  }, [pendingDirtySnapshot])
 
   // Dialog for editing variants
   const [variantsDialogOpen, setVariantsDialogOpen] = React.useState(false)
@@ -240,59 +313,74 @@ export function MenuItemsDataGrid({
   // Handle data changes from grid
   const handleDataChange = React.useCallback(
     (newData: MenuItemRow[]) => {
-      // Normalize/sync derived fields.
-      // IMPORTANT: edits to `price` must update the underlying `variants[0].price`
-      // because the save payload uses `variants`, not `price`.
-      const prevById = new Map(data.map(row => [row.id, row]))
-      const normalizedData = newData.map(row => {
+      // Build a map of original rows by id for comparison
+      const originalById = new Map(initialData.map(row => [row.id, row]))
+
+      // Find which rows have changed from their original values
+      const newEdits = new Map<string, MenuItemRow>()
+
+      for (const row of newData) {
+        // Normalize price field
         const safePrice =
           typeof row.price === "number" && !Number.isNaN(row.price)
             ? row.price
             : 0
 
-        if (row.variantCount !== 1) {
-          return safePrice === row.price ? row : { ...row, price: safePrice }
+        let normalizedRow = row
+        if (row.variantCount === 1) {
+          const variant0 = row.variants[0]
+          if (variant0 && variant0.price !== safePrice) {
+            const nextVariants = [...row.variants]
+            nextVariants[0] = { ...variant0, price: safePrice }
+            normalizedRow = { ...row, price: safePrice, variants: nextVariants }
+          } else if (safePrice !== row.price) {
+            normalizedRow = { ...row, price: safePrice }
+          }
+        } else if (safePrice !== row.price) {
+          normalizedRow = { ...row, price: safePrice }
         }
 
-        const variant0 = row.variants[0]
-        if (!variant0) {
-          return safePrice === row.price ? row : { ...row, price: safePrice }
+        const original = originalById.get(normalizedRow.id)
+        if (!original) continue
+
+        // Check if this row differs from original
+        const isDifferent =
+          JSON.stringify(normalizedRow) !== JSON.stringify(original)
+
+        if (isDifferent) {
+          newEdits.set(normalizedRow.id, { ...normalizedRow, _isDirty: true })
+        }
+      }
+
+      // Only update state if edits actually changed
+      setEdits(prevEdits => {
+        const prevKeys = Array.from(prevEdits.keys()).sort().join(",")
+        const newKeys = Array.from(newEdits.keys()).sort().join(",")
+
+        if (prevKeys === newKeys) {
+          // Same keys - check if values changed
+          let valuesEqual = true
+          for (const [id, newRow] of newEdits) {
+            const prevRow = prevEdits.get(id)
+            if (JSON.stringify(prevRow) !== JSON.stringify(newRow)) {
+              valuesEqual = false
+              break
+            }
+          }
+          if (valuesEqual) return prevEdits
         }
 
-        const needsVariantSync = variant0.price !== safePrice
-        const needsPriceSync = safePrice !== row.price
-        if (!needsVariantSync && !needsPriceSync) return row
+        // Defer parent update to avoid setState during render
+        const dirtyItems = Array.from(newEdits.values())
+        setPendingDirtySnapshot({
+          isDirty: newEdits.size > 0,
+          items: dirtyItems
+        })
 
-        const nextVariants = [...row.variants]
-        nextVariants[0] = { ...variant0, price: safePrice }
-        return {
-          ...row,
-          price: safePrice,
-          variants: nextVariants
-        }
+        return newEdits
       })
-
-      // Find which rows changed (compare by id to be robust to sorting/filtering)
-      const newDirtyIds = new Set(dirtyIds)
-      const nextDataWithDirty = normalizedData.map(row => {
-        const prev = prevById.get(row.id)
-        if (prev && JSON.stringify(row) !== JSON.stringify(prev)) {
-          newDirtyIds.add(row.id)
-          return { ...row, _isDirty: true }
-        }
-        return row
-      })
-
-      setDirtyIds(newDirtyIds)
-      setData(nextDataWithDirty)
-
-      // Pass dirty items to parent
-      const dirtyItems = nextDataWithDirty.filter(row =>
-        newDirtyIds.has(row.id)
-      )
-      onDirtyChange?.(newDirtyIds.size > 0, dirtyItems)
     },
-    [data, dirtyIds, onDirtyChange]
+    [initialData, onDirtyChange]
   )
 
   // Open variants dialog
@@ -304,56 +392,58 @@ export function MenuItemsDataGrid({
   // Update variants from dialog
   const handleVariantsUpdate = React.useCallback(
     (itemId: string, variants: MenuItemRow["variants"]) => {
-      setData(prev => {
-        const updated = prev.map(row =>
-          row.id === itemId
-            ? {
-                ...row,
-                variants,
-                variantCount: variants.length,
-                price: variants[0]?.price ?? row.price,
-                _isDirty: true
-              }
-            : row
-        )
+      const original = initialData.find(row => row.id === itemId)
+      if (!original) return
 
-        // Pass dirty items to parent
-        const newDirtyIds = new Set([...dirtyIds, itemId])
-        setDirtyIds(newDirtyIds)
-        const dirtyItems = updated.filter(row => newDirtyIds.has(row.id))
-        onDirtyChange?.(true, dirtyItems)
+      const updatedRow: MenuItemRow = {
+        ...original,
+        ...edits.get(itemId),
+        variants,
+        variantCount: variants.length,
+        price: variants[0]?.price ?? original.price,
+        _isDirty: true
+      }
 
-        return updated
+      setEdits(prev => {
+        const next = new Map(prev)
+        next.set(itemId, updatedRow)
+
+        // Defer parent update to avoid setState during render
+        const dirtyItems = Array.from(next.values())
+        setPendingDirtySnapshot({ isDirty: true, items: dirtyItems })
+
+        return next
       })
+
       setVariantsDialogOpen(false)
     },
-    [dirtyIds, onDirtyChange]
+    [initialData, edits, onDirtyChange]
   )
 
   const handleManualSave = React.useCallback(async () => {
-    if (dirtyIds.size === 0) return
+    if (edits.size === 0) return
 
-    const dirtyItems = data.filter(row => dirtyIds.has(row.id))
+    const dirtyItems = Array.from(edits.values())
     if (!onManualSave) return
+
     const result = await onManualSave(dirtyItems)
     const success = result ?? true
 
     if (success) {
-      setDirtyIds(new Set())
-      setData(prev => prev.map(row => ({ ...row, _isDirty: undefined })))
-      onDirtyChange?.(false, [])
+      // Clear edits after successful save
+      setEdits(new Map())
+      setPendingDirtySnapshot({ isDirty: false, items: [] })
     }
-  }, [data, dirtyIds, onDirtyChange, onManualSave])
+  }, [edits, onDirtyChange, onManualSave])
 
   const handleDiscardChanges = React.useCallback(() => {
-    if (dirtyIds.size === 0) return
+    if (edits.size === 0) return
 
-    setData(initialData)
-    setDirtyIds(new Set())
+    setEdits(new Map())
     setSelectedItemForVariants(null)
     setVariantsDialogOpen(false)
-    onDirtyChange?.(false, [])
-  }, [dirtyIds, initialData, onDirtyChange])
+    setPendingDirtySnapshot({ isDirty: false, items: [] })
+  }, [edits.size, onDirtyChange])
 
   // Column definitions
   const columns: ColumnDef<MenuItemRow>[] = React.useMemo(
