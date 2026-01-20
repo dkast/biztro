@@ -139,7 +139,7 @@ export default function SyncStatusBanner({
         >
           <div
             className="flex flex-col items-center justify-between gap-2
-              sm:flex-row"
+              @sm:flex-row"
           >
             <div className="flex items-center gap-x-3">
               <RefreshCcw

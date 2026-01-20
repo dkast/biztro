@@ -313,6 +313,8 @@ export function MenuItemsDataGrid({
   // Handle data changes from grid
   const handleDataChange = React.useCallback(
     (newData: MenuItemRow[]) => {
+      if (isSaving) return
+
       // Build a map of original rows by id for comparison
       const originalById = new Map(initialData.map(row => [row.id, row]))
 
@@ -344,8 +346,7 @@ export function MenuItemsDataGrid({
         if (!original) continue
 
         // Check if this row differs from original
-        const isDifferent =
-          JSON.stringify(normalizedRow) !== JSON.stringify(original)
+        const isDifferent = !areMenuItemRowsEqual([normalizedRow], [original])
 
         if (isDifferent) {
           newEdits.set(normalizedRow.id, { ...normalizedRow, _isDirty: true })
@@ -362,7 +363,7 @@ export function MenuItemsDataGrid({
           let valuesEqual = true
           for (const [id, newRow] of newEdits) {
             const prevRow = prevEdits.get(id)
-            if (JSON.stringify(prevRow) !== JSON.stringify(newRow)) {
+            if (!prevRow || !areMenuItemRowsEqual([prevRow], [newRow])) {
               valuesEqual = false
               break
             }
@@ -380,7 +381,7 @@ export function MenuItemsDataGrid({
         return newEdits
       })
     },
-    [initialData, onDirtyChange]
+    [initialData, isSaving, onDirtyChange]
   )
 
   // Open variants dialog
@@ -564,7 +565,8 @@ export function MenuItemsDataGrid({
     meta: {
       onPriceCellAction: handleEditVariants
     },
-    enableSearch: true
+    enableSearch: true,
+    readOnly: isSaving
   })
 
   const isMac =

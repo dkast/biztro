@@ -17,7 +17,7 @@ import { Layers } from "@craftjs/layers"
 import { useAtom, useSetAtom } from "jotai"
 import { ChevronLeft, SheetIcon } from "lucide-react"
 import lz from "lzutf8"
-import { useOptimisticAction } from "next-safe-action/hooks"
+import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 
 import Header from "@/components/dashboard/header"
@@ -61,7 +61,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Toggle } from "@/components/ui/toggle"
-import { updateItem } from "@/server/actions/item/mutations"
+import { bulkUpdateItems } from "@/server/actions/item/mutations"
 import type {
   getCategoriesWithItems,
   getFeaturedItems,
@@ -331,17 +331,16 @@ export default function Workbench({
     [categories, soloItems, featuredItems]
   )
 
-  const { executeAsync: executeUpdateItemOptimistic, optimisticState } =
-    useOptimisticAction(updateItem, {
-      currentState: serverItemsState,
-      updateFn: (state, next) =>
-        applyOptimisticItemUpdate(
-          state as ItemsState,
-          next as unknown as UpdateItemOptimisticInput
-        )
-    })
+  const { executeAsync: executeBulkUpdateItems } = useAction(bulkUpdateItems)
 
-  const effectiveItemsState = (optimisticState ??
+  const [optimisticItemsState, setOptimisticItemsState] =
+    useState<ItemsState | null>(null)
+
+  useEffect(() => {
+    setOptimisticItemsState(null)
+  }, [serverItemsState])
+
+  const effectiveItemsState = (optimisticItemsState ??
     serverItemsState) as ItemsState
 
   // Batch save function for grid items
@@ -350,63 +349,105 @@ export default function Workbench({
       if (items.length === 0) return false
 
       setIsBatchSaving(true)
+      const payload = items.map(item => {
+        const allergensValue = (item.allergens ?? [])
+          .map(entry => entry.trim())
+          .filter(Boolean)
+          .join(",")
+
+        return {
+          id: item.id,
+          name: item.name,
+          description: item.description ?? "",
+          allergens: allergensValue,
+          status: item.status,
+          categoryId: item.categoryId ?? "",
+          organizationId: item.organizationId,
+          featured: item.featured,
+          currency: item.currency,
+          variants: item.variants.map(v => ({
+            id: v.id,
+            name: v.name,
+            price: v.price,
+            description: v.description ?? undefined,
+            menuItemId: v.menuItemId
+          })) as [
+            {
+              id: string
+              name: string
+              price: number
+              description?: string
+              menuItemId: string
+            },
+            ...{
+              id: string
+              name: string
+              price: number
+              description?: string
+              menuItemId: string
+            }[]
+          ]
+        }
+      })
+
       let successCount = 0
       let failCount = 0
       const failedIds = new Set<string>()
 
-      for (const item of items) {
-        try {
-          const allergensValue = (item.allergens ?? [])
-            .map(entry => entry.trim())
-            .filter(Boolean)
-            .join(",")
-          const result = await executeUpdateItemOptimistic({
-            id: item.id,
-            name: item.name,
-            description: item.description ?? "",
-            allergens: allergensValue,
-            status: item.status,
-            categoryId: item.categoryId ?? "",
-            organizationId: item.organizationId,
-            featured: item.featured,
-            currency: item.currency,
-            // Force draft menu sync even when preference is null
-            updatePublishedMenus: false,
-            variants: item.variants.map(v => ({
-              id: v.id,
-              name: v.name,
-              price: v.price,
-              description: v.description ?? undefined,
-              menuItemId: v.menuItemId
-            })) as [
-              {
-                id: string
-                name: string
-                price: number
-                description?: string
-                menuItemId: string
-              },
-              ...{
-                id: string
-                name: string
-                price: number
-                description?: string
-                menuItemId: string
-              }[]
-            ]
-          })
+      try {
+        const result = await executeBulkUpdateItems({
+          items: payload,
+          updatePublishedMenus: false
+        })
 
-          if (result?.data?.success) {
-            successCount++
-          } else {
-            failCount++
-            failedIds.add(item.id)
-          }
-        } catch (error) {
-          console.error("Error saving item:", item.id, error)
-          failCount++
-          failedIds.add(item.id)
+        if (result?.data?.failure) {
+          throw new Error(result.data.failure.reason)
         }
+
+        const successIds = result?.data?.success?.successIds ?? []
+        const failed = result?.data?.success?.failed ?? []
+        successCount = successIds.length
+        failCount = failed.length
+        failed.forEach(entry => failedIds.add(entry.id))
+
+        if (successCount > 0) {
+          const successItems = items.filter(item =>
+            successIds.includes(item.id)
+          )
+
+          setOptimisticItemsState(prevState => {
+            const baseState = (prevState ?? serverItemsState) as ItemsState
+
+            return successItems.reduce((state, item) => {
+              const allergensValue = (item.allergens ?? [])
+                .map(entry => entry.trim())
+                .filter(Boolean)
+                .join(",")
+
+              return applyOptimisticItemUpdate(state, {
+                id: item.id,
+                name: item.name,
+                description: item.description ?? "",
+                allergens: allergensValue,
+                status: item.status,
+                categoryId: item.categoryId ?? null,
+                featured: item.featured,
+                currency: item.currency,
+                variants: item.variants.map(v => ({
+                  id: v.id,
+                  name: v.name,
+                  price: v.price,
+                  description: v.description ?? undefined,
+                  menuItemId: v.menuItemId
+                }))
+              })
+            }, baseState)
+          })
+        }
+      } catch (error) {
+        console.error("Error saving items:", error)
+        failCount = items.length
+        items.forEach(item => failedIds.add(item.id))
       }
 
       setIsBatchSaving(false)
@@ -452,7 +493,7 @@ export default function Workbench({
 
       return false
     },
-    [clearUnsavedChanges, executeUpdateItemOptimistic, router]
+    [clearUnsavedChanges, executeBulkUpdateItems, router, serverItemsState]
   )
 
   // Handle grid dirty state changes
