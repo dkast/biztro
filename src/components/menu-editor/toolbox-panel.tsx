@@ -155,7 +155,7 @@ export default function ToolboxPanel({
               priceFontFamily={selectedFontTheme.fontText}
               descriptionFontFamily={selectedFontTheme.fontText}
               categoryColor={hexToRgba(selectedColorTheme.accentColor)}
-              categoryHeadingBgColor={selectedColorTheme.brandColor}
+              // categoryHeadingBgColor={selectedColorTheme.brandColor}
               itemColor={hexToRgba(selectedColorTheme.textColor)}
               priceColor={hexToRgba(selectedColorTheme.accentColor)}
               descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}

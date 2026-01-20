@@ -13,6 +13,7 @@ package-lock.json
 /prisma/dev.db
 /prisma/dev.db-journal
 local.db*
+dev.db*
 
 # next.js
 /.next/

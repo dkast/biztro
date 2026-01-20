@@ -11,6 +11,14 @@
     "motion": {
       "command": "npx",
       "args": ["-y", "motion-ai"]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--browser-url=http://127.0.0.1:9222"
+      ]
     }
   }
 }

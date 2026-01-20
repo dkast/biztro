@@ -1,20 +1,31 @@
 "use client"
 
 import {
+  Activity,
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
-  useState,
-  type RefObject
+  useState
 } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
+import { toast } from "react-hot-toast"
+import type { Layout } from "react-resizable-panels"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import { useAtom, useSetAtom } from "jotai"
+import { ChevronLeft, SheetIcon } from "lucide-react"
 import lz from "lzutf8"
+import { useAction } from "next-safe-action/hooks"
+import { useRouter } from "next/navigation"
 
 import Header from "@/components/dashboard/header"
+import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
+import {
+  GuardLink,
+  useSetUnsavedChanges
+} from "@/components/dashboard/unsaved-changes-provider"
 import CategoryBlock from "@/components/menu-editor/blocks/category-block"
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import FeaturedBlock from "@/components/menu-editor/blocks/featured-block"
@@ -24,18 +35,23 @@ import ItemBlock from "@/components/menu-editor/blocks/item-block"
 import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import { BottomBar } from "@/components/menu-editor/bottom-bar"
-import CssStyles from "@/components/menu-editor/css-styles"
 import FloatingBar from "@/components/menu-editor/floating-bar"
+import { FramePreviewContent } from "@/components/menu-editor/frame-preview-content"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
+import {
+  MenuItemsDataGrid,
+  type MenuItemRow
+} from "@/components/menu-editor/menu-items-data-grid"
 import MenuPublish from "@/components/menu-editor/menu-publish"
+import MenuTitle from "@/components/menu-editor/menu-title"
 import MenuTour from "@/components/menu-editor/menu-tour"
 import MenuTourMobile from "@/components/menu-editor/menu-tour-mobile"
 import { RenderNode } from "@/components/menu-editor/render-node"
 import SettingsPanel from "@/components/menu-editor/settings-panel"
 import SyncStatusBanner from "@/components/menu-editor/sync-status-banner"
 import ThemeSelector from "@/components/menu-editor/theme-selector"
-import Toolbar from "@/components/menu-editor/toolbar"
 import ToolboxPanel from "@/components/menu-editor/toolbox-panel"
+import { Button } from "@/components/ui/button"
 import { DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import {
   ResizableHandle,
@@ -44,6 +60,8 @@ import {
 } from "@/components/ui/resizable"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { Toggle } from "@/components/ui/toggle"
+import { bulkUpdateItems } from "@/server/actions/item/mutations"
 import type {
   getCategoriesWithItems,
   getFeaturedItems,
@@ -64,13 +82,208 @@ export enum PanelType {
   THEME = "theme"
 }
 
+type ItemsState = {
+  categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
+  soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
+  featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
+}
+
+type VariantBroad = Record<string, unknown> & {
+  id: string
+  name: string
+  price: number
+  description: string | null
+}
+
+type MenuItemBroad = Record<string, unknown> & {
+  id: string
+  name: string | null
+  description: string | null
+  allergens?: string | null
+  status: string
+  categoryId: string | null
+  featured: boolean
+  currency: string | null
+  variants: VariantBroad[]
+}
+
+type UpdateItemOptimisticInput = {
+  id?: string
+  name: string
+  description?: string
+  allergens?: string
+  status: string
+  categoryId?: string | null
+  featured?: boolean
+  currency?: string | null
+  variants?: {
+    id?: string
+    name: string
+    price: number
+    description?: string | null
+    menuItemId?: string
+  }[]
+}
+
+// Normalize categoryId values from form inputs: empty string, null, and undefined
+// are all treated as "no category" and stored as null to match a nullable FK in the DB.
+function normalizeCategoryId(categoryId: string | null | undefined) {
+  if (categoryId === undefined || categoryId === null || categoryId === "") {
+    return null
+  }
+  return categoryId
+}
+
+function sortByName<T extends { name: string | null }>(items: T[]) {
+  return [...items].sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""))
+}
+
+function applyOptimisticItemUpdate(
+  state: ItemsState,
+  input: UpdateItemOptimisticInput
+): ItemsState {
+  if (!input.id) {
+    return state
+  }
+
+  // The server query return types can collapse to overly-narrow array types in client code.
+  // Widen them here for manipulation, then cast back on return.
+  const categories = state.categories as unknown as Array<
+    Record<string, unknown> & {
+      id: string
+      name: string | null
+      menuItems: MenuItemBroad[]
+    }
+  >
+  const soloItems = state.soloItems as unknown as MenuItemBroad[]
+  const featuredItems = state.featuredItems as unknown as MenuItemBroad[]
+
+  const nextCategoryId = normalizeCategoryId(input.categoryId)
+  const nextFeatured = Boolean(input.featured)
+  const nextStatus = input.status
+
+  // Find the existing item first (avoid relying on callback side-effects for TS control flow).
+  let existingItem: MenuItemBroad | null = null
+  for (const category of categories) {
+    const found = category.menuItems.find(menuItem => menuItem.id === input.id)
+    if (found) {
+      existingItem = found
+      break
+    }
+  }
+  if (!existingItem) {
+    existingItem = soloItems.find(menuItem => menuItem.id === input.id) ?? null
+  }
+  if (!existingItem) {
+    existingItem =
+      featuredItems.find(menuItem => menuItem.id === input.id) ?? null
+  }
+
+  // Remove the item from all collections.
+  const categoriesWithoutItem = categories
+    .map(category => {
+      const nextMenuItems = category.menuItems.filter(
+        menuItem => menuItem.id !== input.id
+      )
+      return nextMenuItems.length === category.menuItems.length
+        ? category
+        : { ...category, menuItems: nextMenuItems }
+    })
+    .filter(category => category.menuItems.length > 0)
+
+  const soloWithoutItem = soloItems.filter(menuItem => menuItem.id !== input.id)
+  const featuredWithoutItem = featuredItems.filter(
+    menuItem => menuItem.id !== input.id
+  )
+
+  // If we can’t find it in current state, just return unchanged.
+  if (!existingItem) {
+    return state
+  }
+
+  const nextDescription = input.description ?? ""
+  const nextAllergens = input.allergens ?? existingItem.allergens ?? ""
+
+  // If item becomes non-ACTIVE, it should disappear from these lists (server queries filter by ACTIVE).
+  if (nextStatus !== "ACTIVE") {
+    return {
+      categories: categoriesWithoutItem as unknown as ItemsState["categories"],
+      soloItems: soloWithoutItem as unknown as ItemsState["soloItems"],
+      featuredItems:
+        featuredWithoutItem as unknown as ItemsState["featuredItems"]
+    }
+  }
+
+  const nextVariants = [...existingItem.variants]
+    .map(variant => {
+      const incoming = input.variants?.find(v => v.id && v.id === variant.id)
+      if (!incoming) return variant
+      return {
+        ...variant,
+        name: incoming.name,
+        price: incoming.price,
+        description: incoming.description ?? null
+      }
+    })
+    .sort((a, b) => a.price - b.price)
+
+  const updatedItem = {
+    ...existingItem,
+    name: input.name,
+    description: nextDescription,
+    allergens: nextAllergens,
+    status: nextStatus,
+    categoryId: nextCategoryId,
+    featured: nextFeatured,
+    currency: input.currency ?? existingItem.currency ?? "MXN",
+    variants: nextVariants
+  } satisfies MenuItemBroad
+
+  let nextCategories = categoriesWithoutItem
+  let nextSoloItems = soloWithoutItem
+
+  if (nextCategoryId) {
+    const categoryIndex = nextCategories.findIndex(c => c.id === nextCategoryId)
+    if (categoryIndex >= 0) {
+      const category = nextCategories[categoryIndex]
+      if (!category) {
+        nextSoloItems = sortByName([...nextSoloItems, updatedItem])
+      } else {
+        const nextMenuItems = sortByName([
+          ...category.menuItems,
+          updatedItem as unknown as (typeof category.menuItems)[number]
+        ])
+        nextCategories = nextCategories.map((c, i) =>
+          i === categoryIndex ? { ...c, menuItems: nextMenuItems } : c
+        )
+      }
+    } else {
+      // If the category isn't present in the current ACTIVE-only list, fall back to solo.
+      nextSoloItems = sortByName([...nextSoloItems, updatedItem])
+    }
+  } else {
+    nextSoloItems = sortByName([...nextSoloItems, updatedItem])
+  }
+
+  const nextFeaturedItems = nextFeatured
+    ? sortByName([...featuredWithoutItem, updatedItem])
+    : featuredWithoutItem
+
+  return {
+    categories: nextCategories as unknown as ItemsState["categories"],
+    soloItems: nextSoloItems as unknown as ItemsState["soloItems"],
+    featuredItems: nextFeaturedItems as unknown as ItemsState["featuredItems"]
+  }
+}
+
 export default function Workbench({
   menu,
   organization,
   location,
   categories,
   soloItems,
-  featuredItems
+  featuredItems,
+  defaultLayout: serverDefaultLayout
 }: {
   menu: Awaited<ReturnType<typeof getMenuById>>
   organization: Awaited<ReturnType<typeof getCurrentOrganization>>
@@ -78,21 +291,243 @@ export default function Workbench({
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
   soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
+  defaultLayout?: Layout
 }) {
   const isMobile = useIsMobile()
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [activePanel, setActivePanel] = useState<PanelType | null>(null)
   const [shouldRenderFrame, setShouldRenderFrame] = useState(true)
   const [iframeHeight, setIframeHeight] = useState(0)
+  const [isDataGridView, setIsDataGridView] = useState(false)
   // Key to force ScrollArea re-render after ResizablePanel establishes dimensions
   const [scrollAreaKey, setScrollAreaKey] = useState(0)
+
+  // Data grid dirty tracking and batch save
+  const [gridDirtyItems, setGridDirtyItems] = useState<MenuItemRow[]>([])
+  const [isGridDirty, setIsGridDirty] = useState(false)
+  const [isBatchSaving, setIsBatchSaving] = useState(false)
+  const [syncEditorTrigger, setSyncEditorTrigger] = useState(0)
+
+  // Unsaved changes context for grid dirty state
+  const { setUnsavedChanges, clearUnsavedChanges } = useSetUnsavedChanges()
 
   // Initialize the atoms for the editor
   const [frameSize] = useAtom(frameSizeAtom)
   const setFontThemeId = useSetAtom(fontThemeAtom)
   const setColorThemeId = useSetAtom(colorThemeAtom)
-  // Initialize themes only on first load
 
+  // Setup persistent layout using cookies for SSR compatibility
+  const onLayoutChange = useCallback((layout: Layout) => {
+    // Store a JSON representation of the layout object (map of panelId -> size)
+    const cookieValue = encodeURIComponent(JSON.stringify(layout))
+    const isSecure = window.location.protocol === "https:"
+    const secureFlag = isSecure ? "; Secure" : ""
+    document.cookie = `react-resizable-panels:layout:menu-editor-workbench=${cookieValue}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`
+  }, [])
+
+  const serverItemsState = useMemo<ItemsState>(
+    () => ({ categories, soloItems, featuredItems }),
+    [categories, soloItems, featuredItems]
+  )
+
+  const { executeAsync: executeBulkUpdateItems } = useAction(bulkUpdateItems)
+
+  const [optimisticItemsState, setOptimisticItemsState] =
+    useState<ItemsState | null>(null)
+
+  useEffect(() => {
+    setOptimisticItemsState(null)
+  }, [serverItemsState])
+
+  const effectiveItemsState = (optimisticItemsState ??
+    serverItemsState) as ItemsState
+
+  // Batch save function for grid items
+  const batchSaveGridItems = useCallback(
+    async (items: MenuItemRow[]) => {
+      if (items.length === 0) return false
+
+      setIsBatchSaving(true)
+      const payload = items.map(item => {
+        const allergensValue = (item.allergens ?? [])
+          .map(entry => entry.trim())
+          .filter(Boolean)
+          .join(",")
+
+        return {
+          id: item.id,
+          name: item.name,
+          description: item.description ?? "",
+          allergens: allergensValue,
+          status: item.status,
+          categoryId: item.categoryId ?? "",
+          organizationId: item.organizationId,
+          featured: item.featured,
+          currency: item.currency,
+          variants: item.variants.map(v => ({
+            id: v.id,
+            name: v.name,
+            price: v.price,
+            description: v.description ?? undefined,
+            menuItemId: v.menuItemId
+          })) as [
+            {
+              id: string
+              name: string
+              price: number
+              description?: string
+              menuItemId: string
+            },
+            ...{
+              id: string
+              name: string
+              price: number
+              description?: string
+              menuItemId: string
+            }[]
+          ]
+        }
+      })
+
+      let successCount = 0
+      let failCount = 0
+      const failedIds = new Set<string>()
+
+      try {
+        const result = await executeBulkUpdateItems({
+          items: payload,
+          updatePublishedMenus: false
+        })
+
+        if (result?.data?.failure) {
+          throw new Error(result.data.failure.reason)
+        }
+
+        const successIds = result?.data?.success?.successIds ?? []
+        const failed = result?.data?.success?.failed ?? []
+        successCount = successIds.length
+        failCount = failed.length
+        failed.forEach(entry => failedIds.add(entry.id))
+
+        if (successCount > 0) {
+          const successItems = items.filter(item =>
+            successIds.includes(item.id)
+          )
+
+          setOptimisticItemsState(prevState => {
+            const baseState = (prevState ?? serverItemsState) as ItemsState
+
+            return successItems.reduce((state, item) => {
+              const allergensValue = (item.allergens ?? [])
+                .map(entry => entry.trim())
+                .filter(Boolean)
+                .join(",")
+
+              return applyOptimisticItemUpdate(state, {
+                id: item.id,
+                name: item.name,
+                description: item.description ?? "",
+                allergens: allergensValue,
+                status: item.status,
+                categoryId: item.categoryId ?? null,
+                featured: item.featured,
+                currency: item.currency,
+                variants: item.variants.map(v => ({
+                  id: v.id,
+                  name: v.name,
+                  price: v.price,
+                  description: v.description ?? undefined,
+                  menuItemId: v.menuItemId
+                }))
+              })
+            }, baseState)
+          })
+        }
+      } catch (error) {
+        console.error("Error saving items:", error)
+        failCount = items.length
+        items.forEach(item => failedIds.add(item.id))
+      }
+
+      setIsBatchSaving(false)
+
+      const allSaved = successCount > 0 && failCount === 0
+
+      if (allSaved) {
+        setGridDirtyItems([])
+        setIsGridDirty(false)
+        clearUnsavedChanges()
+        toast.success(
+          `${successCount} producto${successCount > 1 ? "s" : ""} guardado${successCount > 1 ? "s" : ""}`
+        )
+
+        // Sync the canvas immediately using optimistic data, then reconcile from the server.
+        setSyncEditorTrigger(prev => prev + 1)
+        // Intentionally not calling router.refresh() here to avoid a full page reload after a successful batch save.
+        // Re-enable router.refresh() below if server-rendered menu data must be refreshed immediately after saving.
+        // router.refresh()
+        return true
+      }
+
+      // Partial/failed save: keep the failed rows dirty.
+      const remainingDirty = items.filter(i => failedIds.has(i.id))
+      setGridDirtyItems(remainingDirty)
+      setIsGridDirty(remainingDirty.length > 0)
+
+      if (successCount > 0) {
+        // Still sync for the successfully saved items.
+        setSyncEditorTrigger(prev => prev + 1)
+        router.refresh()
+      }
+
+      if (failCount > 0 && successCount > 0) {
+        toast.error(
+          `Se guardaron ${successCount} y ${failCount} no se pudo${failCount > 1 ? "ieron" : ""} guardar`
+        )
+      } else if (failCount > 0) {
+        toast.error(
+          `Error: ${failCount} producto${failCount > 1 ? "s" : ""} no se pudo${failCount > 1 ? "ieron" : ""} guardar`
+        )
+      }
+
+      return false
+    },
+    [clearUnsavedChanges, executeBulkUpdateItems, router, serverItemsState]
+  )
+
+  // Handle grid dirty state changes
+  const handleGridDirtyChange = useCallback(
+    (isDirty: boolean, dirtyItems?: MenuItemRow[]) => {
+      setIsGridDirty(isDirty)
+      if (dirtyItems) {
+        setGridDirtyItems(dirtyItems)
+      }
+      if (isDirty) {
+        setUnsavedChanges({
+          message:
+            "Tienes cambios sin guardar en el editor de productos. ¿Deseas guardarlos?",
+          dismissButtonLabel: "Cancelar",
+          proceedLinkLabel: "Descartar cambios"
+        })
+      } else {
+        clearUnsavedChanges()
+      }
+    },
+    [setUnsavedChanges, clearUnsavedChanges]
+  )
+
+  const handleDataGridToggle = useCallback(
+    (next: boolean) => {
+      if (isDataGridView && !next && isGridDirty) {
+        toast("Tienes cambios sin guardar en el editor de productos")
+      }
+      setIsDataGridView(next)
+    },
+    [isDataGridView, isGridDirty]
+  )
+
+  // Initialize themes only on first load
   useEffect(() => {
     setFontThemeId(menu?.fontTheme ?? "DEFAULT")
     setColorThemeId(menu?.colorTheme ?? "DEFAULT")
@@ -189,6 +624,20 @@ export default function Workbench({
     }
   }, [])
 
+  // Refresh data when tab becomes visible (only if no dirty edits)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && !isGridDirty && gridDirtyItems.length === 0) {
+        router.refresh()
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  }, [isGridDirty, gridDirtyItems.length, router])
+
   if (!menu || !categories || !organization) return null
 
   // Extract the serialized data from the menu
@@ -224,9 +673,9 @@ export default function Workbench({
             <ToolboxPanel
               organization={organization}
               location={location}
-              categories={categories}
-              soloItems={soloItems}
-              featuredItems={featuredItems}
+              categories={effectiveItemsState.categories}
+              soloItems={effectiveItemsState.soloItems}
+              featuredItems={effectiveItemsState.featuredItems}
               isPro={organization.plan?.toUpperCase() === "PRO"}
             />
           </>
@@ -268,9 +717,10 @@ export default function Workbench({
             <SyncStatusBanner
               menu={menu}
               location={location}
-              categories={categories}
-              featuredItems={featuredItems}
-              soloItems={soloItems}
+              categories={effectiveItemsState.categories}
+              featuredItems={effectiveItemsState.featuredItems}
+              soloItems={effectiveItemsState.soloItems}
+              syncTrigger={syncEditorTrigger}
             />
             <div className="pb-20">
               <Frame data={json}>
@@ -310,34 +760,92 @@ export default function Workbench({
           onNodesChange={handleNodesChange}
         >
           <Header className="fixed inset-x-0 top-0">
-            <Toolbar menu={menu} />
+            <div className="mx-10 grid grow grid-cols-3 items-center">
+              <div className="flex items-center gap-1">
+                <GuardLink href={"/dashboard"}>
+                  <Button variant="ghost" size="sm">
+                    <ChevronLeft className="size-5" />
+                    Regresar
+                  </Button>
+                </GuardLink>
+                <TooltipHelper
+                  content={
+                    isDataGridView
+                      ? "Ocultar editor de productos"
+                      : "Mostrar editor de productos"
+                  }
+                >
+                  <div>
+                    <Toggle
+                      size="sm"
+                      variant="default"
+                      pressed={isDataGridView}
+                      onPressedChange={handleDataGridToggle}
+                      aria-label="Toggle data grid view"
+                    >
+                      <SheetIcon className="size-4" />
+                    </Toggle>
+                  </div>
+                </TooltipHelper>
+              </div>
+              <MenuTitle menu={menu} />
+              <MenuPublish menu={menu} />
+            </div>
             <MenuTour />
           </Header>
           <ResizablePanelGroup
             className="bg-card grow pt-16"
-            direction="horizontal"
+            orientation="horizontal"
+            defaultLayout={serverDefaultLayout}
+            onLayoutChange={onLayoutChange}
           >
-            <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>
-              <ScrollArea
-                key={`left-panel-${scrollAreaKey}`}
-                className="h-full"
+            <Activity mode={isDataGridView ? "hidden" : "visible"}>
+              <ResizablePanel
+                id="left"
+                defaultSize="18%"
+                minSize="15%"
+                maxSize="25%"
               >
-                <div className="pb-2">
-                  <ToolboxPanel
-                    organization={organization}
-                    location={location}
-                    categories={categories}
-                    soloItems={soloItems}
-                    featuredItems={featuredItems}
-                    isPro={organization.plan?.toUpperCase() === "PRO"}
-                  />
-                  <Separator />
-                  <Layers renderLayer={DefaultLayer} />
-                </div>
-              </ScrollArea>
-            </ResizablePanel>
-            <ResizableHandle />
-            <ResizablePanel defaultSize={70}>
+                <ScrollArea
+                  key={`left-panel-${scrollAreaKey}`}
+                  className="h-full"
+                >
+                  <div className="pb-2">
+                    <ToolboxPanel
+                      organization={organization}
+                      location={location}
+                      categories={effectiveItemsState.categories}
+                      soloItems={effectiveItemsState.soloItems}
+                      featuredItems={effectiveItemsState.featuredItems}
+                      isPro={organization.plan?.toUpperCase() === "PRO"}
+                    />
+                    <Separator />
+                    <Layers renderLayer={DefaultLayer} />
+                  </div>
+                </ScrollArea>
+              </ResizablePanel>
+            </Activity>
+            <Activity mode={isDataGridView ? "visible" : "hidden"}>
+              <ResizablePanel id="data-grid" defaultSize="70%">
+                <MenuItemsDataGrid
+                  categories={effectiveItemsState.categories}
+                  soloItems={effectiveItemsState.soloItems}
+                  featuredItems={effectiveItemsState.featuredItems}
+                  organizationId={organization.id}
+                  onDirtyChange={(isDirty, dirtyItems) =>
+                    handleGridDirtyChange(isDirty, dirtyItems)
+                  }
+                  isSaving={isBatchSaving}
+                  onManualSave={batchSaveGridItems}
+                />
+              </ResizablePanel>
+            </Activity>
+            <ResizableHandle withHandle={isDataGridView} />
+            <ResizablePanel
+              id="canvas"
+              minSize={200}
+              collapsible={isDataGridView}
+            >
               <div
                 id="editor-canvas"
                 className="no-scrollbar bg-secondary relative h-full w-full
@@ -346,13 +854,14 @@ export default function Workbench({
                 <SyncStatusBanner
                   menu={menu}
                   location={location}
-                  categories={categories}
-                  featuredItems={featuredItems}
-                  soloItems={soloItems}
+                  categories={effectiveItemsState.categories}
+                  featuredItems={effectiveItemsState.featuredItems}
+                  soloItems={effectiveItemsState.soloItems}
+                  syncTrigger={syncEditorTrigger}
                 />
                 <div
                   className={cn(
-                    frameSize === FrameSize.DESKTOP ? "w-5xl" : "w-[390px]",
+                    frameSize === FrameSize.DESKTOP ? "w-5xl" : "w-97.5",
                     `editor-preview group mx-auto pt-10 pb-24 transition-all
                       duration-300 ease-in-out`
                   )}
@@ -365,7 +874,7 @@ export default function Workbench({
                   </span>
                   <div
                     className={cn(
-                      frameSize === FrameSize.DESKTOP ? "w-5xl" : "w-[390px]",
+                      frameSize === FrameSize.DESKTOP ? "w-5xl" : "w-97.5",
                       `flex flex-col border bg-white transition-all duration-300
                         ease-in-out dark:border-gray-700`
                     )}
@@ -406,105 +915,31 @@ export default function Workbench({
                     )}
                   </div>
                 </div>
-                <FloatingBar />
+                <Activity mode={isDataGridView ? "hidden" : "visible"}>
+                  <FloatingBar />
+                </Activity>
               </div>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel defaultSize={18} minSize={15} maxSize={25}>
-              <ScrollArea
-                key={`right-panel-${scrollAreaKey}`}
-                className="h-full"
+            <Activity mode={isDataGridView ? "hidden" : "visible"}>
+              <ResizablePanel
+                id="right"
+                defaultSize="18%"
+                minSize="15%"
+                maxSize="25%"
               >
-                <ThemeSelector menu={menu} />
-                <SettingsPanel />
-              </ScrollArea>
-            </ResizablePanel>
+                <ScrollArea
+                  key={`right-panel-${scrollAreaKey}`}
+                  className="h-full"
+                >
+                  <ThemeSelector menu={menu} />
+                  <SettingsPanel />
+                </ScrollArea>
+              </ResizablePanel>
+            </Activity>
           </ResizablePanelGroup>
         </Editor>
       )}
     </div>
-  )
-}
-
-interface FramePreviewContentProps {
-  frameDocument: Document | null | undefined
-  frameDocRef: RefObject<Document | null>
-  json?: string
-  organization: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>
-  location: Awaited<ReturnType<typeof getDefaultLocation>> | null
-  updateFrameHeight: () => void
-}
-
-function pauseFrameMedia(doc: Document | null | undefined) {
-  if (!doc) return
-
-  try {
-    ;(
-      doc.querySelectorAll("video, audio") as NodeListOf<HTMLMediaElement>
-    ).forEach(el => {
-      try {
-        el.pause()
-      } catch {
-        // ignore
-      }
-    })
-    ;(doc.querySelectorAll("iframe") as NodeListOf<HTMLIFrameElement>).forEach(
-      iframe => {
-        try {
-          const win = iframe.contentWindow
-          win?.postMessage({ type: "react-activity-hidden" }, "*")
-        } catch {
-          // ignore
-        }
-      }
-    )
-  } catch {
-    // ignore
-  }
-}
-
-function FramePreviewContent({
-  frameDocument,
-  frameDocRef,
-  json,
-  organization,
-  location,
-  updateFrameHeight
-}: FramePreviewContentProps) {
-  useEffect(() => {
-    frameDocRef.current = frameDocument ?? null
-    if (!frameDocument) return
-
-    updateFrameHeight()
-    const win = frameDocument.defaultView
-    const target = frameDocument.body ?? frameDocument.documentElement
-    if (!target) return
-
-    const ResizeObserverClass = win?.ResizeObserver ?? window.ResizeObserver
-    if (!ResizeObserverClass) return
-
-    const resizeObserver = new ResizeObserverClass(() => {
-      updateFrameHeight()
-    })
-    resizeObserver.observe(target)
-    return () => {
-      resizeObserver.disconnect()
-      pauseFrameMedia(frameDocument)
-    }
-  }, [frameDocument, frameDocRef, updateFrameHeight])
-
-  return (
-    <CssStyles frameDocument={frameDocument}>
-      <Frame data={json}>
-        <Element is={ContainerBlock} canvas>
-          <HeaderBlock
-            layout="modern"
-            organization={organization}
-            location={location ?? undefined}
-            showBanner={organization.banner !== null}
-          />
-        </Element>
-      </Frame>
-    </CssStyles>
   )
 }

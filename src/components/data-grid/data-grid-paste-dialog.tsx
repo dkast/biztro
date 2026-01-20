@@ -1,0 +1,157 @@
+"use client"
+
+import * as React from "react"
+import type { PasteDialogState } from "@/types/data-grid"
+import type { TableMeta } from "@tanstack/react-table"
+
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog"
+import { useAsRef } from "@/hooks/use-as-ref"
+import { cn } from "@/lib/utils"
+
+interface DataGridPasteDialogProps<TData> {
+  tableMeta: TableMeta<TData>
+  pasteDialog: PasteDialogState
+}
+
+export function DataGridPasteDialog<TData>({
+  tableMeta,
+  pasteDialog
+}: DataGridPasteDialogProps<TData>) {
+  const onPasteDialogOpenChange = tableMeta?.onPasteDialogOpenChange
+  const onCellsPaste = tableMeta?.onCellsPaste
+
+  if (!pasteDialog.open) return null
+
+  return (
+    <PasteDialog
+      pasteDialog={pasteDialog}
+      onPasteDialogOpenChange={onPasteDialogOpenChange}
+      onCellsPaste={onCellsPaste}
+    />
+  )
+}
+
+interface PasteDialogProps
+  extends
+    Pick<TableMeta<unknown>, "onPasteDialogOpenChange" | "onCellsPaste">,
+    Required<Pick<TableMeta<unknown>, "pasteDialog">> {}
+
+const PasteDialog = React.memo(PasteDialogImpl, (prev, next) => {
+  if (prev.pasteDialog.open !== next.pasteDialog.open) return false
+  if (!next.pasteDialog.open) return true
+  if (prev.pasteDialog.rowsNeeded !== next.pasteDialog.rowsNeeded) return false
+
+  return true
+})
+
+function PasteDialogImpl({
+  pasteDialog,
+  onPasteDialogOpenChange,
+  onCellsPaste
+}: PasteDialogProps) {
+  const propsRef = useAsRef({
+    onPasteDialogOpenChange,
+    onCellsPaste
+  })
+
+  const expandRadioRef = React.useRef<HTMLInputElement | null>(null)
+
+  const onOpenChange = React.useCallback(
+    (open: boolean) => {
+      propsRef.current.onPasteDialogOpenChange?.(open)
+    },
+    [propsRef]
+  )
+
+  const onCancel = React.useCallback(() => {
+    propsRef.current.onPasteDialogOpenChange?.(false)
+  }, [propsRef])
+
+  const onContinue = React.useCallback(() => {
+    propsRef.current.onCellsPaste?.(expandRadioRef.current?.checked ?? false)
+  }, [propsRef])
+
+  return (
+    <Dialog open={pasteDialog.open} onOpenChange={onOpenChange}>
+      <DialogContent data-grid-popover="">
+        <DialogHeader>
+          <DialogTitle>¿Deseas agregar más filas?</DialogTitle>
+          <DialogDescription>
+            Necesitamos <strong>{pasteDialog.rowsNeeded}</strong> fila
+            {pasteDialog.rowsNeeded !== 1 ? "s" : ""} adicional
+            {pasteDialog.rowsNeeded !== 1 ? "s" : ""} para pegar todo desde el
+            portapapeles.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-3 py-1">
+          <label className="flex cursor-pointer items-start gap-3">
+            <RadioItem
+              ref={expandRadioRef}
+              name="expand-option"
+              value="expand"
+              defaultChecked
+            />
+            <div className="flex flex-col gap-1">
+              <span className="text-sm leading-none font-medium">
+                Crear nuevas filas
+              </span>
+              <span className="text-muted-foreground text-sm">
+                Agregar {pasteDialog.rowsNeeded} fila
+                {pasteDialog.rowsNeeded !== 1 ? "s" : ""} a la tabla y pegar
+                todos los datos
+              </span>
+            </div>
+          </label>
+          <label className="flex cursor-pointer items-start gap-3">
+            <RadioItem name="expand-option" value="no-expand" />
+            <div className="flex flex-col gap-1">
+              <span className="text-sm leading-none font-medium">
+                Mantener filas actuales
+              </span>
+              <span className="text-muted-foreground text-sm">
+                Pegar solo lo que quepa en las filas existentes
+              </span>
+            </div>
+          </label>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onCancel}>
+            Cancelar
+          </Button>
+          <Button onClick={onContinue}>Continuar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function RadioItem({ className, ...props }: React.ComponentProps<"input">) {
+  return (
+    <input
+      type="radio"
+      className={cn(
+        `border-input bg-background relative size-4 shrink-0 appearance-none
+        rounded-full border shadow-xs transition-[color,box-shadow]
+        outline-none`,
+        `text-primary focus-visible:border-ring focus-visible:ring-ring/50
+        focus-visible:ring-[3px]`,
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        `checked:before:bg-primary checked:before:absolute
+        checked:before:start-1/2 checked:before:top-1/2 checked:before:size-2
+        checked:before:-translate-x-1/2 checked:before:-translate-y-1/2
+        checked:before:rounded-full checked:before:content-['']`,
+        "dark:bg-input/30",
+        className
+      )}
+      {...props}
+    />
+  )
+}

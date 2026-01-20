@@ -443,6 +443,126 @@ export const updateItem = authMemberActionClient
     }
   )
 
+const bulkUpdateItemsSchema = z.object({
+  items: z.array(
+    menuItemSchema.extend({
+      id: z.string(),
+      organizationId: z.string()
+    })
+  ),
+  updatePublishedMenus: z.boolean().optional(),
+  rememberPublishedChoice: z.boolean().optional()
+})
+
+/**
+ * Updates multiple items in bulk (best-effort).
+ */
+export const bulkUpdateItems = authMemberActionClient
+  .inputSchema(bulkUpdateItemsSchema)
+  .action(
+    async ({
+      parsedInput: { items, updatePublishedMenus, rememberPublishedChoice },
+      ctx: { member }
+    }) => {
+      const currentOrgId = member.organizationId
+
+      if (!currentOrgId) {
+        return {
+          failure: {
+            reason: "No se pudo obtener la organización actual"
+          }
+        }
+      }
+
+      const successIds: string[] = []
+      const failed: Array<{ id: string; reason: string }> = []
+
+      try {
+        for (const item of items) {
+          const itemId = item.id
+          try {
+            await prisma.menuItem.update({
+              where: { id: itemId },
+              data: {
+                name: item.name,
+                description: item.description,
+                status: item.status,
+                currency: item.currency ?? "MXN",
+                categoryId: item.categoryId === "" ? null : item.categoryId,
+                featured: item.featured,
+                allergens: item.allergens,
+                variants: {
+                  upsert: item.variants.map(variant => ({
+                    where: { id: variant.id },
+                    create: {
+                      name: variant.name,
+                      price: variant.price
+                    },
+                    update: {
+                      name: variant.name,
+                      price: variant.price
+                    }
+                  }))
+                }
+              }
+            })
+
+            successIds.push(itemId)
+          } catch (error) {
+            let message = "Error desconocido"
+            if (typeof error === "string") {
+              message = error
+            } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+              if (
+                error.code === "P2002" ||
+                error.code === "SQLITE_CONSTRAINT"
+              ) {
+                message = "Ya existe un producto con ese nombre"
+              } else {
+                message = error.message
+              }
+            } else if (error instanceof Error) {
+              message = error.message
+            }
+
+            failed.push({ id: itemId, reason: message })
+          }
+        }
+
+        if (successIds.length > 0) {
+          updateTag(`menu-items-${currentOrgId}`)
+          for (const id of successIds) {
+            updateTag(`menu-item-${id}`)
+          }
+        }
+
+        const sync =
+          successIds.length > 0
+            ? await executeMenuSyncWithPreference({
+                organizationId: currentOrgId,
+                updatePublishedMenus,
+                rememberPublishedChoice
+              })
+            : null
+
+        return {
+          success: {
+            successIds,
+            failed,
+            sync
+          }
+        }
+      } catch (error) {
+        console.error(error)
+        return {
+          failure: {
+            reason: "Error al actualizar los productos"
+          }
+        }
+      }
+    }
+  )
+
 /**
  * Deletes an item from the server.
  *

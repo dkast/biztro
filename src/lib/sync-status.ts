@@ -7,6 +7,7 @@ import type {
   getMenuItemsWithoutCategory
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
+import type { getMenuById } from "@/server/actions/menu/queries"
 
 type MenuComponent = {
   type?: {
@@ -16,6 +17,14 @@ type MenuComponent = {
 }
 
 type MenuNodeMap = Record<string, MenuComponent>
+
+type EditorActions = {
+  setProp: (
+    nodeId: string,
+    setter: (props: Record<string, unknown>) => void
+  ) => void
+  delete: (nodeId: string) => void
+}
 
 export type MenuData = {
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
@@ -440,4 +449,107 @@ export function areLocationsInSync(
     menuLocation?.openingHours,
     dbLocation?.openingHours
   )
+}
+
+/**
+ * Synchronize the editor's nodes with the current menu state.
+ *
+ * This function decodes serialized editor nodes stored on the menu (menu.serialData)
+ * and updates the editor via the provided actions. It will:
+ * - Update CategoryBlock nodes with the corresponding category data from `categories`,
+ *   or delete the node if the category no longer exists.
+ * - Update HeaderBlock nodes with the provided `organization` and `location`.
+ * - Update FeaturedBlock nodes with the provided `featuredItems`.
+ * - Update ItemBlock nodes with the corresponding item from `soloItems`,
+ *   or delete the node if the item no longer exists.
+ *
+ * @param {Object} params - Parameters to control the sync operation.
+ * @param {EditorActions} params.actions - Editor actions (setProp, delete) used to modify nodes.
+ * @param {Awaited<ReturnType<typeof getMenuById>>} params.menu - Menu record that contains serialData to decode.
+ * @param {Awaited<ReturnType<typeof getDefaultLocation>> | null} params.location - Default location used to update HeaderBlock.
+ * @param {Awaited<ReturnType<typeof getCategoriesWithItems>>} params.categories - Current categories and their items.
+ * @param {Awaited<ReturnType<typeof getFeaturedItems>>} params.featuredItems - Current featured items.
+ * @param {Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>} params.soloItems - Items without a category.
+ *
+ * @returns {boolean} True when nodes were decoded and the editor was synchronized; false when
+ * there is no menu.serialData or decoding fails.
+ */
+export function syncEditorWithMenuState({
+  actions,
+  menu,
+  location,
+  categories,
+  featuredItems,
+  soloItems
+}: {
+  actions: EditorActions
+  menu: Awaited<ReturnType<typeof getMenuById>>
+  location: Awaited<ReturnType<typeof getDefaultLocation>> | null
+  categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
+  featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
+  soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
+}) {
+  if (!menu?.serialData) {
+    return false
+  }
+
+  const nodes = decodeMenuNodes(menu.serialData)
+  if (!nodes) {
+    return false
+  }
+
+  for (const property in nodes) {
+    const component = nodes[property]
+    if (component?.type?.resolvedName === "CategoryBlock") {
+      const categoryId = (component?.props?.data as { id?: string } | undefined)
+        ?.id
+      if (!categoryId) {
+        continue
+      }
+      const dbCategory = categories.filter(
+        dbCategory => dbCategory.id === categoryId
+      )
+      if (dbCategory[0]) {
+        actions.setProp(property, props => {
+          props.data = dbCategory[0]
+        })
+      }
+
+      if (!dbCategory[0]) {
+        actions.delete(property)
+      }
+    }
+
+    if (component?.type?.resolvedName === "HeaderBlock") {
+      actions.setProp(property, props => {
+        props.organization = menu?.organization
+        props.location = location
+      })
+    }
+
+    if (component?.type?.resolvedName === "FeaturedBlock") {
+      actions.setProp(property, props => {
+        props.items = featuredItems
+      })
+    }
+
+    if (component?.type?.resolvedName === "ItemBlock") {
+      const itemId = (component?.props?.item as { id?: string } | undefined)?.id
+      if (!itemId) {
+        continue
+      }
+      const dbItem = soloItems.find(dbItem => dbItem.id === itemId)
+      if (dbItem) {
+        actions.setProp(property, props => {
+          props.item = dbItem
+        })
+      }
+
+      if (!dbItem) {
+        actions.delete(property)
+      }
+    }
+  }
+
+  return true
 }
