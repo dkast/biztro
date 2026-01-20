@@ -1,4 +1,4 @@
-import React, { Suspense } from "react"
+import React from "react"
 import { VercelToolbar } from "@vercel/toolbar/next"
 import { type Metadata, type Viewport } from "next"
 import { Inter, Sora } from "next/font/google"
@@ -59,17 +59,12 @@ export default function RootLayout({
     >
       {/* <AxiomWebVitals /> */}
       <body className="bg-white text-gray-950 dark:bg-gray-950 dark:text-white">
-        {/* Wrap Providers in a server-side Suspense boundary so any uncached
-            async data accessed by children or client components can suspend
-            without blocking the entire route (avoids "Blocking Route" errors). */}
-        <Suspense fallback={<div />}>
-          <Providers>
-            <div className="flex min-h-dvh flex-col">
-              {children}
-              {shouldInjectToolbar && <VercelToolbar />}
-            </div>
-          </Providers>
-        </Suspense>
+        <Providers>
+          <div className="flex min-h-dvh flex-col">
+            {children}
+            {shouldInjectToolbar && <VercelToolbar />}
+          </div>
+        </Providers>
       </body>
     </html>
   )
