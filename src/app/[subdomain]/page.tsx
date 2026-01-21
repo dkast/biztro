@@ -5,6 +5,7 @@ import { cacheLife, cacheTag } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { Suspense } from "react"
 
 // import GradientBlur from "@/components/flare-ui/gradient-blur"
 import { getActiveMenuByOrganizationSlug } from "@/server/actions/menu/queries"
@@ -13,6 +14,7 @@ import {
   getOrganizationBySlug
 } from "@/server/actions/organization/queries"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
+import PublicMenuTracker from "@/app/[subdomain]/public-menu-tracker"
 import { SubscriptionStatus } from "@/lib/types"
 
 // Add generateStaticParams to pre-render specific paths
@@ -138,6 +140,13 @@ export default async function SitePage(props: {
 
   return (
     <>
+      <Suspense fallback={null}>
+        <PublicMenuTracker
+          organizationId={siteMenu.organizationId}
+          menuId={siteMenu.id}
+          slug={params.subdomain}
+        />
+      </Suspense>
       <style>{`body { background-color: ${rgbaToHex(backgroundColor)} }`}</style>
       <div
         style={{

@@ -5,6 +5,7 @@ import toast from "react-hot-toast"
 import { Loader, PlusCircle } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
+import { usePostHog } from "posthog-js/react"
 
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { Button } from "@/components/ui/button"
@@ -16,6 +17,8 @@ export default function ItemCreate() {
   const [isPending, startTransition] = useTransition()
   const [showUpgrade, setShowUpgrade] = useState(false)
   const router = useRouter()
+  const posthog = usePostHog()
+  
   const { execute, status, reset } = useAction(createItem, {
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
@@ -27,6 +30,17 @@ export default function ItemCreate() {
         reset()
         return
       }
+      
+      // Track item creation
+      if (data?.success) {
+        posthog.capture("item_created", {
+          item_id: data.success.id,
+          organization_id: data.success.organizationId,
+          category_id: data.success.categoryId,
+          source: "dashboard"
+        })
+      }
+      
       startTransition(() => {
         router.push(`/dashboard/menu-items/new/${data?.success?.id}`)
         reset()
