@@ -87,11 +87,7 @@ npm run dev
 - Prefer React Server Components and minimize `use client` scopes.
 - Use React Hook Form + Zod for forms and validation.
 - URL search state is managed with `nuqs` (see `src/app/providers.tsx`).
-- Auth is implemented with `better-auth`; middleware lives in `src/middleware.ts`.
+- Auth is implemented with `better-auth`; middleware lives in `src/proxy.ts`.
 - Prisma uses the LibSQL adapter configured in `prisma.config.ts` and migrations live under `prisma/migrations`.
 
 For contributor guidance and agent rules see `AGENTS.md`.
-
----
-
-_This README was updated to include stack and local configuration steps._
