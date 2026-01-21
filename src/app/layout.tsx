@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Suspense } from "react"
 import { VercelToolbar } from "@vercel/toolbar/next"
 import { type Metadata, type Viewport } from "next"
 import { Inter, Sora } from "next/font/google"
@@ -59,12 +59,25 @@ export default function RootLayout({
     >
       {/* <AxiomWebVitals /> */}
       <body className="bg-white text-gray-950 dark:bg-gray-950 dark:text-white">
-        <Providers>
-          <div className="flex min-h-dvh flex-col">
-            {children}
-            {shouldInjectToolbar && <VercelToolbar />}
-          </div>
-        </Providers>
+        <Suspense
+          fallback={
+            <div className="flex min-h-dvh items-center justify-center">
+              <div className="flex items-center gap-3 text-sm text-gray-500">
+                <span
+                  className="h-2.5 w-2.5 animate-pulse rounded-full bg-gray-400"
+                />
+                Cargando…
+              </div>
+            </div>
+          }
+        >
+          <Providers>
+            <div className="flex min-h-dvh flex-col">
+              {children}
+              {shouldInjectToolbar && <VercelToolbar />}
+            </div>
+          </Providers>
+        </Suspense>
       </body>
     </html>
   )
