@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import { useQueryClient } from "@tanstack/react-query"
@@ -169,7 +170,10 @@ export default function MenuPublish({
             queryKey: ["menu", menu?.id]
           })
         } catch (error) {
-          console.error(error)
+          Sentry.captureException(error, {
+            tags: { action: "revert_menu_to_published" },
+            extra: { menuId: menu?.id }
+          })
           toast.error("No se pudo revertir el menú publicado")
         }
       } else if (data?.failure?.reason) {

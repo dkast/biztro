@@ -2,6 +2,7 @@
 
 import { updateTag } from "next/cache"
 import { headers } from "next/headers"
+import * as Sentry from "@sentry/nextjs"
 
 import { auth } from "@/lib/auth"
 import { getBaseUrl } from "@/lib/utils"
@@ -21,7 +22,10 @@ export const createStripePortal = async (referenceId: string) => {
 
     return data.url
   } catch (error) {
-    console.error(error)
+    Sentry.captureException(error, {
+      tags: { section: "billing-portal" },
+      extra: { referenceId }
+    })
     return null
   }
 }

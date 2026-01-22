@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import { Gauge } from "@suyalcinkaya/gauge"
 import { useTheme } from "next-themes"
 
@@ -38,7 +39,13 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
     })
 
     if (error) {
-      console.error("Error creating checkout session:", error)
+      Sentry.captureException(error, {
+        tags: { action: "create_checkout_session", plan: Plan.PRO },
+        extra: { 
+          organizationId: activeOrganization?.id,
+          billingInterval 
+        }
+      })
       toast.error("Error al iniciar el proceso de pago. Inténtalo de nuevo.")
     }
   }

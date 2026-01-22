@@ -10,6 +10,7 @@ import {
 } from "@internationalized/date"
 import { clsx, type ClassValue } from "clsx"
 import { Resend } from "resend"
+import * as Sentry from "@sentry/nextjs"
 import { twMerge } from "tailwind-merge"
 
 import { authClient } from "@/lib/auth-client"
@@ -257,7 +258,10 @@ export const sendOrganizationInvitation = async ({
   })
 
   if (error) {
-    console.error("Error sending invitation email:", error)
+    Sentry.captureException(error, {
+      tags: { section: "email-invitation" },
+      extra: { email, organizationName }
+    })
   }
 }
 
@@ -274,7 +278,10 @@ export async function upgradeOrganizationPlan(
     })
 
     if (error || !data) {
-      console.error("Error upgrading organization plan:", error)
+      Sentry.captureException(error, {
+        tags: { section: "organization-upgrade" },
+        extra: { organizationId, newPlan }
+      })
       return {
         failure: {
           reason: "No se pudo actualizar el plan de la organización"

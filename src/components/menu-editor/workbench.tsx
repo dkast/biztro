@@ -11,6 +11,7 @@ import {
 } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { toast } from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import type { Layout } from "react-resizable-panels"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
@@ -445,7 +446,10 @@ export default function Workbench({
           })
         }
       } catch (error) {
-        console.error("Error saving items:", error)
+        Sentry.captureException(error, {
+          tags: { action: "bulk_save_items" },
+          extra: { itemCount: items.length, organizationId }
+        })
         failCount = items.length
         items.forEach(item => failedIds.add(item.id))
       }

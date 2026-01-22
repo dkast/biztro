@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import { Loader, PlusCircle } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
@@ -47,7 +48,10 @@ export default function ItemCreate() {
       })
     },
     onError: error => {
-      console.error(error)
+      Sentry.captureException(error, {
+        tags: { action: "create_item" },
+        extra: { source: "dashboard" }
+      })
       toast.error("No se pudo crear el producto")
       reset()
     }

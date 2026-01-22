@@ -2,6 +2,7 @@
 
 import lz from "lzutf8"
 import { cacheTag } from "next/cache"
+import * as Sentry from "@sentry/nextjs"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
@@ -98,7 +99,10 @@ export async function getMenuById(id: string) {
         menu.serialData = lz.encodeBase64(lz.compress(updated))
       }
     } catch (err) {
-      console.error("Failed to transform serialData backgrounds", err)
+      Sentry.captureException(err, {
+        tags: { section: "menu-transform-backgrounds" },
+        extra: { menuId: id }
+      })
     }
   }
 

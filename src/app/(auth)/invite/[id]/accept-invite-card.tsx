@@ -3,6 +3,7 @@
 import toast from "react-hot-toast"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
+import * as Sentry from "@sentry/nextjs"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -31,7 +32,7 @@ export default function AcceptInviteCard({ invite }: { invite: InviteData }) {
   const { execute, status } = useAction(acceptInvite, {
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
-        console.error(data.failure.reason)
+        Sentry.captureMessage(data.failure.reason, "error")
         toast.error("Falló la aceptación de la invitación")
       } else if (data?.success) {
         router.push("/dashboard")

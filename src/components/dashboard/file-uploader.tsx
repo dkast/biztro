@@ -10,6 +10,7 @@ import Uppy, {
 import ImageEditor from "@uppy/image-editor"
 import Spanish from "@uppy/locales/lib/es_MX"
 import { Dashboard } from "@uppy/react"
+import * as Sentry from "@sentry/nextjs"
 
 // Uppy styles
 import "@uppy/core/dist/style.min.css"
@@ -156,7 +157,7 @@ export function FileUploader({
           (image.width as number) > limitDimension ||
           (image.height as number) > limitDimension
         ) {
-          console.error("Image too big")
+          Sentry.captureMessage("Image dimensions too large", "warning")
           uppy.info(
             `La imagen es demasiado grande, el tamaño máximo es de ${limitDimension}x${limitDimension} píxeles`,
             "error",
@@ -166,7 +167,7 @@ export function FileUploader({
         }
       } else {
         // If the file is not an image, show an error
-        console.error("Not an image")
+        Sentry.captureMessage("File is not an image", "warning")
         uppy.info("El archivo no es una imagen", "error", 3000)
         uppy.removeFile(file.id)
       }

@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect } from "react"
+import * as Sentry from "@sentry/nextjs"
 
 import { cn } from "@/lib/utils"
 
@@ -54,7 +55,10 @@ function ensureFontLoaded(fontFamily: string) {
     })
     .catch(err => {
       loadingFontFamilies.delete(fontFamily)
-      console.error("Error loading WebFont:", err)
+      Sentry.captureException(err, {
+        tags: { action: "load_webfont" },
+        extra: { fontFamily }
+      })
     })
 
   loadingFontFamilies.set(fontFamily, promise)

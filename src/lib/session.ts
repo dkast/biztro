@@ -1,4 +1,5 @@
 import { headers } from "next/headers"
+import * as Sentry from "@sentry/nextjs"
 
 import { auth } from "@/lib/auth"
 
@@ -7,7 +8,9 @@ export async function getCurrentUser() {
     const session = await auth.api.getSession({ headers: await headers() })
     return session?.user ?? null
   } catch (error) {
-    console.error("Error fetching current user:", error)
+    Sentry.captureException(error, {
+      tags: { section: "auth-session" }
+    })
     return null
   }
 }

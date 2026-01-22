@@ -3,6 +3,7 @@
 import type { Organization } from "@/generated/prisma-client/client"
 import lz from "lzutf8"
 import { revalidatePath, updateTag } from "next/cache"
+import * as Sentry from "@sentry/nextjs"
 import { z } from "zod/v4"
 
 import prisma from "@/lib/prisma"
@@ -55,7 +56,10 @@ async function getMenuSyncPreference(organizationId: string) {
     const value = parsed.menuSync?.updatePublishedOnCatalogChange
     return typeof value === "boolean" ? value : null
   } catch (error) {
-    console.error("Failed to parse organization metadata", error)
+    Sentry.captureException(error, {
+      tags: { section: "menu-sync-preference" },
+      extra: { organizationId }
+    })
     return null
   }
 }
@@ -75,7 +79,10 @@ async function setMenuSyncPreference(
         try {
           return JSON.parse(org.metadata) as MenuSyncPreference
         } catch (error) {
-          console.error("Failed to parse organization metadata", error)
+          Sentry.captureException(error, {
+            tags: { section: "menu-sync-preference" },
+            extra: { organizationId }
+          })
           return {}
         }
       })()
@@ -110,7 +117,9 @@ function decodeNodes(serialData?: string | null) {
     const parsed = JSON.parse(serial) as unknown
     return isRecord(parsed) ? (parsed as NodeMap) : null
   } catch (error) {
-    console.error("Failed to decode menu serial data", error)
+    Sentry.captureException(error, {
+      tags: { section: "menu-decode" }
+    })
     return null
   }
 }
