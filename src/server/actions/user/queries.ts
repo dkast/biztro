@@ -3,6 +3,7 @@
 // removed unstable_cache usage — functions now fetch directly
 import { cacheLife, cacheTag } from "next/cache"
 import { headers } from "next/headers"
+import * as Sentry from "@sentry/nextjs"
 
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
@@ -39,7 +40,9 @@ export async function getCurrentOrganization() {
 
     return currentOrg
   } catch (err) {
-    console.error("Failed to get current organization", err)
+    Sentry.captureException(err, {
+      tags: { section: "organization" }
+    })
     return null
   }
 }
@@ -69,7 +72,9 @@ export async function hasOrganizations(): Promise<number> {
     if (!Array.isArray(data)) return 0
     return data.length
   } catch (err) {
-    console.error("Failed to list organizations", err)
+    Sentry.captureException(err, {
+      tags: { section: "organization" }
+    })
     return 0
   }
 }
@@ -107,7 +112,9 @@ export const getCurrentMembership = async () => {
 
     return member
   } catch (err) {
-    console.error("Failed to get current membership", err)
+    Sentry.captureException(err, {
+      tags: { section: "membership" }
+    })
     return null
   }
 }
@@ -126,7 +133,9 @@ export const getCurrentMembershipRole = async () => {
 
     return role
   } catch (err) {
-    console.error("Failed to get current membership role", err)
+    Sentry.captureException(err, {
+      tags: { section: "membership" }
+    })
     return null
   }
 }
@@ -147,7 +156,10 @@ export const getInviteByToken = async (token: string) => {
       error: null
     }
   } catch (err) {
-    console.error("Failed to get invitation by token", err)
+    Sentry.captureException(err, {
+      tags: { section: "invitation" },
+      extra: { token }
+    })
     // If err has a message property, return it; otherwise stringify
     if (err && typeof err === "object" && "message" in err) {
       return {
@@ -211,7 +223,10 @@ export async function isProMember() {
         headers: await headers()
       })
     } catch (error) {
-      console.error("Failed to update organization plan", error)
+      Sentry.captureException(error, {
+        tags: { section: "subscription" },
+        extra: { organizationId: org.id, plan: activeSubscription.plan }
+      })
     }
   }
 
@@ -228,7 +243,7 @@ export async function safeHasPermission(
   cacheLife({ stale: 30 })
 
   if (!opts) {
-    console.error("safeHasPermission called without opts")
+    Sentry.captureMessage("safeHasPermission called without opts", "error")
     return null
   }
 
@@ -262,7 +277,9 @@ export async function safeHasPermission(
     const result = await auth.api.hasPermission(callOpts)
     return result
   } catch (err) {
-    console.error("auth.api.hasPermission failed:", err)
+    Sentry.captureException(err, {
+      tags: { section: "permissions" }
+    })
     return null
   }
 }

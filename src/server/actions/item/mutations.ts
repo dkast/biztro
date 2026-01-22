@@ -3,6 +3,7 @@
 import { Prisma } from "@/generated/prisma-client/client"
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { updateTag } from "next/cache"
+import * as Sentry from "@sentry/nextjs"
 import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
@@ -337,7 +338,10 @@ export const exportMenuItems = authMemberActionClient.action(
 
       return { success: items }
     } catch (error) {
-      console.error("Error exporting items:", error)
+      Sentry.captureException(error, {
+        tags: { section: "item-export" },
+        extra: { menuId }
+      })
       return {
         failure: {
           reason: error instanceof Error ? error.message : "Error desconocido"
@@ -421,11 +425,13 @@ export const updateItem = authMemberActionClient
           }
         }
       } catch (error) {
+        Sentry.captureException(error, {
+          tags: { section: "item-create" }
+        })
         let message
         if (typeof error === "string") {
           message = error
         } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          console.error(error)
           if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
             message = "Ya existe un producto con ese nombre"
           } else {
@@ -553,7 +559,9 @@ export const bulkUpdateItems = authMemberActionClient
           }
         }
       } catch (error) {
-        console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "item-bulk-update" }
+        })
         return {
           failure: {
             reason: "Error al actualizar los productos"
@@ -600,11 +608,14 @@ export const deleteItem = authMemberActionClient
       updateTag(`menu-items-${organizationId}`)
       return { success: true }
     } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "item-delete" },
+        extra: { itemId: id }
+      })
       let message
       if (typeof error === "string") {
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        console.error(error)
         message = error.message
       } else if (error instanceof Error) {
         message = error.message
@@ -646,11 +657,13 @@ export const createCategory = authMemberActionClient
       updateTag(`categories-${currentOrgId}`)
       return { success: category }
     } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "category-create" }
+      })
       let message
       if (typeof error === "string") {
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        console.error(error)
         if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
           message = "Ya existe una categoría con ese nombre"
         } else {
@@ -711,11 +724,13 @@ export const updateCategory = authMemberActionClient
           }
         }
       } catch (error) {
+        Sentry.captureException(error, {
+          tags: { section: "category-update" }
+        })
         let message
         if (typeof error === "string") {
           message = error
         } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          console.error(error)
           if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
             message = "Ya existe una categoría con ese nombre"
           } else {
@@ -771,11 +786,14 @@ export const deleteCategory = authMemberActionClient
       updateTag(`categories-${organizationId}`)
       return { success: true }
     } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "category-delete" },
+        extra: { categoryId: id }
+      })
       let message
       if (typeof error === "string") {
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        console.error(error)
         message = error.message
       } else if (error instanceof Error) {
         message = error.message
@@ -819,11 +837,14 @@ export const createVariant = authMemberActionClient
       updateTag(`menu-item-${menuItemId}`)
       return { success: variant }
     } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "variant-create" },
+        extra: { menuItemId }
+      })
       let message
       if (typeof error === "string") {
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        console.error(error)
         message = error.message
       } else if (error instanceof Error) {
         message = error.message
@@ -859,11 +880,14 @@ export const deleteVariant = authMemberActionClient
       updateTag(`menu-item-${menuItemId}`)
       return { success: true }
     } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "variant-delete" },
+        extra: { variantId: id, menuItemId }
+      })
       let message
       if (typeof error === "string") {
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        console.error(error)
         message = error.message
       } else if (error instanceof Error) {
         message = error.message
@@ -923,7 +947,9 @@ export const bulkUpdateCategory = authMemberActionClient
           }
         }
       } catch (error) {
-        console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "category-order-update" }
+        })
         return {
           failure: {
             reason: "Error al actualizar las categorías"
@@ -974,7 +1000,9 @@ export const bulkDeleteItems = authMemberActionClient
       updateTag(`menu-items-${organizationId}`)
       return { success: true }
     } catch (error) {
-      console.error(error)
+      Sentry.captureException(error, {
+        tags: { section: "item-bulk-delete" }
+      })
       return {
         failure: {
           reason: "Error al eliminar los productos"
@@ -1030,7 +1058,9 @@ export const bulkToggleFeature = authMemberActionClient
           }
         }
       } catch (error) {
-        console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "item-featured-update" }
+        })
         return {
           failure: {
             reason: "Error al actualizar los productos destacados"

@@ -14,7 +14,6 @@ export default function MenuEditorError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error(error)
     Sentry.captureException(error)
   }, [error])
 

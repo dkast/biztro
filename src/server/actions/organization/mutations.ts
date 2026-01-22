@@ -2,6 +2,7 @@
 
 import { updateTag } from "next/cache"
 import { headers } from "next/headers"
+import * as Sentry from "@sentry/nextjs"
 import { z } from "zod/v4"
 
 import { getOrganizationBySlug } from "@/server/actions/organization/queries"
@@ -110,7 +111,10 @@ export const bootstrapOrg = authActionClient
             message = "El subdominio ya está en uso"
           }
         }
-        console.error("Error bootstrapping organization:", error)
+        Sentry.captureException(error, {
+          tags: { section: "organization-bootstrap" },
+          extra: { slug, userId: user?.id }
+        })
         return {
           failure: {
             reason: message
@@ -200,7 +204,9 @@ export const createOrg = authActionClient
         } else if (error instanceof Error) {
           message = error.message
         }
-        console.error("Error creating organization via Better Auth:", error)
+        Sentry.captureException(error, {
+          tags: { section: "organization-create" }
+        })
         return {
           failure: {
             reason: message
