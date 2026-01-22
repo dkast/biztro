@@ -154,8 +154,7 @@ function assertSingleVariantPriceSyncedRow(row: MenuItemRow) {
       } else {
         // Don't throw in production to avoid interrupting user flows, but log.
 
-        Sentry.captureMessage(msg, {
-          level: "error",
+        Sentry.captureMessage(msg, "error", {
           tags: { invariant: "single_variant_price_sync" },
           extra: { rowId: row.id, price: row.price, variantPrice: v0.price }
         })
