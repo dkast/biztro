@@ -8,7 +8,7 @@ import { env } from "@/env.mjs"
 
 /**
  * Get analytics data from PostHog for a specific organization
- * 
+ *
  * @param dateRange - Number of days to look back (7 or 30)
  * @returns Analytics data with public menu view counts
  */
@@ -61,14 +61,17 @@ export const getOrganizationAnalytics = authActionClient
         limit: 10000
       }
 
-      const response = await fetch(`${posthogHost}/api/projects/${env.NEXT_PUBLIC_POSTHOG_KEY}/query/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${env.POSTHOG_API_KEY}`
-        },
-        body: JSON.stringify({ query })
-      })
+      const response = await fetch(
+        `${posthogHost}/api/projects/${env.NEXT_PUBLIC_POSTHOG_KEY}/query/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${env.POSTHOG_API_KEY}`
+          },
+          body: JSON.stringify({ query })
+        }
+      )
 
       if (!response.ok) {
         console.error("PostHog API error:", response.statusText)
@@ -104,7 +107,7 @@ export const getOrganizationAnalytics = authActionClient
 /**
  * Get analytics trend data from PostHog for a specific organization
  * Returns views grouped by day for trend charts
- * 
+ *
  * @param dateRange - Number of days to look back (7 or 30)
  * @returns Analytics trend data with daily public menu view counts
  */
@@ -196,7 +199,7 @@ export const getOrganizationAnalyticsTrend = authActionClient
       )
 
       if (!response.ok) {
-        console.error("PostHog API error:", response.statusText)
+        // console.error("PostHog API error:", response.statusText)
         return {
           failure: {
             reason: "Error al obtener datos de tendencia"
@@ -229,7 +232,7 @@ export const getOrganizationAnalyticsTrend = authActionClient
         }
       }
     } catch (error) {
-      console.error("Error fetching analytics trend:", error)
+      // console.error("Error fetching analytics trend:", error)
       return {
         failure: {
           reason:
