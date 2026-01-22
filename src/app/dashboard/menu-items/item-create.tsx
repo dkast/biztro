@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import { Loader, PlusCircle } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"

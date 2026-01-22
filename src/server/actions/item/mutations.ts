@@ -670,7 +670,7 @@ export const createCategory = authMemberActionClient
         console.error(error)
         Sentry.captureException(error, {
           tags: { section: "item-mutations" },
-          extra: { categoryId: id, errorCode: error.code }
+          extra: { categoryName: name, errorCode: error.code }
         })
         if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
           message = "Ya existe una categoría con ese nombre"

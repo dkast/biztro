@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import * as Sentry from "@sentry/nextjs"
 import AwsS3, { type AwsS3UploadParameters } from "@uppy/aws-s3"
 import Compressor from "@uppy/compressor"
 import Uppy, {

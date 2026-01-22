@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { toast } from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import type { Category } from "@/generated/prisma-client/client"
 import type { Table } from "@tanstack/react-table"
 import { Combine, Loader, Star, Trash2, X } from "lucide-react"

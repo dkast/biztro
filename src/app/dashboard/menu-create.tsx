@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import { CirclePlus, Loader } from "lucide-react"
 import { motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import { useQueryClient } from "@tanstack/react-query"
