@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 import lz from "lzutf8"
 import type { Metadata, ResolvingMetadata } from "next"
@@ -12,6 +13,7 @@ import {
   getAllActiveOrganizations,
   getOrganizationBySlug
 } from "@/server/actions/organization/queries"
+import PublicMenuTracker from "@/app/[subdomain]/public-menu-tracker"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { SubscriptionStatus } from "@/lib/types"
 
@@ -118,26 +120,46 @@ export default async function SitePage(props: {
   }
 
   const json = lz.decompress(lz.decodeBase64(snapshot))
+  if (!json) {
+    return notFound()
+  }
+
+  const parsed = JSON.parse(json) as Record<string, unknown>
+  if (!isRecord(parsed)) {
+    return notFound()
+  }
+
+  const { nodes: sanitizedNodes, changed } = sanitizeCraftNodes(parsed)
+  const serializedNodes = changed ? JSON.stringify(sanitizedNodes) : json
 
   let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
   let textColor: RgbaColor = { r: 0, g: 0, b: 0, a: 1 }
 
   // Search container style (color)
-  const data = JSON.parse(json)
+  const data = sanitizedNodes
   const keys = Object.keys(data)
   keys.forEach(el => {
     const node = data[el]
-    const { displayName } = node
+    if (!isRecord(node)) return
+    const displayName = node.displayName as string | undefined
+    const props = isRecord(node.props) ? node.props : undefined
     if (displayName === "Sitio") {
-      backgroundColor = data[el]?.props?.backgroundColor
+      backgroundColor = props?.backgroundColor as RgbaColor
     }
     if (displayName === "Cabecera") {
-      textColor = data[el]?.props?.color
+      textColor = props?.color as RgbaColor
     }
   })
 
   return (
     <>
+      <Suspense fallback={null}>
+        <PublicMenuTracker
+          organizationId={siteMenu.organizationId}
+          menuId={siteMenu.id}
+          slug={params.subdomain}
+        />
+      </Suspense>
       <style>{`body { background-color: ${rgbaToHex(backgroundColor)} }`}</style>
       <div
         style={{
@@ -146,7 +168,7 @@ export default async function SitePage(props: {
         className="relative flex min-h-screen flex-col"
       >
         <div className="flex grow">
-          <ResolveEditor json={json} />
+          <ResolveEditor json={serializedNodes} />
         </div>
         <div
           className="fixed inset-x-0 bottom-0 flex items-center justify-between
@@ -189,4 +211,28 @@ export default async function SitePage(props: {
       </div>
     </>
   )
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+function sanitizeCraftNodes(nodes: Record<string, unknown>) {
+  let changed = false
+  const next: Record<string, unknown> = { ...nodes }
+
+  for (const [nodeId, value] of Object.entries(nodes)) {
+    if (!isRecord(value)) continue
+    const node = value as Record<string, unknown>
+    const props = node.props
+    if (!isRecord(props)) {
+      next[nodeId] = {
+        ...node,
+        props: {}
+      }
+      changed = true
+    }
+  }
+
+  return { nodes: next, changed }
 }
