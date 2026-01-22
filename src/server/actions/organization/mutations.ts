@@ -2,6 +2,7 @@
 
 import { updateTag } from "next/cache"
 import { headers } from "next/headers"
+import * as Sentry from "@sentry/nextjs"
 import { z } from "zod/v4"
 
 import { getOrganizationBySlug } from "@/server/actions/organization/queries"
@@ -111,6 +112,10 @@ export const bootstrapOrg = authActionClient
           }
         }
         console.error("Error bootstrapping organization:", error)
+        Sentry.captureException(error, {
+          tags: { section: "organization-mutations", operation: "bootstrap" },
+          extra: { slug, name }
+        })
         return {
           failure: {
             reason: message
@@ -201,6 +206,10 @@ export const createOrg = authActionClient
           message = error.message
         }
         console.error("Error creating organization via Better Auth:", error)
+        Sentry.captureException(error, {
+          tags: { section: "organization-mutations", operation: "create" },
+          extra: { slug, name }
+        })
         return {
           failure: {
             reason: message
@@ -242,6 +251,10 @@ export const updateOrg = authActionClient
           // If the external API throws (for example, when slug is taken),
           // don't return early — treat as 'not available' and verify ownership below.
           console.warn("checkOrganizationSlug failed:", err)
+          Sentry.captureException(err, {
+            tags: { section: "organization-mutations", operation: "checkSlug" },
+            extra: { slug }
+          })
           existingSlug = null
         }
 
@@ -425,6 +438,10 @@ export const deleteOrganization = authActionClient
           await auth.api.signOut({ headers: await headers() })
         } catch (err) {
           console.warn("Failed to sign out after organization deletion:", err)
+          Sentry.captureException(err, {
+            tags: { section: "organization-mutations", operation: "signOut" },
+            extra: { organizationId: id }
+          })
         }
 
         return {

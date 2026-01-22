@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import {
   AlertCircle,
   ChevronDown,
@@ -83,6 +84,9 @@ export default function ItemImport() {
     },
     onError: error => {
       console.error(error)
+      Sentry.captureException(error, {
+        tags: { section: "item-import" }
+      })
       toast.error("Error al importar los productos")
       reset()
     }
@@ -152,6 +156,9 @@ export default function ItemImport() {
     },
     onError: error => {
       console.error(error)
+      Sentry.captureException(error, {
+        tags: { section: "item-export" }
+      })
       toast.error("No se pudo exportar los productos")
       resetExport()
     }

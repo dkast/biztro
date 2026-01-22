@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import * as Sentry from "@sentry/nextjs"
 import type { CellSelectOption } from "@/types/data-grid"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Loader } from "lucide-react"
@@ -154,6 +155,10 @@ function assertSingleVariantPriceSyncedRow(row: MenuItemRow) {
         // Don't throw in production to avoid interrupting user flows, but log.
 
         console.error(msg)
+        Sentry.captureMessage(msg, {
+          level: "error",
+          tags: { section: "menu-items-data-grid" }
+        })
       }
     }
   }

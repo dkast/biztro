@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og"
+import * as Sentry from "@sentry/nextjs"
 
 import { getBaseUrl } from "@/lib/utils"
 import { env } from "@/env.mjs"
@@ -129,6 +130,9 @@ export default async function Image({
     )
   } catch (error) {
     console.error(error)
+    Sentry.captureException(error, {
+      tags: { section: "opengraph-image" }
+    })
     return new Response("Failed to generate image", { status: 500 })
   }
 }

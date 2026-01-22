@@ -1,5 +1,6 @@
 "use server"
 
+import * as Sentry from "@sentry/nextjs"
 import { z } from "zod/v4"
 
 import { getCurrentOrganization } from "@/server/actions/user/queries"
@@ -74,7 +75,9 @@ export const getOrganizationAnalytics = authActionClient
       )
 
       if (!response.ok) {
-        console.error("PostHog API error:", response.statusText)
+        Sentry.captureMessage(`PostHog API error: ${response.statusText}`, {
+          level: "error"
+        })
         return {
           failure: {
             reason: "Error al obtener datos de analítica"
@@ -92,7 +95,10 @@ export const getOrganizationAnalytics = authActionClient
         }
       }
     } catch (error) {
-      console.error("Error fetching analytics:", error)
+      Sentry.captureException(error, {
+        tags: { section: "analytics" },
+        extra: { organizationSlug: currentOrg.slug }
+      })
       return {
         failure: {
           reason:
