@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import type { z } from "zod/v4"
+import { usePostHog } from "posthog-js/react"
 
 import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
 import { Button } from "@/components/ui/button"
@@ -105,6 +106,7 @@ function CategoryEditForm({
       organizationId: category?.organizationId ?? undefined
     }
   })
+  const posthog = usePostHog()
   const [syncPrompt, setSyncPrompt] = useState({
     open: false,
     organizationId: category?.organizationId ?? "",
@@ -119,6 +121,14 @@ function CategoryEditForm({
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Categoría agregada")
+        
+        // Track category creation
+        posthog.capture("category_created", {
+          category_id: data.success.id,
+          organization_id: data.success.organizationId,
+          source: "dashboard"
+        })
+        
         onClose(false)
       } else if (data?.failure.reason) {
         toast.error(data?.failure.reason)

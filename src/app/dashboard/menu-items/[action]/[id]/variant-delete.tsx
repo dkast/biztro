@@ -1,6 +1,7 @@
 "use client"
 
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import { useAction } from "next-safe-action/hooks"
 
 import {
@@ -42,6 +43,10 @@ export default function VariantDelete({
     },
     onError: error => {
       console.error(error)
+      Sentry.captureException(error, {
+        tags: { section: "variant-delete" },
+        extra: { variantId, menuItemId }
+      })
       toast.dismiss()
       toast.error("Algo salió mal")
       reset()

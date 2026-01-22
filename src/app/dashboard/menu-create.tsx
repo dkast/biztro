@@ -2,10 +2,12 @@
 
 import { useState } from "react"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import { CirclePlus, Loader } from "lucide-react"
 import { motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
+import { usePostHog } from "posthog-js/react"
 
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { createMenu } from "@/server/actions/menu/mutations"
@@ -13,6 +15,7 @@ import { BasicPlanLimits } from "@/lib/types"
 
 export default function MenuCreate() {
   const router = useRouter()
+  const posthog = usePostHog()
   const [showUpgrade, setShowUpgrade] = useState(false)
 
   const { execute, status, reset } = useAction(createMenu, {
@@ -28,11 +31,24 @@ export default function MenuCreate() {
           return
         }
       }
+      
+      // Track menu creation
+      if (data?.success) {
+        posthog.capture("menu_created", {
+          menu_id: data.success.id,
+          organization_id: data.success.organizationId,
+          source: "dashboard"
+        })
+      }
+      
       router.push(`/menu-editor/${data?.success?.id}`)
       reset()
     },
     onError: error => {
       console.error(error)
+      Sentry.captureException(error, {
+        tags: { section: "menu-create" }
+      })
       toast.error("No se pudo crear el menú")
       reset()
     }

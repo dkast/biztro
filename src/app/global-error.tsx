@@ -27,7 +27,6 @@ export default function GlobalError({
   error: Error & { digest?: string }
 }) {
   useEffect(() => {
-    console.error(error)
     Sentry.captureException(error)
   }, [error])
 

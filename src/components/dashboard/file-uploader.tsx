@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import * as Sentry from "@sentry/nextjs"
 import AwsS3, { type AwsS3UploadParameters } from "@uppy/aws-s3"
 import Compressor from "@uppy/compressor"
 import Uppy, {
@@ -157,6 +158,15 @@ export function FileUploader({
           (image.height as number) > limitDimension
         ) {
           console.error("Image too big")
+          Sentry.captureMessage("Image too large", {
+            level: "warning",
+            tags: { section: "file-upload" },
+            extra: { 
+              width: image.width, 
+              height: image.height, 
+              limitDimension 
+            }
+          })
           uppy.info(
             `La imagen es demasiado grande, el tamaño máximo es de ${limitDimension}x${limitDimension} píxeles`,
             "error",
@@ -167,6 +177,11 @@ export function FileUploader({
       } else {
         // If the file is not an image, show an error
         console.error("Not an image")
+        Sentry.captureMessage("Non-image file attempted upload", {
+          level: "warning",
+          tags: { section: "file-upload" },
+          extra: { fileType: file.type }
+        })
         uppy.info("El archivo no es una imagen", "error", 3000)
         uppy.removeFile(file.id)
       }
@@ -189,6 +204,12 @@ export function FileUploader({
         onUpgradeRequired?.()
         return
       }
+
+      console.error("Upload error:", error)
+      Sentry.captureException(error, {
+        tags: { section: "file-upload" },
+        extra: { imageType, objectId }
+      })
 
       if (onUploadError) {
         onUploadError(

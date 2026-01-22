@@ -1,4 +1,5 @@
 import { Logger } from "next-axiom"
+import * as Sentry from "@sentry/nextjs"
 import { createSafeActionClient } from "next-safe-action"
 import { redirect } from "next/navigation"
 
@@ -7,7 +8,7 @@ import { getCurrentUser } from "@/lib/session"
 
 export const actionClient = createSafeActionClient({
   handleServerError(e) {
-    console.error(e)
+    Sentry.captureException(e)
     const log = new Logger()
     log.error("Error in safe action", e)
     log.flush()

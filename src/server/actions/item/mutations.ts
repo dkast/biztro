@@ -3,6 +3,7 @@
 import { Prisma } from "@/generated/prisma-client/client"
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { updateTag } from "next/cache"
+import * as Sentry from "@sentry/nextjs"
 import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
@@ -338,6 +339,10 @@ export const exportMenuItems = authMemberActionClient.action(
       return { success: items }
     } catch (error) {
       console.error("Error exporting items:", error)
+      Sentry.captureException(error, {
+        tags: { section: "item-mutations" },
+        extra: { organizationId: currentOrgId }
+      })
       return {
         failure: {
           reason: error instanceof Error ? error.message : "Error desconocido"
@@ -426,6 +431,10 @@ export const updateItem = authMemberActionClient
           message = error
         } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
           console.error(error)
+          Sentry.captureException(error, {
+            tags: { section: "item-mutations", operation: "updateItem" },
+            extra: { itemId: id, errorCode: error.code }
+          })
           if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
             message = "Ya existe un producto con ese nombre"
           } else {
@@ -554,6 +563,10 @@ export const bulkUpdateItems = authMemberActionClient
         }
       } catch (error) {
         console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "item-mutations" },
+          extra: { organizationId: currentOrgId, itemCount: items.length }
+        })
         return {
           failure: {
             reason: "Error al actualizar los productos"
@@ -605,6 +618,10 @@ export const deleteItem = authMemberActionClient
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
         console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "item-mutations", operation: "deleteItem" },
+          extra: { itemId: id, organizationId, errorCode: error.code }
+        })
         message = error.message
       } else if (error instanceof Error) {
         message = error.message
@@ -651,6 +668,10 @@ export const createCategory = authMemberActionClient
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
         console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "item-mutations" },
+          extra: { categoryName: name, errorCode: error.code }
+        })
         if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
           message = "Ya existe una categoría con ese nombre"
         } else {
@@ -716,6 +737,10 @@ export const updateCategory = authMemberActionClient
           message = error
         } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
           console.error(error)
+          Sentry.captureException(error, {
+            tags: { section: "item-mutations", operation: "updateCategory" },
+            extra: { categoryId: id, errorCode: error.code }
+          })
           if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
             message = "Ya existe una categoría con ese nombre"
           } else {
@@ -776,6 +801,10 @@ export const deleteCategory = authMemberActionClient
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
         console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "item-mutations", operation: "deleteCategory" },
+          extra: { categoryId: id, organizationId, errorCode: error.code }
+        })
         message = error.message
       } else if (error instanceof Error) {
         message = error.message
@@ -824,6 +853,10 @@ export const createVariant = authMemberActionClient
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
         console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "item-mutations", operation: "createVariant" },
+          extra: { menuItemId, errorCode: error.code }
+        })
         message = error.message
       } else if (error instanceof Error) {
         message = error.message
@@ -864,6 +897,10 @@ export const deleteVariant = authMemberActionClient
         message = error
       } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
         console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "item-mutations", operation: "deleteVariant" },
+          extra: { variantId: id, menuItemId, errorCode: error.code }
+        })
         message = error.message
       } else if (error instanceof Error) {
         message = error.message
@@ -924,6 +961,10 @@ export const bulkUpdateCategory = authMemberActionClient
         }
       } catch (error) {
         console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "item-mutations", operation: "bulkUpdateCategory" },
+          extra: { organizationId, categoryId, itemIds: ids.slice(0, 10) }
+        })
         return {
           failure: {
             reason: "Error al actualizar las categorías"
@@ -975,6 +1016,10 @@ export const bulkDeleteItems = authMemberActionClient
       return { success: true }
     } catch (error) {
       console.error(error)
+      Sentry.captureException(error, {
+        tags: { section: "item-mutations" },
+        extra: { organizationId, itemIds: ids.slice(0, 10) }
+      })
       return {
         failure: {
           reason: "Error al eliminar los productos"
@@ -1031,6 +1076,10 @@ export const bulkToggleFeature = authMemberActionClient
         }
       } catch (error) {
         console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "item-mutations" },
+          extra: { organizationId, featured, itemIds: ids.slice(0, 10) }
+        })
         return {
           failure: {
             reason: "Error al actualizar los productos destacados"

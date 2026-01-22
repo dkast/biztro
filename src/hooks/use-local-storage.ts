@@ -1,4 +1,5 @@
 import { useState } from "react"
+import * as Sentry from "@sentry/nextjs"
 
 export default function useLocalStorage<T>(key: string, initialValue: T) {
   // State to store our value
@@ -15,6 +16,10 @@ export default function useLocalStorage<T>(key: string, initialValue: T) {
     } catch (error) {
       // If error also return initialValue
       console.error(error)
+      Sentry.captureException(error, {
+        tags: { section: "local-storage" },
+        extra: { key }
+      })
       return initialValue
     }
   })
@@ -34,6 +39,10 @@ export default function useLocalStorage<T>(key: string, initialValue: T) {
     } catch (error) {
       // A more advanced implementation would handle the error case
       console.error(error)
+      Sentry.captureException(error, {
+        tags: { section: "local-storage" },
+        extra: { key }
+      })
     }
   }
   return [storedValue, setValue] as const

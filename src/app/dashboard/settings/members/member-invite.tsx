@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, UserPlus } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
@@ -45,6 +46,9 @@ export default function MemberInvite({ isPro }: { isPro: boolean }) {
     },
     onError: error => {
       console.error(error)
+      Sentry.captureException(error, {
+        tags: { section: "member-invite" }
+      })
       toast.error("Falló el envío de la invitación")
     }
   })

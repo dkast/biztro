@@ -59,10 +59,18 @@ export default function RootLayout({
     >
       {/* <AxiomWebVitals /> */}
       <body className="bg-white text-gray-950 dark:bg-gray-950 dark:text-white">
-        {/* Wrap Providers in a server-side Suspense boundary so any uncached
-            async data accessed by children or client components can suspend
-            without blocking the entire route (avoids "Blocking Route" errors). */}
-        <Suspense fallback={<div />}>
+        <Suspense
+          fallback={
+            <div className="flex min-h-dvh items-center justify-center">
+              <div className="flex items-center gap-3 text-sm text-gray-500">
+                <span
+                  className="h-2.5 w-2.5 animate-pulse rounded-full bg-gray-400"
+                />
+                Cargando…
+              </div>
+            </div>
+          }
+        >
           <Providers>
             <div className="flex min-h-dvh flex-col">
               {children}

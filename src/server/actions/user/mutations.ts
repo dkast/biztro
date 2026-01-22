@@ -2,6 +2,7 @@
 
 import { refresh, updateTag } from "next/cache"
 import { headers } from "next/headers"
+import * as Sentry from "@sentry/nextjs"
 import { z } from "zod/v4"
 
 import { auth } from "@/lib/auth"
@@ -57,6 +58,10 @@ export const switchOrganization = authActionClient
         return { success: true }
       } catch (error) {
         console.error("Error switching organization:", error)
+        Sentry.captureException(error, {
+          tags: { section: "user-mutations" },
+          extra: { organizationId, currentOrganizationId }
+        })
         return {
           failure: {
             reason: "Error cambiando de organización"
@@ -104,6 +109,10 @@ export const inviteMember = authActionClient
       }
     } catch (error) {
       console.error("Error inviting member:", error)
+      Sentry.captureException(error, {
+        tags: { section: "user-mutations" },
+        extra: { email }
+      })
       return {
         failure: {
           reason: "Error invitando al miembro"
@@ -158,6 +167,10 @@ export const acceptInvite = authActionClient
       return { success: true }
     } catch (error) {
       console.error("Error accepting invite:", error)
+      Sentry.captureException(error, {
+        tags: { section: "user-mutations" },
+        extra: { invitationId: id }
+      })
       return {
         failure: {
           reason: "Error aceptando la invitación"
@@ -206,6 +219,10 @@ export const removeMember = authActionClient
       return { success: true }
     } catch (error) {
       console.error("Error removing member:", error)
+      Sentry.captureException(error, {
+        tags: { section: "user-mutations" },
+        extra: { memberId: id }
+      })
       return {
         failure: {
           reason: "Error eliminando al miembro"
