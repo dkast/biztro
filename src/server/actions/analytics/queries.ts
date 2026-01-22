@@ -75,10 +75,9 @@ export const getOrganizationAnalytics = authActionClient
       )
 
       if (!response.ok) {
-        Sentry.captureMessage(
-          `PostHog API error: ${response.statusText}`,
-          "error"
-        )
+        Sentry.captureMessage(`PostHog API error: ${response.statusText}`, {
+          level: "error"
+        })
         return {
           failure: {
             reason: "Error al obtener datos de analítica"

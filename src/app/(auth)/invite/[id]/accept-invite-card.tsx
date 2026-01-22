@@ -32,7 +32,7 @@ export default function AcceptInviteCard({ invite }: { invite: InviteData }) {
   const { execute, status } = useAction(acceptInvite, {
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
-        Sentry.captureMessage(data.failure.reason, "error")
+        Sentry.captureMessage(data.failure.reason, { level: "error" })
         toast.error("Falló la aceptación de la invitación")
       } else if (data?.success) {
         router.push("/dashboard")

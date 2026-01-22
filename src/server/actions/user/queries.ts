@@ -243,7 +243,9 @@ export async function safeHasPermission(
   cacheLife({ stale: 30 })
 
   if (!opts) {
-    Sentry.captureMessage("safeHasPermission called without opts", "error")
+    Sentry.captureMessage("safeHasPermission called without opts", {
+      level: "error"
+    })
     return null
   }
 

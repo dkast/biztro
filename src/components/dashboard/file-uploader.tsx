@@ -157,7 +157,9 @@ export function FileUploader({
           (image.width as number) > limitDimension ||
           (image.height as number) > limitDimension
         ) {
-          Sentry.captureMessage("Image dimensions too large", "warning")
+          Sentry.captureMessage("Image dimensions too large", {
+            level: "warning"
+          })
           uppy.info(
             `La imagen es demasiado grande, el tamaño máximo es de ${limitDimension}x${limitDimension} píxeles`,
             "error",
@@ -167,7 +169,7 @@ export function FileUploader({
         }
       } else {
         // If the file is not an image, show an error
-        Sentry.captureMessage("File is not an image", "warning")
+        Sentry.captureMessage("File is not an image", { level: "warning" })
         uppy.info("El archivo no es una imagen", "error", 3000)
         uppy.removeFile(file.id)
       }
