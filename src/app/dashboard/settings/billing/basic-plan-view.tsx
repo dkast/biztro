@@ -39,11 +39,13 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
     })
 
     if (error) {
+      console.error("Error creating checkout session:", error)
       Sentry.captureException(error, {
-        tags: { action: "create_checkout_session", plan: Plan.PRO },
+        tags: { section: "billing-checkout" },
         extra: { 
-          organizationId: activeOrganization?.id,
-          billingInterval 
+          organizationId: activeOrganization?.id, 
+          plan: Plan.PRO,
+          billingInterval
         }
       })
       toast.error("Error al iniciar el proceso de pago. Inténtalo de nuevo.")

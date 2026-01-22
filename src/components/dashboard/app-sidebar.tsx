@@ -254,8 +254,9 @@ function SidebarWorkgroup() {
       }
     },
     onError: error => {
+      console.error(error)
       Sentry.captureException(error, {
-        tags: { section: "organization-switch" }
+        tags: { section: "sidebar-switch-org" }
       })
       toast.error("No se pudo cambiar de organización")
     },

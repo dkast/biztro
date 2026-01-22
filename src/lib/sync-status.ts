@@ -46,8 +46,9 @@ export function decodeMenuNodes(serialData?: string | null) {
     const serial = lz.decompress(lz.decodeBase64(serialData))
     return JSON.parse(serial) as MenuNodeMap
   } catch (error) {
+    console.error("Failed to decode menu serial data", error)
     Sentry.captureException(error, {
-      tags: { section: "menu-decode" }
+      tags: { section: "menu-sync" }
     })
     return null
   }

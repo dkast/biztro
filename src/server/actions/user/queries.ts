@@ -40,8 +40,9 @@ export async function getCurrentOrganization() {
 
     return currentOrg
   } catch (err) {
+    console.error("Failed to get current organization", err)
     Sentry.captureException(err, {
-      tags: { section: "organization" }
+      tags: { section: "user-queries" }
     })
     return null
   }
@@ -72,8 +73,9 @@ export async function hasOrganizations(): Promise<number> {
     if (!Array.isArray(data)) return 0
     return data.length
   } catch (err) {
+    console.error("Failed to list organizations", err)
     Sentry.captureException(err, {
-      tags: { section: "organization" }
+      tags: { section: "user-queries" }
     })
     return 0
   }
@@ -112,8 +114,9 @@ export const getCurrentMembership = async () => {
 
     return member
   } catch (err) {
+    console.error("Failed to get current membership", err)
     Sentry.captureException(err, {
-      tags: { section: "membership" }
+      tags: { section: "user-queries" }
     })
     return null
   }
@@ -133,8 +136,9 @@ export const getCurrentMembershipRole = async () => {
 
     return role
   } catch (err) {
+    console.error("Failed to get current membership role", err)
     Sentry.captureException(err, {
-      tags: { section: "membership" }
+      tags: { section: "user-queries" }
     })
     return null
   }
@@ -156,8 +160,9 @@ export const getInviteByToken = async (token: string) => {
       error: null
     }
   } catch (err) {
+    console.error("Failed to get invitation by token", err)
     Sentry.captureException(err, {
-      tags: { section: "invitation" },
+      tags: { section: "user-queries" },
       extra: { token }
     })
     // If err has a message property, return it; otherwise stringify
@@ -223,8 +228,9 @@ export async function isProMember() {
         headers: await headers()
       })
     } catch (error) {
+      console.error("Failed to update organization plan", error)
       Sentry.captureException(error, {
-        tags: { section: "subscription" },
+        tags: { section: "user-queries" },
         extra: { organizationId: org.id, plan: activeSubscription.plan }
       })
     }
@@ -243,8 +249,10 @@ export async function safeHasPermission(
   cacheLife({ stale: 30 })
 
   if (!opts) {
+    console.error("safeHasPermission called without opts")
     Sentry.captureMessage("safeHasPermission called without opts", {
-      level: "error"
+      level: "error",
+      tags: { section: "user-queries" }
     })
     return null
   }
@@ -279,8 +287,9 @@ export async function safeHasPermission(
     const result = await auth.api.hasPermission(callOpts)
     return result
   } catch (err) {
+    console.error("auth.api.hasPermission failed:", err)
     Sentry.captureException(err, {
-      tags: { section: "permissions" }
+      tags: { section: "user-queries" }
     })
     return null
   }

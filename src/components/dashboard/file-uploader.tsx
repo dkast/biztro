@@ -10,7 +10,6 @@ import Uppy, {
 import ImageEditor from "@uppy/image-editor"
 import Spanish from "@uppy/locales/lib/es_MX"
 import { Dashboard } from "@uppy/react"
-import * as Sentry from "@sentry/nextjs"
 
 // Uppy styles
 import "@uppy/core/dist/style.min.css"
@@ -157,8 +156,15 @@ export function FileUploader({
           (image.width as number) > limitDimension ||
           (image.height as number) > limitDimension
         ) {
-          Sentry.captureMessage("Image dimensions too large", {
-            level: "warning"
+          console.error("Image too big")
+          Sentry.captureMessage("Image too large", {
+            level: "warning",
+            tags: { section: "file-upload" },
+            extra: { 
+              width: image.width, 
+              height: image.height, 
+              limitDimension 
+            }
           })
           uppy.info(
             `La imagen es demasiado grande, el tamaño máximo es de ${limitDimension}x${limitDimension} píxeles`,
@@ -169,7 +175,12 @@ export function FileUploader({
         }
       } else {
         // If the file is not an image, show an error
-        Sentry.captureMessage("File is not an image", { level: "warning" })
+        console.error("Not an image")
+        Sentry.captureMessage("Non-image file attempted upload", {
+          level: "warning",
+          tags: { section: "file-upload" },
+          extra: { fileType: file.type }
+        })
         uppy.info("El archivo no es una imagen", "error", 3000)
         uppy.removeFile(file.id)
       }
@@ -192,6 +203,12 @@ export function FileUploader({
         onUpgradeRequired?.()
         return
       }
+
+      console.error("Upload error:", error)
+      Sentry.captureException(error, {
+        tags: { section: "file-upload" },
+        extra: { imageType, objectId }
+      })
 
       if (onUploadError) {
         onUploadError(

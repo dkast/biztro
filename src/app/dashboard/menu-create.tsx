@@ -7,7 +7,6 @@ import { motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { usePostHog } from "posthog-js/react"
-import * as Sentry from "@sentry/nextjs"
 
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { createMenu } from "@/server/actions/menu/mutations"
@@ -45,6 +44,7 @@ export default function MenuCreate() {
       reset()
     },
     onError: error => {
+      console.error(error)
       Sentry.captureException(error, {
         tags: { section: "menu-create" }
       })

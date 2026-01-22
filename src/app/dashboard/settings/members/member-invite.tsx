@@ -45,8 +45,9 @@ export default function MemberInvite({ isPro }: { isPro: boolean }) {
       reset()
     },
     onError: error => {
+      console.error(error)
       Sentry.captureException(error, {
-        tags: { action: "invite_member" }
+        tags: { section: "member-invite" }
       })
       toast.error("Falló el envío de la invitación")
     }

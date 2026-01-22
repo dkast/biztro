@@ -42,8 +42,9 @@ export default function VariantDelete({
       reset()
     },
     onError: error => {
+      console.error(error)
       Sentry.captureException(error, {
-        tags: { action: "delete_variant" },
+        tags: { section: "variant-delete" },
         extra: { variantId, menuItemId }
       })
       toast.dismiss()

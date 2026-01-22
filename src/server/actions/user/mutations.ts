@@ -57,8 +57,9 @@ export const switchOrganization = authActionClient
         }
         return { success: true }
       } catch (error) {
+        console.error("Error switching organization:", error)
         Sentry.captureException(error, {
-          tags: { section: "organization" },
+          tags: { section: "user-mutations" },
           extra: { organizationId, currentOrganizationId }
         })
         return {
@@ -107,8 +108,9 @@ export const inviteMember = authActionClient
         return { success: true }
       }
     } catch (error) {
+      console.error("Error inviting member:", error)
       Sentry.captureException(error, {
-        tags: { section: "member-invite" },
+        tags: { section: "user-mutations" },
         extra: { email }
       })
       return {
@@ -164,8 +166,9 @@ export const acceptInvite = authActionClient
 
       return { success: true }
     } catch (error) {
+      console.error("Error accepting invite:", error)
       Sentry.captureException(error, {
-        tags: { section: "accept-invite" },
+        tags: { section: "user-mutations" },
         extra: { invitationId: id }
       })
       return {
@@ -215,8 +218,9 @@ export const removeMember = authActionClient
 
       return { success: true }
     } catch (error) {
+      console.error("Error removing member:", error)
       Sentry.captureException(error, {
-        tags: { section: "remove-member" },
+        tags: { section: "user-mutations" },
         extra: { memberId: id }
       })
       return {

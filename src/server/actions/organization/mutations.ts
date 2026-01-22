@@ -111,9 +111,10 @@ export const bootstrapOrg = authActionClient
             message = "El subdominio ya está en uso"
           }
         }
+        console.error("Error bootstrapping organization:", error)
         Sentry.captureException(error, {
-          tags: { section: "organization-bootstrap" },
-          extra: { slug, userId: user?.id }
+          tags: { section: "organization-mutations", operation: "bootstrap" },
+          extra: { slug, name }
         })
         return {
           failure: {
@@ -204,8 +205,10 @@ export const createOrg = authActionClient
         } else if (error instanceof Error) {
           message = error.message
         }
+        console.error("Error creating organization via Better Auth:", error)
         Sentry.captureException(error, {
-          tags: { section: "organization-create" }
+          tags: { section: "organization-mutations", operation: "create" },
+          extra: { slug, name }
         })
         return {
           failure: {
@@ -248,6 +251,10 @@ export const updateOrg = authActionClient
           // If the external API throws (for example, when slug is taken),
           // don't return early — treat as 'not available' and verify ownership below.
           console.warn("checkOrganizationSlug failed:", err)
+          Sentry.captureException(err, {
+            tags: { section: "organization-mutations", operation: "checkSlug" },
+            extra: { slug }
+          })
           existingSlug = null
         }
 
@@ -431,6 +438,10 @@ export const deleteOrganization = authActionClient
           await auth.api.signOut({ headers: await headers() })
         } catch (err) {
           console.warn("Failed to sign out after organization deletion:", err)
+          Sentry.captureException(err, {
+            tags: { section: "organization-mutations", operation: "signOut" },
+            extra: { organizationId: id }
+          })
         }
 
         return {

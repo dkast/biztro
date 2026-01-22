@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { toast } from "react-hot-toast"
-import * as Sentry from "@sentry/nextjs"
 import type { Category } from "@/generated/prisma-client/client"
 import type { Table } from "@tanstack/react-table"
 import { Combine, Loader, Star, Trash2, X } from "lucide-react"
@@ -169,9 +168,10 @@ function FloatingToolbar({
       })
       setShowDeleteDialog(false)
     } catch (error) {
+      console.error("Error deleting items:", error)
       Sentry.captureException(error, {
-        tags: { action: "bulk_delete_items" },
-        extra: { itemIds: selectedIds, organizationId: orgId }
+        tags: { section: "floating-toolbar" },
+        extra: { organizationId: orgId, itemIds: selectedIds.slice(0, 10) }
       })
       // Add appropriate error handling/notification
     }
