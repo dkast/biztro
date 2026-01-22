@@ -961,6 +961,10 @@ export const bulkUpdateCategory = authMemberActionClient
         }
       } catch (error) {
         console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "item-mutations", operation: "bulkUpdateCategory" },
+          extra: { organizationId, categoryId, itemIds: ids.slice(0, 10) }
+        })
         return {
           failure: {
             reason: "Error al actualizar las categorías"
