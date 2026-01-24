@@ -1,7 +1,7 @@
 "use server"
 
 import { Prisma } from "@/generated/prisma-client/client"
-import { revalidatePath, updateTag } from "next/cache"
+import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getMenuCount } from "@/server/actions/menu/queries"
@@ -184,8 +184,7 @@ export const updateMenuStatus = authActionClient
                 }
         })
 
-        revalidatePath(`/${subdomain}`)
-        updateTag(`subdomain-${menu.organizationId}`)
+        updateTag(`subdomain-${subdomain}`)
         updateTag(`menu-${menu.id}`)
         return {
           success: menu

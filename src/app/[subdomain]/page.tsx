@@ -21,8 +21,15 @@ import { SubscriptionStatus } from "@/lib/types"
 export async function generateStaticParams() {
   const organizations = await getAllActiveOrganizations()
   return organizations.map(({ slug }) => ({
-    slug
+    subdomain: slug
   }))
+}
+
+async function getCachedOrganizationBySubdomain(subdomain: string) {
+  "use cache"
+  cacheTag(`subdomain-${subdomain}`)
+  cacheLife("hours")
+  return getOrganizationBySlug(subdomain)
 }
 
 export async function generateMetadata(
@@ -32,7 +39,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const params = await props.params
-  const org = await getOrganizationBySlug(params.subdomain)
+  const org = await getCachedOrganizationBySubdomain(params.subdomain)
 
   if (
     org &&
@@ -119,37 +126,12 @@ export default async function SitePage(props: {
     return notFound()
   }
 
-  const json = lz.decompress(lz.decodeBase64(snapshot))
-  if (!json) {
+  const renderData = await getCachedMenuRenderData(siteMenu.id, snapshot)
+  if (!renderData) {
     return notFound()
   }
 
-  const parsed = JSON.parse(json) as Record<string, unknown>
-  if (!isRecord(parsed)) {
-    return notFound()
-  }
-
-  const { nodes: sanitizedNodes, changed } = sanitizeCraftNodes(parsed)
-  const serializedNodes = changed ? JSON.stringify(sanitizedNodes) : json
-
-  let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
-  let textColor: RgbaColor = { r: 0, g: 0, b: 0, a: 1 }
-
-  // Search container style (color)
-  const data = sanitizedNodes
-  const keys = Object.keys(data)
-  keys.forEach(el => {
-    const node = data[el]
-    if (!isRecord(node)) return
-    const displayName = node.displayName as string | undefined
-    const props = isRecord(node.props) ? node.props : undefined
-    if (displayName === "Sitio") {
-      backgroundColor = props?.backgroundColor as RgbaColor
-    }
-    if (displayName === "Cabecera") {
-      textColor = props?.color as RgbaColor
-    }
-  })
+  const { serializedNodes, backgroundColor, textColor } = renderData
 
   return (
     <>
@@ -215,6 +197,54 @@ export default async function SitePage(props: {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+async function getCachedMenuRenderData(menuId: string, snapshot: string) {
+  "use cache"
+  cacheTag(`menu-${menuId}`)
+  cacheLife("hours")
+
+  let json: string | null = null
+  try {
+    json = lz.decompress(lz.decodeBase64(snapshot))
+  } catch {
+    return null
+  }
+  if (!json) {
+    return null
+  }
+
+  let parsed: Record<string, unknown>
+  try {
+    parsed = JSON.parse(json) as Record<string, unknown>
+  } catch {
+    return null
+  }
+  if (!isRecord(parsed)) {
+    return null
+  }
+
+  const { nodes: sanitizedNodes, changed } = sanitizeCraftNodes(parsed)
+  const serializedNodes = changed ? JSON.stringify(sanitizedNodes) : json
+
+  let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
+  let textColor: RgbaColor = { r: 0, g: 0, b: 0, a: 1 }
+
+  const keys = Object.keys(sanitizedNodes)
+  keys.forEach(el => {
+    const node = sanitizedNodes[el]
+    if (!isRecord(node)) return
+    const displayName = node.displayName as string | undefined
+    const props = isRecord(node.props) ? node.props : undefined
+    if (displayName === "Sitio") {
+      backgroundColor = props?.backgroundColor as RgbaColor
+    }
+    if (displayName === "Cabecera") {
+      textColor = props?.color as RgbaColor
+    }
+  })
+
+  return { serializedNodes, backgroundColor, textColor }
 }
 
 function sanitizeCraftNodes(nodes: Record<string, unknown>) {
