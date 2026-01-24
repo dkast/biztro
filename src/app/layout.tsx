@@ -6,6 +6,7 @@ import { Inter, Sora } from "next/font/google"
 import "../../styles/globals.css"
 import "../../styles/gradient-blur.css"
 
+import Spinner from "@/components/ui/spinner"
 // import { AxiomWebVitals } from "next-axiom"
 
 import Providers from "@/app/providers"
@@ -62,12 +63,7 @@ export default function RootLayout({
         <Suspense
           fallback={
             <div className="flex min-h-dvh items-center justify-center">
-              <div className="flex items-center gap-3 text-sm text-gray-500">
-                <span
-                  className="h-2.5 w-2.5 animate-pulse rounded-full bg-gray-400"
-                />
-                Cargando…
-              </div>
+              <Spinner />
             </div>
           }
         >
