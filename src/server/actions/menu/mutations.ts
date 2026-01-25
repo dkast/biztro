@@ -1,7 +1,7 @@
 "use server"
 
 import { Prisma } from "@/generated/prisma-client/client"
-import { revalidatePath, updateTag } from "next/cache"
+import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getMenuCount } from "@/server/actions/menu/queries"
@@ -133,9 +133,9 @@ export const updateMenuName = authActionClient
 
 /**
  * Updates the status, font theme, color theme, and serial data of a menu.
+ * The organization subdomain is derived server-side for cache invalidation.
  *
  * @param id - The ID of the menu.
- * @param subdomain - The subdomain of the site.
  * @param status - The status of the menu. Must be either "PUBLISHED" or "DRAFT".
  * @param fontTheme - The font theme of the menu.
  * @param colorTheme - The color theme of the menu.
@@ -146,7 +146,6 @@ export const updateMenuStatus = authActionClient
   .inputSchema(
     z.object({
       id: z.string(),
-      subdomain: z.string(),
       status: z.enum(["PUBLISHED", "DRAFT"]),
       fontTheme: z.string(),
       colorTheme: z.string(),
@@ -155,7 +154,7 @@ export const updateMenuStatus = authActionClient
   )
   .action(
     async ({
-      parsedInput: { id, subdomain, status, fontTheme, colorTheme, serialData }
+      parsedInput: { id, status, fontTheme, colorTheme, serialData }
     }) => {
       try {
         const menu = await prisma.menu.update({
@@ -181,11 +180,31 @@ export const updateMenuStatus = authActionClient
                   publishedAt: null,
                   publishedFontTheme: null,
                   publishedColorTheme: null
-                }
+                },
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+            organizationId: true,
+            serialData: true,
+            publishedData: true,
+            publishedAt: true,
+            fontTheme: true,
+            colorTheme: true,
+            publishedFontTheme: true,
+            publishedColorTheme: true,
+            organization: {
+              select: {
+                slug: true
+              }
+            }
+          }
         })
 
-        revalidatePath(`/${subdomain}`)
-        updateTag(`subdomain-${menu.organizationId}`)
+        updateTag(`subdomain-${menu.organization.slug}`)
         updateTag(`menu-${menu.id}`)
         return {
           success: menu

@@ -1,29 +1,29 @@
-import { ImageResponse } from "next/og"
+import { readFile } from "node:fs/promises"
+import path from "node:path"
 import * as Sentry from "@sentry/nextjs"
+import { cacheLife, cacheTag } from "next/cache"
+import { ImageResponse } from "next/og"
 
-import { getBaseUrl } from "@/lib/utils"
-import { env } from "@/env.mjs"
+import { getOrganizationBySlug } from "@/server/actions/organization/queries"
 
 export const runtime = "nodejs"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
-// Image generation
-// Simple in-memory cache for the font ArrayBuffer during a single build/runtime lifecycle
-let interFontData: ArrayBuffer | null = null
+let interFontData: ArrayBuffer | Buffer | null = null
 
-async function loadGoogleFont(font: string, weights: number[], text: string) {
-  const weightsParam = weights.map(w => `wght@${w}`).join(";")
-  const url = `https://fonts.googleapis.com/css2?family=${font}:${weightsParam}&text=${encodeURIComponent(text)}`
-  const css = await (await fetch(url)).text()
-  const resource = /src: url\((.+)\) format\('(opentype|truetype)'\)/.exec(css)
+async function loadLocalFont() {
+  if (interFontData) return interFontData
+  const fontPath = path.join(process.cwd(), "public", "Inter-SemiBold.ttf")
+  interFontData = await readFile(fontPath)
+  return interFontData
+}
 
-  if (resource?.[1]) {
-    const response = await fetch(resource[1])
-    if (response.status === 200) return await response.arrayBuffer()
-  }
-
-  throw new Error("failed to load font data")
+async function getCachedOrganization(subdomain: string) {
+  "use cache"
+  cacheTag(`subdomain-${subdomain}`)
+  cacheLife("days")
+  return getOrganizationBySlug(subdomain)
 }
 
 export default async function Image({
@@ -34,16 +34,9 @@ export default async function Image({
   try {
     const { subdomain } = await params
 
-    // Only select needed fields to reduce payload
-    const org = await fetch(
-      `${getBaseUrl()}/api/org?subdomain=${encodeURIComponent(subdomain)}&fields=name,logo,banner&secret=${env.AUTH_SECRET}`
-    ).then(res => res.json())
-
-    // Load Inter font (SemiBold ~ weight 600) via Google Fonts once and reuse
-    if (!interFontData) {
-      const sample = org?.name ? org.name.slice(0, 60) : "Biztro" // limit for query length
-      interFontData = await loadGoogleFont("Inter", [600], sample)
-    }
+    const org = await getCachedOrganization(subdomain)
+    const orgName = org?.name ?? "Biztro"
+    const fontData = await loadLocalFont()
 
     // Use Tailwind classes for layout, minimize inline styles
     return new ImageResponse(
@@ -103,14 +96,14 @@ export default async function Image({
                 <img
                   tw="w-30 h-30 rounded-full mr-8"
                   src={org.logo}
-                  alt={org.name}
+                  alt={orgName}
                   width={120}
                   height={120}
                   style={{ objectFit: "cover" }}
                 />
               )}
               <h2 tw="flex flex-col text-7xl font-semibold tracking-tight text-gray-50 text-left truncate">
-                <span>{org?.name}</span>
+                <span>{orgName}</span>
               </h2>
             </div>
           </div>
@@ -121,7 +114,7 @@ export default async function Image({
         fonts: [
           {
             name: "Inter",
-            data: interFontData,
+            data: fontData,
             style: "normal",
             weight: 600
           }

@@ -1,9 +1,9 @@
 "use client"
 
 import { useEffect } from "react"
+import { usePathname, useSearchParams } from "next/navigation"
 import posthog from "posthog-js"
 import { PostHogProvider } from "posthog-js/react"
-import { usePathname, useSearchParams } from "next/navigation"
 
 import { useSession } from "@/lib/auth-client"
 import { env } from "@/env.mjs"
@@ -24,9 +24,9 @@ if (typeof window !== "undefined") {
     loaded: function (posthog) {
       if (process.env.NODE_ENV === "development") {
         posthog.opt_out_capturing()
-        posthog.set_config({
-          disable_session_recording: true
-        })
+        // posthog.set_config({
+        //   disable_session_recording: true
+        // })
       }
     }
   })
@@ -74,7 +74,7 @@ function PageviewTracker() {
         $current_url: url
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [pathname, searchParams])
 
   return null

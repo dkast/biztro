@@ -59,13 +59,16 @@ const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 })
 
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, { provider: "sqlite" }),
   // Adjust trusted origins for your deployment
   trustedOrigins: [
     "https://biztro.co",
     "https://preview.biztro.co",
     "http://localhost:3000"
   ],
+  database: prismaAdapter(prisma, { provider: "sqlite" }),
+  experimental: {
+    joins: true
+  },
   // Intentionally not using a global `before` hook here. Instead we enforce
   // invite-only access at user creation time via a database hook below. This
   // ensures the check runs exactly when an account would be created and has
@@ -169,6 +172,7 @@ export const auth = betterAuth({
       // skipcq: SCT-A000 This is a false positive, the mapping is correct.
       accessToken: "access_token", // NextAuth `access_token` -> BA `accessToken`
       accessTokenExpiresAt: "expires_at", // Now DateTime? in schema
+      refreshTokenExpiresAt: "refresh_token_expires_in",
       // skipcq: SCT-A000 This is a false positive, the mapping is correct.
       idToken: "id_token" // NextAuth `id_token` -> BA `idToken`
     }
