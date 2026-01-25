@@ -268,7 +268,6 @@ export default function MenuPublish({
     const serialData = lz.encodeBase64(lz.compress(json))
     execute({
       id: menu!.id,
-      subdomain: orgSlug,
       status,
       fontTheme,
       colorTheme,
