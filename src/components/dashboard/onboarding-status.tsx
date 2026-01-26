@@ -1,5 +1,7 @@
 import { OnboardingCards } from "@/components/dashboard/onboarding-cards"
+import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { getOrganizationOnboardingStatus } from "@/server/actions/organization/queries"
+import Page from "@/app/page"
 
 export default async function OnboardingStatus({
   orgId
@@ -22,12 +24,17 @@ export default async function OnboardingStatus({
   progress +=
     (orgReady ? 33 : 0) + (locationReady ? 33 : 0) + (menuItemsReady ? 34 : 0)
 
-  return (
+  return progress < 100 ? (
     <OnboardingCards
       orgReady={orgReady}
       locationReady={locationReady}
       menuItemsReady={menuItemsReady}
       progress={progress}
+    />
+  ) : (
+    <PageSubtitle
+      title="Bienvenido a Biztro"
+      description="Este es tu tablero inicial para administrar tu negocio."
     />
   )
 }
