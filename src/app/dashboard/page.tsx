@@ -1,5 +1,5 @@
 import { Suspense } from "react"
-import { ChevronRight, ChevronRightIcon, GlobeIcon } from "lucide-react"
+import { ChevronRightIcon, GlobeIcon } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { redirect } from "next/navigation"
@@ -63,13 +63,13 @@ export default async function DashboardPage() {
               >
                 <ItemMedia>
                   <GlobeIcon className="size-4" />
-                  <ItemContent>
-                    <ItemTitle>Visita tu menú en línea</ItemTitle>
-                  </ItemContent>
-                  <ItemActions>
-                    <ChevronRightIcon className="size-4" />
-                  </ItemActions>
                 </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>Visita tu menú en línea</ItemTitle>
+                </ItemContent>
+                <ItemActions>
+                  <ChevronRightIcon className="size-4" />
+                </ItemActions>
               </Link>
             </Item>
           </PageSubtitle>

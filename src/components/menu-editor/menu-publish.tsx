@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
-import * as Sentry from "@sentry/nextjs"
 import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
+import * as Sentry from "@sentry/nextjs"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   Colorful,
@@ -19,9 +19,11 @@ import { useAtomValue, useSetAtom } from "jotai"
 import {
   Check,
   CircleHelp,
+  Copy,
   Download,
   ExternalLink,
   Globe,
+  GlobeIcon,
   Loader,
   Play,
   QrCodeIcon
@@ -46,6 +48,13 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemMedia,
+  ItemTitle
+} from "@/components/ui/item"
 import { Label } from "@/components/ui/label"
 import {
   Popover,
@@ -311,17 +320,43 @@ export default function MenuPublish({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Generar código QR</DialogTitle>
-            <DialogDescription>
-              Al escanear el código con la cámara de tu móvil o aplicación QR te
-              llevará a la siguiente dirección:{" "}
-              <Link
-                href={`${getBaseUrl()}/${orgSlug}`}
-                className="text-blue-600 hover:text-blue-800"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {`${getBaseUrl()}/${orgSlug}`}
-              </Link>
+            <DialogDescription className="flex flex-col gap-2">
+              <span>
+                Al escanear el código con la cámara de tu móvil o aplicación QR
+                te llevará a la siguiente dirección:{" "}
+              </span>
+              <Item size="sm" variant="outline">
+                <ItemMedia>
+                  <GlobeIcon className="size-4" />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>
+                    <Link
+                      href={`${getBaseUrl()}/${orgSlug}`}
+                      // className="text-blue-600 hover:text-blue-800"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {`${getBaseUrl()}/${orgSlug}`}
+                    </Link>
+                  </ItemTitle>
+                </ItemContent>
+                <ItemActions>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="Copiar liga"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        `${getBaseUrl()}/${orgSlug}`
+                      )
+                      toast.success("Liga copiada al portapapeles")
+                    }}
+                  >
+                    <Copy className="size-4" />
+                  </Button>
+                </ItemActions>
+              </Item>
             </DialogDescription>
           </DialogHeader>
           <QrCodeEditor
