@@ -22,7 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { duplicateMenu } from "@/server/actions/menu/mutations"
+import { duplicateMenu, setActiveMenu } from "@/server/actions/menu/mutations"
 import MenuCreate from "@/app/dashboard/menu-create"
 import MenuDelete from "@/app/dashboard/menu-delete"
 import { MenuRename } from "@/app/dashboard/menu-rename"
@@ -31,13 +31,17 @@ import { BasicPlanLimits, MenuStatus } from "@/lib/types"
 export default function MenuList({
   promiseMenus
 }: {
-  promiseMenus: Promise<Menu[]>
+  promiseMenus: Promise<{ menus: Menu[]; activeMenuId: string | null }>
 }) {
-  const menus = use(promiseMenus)
+  const { menus, activeMenuId } = use(promiseMenus)
   return (
     <AnimatePresence mode="popLayout">
-      {menus.map((menu, index) => (
-        <MenuCard key={menu.id} menu={menu} index={index} />
+      {menus.map(menu => (
+        <MenuCard
+          key={menu.id}
+          menu={menu}
+          isActive={menu.id === activeMenuId}
+        />
       ))}
       <motion.div
         layout
@@ -51,7 +55,7 @@ export default function MenuList({
   )
 }
 
-function MenuCard({ menu, index }: { menu: Menu; index: number }) {
+function MenuCard({ menu, isActive }: { menu: Menu; isActive: boolean }) {
   const [openDelete, setOpenDelete] = useState<boolean>(false)
   const [openRename, setOpenRename] = useState<boolean>(false)
   const [showUpgrade, setShowUpgrade] = useState(false)
@@ -80,6 +84,30 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
     }
   })
 
+  const { execute: executeSetActive, reset: resetActive } = useAction(
+    setActiveMenu,
+    {
+      onExecute: () => {
+        toast.loading("Actualizando menú activo...")
+      },
+      onSuccess: ({ data }) => {
+        toast.dismiss()
+        if (data?.failure) {
+          toast.error(data.failure.reason ?? "Ocurrió un error")
+          return
+        }
+        toast.success("Menú activo actualizado")
+        resetActive()
+      },
+      onError: () => {
+        toast.error("No se pudo actualizar el menú activo")
+        resetActive()
+      }
+    }
+  )
+
+  const canSetActive = menu.status === MenuStatus.PUBLISHED && !isActive
+
   return (
     <motion.div
       layout
@@ -90,7 +118,8 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
       <motion.div
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="grid h-[250px] grid-rows-5 overflow-hidden rounded-lg shadow-lg dark:border dark:border-gray-800 dark:bg-gray-800"
+        className="grid h-[250px] grid-rows-5 overflow-hidden rounded-lg
+          shadow-lg dark:border dark:border-gray-800 dark:bg-gray-800"
       >
         <Link
           href={`/menu-editor/${menu.id}`}
@@ -107,7 +136,10 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
             height={64}
           />
         </Link>
-        <div className="row-span-2 flex flex-col justify-between gap-2 rounded-b-lg bg-white px-4 py-3 dark:bg-gray-900">
+        <div
+          className="row-span-2 flex flex-col justify-between gap-2 rounded-b-lg
+            bg-white px-4 py-3 dark:bg-gray-900"
+        >
           <Link href={`/menu-editor/${menu.id}`} prefetch={false}>
             <h2 className="font-medium">{menu.name}</h2>
           </Link>
@@ -132,10 +164,11 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
                 }
               })()}
 
-              {index === 0 && menu.status === MenuStatus.PUBLISHED && (
+              {isActive && menu.status === MenuStatus.PUBLISHED && (
                 <Badge
                   variant="green"
-                  className="flex items-center justify-between gap-1 rounded-full px-1.5"
+                  className="flex items-center justify-between gap-1
+                    rounded-full px-1.5"
                 >
                   <CircleCheck className="size-3" />
                   Activo
@@ -150,6 +183,7 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
                     variant="ghost"
                     size="icon"
                     className="size-8 text-gray-700"
+                    aria-label="Más acciones"
                   >
                     <MoreHorizontal className="size-3.5" />
                   </Button>
@@ -169,8 +203,25 @@ function MenuCard({ menu, index }: { menu: Menu; index: number }) {
                   <DropdownMenuItem onClick={() => setOpenRename(true)}>
                     <span>Renombrar</span>
                   </DropdownMenuItem>
+                  {canSetActive && (
+                    <DropdownMenuItem
+                      onClick={() => executeSetActive({ id: menu.id })}
+                    >
+                      <span>Marcar como activo</span>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setOpenDelete(true)}>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      if (isActive) {
+                        toast.error(
+                          "No puedes eliminar el menú activo. Selecciona otro menú activo primero."
+                        )
+                        return
+                      }
+                      setOpenDelete(true)
+                    }}
+                  >
                     <span className="text-red-500">Eliminar</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>

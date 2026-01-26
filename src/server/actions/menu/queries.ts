@@ -1,8 +1,8 @@
 "use server"
 
+import * as Sentry from "@sentry/nextjs"
 import lz from "lzutf8"
 import { cacheTag } from "next/cache"
-import * as Sentry from "@sentry/nextjs"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
@@ -13,16 +13,26 @@ export async function getMenus(currentOrgId: string) {
   "use cache"
   cacheTag(`menus-${currentOrgId}`)
   if (!currentOrgId) {
-    return []
+    return { menus: [], activeMenuId: null }
   }
-  return await prisma.menu.findMany({
-    where: {
-      organizationId: currentOrgId
-    },
-    orderBy: {
-      publishedAt: "desc"
-    }
-  })
+  const [menus, organization] = await prisma.$transaction([
+    prisma.menu.findMany({
+      where: {
+        organizationId: currentOrgId
+      },
+      orderBy: [{ publishedAt: "desc" }, { updatedAt: "desc" }]
+    }),
+    prisma.organization.findUnique({
+      where: {
+        id: currentOrgId
+      },
+      select: {
+        activeMenuId: true
+      }
+    })
+  ])
+
+  return { menus, activeMenuId: organization?.activeMenuId ?? null }
 }
 
 export async function getMenuById(id: string) {
@@ -112,21 +122,45 @@ export async function getMenuById(id: string) {
 export async function getActiveMenuByOrganizationSlug(slug: string) {
   "use cache"
   cacheTag(`subdomain-${slug}`)
+  const organization = await prisma.organization.findFirst({
+    where: {
+      slug,
+      OR: [
+        { status: SubscriptionStatus.ACTIVE },
+        { status: SubscriptionStatus.TRIALING },
+        { status: SubscriptionStatus.SPONSORED }
+      ]
+    },
+    select: {
+      id: true,
+      activeMenuId: true
+    }
+  })
+
+  if (!organization) {
+    return null
+  }
+
+  if (organization.activeMenuId) {
+    const activeMenu = await prisma.menu.findFirst({
+      where: {
+        id: organization.activeMenuId,
+        organizationId: organization.id,
+        status: MenuStatus.PUBLISHED
+      }
+    })
+
+    if (activeMenu) {
+      return activeMenu
+    }
+  }
+
   return await prisma.menu.findFirst({
     where: {
       status: MenuStatus.PUBLISHED,
-      organization: {
-        slug,
-        OR: [
-          { status: SubscriptionStatus.ACTIVE },
-          { status: SubscriptionStatus.TRIALING },
-          { status: SubscriptionStatus.SPONSORED }
-        ]
-      }
+      organizationId: organization.id
     },
-    orderBy: {
-      publishedAt: "desc"
-    }
+    orderBy: [{ publishedAt: "desc" }, { updatedAt: "desc" }]
   })
 }
 

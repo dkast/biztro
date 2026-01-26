@@ -31,7 +31,10 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex grow bg-gray-50 pb-4 dark:bg-gray-950">
-      <div className="mx-auto grid grow auto-rows-min justify-center gap-10 px-4 py-10 sm:grid-cols-300 sm:px-6 sm:py-12">
+      <div
+        className="mx-auto grid grow auto-rows-min justify-center gap-10 px-4
+          py-10 sm:grid-cols-300 sm:px-6 sm:py-12"
+      >
         <div className="col-span-full">
           <Suspense fallback={<OnboardingSkeleton />}>
             <OnboardingStatus orgId={currentOrg?.id} />

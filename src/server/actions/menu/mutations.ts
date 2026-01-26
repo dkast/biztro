@@ -1,6 +1,7 @@
 "use server"
 
 import { Prisma } from "@/generated/prisma-client/client"
+import * as Sentry from "@sentry/nextjs"
 import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
@@ -12,7 +13,7 @@ import {
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
-import { BasicPlanLimits, menuSchema } from "@/lib/types"
+import { BasicPlanLimits, menuSchema, MenuStatus } from "@/lib/types"
 
 /**
  * Creates a menu.
@@ -157,59 +158,83 @@ export const updateMenuStatus = authActionClient
       parsedInput: { id, status, fontTheme, colorTheme, serialData }
     }) => {
       try {
-        const menu = await prisma.menu.update({
-          where: { id },
-          data:
-            status === "PUBLISHED"
-              ? {
-                  status,
-                  fontTheme,
-                  colorTheme,
-                  serialData,
-                  publishedData: serialData,
-                  publishedAt: new Date(),
-                  publishedFontTheme: fontTheme,
-                  publishedColorTheme: colorTheme
+        const menu = await prisma.$transaction(async tx => {
+          const updated = await tx.menu.update({
+            where: { id },
+            data:
+              status === "PUBLISHED"
+                ? {
+                    status,
+                    fontTheme,
+                    colorTheme,
+                    serialData,
+                    publishedData: serialData,
+                    publishedAt: new Date(),
+                    publishedFontTheme: fontTheme,
+                    publishedColorTheme: colorTheme
+                  }
+                : {
+                    status,
+                    fontTheme,
+                    colorTheme,
+                    serialData,
+                    publishedData: null,
+                    publishedAt: null,
+                    publishedFontTheme: null,
+                    publishedColorTheme: null
+                  },
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              status: true,
+              createdAt: true,
+              updatedAt: true,
+              organizationId: true,
+              serialData: true,
+              publishedData: true,
+              publishedAt: true,
+              fontTheme: true,
+              colorTheme: true,
+              publishedFontTheme: true,
+              publishedColorTheme: true,
+              organization: {
+                select: {
+                  slug: true
                 }
-              : {
-                  status,
-                  fontTheme,
-                  colorTheme,
-                  serialData,
-                  publishedData: null,
-                  publishedAt: null,
-                  publishedFontTheme: null,
-                  publishedColorTheme: null
-                },
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            status: true,
-            createdAt: true,
-            updatedAt: true,
-            organizationId: true,
-            serialData: true,
-            publishedData: true,
-            publishedAt: true,
-            fontTheme: true,
-            colorTheme: true,
-            publishedFontTheme: true,
-            publishedColorTheme: true,
-            organization: {
-              select: {
-                slug: true
               }
             }
+          })
+
+          if (status === "PUBLISHED") {
+            await tx.organization.update({
+              where: { id: updated.organizationId },
+              data: { activeMenuId: updated.id }
+            })
+          } else {
+            await tx.organization.updateMany({
+              where: {
+                id: updated.organizationId,
+                activeMenuId: updated.id
+              },
+              data: { activeMenuId: null }
+            })
           }
+
+          return updated
         })
 
         updateTag(`subdomain-${menu.organization.slug}`)
         updateTag(`menu-${menu.id}`)
+        updateTag(`menus-${menu.organizationId}`)
         return {
           success: menu
         }
       } catch (error) {
+        Sentry.captureException(error, {
+          tags: { section: "menu-update-status" },
+          extra: { menuId: id, status }
+        })
         let message
         if (typeof error === "string") {
           message = error
@@ -226,6 +251,102 @@ export const updateMenuStatus = authActionClient
       }
     }
   )
+
+/**
+ * Sets a menu as the active menu for the current organization.
+ *
+ * @param id - The ID of the menu to mark as active.
+ * @returns An object indicating success or failure.
+ */
+export const setActiveMenu = authActionClient
+  .inputSchema(
+    z.object({
+      id: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { id } }) => {
+    const currentOrg = await getCurrentOrganization()
+
+    if (!currentOrg) {
+      return {
+        failure: {
+          reason: "No se pudo obtener la organización actual"
+        }
+      }
+    }
+
+    try {
+      const menu = await prisma.menu.findFirst({
+        where: {
+          id,
+          organizationId: currentOrg.id
+        },
+        select: {
+          id: true,
+          status: true,
+          organizationId: true
+        }
+      })
+
+      if (!menu) {
+        return {
+          failure: {
+            reason: "Menú no encontrado"
+          }
+        }
+      }
+
+      if (menu.status !== MenuStatus.PUBLISHED) {
+        return {
+          failure: {
+            reason: "Solo puedes activar un menú publicado"
+          }
+        }
+      }
+
+      await prisma.organization.update({
+        where: { id: currentOrg.id },
+        data: { activeMenuId: menu.id }
+      })
+
+      const orgSlug =
+        currentOrg.slug ??
+        (
+          await prisma.organization.findUnique({
+            where: { id: currentOrg.id },
+            select: { slug: true }
+          })
+        )?.slug
+
+      if (orgSlug) {
+        updateTag(`subdomain-${orgSlug}`)
+      }
+      updateTag(`menus-${currentOrg.id}`)
+      updateTag(`menu-${menu.id}`)
+
+      return {
+        success: true
+      }
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "menu-set-active" },
+        extra: { menuId: id }
+      })
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        message = error.message
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  })
 
 /**
  * Updates the menu serial data.
@@ -361,6 +482,20 @@ export const deleteMenu = authActionClient
   )
   .action(async ({ parsedInput: { id, organizationId } }) => {
     try {
+      const organization = await prisma.organization.findUnique({
+        where: { id: organizationId },
+        select: { activeMenuId: true }
+      })
+
+      if (organization?.activeMenuId === id) {
+        return {
+          failure: {
+            reason:
+              "No puedes eliminar el menú activo. Selecciona otro menú activo primero."
+          }
+        }
+      }
+
       await prisma.menu.delete({
         where: { id, organizationId }
       })
@@ -370,6 +505,10 @@ export const deleteMenu = authActionClient
         success: true
       }
     } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "menu-delete" },
+        extra: { menuId: id, organizationId }
+      })
       let message
       if (typeof error === "string") {
         message = error
