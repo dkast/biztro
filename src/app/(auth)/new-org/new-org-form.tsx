@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import slugify from "@sindresorhus/slugify"
+import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
@@ -50,6 +51,7 @@ export default function NewOrgForm() {
   const router = useRouter()
 
   const slug = form.watch("name", "mi-negocio")
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     form.setValue("slug", slugify(slug))
@@ -61,6 +63,9 @@ export default function NewOrgForm() {
         toast.error(data.failure.reason ?? "Ocurrió un error")
         return
       } else if (data?.success) {
+        queryClient.invalidateQueries({
+          queryKey: ["workgroup", "current"]
+        })
         router.push("/dashboard")
       }
       reset()
