@@ -132,7 +132,8 @@ function Tooltip({
   return (
     <div
       {...tooltipProps}
-      className="max-w-96 rounded-lg border border-transparent bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+      className="max-w-96 rounded-lg border border-transparent bg-white p-4
+        shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
       <h3 className="mb-2 font-medium">{step.title}</h3>
       <p className="text-sm text-gray-600 dark:text-gray-400">{step.content}</p>
@@ -142,12 +143,12 @@ function Tooltip({
         </div>
         <div className="flex justify-end gap-x-2">
           {!isLastStep && (
-            <Button {...skipProps} variant="link" size="xs">
+            <Button {...skipProps} variant="ghost" size="xs">
               Saltar
             </Button>
           )}
           {index > 0 && (
-            <Button {...backProps} variant="secondary" size="xs">
+            <Button {...backProps} variant="outline" size="xs">
               Anterior
             </Button>
           )}
@@ -168,11 +169,15 @@ const Beacon = React.forwardRef<HTMLButtonElement, BeaconRenderProps>(
 
     return (
       <div className="relative">
-        <span className="absolute -top-1 -left-1 size-8 animate-ping rounded-full bg-blue-400" />
+        <span
+          className="absolute -top-1 -left-1 size-8 animate-ping rounded-full
+            bg-blue-400"
+        />
         <button
           ref={ref}
           {...(buttonProps as React.ButtonHTMLAttributes<HTMLButtonElement>)}
-          className="absolute inset-auto inline-block size-6 rounded-full bg-blue-500 ring-4 ring-blue-400"
+          className="absolute inset-auto inline-block size-6 rounded-full
+            bg-blue-500 ring-4 ring-blue-400"
         />
       </div>
     )

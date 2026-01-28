@@ -501,24 +501,24 @@ export default function MenuPublish({
                     <Button
                       size="xs"
                       className="w-full"
-                      variant="outline"
+                      variant="secondary"
                       disabled={statusRevert === "executing"}
                       onClick={handleRevertToPublished}
                     >
                       {statusRevert === "executing" ? (
                         <Loader className="size-4 animate-spin" />
                       ) : (
-                        "Revertir a publicado"
+                        "Revertir cambios"
                       )}
                     </Button>
                   )}
                   <Button
                     size="xs"
                     className="w-full"
-                    variant="outline"
+                    variant="secondary"
                     onClick={() => handleUpdateStatus(MenuStatus.DRAFT)}
                   >
-                    Cambiar a borrador
+                    Cambiar a Borrador
                   </Button>
 
                   <TooltipHelper
