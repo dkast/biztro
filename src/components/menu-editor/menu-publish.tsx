@@ -321,52 +321,50 @@ export default function MenuPublish({
           <DialogHeader>
             <DialogTitle>Generar código QR</DialogTitle>
             <DialogDescription className="flex flex-col gap-2">
-              <span>
-                Al escanear el código con la cámara de tu móvil o aplicación QR
-                te llevará a la siguiente dirección:{" "}
-              </span>
-              <Item size="sm" variant="outline">
-                <ItemMedia>
-                  <GlobeIcon className="size-4" />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle>
-                    <Link
-                      href={`${getBaseUrl()}/${orgSlug}`}
-                      // className="text-blue-600 hover:text-blue-800"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {`${getBaseUrl()}/${orgSlug}`}
-                    </Link>
-                  </ItemTitle>
-                </ItemContent>
-                <ItemActions>
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    aria-label="Copiar liga"
-                    onClick={async () => {
-                      try {
-                        await navigator.clipboard.writeText(
-                          `${getBaseUrl()}/${orgSlug}`
-                        )
-                        toast.success("Liga copiada al portapapeles")
-                      } catch (error) {
-                        toast.error(
-                          error instanceof Error
-                            ? error.message
-                            : "No se pudo copiar al portapapeles"
-                        )
-                      }
-                    }}
-                  >
-                    <Copy className="size-4" />
-                  </Button>
-                </ItemActions>
-              </Item>
+              Al escanear el código con la cámara de tu móvil o aplicación QR te
+              llevará a la siguiente dirección:{" "}
             </DialogDescription>
           </DialogHeader>
+          <Item size="sm" variant="outline">
+            <ItemMedia>
+              <GlobeIcon className="size-4" />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>
+                <Link
+                  href={`${getBaseUrl()}/${orgSlug}`}
+                  // className="text-blue-600 hover:text-blue-800"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {`${getBaseUrl()}/${orgSlug}`}
+                </Link>
+              </ItemTitle>
+            </ItemContent>
+            <ItemActions>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Copiar liga"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(
+                      `${getBaseUrl()}/${orgSlug}`
+                    )
+                    toast.success("Liga copiada al portapapeles")
+                  } catch (error) {
+                    toast.error(
+                      error instanceof Error
+                        ? error.message
+                        : "No se pudo copiar al portapapeles"
+                    )
+                  }
+                }}
+              >
+                <Copy className="size-4" />
+              </Button>
+            </ItemActions>
+          </Item>
           <QrCodeEditor
             value={`${getBaseUrl()}/${orgSlug}`}
             logoURL={menu.organization.logo ?? undefined}
