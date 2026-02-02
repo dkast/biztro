@@ -1,7 +1,6 @@
 import { OnboardingCards } from "@/components/dashboard/onboarding-cards"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { getOrganizationOnboardingStatus } from "@/server/actions/organization/queries"
-import Page from "@/app/page"
 
 export default async function OnboardingStatus({
   orgId
