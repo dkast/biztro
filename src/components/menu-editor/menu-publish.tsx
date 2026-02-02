@@ -346,11 +346,19 @@ export default function MenuPublish({
                     variant="ghost"
                     size="icon-sm"
                     aria-label="Copiar liga"
-                    onClick={() => {
-                      navigator.clipboard.writeText(
-                        `${getBaseUrl()}/${orgSlug}`
-                      )
-                      toast.success("Liga copiada al portapapeles")
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(
+                          `${getBaseUrl()}/${orgSlug}`
+                        )
+                        toast.success("Liga copiada al portapapeles")
+                      } catch (error) {
+                        toast.error(
+                          error instanceof Error
+                            ? error.message
+                            : "No se pudo copiar al portapapeles"
+                        )
+                      }
                     }}
                   >
                     <Copy className="size-4" />
