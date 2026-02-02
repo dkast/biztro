@@ -54,24 +54,26 @@ export default async function DashboardPage() {
             description="Todos los menús."
             additionalInfo="Aquí puedes ver todos los menús de tu organización. El menú activo es público para tus clientes. Solo puede haber un menú activo a la vez."
           >
-            <Item size="sm" variant="outline" asChild>
-              <Link
-                href={currentOrg?.slug as string}
-                className="block w-full"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ItemMedia>
-                  <GlobeIcon className="size-4" />
-                </ItemMedia>
-                <ItemContent>
-                  <ItemTitle>Visita tu menú en línea</ItemTitle>
-                </ItemContent>
-                <ItemActions>
-                  <ChevronRightIcon className="size-4" />
-                </ItemActions>
-              </Link>
-            </Item>
+            {currentOrg?.slug && (
+              <Item size="sm" variant="outline" asChild>
+                <Link
+                  href={`/${currentOrg.slug}`}
+                  className="block w-full"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ItemMedia>
+                    <GlobeIcon className="size-4" />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle>Visita tu menú en línea</ItemTitle>
+                  </ItemContent>
+                  <ItemActions>
+                    <ChevronRightIcon className="size-4" />
+                  </ItemActions>
+                </Link>
+              </Item>
+            )}
           </PageSubtitle>
         </div>
         <Suspense fallback={<MenuListSkeleton />}>
