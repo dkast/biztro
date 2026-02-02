@@ -53,7 +53,7 @@ export function OnboardingCards({
         <div className="grow">
           <PageSubtitle
             title="Bienvenido a Biztro"
-            description="Puedes iniciar completando los siguientes pasos para tener tú menú listo."
+            description="Aquí tienes algunos enlaces para comenzar a configurar tu negocio."
           >
             <OnboardingProgress progres={progress} />
           </PageSubtitle>
@@ -61,7 +61,8 @@ export function OnboardingCards({
         <CollapsibleTrigger asChild>
           <Button variant="ghost" size="sm">
             <ChevronDown
-              className={`h-4 w-4 transition-transform ${isCollapsed ? "" : "rotate-180"}`}
+              className={`h-4 w-4 transition-transform
+                ${isCollapsed ? "" : "rotate-180"}`}
             />
           </Button>
         </CollapsibleTrigger>
@@ -69,7 +70,10 @@ export function OnboardingCards({
       <CollapsibleContent>
         <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
           <Card className="rounded-xl p-0">
-            <CardHeader className="flex flex-row items-center justify-between space-y-1 p-3 pb-1">
+            <CardHeader
+              className="flex flex-row items-center justify-between space-y-1
+                p-3 pb-1"
+            >
               <div className="flex flex-row items-center gap-2">
                 <Badge className="p-2" variant="violet">
                   <Store className="size-4" />
@@ -104,7 +108,10 @@ export function OnboardingCards({
           </Card>
 
           <Card className="rounded-xl p-0">
-            <CardHeader className="flex flex-row items-center justify-between space-y-1 p-3 pb-1">
+            <CardHeader
+              className="flex flex-row items-center justify-between space-y-1
+                p-3 pb-1"
+            >
               <div className="flex flex-row items-center gap-2">
                 <Badge className="p-2" variant="destructive">
                   <MapPin className="size-4" />
@@ -139,7 +146,10 @@ export function OnboardingCards({
           </Card>
 
           <Card className="rounded-xl p-0">
-            <CardHeader className="flex flex-row items-center justify-between space-y-1 p-3 pb-1">
+            <CardHeader
+              className="flex flex-row items-center justify-between space-y-1
+                p-3 pb-1"
+            >
               <div className="flex flex-row items-center gap-2">
                 <Badge className="p-2" variant="green">
                   <ShoppingBag className="size-4" />

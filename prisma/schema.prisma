@@ -75,21 +75,24 @@ model OpeningHours {
 }
 
 model Menu {
-  id                  String       @id @default(cuid())
-  name                String
-  description         String?
-  status              String       @default("DRAFT")
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
-  organizationId      String
-  serialData          String?
-  publishedData       String?
-  publishedAt         DateTime?
-  fontTheme           String       @default("DEFAULT")
-  colorTheme          String       @default("DEFAULT")
-  publishedFontTheme  String?
-  publishedColorTheme String?
-  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  id                    String        @id @default(cuid())
+  name                  String
+  description           String?
+  status                String        @default("DRAFT")
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  organizationId        String
+  serialData            String?
+  publishedData         String?
+  publishedAt           DateTime?
+  fontTheme             String        @default("DEFAULT")
+  colorTheme            String        @default("DEFAULT")
+  publishedFontTheme    String?
+  publishedColorTheme   String?
+  organization          Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  activeForOrganization Organization? @relation("ActiveMenu")
+
+  @@index([organizationId, status, publishedAt])
 }
 
 model Theme {

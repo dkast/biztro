@@ -1,17 +1,26 @@
 "use client"
 
 import * as React from "react"
-import * as Sentry from "@sentry/nextjs"
 import type { CellSelectOption } from "@/types/data-grid"
+import * as Sentry from "@sentry/nextjs"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Loader } from "lucide-react"
+import { Loader, ShoppingBag } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
+import Link from "next/link"
 
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridFilterMenu } from "@/components/data-grid/data-grid-filter-menu"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
 import { DataGridViewMenu } from "@/components/data-grid/data-grid-view-menu"
 import { Button } from "@/components/ui/button"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from "@/components/ui/empty"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useDataGrid } from "@/hooks/use-data-grid"
@@ -581,6 +590,8 @@ export function MenuItemsDataGrid({
 
   const modKey = isMac ? "⌘" : "Ctrl"
 
+  const isEmpty = data.length === 0
+
   return (
     <div className="flex h-full flex-col px-3">
       <div className="py-2">
@@ -648,26 +659,54 @@ export function MenuItemsDataGrid({
       >
         <TooltipProvider>
           <DataGridKeyboardShortcuts enableSearch />
-          <DataGrid
-            table={table}
-            {...dataGridProps}
-            height={undefined}
-            columns={columns}
-            stretchColumns
-          />
+          {isEmpty ? (
+            <div className="flex h-full items-center justify-center px-4">
+              <div
+                className="flex max-w-sm flex-col items-center gap-3
+                  text-center"
+              >
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <ShoppingBag className="size-5" />
+                    </EmptyMedia>
+                    <EmptyTitle>Aún no hay productos</EmptyTitle>
+                    <EmptyDescription>
+                      Crea tu primer producto para empezar a editar el menú.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <Button asChild size="sm">
+                      <Link href="/dashboard/menu-items">Crear producto</Link>
+                    </Button>
+                  </EmptyContent>
+                </Empty>
+              </div>
+            </div>
+          ) : (
+            <DataGrid
+              table={table}
+              {...dataGridProps}
+              height={undefined}
+              columns={columns}
+              stretchColumns
+            />
+          )}
         </TooltipProvider>
-        <div className="px-2 py-1">
-          <span className="text-muted-foreground text-xs">
-            Presiona <Kbd>Enter</Kbd> para iniciar cambios en una celda,{" "}
-            <Kbd>Esc</Kbd> para cancelar la edición.
-            <br />
-            Presiona{" "}
-            <KbdGroup>
-              <Kbd>{modKey}</Kbd> + <Kbd>/</Kbd>
-            </KbdGroup>{" "}
-            para mostrar la lista completa de comandos.
-          </span>
-        </div>
+        {!isEmpty && (
+          <div className="px-2 py-1">
+            <span className="text-muted-foreground text-xs">
+              Presiona <Kbd>Enter</Kbd> para iniciar cambios en una celda,{" "}
+              <Kbd>Esc</Kbd> para cancelar la edición.
+              <br />
+              Presiona{" "}
+              <KbdGroup>
+                <Kbd>{modKey}</Kbd> + <Kbd>/</Kbd>
+              </KbdGroup>{" "}
+              para mostrar la lista completa de comandos.
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Variants Edit Dialog */}
