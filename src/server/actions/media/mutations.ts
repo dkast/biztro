@@ -8,6 +8,8 @@ import { actionClient } from "@/lib/action-client"
 import prisma from "@/lib/prisma"
 import { env } from "@/env.mjs"
 
+import { CACHE_TAGS } from "./constants"
+
 const R2 = new S3Client({
   region: "auto",
   endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
@@ -74,8 +76,8 @@ export const deleteMediaAsset = actionClient
     })
 
     // Revalidate cache
-    revalidateTag(`media-assets-${organizationId}`)
-    revalidateTag(`media-count-${organizationId}`)
+    revalidateTag(CACHE_TAGS.mediaAssets(organizationId))
+    revalidateTag(CACHE_TAGS.mediaCount(organizationId))
 
     return { success: true }
   })

@@ -79,9 +79,11 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
       }
     } catch (error) {
       console.error("Error deleting media:", error)
+      const errorMessage =
+        error instanceof Error ? error.message : "No se pudo eliminar la imagen"
       toast({
         title: "Error",
-        description: "No se pudo eliminar la imagen",
+        description: errorMessage,
         variant: "destructive"
       })
     } finally {

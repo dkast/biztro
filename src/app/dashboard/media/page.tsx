@@ -1,10 +1,7 @@
 import { Suspense } from "react"
 import { Images } from "lucide-react"
 
-import {
-  getMediaAssetCount,
-  getAllMediaAssets
-} from "@/server/actions/media/queries"
+import { getMediaAssetCount } from "@/server/actions/media/queries"
 import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
 

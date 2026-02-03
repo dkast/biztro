@@ -5,6 +5,7 @@ import { headers } from "next/headers"
 import { NextResponse, type NextRequest } from "next/server"
 
 import { isProMember } from "@/server/actions/user/queries"
+import { CACHE_TAGS } from "@/server/actions/media/constants"
 import { appConfig } from "@/app/config"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
@@ -152,7 +153,7 @@ export async function POST(req: NextRequest) {
 
       if (assetCount >= appConfig.mediaLimit) {
         return new NextResponse(
-          `Media limit reached. Free tier is limited to ${appConfig.mediaLimit} images.`,
+          `Límite de medios alcanzado. El nivel gratuito está limitado a ${appConfig.mediaLimit} imágenes.`,
           {
             status: 403,
             headers: corsHeaders
@@ -252,12 +253,16 @@ export async function POST(req: NextRequest) {
       break
     case ImageType.MENU_BACKGROUND:
       revalidateTag(`organization-${organizationId}`, "max")
-      revalidateTag(`media-backgrounds-${organizationId}`, "max")
+      revalidateTag(CACHE_TAGS.mediaBackgrounds(organizationId), "max")
       break
     default:
       // No cache tag to revalidate for unknown imageType
       break
   }
+
+  // Always revalidate media cache tags when a new asset is created
+  revalidateTag(CACHE_TAGS.mediaAssets(organizationId), "max")
+  revalidateTag(CACHE_TAGS.mediaCount(organizationId), "max")
 
   // Return the signed URL to the client for a PUT request
   // Also return the storageKey so clients can persist it in serialData

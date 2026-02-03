@@ -7,6 +7,8 @@ import prisma from "@/lib/prisma"
 import { MediaAssetScope } from "@/lib/types"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
+import { CACHE_TAGS } from "./constants"
+
 export async function getUploadedBackgrounds() {
   "use cache: private"
   const membership = await getCurrentMembership()
@@ -16,7 +18,7 @@ export async function getUploadedBackgrounds() {
     return []
   }
 
-  cacheTag(`media-backgrounds-${organizationId}`)
+  cacheTag(CACHE_TAGS.mediaBackgrounds(organizationId))
 
   const assets = await prisma.mediaAsset.findMany({
     where: {
@@ -53,7 +55,7 @@ export async function getAllMediaAssets() {
     return []
   }
 
-  cacheTag(`media-assets-${organizationId}`)
+  cacheTag(CACHE_TAGS.mediaAssets(organizationId))
 
   const assets = await prisma.mediaAsset.findMany({
     where: {
@@ -100,7 +102,7 @@ export async function getMediaAssetCount() {
     return 0
   }
 
-  cacheTag(`media-count-${organizationId}`)
+  cacheTag(CACHE_TAGS.mediaCount(organizationId))
 
   return await prisma.mediaAsset.count({
     where: {
