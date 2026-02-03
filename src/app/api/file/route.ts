@@ -5,6 +5,7 @@ import { headers } from "next/headers"
 import { NextResponse, type NextRequest } from "next/server"
 
 import { isProMember } from "@/server/actions/user/queries"
+import { appConfig } from "@/app/config"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import {
@@ -129,6 +130,35 @@ export async function POST(req: NextRequest) {
         status: 403,
         headers: corsHeaders
       })
+    }
+  }
+
+  // Check media limit for free tier users
+  const proMember = await isProMember()
+  if (!proMember) {
+    // Check if this is a new asset (not an update)
+    const existingAsset = await prisma.mediaAsset.findUnique({
+      where: { storageKey }
+    })
+
+    if (!existingAsset) {
+      // Count total media assets for this organization
+      const assetCount = await prisma.mediaAsset.count({
+        where: {
+          organizationId,
+          deletedAt: null
+        }
+      })
+
+      if (assetCount >= appConfig.mediaLimit) {
+        return new NextResponse(
+          `Media limit reached. Free tier is limited to ${appConfig.mediaLimit} images.`,
+          {
+            status: 403,
+            headers: corsHeaders
+          }
+        )
+      }
     }
   }
 

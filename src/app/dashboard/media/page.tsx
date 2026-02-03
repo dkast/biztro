@@ -1,12 +1,20 @@
 import { Suspense } from "react"
 import { Images } from "lucide-react"
 
-import { getMediaAssetCount } from "@/server/actions/media/queries"
+import {
+  getMediaAssetCount,
+  getAllMediaAssets
+} from "@/server/actions/media/queries"
+import { isProMember } from "@/server/actions/user/queries"
+import { appConfig } from "@/app/config"
 
 import { MediaGrid } from "./media-grid"
 
 export default async function MediaPage() {
-  const mediaCount = await getMediaAssetCount()
+  const [mediaCount, isPro] = await Promise.all([
+    getMediaAssetCount(),
+    isProMember()
+  ])
 
   return (
     <div className="flex h-full flex-col">
@@ -16,7 +24,16 @@ export default async function MediaPage() {
           <div className="flex-1">
             <h1 className="text-lg font-semibold">Biblioteca de Medios</h1>
             <p className="text-sm text-muted-foreground">
-              {mediaCount} {mediaCount === 1 ? "imagen" : "imágenes"}
+              {isPro ? (
+                <>
+                  {mediaCount} {mediaCount === 1 ? "imagen" : "imágenes"}
+                </>
+              ) : (
+                <>
+                  {mediaCount} de {appConfig.mediaLimit}{" "}
+                  {mediaCount === 1 ? "imagen" : "imágenes"}
+                </>
+              )}
             </p>
           </div>
         </div>
