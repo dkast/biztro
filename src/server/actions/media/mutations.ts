@@ -2,9 +2,10 @@
 
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { revalidateTag } from "next/cache"
+import { z } from "zod/v4"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
-import { actionClient } from "@/lib/action-client"
+import { actionClient } from "@/lib/safe-actions"
 import prisma from "@/lib/prisma"
 import { env } from "@/env.mjs"
 
@@ -20,11 +21,11 @@ const R2 = new S3Client({
 })
 
 export const deleteMediaAsset = actionClient
-  .schema(async schema => {
-    return schema.object({
-      assetId: schema.string()
+  .inputSchema(
+    z.object({
+      assetId: z.string()
     })
-  })
+  )
   .action(async ({ parsedInput: { assetId } }) => {
     const membership = await getCurrentMembership()
     const organizationId = membership?.organizationId
@@ -76,8 +77,8 @@ export const deleteMediaAsset = actionClient
     })
 
     // Revalidate cache
-    revalidateTag(CACHE_TAGS.mediaAssets(organizationId))
-    revalidateTag(CACHE_TAGS.mediaCount(organizationId))
+    revalidateTag(CACHE_TAGS.mediaAssets(organizationId), "max")
+    revalidateTag(CACHE_TAGS.mediaCount(organizationId), "max")
 
     return { success: true }
   })

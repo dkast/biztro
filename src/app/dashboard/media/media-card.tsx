@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import toast from "react-hot-toast"
 import { MoreVertical, Trash2 } from "lucide-react"
 import Image from "next/image"
 
@@ -23,7 +24,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { useToast } from "@/hooks/use-toast"
 
 import { MediaDetailsDialog } from "./media-details-dialog"
 
@@ -51,16 +51,12 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
   const [showDetails, setShowDetails] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const { toast } = useToast()
 
   const handleDelete = async () => {
     if (asset.usageCount > 0) {
-      toast({
-        title: "No se puede eliminar",
-        description:
-          "Esta imagen está siendo utilizada. Elimínala de todos los lugares donde se usa primero.",
-        variant: "destructive"
-      })
+      toast.error(
+        "Esta imagen está siendo utilizada. Elimínala de todos los lugares donde se usa primero."
+      )
       setShowDeleteDialog(false)
       return
     }
@@ -70,22 +66,15 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
       const result = await deleteMediaAsset({ assetId: asset.id })
 
       if (result?.data?.success) {
-        toast({
-          title: "Imagen eliminada",
-          description: "La imagen se ha eliminado correctamente"
-        })
+        toast.success("La imagen se ha eliminado correctamente")
       } else {
-        throw new Error(result?.validationErrors?.[0] ?? "Error desconocido")
+        throw new Error("No se pudo eliminar la imagen")
       }
     } catch (error) {
       console.error("Error deleting media:", error)
       const errorMessage =
         error instanceof Error ? error.message : "No se pudo eliminar la imagen"
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive"
-      })
+      toast.error(errorMessage)
     } finally {
       setIsDeleting(false)
       setShowDeleteDialog(false)

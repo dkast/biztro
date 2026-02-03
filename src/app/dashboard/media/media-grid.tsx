@@ -1,5 +1,13 @@
+import { Images } from "lucide-react"
+
 import { getAllMediaAssets } from "@/server/actions/media/queries"
-import { Empty } from "@/components/ui/empty"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from "@/components/ui/empty"
 
 import { MediaCard } from "./media-card"
 
@@ -8,11 +16,18 @@ export async function MediaGrid() {
 
   if (assets.length === 0) {
     return (
-      <Empty
-        icon="image"
-        title="No hay imágenes"
-        description="Sube imágenes desde los productos o la configuración de tu organización"
-      />
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <Images className="size-5" />
+          </EmptyMedia>
+          <EmptyTitle>No hay imágenes</EmptyTitle>
+          <EmptyDescription>
+            Sube imágenes desde los productos o la configuración de tu
+            organización
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     )
   }
 
