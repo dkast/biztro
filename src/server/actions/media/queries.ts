@@ -43,3 +43,69 @@ export async function getUploadedBackgrounds() {
     createdAt: asset.createdAt
   }))
 }
+
+export async function getAllMediaAssets() {
+  "use cache: private"
+  const membership = await getCurrentMembership()
+  const organizationId = membership?.organizationId
+
+  if (!organizationId) {
+    return []
+  }
+
+  cacheTag(`media-assets-${organizationId}`)
+
+  const assets = await prisma.mediaAsset.findMany({
+    where: {
+      organizationId,
+      deletedAt: null
+    },
+    include: {
+      usages: {
+        select: {
+          entityType: true,
+          entityId: true,
+          field: true
+        }
+      }
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
+  })
+
+  return assets.map(asset => ({
+    id: asset.id,
+    storageKey: asset.storageKey,
+    url: getCacheBustedImageUrl(asset.storageKey, asset.updatedAt),
+    type: asset.type,
+    scope: asset.scope,
+    width: asset.width,
+    height: asset.height,
+    bytes: asset.bytes,
+    contentType: asset.contentType,
+    createdAt: asset.createdAt,
+    updatedAt: asset.updatedAt,
+    usageCount: asset.usages.length,
+    usages: asset.usages
+  }))
+}
+
+export async function getMediaAssetCount() {
+  "use cache: private"
+  const membership = await getCurrentMembership()
+  const organizationId = membership?.organizationId
+
+  if (!organizationId) {
+    return 0
+  }
+
+  cacheTag(`media-count-${organizationId}`)
+
+  return await prisma.mediaAsset.count({
+    where: {
+      organizationId,
+      deletedAt: null
+    }
+  })
+}
