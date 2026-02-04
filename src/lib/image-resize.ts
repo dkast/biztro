@@ -41,9 +41,9 @@ export async function resizeImage(
 
   // Check if resizing is needed
   if (originalWidth <= maxDimension && originalHeight <= maxDimension) {
-    // No resize needed, return original
+    // No resize needed, return original (File extends Blob)
     return {
-      blob: file instanceof Blob ? file : new Blob([file]),
+      blob: file,
       width: originalWidth,
       height: originalHeight,
       wasResized: false
