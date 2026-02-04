@@ -23,6 +23,7 @@ import "@uppy/image-editor/dist/style.min.css"
 import { useTheme } from "next-themes"
 
 import type { ImageType } from "@/lib/types"
+import { resizeImage } from "@/lib/image-resize"
 
 // Explicit types for richer error and file meta handling
 interface HttpError extends Error {
@@ -146,32 +147,63 @@ export function FileUploader({
 
   useEffect(() => {
     uppy.on("file-added", async file => {
-      // If the file is an image, get the dimensions
+      // If the file is an image, get the dimensions and resize if needed
       if (file.type?.startsWith("image/")) {
-        // console.log("Loading image")
-        const image = await getImageDimensions(file)
-        // console.log(image.width, image.height)
+        try {
+          const image = await getImageDimensions(file)
 
-        // If the image dimensions are too big, show an error
-        if (
-          (image.width as number) > limitDimension ||
-          (image.height as number) > limitDimension
-        ) {
-          console.error("Image too big")
-          Sentry.captureMessage("Image too large", {
-            level: "warning",
+          // If the image dimensions exceed the limit, resize it
+          if (
+            (image.width as number) > limitDimension ||
+            (image.height as number) > limitDimension
+          ) {
+            // Show a message that we're resizing
+            uppy.info(
+              `Redimensionando imagen de ${image.width}x${image.height} a ${limitDimension}px máximo...`,
+              "info",
+              2000
+            )
+
+            // Resize the image
+            const result = await resizeImage(file.data, {
+              maxDimension: limitDimension,
+              quality: 0.85,
+              maxCanvasSize: 4096 // Cap to prevent memory spikes
+            })
+
+            // Update the file with the resized blob
+            const resizedFile = new File(
+              [result.blob],
+              file.name ?? "resized-image.jpg",
+              { type: result.blob.type }
+            )
+
+            // Update the Uppy file
+            uppy.setFileState(file.id, {
+              data: resizedFile,
+              size: resizedFile.size
+            })
+
+            // Log the resize for monitoring
+            Sentry.captureMessage("Image auto-resized", {
+              level: "info",
+              tags: { section: "file-upload" },
+              extra: {
+                originalWidth: image.width,
+                originalHeight: image.height,
+                newWidth: result.width,
+                newHeight: result.height,
+                limitDimension
+              }
+            })
+          }
+        } catch (error) {
+          console.error("Error processing image:", error)
+          Sentry.captureException(error, {
             tags: { section: "file-upload" },
-            extra: { 
-              width: image.width, 
-              height: image.height, 
-              limitDimension 
-            }
+            extra: { stage: "resize" }
           })
-          uppy.info(
-            `La imagen es demasiado grande, el tamaño máximo es de ${limitDimension}x${limitDimension} píxeles`,
-            "error",
-            3000
-          )
+          uppy.info("Error al procesar la imagen", "error", 3000)
           uppy.removeFile(file.id)
         }
       } else {
