@@ -172,9 +172,14 @@ export function FileUploader({
             })
 
             // Update the file with the resized blob
+            // Use appropriate fallback extension based on MIME type
+            const fallbackName =
+              result.blob.type === "image/png"
+                ? "resized-image.png"
+                : "resized-image.jpg"
             const resizedFile = new File(
               [result.blob],
-              file.name ?? "resized-image.jpg",
+              file.name ?? fallbackName,
               { type: result.blob.type }
             )
 
