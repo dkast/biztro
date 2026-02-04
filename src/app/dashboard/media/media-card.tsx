@@ -97,7 +97,7 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
 
         {/* Overlay with actions */}
         <div
-          className="absolute inset-0 bg-black/10 opacity-0 transition-opacity
+          className="absolute inset-0 bg-black/50 opacity-0 transition-opacity
             group-hover:opacity-100"
         >
           <div className="@container flex h-full flex-col justify-between p-2">
