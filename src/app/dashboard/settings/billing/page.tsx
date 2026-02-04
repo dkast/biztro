@@ -37,11 +37,13 @@ export default async function BillingPage() {
 
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
-      <PageSubtitle
-        title="Planes de suscripción"
-        description="Maneja tu plan de suscripción e historial de pagos"
-        Icon={Wallet}
-      />
+      <PageSubtitle>
+        <PageSubtitle.Icon icon={Wallet} />
+        <PageSubtitle.Title>Planes de suscripción</PageSubtitle.Title>
+        <PageSubtitle.Description>
+          Maneja tu plan de suscripción e historial de pagos
+        </PageSubtitle.Description>
+      </PageSubtitle>
       {role === MembershipRole.OWNER && subsEnabled ? (
         <div className="my-10">
           {isPro ? (

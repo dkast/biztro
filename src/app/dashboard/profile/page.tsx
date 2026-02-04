@@ -43,12 +43,20 @@ export default async function ProfilePage() {
       <PageHeader title="Mi Perfil" />
       <div className="flex grow py-4">
         <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
-          <PageSubtitle
-            title="Datos generales"
-            description="Información general sobre mi cuenta"
-          />
-          <div className="relative my-6 rounded-xl bg-linear-to-t from-white to-gray-100 dark:from-gray-950 dark:to-gray-900">
-            <div className="bg-dot-pattern dark:bg-dot-pattern-white absolute inset-0 size-full mask-t-from-50%" />
+          <PageSubtitle>
+            <PageSubtitle.Title>Datos generales</PageSubtitle.Title>
+            <PageSubtitle.Description>
+              Información general sobre mi cuenta
+            </PageSubtitle.Description>
+          </PageSubtitle>
+          <div
+            className="relative my-6 rounded-xl bg-linear-to-t from-white
+              to-gray-100 dark:from-gray-950 dark:to-gray-900"
+          >
+            <div
+              className="bg-dot-pattern dark:bg-dot-pattern-white absolute
+                inset-0 size-full mask-t-from-50%"
+            />
             <div className="flex h-36 items-center overflow-hidden px-7">
               <Avatar className="size-20 shadow-lg">
                 {membership.user.image && (
@@ -65,19 +73,28 @@ export default async function ProfilePage() {
               <h3 className="text-xl leading-none font-semibold">
                 {membership.user.name}
               </h3>
-              <p className="mt-1.5 leading-none font-medium text-gray-600 dark:text-gray-400">
+              <p
+                className="mt-1.5 leading-none font-medium text-gray-600
+                  dark:text-gray-400"
+              >
                 {membership.user.email}
               </p>
             </div>
           </div>
           <div>
-            <PageSubtitle
-              title="Membresía actual"
-              description="Información sobre tu membresía actual"
-            />
+            <PageSubtitle>
+              <PageSubtitle.Title>Membresía actual</PageSubtitle.Title>
+              <PageSubtitle.Description>
+                Información sobre tu membresía actual
+              </PageSubtitle.Description>
+            </PageSubtitle>
             <div className="mt-6">
               {membership ? (
-                <div className="grid grid-cols-1 gap-6 rounded-lg border border-gray-200 px-6 py-3 sm:grid-cols-2 dark:border-gray-800">
+                <div
+                  className="grid grid-cols-1 gap-6 rounded-lg border
+                    border-gray-200 px-6 py-3 sm:grid-cols-2
+                    dark:border-gray-800"
+                >
                   <div>
                     <Label>Organización</Label>
                     <h4 className="text-gray-500">

@@ -5,7 +5,6 @@ import toast from "react-hot-toast"
 import { MoreVertical, Trash2 } from "lucide-react"
 import Image from "next/image"
 
-import { deleteMediaAsset } from "@/server/actions/media/mutations"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-
+import { deleteMediaAsset } from "@/server/actions/media/mutations"
 import { MediaDetailsDialog } from "./media-details-dialog"
 
 type MediaAsset = {
@@ -83,7 +82,10 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
 
   return (
     <>
-      <div className="group relative aspect-square overflow-hidden rounded-lg border bg-muted">
+      <div
+        className="group bg-muted relative aspect-square overflow-hidden
+          rounded-lg shadow-lg"
+      >
         <Image
           src={asset.url}
           alt="Media asset"
@@ -94,15 +96,18 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
         />
 
         {/* Overlay with actions */}
-        <div className="absolute inset-0 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-          <div className="flex h-full flex-col justify-between p-2">
+        <div
+          className="absolute inset-0 bg-black/10 opacity-0 transition-opacity
+            group-hover:opacity-100"
+        >
+          <div className="@container flex h-full flex-col justify-between p-2">
             <div className="flex justify-end">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    size="icon"
+                    size="icon-sm"
                     variant="ghost"
-                    className="h-8 w-8 bg-black/20 text-white hover:bg-black/40"
+                    className="bg-black/20 text-white hover:bg-black/40"
                   >
                     <MoreVertical className="size-4" />
                   </Button>
@@ -119,10 +124,14 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
               </DropdownMenu>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div
+              className="flex flex-col items-center justify-between gap-2
+                @min-[230px]:flex-row"
+            >
               <Badge
                 variant="secondary"
-                className="bg-black/40 text-white hover:bg-black/60"
+                className="rounded-full bg-black/40 px-2.5 py-1.5 text-white
+                  dark:bg-black/60"
               >
                 Usado en {asset.usageCount}{" "}
                 {asset.usageCount === 1 ? "lugar" : "lugares"}
@@ -131,7 +140,8 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
               <Button
                 size="sm"
                 variant="secondary"
-                className="bg-black/40 text-white hover:bg-black/60"
+                className="border border-white/50 bg-transparent text-white
+                  hover:bg-white/10"
                 onClick={() => setShowDetails(true)}
               >
                 Ver detalles
@@ -163,7 +173,8 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
               <AlertDialogAction
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                className="bg-destructive text-destructive-foreground
+                  hover:bg-destructive/90"
               >
                 {isDeleting ? "Eliminando..." : "Eliminar"}
               </AlertDialogAction>
