@@ -1,6 +1,5 @@
 import { Images } from "lucide-react"
 
-import { getAllMediaAssets } from "@/server/actions/media/queries"
 import {
   Empty,
   EmptyDescription,
@@ -8,7 +7,7 @@ import {
   EmptyMedia,
   EmptyTitle
 } from "@/components/ui/empty"
-
+import { getAllMediaAssets } from "@/server/actions/media/queries"
 import { MediaCard } from "./media-card"
 
 export async function MediaGrid() {
@@ -32,7 +31,10 @@ export async function MediaGrid() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+    <div
+      className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4
+        lg:grid-cols-5"
+    >
       {assets.map(asset => (
         <MediaCard key={asset.id} asset={asset} />
       ))}
