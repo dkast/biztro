@@ -22,8 +22,8 @@ import "@uppy/image-editor/dist/style.min.css"
 // import Webcam from "@uppy/webcam"
 import { useTheme } from "next-themes"
 
-import type { ImageType } from "@/lib/types"
 import { resizeImage } from "@/lib/image-resize"
+import type { ImageType } from "@/lib/types"
 
 // Explicit types for richer error and file meta handling
 interface HttpError extends Error {
@@ -172,9 +172,14 @@ export function FileUploader({
             })
 
             // Update the file with the resized blob
+            // Preserve filename with appropriate fallback based on MIME type
+            const fallbackName =
+              result.blob.type === "image/png"
+                ? "resized-image.png"
+                : "resized-image.jpg"
             const resizedFile = new File(
               [result.blob],
-              file.name,
+              file.name ?? fallbackName,
               { type: result.blob.type }
             )
 
