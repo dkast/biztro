@@ -32,6 +32,9 @@ interface HttpError extends Error {
 
 interface UploadFileMeta extends Meta {
   storageKey?: string
+  width?: number
+  height?: number
+  bytes?: number
   [key: string]: unknown
 }
 
@@ -41,6 +44,15 @@ export async function getUploadParameters(
   imageType: ImageType,
   objectId: string
 ) {
+  const meta = file.meta as UploadFileMeta
+  const width = typeof meta.width === "number" ? meta.width : undefined
+  const height = typeof meta.height === "number" ? meta.height : undefined
+  const bytes =
+    typeof meta.bytes === "number"
+      ? meta.bytes
+      : typeof file.size === "number"
+        ? file.size
+        : undefined
   const response = await fetch("/api/file", {
     method: "POST",
     headers: {
@@ -51,7 +63,10 @@ export async function getUploadParameters(
       imageType,
       objectId,
       filename: file.name,
-      contentType: file.type
+      contentType: file.type,
+      width,
+      height,
+      bytes
     })
   })
   if (!response.ok) {
@@ -151,6 +166,13 @@ export function FileUploader({
       if (file.type?.startsWith("image/")) {
         try {
           const image = await getImageDimensions(file)
+          if (typeof file.size === "number") {
+            uppy.setFileMeta(file.id, {
+              width: image.width,
+              height: image.height,
+              bytes: file.size
+            })
+          }
 
           // If the image dimensions exceed the limit, resize it
           if (
@@ -187,6 +209,11 @@ export function FileUploader({
             uppy.setFileState(file.id, {
               data: resizedFile,
               size: resizedFile.size
+            })
+            uppy.setFileMeta(file.id, {
+              width: result.width,
+              height: result.height,
+              bytes: resizedFile.size
             })
 
             // Log the resize for monitoring
