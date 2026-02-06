@@ -32,8 +32,14 @@ interface HttpError extends Error {
 
 interface UploadFileMeta extends Meta {
   storageKey?: string
+  width?: number
+  height?: number
+  bytes?: number
   [key: string]: unknown
 }
+
+const toFiniteNumber = (value: unknown) =>
+  typeof value === "number" && Number.isFinite(value) ? value : undefined
 
 export async function getUploadParameters(
   file: UppyFile<Meta, Body>,
@@ -41,6 +47,10 @@ export async function getUploadParameters(
   imageType: ImageType,
   objectId: string
 ) {
+  const meta = file.meta as UploadFileMeta
+  const width = toFiniteNumber(meta.width)
+  const height = toFiniteNumber(meta.height)
+  const bytes = toFiniteNumber(meta.bytes) ?? toFiniteNumber(file.size)
   const response = await fetch("/api/file", {
     method: "POST",
     headers: {
@@ -51,7 +61,10 @@ export async function getUploadParameters(
       imageType,
       objectId,
       filename: file.name,
-      contentType: file.type
+      contentType: file.type,
+      width,
+      height,
+      bytes
     })
   })
   if (!response.ok) {
@@ -151,6 +164,20 @@ export function FileUploader({
       if (file.type?.startsWith("image/")) {
         try {
           const image = await getImageDimensions(file)
+          const width = toFiniteNumber(image.width)
+          const height = toFiniteNumber(image.height)
+          const bytes = toFiniteNumber(file.size)
+          if (
+            width !== undefined &&
+            height !== undefined &&
+            bytes !== undefined
+          ) {
+            uppy.setFileMeta(file.id, {
+              width,
+              height,
+              bytes
+            })
+          }
 
           // If the image dimensions exceed the limit, resize it
           if (
@@ -187,6 +214,11 @@ export function FileUploader({
             uppy.setFileState(file.id, {
               data: resizedFile,
               size: resizedFile.size
+            })
+            uppy.setFileMeta(file.id, {
+              width: result.width,
+              height: result.height,
+              bytes: resizedFile.size
             })
 
             // Log the resize for monitoring

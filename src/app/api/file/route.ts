@@ -4,8 +4,8 @@ import { revalidateTag } from "next/cache"
 import { headers } from "next/headers"
 import { NextResponse, type NextRequest } from "next/server"
 
-import { isProMember } from "@/server/actions/user/queries"
 import { CACHE_TAGS } from "@/server/actions/media/constants"
+import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
@@ -32,7 +32,10 @@ export async function POST(req: NextRequest) {
     organizationId: requestedOrganizationId,
     imageType,
     objectId,
-    contentType
+    contentType,
+    width: requestedWidth,
+    height: requestedHeight,
+    bytes: requestedBytes
   } = await req.json()
 
   const corsHeaders = {
@@ -63,6 +66,13 @@ export async function POST(req: NextRequest) {
   }
 
   const organizationId = activeOrganizationId
+  const normalizeSize = (value: unknown) =>
+    typeof value === "number" && Number.isFinite(value) && value > 0
+      ? Math.round(value)
+      : undefined
+  const width = normalizeSize(requestedWidth)
+  const height = normalizeSize(requestedHeight)
+  const bytes = normalizeSize(requestedBytes)
 
   // Use deterministic storage keys to enable overwriting and prevent orphaned files
   let storageKey: string
@@ -184,10 +194,16 @@ export async function POST(req: NextRequest) {
         storageKey,
         type: MediaAssetType.IMAGE,
         scope: assetScope,
-        contentType: contentType as string
+        contentType: contentType as string,
+        width,
+        height,
+        bytes
       },
       update: {
         contentType: contentType as string,
+        width,
+        height,
+        bytes,
         updatedAt: new Date()
       }
     })
