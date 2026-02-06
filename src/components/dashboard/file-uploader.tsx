@@ -38,6 +38,9 @@ interface UploadFileMeta extends Meta {
   [key: string]: unknown
 }
 
+const toFiniteNumber = (value: unknown) =>
+  typeof value === "number" && Number.isFinite(value) ? value : undefined
+
 export async function getUploadParameters(
   file: UppyFile<Meta, Body>,
   organizationId: string,
@@ -45,14 +48,9 @@ export async function getUploadParameters(
   objectId: string
 ) {
   const meta = file.meta as UploadFileMeta
-  const width = typeof meta.width === "number" ? meta.width : undefined
-  const height = typeof meta.height === "number" ? meta.height : undefined
-  const bytes =
-    typeof meta.bytes === "number"
-      ? meta.bytes
-      : typeof file.size === "number"
-        ? file.size
-        : undefined
+  const width = toFiniteNumber(meta.width)
+  const height = toFiniteNumber(meta.height)
+  const bytes = toFiniteNumber(meta.bytes) ?? toFiniteNumber(file.size)
   const response = await fetch("/api/file", {
     method: "POST",
     headers: {
@@ -166,11 +164,18 @@ export function FileUploader({
       if (file.type?.startsWith("image/")) {
         try {
           const image = await getImageDimensions(file)
-          if (typeof file.size === "number") {
+          const width = toFiniteNumber(image.width)
+          const height = toFiniteNumber(image.height)
+          const bytes = toFiniteNumber(file.size)
+          if (
+            width !== undefined &&
+            height !== undefined &&
+            bytes !== undefined
+          ) {
             uppy.setFileMeta(file.id, {
-              width: image.width,
-              height: image.height,
-              bytes: file.size
+              width,
+              height,
+              bytes
             })
           }
 
