@@ -6,7 +6,6 @@ import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { MediaAssetScope } from "@/lib/types"
 import { getCacheBustedImageUrl } from "@/lib/utils"
-
 import { CACHE_TAGS } from "./constants"
 
 export async function getUploadedBackgrounds() {
@@ -78,6 +77,7 @@ export async function getAllMediaAssets() {
 
   return assets.map(asset => ({
     id: asset.id,
+    organizationId: asset.organizationId,
     storageKey: asset.storageKey,
     url: getCacheBustedImageUrl(asset.storageKey, asset.updatedAt),
     type: asset.type,

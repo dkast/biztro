@@ -1,20 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import toast from "react-hot-toast"
-import { MoreVertical, Trash2 } from "lucide-react"
+import { ImageUp, MoreVertical } from "lucide-react"
 import Image from "next/image"
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle
-} from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,11 +12,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { deleteMediaAsset } from "@/server/actions/media/mutations"
 import { MediaDetailsDialog } from "./media-details-dialog"
+import { MediaReplaceDialog } from "./media-replace-dialog"
 
 type MediaAsset = {
   id: string
+  organizationId: string
   storageKey: string
   url: string
   type: string
@@ -48,37 +38,7 @@ type MediaAsset = {
 
 export function MediaCard({ asset }: { asset: MediaAsset }) {
   const [showDetails, setShowDetails] = useState(false)
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
-
-  const handleDelete = async () => {
-    if (asset.usageCount > 0) {
-      toast.error(
-        "Esta imagen está siendo utilizada. Elimínala de todos los lugares donde se usa primero."
-      )
-      setShowDeleteDialog(false)
-      return
-    }
-
-    setIsDeleting(true)
-    try {
-      const result = await deleteMediaAsset({ assetId: asset.id })
-
-      if (result?.data?.success) {
-        toast.success("La imagen se ha eliminado correctamente")
-      } else {
-        throw new Error("No se pudo eliminar la imagen")
-      }
-    } catch (error) {
-      console.error("Error deleting media:", error)
-      const errorMessage =
-        error instanceof Error ? error.message : "No se pudo eliminar la imagen"
-      toast.error(errorMessage)
-    } finally {
-      setIsDeleting(false)
-      setShowDeleteDialog(false)
-    }
-  }
+  const [showReplaceDialog, setShowReplaceDialog] = useState(false)
 
   return (
     <>
@@ -113,12 +73,9 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => setShowDeleteDialog(true)}
-                    className="text-destructive"
-                  >
-                    <Trash2 className="mr-2 size-4" />
-                    Eliminar
+                  <DropdownMenuItem onClick={() => setShowReplaceDialog(true)}>
+                    <ImageUp className="mr-2 size-4" />
+                    Reemplazar imagen
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -157,31 +114,11 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
         onOpenChange={setShowDetails}
       />
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar imagen?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {asset.usageCount > 0
-                ? "Esta imagen está siendo utilizada. Elimínala de todos los lugares donde se usa antes de borrarla."
-                : "Esta acción no se puede deshacer. La imagen será eliminada permanentemente."}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            {asset.usageCount === 0 && (
-              <AlertDialogAction
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="bg-destructive text-destructive-foreground
-                  hover:bg-destructive/90"
-              >
-                {isDeleting ? "Eliminando..." : "Eliminar"}
-              </AlertDialogAction>
-            )}
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <MediaReplaceDialog
+        asset={asset}
+        open={showReplaceDialog}
+        onOpenChange={setShowReplaceDialog}
+      />
     </>
   )
 }

@@ -16,7 +16,7 @@ export default function MediaLoading() {
           className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4
             lg:grid-cols-5"
         >
-          {Array.from({ length: 12 }).map((_, i) => (
+          {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
               className="bg-muted aspect-square animate-pulse rounded-lg"
