@@ -33,16 +33,23 @@ function PageSubtitleRoot({ children, className }: PageSubtitleRootProps) {
   const actions = getSlot(children, PageSubtitleActions)
 
   return (
-    <div className={cn("flex items-center justify-between", className)}>
-      {icon}
-      <div className="min-w-0 flex-1">
-        {title}
-        {(description || info) && (
-          <div className="flex items-end gap-1">
-            {description}
-            {info}
-          </div>
-        )}
+    <div
+      className={cn(
+        "flex flex-col items-start justify-between sm:flex-row",
+        className
+      )}
+    >
+      <div className="flex items-center">
+        {icon}
+        <div className="min-w-0 flex-1">
+          {title}
+          {(description || info) && (
+            <div className="flex items-end gap-1">
+              {description}
+              {info}
+            </div>
+          )}
+        </div>
       </div>
       {actions}
     </div>

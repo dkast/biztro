@@ -86,7 +86,7 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
           }
         >
           <div className="@container flex h-full flex-col justify-between p-2">
-            <div className="flex justify-end @max-[230px]:justify-center">
+            <div className="flex justify-end @max-[175px]:justify-center">
               {isMobile ? (
                 <Button
                   size="xs"

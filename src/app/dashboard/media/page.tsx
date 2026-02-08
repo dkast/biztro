@@ -16,7 +16,7 @@ export default async function MediaPage() {
   return (
     <div className="flex h-full flex-col">
       <div className="border-b">
-        <PageSubtitle className="h-16 px-6">
+        <PageSubtitle className="px-6 py-4">
           <PageSubtitle.Icon icon={Images} />
           <PageSubtitle.Title>Biblioteca de Medios</PageSubtitle.Title>
           <PageSubtitle.Description>
