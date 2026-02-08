@@ -5,7 +5,7 @@ import { revalidateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
-import { actionClient } from "@/lib/safe-actions"
+import { actionClient, authMemberActionClient } from "@/lib/safe-actions"
 import prisma from "@/lib/prisma"
 import { env } from "@/env.mjs"
 
@@ -20,22 +20,25 @@ const R2 = new S3Client({
   }
 })
 
-export const deleteMediaAsset = actionClient
+export const deleteMediaAsset = authMemberActionClient
   .inputSchema(
     z.object({
       assetId: z.string()
     })
   )
-  .action(async ({ parsedInput: { assetId } }) => {
-    const membership = await getCurrentMembership()
-    const organizationId = membership?.organizationId
+  .action(async ({ parsedInput: { assetId }, ctx: { member } }) => {
+    const organizationId = member.organizationId
 
     if (!organizationId) {
-      throw new Error("Unauthorized")
+      return {
+        failure: {
+          reason: "No se pudo obtener la organización actual"
+        }
+      }
     }
 
     // Get the asset to verify ownership and get storage key
-    const asset = await prisma.mediaAsset.findUnique({
+    const asset = await prisma.mediaAsset.findFirst({
       where: {
         id: assetId,
         organizationId
@@ -46,14 +49,21 @@ export const deleteMediaAsset = actionClient
     })
 
     if (!asset) {
-      throw new Error("Media asset not found")
+      return {
+        failure: {
+          reason: "Recurso multimedia no encontrado"
+        }
+      }
     }
 
     // Check if asset is in use
     if (asset.usages.length > 0) {
-      throw new Error(
-        "Cannot delete media asset that is currently in use. Please remove it from all locations first."
-      )
+      return {
+        failure: {
+          reason:
+            "No se puede eliminar un recurso multimedia que está en uso. Por favor, elimínelo de todas las ubicaciones primero."
+        }
+      }
     }
 
     // Delete from R2

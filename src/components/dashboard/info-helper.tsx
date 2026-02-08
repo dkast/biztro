@@ -43,7 +43,7 @@ export default function InfoHelper({
       open={isMobile ? open : undefined}
       onOpenChange={isMobile ? setOpen : undefined}
     >
-      <HoverCardTrigger>{trigger}</HoverCardTrigger>
+      <HoverCardTrigger asChild>{trigger}</HoverCardTrigger>
       <HoverCardContent className="px-3 py-2 text-sm text-gray-600">
         {children}
       </HoverCardContent>

@@ -115,8 +115,8 @@ export function MediaReplaceDialog({
       <Info className="size-4" />
       <AlertTitle>No se puede reemplazar</AlertTitle>
       <AlertDescription>
-        Esta imagen no tiene un destino valido (logo/banner/producto) o sus usos
-        estan desactualizados.
+        Esta imagen no tiene un destino válido (logo/banner/producto) o sus usos
+        están desactualizados.
       </AlertDescription>
     </Alert>
   )
