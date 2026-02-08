@@ -12,6 +12,14 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle
+} from "@/components/ui/drawer"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { ImageType } from "@/lib/types"
 
 type MediaAsset = {
@@ -81,8 +89,47 @@ export function MediaReplaceDialog({
   onOpenChange: (open: boolean) => void
 }) {
   const router = useRouter()
+  const isMobile = useIsMobile()
 
   const target = useMemo(() => resolveReplaceTarget(asset), [asset])
+
+  const replaceContent = target ? (
+    <FileUploader
+      organizationId={asset.organizationId}
+      imageType={target.imageType}
+      objectId={target.objectId}
+      limitDimension={target.limitDimension}
+      onUploadSuccess={() => {
+        toast.success("Imagen reemplazada")
+        onOpenChange(false)
+        router.refresh()
+      }}
+      onUploadError={() => {
+        toast.error("No se pudo reemplazar la imagen")
+      }}
+    />
+  ) : (
+    <div className="text-muted-foreground text-sm">
+      No se puede reemplazar esta imagen porque no tiene un destino válido
+      (logo/banner/producto) o sus usos están desactualizados.
+    </div>
+  )
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="max-h-[85vh] overflow-y-auto">
+          <DrawerHeader>
+            <DrawerTitle>Reemplazar imagen</DrawerTitle>
+            <DrawerDescription>
+              Esta acción reemplaza la imagen manteniendo sus usos actuales.
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="px-4 pb-6">{replaceContent}</div>
+        </DrawerContent>
+      </Drawer>
+    )
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -94,27 +141,7 @@ export function MediaReplaceDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {target ? (
-          <FileUploader
-            organizationId={asset.organizationId}
-            imageType={target.imageType}
-            objectId={target.objectId}
-            limitDimension={target.limitDimension}
-            onUploadSuccess={() => {
-              toast.success("Imagen reemplazada")
-              onOpenChange(false)
-              router.refresh()
-            }}
-            onUploadError={() => {
-              toast.error("No se pudo reemplazar la imagen")
-            }}
-          />
-        ) : (
-          <div className="text-muted-foreground text-sm">
-            No se puede reemplazar esta imagen porque no tiene un destino válido
-            (logo/banner/producto) o sus usos están desactualizados.
-          </div>
-        )}
+        {replaceContent}
       </DialogContent>
     </Dialog>
   )

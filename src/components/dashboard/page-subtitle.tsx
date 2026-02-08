@@ -33,9 +33,7 @@ function PageSubtitleRoot({ children, className }: PageSubtitleRootProps) {
   const actions = getSlot(children, PageSubtitleActions)
 
   return (
-    <div
-      className={cn("md:flex md:items-center md:justify-between", className)}
-    >
+    <div className={cn("flex items-center justify-between", className)}>
       {icon}
       <div className="min-w-0 flex-1">
         {title}

@@ -10,6 +10,13 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle
+} from "@/components/ui/drawer"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 type MediaAsset = {
   id: string
@@ -40,6 +47,8 @@ export function MediaDetailsDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const isMobile = useIsMobile()
+
   const formatBytes = (bytes: number | null) => {
     if (!bytes) return "N/A"
     const kb = bytes / 1024
@@ -88,103 +97,120 @@ export function MediaDetailsDialog({
     }
   }
 
+  const detailsContent = (
+    <div className="space-y-6">
+      <div
+        className="bg-muted relative aspect-video overflow-hidden rounded-lg
+          border"
+      >
+        <Image
+          src={asset.url}
+          alt="Preview"
+          fill
+          className="object-contain"
+          unoptimized
+        />
+      </div>
+
+      <div className="grid gap-4">
+        <div className="flex items-center gap-3">
+          <FileType className="text-muted-foreground size-4" />
+          <div>
+            <p className="text-sm font-medium">Tipo</p>
+            <p className="text-muted-foreground text-sm">
+              {getScopeLabel(asset.scope)}
+            </p>
+          </div>
+        </div>
+
+        {asset.width && asset.height && (
+          <div className="flex items-center gap-3">
+            <Ruler className="text-muted-foreground size-4" />
+            <div>
+              <p className="text-sm font-medium">Dimensiones</p>
+              <p className="text-muted-foreground text-sm">
+                {asset.width} × {asset.height} píxeles
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className="flex items-center gap-3">
+          <ImageIcon className="text-muted-foreground size-4" />
+          <div>
+            <p className="text-sm font-medium">Tamaño</p>
+            <p className="text-muted-foreground text-sm">
+              {formatBytes(asset.bytes)}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Calendar className="text-muted-foreground size-4" />
+          <div>
+            <p className="text-sm font-medium">Subida</p>
+            <p className="text-muted-foreground text-sm">
+              {formatDate(asset.createdAt)}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="mb-3 text-sm font-medium">
+          Usado en {asset.usageCount}{" "}
+          {asset.usageCount === 1 ? "lugar" : "lugares"}
+        </h3>
+        {asset.usages.length > 0 ? (
+          <div className="space-y-2">
+            {asset.usages.map((usage, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between rounded-lg border
+                  p-3"
+              >
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline">
+                    {getEntityTypeLabel(usage.entityType)}
+                  </Badge>
+                  {usage.field && (
+                    <span className="text-muted-foreground text-sm">
+                      {usage.field}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            Esta imagen no está siendo utilizada
+          </p>
+        )}
+      </div>
+    </div>
+  )
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="max-h-[85vh] overflow-y-auto">
+          <DrawerHeader>
+            <DrawerTitle>Detalles de la imagen</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-6">{detailsContent}</div>
+        </DrawerContent>
+      </Drawer>
+    )
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Detalles de la imagen</DialogTitle>
         </DialogHeader>
-
-        <div className="space-y-6">
-          {/* Image preview */}
-          <div className="relative aspect-video overflow-hidden rounded-lg border bg-muted">
-            <Image
-              src={asset.url}
-              alt="Preview"
-              fill
-              className="object-contain"
-              unoptimized
-            />
-          </div>
-
-          {/* Details */}
-          <div className="grid gap-4">
-            <div className="flex items-center gap-3">
-              <FileType className="size-4 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Tipo</p>
-                <p className="text-sm text-muted-foreground">
-                  {getScopeLabel(asset.scope)}
-                </p>
-              </div>
-            </div>
-
-            {asset.width && asset.height && (
-              <div className="flex items-center gap-3">
-                <Ruler className="size-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Dimensiones</p>
-                  <p className="text-sm text-muted-foreground">
-                    {asset.width} × {asset.height} píxeles
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center gap-3">
-              <ImageIcon className="size-4 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Tamaño</p>
-                <p className="text-sm text-muted-foreground">
-                  {formatBytes(asset.bytes)}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Calendar className="size-4 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium">Subida</p>
-                <p className="text-sm text-muted-foreground">
-                  {formatDate(asset.createdAt)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Usage */}
-          <div>
-            <h3 className="mb-3 text-sm font-medium">
-              Usado en {asset.usageCount}{" "}
-              {asset.usageCount === 1 ? "lugar" : "lugares"}
-            </h3>
-            {asset.usages.length > 0 ? (
-              <div className="space-y-2">
-                {asset.usages.map((usage, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between rounded-lg border p-3"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">
-                        {getEntityTypeLabel(usage.entityType)}
-                      </Badge>
-                      {usage.field && (
-                        <span className="text-sm text-muted-foreground">
-                          {usage.field}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Esta imagen no está siendo utilizada
-              </p>
-            )}
-          </div>
-        </div>
+        {detailsContent}
       </DialogContent>
     </Dialog>
   )
