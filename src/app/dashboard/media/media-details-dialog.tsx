@@ -1,21 +1,23 @@
 "use client"
 
-import { Calendar, FileType, Image as ImageIcon, Ruler } from "lucide-react"
+import {
+  Calendar,
+  FileType,
+  Image as ImageIcon,
+  ImageUp,
+  Ruler
+} from "lucide-react"
 import Image from "next/image"
 
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle
-} from "@/components/ui/drawer"
+import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 type MediaAsset = {
@@ -41,11 +43,13 @@ type MediaAsset = {
 export function MediaDetailsDialog({
   asset,
   open,
-  onOpenChange
+  onOpenChange,
+  onReplace
 }: {
   asset: MediaAsset
   open: boolean
   onOpenChange: (open: boolean) => void
+  onReplace?: () => void
 }) {
   const isMobile = useIsMobile()
 
@@ -191,14 +195,23 @@ export function MediaDetailsDialog({
     </div>
   )
 
+  const replaceButton = onReplace ? (
+    <Button size="sm" variant="secondary" onClick={onReplace}>
+      <ImageUp className="mr-2 size-4" />
+      Reemplazar
+    </Button>
+  ) : null
+
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[85vh] overflow-y-auto">
-          <DrawerHeader>
-            <DrawerTitle>Detalles de la imagen</DrawerTitle>
-          </DrawerHeader>
-          <div className="px-4 pb-6">{detailsContent}</div>
+        <DrawerContent
+          className="max-h-[85vh] space-y-4 overflow-y-auto px-4 pb-6"
+        >
+          <DrawerTitle>Detalles de la imagen</DrawerTitle>
+
+          <div>{detailsContent}</div>
+          {replaceButton}
         </DrawerContent>
       </Drawer>
     )
@@ -207,10 +220,13 @@ export function MediaDetailsDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Detalles de la imagen</DialogTitle>
-        </DialogHeader>
+        <div className="flex items-start justify-between gap-3">
+          <DialogHeader>
+            <DialogTitle>Detalles de la imagen</DialogTitle>
+          </DialogHeader>
+        </div>
         {detailsContent}
+        {replaceButton}
       </DialogContent>
     </Dialog>
   )

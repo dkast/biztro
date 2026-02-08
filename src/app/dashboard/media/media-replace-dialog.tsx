@@ -2,9 +2,11 @@
 
 import { useMemo } from "react"
 import toast from "react-hot-toast"
+import { Info } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 import { FileUploader } from "@/components/dashboard/file-uploader"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   Dialog,
   DialogContent,
@@ -13,10 +15,10 @@ import {
   DialogTitle
 } from "@/components/ui/dialog"
 import {
-  Drawer,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
+  DrawerNested,
   DrawerTitle
 } from "@/components/ui/drawer"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -109,15 +111,19 @@ export function MediaReplaceDialog({
       }}
     />
   ) : (
-    <div className="text-muted-foreground text-sm">
-      No se puede reemplazar esta imagen porque no tiene un destino válido
-      (logo/banner/producto) o sus usos están desactualizados.
-    </div>
+    <Alert variant="information">
+      <Info className="size-4" />
+      <AlertTitle>No se puede reemplazar</AlertTitle>
+      <AlertDescription>
+        Esta imagen no tiene un destino valido (logo/banner/producto) o sus usos
+        estan desactualizados.
+      </AlertDescription>
+    </Alert>
   )
 
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerNested open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-[85vh] overflow-y-auto">
           <DrawerHeader>
             <DrawerTitle>Reemplazar imagen</DrawerTitle>
@@ -127,7 +133,7 @@ export function MediaReplaceDialog({
           </DrawerHeader>
           <div className="px-4 pb-6">{replaceContent}</div>
         </DrawerContent>
-      </Drawer>
+      </DrawerNested>
     )
   }
 
