@@ -4,8 +4,7 @@ import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { revalidateTag } from "next/cache"
 import { z } from "zod/v4"
 
-import { getCurrentMembership } from "@/server/actions/user/queries"
-import { actionClient, authMemberActionClient } from "@/lib/safe-actions"
+import { authMemberActionClient } from "@/lib/safe-actions"
 import prisma from "@/lib/prisma"
 import { env } from "@/env.mjs"
 
