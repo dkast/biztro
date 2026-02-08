@@ -41,15 +41,18 @@ export default async function ItemsPage(props: {
 
   return (
     <div className="mx-auto grow px-4 sm:px-6">
-      <PageSubtitle
-        title="Productos"
-        description="Administra los productos de tu menú"
-        Icon={ShoppingBag}
-      >
-        <div className="flex gap-2">
-          <ItemImport />
-          <ItemCreate />
-        </div>
+      <PageSubtitle>
+        <PageSubtitle.Icon icon={ShoppingBag} />
+        <PageSubtitle.Title>Productos</PageSubtitle.Title>
+        <PageSubtitle.Description>
+          Administra los productos de tu menú
+        </PageSubtitle.Description>
+        <PageSubtitle.Actions>
+          <div className="flex gap-2">
+            <ItemImport />
+            <ItemCreate />
+          </div>
+        </PageSubtitle.Actions>
       </PageSubtitle>
       <div className="mt-6">
         <ItemTable data={data} categories={categories} />

@@ -15,6 +15,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ChevronRight,
   ChevronsUpDown,
+  Images,
   LayoutTemplate,
   Megaphone,
   Plus,
@@ -90,6 +91,7 @@ const navigation: NavigationItem[] = [
       { title: "Categorías", url: "/dashboard/menu-items/categories" }
     ]
   },
+  { title: "Medios", url: "/dashboard/media", icon: Images },
   {
     title: "Configuración",
     url: "/dashboard/settings",

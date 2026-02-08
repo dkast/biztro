@@ -212,7 +212,7 @@ export default function ContainerSettings() {
       label =
         BgImages.find(img => img.image === backgroundImage)?.name ?? "Imagen"
     } else if (isUploaded) {
-      label = "Imagen subida"
+      label = "Personalizado"
     }
 
     return (

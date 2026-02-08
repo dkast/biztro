@@ -24,18 +24,22 @@ export default async function LocationPage() {
 
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
-      <PageSubtitle
-        title="Sucursal"
-        description="Información de contacto"
-        Icon={MapPin}
-      />
+      <PageSubtitle>
+        <PageSubtitle.Icon icon={MapPin} />
+        <PageSubtitle.Title>Sucursal</PageSubtitle.Title>
+        <PageSubtitle.Description>
+          Información de contacto
+        </PageSubtitle.Description>
+      </PageSubtitle>
       <LocationForm data={data} enabled />
       <Separator className="my-8" />
-      <PageSubtitle
-        title="Horarios de atención"
-        description="Horarios de atención al público"
-        Icon={Clock}
-      />
+      <PageSubtitle>
+        <PageSubtitle.Icon icon={Clock} />
+        <PageSubtitle.Title>Horarios de atención</PageSubtitle.Title>
+        <PageSubtitle.Description>
+          Horarios de atención al público
+        </PageSubtitle.Description>
+      </PageSubtitle>
       <HoursForm data={data} />
     </div>
   )

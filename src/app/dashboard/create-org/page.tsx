@@ -12,11 +12,13 @@ export default function Page() {
   return (
     <div className="flex grow py-4">
       <div className="mx-auto flex max-w-2xl grow flex-col gap-4 px-4 sm:px-0">
-        <PageSubtitle
-          title="Crear Organización"
-          description="Información básica del negocio"
-          Icon={Store}
-        />
+        <PageSubtitle>
+          <PageSubtitle.Icon icon={Store} />
+          <PageSubtitle.Title>Crear Organización</PageSubtitle.Title>
+          <PageSubtitle.Description>
+            Información básica del negocio
+          </PageSubtitle.Description>
+        </PageSubtitle>
         <NewOrgForm />
       </div>
     </div>

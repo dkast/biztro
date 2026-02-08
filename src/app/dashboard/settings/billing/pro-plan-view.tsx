@@ -45,7 +45,10 @@ export async function ProPlanView() {
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Plan</CardTitle>
-          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <div
+            className="flex items-center gap-2 text-sm text-gray-500
+              dark:text-gray-400"
+          >
             <span>PRO</span>
             {(() => {
               switch (subscription.status) {
@@ -182,7 +185,7 @@ export async function ProPlanView() {
           )}
         </CardContent>
         <Separator />
-        <CardFooter className="items-center justify-between py-4">
+        <CardFooter className="items-center justify-between gap-1 py-4">
           <p className="text-sm text-gray-500">
             Maneja tu suscripción en Stripe
           </p>

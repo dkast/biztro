@@ -49,31 +49,38 @@ export default async function DashboardPage() {
           </Suspense>
         </div>
         <div className="col-span-full">
-          <PageSubtitle
-            title="Menús"
-            description="Todos los menús."
-            additionalInfo="Aquí puedes ver todos los menús de tu organización. El menú activo es público para tus clientes. Solo puede haber un menú activo a la vez."
-          >
-            {currentOrg?.slug && (
-              <Item size="sm" variant="outline" asChild>
-                <Link
-                  href={`/${currentOrg.slug}`}
-                  className="block w-full"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <ItemMedia>
-                    <GlobeIcon className="size-4" />
-                  </ItemMedia>
-                  <ItemContent>
-                    <ItemTitle>Visita tu menú en línea</ItemTitle>
-                  </ItemContent>
-                  <ItemActions>
-                    <ChevronRightIcon className="size-4" />
-                  </ItemActions>
-                </Link>
-              </Item>
-            )}
+          <PageSubtitle>
+            <PageSubtitle.Title>Menús</PageSubtitle.Title>
+            <PageSubtitle.Description>
+              Todos los menús.
+            </PageSubtitle.Description>
+            <PageSubtitle.Info>
+              Aquí puedes ver todos los menús de tu organización. El menú activo
+              es público para tus clientes. Solo puede haber un menú activo a la
+              vez.
+            </PageSubtitle.Info>
+            <PageSubtitle.Actions>
+              {currentOrg?.slug && (
+                <Item size="sm" variant="outline" asChild>
+                  <Link
+                    href={`/${currentOrg.slug}`}
+                    className="block w-full"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ItemMedia>
+                      <GlobeIcon className="size-4" />
+                    </ItemMedia>
+                    <ItemContent>
+                      <ItemTitle>Visita tu menú en línea</ItemTitle>
+                    </ItemContent>
+                    <ItemActions>
+                      <ChevronRightIcon className="size-4" />
+                    </ItemActions>
+                  </Link>
+                </Item>
+              )}
+            </PageSubtitle.Actions>
           </PageSubtitle>
         </div>
         <Suspense fallback={<MenuListSkeleton />}>

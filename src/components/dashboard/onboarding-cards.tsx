@@ -51,11 +51,14 @@ export function OnboardingCards({
     >
       <div className="mb-4 flex items-end sm:mb-2 sm:items-center">
         <div className="grow">
-          <PageSubtitle
-            title="Bienvenido a Biztro"
-            description="Aquí tienes algunos enlaces para comenzar a configurar tu negocio."
-          >
-            <OnboardingProgress progres={progress} />
+          <PageSubtitle>
+            <PageSubtitle.Title>Bienvenido a Biztro</PageSubtitle.Title>
+            <PageSubtitle.Description>
+              Aquí tienes algunos enlaces para comenzar a configurar tu negocio.
+            </PageSubtitle.Description>
+            <PageSubtitle.Actions>
+              <OnboardingProgress progres={progress} />
+            </PageSubtitle.Actions>
           </PageSubtitle>
         </div>
         <CollapsibleTrigger asChild>
