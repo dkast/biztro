@@ -276,7 +276,7 @@ export async function POST(req: NextRequest) {
       break
   }
 
-  // Always revalidate media cache tags when a new asset is created
+  // Always revalidate media cache tags after a successful asset upsert
   revalidateTag(CACHE_TAGS.mediaAssets(organizationId), "max")
   revalidateTag(CACHE_TAGS.mediaCount(organizationId), "max")
 

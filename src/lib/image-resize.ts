@@ -51,8 +51,8 @@ export async function resizeImage(
   }
 
   // Calculate new dimensions maintaining aspect ratio
-  let targetWidth = originalWidth
-  let targetHeight = originalHeight
+  let targetWidth
+  let targetHeight
 
   if (originalWidth > originalHeight) {
     targetWidth = Math.min(maxDimension, maxCanvasSize)
