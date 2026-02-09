@@ -4,7 +4,9 @@ import { revalidateTag } from "next/cache"
 import { headers } from "next/headers"
 import { NextResponse, type NextRequest } from "next/server"
 
+import { CACHE_TAGS } from "@/server/actions/media/constants"
 import { isProMember } from "@/server/actions/user/queries"
+import { appConfig } from "@/app/config"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import {
@@ -30,7 +32,10 @@ export async function POST(req: NextRequest) {
     organizationId: requestedOrganizationId,
     imageType,
     objectId,
-    contentType
+    contentType,
+    width: requestedWidth,
+    height: requestedHeight,
+    bytes: requestedBytes
   } = await req.json()
 
   const corsHeaders = {
@@ -61,6 +66,13 @@ export async function POST(req: NextRequest) {
   }
 
   const organizationId = activeOrganizationId
+  const normalizeSize = (value: unknown) =>
+    typeof value === "number" && Number.isFinite(value) && value > 0
+      ? Math.round(value)
+      : undefined
+  const width = normalizeSize(requestedWidth)
+  const height = normalizeSize(requestedHeight)
+  const bytes = normalizeSize(requestedBytes)
 
   // Use deterministic storage keys to enable overwriting and prevent orphaned files
   let storageKey: string
@@ -132,6 +144,35 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Check media limit for free tier users
+  const proMember = await isProMember()
+  if (!proMember) {
+    // Check if this is a new asset (not an update)
+    const existingAsset = await prisma.mediaAsset.findUnique({
+      where: { storageKey }
+    })
+
+    if (!existingAsset) {
+      // Count total media assets for this organization
+      const assetCount = await prisma.mediaAsset.count({
+        where: {
+          organizationId,
+          deletedAt: null
+        }
+      })
+
+      if (assetCount >= appConfig.mediaLimit) {
+        return new NextResponse(
+          `Límite de medios alcanzado. El nivel gratuito está limitado a ${appConfig.mediaLimit} imágenes.`,
+          {
+            status: 403,
+            headers: corsHeaders
+          }
+        )
+      }
+    }
+  }
+
   // Create a signed URL for a PUT request
   const signedUrl = await getSignedUrl(
     R2,
@@ -153,10 +194,16 @@ export async function POST(req: NextRequest) {
         storageKey,
         type: MediaAssetType.IMAGE,
         scope: assetScope,
-        contentType: contentType as string
+        contentType: contentType as string,
+        width,
+        height,
+        bytes
       },
       update: {
         contentType: contentType as string,
+        width,
+        height,
+        bytes,
         updatedAt: new Date()
       }
     })
@@ -222,12 +269,16 @@ export async function POST(req: NextRequest) {
       break
     case ImageType.MENU_BACKGROUND:
       revalidateTag(`organization-${organizationId}`, "max")
-      revalidateTag(`media-backgrounds-${organizationId}`, "max")
+      revalidateTag(CACHE_TAGS.mediaBackgrounds(organizationId), "max")
       break
     default:
       // No cache tag to revalidate for unknown imageType
       break
   }
+
+  // Always revalidate media cache tags after a successful asset upsert
+  revalidateTag(CACHE_TAGS.mediaAssets(organizationId), "max")
+  revalidateTag(CACHE_TAGS.mediaCount(organizationId), "max")
 
   // Return the signed URL to the client for a PUT request
   // Also return the storageKey so clients can persist it in serialData

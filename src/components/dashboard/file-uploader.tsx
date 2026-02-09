@@ -22,6 +22,7 @@ import "@uppy/image-editor/dist/style.min.css"
 // import Webcam from "@uppy/webcam"
 import { useTheme } from "next-themes"
 
+import { resizeImage } from "@/lib/image-resize"
 import type { ImageType } from "@/lib/types"
 
 // Explicit types for richer error and file meta handling
@@ -31,8 +32,14 @@ interface HttpError extends Error {
 
 interface UploadFileMeta extends Meta {
   storageKey?: string
+  width?: number
+  height?: number
+  bytes?: number
   [key: string]: unknown
 }
+
+const toFiniteNumber = (value: unknown) =>
+  typeof value === "number" && Number.isFinite(value) ? value : undefined
 
 export async function getUploadParameters(
   file: UppyFile<Meta, Body>,
@@ -40,6 +47,10 @@ export async function getUploadParameters(
   imageType: ImageType,
   objectId: string
 ) {
+  const meta = file.meta as UploadFileMeta
+  const width = toFiniteNumber(meta.width)
+  const height = toFiniteNumber(meta.height)
+  const bytes = toFiniteNumber(meta.bytes) ?? toFiniteNumber(file.size)
   const response = await fetch("/api/file", {
     method: "POST",
     headers: {
@@ -50,7 +61,10 @@ export async function getUploadParameters(
       imageType,
       objectId,
       filename: file.name,
-      contentType: file.type
+      contentType: file.type,
+      width,
+      height,
+      bytes
     })
   })
   if (!response.ok) {
@@ -146,32 +160,87 @@ export function FileUploader({
 
   useEffect(() => {
     uppy.on("file-added", async file => {
-      // If the file is an image, get the dimensions
+      // If the file is an image, get the dimensions and resize if needed
       if (file.type?.startsWith("image/")) {
-        // console.log("Loading image")
-        const image = await getImageDimensions(file)
-        // console.log(image.width, image.height)
+        try {
+          const image = await getImageDimensions(file)
+          const width = toFiniteNumber(image.width)
+          const height = toFiniteNumber(image.height)
+          const bytes = toFiniteNumber(file.size)
+          if (
+            width !== undefined &&
+            height !== undefined &&
+            bytes !== undefined
+          ) {
+            uppy.setFileMeta(file.id, {
+              width,
+              height,
+              bytes
+            })
+          }
 
-        // If the image dimensions are too big, show an error
-        if (
-          (image.width as number) > limitDimension ||
-          (image.height as number) > limitDimension
-        ) {
-          console.error("Image too big")
-          Sentry.captureMessage("Image too large", {
-            level: "warning",
+          // If the image dimensions exceed the limit, resize it
+          if (
+            (image.width as number) > limitDimension ||
+            (image.height as number) > limitDimension
+          ) {
+            // Show a message that we're resizing
+            uppy.info(
+              `Redimensionando imagen de ${image.width}x${image.height} a ${limitDimension}px máximo...`,
+              "info",
+              2000
+            )
+
+            // Resize the image
+            const result = await resizeImage(file.data, {
+              maxDimension: limitDimension,
+              quality: 0.85,
+              maxCanvasSize: 4096 // Cap to prevent memory spikes
+            })
+
+            // Update the file with the resized blob
+            // Preserve filename with appropriate fallback based on MIME type
+            const fallbackName =
+              result.blob.type === "image/png"
+                ? "resized-image.png"
+                : "resized-image.jpg"
+            const resizedFile = new File(
+              [result.blob],
+              file.name ?? fallbackName,
+              { type: result.blob.type }
+            )
+
+            // Update the Uppy file
+            uppy.setFileState(file.id, {
+              data: resizedFile,
+              size: resizedFile.size
+            })
+            uppy.setFileMeta(file.id, {
+              width: result.width,
+              height: result.height,
+              bytes: resizedFile.size
+            })
+
+            // Log the resize for monitoring
+            Sentry.captureMessage("Image auto-resized", {
+              level: "info",
+              tags: { section: "file-upload" },
+              extra: {
+                originalWidth: image.width,
+                originalHeight: image.height,
+                newWidth: result.width,
+                newHeight: result.height,
+                limitDimension
+              }
+            })
+          }
+        } catch (error) {
+          console.error("Error processing image:", error)
+          Sentry.captureException(error, {
             tags: { section: "file-upload" },
-            extra: { 
-              width: image.width, 
-              height: image.height, 
-              limitDimension 
-            }
+            extra: { stage: "resize" }
           })
-          uppy.info(
-            `La imagen es demasiado grande, el tamaño máximo es de ${limitDimension}x${limitDimension} píxeles`,
-            "error",
-            3000
-          )
+          uppy.info("Error al procesar la imagen", "error", 3000)
           uppy.removeFile(file.id)
         }
       } else {

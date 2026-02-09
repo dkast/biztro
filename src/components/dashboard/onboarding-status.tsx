@@ -31,9 +31,11 @@ export default async function OnboardingStatus({
       progress={progress}
     />
   ) : (
-    <PageSubtitle
-      title="Bienvenido a Biztro"
-      description="Este es tu tablero inicial para administrar tu negocio."
-    />
+    <PageSubtitle>
+      <PageSubtitle.Title>Bienvenido a Biztro</PageSubtitle.Title>
+      <PageSubtitle.Description>
+        Este es tu tablero inicial para administrar tu negocio.
+      </PageSubtitle.Description>
+    </PageSubtitle>
   )
 }

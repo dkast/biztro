@@ -25,14 +25,17 @@ export default async function CategoriesPage() {
 
   return (
     <div className="mx-auto grow px-4 sm:px-6">
-      <PageSubtitle
-        title="Categorías"
-        description="Administra las categorías de tu menú"
-        Icon={Layers}
-      >
-        <CategoryEdit action={ActionType.CREATE}>
-          <Button>Agregar categoría</Button>
-        </CategoryEdit>
+      <PageSubtitle>
+        <PageSubtitle.Icon icon={Layers} />
+        <PageSubtitle.Title>Categorías</PageSubtitle.Title>
+        <PageSubtitle.Description>
+          Administra las categorías de tu menú
+        </PageSubtitle.Description>
+        <PageSubtitle.Actions>
+          <CategoryEdit action={ActionType.CREATE}>
+            <Button>Agregar categoría</Button>
+          </CategoryEdit>
+        </PageSubtitle.Actions>
       </PageSubtitle>
       <div className="mt-6">
         <CategoryTable data={data} />

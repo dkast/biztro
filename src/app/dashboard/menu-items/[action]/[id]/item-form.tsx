@@ -298,31 +298,33 @@ export default function ItemForm({
     <div className="pb-20">
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <PageSubtitle
-          title={title}
           className="border-border bg-background sticky top-18 z-10 rounded-xl
             border px-4 py-3 shadow-xs group-[.is-dialog]:top-0"
         >
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => router.back()}
-              ref={saveRef}
-            >
-              Cerrar
-            </Button>
-            <Button disabled={status === "executing"} size="sm" type="submit">
-              {status === "executing" ? (
-                <>
-                  <Loader className="mr-2 size-4 animate-spin" />
-                  {"Guardando"}
-                </>
-              ) : (
-                "Guardar"
-              )}
-            </Button>
-          </div>
+          <PageSubtitle.Title>{title}</PageSubtitle.Title>
+          <PageSubtitle.Actions>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => router.back()}
+                ref={saveRef}
+              >
+                Cerrar
+              </Button>
+              <Button disabled={status === "executing"} size="sm" type="submit">
+                {status === "executing" ? (
+                  <>
+                    <Loader className="mr-2 size-4 animate-spin" />
+                    {"Guardando"}
+                  </>
+                ) : (
+                  "Guardar"
+                )}
+              </Button>
+            </div>
+          </PageSubtitle.Actions>
         </PageSubtitle>
         <div className="mt-10">
           <FieldGroup>

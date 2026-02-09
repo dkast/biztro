@@ -66,11 +66,13 @@ export default async function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
       <div className="flex items-center justify-between">
-        <PageSubtitle
-          title="Mi Organización"
-          description="Información general del negocio"
-          Icon={Store}
-        />
+        <PageSubtitle>
+          <PageSubtitle.Icon icon={Store} />
+          <PageSubtitle.Title>Mi Organización</PageSubtitle.Title>
+          <PageSubtitle.Description>
+            Información general del negocio
+          </PageSubtitle.Description>
+        </PageSubtitle>
         <StatusBadge status={currentOrg.status as SubscriptionStatus} />
       </div>
       <OrganizationForm data={currentOrg} enabled />

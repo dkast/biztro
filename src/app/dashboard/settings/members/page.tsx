@@ -58,12 +58,15 @@ export default async function MembersPage() {
 
   return (
     <div className="mx-auto grow px-4 sm:px-6">
-      <PageSubtitle
-        title="Miembros"
-        description="Administra a los miembros de tu equipo"
-        Icon={Users}
-      >
-        {canInviteMember?.success && <MemberInvite isPro={isPro} />}
+      <PageSubtitle>
+        <PageSubtitle.Icon icon={Users} />
+        <PageSubtitle.Title>Miembros</PageSubtitle.Title>
+        <PageSubtitle.Description>
+          Administra a los miembros de tu equipo
+        </PageSubtitle.Description>
+        <PageSubtitle.Actions>
+          {canInviteMember?.success && <MemberInvite isPro={isPro} />}
+        </PageSubtitle.Actions>
       </PageSubtitle>
       <div className="mt-6">
         <MemberTable
