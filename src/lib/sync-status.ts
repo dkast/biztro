@@ -1,6 +1,6 @@
 import type { Organization } from "@/generated/prisma-client/client"
-import lz from "lzutf8"
 import * as Sentry from "@sentry/nextjs"
+import lz from "lzutf8"
 
 import type {
   getCategoriesWithItems,
@@ -307,6 +307,40 @@ function normalizeLocationString(value: unknown) {
   return value ?? null
 }
 
+function normalizeOrganizationText(value: unknown) {
+  const normalized = normalizeLocationString(value)
+  if (typeof normalized !== "string") {
+    return normalized
+  }
+
+  const trimmed = normalized.trim()
+  return trimmed.length ? trimmed : null
+}
+
+function normalizeOrganizationMedia(value: unknown) {
+  if (typeof value !== "string") {
+    return value ?? null
+  }
+
+  const trimmed = value.trim()
+  if (!trimmed) {
+    return null
+  }
+
+  try {
+    const parsed = new URL(trimmed, "http://local")
+    const normalizedPath = parsed.pathname.replace(/\/+$/, "")
+    return normalizedPath || "/"
+  } catch {
+    const withoutQuery = trimmed.split("?")[0]?.split("#")[0]
+    if (!withoutQuery) {
+      return null
+    }
+    const normalizedPath = withoutQuery.replace(/\/+$/, "")
+    return normalizedPath || "/"
+  }
+}
+
 function normalizeLocationBoolean(value: unknown) {
   return value === true
 }
@@ -399,9 +433,17 @@ export function areOrganizationsInSync(
   const menuFields = menuOrganization as Record<string, unknown>
   const dbFields = dbOrganization as Record<string, unknown>
 
-  for (const field of ["banner", "logo", "name"] as const) {
-    const menuValue = normalizeLocationString(menuFields[field])
-    const dbValue = normalizeLocationString(dbFields[field])
+  for (const field of ["banner", "logo"] as const) {
+    const menuValue = normalizeOrganizationMedia(menuFields[field])
+    const dbValue = normalizeOrganizationMedia(dbFields[field])
+    if (!valuesMatch(menuValue, dbValue)) {
+      return false
+    }
+  }
+
+  for (const field of ["name"] as const) {
+    const menuValue = normalizeOrganizationText(menuFields[field])
+    const dbValue = normalizeOrganizationText(dbFields[field])
     if (!valuesMatch(menuValue, dbValue)) {
       return false
     }

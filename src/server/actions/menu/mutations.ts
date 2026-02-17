@@ -437,6 +437,7 @@ export const revertMenuToPublished = authActionClient
         },
         select: {
           id: true,
+          updatedAt: true,
           fontTheme: true,
           colorTheme: true,
           publishedFontTheme: true,

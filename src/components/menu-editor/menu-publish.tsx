@@ -5,7 +5,6 @@ import toast from "react-hot-toast"
 import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import * as Sentry from "@sentry/nextjs"
-import { useQueryClient } from "@tanstack/react-query"
 import {
   Colorful,
   rgbaToHex,
@@ -63,6 +62,12 @@ import {
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
+import type {
+  getCategoriesWithItems,
+  getFeaturedItems,
+  getMenuItemsWithoutCategory
+} from "@/server/actions/item/queries"
+import type { getDefaultLocation } from "@/server/actions/location/queries"
 import {
   revertMenuToPublished,
   updateMenuSerialData,
@@ -73,19 +78,31 @@ import useLocalStorage from "@/hooks/use-local-storage"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorThemeAtom, fontThemeAtom, tourModeAtom } from "@/lib/atoms"
 import exportAsImage from "@/lib/export-as-image"
+import { syncEditorWithMenuState } from "@/lib/sync-status"
 import { MenuStatus } from "@/lib/types"
 import { getBaseUrl } from "@/lib/utils"
 
 export default function MenuPublish({
-  menu
+  menu,
+  onPersistedMenuUpdate,
+  location,
+  categories,
+  featuredItems,
+  soloItems
 }: {
   menu: Awaited<ReturnType<typeof getMenuById>>
+  onPersistedMenuUpdate: (
+    patch: Partial<NonNullable<Awaited<ReturnType<typeof getMenuById>>>>
+  ) => void
+  location: Awaited<ReturnType<typeof getDefaultLocation>> | null
+  categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
+  featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
+  soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
 }) {
   const { store, query, actions, nodes } = useEditor((state, query) => ({
     nodes: query.getSerializedNodes()
   }))
 
-  const queryClient = useQueryClient()
   const fontTheme = useAtomValue(fontThemeAtom)
   const colorTheme = useAtomValue(colorThemeAtom)
   const setFontTheme = useSetAtom(fontThemeAtom)
@@ -95,12 +112,24 @@ export default function MenuPublish({
   const { execute, status, reset } = useAction(updateMenuStatus, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Menú actualizado")
-        queryClient.invalidateQueries({
-          queryKey: ["menu", menu?.id]
+        onPersistedMenuUpdate({
+          status: data.success.status,
+          serialData: data.success.serialData,
+          publishedData: data.success.publishedData,
+          publishedAt: data.success.publishedAt,
+          fontTheme: data.success.fontTheme,
+          colorTheme: data.success.colorTheme,
+          publishedFontTheme: data.success.publishedFontTheme,
+          publishedColorTheme: data.success.publishedColorTheme,
+          updatedAt: data.success.updatedAt
         })
+        toast.success("Menú actualizado")
         // Reset history to avoid undoing the update
         actions.history.clear()
+        setTimelineLength(store.history.timeline.length)
+        setLastSavedTimelineLength(store.history.timeline.length)
+        setPendingValidationTriggered(false)
+        clearUnsavedChanges()
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
@@ -125,10 +154,13 @@ export default function MenuPublish({
   } = useAction(updateMenuSerialData, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        // toast.success("Cambios guardados")
-        queryClient.invalidateQueries({
-          queryKey: ["menu", menu?.id]
+        onPersistedMenuUpdate({
+          serialData: data.success.serialData,
+          fontTheme: data.success.fontTheme,
+          colorTheme: data.success.colorTheme,
+          updatedAt: data.success.updatedAt
         })
+        // toast.success("Cambios guardados")
         // Reset history to avoid undoing the update
         // actions.history.clear()
 
@@ -170,14 +202,16 @@ export default function MenuPublish({
           if (publishedColorTheme) {
             setColorTheme(publishedColorTheme)
           }
+          onPersistedMenuUpdate({
+            serialData: data.success.publishedData,
+            fontTheme: publishedFontTheme,
+            colorTheme: publishedColorTheme
+          })
           setPendingValidationTriggered(false)
           setTimelineLength(store.history.timeline.length)
           setLastSavedTimelineLength(store.history.timeline.length)
           clearUnsavedChanges()
           toast.success("Menú revertido al último publicado")
-          queryClient.invalidateQueries({
-            queryKey: ["menu", menu?.id]
-          })
         } catch (error) {
           console.error(error)
           Sentry.captureException(error, {
@@ -206,10 +240,38 @@ export default function MenuPublish({
     store.history.timeline.length
   )
 
+  const serializeCurrentEditorState = useCallback(() => {
+    const json = query.serialize()
+    return lz.encodeBase64(lz.compress(json))
+  }, [query])
+
+  const serializeSyncedEditorState = useCallback(() => {
+    if (!menu) {
+      return serializeCurrentEditorState()
+    }
+
+    syncEditorWithMenuState({
+      actions,
+      menu,
+      location,
+      categories,
+      featuredItems,
+      soloItems
+    })
+    return serializeCurrentEditorState()
+  }, [
+    actions,
+    menu,
+    location,
+    categories,
+    featuredItems,
+    soloItems,
+    serializeCurrentEditorState
+  ])
+
   const handleUpdateSerialData = useCallback(() => {
     setPendingValidationTriggered(true)
-    const json = query.serialize()
-    const serialData = lz.encodeBase64(lz.compress(json))
+    const serialData = serializeSyncedEditorState()
     updateSerialData({
       id: menu!.id,
       fontTheme,
@@ -217,12 +279,12 @@ export default function MenuPublish({
       serialData
     })
   }, [
-    query,
     menu,
     fontTheme,
     colorTheme,
     updateSerialData,
-    setPendingValidationTriggered
+    setPendingValidationTriggered,
+    serializeSyncedEditorState
   ])
 
   const handleRevertToPublished = useCallback(() => {
@@ -273,8 +335,7 @@ export default function MenuPublish({
   if (!menu) return null
 
   const handleUpdateStatus = (status: MenuStatus) => {
-    const json = query.serialize()
-    const serialData = lz.encodeBase64(lz.compress(json))
+    const serialData = serializeSyncedEditorState()
     execute({
       id: menu!.id,
       status,
