@@ -1,10 +1,18 @@
 import React, { useEffect, useRef, useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
 import type { RgbaColor } from "@uiw/react-color"
-import { ChevronsRight } from "lucide-react"
+import { ChevronsRight, Menu } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
 
+import { Button } from "@/components/ui/button"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle
+} from "@/components/ui/drawer"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 
 export type NavigatorBlockProps = {
@@ -25,9 +33,11 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
   const [visibleId, setVisibleId] = useState<string | null>(null)
   const [isSticky, setIsSticky] = useState(false)
   const [isOverflowing, setIsOverflowing] = useState(false)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const observer = useRef<IntersectionObserver | null>(null)
   const navRef = useRef<HTMLElement | null>(null)
   const ulRef = useRef<HTMLUListElement | null>(null)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     const rootNode = nodes.ROOT
@@ -130,67 +140,113 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
   }, [ids])
 
   return (
-    <nav
-      ref={ref => {
-        if (ref) {
-          connect(ref)
-        }
-        navRef.current = ref
-      }}
-      className={cn(
-        `sticky top-0 z-10 col-span-1 p-4 transition delay-150 ease-in-out
-        md:col-span-2`,
-        {
-          "bg-black/60 text-white! backdrop-blur-md": isSticky
-        }
-      )}
-      style={{
-        color: `rgb(${Object.values(color ?? { r: 255, g: 255, b: 255, a: 1 })})`
-      }}
-    >
-      {ids.length === 0 ? (
-        <p>Navegador</p>
-      ) : (
-        <div className="relative">
-          <ul
-            ref={ulRef}
-            className={cn(
-              "flex space-x-4 overflow-x-auto",
-              isOverflowing ? "mask-fade justify-normal" : "justify-center"
-            )}
-          >
-            {ids.map((id, index) => (
-              <li key={id} className="shrink-0">
-                <Link
-                  href={`#${id}`}
-                  className={cn(
-                    visibleId === id
-                      ? "underline decoration-2 underline-offset-4"
-                      : ""
-                  )}
-                >
-                  {displayNames[index]}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <AnimatePresence>
-            {isOverflowing && (
-              <motion.div
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                transition={{ duration: 0.3 }}
-                className="pointer-events-none absolute top-0 right-0 flex
-                  h-full items-center"
+    <>
+      <nav
+        ref={ref => {
+          if (ref) {
+            connect(ref)
+          }
+          navRef.current = ref
+        }}
+        className={cn(
+          `sticky top-0 z-10 col-span-1 p-4 transition delay-150 ease-in-out
+          md:col-span-2`,
+          {
+            "bg-black/60 text-white! backdrop-blur-md": isSticky
+          }
+        )}
+        style={{
+          color: `rgb(${Object.values(color ?? { r: 255, g: 255, b: 255, a: 1 })})`
+        }}
+      >
+        {ids.length === 0 ? (
+          <p>Navegador</p>
+        ) : (
+          <div className="relative flex items-center gap-2">
+            {/* Menu button - visible only on mobile */}
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="shrink-0 md:hidden"
+              onClick={() => setIsDrawerOpen(true)}
+              aria-label="Abrir menú de navegación"
+            >
+              <Menu className="size-4" />
+            </Button>
+
+            {/* Horizontal navigation */}
+            <div className="relative flex-1 overflow-hidden">
+              <ul
+                ref={ulRef}
+                className={cn(
+                  "no-scrollbar flex space-x-4 overflow-x-auto",
+                  isOverflowing ? "mask-fade justify-normal" : "justify-center"
+                )}
               >
-                <ChevronsRight className="size-4" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                {ids.map((id, index) => (
+                  <li key={id} className="shrink-0">
+                    <Link
+                      href={`#${id}`}
+                      className={cn(
+                        visibleId === id
+                          ? "underline decoration-2 underline-offset-4"
+                          : ""
+                      )}
+                    >
+                      {displayNames[index]}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <AnimatePresence>
+                {isOverflowing && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    transition={{ duration: 0.3 }}
+                    className="pointer-events-none absolute top-0 right-0 flex
+                      h-full items-center"
+                  >
+                    <ChevronsRight className="size-4" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      {/* Mobile drawer for navigation */}
+      {isMobile && ids.length > 0 && (
+        <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Navegación</DrawerTitle>
+            </DrawerHeader>
+            <nav className="px-4 pb-8">
+              <ul className="flex flex-col space-y-2">
+                {ids.map((id, index) => (
+                  <li key={id}>
+                    <Link
+                      href={`#${id}`}
+                      onClick={() => setIsDrawerOpen(false)}
+                      className={cn(
+                        `hover:bg-accent block rounded-md px-4 py-3 text-lg
+                        transition-colors`,
+                        visibleId === id ? "bg-accent font-semibold" : ""
+                      )}
+                    >
+                      {displayNames[index]}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </DrawerContent>
+        </Drawer>
       )}
-    </nav>
+    </>
   )
 }
 
