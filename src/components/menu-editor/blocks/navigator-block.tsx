@@ -139,6 +139,23 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
     }
   }, [ids])
 
+  // Auto-scroll navigation to keep active section in view
+  useEffect(() => {
+    if (visibleId && ulRef.current) {
+      const activeIndex = ids.indexOf(visibleId)
+      if (activeIndex !== -1) {
+        const activeLink = ulRef.current.children[activeIndex] as HTMLElement
+        if (activeLink) {
+          activeLink.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center"
+          })
+        }
+      }
+    }
+  }, [visibleId, ids])
+
   return (
     <>
       <nav
