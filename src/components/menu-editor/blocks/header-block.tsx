@@ -185,7 +185,7 @@ export default function HeaderBlock({
           connect(ref)
         }
       }}
-      className="relative col-span-1 md:col-span-2"
+      className="relative"
     >
       {layout === "classic" ? renderClassic() : renderModern()}
     </div>
