@@ -27,6 +27,39 @@ type EditorActions = {
   delete: (nodeId: string) => void
 }
 
+function isMissingEditorNodeError(error: unknown) {
+  return (
+    error instanceof Error &&
+    error.message.includes("Node does not exist, it may have been removed")
+  )
+}
+
+function trySetProp(
+  actions: EditorActions,
+  nodeId: string,
+  setter: (props: Record<string, unknown>) => void
+) {
+  try {
+    actions.setProp(nodeId, setter)
+  } catch (error) {
+    if (isMissingEditorNodeError(error)) {
+      return
+    }
+    throw error
+  }
+}
+
+function tryDelete(actions: EditorActions, nodeId: string) {
+  try {
+    actions.delete(nodeId)
+  } catch (error) {
+    if (isMissingEditorNodeError(error)) {
+      return
+    }
+    throw error
+  }
+}
+
 export type MenuData = {
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
@@ -556,25 +589,25 @@ export function syncEditorWithMenuState({
         dbCategory => dbCategory.id === categoryId
       )
       if (dbCategory[0]) {
-        actions.setProp(property, props => {
+        trySetProp(actions, property, props => {
           props.data = dbCategory[0]
         })
       }
 
       if (!dbCategory[0]) {
-        actions.delete(property)
+        tryDelete(actions, property)
       }
     }
 
     if (component?.type?.resolvedName === "HeaderBlock") {
-      actions.setProp(property, props => {
+      trySetProp(actions, property, props => {
         props.organization = menu?.organization
         props.location = location
       })
     }
 
     if (component?.type?.resolvedName === "FeaturedBlock") {
-      actions.setProp(property, props => {
+      trySetProp(actions, property, props => {
         props.items = featuredItems
       })
     }
@@ -586,13 +619,13 @@ export function syncEditorWithMenuState({
       }
       const dbItem = soloItems.find(dbItem => dbItem.id === itemId)
       if (dbItem) {
-        actions.setProp(property, props => {
+        trySetProp(actions, property, props => {
           props.item = dbItem
         })
       }
 
       if (!dbItem) {
-        actions.delete(property)
+        tryDelete(actions, property)
       }
     }
   }

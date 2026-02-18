@@ -16,7 +16,7 @@ import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import * as Sentry from "@sentry/nextjs"
 import { useAtom, useSetAtom } from "jotai"
-import { ChevronLeft, SheetIcon } from "lucide-react"
+import { ChevronLeft, DatabaseIcon } from "lucide-react"
 import lz from "lzutf8"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
@@ -821,7 +821,7 @@ export default function Workbench({
                       onPressedChange={handleDataGridToggle}
                       aria-label="Toggle data grid view"
                     >
-                      <SheetIcon className="size-4" />
+                      <DatabaseIcon className="size-4" />
                     </Toggle>
                   </div>
                 </TooltipHelper>

@@ -351,7 +351,7 @@ export default function MenuPublish({
         <div>
           <GuardLink href={`/menu-editor/${menu.id}/preview`}>
             <Button size="xs" variant="ghost">
-              <Play className="size-4" />
+              <Play className="fill-foreground size-4" />
             </Button>
           </GuardLink>
         </div>

@@ -19,6 +19,7 @@ function normalizeColor(
 }
 
 export type CategoryHeadingShape =
+  | "none"
   | "rectangle"
   | "rounded"
   | "pill"
@@ -61,7 +62,7 @@ export default function CategoryBlock({
   categoryFontFamily,
   categoryTextAlign,
   categoryHeadingBgColor,
-  categoryHeadingShape = "rectangle",
+  categoryHeadingShape = "none",
   itemFontSize,
   itemColor,
   itemFontWeight,
@@ -119,7 +120,10 @@ export default function CategoryBlock({
               fontWeight: categoryFontWeight,
               textAlign: categoryTextAlign as "right" | "left" | "center",
               lineHeight: `${(categoryFontSize ?? 12) * 1.8}px`,
-              "--heading-bg-color": normalizeColor(categoryHeadingBgColor)
+              "--heading-bg-color":
+                categoryHeadingShape === "none"
+                  ? "transparent"
+                  : normalizeColor(categoryHeadingBgColor)
             } as React.CSSProperties
           }
         >
