@@ -130,7 +130,10 @@ export default function CategoryBlock({
           {data.name}
         </h2>
         <div
-          className={cn(backgroundMode === "none" ? "space-y-0" : "space-y-4")}
+          className={cn(
+            "grid grid-cols-1 gap-4 md:grid-cols-2",
+            backgroundMode === "none" ? "space-y-0" : "space-y-4"
+          )}
         >
           {data.menuItems.map(item => {
             return (
