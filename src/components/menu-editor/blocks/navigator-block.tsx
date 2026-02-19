@@ -39,6 +39,29 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
   const ulRef = useRef<HTMLUListElement | null>(null)
   const isMobile = useIsMobile()
 
+  const handleSectionNavigation = (id: string, shouldCloseDrawer = false) => {
+    if (shouldCloseDrawer) {
+      setIsDrawerOpen(false)
+    }
+
+    requestAnimationFrame(() => {
+      const target = document.getElementById(id)
+
+      if (target) {
+        // Calculate target scroll position accounting for the sticky nav height
+        const navHeight = navRef.current?.offsetHeight ?? 0
+        const extraSpacing = 8 // small breathing room so heading isn't flush with nav
+        const targetRect = target.getBoundingClientRect()
+        const absoluteTop = window.scrollY + targetRect.top
+        const scrollTop = Math.max(0, absoluteTop - navHeight - extraSpacing)
+
+        window.scrollTo({ top: scrollTop, behavior: "smooth" })
+      }
+
+      window.history.replaceState(null, "", `#${id}`)
+    })
+  }
+
   useEffect(() => {
     const rootNode = nodes.ROOT
     const rootNodeArray = rootNode?.data?.nodes || []
@@ -204,6 +227,10 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
                   <li key={id} className="shrink-0">
                     <Link
                       href={`#${id}`}
+                      onClick={event => {
+                        event.preventDefault()
+                        handleSectionNavigation(id)
+                      }}
                       className={cn(
                         visibleId === id
                           ? "underline decoration-2 underline-offset-4"
@@ -247,7 +274,10 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
                   <li key={id}>
                     <Link
                       href={`#${id}`}
-                      onClick={() => setIsDrawerOpen(false)}
+                      onClick={event => {
+                        event.preventDefault()
+                        handleSectionNavigation(id, true)
+                      }}
                       className={cn(
                         `hover:bg-accent block rounded-md px-4 py-3 text-lg
                         transition-colors`,
