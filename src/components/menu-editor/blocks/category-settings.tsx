@@ -363,6 +363,7 @@ export default function CategorySettings() {
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">Ninguna</SelectItem>
                 <SelectItem value="rectangle">Rectángulo</SelectItem>
                 <SelectItem value="rounded">Redondeado</SelectItem>
                 <SelectItem value="pill">Cápsula</SelectItem>

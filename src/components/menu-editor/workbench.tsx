@@ -11,12 +11,12 @@ import {
 } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { toast } from "react-hot-toast"
-import * as Sentry from "@sentry/nextjs"
 import type { Layout } from "react-resizable-panels"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
+import * as Sentry from "@sentry/nextjs"
 import { useAtom, useSetAtom } from "jotai"
-import { ChevronLeft, SheetIcon } from "lucide-react"
+import { ChevronLeft, DatabaseIcon } from "lucide-react"
 import lz from "lzutf8"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
@@ -88,6 +88,8 @@ type ItemsState = {
   soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
 }
+
+type MenuRecord = NonNullable<Awaited<ReturnType<typeof getMenuById>>>
 
 type VariantBroad = Record<string, unknown> & {
   id: string
@@ -309,6 +311,8 @@ export default function Workbench({
   const [isGridDirty, setIsGridDirty] = useState(false)
   const [isBatchSaving, setIsBatchSaving] = useState(false)
   const [syncEditorTrigger, setSyncEditorTrigger] = useState(0)
+  const [persistedMenu, setPersistedMenu] = useState(menu)
+  const [persistedMenuVersion, setPersistedMenuVersion] = useState(0)
 
   // Unsaved changes context for grid dirty state
   const { setUnsavedChanges, clearUnsavedChanges } = useSetUnsavedChanges()
@@ -336,6 +340,27 @@ export default function Workbench({
 
   const [optimisticItemsState, setOptimisticItemsState] =
     useState<ItemsState | null>(null)
+
+  useEffect(() => {
+    setPersistedMenu(menu)
+  }, [menu])
+
+  const handlePersistedMenuUpdate = useCallback(
+    (patch: Partial<MenuRecord>) => {
+      setPersistedMenu(previousMenu => {
+        if (!previousMenu) {
+          return previousMenu
+        }
+
+        return {
+          ...previousMenu,
+          ...patch
+        }
+      })
+      setPersistedMenuVersion(version => version + 1)
+    },
+    []
+  )
 
   useEffect(() => {
     setOptimisticItemsState(null)
@@ -717,15 +742,23 @@ export default function Workbench({
             onRender={RenderNode}
           >
             <Header className="editor-topbar relative py-4">
-              <MenuPublish menu={menu} />
+              <MenuPublish
+                menu={persistedMenu}
+                onPersistedMenuUpdate={handlePersistedMenuUpdate}
+                location={location}
+                categories={effectiveItemsState.categories}
+                featuredItems={effectiveItemsState.featuredItems}
+                soloItems={effectiveItemsState.soloItems}
+              />
             </Header>
             <SyncStatusBanner
-              menu={menu}
+              menu={persistedMenu}
               location={location}
               categories={effectiveItemsState.categories}
               featuredItems={effectiveItemsState.featuredItems}
               soloItems={effectiveItemsState.soloItems}
               syncTrigger={syncEditorTrigger}
+              persistedVersion={persistedMenuVersion}
             />
             <div className="pb-20">
               <Frame data={json}>
@@ -788,13 +821,20 @@ export default function Workbench({
                       onPressedChange={handleDataGridToggle}
                       aria-label="Toggle data grid view"
                     >
-                      <SheetIcon className="size-4" />
+                      <DatabaseIcon className="size-4" />
                     </Toggle>
                   </div>
                 </TooltipHelper>
               </div>
               <MenuTitle menu={menu} />
-              <MenuPublish menu={menu} />
+              <MenuPublish
+                menu={persistedMenu}
+                onPersistedMenuUpdate={handlePersistedMenuUpdate}
+                location={location}
+                categories={effectiveItemsState.categories}
+                featuredItems={effectiveItemsState.featuredItems}
+                soloItems={effectiveItemsState.soloItems}
+              />
             </div>
             <MenuTour />
           </Header>
@@ -857,12 +897,13 @@ export default function Workbench({
                   overflow-y-auto"
               >
                 <SyncStatusBanner
-                  menu={menu}
+                  menu={persistedMenu}
                   location={location}
                   categories={effectiveItemsState.categories}
                   featuredItems={effectiveItemsState.featuredItems}
                   soloItems={effectiveItemsState.soloItems}
                   syncTrigger={syncEditorTrigger}
+                  persistedVersion={persistedMenuVersion}
                 />
                 <div
                   className={cn(

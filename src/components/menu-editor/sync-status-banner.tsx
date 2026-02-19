@@ -31,7 +31,8 @@ export default function SyncStatusBanner({
   categories,
   featuredItems,
   soloItems,
-  syncTrigger = 0
+  syncTrigger = 0,
+  persistedVersion = 0
 }: {
   menu: Awaited<ReturnType<typeof getMenuById>>
   location: Awaited<ReturnType<typeof getDefaultLocation>> | null
@@ -39,6 +40,7 @@ export default function SyncStatusBanner({
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
   soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
   syncTrigger?: number
+  persistedVersion?: number
 }) {
   const { actions } = useEditor()
   const [syncReq, setSyncReq] = useState(false)
@@ -54,6 +56,7 @@ export default function SyncStatusBanner({
   )
 
   const [lastSyncTrigger, setLastSyncTrigger] = useState(0)
+  const [lastPersistedVersion, setLastPersistedVersion] = useState(0)
 
   const runSyncState = useCallback(() => {
     const synced = syncEditorWithMenuState({
@@ -85,6 +88,12 @@ export default function SyncStatusBanner({
   }, [runSyncState, syncTrigger, lastSyncTrigger])
 
   useEffect(() => {
+    if (persistedVersion !== lastPersistedVersion) {
+      setSyncReq(false)
+      setLastPersistedVersion(persistedVersion)
+      return
+    }
+
     if (!menu?.serialData) {
       setSyncReq(false)
       return
@@ -95,28 +104,41 @@ export default function SyncStatusBanner({
       return
     }
 
-    const hasContentChanges =
-      !areCategoriesInSync(menuData.categories, categories) ||
-      !areFeaturedItemsInSync(
-        menuData.featuredItems,
-        featuredItems,
-        menuData.hasFeaturedBlock
-      ) ||
-      !areSoloItemsInSync(menuData.items, soloItems)
-
-    const organizationOutOfSync = !areOrganizationsInSync(
+    const categoriesInSync = areCategoriesInSync(
+      menuData.categories,
+      categories
+    )
+    const featuredInSync = areFeaturedItemsInSync(
+      menuData.featuredItems,
+      featuredItems,
+      menuData.hasFeaturedBlock
+    )
+    const soloItemsInSync = areSoloItemsInSync(menuData.items, soloItems)
+    const organizationInSync = areOrganizationsInSync(
       menuData.organization,
       menu.organization ?? null
     )
-
-    const locationOutOfSync = !areLocationsInSync(
+    const locationInSync = areLocationsInSync(
       menuData.defaultLocation,
       location
     )
 
-    setSyncReq(hasContentChanges || organizationOutOfSync || locationOutOfSync)
+    const shouldSync =
+      !categoriesInSync ||
+      !featuredInSync ||
+      !soloItemsInSync ||
+      !organizationInSync ||
+      !locationInSync
+
+    setSyncReq(shouldSync)
   }, [
+    persistedVersion,
+    lastPersistedVersion,
+    syncTrigger,
+    lastSyncTrigger,
     menu?.serialData,
+    menu?.updatedAt,
+    menu?.publishedAt,
     menu?.organization,
     menuData,
     categories,
@@ -124,10 +146,6 @@ export default function SyncStatusBanner({
     location,
     soloItems
   ])
-
-  const syncState = () => {
-    runSyncState()
-  }
 
   return (
     /* skipcq: JS-0424 */
@@ -154,7 +172,7 @@ export default function SyncStatusBanner({
               variant={isMobile ? "outline" : "link"}
               size="xs"
               className="w-full text-indigo-700 @md:w-auto dark:text-indigo-300"
-              onClick={() => syncState()}
+              onClick={runSyncState}
             >
               Sincronizar
             </Button>

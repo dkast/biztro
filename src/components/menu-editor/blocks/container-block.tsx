@@ -80,13 +80,8 @@ export default function ContainerBlock({
           ></div>
         )}
       </div>
-      <main
-        className="@container mx-auto flex max-w-(--breakpoint-md) grow
-          flex-col"
-      >
-        <div className="relative grid grow grid-cols-1 pb-8 md:grid-cols-2">
-          {children}
-        </div>
+      <main className="mx-auto flex max-w-(--breakpoint-md) grow flex-col">
+        <div className="relative flex grow flex-col pb-8">{children}</div>
       </main>
     </div>
   )
