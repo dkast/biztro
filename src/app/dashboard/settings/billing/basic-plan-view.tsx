@@ -5,6 +5,7 @@ import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import { Gauge } from "@suyalcinkaya/gauge"
 import { useTheme } from "next-themes"
+import { TextMorph } from "torph/react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -42,8 +43,8 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
       console.error("Error creating checkout session:", error)
       Sentry.captureException(error, {
         tags: { section: "billing-checkout" },
-        extra: { 
-          organizationId: activeOrganization?.id, 
+        extra: {
+          organizationId: activeOrganization?.id,
           plan: Plan.PRO,
           billingInterval
         }
@@ -70,7 +71,9 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
             />
           </div>
           <div className="flex flex-col justify-center gap-1">
-            <p className="text-sm font-semibold text-gray-600 dark:text-gray-300">
+            <p
+              className="text-sm font-semibold text-gray-600 dark:text-gray-300"
+            >
               Has consumido {itemCount} de los {appConfig.itemLimit} productos
               disponibles en tu plan
             </p>
@@ -88,20 +91,27 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
               onValueChange={value =>
                 value && setBillingInterval(value as "monthly" | "yearly")
               }
-              className="w-full justify-center gap-0.5 rounded-lg border border-gray-200 p-1 dark:border-gray-800"
+              className="w-full justify-center gap-0.5 rounded-lg border
+                border-gray-200 p-1 dark:border-gray-800"
             >
               <ToggleGroupItem
                 value="monthly"
-                className="w-1/2 text-sm data-[state=on]:bg-indigo-600 data-[state=on]:text-white"
+                className="w-1/2 text-sm data-[state=on]:bg-indigo-600
+                  data-[state=on]:text-white"
               >
                 Mensual
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="yearly"
-                className="w-1/2 text-sm data-[state=on]:bg-indigo-600 data-[state=on]:text-white"
+                className="w-1/2 text-sm data-[state=on]:bg-indigo-600
+                  data-[state=on]:text-white"
               >
                 Anual
-                <span className="ml-1.5 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-600 dark:bg-green-900 dark:text-green-300">
+                <span
+                  className="ml-1.5 rounded-full bg-green-100 px-2 py-0.5
+                    text-xs font-medium text-green-600 dark:bg-green-900
+                    dark:text-green-300"
+                >
                   -20%
                 </span>
               </ToggleGroupItem>
@@ -146,7 +156,11 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
       <Separator />
       <CardFooter className="justify-end py-4">
         <Button onClick={handleStripeCheckout} className="w-full sm:w-auto">
-          Obtener Pro {billingInterval === "monthly" ? "Mensual" : "Anual"}
+          <TextMorph>
+            {billingInterval === "monthly"
+              ? "Obtener Pro Mensual"
+              : "Obtener Pro Anual"}
+          </TextMorph>
         </Button>
       </CardFooter>
     </Card>

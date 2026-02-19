@@ -9,6 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Check, Loader, PlusCircle, TriangleAlert, X } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
+import { TextMorph } from "torph/react"
 import type { z } from "zod/v4"
 
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
@@ -314,14 +315,12 @@ export default function ItemForm({
                 Cerrar
               </Button>
               <Button disabled={status === "executing"} size="sm" type="submit">
-                {status === "executing" ? (
-                  <>
-                    <Loader className="mr-2 size-4 animate-spin" />
-                    {"Guardando"}
-                  </>
-                ) : (
-                  "Guardar"
+                {status === "executing" && (
+                  <Loader className="mr-2 size-4 animate-spin" />
                 )}
+                <TextMorph>
+                  {status === "executing" ? "Guardando" : "Guardar"}
+                </TextMorph>
               </Button>
             </div>
           </PageSubtitle.Actions>

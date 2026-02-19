@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 import { motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
+import { TextMorph } from "torph/react"
 import { z } from "zod/v4"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -52,7 +53,10 @@ export default function Waitlist() {
       >
         {/* <span className="text-gray-500">Unirse a la lista de espera</span> */}
         {!isSubmitted ? (
-          <div className="flex flex-row items-center justify-center gap-x-2 rounded-full bg-gray-800 p-1 shadow-lg">
+          <div
+            className="flex flex-row items-center justify-center gap-x-2
+              rounded-full bg-gray-800 p-1 shadow-lg"
+          >
             <Controller
               name="email"
               control={form.control}
@@ -61,7 +65,10 @@ export default function Waitlist() {
                   <Input
                     type="email"
                     placeholder="nombre@correo.com"
-                    className="placeholder:text-gray-340 h-8 max-w-[300px] rounded-full border-0 bg-transparent text-white focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-transparent"
+                    className="placeholder:text-gray-340 h-8 max-w-[300px]
+                      rounded-full border-0 bg-transparent text-white
+                      focus-visible:ring-0 focus-visible:ring-offset-0
+                      dark:bg-transparent"
                     {...field}
                   />
                 </Field>
@@ -71,16 +78,17 @@ export default function Waitlist() {
               disabled={status === "executing"}
               type="submit"
               size="xs"
-              className="bg-brand-500 focus:ring-opacity-50 rounded-full px-4 py-2 text-white transition-colors duration-200 ease-in-out hover:bg-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-hidden"
+              className="bg-brand-500 focus:ring-opacity-50 rounded-full px-4
+                py-2 text-white transition-colors duration-200 ease-in-out
+                hover:bg-orange-500 focus:ring-2 focus:ring-orange-500
+                focus:outline-hidden"
             >
-              {status === "executing" ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
-                  {"Procesando..."}
-                </>
-              ) : (
-                "Unirse"
+              {status === "executing" && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
+              <TextMorph>
+                {status === "executing" ? "Procesando..." : "Unirse"}
+              </TextMorph>
             </Button>
           </div>
         ) : (

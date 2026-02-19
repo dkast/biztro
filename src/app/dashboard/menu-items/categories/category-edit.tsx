@@ -6,8 +6,9 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
-import type { z } from "zod/v4"
 import { usePostHog } from "posthog-js/react"
+import { TextMorph } from "torph/react"
+import type { z } from "zod/v4"
 
 import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
 import { Button } from "@/components/ui/button"
@@ -121,14 +122,14 @@ function CategoryEditForm({
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Categoría agregada")
-        
+
         // Track category creation
         posthog.capture("category_created", {
           category_id: data.success.id,
           organization_id: data.success.organizationId,
           source: "dashboard"
         })
-        
+
         onClose(false)
       } else if (data?.failure.reason) {
         toast.error(data?.failure.reason)
@@ -242,13 +243,15 @@ function CategoryEditForm({
         onClick={form.handleSubmit(onSubmit)}
         className="w-full"
       >
-        {statusInsert === "executing" || statusUpdate === "executing" ? (
-          <>
-            <Loader className="mr-2 h-4 w-4 animate-spin" /> {"Guardarando..."}
-          </>
-        ) : (
-          "Guardar"
-        )}
+        {statusInsert === "executing" ||
+          (statusUpdate === "executing" && (
+            <Loader className="mr-2 h-4 w-4 animate-spin" />
+          ))}
+        <TextMorph>
+          {statusInsert === "executing" || statusUpdate === "executing"
+            ? "Guardando..."
+            : "Guardar"}
+        </TextMorph>
       </Button>
       <MenuSyncDialog
         open={syncPrompt.open}

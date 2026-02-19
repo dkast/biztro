@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
+import { TextMorph } from "torph/react"
 import type { z } from "zod/v4"
 
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
@@ -250,14 +251,12 @@ export default function OrganizationForm({
           </div>
           <Field orientation="responsive">
             <Button disabled={status === "executing"} type="submit">
-              {status === "executing" ? (
-                <>
-                  <Loader className="mr-2 size-4 animate-spin" />
-                  {"Guardando..."}
-                </>
-              ) : (
-                "Guardar"
+              {status === "executing" && (
+                <Loader className="mr-2 animate-spin" />
               )}
+              <TextMorph>
+                {status === "executing" ? "Guardando..." : "Guardar"}
+              </TextMorph>
             </Button>
           </Field>
         </FieldGroup>

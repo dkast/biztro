@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
+import { TextMorph } from "torph/react"
 import { type z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
@@ -482,16 +483,17 @@ export default function LocationForm({
                 statusUpdate === "executing" || statusCreate === "executing"
               }
             >
-              {statusUpdate === "executing" || statusCreate === "executing" ? (
-                <>
-                  <Loader className="mr-2 size-4 animate-spin" />
-                  {"Guardando..."}
-                </>
-              ) : data ? (
-                "Actualizar sucursal"
-              ) : (
-                "Crear sucursal"
+              {(statusUpdate === "executing" ||
+                statusCreate === "executing") && (
+                <Loader className="mr-2 size-4 animate-spin" />
               )}
+              <TextMorph>
+                {statusUpdate === "executing" || statusCreate === "executing"
+                  ? "Guardando..."
+                  : data
+                    ? "Actualizar sucursal"
+                    : "Crear sucursal"}
+              </TextMorph>
             </Button>
           </Field>
         </FieldGroup>

@@ -31,6 +31,7 @@ import lz from "lzutf8"
 import { AnimatePresence, motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
+import { TextMorph } from "torph/react"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import {
@@ -498,11 +499,12 @@ export default function MenuPublish({
                   className="mt-2 w-full"
                   onClick={() => handleUpdateStatus(MenuStatus.PUBLISHED)}
                 >
-                  {status === "executing" ? (
+                  {status === "executing" && (
                     <Loader className="size-4 animate-spin" />
-                  ) : (
-                    "Publicar"
                   )}
+                  <TextMorph>
+                    {status === "executing" ? "Publicando..." : "Publicar"}
+                  </TextMorph>
                 </Button>
               </motion.div>
             ) : (
@@ -571,11 +573,14 @@ export default function MenuPublish({
                       handleUpdateStatus(menu.status as MenuStatus)
                     }
                   >
-                    {status === "executing" ? (
+                    {status === "executing" && (
                       <Loader className="size-4 animate-spin" />
-                    ) : (
-                      "Publicar cambios"
                     )}
+                    <TextMorph>
+                      {status === "executing"
+                        ? "Publicando..."
+                        : "Publicar cambios"}
+                    </TextMorph>
                   </Button>
                   {menu.publishedAt && (
                     <Button
@@ -585,11 +590,14 @@ export default function MenuPublish({
                       disabled={statusRevert === "executing"}
                       onClick={handleRevertToPublished}
                     >
-                      {statusRevert === "executing" ? (
+                      {statusRevert === "executing" && (
                         <Loader className="size-4 animate-spin" />
-                      ) : (
-                        "Revertir cambios"
                       )}
+                      <TextMorph>
+                        {statusRevert === "executing"
+                          ? "Revirtiendo..."
+                          : "Revertir cambios"}
+                      </TextMorph>
                     </Button>
                   )}
                   <Button
