@@ -32,7 +32,8 @@ export default function SyncStatusBanner({
   featuredItems,
   soloItems,
   syncTrigger = 0,
-  persistedVersion = 0
+  persistedVersion = 0,
+  revertVersion = 0
 }: {
   menu: Awaited<ReturnType<typeof getMenuById>>
   location: Awaited<ReturnType<typeof getDefaultLocation>> | null
@@ -41,6 +42,7 @@ export default function SyncStatusBanner({
   soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
   syncTrigger?: number
   persistedVersion?: number
+  revertVersion?: number
 }) {
   const { actions } = useEditor()
   const [syncReq, setSyncReq] = useState(false)
@@ -57,6 +59,10 @@ export default function SyncStatusBanner({
 
   const [lastSyncTrigger, setLastSyncTrigger] = useState(0)
   const [lastPersistedVersion, setLastPersistedVersion] = useState(0)
+  const [lastRevertVersion, setLastRevertVersion] = useState(0)
+  const [suppressedPersistedVersion, setSuppressedPersistedVersion] = useState<
+    number | null
+  >(null)
 
   const runSyncState = useCallback(() => {
     const synced = syncEditorWithMenuState({
@@ -88,9 +94,24 @@ export default function SyncStatusBanner({
   }, [runSyncState, syncTrigger, lastSyncTrigger])
 
   useEffect(() => {
+    if (revertVersion && revertVersion !== lastRevertVersion) {
+      setSyncReq(false)
+      setLastRevertVersion(revertVersion)
+      setSuppressedPersistedVersion(persistedVersion)
+      return
+    }
+
     if (persistedVersion !== lastPersistedVersion) {
       setSyncReq(false)
       setLastPersistedVersion(persistedVersion)
+      return
+    }
+
+    if (
+      suppressedPersistedVersion !== null &&
+      suppressedPersistedVersion === persistedVersion
+    ) {
+      setSyncReq(false)
       return
     }
 
@@ -133,7 +154,10 @@ export default function SyncStatusBanner({
     setSyncReq(shouldSync)
   }, [
     persistedVersion,
+    revertVersion,
+    lastRevertVersion,
     lastPersistedVersion,
+    suppressedPersistedVersion,
     syncTrigger,
     lastSyncTrigger,
     menu?.serialData,

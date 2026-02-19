@@ -313,6 +313,7 @@ export default function Workbench({
   const [syncEditorTrigger, setSyncEditorTrigger] = useState(0)
   const [persistedMenu, setPersistedMenu] = useState(menu)
   const [persistedMenuVersion, setPersistedMenuVersion] = useState(0)
+  const [revertVersion, setRevertVersion] = useState(0)
 
   // Unsaved changes context for grid dirty state
   const { setUnsavedChanges, clearUnsavedChanges } = useSetUnsavedChanges()
@@ -361,6 +362,10 @@ export default function Workbench({
     },
     []
   )
+
+  const handleRevertSuccess = useCallback(() => {
+    setRevertVersion(version => version + 1)
+  }, [])
 
   useEffect(() => {
     setOptimisticItemsState(null)
@@ -745,6 +750,7 @@ export default function Workbench({
               <MenuPublish
                 menu={persistedMenu}
                 onPersistedMenuUpdate={handlePersistedMenuUpdate}
+                onRevertSuccess={handleRevertSuccess}
                 location={location}
                 categories={effectiveItemsState.categories}
                 featuredItems={effectiveItemsState.featuredItems}
@@ -759,6 +765,7 @@ export default function Workbench({
               soloItems={effectiveItemsState.soloItems}
               syncTrigger={syncEditorTrigger}
               persistedVersion={persistedMenuVersion}
+              revertVersion={revertVersion}
             />
             <div className="pb-20">
               <Frame data={json}>
@@ -830,6 +837,7 @@ export default function Workbench({
               <MenuPublish
                 menu={persistedMenu}
                 onPersistedMenuUpdate={handlePersistedMenuUpdate}
+                onRevertSuccess={handleRevertSuccess}
                 location={location}
                 categories={effectiveItemsState.categories}
                 featuredItems={effectiveItemsState.featuredItems}
@@ -904,6 +912,7 @@ export default function Workbench({
                   soloItems={effectiveItemsState.soloItems}
                   syncTrigger={syncEditorTrigger}
                   persistedVersion={persistedMenuVersion}
+                  revertVersion={revertVersion}
                 />
                 <div
                   className={cn(

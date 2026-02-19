@@ -85,6 +85,7 @@ import { getBaseUrl } from "@/lib/utils"
 export default function MenuPublish({
   menu,
   onPersistedMenuUpdate,
+  onRevertSuccess,
   location,
   categories,
   featuredItems,
@@ -94,6 +95,7 @@ export default function MenuPublish({
   onPersistedMenuUpdate: (
     patch: Partial<NonNullable<Awaited<ReturnType<typeof getMenuById>>>>
   ) => void
+  onRevertSuccess?: () => void
   location: Awaited<ReturnType<typeof getDefaultLocation>> | null
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
@@ -204,13 +206,19 @@ export default function MenuPublish({
           }
           onPersistedMenuUpdate({
             serialData: data.success.publishedData,
+            publishedData: data.success.publishedData,
+            updatedAt: data.success.updatedAt,
             fontTheme: publishedFontTheme,
-            colorTheme: publishedColorTheme
+            colorTheme: publishedColorTheme,
+            publishedFontTheme: data.success.publishedFontTheme,
+            publishedColorTheme: data.success.publishedColorTheme
           })
           setPendingValidationTriggered(false)
+          setSuppressPendingPublishIndicator(true)
           setTimelineLength(store.history.timeline.length)
           setLastSavedTimelineLength(store.history.timeline.length)
           clearUnsavedChanges()
+          onRevertSuccess?.()
           toast.success("Menú revertido al último publicado")
         } catch (error) {
           console.error(error)
@@ -235,6 +243,8 @@ export default function MenuPublish({
   const [lastSavedTimelineLength, setLastSavedTimelineLength] =
     useState<number>(store.history.timeline.length)
   const [pendingValidationTriggered, setPendingValidationTriggered] =
+    useState(false)
+  const [suppressPendingPublishIndicator, setSuppressPendingPublishIndicator] =
     useState(false)
   const [timelineLength, setTimelineLength] = useState<number>(
     store.history.timeline.length
@@ -308,6 +318,8 @@ export default function MenuPublish({
     // Auto-save once after 10s when there are unsaved timeline entries
     if (timelineLength <= lastSavedTimelineLength) return
 
+    setSuppressPendingPublishIndicator(false)
+
     const autoSaveTimer = setTimeout(() => {
       handleUpdateSerialData()
       setLastSavedTimelineLength(timelineLength)
@@ -324,7 +336,8 @@ export default function MenuPublish({
     differenceInMinutes(menu.updatedAt, menu.publishedAt) >= 1
   )
   const showPendingPublishIndicator =
-    hasPendingPublishChanges || pendingValidationTriggered
+    !suppressPendingPublishIndicator &&
+    (hasPendingPublishChanges || pendingValidationTriggered)
 
   useEffect(() => {
     if (!hasPendingPublishChanges) {
