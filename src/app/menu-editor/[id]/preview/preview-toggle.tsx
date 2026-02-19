@@ -1,12 +1,14 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { Monitor, Smartphone } from "lucide-react"
+import { motion } from "motion/react"
 
 import CssStyles from "@/components/menu-editor/css-styles"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { useIsMobile } from "@/hooks/use-mobile"
+import useScrollDirection from "@/hooks/use-scroll-direction"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { cn } from "@/lib/utils"
 
@@ -16,6 +18,15 @@ export function PreviewToggle({ json }: { json?: string }) {
   const [mode, setMode] = useState<PreviewMode>("inline")
   const [mounted, setMounted] = useState(false)
   const isMobile = useIsMobile()
+  const scrollDir = useScrollDirection()
+  const lastNonIdle = useRef<"up" | "down" | null>(null)
+  const lastChangeTS = useRef<number>(0)
+
+  useEffect(() => {
+    if (scrollDir === "idle") return
+    lastNonIdle.current = scrollDir
+    lastChangeTS.current = Date.now()
+  }, [scrollDir])
 
   useEffect(() => {
     setMounted(true)
@@ -26,6 +37,11 @@ export function PreviewToggle({ json }: { json?: string }) {
   }, [isMobile])
 
   const showToggle = mounted && !isMobile
+  // keep hidden for a short grace period after the last downward scroll
+  const HIDE_GRACE_MS = 400
+  const isHiddenByScroll =
+    lastNonIdle.current === "down" &&
+    Date.now() - lastChangeTS.current < HIDE_GRACE_MS
   const effectiveMode: PreviewMode = showToggle ? mode : "inline"
 
   const content = useMemo(() => {
@@ -68,15 +84,23 @@ export function PreviewToggle({ json }: { json?: string }) {
   return (
     <div className="relative flex h-full w-full flex-col">
       {showToggle ? (
-        <div className="fixed top-2 left-1/2 z-50 -translate-x-1/2">
+        <motion.div
+          className="fixed top-2 left-1/2 z-50 -translate-x-1/2"
+          initial={{ opacity: 1 }}
+          animate={{
+            opacity: isHiddenByScroll ? 0 : 1,
+            pointerEvents: isHiddenByScroll ? "none" : "auto"
+          }}
+          transition={{ duration: 0.22 }}
+        >
           <ToggleGroup
             type="single"
             value={effectiveMode}
             onValueChange={value => {
               if (value) setMode(value as PreviewMode)
             }}
-            className="rounded-xl bg-white/80 p-1 shadow backdrop-blur
-              dark:bg-gray-900/80"
+            className="rounded-xl bg-white/80 p-1 shadow ring-1 ring-gray-300/80
+              backdrop-blur dark:bg-gray-900/80 dark:ring-gray-700/80"
           >
             <ToggleGroupItem
               value="inline"
@@ -95,7 +119,7 @@ export function PreviewToggle({ json }: { json?: string }) {
               <span className="hidden sm:inline">Móvil</span>
             </ToggleGroupItem>
           </ToggleGroup>
-        </div>
+        </motion.div>
       ) : null}
 
       <div

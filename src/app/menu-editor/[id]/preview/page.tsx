@@ -1,4 +1,4 @@
-import { ChevronLeft, ScanEye } from "lucide-react"
+import { XIcon } from "lucide-react"
 import lz from "lzutf8"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -30,23 +30,22 @@ export default async function PreviewPage(props: {
 
   return (
     <div className="relative bg-gray-50 dark:bg-gray-800">
-      <div className="fixed top-2 left-2 z-50">
-        <Link href={`/menu-editor/${params.id}`}>
-          <Button variant="outline" size="icon" className="rounded-full">
-            <ChevronLeft className="size-4" />
-          </Button>
-        </Link>
-      </div>
       <div className="flex min-h-dvh">
         <PreviewToggle json={json} />
       </div>
-      <div className="fixed inset-x-0 bottom-3 text-center">
-        <span
-          className="rounded-full bg-amber-400 px-3 py-1 text-sm text-amber-950"
+      <div className="fixed inset-x-0 bottom-4 text-center">
+        <div
+          className="mx-auto flex w-fit items-center gap-1 rounded-full
+            bg-amber-400/80 py-1 pr-1 pl-3 text-sm text-amber-950 shadow-md
+            inset-ring inset-ring-amber-300/50 backdrop-blur-lg"
         >
-          <ScanEye className="mr-1 inline-block size-4 align-text-bottom" />
           Vista previa
-        </span>
+          <Link href={`/menu-editor/${params.id}`}>
+            <Button variant="ghost" size="icon-sm" className="rounded-full">
+              <XIcon />
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   )
