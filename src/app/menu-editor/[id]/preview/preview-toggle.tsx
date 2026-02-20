@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { Monitor, Smartphone } from "lucide-react"
 import { motion } from "motion/react"
@@ -28,8 +28,31 @@ export function PreviewToggle({ json }: { json?: string }) {
     if (isMobile) setMode("inline")
   }, [isMobile])
 
+  const [isHiddenByScroll, setIsHiddenByScroll] = useState(false)
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    if (scrollDir === "down") {
+      setIsHiddenByScroll(true)
+      if (hideTimerRef.current !== null) clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = setTimeout(() => {
+        setIsHiddenByScroll(false)
+        hideTimerRef.current = null
+      }, 800)
+    } else if (scrollDir === "up") {
+      if (hideTimerRef.current !== null) {
+        clearTimeout(hideTimerRef.current)
+        hideTimerRef.current = null
+      }
+      setIsHiddenByScroll(false)
+    }
+    // "idle" → let the timer fire naturally
+    return () => {
+      if (hideTimerRef.current !== null) clearTimeout(hideTimerRef.current)
+    }
+  }, [scrollDir])
+
   const showToggle = mounted && !isMobile
-  const isHiddenByScroll = scrollDir === "down"
   const effectiveMode: PreviewMode = showToggle ? mode : "inline"
 
   const content = useMemo(() => {
