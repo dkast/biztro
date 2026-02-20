@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { Monitor, Smartphone } from "lucide-react"
 import { motion } from "motion/react"
@@ -19,14 +19,6 @@ export function PreviewToggle({ json }: { json?: string }) {
   const [mounted, setMounted] = useState(false)
   const isMobile = useIsMobile()
   const scrollDir = useScrollDirection()
-  const lastNonIdle = useRef<"up" | "down" | null>(null)
-  const lastChangeTS = useRef<number>(0)
-
-  useEffect(() => {
-    if (scrollDir === "idle") return
-    lastNonIdle.current = scrollDir
-    lastChangeTS.current = Date.now()
-  }, [scrollDir])
 
   useEffect(() => {
     setMounted(true)
@@ -37,11 +29,7 @@ export function PreviewToggle({ json }: { json?: string }) {
   }, [isMobile])
 
   const showToggle = mounted && !isMobile
-  // keep hidden for a short grace period after the last downward scroll
-  const HIDE_GRACE_MS = 400
-  const isHiddenByScroll =
-    lastNonIdle.current === "down" &&
-    Date.now() - lastChangeTS.current < HIDE_GRACE_MS
+  const isHiddenByScroll = scrollDir === "down"
   const effectiveMode: PreviewMode = showToggle ? mode : "inline"
 
   const content = useMemo(() => {

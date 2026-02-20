@@ -243,10 +243,9 @@ function CategoryEditForm({
         onClick={form.handleSubmit(onSubmit)}
         className="w-full"
       >
-        {statusInsert === "executing" ||
-          (statusUpdate === "executing" && (
-            <Loader className="mr-2 h-4 w-4 animate-spin" />
-          ))}
+        {(statusInsert === "executing" || statusUpdate === "executing") && (
+          <Loader className="mr-2 h-4 w-4 animate-spin" />
+        )}
         <TextMorph>
           {statusInsert === "executing" || statusUpdate === "executing"
             ? "Guardando..."

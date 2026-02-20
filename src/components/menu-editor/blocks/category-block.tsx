@@ -62,7 +62,7 @@ export default function CategoryBlock({
   categoryFontFamily,
   categoryTextAlign,
   categoryHeadingBgColor,
-  categoryHeadingShape = "none",
+  categoryHeadingShape = "rectangle",
   itemFontSize,
   itemColor,
   itemFontWeight,
@@ -131,8 +131,8 @@ export default function CategoryBlock({
         </h2>
         <div
           className={cn(
-            "grid grid-cols-1 gap-4 md:grid-cols-2",
-            backgroundMode === "none" ? "space-y-0" : "space-y-4"
+            "grid grid-cols-1 md:grid-cols-2",
+            backgroundMode === "none" ? "gap-0" : "gap-4"
           )}
         >
           {data.menuItems.map(item => {
