@@ -4,6 +4,7 @@ import * as React from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, PlusCircle, Trash } from "lucide-react"
+import { TextMorph } from "torph/react"
 import { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
@@ -225,14 +226,12 @@ export function VariantsEditDialog({
               Cancelar
             </Button>
             <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? (
-                <>
-                  <Loader className="mr-2 size-4 animate-spin" />
-                  Guardando
-                </>
-              ) : (
-                "Guardar cambios"
+              {form.formState.isSubmitting && (
+                <Loader className="mr-2 size-4 animate-spin" />
               )}
+              <TextMorph>
+                {form.formState.isSubmitting ? "Guardando" : "Guardar cambios"}
+              </TextMorph>
             </Button>
           </DialogFooter>
         </form>

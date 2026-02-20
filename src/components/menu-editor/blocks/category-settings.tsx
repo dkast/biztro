@@ -349,7 +349,7 @@ export default function CategorySettings() {
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
-              value={categoryHeadingShape ?? "rectangle"}
+              value={categoryHeadingShape ?? "none"}
               onValueChange={value =>
                 setProp(
                   (props: CategoryBlockProps) =>
@@ -363,6 +363,7 @@ export default function CategorySettings() {
                 <SelectValue placeholder="Selecciona" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">Ninguna</SelectItem>
                 <SelectItem value="rectangle">Rectángulo</SelectItem>
                 <SelectItem value="rounded">Redondeado</SelectItem>
                 <SelectItem value="pill">Cápsula</SelectItem>

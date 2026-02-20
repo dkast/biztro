@@ -19,6 +19,7 @@ function normalizeColor(
 }
 
 export type CategoryHeadingShape =
+  | "none"
   | "rectangle"
   | "rounded"
   | "pill"
@@ -61,7 +62,7 @@ export default function CategoryBlock({
   categoryFontFamily,
   categoryTextAlign,
   categoryHeadingBgColor,
-  categoryHeadingShape = "rectangle",
+  categoryHeadingShape = "none",
   itemFontSize,
   itemColor,
   itemFontWeight,
@@ -119,14 +120,20 @@ export default function CategoryBlock({
               fontWeight: categoryFontWeight,
               textAlign: categoryTextAlign as "right" | "left" | "center",
               lineHeight: `${(categoryFontSize ?? 12) * 1.8}px`,
-              "--heading-bg-color": normalizeColor(categoryHeadingBgColor)
+              "--heading-bg-color":
+                categoryHeadingShape === "none"
+                  ? "transparent"
+                  : normalizeColor(categoryHeadingBgColor)
             } as React.CSSProperties
           }
         >
           {data.name}
         </h2>
         <div
-          className={cn(backgroundMode === "none" ? "space-y-0" : "space-y-4")}
+          className={cn(
+            "grid grid-cols-1 md:grid-cols-2",
+            backgroundMode === "none" ? "gap-0" : "gap-4"
+          )}
         >
           {data.menuItems.map(item => {
             return (
@@ -167,7 +174,7 @@ CategoryBlock.craft = {
     categoryFontFamily: "Inter",
     categoryTextAlign: "center",
     categoryHeadingBgColor: undefined,
-    categoryHeadingShape: "rectangle",
+    categoryHeadingShape: "none",
     itemFontSize: 16,
     itemColor: { r: 38, g: 50, b: 56, a: 1 },
     itemFontWeight: "500",

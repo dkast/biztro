@@ -3,10 +3,11 @@
 import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import * as Sentry from "@sentry/nextjs"
 import { zodResolver } from "@hookform/resolvers/zod"
+import * as Sentry from "@sentry/nextjs"
 import { Loader, UserPlus } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
+import { TextMorph } from "torph/react"
 import { z } from "zod/v4"
 
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
@@ -108,14 +109,14 @@ export default function MemberInvite({ isPro }: { isPro: boolean }) {
                 />
                 <div className="flex justify-end">
                   <Button type="submit" disabled={status === "executing"}>
-                    {status === "executing" ? (
-                      <>
-                        <Loader className="mr-2 size-4 animate-spin" />
-                        {"Enviando..."}
-                      </>
-                    ) : (
-                      "Enviar invitación"
+                    {status === "executing" && (
+                      <Loader className="mr-2 size-4 animate-spin" />
                     )}
+                    <TextMorph>
+                      {status === "executing"
+                        ? "Enviando..."
+                        : "Enviar invitación"}
+                    </TextMorph>
                   </Button>
                 </div>
               </form>

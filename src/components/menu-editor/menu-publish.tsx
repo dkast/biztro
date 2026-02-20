@@ -5,7 +5,6 @@ import toast from "react-hot-toast"
 import { QRCode } from "react-qrcode-logo"
 import { useEditor } from "@craftjs/core"
 import * as Sentry from "@sentry/nextjs"
-import { useQueryClient } from "@tanstack/react-query"
 import {
   Colorful,
   rgbaToHex,
@@ -32,6 +31,7 @@ import lz from "lzutf8"
 import { AnimatePresence, motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
+import { TextMorph } from "torph/react"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import {
@@ -63,6 +63,12 @@ import {
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
+import type {
+  getCategoriesWithItems,
+  getFeaturedItems,
+  getMenuItemsWithoutCategory
+} from "@/server/actions/item/queries"
+import type { getDefaultLocation } from "@/server/actions/location/queries"
 import {
   revertMenuToPublished,
   updateMenuSerialData,
@@ -73,19 +79,33 @@ import useLocalStorage from "@/hooks/use-local-storage"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorThemeAtom, fontThemeAtom, tourModeAtom } from "@/lib/atoms"
 import exportAsImage from "@/lib/export-as-image"
+import { syncEditorWithMenuState } from "@/lib/sync-status"
 import { MenuStatus } from "@/lib/types"
 import { getBaseUrl } from "@/lib/utils"
 
 export default function MenuPublish({
-  menu
+  menu,
+  onPersistedMenuUpdate,
+  onRevertSuccess,
+  location,
+  categories,
+  featuredItems,
+  soloItems
 }: {
   menu: Awaited<ReturnType<typeof getMenuById>>
+  onPersistedMenuUpdate: (
+    patch: Partial<NonNullable<Awaited<ReturnType<typeof getMenuById>>>>
+  ) => void
+  onRevertSuccess?: () => void
+  location: Awaited<ReturnType<typeof getDefaultLocation>> | null
+  categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
+  featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
+  soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
 }) {
   const { store, query, actions, nodes } = useEditor((state, query) => ({
     nodes: query.getSerializedNodes()
   }))
 
-  const queryClient = useQueryClient()
   const fontTheme = useAtomValue(fontThemeAtom)
   const colorTheme = useAtomValue(colorThemeAtom)
   const setFontTheme = useSetAtom(fontThemeAtom)
@@ -95,12 +115,24 @@ export default function MenuPublish({
   const { execute, status, reset } = useAction(updateMenuStatus, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Menú actualizado")
-        queryClient.invalidateQueries({
-          queryKey: ["menu", menu?.id]
+        onPersistedMenuUpdate({
+          status: data.success.status,
+          serialData: data.success.serialData,
+          publishedData: data.success.publishedData,
+          publishedAt: data.success.publishedAt,
+          fontTheme: data.success.fontTheme,
+          colorTheme: data.success.colorTheme,
+          publishedFontTheme: data.success.publishedFontTheme,
+          publishedColorTheme: data.success.publishedColorTheme,
+          updatedAt: data.success.updatedAt
         })
+        toast.success("Menú actualizado")
         // Reset history to avoid undoing the update
         actions.history.clear()
+        setTimelineLength(store.history.timeline.length)
+        setLastSavedTimelineLength(store.history.timeline.length)
+        setPendingValidationTriggered(false)
+        clearUnsavedChanges()
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
@@ -125,10 +157,13 @@ export default function MenuPublish({
   } = useAction(updateMenuSerialData, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        // toast.success("Cambios guardados")
-        queryClient.invalidateQueries({
-          queryKey: ["menu", menu?.id]
+        onPersistedMenuUpdate({
+          serialData: data.success.serialData,
+          fontTheme: data.success.fontTheme,
+          colorTheme: data.success.colorTheme,
+          updatedAt: data.success.updatedAt
         })
+        // toast.success("Cambios guardados")
         // Reset history to avoid undoing the update
         // actions.history.clear()
 
@@ -170,14 +205,22 @@ export default function MenuPublish({
           if (publishedColorTheme) {
             setColorTheme(publishedColorTheme)
           }
+          onPersistedMenuUpdate({
+            serialData: data.success.publishedData,
+            publishedData: data.success.publishedData,
+            updatedAt: data.success.updatedAt,
+            fontTheme: publishedFontTheme,
+            colorTheme: publishedColorTheme,
+            publishedFontTheme: data.success.publishedFontTheme,
+            publishedColorTheme: data.success.publishedColorTheme
+          })
           setPendingValidationTriggered(false)
+          setSuppressPendingPublishIndicator(true)
           setTimelineLength(store.history.timeline.length)
           setLastSavedTimelineLength(store.history.timeline.length)
           clearUnsavedChanges()
+          onRevertSuccess?.()
           toast.success("Menú revertido al último publicado")
-          queryClient.invalidateQueries({
-            queryKey: ["menu", menu?.id]
-          })
         } catch (error) {
           console.error(error)
           Sentry.captureException(error, {
@@ -202,14 +245,44 @@ export default function MenuPublish({
     useState<number>(store.history.timeline.length)
   const [pendingValidationTriggered, setPendingValidationTriggered] =
     useState(false)
+  const [suppressPendingPublishIndicator, setSuppressPendingPublishIndicator] =
+    useState(false)
   const [timelineLength, setTimelineLength] = useState<number>(
     store.history.timeline.length
   )
 
+  const serializeCurrentEditorState = useCallback(() => {
+    const json = query.serialize()
+    return lz.encodeBase64(lz.compress(json))
+  }, [query])
+
+  const serializeSyncedEditorState = useCallback(() => {
+    if (!menu) {
+      return serializeCurrentEditorState()
+    }
+
+    syncEditorWithMenuState({
+      actions: actions.history.ignore(),
+      menu,
+      location,
+      categories,
+      featuredItems,
+      soloItems
+    })
+    return serializeCurrentEditorState()
+  }, [
+    actions,
+    menu,
+    location,
+    categories,
+    featuredItems,
+    soloItems,
+    serializeCurrentEditorState
+  ])
+
   const handleUpdateSerialData = useCallback(() => {
     setPendingValidationTriggered(true)
-    const json = query.serialize()
-    const serialData = lz.encodeBase64(lz.compress(json))
+    const serialData = serializeSyncedEditorState()
     updateSerialData({
       id: menu!.id,
       fontTheme,
@@ -217,12 +290,12 @@ export default function MenuPublish({
       serialData
     })
   }, [
-    query,
     menu,
     fontTheme,
     colorTheme,
     updateSerialData,
-    setPendingValidationTriggered
+    setPendingValidationTriggered,
+    serializeSyncedEditorState
   ])
 
   const handleRevertToPublished = useCallback(() => {
@@ -246,6 +319,8 @@ export default function MenuPublish({
     // Auto-save once after 10s when there are unsaved timeline entries
     if (timelineLength <= lastSavedTimelineLength) return
 
+    setSuppressPendingPublishIndicator(false)
+
     const autoSaveTimer = setTimeout(() => {
       handleUpdateSerialData()
       setLastSavedTimelineLength(timelineLength)
@@ -262,7 +337,8 @@ export default function MenuPublish({
     differenceInMinutes(menu.updatedAt, menu.publishedAt) >= 1
   )
   const showPendingPublishIndicator =
-    hasPendingPublishChanges || pendingValidationTriggered
+    !suppressPendingPublishIndicator &&
+    (hasPendingPublishChanges || pendingValidationTriggered)
 
   useEffect(() => {
     if (!hasPendingPublishChanges) {
@@ -273,8 +349,7 @@ export default function MenuPublish({
   if (!menu) return null
 
   const handleUpdateStatus = (status: MenuStatus) => {
-    const json = query.serialize()
-    const serialData = lz.encodeBase64(lz.compress(json))
+    const serialData = serializeSyncedEditorState()
     execute({
       id: menu!.id,
       status,
@@ -290,7 +365,7 @@ export default function MenuPublish({
         <div>
           <GuardLink href={`/menu-editor/${menu.id}/preview`}>
             <Button size="xs" variant="ghost">
-              <Play className="size-4" />
+              <Play className="fill-foreground size-4" />
             </Button>
           </GuardLink>
         </div>
@@ -424,11 +499,12 @@ export default function MenuPublish({
                   className="mt-2 w-full"
                   onClick={() => handleUpdateStatus(MenuStatus.PUBLISHED)}
                 >
-                  {status === "executing" ? (
+                  {status === "executing" && (
                     <Loader className="size-4 animate-spin" />
-                  ) : (
-                    "Publicar"
                   )}
+                  <TextMorph>
+                    {status === "executing" ? "Publicando..." : "Publicar"}
+                  </TextMorph>
                 </Button>
               </motion.div>
             ) : (
@@ -497,11 +573,14 @@ export default function MenuPublish({
                       handleUpdateStatus(menu.status as MenuStatus)
                     }
                   >
-                    {status === "executing" ? (
+                    {status === "executing" && (
                       <Loader className="size-4 animate-spin" />
-                    ) : (
-                      "Publicar cambios"
                     )}
+                    <TextMorph>
+                      {status === "executing"
+                        ? "Publicando..."
+                        : "Publicar cambios"}
+                    </TextMorph>
                   </Button>
                   {menu.publishedAt && (
                     <Button
@@ -511,11 +590,14 @@ export default function MenuPublish({
                       disabled={statusRevert === "executing"}
                       onClick={handleRevertToPublished}
                     >
-                      {statusRevert === "executing" ? (
+                      {statusRevert === "executing" && (
                         <Loader className="size-4 animate-spin" />
-                      ) : (
-                        "Revertir cambios"
                       )}
+                      <TextMorph>
+                        {statusRevert === "executing"
+                          ? "Revirtiendo..."
+                          : "Revertir cambios"}
+                      </TextMorph>
                     </Button>
                   )}
                   <Button

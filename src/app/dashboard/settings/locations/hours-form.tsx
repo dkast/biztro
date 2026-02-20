@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { parseTime } from "@internationalized/date"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
+import { TextMorph } from "torph/react"
 import type { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
@@ -181,7 +182,10 @@ export default function HoursForm({
                     name={`items.${index}.allDay`}
                     control={form.control}
                     render={({ field: ctlField, fieldState }) => (
-                      <Field className="mt-1 flex flex-1 flex-row items-center justify-between space-y-0">
+                      <Field
+                        className="mt-1 flex flex-1 flex-row items-center
+                          justify-between space-y-0"
+                      >
                         <FieldLabel
                           htmlFor={`items.${index}.allDay`}
                           className="cursor-pointer text-sm font-medium"
@@ -212,7 +216,9 @@ export default function HoursForm({
                   name={`items.${index}.startTime`}
                   control={form.control}
                   render={({ field: ctlField, fieldState }) => (
-                    <Field className="flex flex-row items-center gap-2 space-y-0">
+                    <Field
+                      className="flex flex-row items-center gap-2 space-y-0"
+                    >
                       <FieldLabel className="hidden sm:inline">
                         Desde
                       </FieldLabel>
@@ -237,7 +243,9 @@ export default function HoursForm({
                   name={`items.${index}.endTime`}
                   control={form.control}
                   render={({ field: ctlField, fieldState }) => (
-                    <Field className="flex flex-row items-center gap-2 space-y-0">
+                    <Field
+                      className="flex flex-row items-center gap-2 space-y-0"
+                    >
                       <FieldLabel className="hidden sm:inline">
                         Hasta
                       </FieldLabel>
@@ -261,14 +269,12 @@ export default function HoursForm({
           </div>
           <Field orientation="responsive">
             <Button type="submit" disabled={status === "executing"}>
-              {status === "executing" ? (
-                <>
-                  <Loader className="mr-2 size-4 animate-spin" />
-                  {"Guardando..."}
-                </>
-              ) : (
-                "Actualizar Horario"
+              {status === "executing" && (
+                <Loader className="mr-2 size-4 animate-spin" />
               )}
+              <TextMorph>
+                {status === "executing" ? "Guardando..." : "Actualizar Horario"}
+              </TextMorph>
             </Button>
           </Field>
         </FieldGroup>
