@@ -19,14 +19,6 @@ export function PreviewToggle({ json }: { json?: string }) {
   const [mounted, setMounted] = useState(false)
   const isMobile = useIsMobile()
   const scrollDir = useScrollDirection()
-  const lastNonIdle = useRef<"up" | "down" | null>(null)
-  const lastChangeTS = useRef<number>(0)
-
-  useEffect(() => {
-    if (scrollDir === "idle") return
-    lastNonIdle.current = scrollDir
-    lastChangeTS.current = Date.now()
-  }, [scrollDir])
 
   useEffect(() => {
     setMounted(true)
@@ -36,12 +28,31 @@ export function PreviewToggle({ json }: { json?: string }) {
     if (isMobile) setMode("inline")
   }, [isMobile])
 
+  const [isHiddenByScroll, setIsHiddenByScroll] = useState(false)
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    if (scrollDir === "down") {
+      setIsHiddenByScroll(true)
+      if (hideTimerRef.current !== null) clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = setTimeout(() => {
+        setIsHiddenByScroll(false)
+        hideTimerRef.current = null
+      }, 800)
+    } else if (scrollDir === "up") {
+      if (hideTimerRef.current !== null) {
+        clearTimeout(hideTimerRef.current)
+        hideTimerRef.current = null
+      }
+      setIsHiddenByScroll(false)
+    }
+    // "idle" → let the timer fire naturally
+    return () => {
+      if (hideTimerRef.current !== null) clearTimeout(hideTimerRef.current)
+    }
+  }, [scrollDir])
+
   const showToggle = mounted && !isMobile
-  // keep hidden for a short grace period after the last downward scroll
-  const HIDE_GRACE_MS = 400
-  const isHiddenByScroll =
-    lastNonIdle.current === "down" &&
-    Date.now() - lastChangeTS.current < HIDE_GRACE_MS
   const effectiveMode: PreviewMode = showToggle ? mode : "inline"
 
   const content = useMemo(() => {

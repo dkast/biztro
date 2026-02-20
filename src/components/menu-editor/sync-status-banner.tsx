@@ -112,6 +112,7 @@ export default function SyncStatusBanner({
       suppressedPersistedVersion === persistedVersion
     ) {
       setSyncReq(false)
+      setSuppressedPersistedVersion(null)
       return
     }
 

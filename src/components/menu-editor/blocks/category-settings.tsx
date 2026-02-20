@@ -349,7 +349,7 @@ export default function CategorySettings() {
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
-              value={categoryHeadingShape ?? "rectangle"}
+              value={categoryHeadingShape ?? "none"}
               onValueChange={value =>
                 setProp(
                   (props: CategoryBlockProps) =>

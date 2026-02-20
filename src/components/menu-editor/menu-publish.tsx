@@ -262,7 +262,7 @@ export default function MenuPublish({
     }
 
     syncEditorWithMenuState({
-      actions,
+      actions: actions.history.ignore(),
       menu,
       location,
       categories,
