@@ -13,6 +13,7 @@ import type {
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
+import type { getCurrentOrganization } from "@/server/actions/user/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
 import {
   areCategoriesInSync,
@@ -27,6 +28,7 @@ import {
 
 export default function SyncStatusBanner({
   menu,
+  organization,
   location,
   categories,
   featuredItems,
@@ -36,6 +38,7 @@ export default function SyncStatusBanner({
   revertVersion = 0
 }: {
   menu: Awaited<ReturnType<typeof getMenuById>>
+  organization: Awaited<ReturnType<typeof getCurrentOrganization>>
   location: Awaited<ReturnType<typeof getDefaultLocation>> | null
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
@@ -68,6 +71,7 @@ export default function SyncStatusBanner({
     const synced = syncEditorWithMenuState({
       actions,
       menu,
+      organization,
       location,
       categories,
       featuredItems,
@@ -81,7 +85,15 @@ export default function SyncStatusBanner({
     toast.success("Información actualizada")
     setSyncReq(false)
     return true
-  }, [actions, menu, location, categories, featuredItems, soloItems])
+  }, [
+    actions,
+    menu,
+    organization,
+    location,
+    categories,
+    featuredItems,
+    soloItems
+  ])
 
   useEffect(() => {
     if (!syncTrigger || lastSyncTrigger === syncTrigger) {
@@ -138,7 +150,7 @@ export default function SyncStatusBanner({
     const soloItemsInSync = areSoloItemsInSync(menuData.items, soloItems)
     const organizationInSync = areOrganizationsInSync(
       menuData.organization,
-      menu.organization ?? null
+      organization
     )
     const locationInSync = areLocationsInSync(
       menuData.defaultLocation,
@@ -164,7 +176,7 @@ export default function SyncStatusBanner({
     menu?.serialData,
     menu?.updatedAt,
     menu?.publishedAt,
-    menu?.organization,
+    organization,
     menuData,
     categories,
     featuredItems,

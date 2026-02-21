@@ -75,6 +75,7 @@ import {
   updateMenuStatus
 } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
+import type { getCurrentOrganization } from "@/server/actions/user/queries"
 import useLocalStorage from "@/hooks/use-local-storage"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorThemeAtom, fontThemeAtom, tourModeAtom } from "@/lib/atoms"
@@ -87,6 +88,7 @@ export default function MenuPublish({
   menu,
   onPersistedMenuUpdate,
   onRevertSuccess,
+  organization,
   location,
   categories,
   featuredItems,
@@ -97,6 +99,7 @@ export default function MenuPublish({
     patch: Partial<NonNullable<Awaited<ReturnType<typeof getMenuById>>>>
   ) => void
   onRevertSuccess?: () => void
+  organization: Awaited<ReturnType<typeof getCurrentOrganization>>
   location: Awaited<ReturnType<typeof getDefaultLocation>> | null
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
@@ -264,6 +267,7 @@ export default function MenuPublish({
     syncEditorWithMenuState({
       actions: actions.history.ignore(),
       menu,
+      organization,
       location,
       categories,
       featuredItems,
@@ -273,6 +277,7 @@ export default function MenuPublish({
   }, [
     actions,
     menu,
+    organization,
     location,
     categories,
     featuredItems,

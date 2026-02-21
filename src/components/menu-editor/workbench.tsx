@@ -751,6 +751,7 @@ export default function Workbench({
                 menu={persistedMenu}
                 onPersistedMenuUpdate={handlePersistedMenuUpdate}
                 onRevertSuccess={handleRevertSuccess}
+                organization={organization}
                 location={location}
                 categories={effectiveItemsState.categories}
                 featuredItems={effectiveItemsState.featuredItems}
@@ -759,6 +760,7 @@ export default function Workbench({
             </Header>
             <SyncStatusBanner
               menu={persistedMenu}
+              organization={organization}
               location={location}
               categories={effectiveItemsState.categories}
               featuredItems={effectiveItemsState.featuredItems}
@@ -838,6 +840,7 @@ export default function Workbench({
                 menu={persistedMenu}
                 onPersistedMenuUpdate={handlePersistedMenuUpdate}
                 onRevertSuccess={handleRevertSuccess}
+                organization={organization}
                 location={location}
                 categories={effectiveItemsState.categories}
                 featuredItems={effectiveItemsState.featuredItems}
@@ -906,6 +909,7 @@ export default function Workbench({
               >
                 <SyncStatusBanner
                   menu={persistedMenu}
+                  organization={organization}
                   location={location}
                   categories={effectiveItemsState.categories}
                   featuredItems={effectiveItemsState.featuredItems}
