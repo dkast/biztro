@@ -72,12 +72,13 @@ export default function HeaderBlock({
                 logo={organization.logo}
                 orgName={organization.name}
                 isLogoVisible={showLogo ?? false}
-                className="size-14 rounded-lg shadow-none"
+                className="size-18 rounded-lg shadow-none"
               />
               <div className="min-w-0 flex-1">
                 <FontWrapper fontFamily={fontFamily}>
                   <h1
-                    className="text-xl leading-tight font-semibold text-balance"
+                    className="text-xl leading-tight font-semibold text-balance
+                      text-shadow-lg/30"
                   >
                     {organization?.name}
                   </h1>
@@ -135,7 +136,9 @@ export default function HeaderBlock({
           />
           <FontWrapper fontFamily={fontFamily}>
             <h1
-              className={cn("text-xl font-semibold text-balance")}
+              className={cn(
+                "text-xl font-semibold text-balance text-shadow-md"
+              )}
               style={{
                 color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
               }}

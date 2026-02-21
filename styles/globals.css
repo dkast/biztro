@@ -1,4 +1,8 @@
 @import "tailwindcss";
+
+/* Text shadow utilities */
+@source inline("text-shadow-md text-shadow-lg/30");
+
 /*
   ---break---
 */

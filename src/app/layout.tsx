@@ -1,5 +1,6 @@
 import React, { Suspense } from "react"
 import { VercelToolbar } from "@vercel/toolbar/next"
+import { Agentation } from "agentation"
 import { type Metadata, type Viewport } from "next"
 import { Inter, Sora } from "next/font/google"
 
@@ -71,6 +72,7 @@ export default function RootLayout({
             <div className="flex min-h-dvh flex-col">
               {children}
               {shouldInjectToolbar && <VercelToolbar />}
+              {shouldInjectToolbar && <Agentation />}
             </div>
           </Providers>
         </Suspense>
