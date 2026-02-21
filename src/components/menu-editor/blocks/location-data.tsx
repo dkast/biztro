@@ -222,6 +222,7 @@ export default function LocationData({
           target="_blank"
           rel="noopener noreferrer"
           className="underline"
+          aria-label="Abrir dirección en Google Maps"
         >
           <ExternalLink className="size-5" />
         </a>

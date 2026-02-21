@@ -177,6 +177,7 @@ export const auth = betterAuth({
       idToken: "id_token" // NextAuth `id_token` -> BA `idToken`
     }
   },
+  baseURL: process.env.BETTER_AUTH_URL,
   socialProviders: {
     google: {
       prompt: "select_account",
