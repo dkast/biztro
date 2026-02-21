@@ -63,6 +63,7 @@ export const auth = betterAuth({
   trustedOrigins: [
     "https://biztro.co",
     "https://preview.biztro.co",
+    "https://*.vercel.app",
     "http://localhost:3000"
   ],
   database: prismaAdapter(prisma, { provider: "sqlite" }),
