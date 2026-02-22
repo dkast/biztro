@@ -31,6 +31,11 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from "@/components/ui/tooltip"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorListAtom, colorThemeAtom } from "@/lib/atoms"
 import { FONT_SIZES } from "@/lib/types"
@@ -540,15 +545,22 @@ export default function CategorySettings() {
         </div>
       </SideSection>
       <div className="px-4 py-3">
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full gap-1.5 text-xs"
-          onClick={applyToAll}
-        >
-          <Paintbrush className="size-3.5" />
-          Aplicar a todos
-        </Button>
+        <Tooltip delayDuration={100}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full gap-1.5 text-xs"
+              onClick={applyToAll}
+            >
+              <Paintbrush className="size-3.5" />
+              Aplicar a todos
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p>Propagar estas propiedades a todas las categorías</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
     </>
   )

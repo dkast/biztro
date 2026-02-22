@@ -11,6 +11,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 import { UnsavedChangesProvider } from "@/components/dashboard/unsaved-changes-provider"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import { CSPostHogProvider } from "@/app/analytics"
 
 function makeQueryClient() {
@@ -65,21 +66,23 @@ function Providers({ children }: { children: React.ReactNode }) {
           <NuqsAdapter>
             <QueryClientProvider client={queryClient}>
               <Provider>
-                <UnsavedChangesProvider>
-                  <ReactQueryStreamedHydration>
-                    {children}
-                  </ReactQueryStreamedHydration>
-                </UnsavedChangesProvider>
-                <Toaster
-                  position="top-center"
-                  toastOptions={{
-                    style: {
-                      background: "#333",
-                      color: "#fff"
-                    }
-                  }}
-                />
-                <TailwindIndicator />
+                <TooltipProvider>
+                  <UnsavedChangesProvider>
+                    <ReactQueryStreamedHydration>
+                      {children}
+                    </ReactQueryStreamedHydration>
+                  </UnsavedChangesProvider>
+                  <Toaster
+                    position="top-center"
+                    toastOptions={{
+                      style: {
+                        background: "#333",
+                        color: "#fff"
+                      }
+                    }}
+                  />
+                  <TailwindIndicator />
+                </TooltipProvider>
               </Provider>
             </QueryClientProvider>
           </NuqsAdapter>

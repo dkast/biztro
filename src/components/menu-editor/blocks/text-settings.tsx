@@ -13,6 +13,11 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from "@/components/ui/tooltip"
 import { FONT_SIZES } from "@/lib/types"
 
 export default function TextSettings() {
@@ -127,15 +132,22 @@ export default function TextSettings() {
         </div>
       </SideSection>
       <div className="px-4 py-3">
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full gap-1.5 text-xs"
-          onClick={applyToAll}
-        >
-          <Paintbrush className="size-3.5" />
-          Aplicar a todos
-        </Button>
+        <Tooltip delayDuration={100}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full gap-1.5 text-xs"
+              onClick={applyToAll}
+            >
+              <Paintbrush className="size-3.5" />
+              Aplicar a todos
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p>Propagar estas propiedades a todos los textos</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
     </>
   )
