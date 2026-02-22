@@ -113,7 +113,7 @@
 @utility heading-shape {
   position: relative;
   isolation: isolate;
-  padding: 0.5rem 0.5rem;
+  padding: 0;
   &::before {
     content: "";
     position: absolute;
@@ -130,7 +130,7 @@
 
 /* Rounded - simple border-radius */
 @utility heading-shape-rounded {
-  padding: 0.5rem;
+  padding: 0;
   &::before {
     border-radius: 0.5rem;
   }
@@ -138,7 +138,7 @@
 
 /* Rounded Pill - fully rounded sides */
 @utility heading-shape-pill {
-  padding: 0.5rem;
+  padding: 0;
   &::before {
     border-radius: 9999px;
   }
@@ -146,7 +146,7 @@
 
 /* Slanted Edge - diagonal cut on right side */
 @utility heading-shape-slanted {
-  padding: 0.5rem;
+  padding: 0;
   &::before {
     --slant: 20px;
     clip-path: polygon(0 0, 100% 0, calc(100% - var(--slant)) 100%, 0 100%);
@@ -187,7 +187,7 @@
 
 /* Rounded Tab - browser tab style with curved corners at bottom */
 @utility heading-shape-tab {
-  padding: 0.5rem;
+  padding: 0;
   &::before {
     --r: 12px;
     border-radius: calc(2 * var(--r)) calc(2 * var(--r)) 0 0;
@@ -226,6 +226,7 @@
 
 /* Ribbon - decorative ribbon banner style */
 @utility heading-shape-ribbon {
+  padding-bottom: 0.5rem;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
   &::before {

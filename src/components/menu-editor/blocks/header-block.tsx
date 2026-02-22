@@ -96,7 +96,7 @@ export default function HeaderBlock({
                 <SocialMedia
                   location={location}
                   isVisible={showSocialMedia}
-                  className="justify-start gap-2.5 p-0"
+                  className="justify-start gap-4 p-0"
                   iconClassName="size-6"
                 />
               </div>

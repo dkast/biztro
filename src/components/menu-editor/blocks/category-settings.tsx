@@ -1,7 +1,7 @@
-import { useNode } from "@craftjs/core"
+import { useEditor, useNode } from "@craftjs/core"
 import { Colorful, hexToHsva, Sketch } from "@uiw/react-color"
 import { useAtomValue } from "jotai"
-import { AlignCenter, AlignLeft, AlignRight } from "lucide-react"
+import { AlignCenter, AlignLeft, AlignRight, Paintbrush } from "lucide-react"
 
 import type {
   CategoryBlockProps,
@@ -76,6 +76,7 @@ function getColorButtonStyle(
 
 export default function CategorySettings() {
   const {
+    id,
     actions: { setProp },
     // backgroundMode,
     categoryFontSize,
@@ -104,6 +105,34 @@ export default function CategorySettings() {
     priceFontWeight: node.data.props.priceFontWeight,
     showImage: node.data.props.showImage
   }))
+
+  const { actions: editorActions, nodes } = useEditor(state => ({
+    nodes: state.nodes
+  }))
+
+  const applyToAll = () => {
+    const styleProps = {
+      categoryFontSize,
+      categoryFontWeight,
+      categoryTextAlign,
+      categoryHeadingBgColor,
+      categoryHeadingShape,
+      itemFontSize,
+      itemFontWeight,
+      priceFontSize,
+      priceFontWeight,
+      showImage
+    }
+    for (const [key, value] of Object.entries(nodes)) {
+      if (key === id) continue
+      if (value.data?.name === "CategoryBlock") {
+        editorActions.setProp(key, props => {
+          Object.assign(props, styleProps)
+        })
+      }
+    }
+  }
+
   const isMobile = useIsMobile()
   const colorList = useAtomValue(colorListAtom)
   const colorThemeId = useAtomValue(colorThemeAtom)
@@ -509,6 +538,17 @@ export default function CategorySettings() {
           </dd>
         </div>
       </SideSection>
+      <div className="px-4 py-3">
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full gap-1.5 text-xs"
+          onClick={applyToAll}
+        >
+          <Paintbrush className="size-3.5" />
+          Aplicar a todos
+        </Button>
+      </div>
     </>
   )
 }
