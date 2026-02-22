@@ -44,7 +44,7 @@ export default function TextSettings() {
     for (const [key, value] of Object.entries(nodes)) {
       if (key === id) continue
       if (value.data?.name === "TextElement") {
-        editorActions.setProp(key, props => {
+        editorActions.history.ignore().setProp(key, props => {
           Object.assign(props, styleProps)
         })
       }

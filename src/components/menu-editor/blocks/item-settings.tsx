@@ -61,7 +61,7 @@ export default function ItemSettings() {
     for (const [key, value] of Object.entries(nodes)) {
       if (key === id) continue
       if (value.data?.name === "ItemBlock") {
-        editorActions.setProp(key, props => {
+        editorActions.history.ignore().setProp(key, props => {
           Object.assign(props, styleProps)
         })
       }

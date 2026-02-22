@@ -131,7 +131,7 @@ export default function CategorySettings() {
     for (const [key, value] of Object.entries(nodes)) {
       if (key === id) continue
       if (value.data?.name === "CategoryBlock") {
-        editorActions.setProp(key, props => {
+        editorActions.history.ignore().setProp(key, props => {
           Object.assign(props, styleProps)
         })
       }
