@@ -1,7 +1,7 @@
-import { useNode } from "@craftjs/core"
+import { useEditor, useNode } from "@craftjs/core"
 import { Colorful, hexToHsva, Sketch } from "@uiw/react-color"
 import { useAtomValue } from "jotai"
-import { AlignCenter, AlignLeft, AlignRight } from "lucide-react"
+import { AlignCenter, AlignLeft, AlignRight, Paintbrush } from "lucide-react"
 
 import type {
   CategoryBlockProps,
@@ -31,6 +31,11 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from "@/components/ui/tooltip"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorListAtom, colorThemeAtom } from "@/lib/atoms"
 import { FONT_SIZES } from "@/lib/types"
@@ -76,6 +81,7 @@ function getColorButtonStyle(
 
 export default function CategorySettings() {
   const {
+    id,
     actions: { setProp },
     // backgroundMode,
     categoryFontSize,
@@ -104,6 +110,34 @@ export default function CategorySettings() {
     priceFontWeight: node.data.props.priceFontWeight,
     showImage: node.data.props.showImage
   }))
+
+  const { actions: editorActions, nodes } = useEditor(state => ({
+    nodes: state.nodes
+  }))
+
+  const applyToAll = () => {
+    const styleProps = {
+      categoryFontSize,
+      categoryFontWeight,
+      categoryTextAlign,
+      categoryHeadingBgColor,
+      categoryHeadingShape,
+      itemFontSize,
+      itemFontWeight,
+      priceFontSize,
+      priceFontWeight,
+      showImage
+    }
+    for (const [key, value] of Object.entries(nodes)) {
+      if (key === id) continue
+      if (value.data?.name === "CategoryBlock") {
+        editorActions.history.ignore().setProp(key, props => {
+          Object.assign(props, styleProps)
+        })
+      }
+    }
+  }
+
   const isMobile = useIsMobile()
   const colorList = useAtomValue(colorListAtom)
   const colorThemeId = useAtomValue(colorThemeAtom)
@@ -263,6 +297,7 @@ export default function CategorySettings() {
                   <div className="space-y-4">
                     <div
                       className="flex items-center justify-center"
+                      data-vaul-no-drag
                       onPointerDown={e => e.stopPropagation()}
                       onTouchStart={e => e.stopPropagation()}
                       onMouseDown={e => e.stopPropagation()}
@@ -509,6 +544,24 @@ export default function CategorySettings() {
           </dd>
         </div>
       </SideSection>
+      <div className="px-4 py-3">
+        <Tooltip delayDuration={100}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full gap-1.5 text-xs"
+              onClick={applyToAll}
+            >
+              <Paintbrush className="size-3.5" />
+              Aplicar a todos
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p>Propagar estas propiedades a todas las categorías</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
     </>
   )
 }

@@ -119,7 +119,10 @@ export default function OrganizationForm({
       <FieldSet disabled={!enabled} className="mt-10">
         <FieldGroup>
           <div className="flex items-center gap-x-8">
-            <Avatar className="border-border h-24 w-24 rounded-xl border">
+            <Avatar
+              className="h-24 w-24 rounded-xl ring-1 ring-black/10 ring-inset
+                dark:ring-white/15"
+            >
               {data.logo && (
                 <AvatarImage src={data.logo} className="rounded-xl" />
               )}

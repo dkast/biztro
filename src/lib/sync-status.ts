@@ -9,6 +9,9 @@ import type {
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getMenuById } from "@/server/actions/menu/queries"
+import type { getCurrentOrganization } from "@/server/actions/user/queries"
+
+type CurrentOrganization = Awaited<ReturnType<typeof getCurrentOrganization>>
 
 type MenuComponent = {
   type?: {
@@ -453,7 +456,7 @@ function areOpeningHoursEqual(
 
 export function areOrganizationsInSync(
   menuOrganization: MenuData["organization"],
-  dbOrganization: Organization | null | undefined
+  dbOrganization: CurrentOrganization | Organization | null | undefined
 ) {
   if (!menuOrganization && !dbOrganization) {
     return true
@@ -556,6 +559,7 @@ export function areLocationsInSync(
 export function syncEditorWithMenuState({
   actions,
   menu,
+  organization,
   location,
   categories,
   featuredItems,
@@ -563,6 +567,7 @@ export function syncEditorWithMenuState({
 }: {
   actions: EditorActions
   menu: Awaited<ReturnType<typeof getMenuById>>
+  organization: CurrentOrganization | null
   location: Awaited<ReturnType<typeof getDefaultLocation>> | null
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
@@ -601,7 +606,7 @@ export function syncEditorWithMenuState({
 
     if (component?.type?.resolvedName === "HeaderBlock") {
       trySetProp(actions, property, props => {
-        props.organization = menu?.organization
+        props.organization = organization
         props.location = location
       })
     }

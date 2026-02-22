@@ -20,7 +20,7 @@ const HEADING_SHAPE_STYLES = `
 .heading-shape {
   position: relative;
   isolation: isolate;
-  padding: 0.5rem 0.5rem;
+  padding: 0;
 }
 .heading-shape::before {
   content: "";
@@ -37,7 +37,7 @@ const HEADING_SHAPE_STYLES = `
 
 /* Rounded */
 .heading-shape-rounded {
-  padding: 0.5rem;
+  padding: 0;
 }
 .heading-shape-rounded::before {
   border-radius: 0.5rem;
@@ -45,7 +45,7 @@ const HEADING_SHAPE_STYLES = `
 
 /* Pill */
 .heading-shape-pill {
-  padding: 0.5rem;
+  padding: 0;
 }
 .heading-shape-pill::before {
   border-radius: 9999px;
@@ -53,7 +53,7 @@ const HEADING_SHAPE_STYLES = `
 
 /* Slanted Edge - diagonal cut on right side */
 .heading-shape-slanted {
-  padding: 0.5rem;
+  padding: 0;
 }
 .heading-shape-slanted::before {
   --slant: 20px;
@@ -82,7 +82,7 @@ const HEADING_SHAPE_STYLES = `
 
 /* Rounded Tab */
 .heading-shape-tab {
-  padding: 0.5rem;
+  padding: 0;
 }
 .heading-shape-tab::before {
   --r: 12px;
@@ -121,6 +121,7 @@ const HEADING_SHAPE_STYLES = `
 
 /* Ribbon */
 .heading-shape-ribbon {
+  padding-bottom: 0.5rem;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
 }

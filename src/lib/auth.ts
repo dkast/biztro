@@ -63,6 +63,10 @@ export const auth = betterAuth({
   trustedOrigins: [
     "https://biztro.co",
     "https://preview.biztro.co",
+    ...(process.env.NEXT_PUBLIC_VERCEL_URL &&
+    /^[a-zA-Z0-9-]+\.vercel\.app$/.test(process.env.NEXT_PUBLIC_VERCEL_URL)
+      ? [`https://${process.env.NEXT_PUBLIC_VERCEL_URL}`]
+      : []),
     "http://localhost:3000"
   ],
   database: prismaAdapter(prisma, { provider: "sqlite" }),
@@ -177,6 +181,7 @@ export const auth = betterAuth({
       idToken: "id_token" // NextAuth `id_token` -> BA `idToken`
     }
   },
+  baseURL: process.env.BETTER_AUTH_URL,
   socialProviders: {
     google: {
       prompt: "select_account",

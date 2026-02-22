@@ -1,7 +1,9 @@
-import { useNode } from "@craftjs/core"
+import { useEditor, useNode } from "@craftjs/core"
+import { Paintbrush } from "lucide-react"
 
 import type { CategoryBlockProps } from "@/components/menu-editor/blocks/category-block"
 import SideSection from "@/components/menu-editor/side-section"
+import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -11,10 +13,16 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from "@/components/ui/tooltip"
 import { FONT_SIZES } from "@/lib/types"
 
 export default function ItemSettings() {
   const {
+    id,
     actions: { setProp },
     backgroundMode,
     itemFontSize,
@@ -36,6 +44,30 @@ export default function ItemSettings() {
     priceFontWeight: node.data.props.priceFontWeight,
     showImage: node.data.props.showImage
   }))
+
+  const { actions: editorActions, nodes } = useEditor(state => ({
+    nodes: state.nodes
+  }))
+
+  const applyToAll = () => {
+    const styleProps = {
+      backgroundMode,
+      itemFontSize,
+      itemFontWeight,
+      priceFontSize,
+      priceFontWeight,
+      showImage
+    }
+    for (const [key, value] of Object.entries(nodes)) {
+      if (key === id) continue
+      if (value.data?.name === "ItemBlock") {
+        editorActions.history.ignore().setProp(key, props => {
+          Object.assign(props, styleProps)
+        })
+      }
+    }
+  }
+
   return (
     <>
       <SideSection title="General">
@@ -197,6 +229,24 @@ export default function ItemSettings() {
           </dd>
         </div>
       </SideSection>
+      <div className="px-4 py-3">
+        <Tooltip delayDuration={100}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full gap-1.5 text-xs"
+              onClick={applyToAll}
+            >
+              <Paintbrush className="size-3.5" />
+              Aplicar a todos
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p>Propagar estas propiedades a todos los productos</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
     </>
   )
 }

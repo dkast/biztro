@@ -90,7 +90,7 @@ export function BottomBar({
           </span>
         </div>
       </div>
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <Drawer open={isOpen} onOpenChange={setIsOpen} handleOnly>
         <DrawerContent>
           <ScrollArea className="h-[80vh]">{getPanelContent()}</ScrollArea>
         </DrawerContent>

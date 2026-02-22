@@ -49,68 +49,59 @@ export default function HeaderBlock({
   } = useNode()
 
   const renderClassic = () => {
+    const hasBanner = Boolean(organization.banner && showBanner)
+
     return (
       <>
         <Banner
           banner={organization.banner}
           isBannerVisible={showBanner ?? false}
-          className="relative"
+          className="relative h-28"
         />
-        <div className="px-4 pt-4 pb-6">
-          {/* Logo and organization name */}
+        <div
+          className={cn("px-4 pt-3 pb-4", hasBanner && "relative z-10 -mt-10")}
+        >
           <div
-            className={cn(
-              "flex flex-row",
-              organization.banner && showBanner
-                ? "-mt-12 items-end"
-                : "my-2 items-center"
-            )}
-          >
-            <Logo
-              logo={organization.logo}
-              orgName={organization.name}
-              isLogoVisible={showLogo ?? false}
-            />
-            <FontWrapper fontFamily={fontFamily}>
-              <h1
-                className={cn(
-                  "z-10 text-xl font-semibold",
-                  showLogo && "ml-4",
-                  organization.banner && showBanner && "mt-10"
-                )}
-                style={{
-                  color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-                }}
-              >
-                {organization?.name}
-              </h1>
-            </FontWrapper>
-          </div>
-          {/* Location data */}
-          <div
-            className={cn(
-              "flex flex-row gap-1",
-              showLogo ? "ml-20" : "pt-5",
-              organization.banner && showBanner ? "" : "-mt-5"
-            )}
+            className="rounded-xl border border-black/10 shadow-sm"
             style={{
               color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
             }}
           >
-            <LocationData
-              isBusinessInfoVisible={showAddress ?? false}
-              isOpenHoursVisible={showAddress ?? false}
-              location={location}
-              className="items-start"
-            />
+            <div className="flex items-start gap-3 p-2.5">
+              <Logo
+                logo={organization.logo}
+                orgName={organization.name}
+                isLogoVisible={showLogo ?? false}
+                className="size-18 rounded-lg shadow-none"
+              />
+              <div className="min-w-0 flex-1">
+                <FontWrapper fontFamily={fontFamily}>
+                  <h1
+                    className="text-xl leading-tight font-semibold text-balance
+                      text-shadow-lg/30"
+                  >
+                    {organization?.name}
+                  </h1>
+                </FontWrapper>
+                <LocationData
+                  isBusinessInfoVisible={showAddress ?? false}
+                  isOpenHoursVisible={showAddress ?? false}
+                  location={location}
+                  className="mt-1 items-start"
+                />
+              </div>
+            </div>
+            {showSocialMedia && (
+              <div className="mt-1 border-t border-black/10 px-2.5 pt-2 pb-2">
+                <SocialMedia
+                  location={location}
+                  isVisible={showSocialMedia}
+                  className="justify-start gap-4 p-0"
+                  iconClassName="size-6"
+                />
+              </div>
+            )}
           </div>
-        </div>
-        <div
-          style={{
-            color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-          }}
-        >
-          <SocialMedia location={location} isVisible={showSocialMedia} />
         </div>
       </>
     )
@@ -145,7 +136,9 @@ export default function HeaderBlock({
           />
           <FontWrapper fontFamily={fontFamily}>
             <h1
-              className={cn("text-xl font-semibold")}
+              className={cn(
+                "text-xl font-semibold text-balance text-shadow-md"
+              )}
               style={{
                 color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
               }}
@@ -242,22 +235,32 @@ function Logo({
 
 function SocialMedia({
   location,
-  isVisible
+  isVisible,
+  className,
+  iconClassName
 }: {
   location: Awaited<ReturnType<typeof getDefaultLocation>> | undefined
   isVisible: boolean | undefined
+  className?: string
+  iconClassName?: string
 }) {
   if (!isVisible || !location) return null
 
   return (
-    <div className="flex flex-row items-center justify-center gap-4 p-2">
+    <div
+      className={cn(
+        "flex flex-row items-center justify-center gap-4 p-2",
+        className
+      )}
+    >
       {location?.facebook && (
         <a
           href={`https://facebook.com/${location.facebook}`}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Facebook"
         >
-          <FacebookIcon className="size-8" />
+          <FacebookIcon className={cn("size-8", iconClassName)} />
         </a>
       )}
       {location?.instagram && (
@@ -265,8 +268,9 @@ function SocialMedia({
           href={`https://instagram.com/${location.instagram}`}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Instagram"
         >
-          <InstagramIcon className="size-8" />
+          <InstagramIcon className={cn("size-8", iconClassName)} />
         </a>
       )}
       {location?.twitter && (
@@ -274,8 +278,9 @@ function SocialMedia({
           href={`https://twitter.com/${location.twitter}`}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="X"
         >
-          <TwitterIcon className="size-8" />
+          <TwitterIcon className={cn("size-8", iconClassName)} />
         </a>
       )}
       {location?.tiktok && (
@@ -283,8 +288,9 @@ function SocialMedia({
           href={`https://tiktok.com/${location.tiktok}`}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="TikTok"
         >
-          <TiktokIcon className="size-8" />
+          <TiktokIcon className={cn("size-8", iconClassName)} />
         </a>
       )}
       {location?.whatsapp && (
@@ -292,8 +298,9 @@ function SocialMedia({
           href={`https://wa.me/${location.whatsapp}`}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="WhatsApp"
         >
-          <WhatsappIcon className="size-8" />
+          <WhatsappIcon className={cn("size-8", iconClassName)} />
         </a>
       )}
     </div>

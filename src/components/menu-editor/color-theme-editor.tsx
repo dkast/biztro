@@ -282,6 +282,7 @@ export function ColorThemeEditor({
             <div className="px-4 pb-4">
               <div
                 className="mb-4 flex items-center justify-center"
+                data-vaul-no-drag
                 onPointerDown={e => e.stopPropagation()}
                 onTouchStart={e => e.stopPropagation()}
                 onMouseDown={e => e.stopPropagation()}
@@ -320,7 +321,9 @@ export function ColorThemeEditor({
           fontText={fontText}
           theme={themeState}
         />
-        <fieldset className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+        <fieldset
+          className="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+        >
           <legend className="-ml-1 px-1 text-sm font-medium">Colores</legend>
           <div className="grid grid-cols-4 items-center gap-2">
             <dt>
@@ -330,7 +333,8 @@ export function ColorThemeEditor({
               {isMobile ? (
                 <button
                   type="button"
-                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  className="h-5 w-12 rounded-sm border border-black/20
+                    dark:border-white/20"
                   style={{ backgroundColor: themeState.surfaceColor }}
                   aria-label="Seleccionar color de fondo"
                   onClick={() => setDrawerColorKey("surfaceColor")}
@@ -340,7 +344,8 @@ export function ColorThemeEditor({
                   <PopoverTrigger asChild>
                     <button
                       type="button"
-                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      className="h-5 w-12 rounded-sm border border-black/20
+                        dark:border-white/20"
                       style={{ backgroundColor: themeState.surfaceColor }}
                       aria-label="Seleccionar color de fondo"
                     />
@@ -368,7 +373,8 @@ export function ColorThemeEditor({
               {isMobile ? (
                 <button
                   type="button"
-                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  className="h-5 w-12 rounded-sm border border-black/20
+                    dark:border-white/20"
                   style={{ backgroundColor: themeState.brandColor }}
                   aria-label="Seleccionar color de marca"
                   onClick={() => setDrawerColorKey("brandColor")}
@@ -378,7 +384,8 @@ export function ColorThemeEditor({
                   <PopoverTrigger asChild>
                     <button
                       type="button"
-                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      className="h-5 w-12 rounded-sm border border-black/20
+                        dark:border-white/20"
                       style={{ backgroundColor: themeState.brandColor }}
                       aria-label="Seleccionar color de marca"
                     />
@@ -406,7 +413,8 @@ export function ColorThemeEditor({
               {isMobile ? (
                 <button
                   type="button"
-                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  className="h-5 w-12 rounded-sm border border-black/20
+                    dark:border-white/20"
                   style={{ backgroundColor: themeState.accentColor }}
                   aria-label="Seleccionar color de acento"
                   onClick={() => setDrawerColorKey("accentColor")}
@@ -416,7 +424,8 @@ export function ColorThemeEditor({
                   <PopoverTrigger asChild>
                     <button
                       type="button"
-                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      className="h-5 w-12 rounded-sm border border-black/20
+                        dark:border-white/20"
                       style={{ backgroundColor: themeState.accentColor }}
                       aria-label="Seleccionar color de acento"
                     />
@@ -444,7 +453,8 @@ export function ColorThemeEditor({
               {isMobile ? (
                 <button
                   type="button"
-                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  className="h-5 w-12 rounded-sm border border-black/20
+                    dark:border-white/20"
                   style={{ backgroundColor: themeState.textColor }}
                   aria-label="Seleccionar color de texto"
                   onClick={() => setDrawerColorKey("textColor")}
@@ -454,7 +464,8 @@ export function ColorThemeEditor({
                   <PopoverTrigger asChild>
                     <button
                       type="button"
-                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      className="h-5 w-12 rounded-sm border border-black/20
+                        dark:border-white/20"
                       style={{ backgroundColor: themeState.textColor }}
                       aria-label="Seleccionar color de texto"
                     />
@@ -482,7 +493,8 @@ export function ColorThemeEditor({
               {isMobile ? (
                 <button
                   type="button"
-                  className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                  className="h-5 w-12 rounded-sm border border-black/20
+                    dark:border-white/20"
                   style={{ backgroundColor: themeState.mutedColor }}
                   aria-label="Seleccionar color tenue"
                   onClick={() => setDrawerColorKey("mutedColor")}
@@ -492,7 +504,8 @@ export function ColorThemeEditor({
                   <PopoverTrigger asChild>
                     <button
                       type="button"
-                      className="h-5 w-12 rounded-sm border border-black/20 dark:border-white/20"
+                      className="h-5 w-12 rounded-sm border border-black/20
+                        dark:border-white/20"
                       style={{ backgroundColor: themeState.mutedColor }}
                       aria-label="Seleccionar color tenue"
                     />
@@ -613,7 +626,8 @@ function ThemePreview({
 }) {
   return (
     <div
-      className="flex flex-col gap-4 rounded-lg border-2 border-black/10 p-4 dark:border-white/20"
+      className="flex flex-col gap-4 rounded-lg border-2 border-black/10 p-4
+        dark:border-white/20"
       style={{
         backgroundColor: theme.surfaceColor,
         color: theme.brandColor
