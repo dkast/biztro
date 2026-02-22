@@ -71,6 +71,7 @@ function ThemedSelector<T>({
           <div
             className="no-scrollbar absolute inset-0 overflow-y-scroll
               overscroll-contain"
+            data-vaul-no-drag
           >
             <div className="flex flex-col items-center gap-2">
               <RadioGroup

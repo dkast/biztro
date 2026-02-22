@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import {
-  ChevronDown,
   ExternalLink,
   HandPlatter,
+  InfoIcon,
   Motorbike,
   Phone,
   ShoppingBag
@@ -97,7 +97,7 @@ export default function LocationData({
         )}
       </div>
       <span>{legend}</span>
-      <ChevronDown className="inline-block size-2.5" />
+      <InfoIcon className="ml-1 inline-block size-3" />
     </button>
   )
 

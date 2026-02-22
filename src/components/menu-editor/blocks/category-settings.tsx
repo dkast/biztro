@@ -292,6 +292,7 @@ export default function CategorySettings() {
                   <div className="space-y-4">
                     <div
                       className="flex items-center justify-center"
+                      data-vaul-no-drag
                       onPointerDown={e => e.stopPropagation()}
                       onTouchStart={e => e.stopPropagation()}
                       onMouseDown={e => e.stopPropagation()}
