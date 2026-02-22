@@ -1,8 +1,8 @@
 "use server"
 
+import * as Sentry from "@sentry/nextjs"
 import { updateTag } from "next/cache"
 import { headers } from "next/headers"
-import * as Sentry from "@sentry/nextjs"
 import { z } from "zod/v4"
 
 import { getOrganizationBySlug } from "@/server/actions/organization/queries"

@@ -8,9 +8,9 @@ import {
   toCalendarDateTime,
   today
 } from "@internationalized/date"
+import * as Sentry from "@sentry/nextjs"
 import { clsx, type ClassValue } from "clsx"
 import { Resend } from "resend"
-import * as Sentry from "@sentry/nextjs"
 import { twMerge } from "tailwind-merge"
 
 import { authClient } from "@/lib/auth-client"

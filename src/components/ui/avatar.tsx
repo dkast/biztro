@@ -78,7 +78,8 @@ const AvatarFallback = React.memo(
     return (
       <AvatarPrimitive.Fallback
         className={cn(
-          "flex h-full w-full items-center justify-center bg-amber-100 text-amber-900 dark:bg-lime-800 dark:text-lime-100",
+          `flex h-full w-full items-center justify-center bg-amber-100
+          text-amber-900 dark:bg-lime-800 dark:text-lime-100`,
           className,
           colorClass
         )}

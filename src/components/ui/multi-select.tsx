@@ -48,7 +48,8 @@ const multiSelectVariants = cva(
  * Props for MultiSelect component
  */
 interface MultiSelectProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof multiSelectVariants> {
   /**
    * An array of option objects to be displayed in the multi-select component.
@@ -181,7 +182,11 @@ export const MultiSelect = ({
           {...props}
           onClick={handleTogglePopover}
           className={cn(
-            "flex h-auto min-h-10 w-full items-center justify-between rounded-md border border-gray-200 bg-inherit p-1 text-gray-950 hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-50 dark:hover:bg-gray-900 [&_svg]:pointer-events-auto",
+            `flex h-auto min-h-10 w-full items-center justify-between rounded-md
+            border border-gray-200 bg-inherit p-1 text-gray-950
+            hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-950
+            dark:text-gray-50 dark:hover:bg-gray-900
+            [&_svg]:pointer-events-auto`,
             className
           )}
         >
@@ -280,9 +285,11 @@ export const MultiSelect = ({
               >
                 <div
                   className={cn(
-                    "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                    `mr-2 flex h-4 w-4 items-center justify-center rounded-sm
+                    border`,
                     selectedValues.length === options.length
-                      ? "border-black bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
+                      ? `border-black bg-black text-gray-50 dark:border-gray-50
+                        dark:bg-gray-50 dark:text-gray-900`
                       : "opacity-50 [&_svg]:invisible"
                   )}
                 >
@@ -300,16 +307,23 @@ export const MultiSelect = ({
                   >
                     <div
                       className={cn(
-                        "pointer-events-auto! relative z-50 mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                        `pointer-events-auto! relative z-50 mr-2 flex h-4 w-4
+                        items-center justify-center rounded-sm border`,
                         isSelected
-                          ? "border-black bg-black text-gray-50 dark:border-gray-50 dark:bg-gray-50 dark:text-gray-900"
+                          ? `border-black bg-black text-gray-50
+                            dark:border-gray-50 dark:bg-gray-50
+                            dark:text-gray-900`
                           : "opacity-50 [&_svg]:invisible"
                       )}
                     >
-                      <CheckIcon className="h-4 w-4 text-white dark:text-gray-500" />
+                      <CheckIcon
+                        className="h-4 w-4 text-white dark:text-gray-500"
+                      />
                     </div>
                     {option.icon && (
-                      <option.icon className="mr-2 h-4 w-4 text-white dark:text-gray-500" />
+                      <option.icon
+                        className="mr-2 h-4 w-4 text-white dark:text-gray-500"
+                      />
                     )}
                     <span>{option.label}</span>
                   </CommandItem>

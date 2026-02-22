@@ -47,7 +47,10 @@ export function ImageField({
         fill
         unoptimized
       />
-      <div className="absolute inset-0 hidden bg-black/50 backdrop-blur group-hover:block">
+      <div
+        className="absolute inset-0 hidden bg-black/50 backdrop-blur
+          group-hover:block"
+      >
         <div className="absolute inset-0 flex items-center justify-center">
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -55,7 +58,8 @@ export function ImageField({
                 type="button"
                 variant="default"
                 size="sm"
-                className="border border-white/50 bg-transparent hover:bg-white/10"
+                className="border border-white/50 bg-transparent
+                  hover:bg-white/10"
               >
                 <ImageUp className="mr-2 size-4" />
                 Cambiar imágen

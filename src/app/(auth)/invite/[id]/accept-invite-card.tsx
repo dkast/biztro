@@ -1,9 +1,9 @@
 "use client"
 
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
-import * as Sentry from "@sentry/nextjs"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -78,7 +78,10 @@ export default function AcceptInviteCard({ invite }: { invite: InviteData }) {
           </div>
         ) : (
           <div>
-            <div className="flex w-full flex-col items-center justify-center gap-8 py-2">
+            <div
+              className="flex w-full flex-col items-center justify-center gap-8
+                py-2"
+            >
               <div className="flex items-center space-x-4">
                 <Avatar className="size-6">
                   <AvatarImage

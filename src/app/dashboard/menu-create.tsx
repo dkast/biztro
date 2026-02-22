@@ -31,7 +31,7 @@ export default function MenuCreate() {
           return
         }
       }
-      
+
       // Track menu creation
       if (data?.success) {
         posthog.capture("menu_created", {
@@ -40,7 +40,7 @@ export default function MenuCreate() {
           source: "dashboard"
         })
       }
-      
+
       router.push(`/menu-editor/${data?.success?.id}`)
       reset()
     },
@@ -59,7 +59,9 @@ export default function MenuCreate() {
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="flex h-[250px] w-full flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed border-gray-300 text-gray-400 dark:border-gray-800 dark:bg-gray-800/20 dark:text-gray-500"
+        className="flex h-[250px] w-full flex-col items-center justify-center
+          gap-4 rounded-lg border-2 border-dashed border-gray-300 text-gray-400
+          dark:border-gray-800 dark:bg-gray-800/20 dark:text-gray-500"
         disabled={status === "executing"}
         onClick={() =>
           execute({

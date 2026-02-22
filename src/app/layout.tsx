@@ -2,7 +2,7 @@ import React, { Suspense } from "react"
 import { VercelToolbar } from "@vercel/toolbar/next"
 import { Agentation } from "agentation"
 import { type Metadata, type Viewport } from "next"
-import { Inter, Sora } from "next/font/google"
+import { Fredoka, Inter, Quicksand } from "next/font/google"
 
 import "../../styles/globals.css"
 import "../../styles/gradient-blur.css"
@@ -41,10 +41,16 @@ const inter = Inter({
   variable: "--font-inter"
 })
 
-const sora = Sora({
+const quicksand = Quicksand({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-sora"
+  variable: "--font-quicksand"
+})
+
+const fredoka = Fredoka({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-fredoka"
 })
 
 export default function RootLayout({
@@ -55,7 +61,8 @@ export default function RootLayout({
   const shouldInjectToolbar = process.env.NODE_ENV === "development"
   return (
     <html
-      className={`${inter.variable} ${sora.variable} scroll-smooth antialiased`}
+      className={`${inter.variable} ${quicksand.variable} ${fredoka.variable}
+        scroll-smooth antialiased`}
       suppressHydrationWarning
       lang="es-MX"
     >

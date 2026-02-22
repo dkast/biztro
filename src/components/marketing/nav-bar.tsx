@@ -31,32 +31,44 @@ export default function Navbar({
     >
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-white/50 backdrop-blur-sm dark:bg-black/5"
+        className="pointer-events-none absolute inset-0 bg-white/50
+          backdrop-blur-sm dark:bg-black/5"
         style={{ opacity }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       />
-      <div className="absolute inset-0 mx-auto flex w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div
+        className="absolute inset-0 mx-auto flex w-full max-w-7xl items-center
+          justify-between px-4 sm:px-6 lg:px-8"
+      >
         <Link href="/" className="flex flex-row items-center gap-2">
           <Image src="/logo-bistro.svg" alt="Logo" width={32} height={32} />
-          <span className="font-medium">Biztro</span>
+          <span
+            className="font-display text-xl font-medium text-orange-950
+              dark:text-orange-50"
+          >
+            Biztro
+          </span>
         </Link>
         {showLinks && (
           <nav className="hidden space-x-6 text-sm md:flex">
             <Link
               href="#how-it-works"
-              className="text-gray-800 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-indigo-400"
+              className="text-orange-950/80 hover:text-orange-600
+                dark:text-orange-100/80 dark:hover:text-orange-400"
             >
               Cómo Funciona
             </Link>
             <Link
               href="#benefits"
-              className="text-gray-800 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-indigo-400"
+              className="text-orange-950/80 hover:text-orange-600
+                dark:text-orange-100/80 dark:hover:text-orange-400"
             >
               Beneficios
             </Link>
             <Link
               href="#pricing"
-              className="text-gray-800 hover:text-indigo-700 dark:text-gray-300 dark:hover:text-indigo-400"
+              className="text-orange-950/80 hover:text-orange-600
+                dark:text-orange-100/80 dark:hover:text-orange-400"
             >
               Precios
             </Link>
@@ -67,7 +79,8 @@ export default function Navbar({
           <Button
             variant="default"
             size="xs"
-            className="rounded-full px-3 shadow-xs"
+            className="rounded-full bg-orange-500 px-3 text-white shadow-xs
+              hover:bg-orange-400"
           >
             Acceder a mi cuenta
           </Button>

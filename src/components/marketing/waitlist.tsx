@@ -55,7 +55,7 @@ export default function Waitlist() {
         {!isSubmitted ? (
           <div
             className="flex flex-row items-center justify-center gap-x-2
-              rounded-full bg-gray-800 p-1 shadow-lg"
+              rounded-full bg-orange-950 p-1 shadow-lg dark:bg-gray-800"
           >
             <Controller
               name="email"
@@ -65,8 +65,8 @@ export default function Waitlist() {
                   <Input
                     type="email"
                     placeholder="nombre@correo.com"
-                    className="placeholder:text-gray-340 h-8 max-w-[300px]
-                      rounded-full border-0 bg-transparent text-white
+                    className="h-8 max-w-[300px] rounded-full border-0
+                      bg-transparent text-white placeholder:text-orange-100/50
                       focus-visible:ring-0 focus-visible:ring-offset-0
                       dark:bg-transparent"
                     {...field}
@@ -78,9 +78,9 @@ export default function Waitlist() {
               disabled={status === "executing"}
               type="submit"
               size="xs"
-              className="bg-brand-500 focus:ring-opacity-50 rounded-full px-4
+              className="focus:ring-opacity-50 rounded-full bg-orange-500 px-4
                 py-2 text-white transition-colors duration-200 ease-in-out
-                hover:bg-orange-500 focus:ring-2 focus:ring-orange-500
+                hover:bg-orange-400 focus:ring-2 focus:ring-orange-500
                 focus:outline-hidden"
             >
               {status === "executing" && (
@@ -96,9 +96,16 @@ export default function Waitlist() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <Alert className="max-w-xl space-y-2">
-              <AlertTitle>¡Gracias por tu interés!</AlertTitle>
-              <AlertDescription className="text-gray-600 dark:text-gray-400">
+            <Alert
+              className="max-w-xl space-y-2 border-orange-200 bg-orange-50
+                dark:border-orange-900/30 dark:bg-orange-950/20"
+            >
+              <AlertTitle className="text-orange-950 dark:text-orange-50">
+                ¡Gracias por tu interés!
+              </AlertTitle>
+              <AlertDescription
+                className="text-orange-950/70 dark:text-orange-100/70"
+              >
                 Te enviaremos un correo electrónico cuando estemos listos para
                 que puedas probar la aplicación.
               </AlertDescription>

@@ -1,9 +1,9 @@
 "use server"
 
 import type { Organization } from "@/generated/prisma-client/client"
+import * as Sentry from "@sentry/nextjs"
 import lz from "lzutf8"
 import { revalidatePath, updateTag } from "next/cache"
-import * as Sentry from "@sentry/nextjs"
 import { z } from "zod/v4"
 
 import prisma from "@/lib/prisma"

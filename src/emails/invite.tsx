@@ -40,7 +40,10 @@ export const InviteUserEmail = ({
       <Preview>{previewText}</Preview>
       <Tailwind>
         <Body className="mx-auto my-auto bg-white px-2 font-sans">
-          <Container className="mx-auto my-[40px] max-w-[465px] rounded-sm border border-solid border-[#eaeaea] p-[20px]">
+          <Container
+            className="mx-auto my-[40px] max-w-[465px] rounded-sm border
+              border-solid border-[#eaeaea] p-[20px]"
+          >
             <Section className="mt-[32px]">
               <Img
                 src={`${baseUrl}/logo.png`}
@@ -50,7 +53,10 @@ export const InviteUserEmail = ({
                 className="mx-auto my-0"
               />
             </Section>
-            <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
+            <Heading
+              className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal
+                text-black"
+            >
               Unete a <strong>{teamName}</strong> en <strong>Biztro</strong>
             </Heading>
             <Text className="text-[14px] leading-[24px] text-black">
@@ -69,7 +75,8 @@ export const InviteUserEmail = ({
             </Text>
             <Section className="mt-[32px] mb-[32px] text-center">
               <Button
-                className="rounded-sm bg-[#171717] px-5 py-3 text-center text-[12px] font-semibold text-white no-underline"
+                className="rounded-sm bg-[#171717] px-5 py-3 text-center
+                  text-[12px] font-semibold text-white no-underline"
                 href={inviteLink}
               >
                 Unirse al equipo
@@ -81,7 +88,10 @@ export const InviteUserEmail = ({
                 {inviteLink}
               </Link>
             </Text>
-            <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
+            <Hr
+              className="mx-0 my-[26px] w-full border border-solid
+                border-[#eaeaea]"
+            />
             <Text className="text-[12px] leading-[24px] text-[#666666]">
               Esta invitacion esta destinada para{" "}
               <span className="text-black">{username}</span>. Si no estabas

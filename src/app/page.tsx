@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   cacheLife("weeks")
   return (
-    <div className="relative dark:bg-gray-950">
+    <div className="font-quicksand relative bg-[#fffdfa] dark:bg-gray-950">
       <Navbar showLinks />
       <Hero />
       <EditorPreview />

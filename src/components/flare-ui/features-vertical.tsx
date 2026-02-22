@@ -41,7 +41,8 @@ const AccordionTrigger = ({
   <Accordion.Header className="flex">
     <Accordion.Trigger
       className={cn(
-        "group flex flex-1 cursor-pointer items-center justify-between px-5 text-[15px] leading-none outline-hidden",
+        `group flex flex-1 cursor-pointer items-center justify-between px-5
+        text-[15px] leading-none outline-hidden`,
         className
       )}
       {...props}
@@ -64,7 +65,8 @@ const AccordionContent = ({
 }: AccordionContentProps) => (
   <Accordion.Content
     className={cn(
-      "data-[state=closed]:animate-slide-up data-[state=open]:animate-slide-down overflow-hidden text-[15px] font-medium",
+      `data-[state=closed]:animate-slide-up data-[state=open]:animate-slide-down
+      overflow-hidden text-[15px] font-medium`,
       className
     )}
     {...props}
@@ -179,7 +181,10 @@ export default function Features({
     <section ref={ref} id="features">
       <div className="container">
         <div className="mx-auto max-w-6xl">
-          <div className="mx-auto my-12 grid h-full items-center gap-10 lg:grid-cols-2">
+          <div
+            className="mx-auto my-12 grid h-full items-center gap-10
+              lg:grid-cols-2"
+          >
             <div
               className={`order-1 hidden lg:order-0 lg:flex ${
                 ltr ? "lg:order-2 lg:justify-end" : "justify-start"
@@ -202,16 +207,20 @@ export default function Features({
                   >
                     {linePosition === "left" || linePosition === "right" ? (
                       <div
-                        className={`absolute top-0 bottom-0 h-full w-0.5 overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30 ${
-                          linePosition === "right"
-                            ? "right-0 left-auto"
-                            : "right-auto left-0"
-                        }`}
+                        className={`absolute top-0 bottom-0 h-full w-0.5
+                          overflow-hidden rounded-lg bg-neutral-300/50
+                          dark:bg-neutral-300/30 ${
+                            linePosition === "right"
+                              ? "right-0 left-auto"
+                              : "right-auto left-0"
+                          }`}
                       >
                         <div
                           className={`absolute top-0 left-0 w-full ${
                             currentIndex === index ? "h-full" : "h-0"
-                          } bg-primary origin-top transition-all ease-linear dark:bg-white`}
+                          }
+                            bg-primary origin-top transition-all ease-linear
+                            dark:bg-white`}
                           style={{
                             transitionDuration:
                               currentIndex === index
@@ -224,16 +233,20 @@ export default function Features({
 
                     {linePosition === "top" || linePosition === "bottom" ? (
                       <div
-                        className={`absolute right-0 left-0 h-0.5 w-full overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30 ${
-                          linePosition === "bottom" ? "bottom-0" : "top-0"
-                        }`}
+                        className={`absolute right-0 left-0 h-0.5 w-full
+                          overflow-hidden rounded-lg bg-neutral-300/50
+                          dark:bg-neutral-300/30 ${
+                            linePosition === "bottom" ? "bottom-0" : "top-0"
+                          }`}
                       >
                         <div
                           className={`absolute left-0 ${
                             linePosition === "bottom" ? "bottom-0" : "top-0"
-                          } h-full ${
-                            currentIndex === index ? "w-full" : "w-0"
-                          } bg-primary origin-left transition-all ease-linear dark:bg-white`}
+                          }
+                            h-full ${
+                              currentIndex === index ? "w-full" : "w-0"
+                            } bg-primary origin-left transition-all ease-linear
+                            dark:bg-white`}
                           style={{
                             transitionDuration:
                               currentIndex === index
@@ -245,16 +258,25 @@ export default function Features({
                     ) : null}
 
                     <div className="relative flex items-center">
-                      <div className="item-box mx-2 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-500/10 sm:mx-6">
+                      <div
+                        className="item-box mx-2 flex h-12 w-12 shrink-0
+                          items-center justify-center rounded-full
+                          bg-orange-500/10 sm:mx-6"
+                      >
                         {item.icon}
                       </div>
 
                       <div className="flex flex-col gap-3">
-                        <AccordionTrigger className="font-display pl-0 text-xl font-medium">
+                        <AccordionTrigger
+                          className="font-display pl-0 text-xl font-medium"
+                        >
                           {item.title}
                         </AccordionTrigger>
 
-                        <AccordionTrigger className="justify-start pl-0 text-left leading-6 text-balance text-gray-50">
+                        <AccordionTrigger
+                          className="justify-start pl-0 text-left leading-6
+                            text-balance text-gray-50"
+                        >
                           {item.content}
                         </AccordionTrigger>
                       </div>
@@ -266,14 +288,16 @@ export default function Features({
             <div
               className={`h-[350px] min-h-[200px] w-auto ${
                 ltr && "lg:order-1"
-              }`}
+                }`}
             >
               {data[currentIndex]?.image ? (
                 <motion.img
                   key={currentIndex}
                   src={data[currentIndex].image}
                   alt="feature"
-                  className="aspect-auto h-full w-full rounded-xl border border-neutral-300/50 object-cover object-left-top p-1 shadow-lg"
+                  className="aspect-auto h-full w-full rounded-xl border
+                    border-neutral-300/50 object-cover object-left-top p-1
+                    shadow-lg"
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
@@ -283,19 +307,28 @@ export default function Features({
                 <video
                   preload="auto"
                   src={data[currentIndex].video}
-                  className="aspect-auto h-full w-full rounded-lg object-cover shadow-lg"
+                  className="aspect-auto h-full w-full rounded-lg object-cover
+                    shadow-lg"
                   autoPlay
                   loop
                   muted
                 />
               ) : (
-                <div className="aspect-auto h-full w-full rounded-xl border border-neutral-300/50 bg-gray-200 p-1"></div>
+                <div
+                  className="aspect-auto h-full w-full rounded-xl border
+                    border-neutral-300/50 bg-gray-200 p-1"
+                ></div>
               )}
             </div>
 
             <ul
               ref={carouselRef}
-              className="flex h-full snap-x snap-mandatory flex-nowrap overflow-x-auto [mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] py-10 [-ms-overflow-style:none] [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden"
+              className="flex h-full snap-x snap-mandatory flex-nowrap
+                overflow-x-auto
+                [mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)]
+                py-10 [-ms-overflow-style:none]
+                [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)]
+                [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden"
               style={{
                 padding: "50px calc(50%)"
               }}
@@ -303,17 +336,23 @@ export default function Features({
               {data.map((item, index) => (
                 <div
                   key={item.id}
-                  className="card relative mr-8 grid h-full max-w-60 shrink-0 items-start justify-center py-4 last:mr-0"
+                  className="card relative mr-8 grid h-full max-w-60 shrink-0
+                    items-start justify-center py-4 last:mr-0"
                   onClick={() => setCurrentIndex(index)}
                   style={{
                     scrollSnapAlign: "center"
                   }}
                 >
-                  <div className="absolute top-0 right-auto bottom-0 left-0 h-0.5 w-full overflow-hidden rounded-lg bg-neutral-300/50 dark:bg-neutral-300/30">
+                  <div
+                    className="absolute top-0 right-auto bottom-0 left-0 h-0.5
+                      w-full overflow-hidden rounded-lg bg-neutral-300/50
+                      dark:bg-neutral-300/30"
+                  >
                     <div
                       className={`absolute top-0 left-0 h-full ${
                         currentIndex === index ? "w-full" : "w-0"
-                      } bg-primary origin-top transition-all ease-linear`}
+                      } bg-primary
+                      origin-top transition-all ease-linear`}
                       style={{
                         transitionDuration:
                           currentIndex === index ? `${collapseDelay}ms` : "0s"
