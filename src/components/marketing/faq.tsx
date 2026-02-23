@@ -45,7 +45,7 @@ export default function Faq() {
       >
         <h2
           className="font-display text-3xl tracking-tight text-balance
-            text-orange-950 sm:text-4xl dark:text-orange-50"
+            text-taupe-950 sm:text-4xl dark:text-taupe-50"
         >
           Preguntas y Respuestas
         </h2>
@@ -55,18 +55,16 @@ export default function Faq() {
               <AccordionItem
                 key={index}
                 value={`faq-${index}`}
-                className="dark:border-orange-900/30"
+                className="dark:border-taupe-800/30"
               >
                 <AccordionTrigger
-                  className="text-start text-orange-950 sm:text-lg
-                    dark:text-orange-50 [&>svg]:text-orange-500
-                    sm:[&>svg]:size-5"
+                  className="text-start text-taupe-950 sm:text-lg
+                    dark:text-taupe-50 [&>svg]:text-taupe-500 sm:[&>svg]:size-5"
                 >
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent
-                  className="text-base text-orange-950/70
-                    dark:text-orange-100/70"
+                  className="text-base text-taupe-700 dark:text-taupe-300"
                 >
                   {faq.answer}
                 </AccordionContent>
@@ -75,11 +73,11 @@ export default function Faq() {
           </Accordion>
         </div>
         <div className="col-span-full">
-          <p className="text-center text-orange-950/70 dark:text-orange-100/70">
+          <p className="text-center text-taupe-700 dark:text-taupe-300">
             ¿Tienes más preguntas? Envíanos un correo a{" "}
             <a
               href="mailto:contacto@biztro.co"
-              className="text-orange-500 hover:underline"
+              className="text-taupe-600 hover:underline"
             >
               contacto@biztro.co
             </a>

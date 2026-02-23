@@ -63,11 +63,10 @@ export default function Benefits() {
           sm:inset-x-4 sm:w-auto sm:rounded-3xl"
         style={{
           background: `
-          radial-gradient(ellipse 120% 80% at 70% 20%, rgba(254, 215, 170, 0.3), transparent 50%),
-          radial-gradient(ellipse 100% 60% at 30% 10%, rgba(253, 186, 116, 0.2), transparent 60%),
-          radial-gradient(ellipse 90% 70% at 50% 0%, rgba(251, 146, 60, 0.15), transparent 65%),
-          radial-gradient(ellipse 110% 50% at 80% 30%, rgba(254, 240, 138, 0.2), transparent 40%),
-          #fffdfa
+          radial-gradient(ellipse 120% 80% at 70% 20%, oklch(92.2% 0.005 34.3 / 0.3), transparent 50%),
+          radial-gradient(ellipse 100% 60% at 30% 10%, oklch(86.8% 0.007 39.5 / 0.2), transparent 60%),
+          radial-gradient(ellipse 90% 70% at 50% 0%, oklch(71.4% 0.014 41.2 / 0.15), transparent 65%),
+          oklch(96% 0.002 17.2)
         `
         }}
       />
@@ -105,30 +104,30 @@ const BenefitItem = ({
       <div className="mb-2">
         {Icon && (
           <Icon
-            className="size-10 rounded-xl bg-orange-100 p-2 text-orange-600
-              dark:bg-orange-900/50 dark:text-orange-400"
+            className="size-10 rounded-xl bg-taupe-200 p-2 text-taupe-700
+              dark:bg-taupe-800/50 dark:text-taupe-300"
           />
         )}
       </div>
       <h4
-        className="space-x-1 text-lg font-semibold text-orange-950
-          dark:text-orange-400"
+        className="space-x-1 text-lg font-semibold text-taupe-950
+          dark:text-taupe-100"
       >
         {title}
         {soon && (
           <div>
             <Badge
               variant="outline"
-              className="border-orange-200 bg-orange-50 tracking-wide
-                text-orange-600 uppercase dark:border-orange-900/50
-                dark:bg-orange-900/20 dark:text-orange-400"
+              className="border-taupe-200 bg-taupe-100 tracking-wide
+                text-taupe-600 uppercase dark:border-taupe-700/50
+                dark:bg-taupe-800/20 dark:text-taupe-400"
             >
               Pronto
             </Badge>
           </div>
         )}
       </h4>
-      <span className="text-balance text-orange-950/70 dark:text-gray-50">
+      <span className="text-balance text-taupe-700 dark:text-taupe-300">
         {description}
       </span>
     </div>

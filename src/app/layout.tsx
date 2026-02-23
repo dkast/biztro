@@ -2,7 +2,7 @@ import React, { Suspense } from "react"
 import { VercelToolbar } from "@vercel/toolbar/next"
 import { Agentation } from "agentation"
 import { type Metadata, type Viewport } from "next"
-import { Fredoka, Inter, Quicksand } from "next/font/google"
+import { Inter, Mona_Sans } from "next/font/google"
 
 import "../../styles/globals.css"
 import "../../styles/gradient-blur.css"
@@ -35,22 +35,17 @@ export const viewport: Viewport = {
   userScalable: false
 }
 
+const monaSans = Mona_Sans({
+  subsets: ["latin"],
+  variable: "--font-mona-sans",
+  display: "swap",
+  axes: ["wdth"]
+})
+
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter"
-})
-
-const quicksand = Quicksand({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-quicksand"
-})
-
-const fredoka = Fredoka({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-fredoka"
 })
 
 export default function RootLayout({
@@ -61,13 +56,16 @@ export default function RootLayout({
   const shouldInjectToolbar = process.env.NODE_ENV === "development"
   return (
     <html
-      className={`${inter.variable} ${quicksand.variable} ${fredoka.variable}
-        scroll-smooth antialiased`}
+      className={`${monaSans.variable} ${inter.variable} scroll-smooth
+        antialiased`}
       suppressHydrationWarning
       lang="es-MX"
     >
       {/* <AxiomWebVitals /> */}
-      <body className="bg-white text-gray-950 dark:bg-gray-950 dark:text-white">
+      <body
+        className="bg-taupe-100 text-taupe-950 dark:bg-taupe-950
+          dark:text-taupe-50"
+      >
         <Suspense
           fallback={
             <div className="flex min-h-dvh items-center justify-center">

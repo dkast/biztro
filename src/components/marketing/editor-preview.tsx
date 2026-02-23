@@ -51,9 +51,9 @@ export default function EditorPreview() {
           after:z-10 sm:mt-10 sm:rounded-xl`,
           // isMobile
           isMobile
-            ? `after:[background:linear-gradient(to_top,#fff_10%,transparent)]
+            ? `after:[background:linear-gradient(to_top,#f3f1f1_10%,transparent)]
               dark:after:[background:linear-gradient(to_top,#0a0a0a_10%,transparent)]`
-            : `after:[background:linear-gradient(to_top,#fff_0%,transparent_50%)]
+            : `after:[background:linear-gradient(to_top,#f3f1f1_0%,transparent_50%)]
               dark:after:[background:linear-gradient(to_top,#0a0a0a_0%,transparent)]`
         )}
       >
@@ -73,7 +73,7 @@ export default function EditorPreview() {
         <Image
           src={editorLight}
           className="relative block h-full w-full rounded-md border
-            border-orange-300 sm:rounded-xl dark:hidden"
+            border-taupe-300 sm:rounded-xl dark:hidden"
           alt="Imagen del editor de menús en web"
         />
         <Image

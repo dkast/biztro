@@ -3,6 +3,10 @@
 /* Text shadow utilities */
 @source inline("text-shadow-md text-shadow-lg/30");
 
+@theme {
+  --font-display--font-variation-settings: "wdth" 112.5;
+}
+
 /*
   ---break---
 */
@@ -23,6 +27,16 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-taupe-100);
+
+    @variant dark {
+      background-color: var(--color-taupe-950);
+    }
+  }
+
   *,
   ::after,
   ::before,

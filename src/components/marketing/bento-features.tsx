@@ -29,7 +29,7 @@ const features = [
       </div>
     ),
     className:
-      "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3 bg-orange-500 dark:bg-orange-500 dark:text-orange-50 text-orange-50"
+      "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3 bg-taupe-800 dark:bg-taupe-800 dark:text-taupe-50 text-taupe-50"
   },
   {
     Icon: MousePointerClick,
@@ -46,12 +46,12 @@ const features = [
       >
         <div className="relative flex items-center justify-center">
           <span
-            className="absolute inline-flex h-8 w-22 rounded-full bg-orange-400
+            className="absolute inline-flex h-8 w-22 rounded-full bg-taupe-400
               group-hover:animate-ping"
           ></span>
           <button
-            className="relative inline-flex rounded-full bg-orange-500 px-4 py-2
-              font-medium text-orange-50 shadow-lg shadow-orange-400/30"
+            className="relative inline-flex rounded-full bg-green-600 px-4 py-2
+              font-medium text-green-50 shadow-lg shadow-green-600/30"
           >
             Publicar Menú
           </button>
@@ -59,7 +59,7 @@ const features = [
       </div>
     ),
     className:
-      "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2 text-orange-50 bg-orange-950 dark:bg-orange-900"
+      "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2 text-taupe-50 bg-taupe-950 dark:bg-taupe-900"
   },
   {
     Icon: QrCodeIcon,
@@ -75,8 +75,7 @@ const features = [
             pt-8 transition-all duration-300 ease-out group-hover:scale-95"
         >
           <div
-            className="overflow-hidden rounded-lg shadow-xl
-              shadow-orange-900/50"
+            className="overflow-hidden rounded-lg shadow-xl shadow-taupe-900/50"
           >
             <div className="z-999">
               <QRCode
@@ -93,7 +92,7 @@ const features = [
       </>
     ),
     className:
-      "lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4 bg-orange-300 dark:bg-orange-600 dark:text-orange-50 text-orange-950"
+      "lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4 bg-taupe-200 dark:bg-taupe-700 dark:text-taupe-50 text-taupe-950"
   }
 ]
 
@@ -106,13 +105,13 @@ export default function FeaturesBento() {
       >
         <h2
           className="font-display text-3xl tracking-tight text-balance
-            text-orange-950 sm:text-4xl md:text-5xl dark:text-orange-50"
+            text-taupe-950 sm:text-4xl md:text-5xl dark:text-taupe-50"
         >
           Publica tu menú en Internet, fácil y rápido
         </h2>
         <p
           className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8
-            text-pretty text-orange-950/70 dark:text-orange-100/70"
+            text-pretty text-taupe-700 dark:text-taupe-300"
         >
           Sin necesidad de conocimientos técnicos, crea tu menú utilizando una
           interfaz intuitiva y amigable, solo necesitas tu navegador web.

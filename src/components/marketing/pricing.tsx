@@ -88,25 +88,25 @@ export default function Pricing() {
           className="w-fit"
         >
           <TabsList
-            className="grid w-full grid-cols-2 rounded-full bg-orange-100/60
-              dark:bg-orange-900/20"
+            className="grid w-full grid-cols-2 rounded-full bg-taupe-200/60
+              dark:bg-taupe-800/30"
           >
             <TabsTrigger
               value="monthly"
-              className="rounded-full data-[state=active]:bg-orange-500
+              className="rounded-full data-[state=active]:bg-taupe-950
                 data-[state=active]:text-white"
             >
               Mensual
             </TabsTrigger>
             <TabsTrigger
               value="yearly"
-              className="rounded-full data-[state=active]:bg-orange-500
+              className="rounded-full data-[state=active]:bg-taupe-950
                 data-[state=active]:text-white"
             >
               Anual{" "}
               <span
-                className="ml-1 text-orange-600 in-focus:text-white
-                  dark:text-orange-400"
+                className="ml-1 text-taupe-600 in-focus:text-white
+                  dark:text-taupe-400"
               >
                 (−20%)
               </span>
@@ -116,7 +116,7 @@ export default function Pricing() {
       </div>
       <p
         className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8
-          text-pretty text-orange-950/70 dark:text-orange-100/70"
+          text-pretty text-taupe-700 dark:text-taupe-300"
       >
         Inicia con el plan gratuito, o desbloquea productos ilimitados y
         características con el plan Pro.
@@ -130,9 +130,9 @@ export default function Pricing() {
             key={tier.id}
             className={cn(
               tier.featured
-                ? "relative bg-orange-950 shadow-2xl/30 dark:bg-orange-900"
-                : `bg-white/60 ring-orange-200 sm:mx-8 lg:mx-0
-                  dark:bg-gray-900/60 dark:ring-orange-900/30`,
+                ? "relative bg-taupe-950 shadow-2xl/30 dark:bg-taupe-900"
+                : `bg-taupe-50/60 ring-taupe-200 sm:mx-8 lg:mx-0
+                  dark:bg-taupe-900/20 dark:ring-taupe-700/30`,
               tier.featured
                 ? ""
                 : tierIdx === 0
@@ -146,8 +146,8 @@ export default function Pricing() {
               id={tier.id}
               className={cn(
                 tier.featured
-                  ? "text-orange-400"
-                  : "text-orange-950 dark:text-orange-50",
+                  ? "text-taupe-300"
+                  : "text-taupe-950 dark:text-taupe-50",
                 "text-base leading-7 font-semibold"
               )}
             >
@@ -158,7 +158,7 @@ export default function Pricing() {
                 className={cn(
                   tier.featured
                     ? "text-white"
-                    : "text-orange-950 dark:text-orange-50",
+                    : "text-taupe-950 dark:text-taupe-50",
                   "text-5xl font-bold tracking-tight"
                 )}
               >
@@ -169,8 +169,8 @@ export default function Pricing() {
               <span
                 className={cn(
                   tier.featured
-                    ? "text-orange-400"
-                    : "text-orange-950/60 dark:text-orange-100/60",
+                    ? "text-taupe-400"
+                    : "text-taupe-600 dark:text-taupe-300",
                   "text-base"
                 )}
               >
@@ -180,8 +180,8 @@ export default function Pricing() {
             <div
               className={cn(
                 tier.featured
-                  ? "text-orange-100/80"
-                  : "text-orange-950/80 dark:text-orange-100/80",
+                  ? "text-taupe-100/80"
+                  : "text-taupe-700 dark:text-taupe-300",
                 "mt-6 text-base leading-7"
               )}
             >
@@ -190,8 +190,8 @@ export default function Pricing() {
             <ul
               className={cn(
                 tier.featured
-                  ? "text-orange-100/80"
-                  : "text-orange-950/80 dark:text-orange-100/80",
+                  ? "text-taupe-100/80"
+                  : "text-taupe-700 dark:text-taupe-300",
                 "mt-8 space-y-3 text-sm leading-6 sm:mt-10"
               )}
             >
@@ -201,8 +201,8 @@ export default function Pricing() {
                     aria-hidden="true"
                     className={cn(
                       tier.featured
-                        ? "text-orange-400"
-                        : "text-orange-600 dark:text-orange-400",
+                        ? "text-taupe-300"
+                        : "text-taupe-500 dark:text-taupe-400",
                       "h-6 w-5 flex-none"
                     )}
                   />
@@ -215,12 +215,12 @@ export default function Pricing() {
               aria-describedby={tier.id}
               className={cn(
                 tier.featured
-                  ? `bg-orange-500 text-white shadow-xs hover:bg-orange-400
-                    focus-visible:outline-orange-500`
-                  : `text-orange-600 ring-1 ring-orange-200 ring-inset
-                    hover:ring-orange-300 focus-visible:outline-orange-600
-                    dark:text-orange-400 dark:ring-orange-900/50
-                    dark:hover:ring-orange-900`,
+                  ? `bg-taupe-100 text-taupe-950 shadow-xs hover:bg-taupe-200
+                    focus-visible:outline-taupe-100`
+                  : `text-taupe-700 ring-1 ring-taupe-300 ring-inset
+                    hover:ring-taupe-400 focus-visible:outline-taupe-600
+                    dark:text-taupe-300 dark:ring-taupe-700/50
+                    dark:hover:ring-taupe-600`,
                 `mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm
                 font-semibold focus-visible:outline focus-visible:outline-2
                 focus-visible:outline-offset-2 sm:mt-10`

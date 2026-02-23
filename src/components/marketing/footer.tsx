@@ -25,11 +25,8 @@ export default async function Footer() {
             height={24}
             className="opacity-30 dark:invert"
           />
-          <p
-            className="text-sm font-medium text-orange-950/50
-              dark:text-orange-100/50"
-          >
-            <span className="hidden sm:inline">Biztro</span> &copy;{" "}
+          <p className="text-sm font-medium text-taupe-500 dark:text-taupe-400">
+            <span className="hidden sm:inline">biztro</span> &copy;{" "}
             {new Date().getFullYear()}
           </p>
         </div>
@@ -37,20 +34,20 @@ export default async function Footer() {
         <ul className="flex items-center justify-center gap-x-5 sm:gap-x-10">
           <a
             href="mailto:contacto@biztro.co"
-            className="text-[15px]/normal font-medium text-orange-950/50
-              transition-all duration-100 ease-linear hover:text-orange-950
-              hover:underline hover:underline-offset-4 dark:font-medium
-              dark:text-orange-100/50 dark:hover:text-orange-50"
+            className="text-[15px]/normal font-medium text-taupe-500
+              transition-all duration-100 ease-linear hover:text-taupe-950
+              hover:underline hover:underline-offset-4 dark:text-taupe-400
+              dark:hover:text-taupe-50"
           >
             Contacto
           </a>
           {links.map((link, index) => (
             <li
               key={index}
-              className="text-[15px]/normal font-medium text-orange-950/50
-                transition-all duration-100 ease-linear hover:text-orange-950
-                hover:underline hover:underline-offset-4 dark:font-medium
-                dark:text-orange-100/50 dark:hover:text-orange-50"
+              className="text-[15px]/normal font-medium text-taupe-500
+                transition-all duration-100 ease-linear hover:text-taupe-950
+                hover:underline hover:underline-offset-4 dark:text-taupe-400
+                dark:hover:text-taupe-50"
             >
               <a href={link.url}>{link.text}</a>
             </li>

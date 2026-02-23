@@ -33,13 +33,13 @@ export default function Hero() {
   return (
     <section id="hero">
       <div
-        className="relative h-full overflow-hidden bg-[#fffdfa] py-14
-          dark:bg-gray-950"
+        className="relative h-full overflow-hidden bg-taupe-100 py-14
+          dark:bg-taupe-950"
       >
         <div
           className="absolute inset-0
-            bg-[radial-gradient(circle_at_top_right,#fef08a_0%,transparent_40%),radial-gradient(circle_at_top_left,#fed7aa_0%,transparent_40%),radial-gradient(circle_at_bottom,#fbcfe8_0%,transparent_50%)]
-            opacity-60 dark:opacity-20"
+            bg-[radial-gradient(circle_at_top_right,oklch(92.2%_0.005_34.3)_0%,transparent_40%),radial-gradient(circle_at_top_left,oklch(86.8%_0.007_39.5)_0%,transparent_30%)]
+            opacity-70 dark:opacity-10"
         />
         <div className="relative z-10 container flex flex-col">
           <div className="mt-20 grid grid-cols-1">
@@ -49,9 +49,11 @@ export default function Hero() {
                 <motion.div
                   className={cn(
                     `group relative col-start-1 row-start-1 cursor-pointer
-                    rounded-full border border-orange-900/10 bg-white/50
-                    transition-all ease-in hover:bg-orange-50
-                    dark:border-white/5 dark:bg-gray-900 dark:hover:bg-gray-800`
+                    rounded-full border border-taupe-300/80 bg-taupe-50/80
+                    shadow-sm shadow-taupe-200 transition-all ease-in
+                    hover:border-taupe-400 hover:bg-taupe-100
+                    dark:border-taupe-600/30 dark:bg-taupe-900/40
+                    dark:hover:bg-taupe-900/60`
                   )}
                   animate={fadeInInView ? "animate" : "hidden"}
                   variants={fadeUpVariants}
@@ -64,9 +66,8 @@ export default function Hero() {
                 >
                   <AnimatedShinyText
                     className="inset-0 inline-flex items-center justify-center
-                      px-4 py-1 text-xs transition ease-out
-                      hover:text-orange-900 hover:duration-300 sm:text-sm
-                      dark:hover:text-orange-100"
+                      px-4 py-1 text-xs transition ease-out hover:text-taupe-900
+                      hover:duration-300 sm:text-sm dark:hover:text-taupe-100"
                   >
                     📣 Biztro en versión beta
                     <ArrowRightIcon
@@ -84,11 +85,11 @@ export default function Hero() {
               </div>
               <motion.h1
                 ref={fadeInRef}
-                className="font-display bg-linear-to-br from-orange-950 from-30%
-                  to-orange-950/60 bg-clip-text py-6 text-5xl leading-none
-                  font-medium tracking-tighter text-balance text-transparent
-                  sm:text-6xl md:text-7xl lg:text-8xl dark:from-orange-50
-                  dark:to-orange-50/40"
+                className="font-display bg-linear-to-br from-taupe-950 from-30%
+                  to-taupe-800/70 bg-clip-text px-2 py-6 pb-8 text-5xl
+                  leading-[1.1] font-semibold tracking-tight text-transparent
+                  sm:text-5xl md:text-6xl lg:text-7xl dark:from-taupe-50
+                  dark:to-taupe-300/60"
                 animate={fadeInInView ? "animate" : "initial"}
                 variants={fadeUpVariants}
                 initial={false}
@@ -104,8 +105,8 @@ export default function Hero() {
               </motion.h1>
 
               <motion.p
-                className="text-lg tracking-tight text-balance
-                  text-orange-950/70 md:text-xl dark:text-orange-100/70"
+                className="text-lg tracking-tight text-balance text-taupe-700
+                  md:text-xl dark:text-taupe-300"
                 animate={fadeInInView ? "animate" : "initial"}
                 variants={fadeUpVariants}
                 initial={false}
@@ -117,7 +118,6 @@ export default function Hero() {
                 }}
               >
                 Crea, actualiza y comparte el menú de tu restaurante en minutos.
-                Diseñado para dueños de negocios, no para programadores.
               </motion.p>
 
               <motion.div
@@ -132,7 +132,7 @@ export default function Hero() {
                   type: "spring"
                 }}
               >
-                <span className="text-orange-950/60 dark:text-orange-100/60">
+                <span className="text-taupe-500 dark:text-taupe-400">
                   Únete a nuestra lista de espera
                 </span>
                 <Waitlist />

@@ -55,7 +55,7 @@ export default function Waitlist() {
         {!isSubmitted ? (
           <div
             className="flex flex-row items-center justify-center gap-x-2
-              rounded-full bg-orange-950 p-1 shadow-lg dark:bg-gray-800"
+              rounded-full bg-taupe-950 p-1 shadow-lg dark:bg-taupe-800"
           >
             <Controller
               name="email"
@@ -66,7 +66,7 @@ export default function Waitlist() {
                     type="email"
                     placeholder="nombre@correo.com"
                     className="h-8 max-w-[300px] rounded-full border-0
-                      bg-transparent text-white placeholder:text-orange-100/50
+                      bg-transparent text-white placeholder:text-taupe-400
                       focus-visible:ring-0 focus-visible:ring-offset-0
                       dark:bg-transparent"
                     {...field}
@@ -78,9 +78,9 @@ export default function Waitlist() {
               disabled={status === "executing"}
               type="submit"
               size="xs"
-              className="focus:ring-opacity-50 rounded-full bg-orange-500 px-4
+              className="focus:ring-opacity-50 rounded-full bg-orange-600 px-4
                 py-2 text-white transition-colors duration-200 ease-in-out
-                hover:bg-orange-400 focus:ring-2 focus:ring-orange-500
+                hover:bg-orange-500 focus:ring-2 focus:ring-orange-500
                 focus:outline-hidden"
             >
               {status === "executing" && (
@@ -97,15 +97,13 @@ export default function Waitlist() {
             animate={{ opacity: 1, y: 0 }}
           >
             <Alert
-              className="max-w-xl space-y-2 border-orange-200 bg-orange-50
-                dark:border-orange-900/30 dark:bg-orange-950/20"
+              className="max-w-xl space-y-2 border-taupe-200 bg-taupe-50
+                dark:border-taupe-700/30 dark:bg-taupe-900/20"
             >
-              <AlertTitle className="text-orange-950 dark:text-orange-50">
+              <AlertTitle className="text-taupe-950 dark:text-taupe-50">
                 ¡Gracias por tu interés!
               </AlertTitle>
-              <AlertDescription
-                className="text-orange-950/70 dark:text-orange-100/70"
-              >
+              <AlertDescription className="text-taupe-700 dark:text-taupe-300">
                 Te enviaremos un correo electrónico cuando estemos listos para
                 que puedas probar la aplicación.
               </AlertDescription>

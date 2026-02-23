@@ -35,9 +35,8 @@ const config = {
       }
     },
     fontFamily: {
-      display: ["var(--font-fredoka)"],
-      sans: ["var(--font-inter)", ...defaultTheme.fontFamily.sans],
-      quicksand: ["var(--font-quicksand)", ...defaultTheme.fontFamily.sans]
+      display: ["var(--font-mona-sans)", ...defaultTheme.fontFamily.sans],
+      sans: ["var(--font-inter)", ...defaultTheme.fontFamily.sans]
     },
     extend: {
       colors: {

@@ -53,14 +53,14 @@ export default function Component() {
       >
         <div>
           <h3
-            className="mb-4 text-lg font-semibold text-orange-950 sm:text-2xl
-              lg:text-3xl dark:text-orange-50"
+            className="mb-4 text-lg font-semibold text-taupe-950 sm:text-2xl
+              lg:text-3xl dark:text-taupe-50"
           >
             Genera y descarga tu código QR
           </h3>
           <div
-            className="flex flex-col gap-3 text-orange-950/70 sm:text-lg
-              dark:text-orange-100/70"
+            className="flex flex-col gap-3 text-taupe-700 sm:text-lg
+              dark:text-taupe-300"
           >
             <p>
               Desde el editor de Biztro, puedes descargar tu código QR.
@@ -69,7 +69,7 @@ export default function Component() {
             <p>
               Tus clientes podrán escanear el código QR con su teléfono móvil y
               acceder a tu menú digital.{" "}
-              <span className="text-orange-950 dark:text-orange-50">
+              <span className="text-taupe-950 dark:text-taupe-50">
                 Puedes compartir el enlace de tu menú en redes sociales
               </span>{" "}
               o en tu página web.
@@ -89,7 +89,7 @@ export default function Component() {
             className="absolute inset-0 z-0 hidden size-full sm:block"
             squareSize={4}
             gridGap={6}
-            color="#fb923c"
+            color="#a8927a"
             maxOpacity={0.2}
             flickerChance={0.05}
             height={500}
@@ -109,15 +109,15 @@ export default function Component() {
             />
           </Link>
           <span
-            className="z-10 flex gap-2 text-orange-950/70 text-shadow-white
-              dark:text-orange-100/70"
+            className="z-10 flex gap-2 text-taupe-700 text-shadow-white
+              dark:text-taupe-300"
           >
             Escanea para ver un{" "}
             <Link
               href="https://biztro.co/la-bella-italia"
               target="_blank"
-              className="text-orange-600 underline underline-offset-2
-                hover:text-orange-500 dark:text-orange-400"
+              className="text-taupe-600 underline underline-offset-2
+                hover:text-taupe-500 dark:text-taupe-400"
             >
               ejemplo
             </Link>
