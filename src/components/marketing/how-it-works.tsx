@@ -40,6 +40,9 @@ export default function Component() {
       id="how-it-works"
       className="mx-auto max-w-5xl px-4 pt-20 pb-8 sm:px-6 sm:py-32 sm:pb-28
         lg:max-w-7xl lg:px-8"
+      style={
+        { "--primary": "oklch(64.6% 0.222 41.116)" } as React.CSSProperties
+      }
     >
       <TitleSection
         eyebrow="Cómo funciona"

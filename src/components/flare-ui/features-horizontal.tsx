@@ -207,7 +207,7 @@ export default function Features({
                           className={`absolute top-0 left-0 w-full ${
                             currentIndex === index ? "h-full" : "h-0"
                           }
-                            origin-top bg-orange-600 transition-all ease-linear
+                            bg-primary origin-top transition-all ease-linear
                             dark:bg-white`}
                           style={{
                             transitionDuration:
@@ -233,8 +233,8 @@ export default function Features({
                           }
                             h-full ${
                               currentIndex === index ? "w-full" : "w-0"
-                            } origin-left bg-orange-600 transition-all
-                            ease-linear dark:bg-white`}
+                            } bg-primary origin-left transition-all ease-linear
+                            dark:bg-white`}
                           style={{
                             transitionDuration:
                               currentIndex === index
@@ -248,10 +248,10 @@ export default function Features({
                     <AccordionTrigger>
                       <div className="relative flex flex-col items-center">
                         <div
-                          className="item-box mx-2 flex size-16 shrink-0
-                            items-center justify-center rounded-full
-                            bg-orange-600 text-orange-50 ring-1
-                            ring-orange-400/20 ring-inset sm:mx-6"
+                          className="item-box bg-primary text-primary-foreground
+                            ring-primary/20 mx-2 flex size-16 shrink-0
+                            items-center justify-center rounded-full ring-1
+                            ring-inset sm:mx-6"
                         >
                           {item.icon}
                         </div>
