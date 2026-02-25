@@ -8,10 +8,12 @@ import {
   ChevronDown,
   Download,
   FileSpreadsheet,
+  FileText,
   Loader,
   Upload
 } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
+import Link from "next/link"
 import Papa from "papaparse"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -316,6 +318,12 @@ export default function ItemImport() {
             >
               <Download className="size-4" />
               Exportar Productos
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild disabled={isPending || isExporting}>
+              <Link href="/dashboard/menu-items/pdf-import">
+                <FileText className="size-4" />
+                Importar desde PDF
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
