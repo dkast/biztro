@@ -1,8 +1,7 @@
 "use server"
 
 import * as Sentry from "@sentry/nextjs"
-import { openai } from "@ai-sdk/openai"
-import { generateObject } from "ai"
+import { gateway, generateObject } from "ai"
 import { z } from "zod/v4"
 
 import { authMemberActionClient } from "@/lib/safe-actions"
@@ -44,18 +43,18 @@ export const parsePdfMenu = authMemberActionClient
     })
   )
   .action(async ({ parsedInput: { pdfBase64 } }) => {
-    if (!env.OPENAI_API_KEY) {
+    if (!env.AI_GATEWAY_API_KEY) {
       return {
         failure: {
           reason:
-            "La funcionalidad de importar PDF requiere configurar una clave de API de OpenAI"
+            "La funcionalidad de importar PDF requiere configurar una clave de API del AI Gateway"
         }
       }
     }
 
     try {
       const result = await generateObject({
-        model: openai("gpt-4o"),
+        model: gateway("mistral/mistral-small-latest"),
         schema: pdfMenuItemSchema,
         messages: [
           {

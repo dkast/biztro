@@ -38,7 +38,7 @@ export const env = createEnv({
     ),
     POSTHOG_HOST: z.string().url().optional(),
     POSTHOG_API_KEY: z.string().min(1).optional(),
-    OPENAI_API_KEY: z.string().min(1).optional()
+    AI_GATEWAY_API_KEY: z.string().min(1).optional()
   },
 
   /**
@@ -86,7 +86,7 @@ export const env = createEnv({
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     POSTHOG_HOST: process.env.POSTHOG_HOST,
     POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY
+    AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
