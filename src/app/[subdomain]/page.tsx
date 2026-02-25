@@ -28,7 +28,7 @@ export async function generateStaticParams() {
 async function getCachedOrganizationBySubdomain(subdomain: string) {
   "use cache"
   cacheTag(`subdomain-${subdomain}`)
-  cacheLife("hours")
+  cacheLife("days")
   return getOrganizationBySlug(subdomain)
 }
 
@@ -113,9 +113,9 @@ export default async function SitePage(props: {
   "use cache"
 
   const params = await props.params
-  const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
   cacheTag(`subdomain-${params.subdomain}`)
-  cacheLife("hours")
+  cacheLife("days")
+  const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
 
   if (!params.subdomain || !siteMenu) {
     return notFound()
@@ -202,7 +202,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 async function getCachedMenuRenderData(menuId: string, snapshot: string) {
   "use cache"
   cacheTag(`menu-${menuId}`)
-  cacheLife("hours")
+  cacheLife("days")
 
   let json: string | null = null
   try {
