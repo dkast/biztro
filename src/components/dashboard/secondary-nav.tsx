@@ -41,7 +41,9 @@ export default function SecondaryNav({
                   <Link
                     href={path}
                     className={cn(
-                      "my-1 block rounded-lg px-4 py-2 text-sm font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100",
+                      `my-1 block rounded-lg px-4 py-2 text-sm font-semibold
+                      text-gray-500 hover:bg-gray-100 hover:text-gray-900
+                      dark:hover:bg-gray-800 dark:hover:text-gray-100`,
                       isActive && "text-orange-600"
                     )}
                   >

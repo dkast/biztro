@@ -164,10 +164,15 @@ const DateRangePicker = ({
       ref={ref}
       className={cn(
         groupProps.className,
-        "flex w-[254px] items-center rounded-md ring-offset-white focus-within:ring-2 focus-within:ring-gray-950 focus-within:ring-offset-2"
+        `flex w-[254px] items-center rounded-md ring-offset-white
+        focus-within:ring-2 focus-within:ring-gray-950
+        focus-within:ring-offset-2`
       )}
     >
-      <div className="flex h-8 grow flex-row items-center justify-between rounded-l-md border border-r-0 dark:border-gray-800">
+      <div
+        className="flex h-8 grow flex-row items-center justify-between
+          rounded-l-md border border-r-0 dark:border-gray-800"
+      >
         <DateField {...startFieldProps} />
         <span aria-hidden="true" className="text-gray-700 dark:text-gray-500">
           -

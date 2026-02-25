@@ -74,7 +74,6 @@ function PageviewTracker() {
         $current_url: url
       })
     }
-     
   }, [pathname, searchParams])
 
   return null

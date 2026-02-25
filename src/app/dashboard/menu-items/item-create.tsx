@@ -19,7 +19,7 @@ export default function ItemCreate() {
   const [showUpgrade, setShowUpgrade] = useState(false)
   const router = useRouter()
   const posthog = usePostHog()
-  
+
   const { execute, status, reset } = useAction(createItem, {
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
@@ -31,7 +31,7 @@ export default function ItemCreate() {
         reset()
         return
       }
-      
+
       // Track item creation
       if (data?.success) {
         posthog.capture("item_created", {
@@ -41,7 +41,7 @@ export default function ItemCreate() {
           source: "dashboard"
         })
       }
-      
+
       startTransition(() => {
         router.push(`/dashboard/menu-items/new/${data?.success?.id}`)
         reset()

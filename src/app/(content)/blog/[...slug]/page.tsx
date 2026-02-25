@@ -78,9 +78,12 @@ function Header({
   avatar: string
 }) {
   return (
-    <div className="mb-10 mt-20">
+    <div className="mt-20 mb-10">
       <div className="space-y-6">
-        <div className="flex flex-row items-center gap-2 text-xs font-medium text-gray-400 md:text-sm">
+        <div
+          className="flex flex-row items-center gap-2 text-xs font-medium
+            text-gray-400 md:text-sm"
+        >
           <time>{formattedDate}</time>
           <Separator orientation="vertical" className="mx-2 h-5 bg-gray-300" />
           <span className="text-xs font-medium text-orange-500 md:text-sm">

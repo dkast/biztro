@@ -55,7 +55,8 @@ const AccordionContent = ({
 }: AccordionContentProps) => (
   <Accordion.Content
     className={cn(
-      "data-[state=closed]:animate-slide-up data-[state=open]:animate-slide-down",
+      `data-[state=closed]:animate-slide-up
+      data-[state=open]:animate-slide-down`,
       className
     )}
     {...props}
@@ -194,16 +195,20 @@ export default function Features({
                   >
                     {linePosition === "left" || linePosition === "right" ? (
                       <div
-                        className={`absolute top-0 bottom-0 h-full w-0.5 overflow-hidden rounded-lg bg-gray-300/50 dark:bg-gray-300/30 ${
-                          linePosition === "right"
-                            ? "right-0 left-auto"
-                            : "right-auto left-0"
-                        }`}
+                        className={`absolute top-0 bottom-0 h-full w-0.5
+                          overflow-hidden rounded-lg bg-gray-300/50
+                          dark:bg-gray-300/30 ${
+                            linePosition === "right"
+                              ? "right-0 left-auto"
+                              : "right-auto left-0"
+                          }`}
                       >
                         <div
                           className={`absolute top-0 left-0 w-full ${
                             currentIndex === index ? "h-full" : "h-0"
-                          } bg-primary origin-top transition-all ease-linear dark:bg-white`}
+                          }
+                            bg-primary origin-top transition-all ease-linear
+                            dark:bg-white`}
                           style={{
                             transitionDuration:
                               currentIndex === index
@@ -216,16 +221,20 @@ export default function Features({
 
                     {linePosition === "top" || linePosition === "bottom" ? (
                       <div
-                        className={`absolute right-0 left-0 h-0.5 w-full overflow-hidden rounded-lg bg-gray-300/50 dark:bg-gray-300/30 ${
-                          linePosition === "bottom" ? "bottom-0" : "top-0"
-                        }`}
+                        className={`absolute right-0 left-0 h-0.5 w-full
+                          overflow-hidden rounded-lg bg-gray-300/50
+                          dark:bg-gray-300/30 ${
+                            linePosition === "bottom" ? "bottom-0" : "top-0"
+                          }`}
                       >
                         <div
                           className={`absolute left-0 ${
                             linePosition === "bottom" ? "bottom-0" : "top-0"
-                          } h-full ${
-                            currentIndex === index ? "w-full" : "w-0"
-                          } bg-primary origin-left transition-all ease-linear dark:bg-white`}
+                          }
+                            h-full ${
+                              currentIndex === index ? "w-full" : "w-0"
+                            } bg-primary origin-left transition-all ease-linear
+                            dark:bg-white`}
                           style={{
                             transitionDuration:
                               currentIndex === index
@@ -238,13 +247,24 @@ export default function Features({
 
                     <AccordionTrigger>
                       <div className="relative flex flex-col items-center">
-                        <div className="item-box mx-2 flex size-16 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-indigo-50 ring-1 ring-indigo-400/20 ring-inset sm:mx-6">
+                        <div
+                          className="item-box bg-primary text-primary-foreground
+                            ring-primary/20 mx-2 flex size-16 shrink-0
+                            items-center justify-center rounded-full ring-1
+                            ring-inset sm:mx-6"
+                        >
                           {item.icon}
                         </div>
-                        <div className="my-3 text-xl font-semibold text-gray-700 dark:text-gray-200">
+                        <div
+                          className="my-3 text-xl font-semibold text-gray-700
+                            dark:text-gray-200"
+                        >
                           {item.title}
                         </div>
-                        <div className="mb-4 justify-center text-center text-pretty text-gray-500 dark:text-gray-400">
+                        <div
+                          className="mb-4 justify-center text-center text-pretty
+                            text-gray-500 dark:text-gray-400"
+                        >
                           {item.content}
                         </div>
                       </div>
@@ -254,9 +274,8 @@ export default function Features({
               </Accordion.Root>
             </div>
             <div
-              className={`relative min-h-[200px] w-auto overflow-hidden rounded-lg sm:min-h-[630px] ${
-                ltr && "md:order-1"
-              }`}
+              className={`relative min-h-[200px] w-auto overflow-hidden
+                rounded-lg sm:min-h-[630px] ${ltr && "md:order-1"}`}
             >
               <AnimatePresence mode="sync">
                 {data[currentIndex]?.image ? (
@@ -264,7 +283,9 @@ export default function Features({
                     key={currentIndex}
                     src={data[currentIndex].image}
                     alt="feature"
-                    className="absolute inset-0 aspect-auto h-full w-full rounded-lg border object-cover shadow-lg dark:border-gray-800"
+                    className="absolute inset-0 aspect-auto h-full w-full
+                      rounded-lg border object-cover shadow-lg
+                      dark:border-gray-800"
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
@@ -275,7 +296,8 @@ export default function Features({
                     key={currentIndex}
                     preload="auto"
                     src={data[currentIndex].video}
-                    className="absolute inset-0 aspect-auto h-full w-full rounded-lg border object-cover shadow-lg"
+                    className="absolute inset-0 aspect-auto h-full w-full
+                      rounded-lg border object-cover shadow-lg"
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.98 }}
@@ -287,7 +309,9 @@ export default function Features({
                 ) : (
                   <motion.div
                     key={currentIndex}
-                    className="absolute inset-0 aspect-auto h-full min-h-[600px] w-full rounded-xl border border-gray-300/50 bg-gray-200 p-1"
+                    className="absolute inset-0 aspect-auto h-full min-h-[600px]
+                      w-full rounded-xl border border-gray-300/50 bg-gray-200
+                      p-1"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -299,7 +323,12 @@ export default function Features({
 
             <ul
               ref={carouselRef}
-              className="flex h-full snap-x snap-mandatory flex-nowrap overflow-x-auto [mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] py-10 [-ms-overflow-style:none] [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)] [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden"
+              className="flex h-full snap-x snap-mandatory flex-nowrap
+                overflow-x-auto
+                [mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)]
+                py-10 [-ms-overflow-style:none]
+                [-webkit-mask-image:linear-gradient(90deg,transparent,black_20%,white_80%,transparent)]
+                [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden"
               style={{
                 padding: "50px calc(50%)"
               }}
@@ -307,17 +336,23 @@ export default function Features({
               {data.map((item, index) => (
                 <div
                   key={item.id}
-                  className="card relative mr-8 grid h-full max-w-60 shrink-0 items-start justify-center py-4 last:mr-0"
+                  className="card relative mr-8 grid h-full max-w-60 shrink-0
+                    items-start justify-center py-4 last:mr-0"
                   onClick={() => setCurrentIndex(index)}
                   style={{
                     scrollSnapAlign: "center"
                   }}
                 >
-                  <div className="absolute top-0 right-auto bottom-0 left-0 h-0.5 w-full overflow-hidden rounded-lg bg-gray-300/50 dark:bg-gray-300/30">
+                  <div
+                    className="absolute top-0 right-auto bottom-0 left-0 h-0.5
+                      w-full overflow-hidden rounded-lg bg-gray-300/50
+                      dark:bg-gray-300/30"
+                  >
                     <div
                       className={`absolute top-0 left-0 h-full ${
                         currentIndex === index ? "w-full" : "w-0"
-                      } bg-primary origin-top transition-all ease-linear dark:bg-white`}
+                      } bg-primary
+                      origin-top transition-all ease-linear dark:bg-white`}
                       style={{
                         transitionDuration:
                           currentIndex === index ? `${collapseDelay}ms` : "0s"
@@ -325,7 +360,9 @@ export default function Features({
                     ></div>
                   </div>
                   <h2 className="mb-1 text-lg font-semibold">{item.title}</h2>
-                  <p className="mx-0 max-w-sm text-sm text-balance text-gray-400">
+                  <p
+                    className="mx-0 max-w-sm text-sm text-balance text-gray-400"
+                  >
                     {item.content}
                   </p>
                 </div>

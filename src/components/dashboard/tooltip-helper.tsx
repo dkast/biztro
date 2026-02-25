@@ -15,7 +15,9 @@ export const TooltipHelper = ({
   <TooltipProvider>
     <Tooltip>
       <TooltipTrigger asChild>{children}</TooltipTrigger>
-      <TooltipContent className="border-gray-800 bg-gray-950 text-xs text-gray-50">
+      <TooltipContent
+        className="border-gray-800 bg-gray-950 text-xs text-gray-50"
+      >
         {content}
       </TooltipContent>
     </Tooltip>

@@ -64,7 +64,10 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex flex-col gap-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+      <div
+        className="flex flex-col gap-3 py-2 sm:flex-row sm:items-center
+          sm:justify-between"
+      >
         <Input
           placeholder="Buscar en resultados"
           value={globalFilter}
@@ -73,7 +76,10 @@ export function DataTable<TData, TValue>({
         />
         {toolbar}
       </div>
-      <div className="mb-4 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800">
+      <div
+        className="mb-4 overflow-hidden rounded-lg border border-gray-200
+          dark:border-gray-800"
+      >
         <Table>
           <TableHeader className="bg-gray-50 dark:bg-gray-900/50">
             {table.getHeaderGroups().map(headerGroup => (
@@ -132,7 +138,12 @@ export function DataTable<TData, TValue>({
         <DataTablePagination table={table} />
         {table.getFilteredSelectedRowModel().rows.length > 0 &&
           floatinToolbar && (
-            <div className="fixed inset-x-0 bottom-6 z-10 mx-auto w-fit rounded-full border bg-gray-800 px-1.5 py-1.5 text-white shadow-lg sm:translate-x-1/2 dark:border dark:border-gray-700 dark:bg-gray-900">
+            <div
+              className="fixed inset-x-0 bottom-6 z-10 mx-auto w-fit
+                rounded-full border bg-gray-800 px-1.5 py-1.5 text-white
+                shadow-lg sm:translate-x-1/2 dark:border dark:border-gray-700
+                dark:bg-gray-900"
+            >
               {floatinToolbar}
             </div>
           )}

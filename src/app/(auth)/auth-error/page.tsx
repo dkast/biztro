@@ -23,7 +23,10 @@ export default async function Page(props: {
   if (typeError === "access_denied") {
     return (
       <div className="flex h-dvh">
-        <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+        <div
+          className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6
+            lg:flex-none lg:px-20 xl:px-24"
+        >
           <div className="mx-auto w-full max-w-sm lg:w-96">
             <div className="flex flex-col items-center justify-center gap-8">
               <Image
@@ -38,7 +41,9 @@ export default async function Page(props: {
                 <h2 className="font-display text-3xl leading-9 font-medium">
                   Estamos casi listos
                 </h2>
-                <p className="mt-4 text-balance text-gray-500 dark:text-gray-400">
+                <p
+                  className="mt-4 text-balance text-gray-500 dark:text-gray-400"
+                >
                   Actualmente estamos en Beta. Nos encontramos afinando los
                   últimos detalles.
                 </p>
@@ -71,8 +76,14 @@ export default async function Page(props: {
     return (
       <div className="flex h-dvh w-full flex-col">
         <Navbar />
-        <div className="flex h-96 grow flex-col items-center justify-center gap-6 sm:gap-12">
-          <h1 className="font-display text-6xl font-medium text-gray-800 slashed-zero sm:text-8xl dark:text-gray-200">
+        <div
+          className="flex h-96 grow flex-col items-center justify-center gap-6
+            sm:gap-12"
+        >
+          <h1
+            className="font-display text-6xl font-medium text-gray-800
+              slashed-zero sm:text-8xl dark:text-gray-200"
+          >
             Oh no...
           </h1>
           <div className="space-y-2 text-center text-gray-500">

@@ -74,7 +74,10 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
               Eliminar Organización
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col items-start justify-center gap-x-8 gap-y-4 sm:flex-row sm:items-center">
+          <CardContent
+            className="flex flex-col items-start justify-center gap-x-8 gap-y-4
+              sm:flex-row sm:items-center"
+          >
             <p className="text-gray-500">
               Eliminar la organización, catalogos y menus asociados a la misma.{" "}
               <span className="text-red-500 dark:text-red-400">
@@ -99,7 +102,8 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
                       conservar antes de continuar.{" "}
                       <Link
                         href="settings/billing"
-                        className="text-blue-600 underline underline-offset-2 hover:text-blue-800"
+                        className="text-blue-600 underline underline-offset-2
+                          hover:text-blue-800"
                       >
                         Cancele su suscripción antes de eliminar la
                         organización.
@@ -121,7 +125,10 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
                   </div>
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter className="flex flex-col gap-2 sm:flex-row sm:justify-end sm:gap-4">
+              <AlertDialogFooter
+                className="flex flex-col gap-2 sm:flex-row sm:justify-end
+                  sm:gap-4"
+              >
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
                   disabled={!hasConfirmed}

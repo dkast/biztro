@@ -141,7 +141,8 @@ function Tooltip({
   return (
     <div
       {...tooltipProps}
-      className="max-w-80 rounded-lg border border-transparent bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+      className="max-w-80 rounded-lg border border-transparent bg-white p-4
+        shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
       <h3 className="mb-2 font-medium">{step.title}</h3>
       <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -179,11 +180,15 @@ const Beacon = React.forwardRef<HTMLButtonElement, BeaconRenderProps>(
 
     return (
       <div className="relative">
-        <span className="absolute -top-1 -left-1 size-8 animate-ping rounded-full bg-blue-400" />
+        <span
+          className="absolute -top-1 -left-1 size-8 animate-ping rounded-full
+            bg-blue-400"
+        />
         <button
           ref={ref}
           {...(buttonProps as React.ButtonHTMLAttributes<HTMLButtonElement>)}
-          className="absolute inset-auto inline-block size-6 rounded-full bg-blue-500 ring-4 ring-blue-400"
+          className="absolute inset-auto inline-block size-6 rounded-full
+            bg-blue-500 ring-4 ring-blue-400"
         />
       </div>
     )

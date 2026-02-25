@@ -61,7 +61,8 @@ export function ItemDetail({
         />
       ) : (
         <div
-          className="h-48 w-full rounded-lg bg-gray-50 bg-cover bg-center shadow-sm dark:bg-gray-800"
+          className="h-48 w-full rounded-lg bg-gray-50 bg-cover bg-center
+            shadow-sm dark:bg-gray-800"
           style={{
             backgroundImage: 'url("/bg/leaf.svg")'
           }}

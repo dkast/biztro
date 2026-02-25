@@ -59,23 +59,26 @@ export default function Benefits() {
   return (
     <section id="benefits" className="relative pt-20 pb-28 sm:py-32">
       <div
-        className="absolute inset-0 h-full w-full items-center px-5 py-24 sm:inset-x-4 sm:w-auto sm:rounded-3xl"
+        className="absolute inset-0 h-full w-full items-center px-5 py-24
+          sm:inset-x-4 sm:w-auto sm:rounded-3xl"
         style={{
           background: `
-          radial-gradient(ellipse 120% 80% at 70% 20%, rgba(255, 20, 147, 0.15), transparent 50%),
-          radial-gradient(ellipse 100% 60% at 30% 10%, rgba(0, 255, 255, 0.12), transparent 60%),
-          radial-gradient(ellipse 90% 70% at 50% 0%, rgba(138, 43, 226, 0.18), transparent 65%),
-          radial-gradient(ellipse 110% 50% at 80% 30%, rgba(255, 215, 0, 0.08), transparent 40%),
-          #000000
+          radial-gradient(ellipse 120% 80% at 70% 20%, oklch(92.2% 0.005 34.3 / 0.3), transparent 50%),
+          radial-gradient(ellipse 100% 60% at 30% 10%, oklch(86.8% 0.007 39.5 / 0.2), transparent 60%),
+          radial-gradient(ellipse 90% 70% at 50% 0%, oklch(71.4% 0.014 41.2 / 0.15), transparent 65%),
+          oklch(96% 0.002 17.2)
         `
         }}
       />
-      <div className="dark relative z-10">
+      <div className="relative z-10">
         <TitleSection
           eyebrow="Por qué elegir Biztro"
           title="Transforma la experiencia de tus clientes y aumenta tus ingresos"
         />
-        <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 px-4 sm:grid-cols-3 sm:gap-12 sm:px-6 lg:max-w-7xl lg:gap-16 lg:px-8">
+        <div
+          className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 px-4
+            sm:grid-cols-3 sm:gap-12 sm:px-6 lg:max-w-7xl lg:gap-16 lg:px-8"
+        >
           {BENEFITS.map((benefit, index) => (
             <BenefitItem key={index} {...benefit} />
           ))}
@@ -100,20 +103,33 @@ const BenefitItem = ({
     <div className="flex flex-col items-center gap-2 text-center">
       <div className="mb-2">
         {Icon && (
-          <Icon className="size-10 rounded-xl bg-orange-600 p-2 text-orange-50" />
+          <Icon
+            className="size-10 rounded-xl bg-taupe-200 p-2 text-taupe-700
+              dark:bg-taupe-800/50 dark:text-taupe-300"
+          />
         )}
       </div>
-      <h4 className="space-x-1 text-lg font-semibold text-orange-400">
+      <h4
+        className="space-x-1 text-lg font-semibold text-taupe-950
+          dark:text-taupe-100"
+      >
         {title}
         {soon && (
           <div>
-            <Badge variant="violet" className="tracking-wide uppercase">
+            <Badge
+              variant="outline"
+              className="border-taupe-200 bg-taupe-100 tracking-wide
+                text-taupe-600 uppercase dark:border-taupe-700/50
+                dark:bg-taupe-800/20 dark:text-taupe-400"
+            >
               Pronto
             </Badge>
           </div>
         )}
       </h4>
-      <span className="text-balance text-gray-50">{description}</span>
+      <span className="text-balance text-taupe-700 dark:text-taupe-300">
+        {description}
+      </span>
     </div>
   )
 }

@@ -14,16 +14,24 @@ export const metadata: Metadata = {
 export default async function LoginPage() {
   return (
     <div className="flex min-h-full flex-1">
-      <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+      <div
+        className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6
+          lg:flex-none lg:px-20 xl:px-24"
+      >
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div className="flex flex-col items-center">
             <Link href="/">
               <Image src="/logo-bistro.svg" alt="Logo" width={44} height={44} />
             </Link>
-            <h2 className="font-display mt-4 text-3xl leading-9 font-medium tracking-tight text-gray-900 dark:text-gray-200">
+            <h2
+              className="font-display mt-4 text-3xl leading-9 font-medium
+                tracking-tight text-gray-900 dark:text-gray-200"
+            >
               Bienvenido
             </h2>
-            <span className="mt-2 block text-sm text-gray-600 dark:text-gray-400">
+            <span
+              className="mt-2 block text-sm text-gray-600 dark:text-gray-400"
+            >
               Inicia sesión con tu cuenta de Biztro
             </span>
           </div>

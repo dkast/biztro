@@ -56,7 +56,8 @@ function Calendar(props: CalendarProps<DateValue>) {
           ref={prevButtonRef}
           variant={"outline"}
           className={cn(
-            "absolute left-1 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+            `absolute left-1 h-7 w-7 bg-transparent p-0 opacity-50
+            hover:opacity-100`
           )}
         >
           <ChevronLeftIcon className="h-4 w-4" />
@@ -67,7 +68,8 @@ function Calendar(props: CalendarProps<DateValue>) {
           ref={nextButtonRef}
           variant={"outline"}
           className={cn(
-            "absolute right-1 h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+            `absolute right-1 h-7 w-7 bg-transparent p-0 opacity-50
+            hover:opacity-100`
           )}
         >
           <ChevronRightIcon className="h-4 w-4" />
@@ -151,7 +153,10 @@ function CalendarCell({ state, date }: CalendarCellProps) {
       {...cellProps}
       className={cn(
         cellProps.className,
-        "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-gray-950 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md"
+        `relative p-0 text-center text-sm focus-within:relative
+        focus-within:z-20 [&:has([aria-selected])]:bg-gray-950
+        first:[&:has([aria-selected])]:rounded-l-md
+        last:[&:has([aria-selected])]:rounded-r-md`
       )}
     >
       <Button
@@ -166,7 +171,10 @@ function CalendarCell({ state, date }: CalendarCellProps) {
             ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50"
             : "",
           isSelected
-            ? "bg-gray-900 text-gray-50 hover:bg-gray-900 hover:text-gray-50 focus:bg-gray-900 focus:text-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50 dark:hover:text-gray-900 dark:focus:bg-gray-50 dark:focus:text-gray-900"
+            ? `bg-gray-900 text-gray-50 hover:bg-gray-900 hover:text-gray-50
+              focus:bg-gray-900 focus:text-gray-50 dark:bg-gray-50
+              dark:text-gray-900 dark:hover:bg-gray-50 dark:hover:text-gray-900
+              dark:focus:bg-gray-50 dark:focus:text-gray-900`
             : "",
           isOutsideVisibleRange
             ? "text-gray-500 opacity-50 dark:text-gray-400"

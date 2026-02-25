@@ -35,7 +35,7 @@ const config = {
       }
     },
     fontFamily: {
-      display: ["var(--font-sora)"],
+      display: ["var(--font-mona-sans)", ...defaultTheme.fontFamily.sans],
       sans: ["var(--font-inter)", ...defaultTheme.fontFamily.sans]
     },
     extend: {

@@ -50,10 +50,7 @@ export function MenuSyncDialog({
               onRememberChoiceChange(checked === true)
             }
           />
-          <label
-            htmlFor={checkboxId}
-            className="text-muted-foreground text-sm"
-          >
+          <label htmlFor={checkboxId} className="text-muted-foreground text-sm">
             No volver a preguntar
           </label>
         </div>

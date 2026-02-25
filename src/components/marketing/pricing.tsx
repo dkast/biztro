@@ -69,13 +69,13 @@ export default function Pricing() {
               "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
           }}
           className="mx-auto aspect-1155/678 w-[72.1875rem] bg-linear-to-tr
-            from-[#ff80b5] to-[#9089fc] opacity-30"
+            from-[#fef08a] to-[#fed7aa] opacity-30"
         />
       </div>
       <div className="mx-auto max-w-2xl text-center lg:max-w-4xl">
         <TitleSection
           eyebrow="Precios"
-          title="Escoge el plan correcto para tí"
+          title="Escoge el plan correcto para ti"
         />
       </div>
       <div className="mx-auto mt-8 flex items-center justify-center">
@@ -88,22 +88,26 @@ export default function Pricing() {
           className="w-fit"
         >
           <TabsList
-            className="grid w-full grid-cols-2 rounded-full bg-gray-200/60"
+            className="grid w-full grid-cols-2 rounded-full bg-taupe-200/60
+              dark:bg-taupe-800/30"
           >
             <TabsTrigger
               value="monthly"
-              className="rounded-full data-[state=active]:bg-indigo-600
+              className="rounded-full data-[state=active]:bg-taupe-950
                 data-[state=active]:text-white"
             >
               Mensual
             </TabsTrigger>
             <TabsTrigger
               value="yearly"
-              className="rounded-full data-[state=active]:bg-indigo-600
+              className="rounded-full data-[state=active]:bg-taupe-950
                 data-[state=active]:text-white"
             >
               Anual{" "}
-              <span className="ml-1 text-indigo-500 in-focus:text-white">
+              <span
+                className="ml-1 text-taupe-600 in-focus:text-white
+                  dark:text-taupe-400"
+              >
                 (−20%)
               </span>
             </TabsTrigger>
@@ -112,7 +116,7 @@ export default function Pricing() {
       </div>
       <p
         className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8
-          text-pretty text-gray-500"
+          text-pretty text-taupe-700 dark:text-taupe-300"
       >
         Inicia con el plan gratuito, o desbloquea productos ilimitados y
         características con el plan Pro.
@@ -126,8 +130,9 @@ export default function Pricing() {
             key={tier.id}
             className={cn(
               tier.featured
-                ? "relative bg-slate-900 shadow-2xl/30"
-                : "bg-white/60 ring-gray-300 sm:mx-8 lg:mx-0",
+                ? "relative bg-taupe-950 shadow-2xl/30 dark:bg-taupe-900"
+                : `bg-taupe-50/60 ring-taupe-200 sm:mx-8 lg:mx-0
+                  dark:bg-taupe-900/20 dark:ring-taupe-700/30`,
               tier.featured
                 ? ""
                 : tierIdx === 0
@@ -140,7 +145,9 @@ export default function Pricing() {
             <h3
               id={tier.id}
               className={cn(
-                tier.featured ? "text-indigo-400" : "text-gray-600",
+                tier.featured
+                  ? "text-taupe-300"
+                  : "text-taupe-950 dark:text-taupe-50",
                 "text-base leading-7 font-semibold"
               )}
             >
@@ -149,7 +156,9 @@ export default function Pricing() {
             <div className="mt-4 flex items-baseline gap-x-2">
               <span
                 className={cn(
-                  tier.featured ? "text-white" : "text-gray-900",
+                  tier.featured
+                    ? "text-white"
+                    : "text-taupe-950 dark:text-taupe-50",
                   "text-5xl font-bold tracking-tight"
                 )}
               >
@@ -159,7 +168,9 @@ export default function Pricing() {
               </span>
               <span
                 className={cn(
-                  tier.featured ? "text-indigo-400" : "text-gray-500",
+                  tier.featured
+                    ? "text-taupe-400"
+                    : "text-taupe-600 dark:text-taupe-300",
                   "text-base"
                 )}
               >
@@ -168,7 +179,9 @@ export default function Pricing() {
             </div>
             <div
               className={cn(
-                tier.featured ? "text-gray-300" : "text-gray-600",
+                tier.featured
+                  ? "text-taupe-100/80"
+                  : "text-taupe-700 dark:text-taupe-300",
                 "mt-6 text-base leading-7"
               )}
             >
@@ -176,7 +189,9 @@ export default function Pricing() {
             </div>
             <ul
               className={cn(
-                tier.featured ? "text-gray-300" : "text-gray-600",
+                tier.featured
+                  ? "text-taupe-100/80"
+                  : "text-taupe-700 dark:text-taupe-300",
                 "mt-8 space-y-3 text-sm leading-6 sm:mt-10"
               )}
             >
@@ -185,7 +200,9 @@ export default function Pricing() {
                   <Check
                     aria-hidden="true"
                     className={cn(
-                      tier.featured ? "text-indigo-400" : "text-indigo-600",
+                      tier.featured
+                        ? "text-taupe-300"
+                        : "text-taupe-500 dark:text-taupe-400",
                       "h-6 w-5 flex-none"
                     )}
                   />
@@ -198,10 +215,12 @@ export default function Pricing() {
               aria-describedby={tier.id}
               className={cn(
                 tier.featured
-                  ? `bg-indigo-500 text-white shadow-xs hover:bg-indigo-400
-                    focus-visible:outline-indigo-500`
-                  : `text-indigo-600 ring-1 ring-indigo-200 ring-inset
-                    hover:ring-indigo-300 focus-visible:outline-indigo-600`,
+                  ? `bg-taupe-100 text-taupe-950 shadow-xs hover:bg-taupe-200
+                    focus-visible:outline-taupe-100`
+                  : `text-taupe-700 ring-1 ring-taupe-300 ring-inset
+                    hover:ring-taupe-400 focus-visible:outline-taupe-600
+                    dark:text-taupe-300 dark:ring-taupe-700/50
+                    dark:hover:ring-taupe-600`,
                 `mt-8 block rounded-md px-3.5 py-2.5 text-center text-sm
                 font-semibold focus-visible:outline focus-visible:outline-2
                 focus-visible:outline-offset-2 sm:mt-10`

@@ -17,7 +17,10 @@ export default function Header({
     <header
       className={cn("border-border bg-card z-50 flex h-16 border-b", className)}
     >
-      <div className="mx-auto flex w-full items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div
+        className="mx-auto flex w-full items-center justify-between px-4 sm:px-6
+          lg:px-8"
+      >
         {showLogo && (
           <Link href="/dashboard">
             <Image src="/logo-bistro.svg" alt="Logo" width={32} height={32} />

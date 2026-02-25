@@ -71,7 +71,8 @@ export function DataTableFilter({
                       <Badge
                         variant="indigo"
                         key={option.value}
-                        className="rounded-sm px-1 font-normal whitespace-nowrap"
+                        className="rounded-sm px-1 font-normal
+                          whitespace-nowrap"
                       >
                         {option.label}
                       </Badge>
@@ -105,7 +106,8 @@ export function DataTableFilter({
                   >
                     <div
                       className={cn(
-                        "border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                        `border-primary mr-2 flex h-4 w-4 items-center
+                        justify-center rounded-sm border`,
                         isSelected
                           ? "bg-primary text-primary-foreground"
                           : "opacity-50 [&_svg]:invisible"
@@ -114,7 +116,9 @@ export function DataTableFilter({
                       <CheckIcon className={cn("h-4 w-4")} />
                     </div>
                     {option.icon && (
-                      <option.icon className="text-muted-foreground mr-2 h-4 w-4" />
+                      <option.icon
+                        className="text-muted-foreground mr-2 h-4 w-4"
+                      />
                     )}
                     <span>{option.label}</span>
                   </CommandItem>

@@ -1,8 +1,8 @@
 "use server"
 
+import * as Sentry from "@sentry/nextjs"
 import { updateTag } from "next/cache"
 import { headers } from "next/headers"
-import * as Sentry from "@sentry/nextjs"
 
 import { auth } from "@/lib/auth"
 import { getBaseUrl } from "@/lib/utils"

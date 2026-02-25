@@ -132,7 +132,11 @@ export default function AppSidebar({
                           <SidebarMenuButton tooltip={item.title}>
                             {item.icon && <item.icon />}
                             <span>{item.title}</span>
-                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                            <ChevronRight
+                              className="ml-auto transition-transform
+                                duration-200
+                                group-data-[state=open]/collapsible:rotate-90"
+                            />
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
@@ -169,7 +173,10 @@ export default function AppSidebar({
       <SidebarFooter>
         {currentOrg?.plan === Plan.BASIC && (
           <div className="p-1">
-            <Card className="border-indigo-400/50 bg-radial-[at_0%_100%] from-pink-500/50 via-indigo-500/20 to-transparent shadow-none">
+            <Card
+              className="border-indigo-400/50 bg-radial-[at_0%_100%]
+                from-pink-500/50 via-indigo-500/20 to-transparent shadow-none"
+            >
               <CardHeader className="p-3 pb-2">
                 <CardTitle className="text-sm">Actualiza a Pro</CardTitle>
                 <CardDescription className="text-xs">
@@ -282,7 +289,10 @@ function SidebarWorkgroup() {
         <SidebarMenu>
           <SidebarMenuButton asChild size="lg">
             <Link href="/dashboard/create-org">
-              <div className="border-sidebar-border grid size-8 place-items-center rounded-sm border shadow-sm">
+              <div
+                className="border-sidebar-border grid size-8 place-items-center
+                  rounded-sm border shadow-sm"
+              >
                 <Plus className="size-4" />
               </div>
               <span className="truncate font-semibold">Crear organización</span>
@@ -300,11 +310,16 @@ function SidebarWorkgroup() {
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                className="data-[state=open]:bg-sidebar-accent
+                  data-[state=open]:text-sidebar-accent-foreground"
               >
                 {currentOrg ? (
                   <>
-                    <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                    <div
+                      className="bg-sidebar-primary
+                        text-sidebar-primary-foreground flex aspect-square
+                        size-8 items-center justify-center rounded-lg"
+                    >
                       <Avatar className="size-8 rounded-sm shadow-sm">
                         <AvatarImage src={currentOrg.logo ?? undefined} />
                         <AvatarFallback className="text-xs">
@@ -328,7 +343,8 @@ function SidebarWorkgroup() {
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+              className="w-(--radix-dropdown-menu-trigger-width) min-w-56
+                rounded-lg"
               align="start"
               side="bottom"
               sideOffset={4}
@@ -359,7 +375,10 @@ function SidebarWorkgroup() {
                   href="/dashboard/create-org"
                   className="flex items-center gap-2"
                 >
-                  <div className="border-sidebar-border flex size-6 items-center justify-center rounded-md border">
+                  <div
+                    className="border-sidebar-border flex size-6 items-center
+                      justify-center rounded-md border"
+                  >
                     <Plus className="size-4" />
                   </div>
                   <div className="text-muted-foreground font-medium">

@@ -12,7 +12,6 @@ export default function MemberTable({
   data: AuthMember[]
   canDeleteMember: boolean
 }) {
-
   const cols = getColumns(canDeleteMember)
 
   const { table, globalFilter, setGlobalFilter } = useDataTable({

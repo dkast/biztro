@@ -19,7 +19,7 @@ export interface ResizeResult {
 
 /**
  * Resize an image file to fit within maxDimension while maintaining aspect ratio.
- * 
+ *
  * @param file - The image file to resize
  * @param options - Resize options
  * @returns Promise with the resized blob and metadata
