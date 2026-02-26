@@ -184,11 +184,76 @@ export const bulkCreateItems = authMemberActionClient
       }
     }
 
+    const groupedItemsMap = new Map<
+      string,
+      {
+        name: string
+        description?: string
+        status?: string
+        category?: string
+        currency?: "MXN" | "USD"
+        variants: { name: string; price: number }[]
+      }
+    >()
+
+    for (const item of items) {
+      const normalizedName = item.name.trim()
+      if (!normalizedName) continue
+
+      const itemKey = normalizedName.toLowerCase()
+      const existingItem = groupedItemsMap.get(itemKey)
+
+      const nextVariantBaseName =
+        item.variantName?.trim() ||
+        (existingItem
+          ? `Variante ${existingItem.variants.length + 1}`
+          : "Regular")
+
+      if (!existingItem) {
+        groupedItemsMap.set(itemKey, {
+          name: normalizedName,
+          description: item.description?.trim() || undefined,
+          status: item.status,
+          category: item.category?.trim() || undefined,
+          currency: item.currency,
+          variants: [{ name: nextVariantBaseName, price: item.price }]
+        })
+        continue
+      }
+
+      const nextVariantName = existingItem.variants.some(
+        variant =>
+          variant.name.toLowerCase() === nextVariantBaseName.toLowerCase()
+      )
+        ? `${nextVariantBaseName} ${existingItem.variants.length + 1}`
+        : nextVariantBaseName
+
+      existingItem.variants.push({ name: nextVariantName, price: item.price })
+
+      if (!existingItem.description && item.description?.trim()) {
+        existingItem.description = item.description.trim()
+      }
+
+      if (!existingItem.category && item.category?.trim()) {
+        existingItem.category = item.category.trim()
+      }
+
+      if (!existingItem.currency && item.currency) {
+        existingItem.currency = item.currency
+      }
+
+      if (!existingItem.status && item.status) {
+        existingItem.status = item.status
+      }
+    }
+
+    const groupedItems = Array.from(groupedItemsMap.values())
+
     const proMember = await isProMember()
     const itemCount = await getItemCount()
 
     const itemLimit = appConfig.itemLimit || 10
-    if (!proMember && itemCount + items.length > itemLimit) {
+    if (!proMember && itemCount + groupedItems.length > itemLimit) {
       return {
         failure: {
           reason:
@@ -220,7 +285,7 @@ export const bulkCreateItems = authMemberActionClient
         const newCategoryNames = new Set<string>()
 
         // First pass - collect unique new categories
-        items.forEach(item => {
+        groupedItems.forEach(item => {
           if (item.category) {
             const normalizedName = item.category.trim()
             if (!categoryMap.has(normalizedName.toLowerCase())) {
@@ -248,7 +313,7 @@ export const bulkCreateItems = authMemberActionClient
         )
 
         return Promise.all(
-          items.map(item => {
+          groupedItems.map(item => {
             let categoryId = undefined
 
             if (item.category) {
@@ -267,12 +332,10 @@ export const bulkCreateItems = authMemberActionClient
                   : ((defaultLocation?.currency as "MXN" | "USD") ?? "MXN"),
                 organizationId: currentOrgId,
                 variants: {
-                  create: [
-                    {
-                      name: "Regular",
-                      price: item.price
-                    }
-                  ]
+                  create: item.variants.map(variant => ({
+                    name: variant.name,
+                    price: variant.price
+                  }))
                 }
               }
             })

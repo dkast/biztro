@@ -12,6 +12,10 @@ const pdfMenuItemSchema = z.object({
   items: z.array(
     z.object({
       name: z.string().describe("Name of the menu item"),
+      variantName: z
+        .string()
+        .optional()
+        .describe("Variant or size name, e.g. Chico, Mediano, Grande"),
       description: z
         .string()
         .optional()
@@ -32,6 +36,7 @@ const mockedPdfExtractionResult = {
   items: [
     {
       name: "Tacos al Pastor",
+      variantName: "Regular",
       description: "Tortilla de maíz con cerdo adobado y piña",
       price: 95,
       category: "Tacos",
@@ -39,6 +44,7 @@ const mockedPdfExtractionResult = {
     },
     {
       name: "Quesadilla de Champiñones",
+      variantName: "Regular",
       description: "Queso Oaxaca, champiñones salteados y salsa verde",
       price: 88,
       category: "Antojitos",
@@ -46,6 +52,7 @@ const mockedPdfExtractionResult = {
     },
     {
       name: "Limonada",
+      variantName: "Regular",
       description: "Bebida fresca de limón natural",
       price: 45,
       category: "Bebidas",
@@ -54,13 +61,54 @@ const mockedPdfExtractionResult = {
   ]
 }
 
-const createMockPdfModel = () =>
+const mockedPdfExtractionWithVariantsResult = {
+  items: [
+    {
+      name: "Hamburguesa Clásica",
+      variantName: "Sencilla",
+      description: "Carne de res, lechuga, jitomate y aderezo especial",
+      price: 119,
+      category: "Hamburguesas",
+      currency: "MXN" as const
+    },
+    {
+      name: "Hamburguesa Clásica",
+      variantName: "Doble",
+      description: "Carne de res, lechuga, jitomate y aderezo especial",
+      price: 149,
+      category: "Hamburguesas",
+      currency: "MXN" as const
+    },
+    {
+      name: "Limonada",
+      variantName: "Chica",
+      description: "Bebida fresca de limón natural",
+      price: 39,
+      category: "Bebidas",
+      currency: "MXN" as const
+    },
+    {
+      name: "Limonada",
+      variantName: "Grande",
+      description: "Bebida fresca de limón natural",
+      price: 59,
+      category: "Bebidas",
+      currency: "MXN" as const
+    }
+  ]
+}
+
+const createMockPdfModel = (scenario: "default" | "variants") =>
   new MockLanguageModelV3({
     doGenerate: async () => ({
       content: [
         {
           type: "text",
-          text: JSON.stringify(mockedPdfExtractionResult)
+          text: JSON.stringify(
+            scenario === "variants"
+              ? mockedPdfExtractionWithVariantsResult
+              : mockedPdfExtractionResult
+          )
         }
       ],
       finishReason: { unified: "stop", raw: undefined },
@@ -92,16 +140,81 @@ export const parsePdfMenu = authMemberActionClient
         .boolean()
         .optional()
         .default(false)
-        .describe("When true, simulates AI response using AI SDK test mocks")
+        .describe("When true, simulates AI response using AI SDK test mocks"),
+      simulateScenario: z
+        .enum(["default", "variants"])
+        .optional()
+        .default("default")
+        .describe("Mock response scenario for testing")
     })
   )
-  .action(async ({ parsedInput: { pdfBase64, simulateResponse } }) => {
-    if (simulateResponse) {
+  .action(
+    async ({
+      parsedInput: { pdfBase64, simulateResponse, simulateScenario }
+    }) => {
+      if (simulateResponse) {
+        try {
+          const result = await generateObject({
+            model: createMockPdfModel(simulateScenario),
+            schema: pdfMenuItemSchema,
+            prompt: "Extract menu items from this menu PDF"
+          })
+
+          return {
+            success: result.object.items
+          }
+        } catch (error) {
+          console.error(error)
+          Sentry.captureException(error, {
+            tags: { section: "pdf-import-mock" }
+          })
+
+          return {
+            failure: {
+              reason:
+                "No se pudo simular la extracción del PDF. Intenta nuevamente."
+            }
+          }
+        }
+      }
+
+      if (!env.AI_GATEWAY_API_KEY) {
+        return {
+          failure: {
+            reason:
+              "La funcionalidad de importar PDF requiere configurar una clave de API del AI Gateway"
+          }
+        }
+      }
+
       try {
         const result = await generateObject({
-          model: createMockPdfModel(),
+          model: gateway("mistral/mistral-small-latest"),
           schema: pdfMenuItemSchema,
-          prompt: "Extract menu items from this menu PDF"
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "file",
+                  data: pdfBase64,
+                  mediaType: "application/pdf"
+                },
+                {
+                  type: "text",
+                  text: `Extract all menu items from this PDF menu. For each item, extract:
+- name: the item name
+- variantName: if the item has sizes/presentations, include the variant label (e.g., Small/Medium/Large). If not present, use "Regular"
+- description: a brief description if available
+- price: the numeric price (just the number, no currency symbols)
+- category: the section or category the item belongs to (e.g., "Entradas", "Platos Principales", "Bebidas", etc.)
+- currency: if the currency is clearly stated use "MXN" or "USD", otherwise default to "MXN"
+
+Return all items you find in the menu. If an item has multiple variants, return multiple rows with the same name and different variantName/price.`
+                }
+              ]
+            }
+          ]
         })
 
         return {
@@ -110,69 +223,14 @@ export const parsePdfMenu = authMemberActionClient
       } catch (error) {
         console.error(error)
         Sentry.captureException(error, {
-          tags: { section: "pdf-import-mock" }
+          tags: { section: "pdf-import" }
         })
-
         return {
           failure: {
             reason:
-              "No se pudo simular la extracción del PDF. Intenta nuevamente."
+              "No se pudo procesar el PDF. Asegúrate de que el archivo sea un menú válido."
           }
         }
       }
     }
-
-    if (!env.AI_GATEWAY_API_KEY) {
-      return {
-        failure: {
-          reason:
-            "La funcionalidad de importar PDF requiere configurar una clave de API del AI Gateway"
-        }
-      }
-    }
-
-    try {
-      const result = await generateObject({
-        model: gateway("mistral/mistral-small-latest"),
-        schema: pdfMenuItemSchema,
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "file",
-                data: pdfBase64,
-                mediaType: "application/pdf"
-              },
-              {
-                type: "text",
-                text: `Extract all menu items from this PDF menu. For each item, extract:
-- name: the item name
-- description: a brief description if available
-- price: the numeric price (just the number, no currency symbols)
-- category: the section or category the item belongs to (e.g., "Entradas", "Platos Principales", "Bebidas", etc.)
-- currency: if the currency is clearly stated use "MXN" or "USD", otherwise default to "MXN"
-
-Return all items you find in the menu.`
-              }
-            ]
-          }
-        ]
-      })
-
-      return {
-        success: result.object.items
-      }
-    } catch (error) {
-      console.error(error)
-      Sentry.captureException(error, {
-        tags: { section: "pdf-import" }
-      })
-      return {
-        failure: {
-          reason:
-            "No se pudo procesar el PDF. Asegúrate de que el archivo sea un menú válido."
-        }
-      }
-    }
-  })
+  )

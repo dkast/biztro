@@ -46,6 +46,9 @@ export default function PdfImportForm() {
   const [items, setItems] = useState<EditableItem[]>([])
   const [isParsing, setIsParsing] = useState(false)
   const [simulateResponse, setSimulateResponse] = useState(true)
+  const [simulateScenario, setSimulateScenario] = useState<
+    "default" | "variants"
+  >("default")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [parseError, setParseError] = useState<string | null>(null)
 
@@ -59,6 +62,7 @@ export default function PdfImportForm() {
       }
       const extracted = (response.data?.success ?? []).map(item => ({
         ...item,
+        variantName: item.variantName ?? "Regular",
         _id: generateId()
       }))
       setItems(extracted)
@@ -128,14 +132,18 @@ export default function PdfImportForm() {
         setIsParsing(false)
         return
       }
-      executeParse({ pdfBase64: base64, simulateResponse })
+      executeParse({
+        pdfBase64: base64,
+        simulateResponse,
+        simulateScenario
+      })
     }
     reader.onerror = () => {
       setParseError("Error al leer el archivo")
       setIsParsing(false)
     }
     reader.readAsDataURL(selectedFile)
-  }, [selectedFile, executeParse, simulateResponse])
+  }, [selectedFile, executeParse, simulateResponse, simulateScenario])
 
   const handleDeleteItem = useCallback((id: string) => {
     setItems(prev => prev.filter(item => item._id !== id))
@@ -153,6 +161,7 @@ export default function PdfImportForm() {
     setItems(
       newData.map(item => ({
         ...item,
+        variantName: item.variantName ?? "Regular",
         description: item.description ?? "",
         category: item.category ?? "",
         currency: item.currency === "USD" ? "USD" : "MXN",
@@ -181,6 +190,17 @@ export default function PdfImportForm() {
         minSize: 180,
         meta: {
           label: "Nombre",
+          cell: { variant: "short-text" as const }
+        }
+      },
+      {
+        id: "variantName",
+        accessorKey: "variantName",
+        header: "Variante",
+        size: 160,
+        minSize: 130,
+        meta: {
+          label: "Variante",
           cell: { variant: "short-text" as const }
         }
       },
@@ -276,6 +296,7 @@ export default function PdfImportForm() {
       {
         _id: generateId(),
         name: "",
+        variantName: "Regular",
         description: "",
         price: 0,
         category: "",
@@ -293,6 +314,7 @@ export default function PdfImportForm() {
     executeBulkCreate(
       validItems.map(item => ({
         name: item.name,
+        variantName: item.variantName || undefined,
         description: item.description || undefined,
         price: item.price,
         status: MenuItemStatus.ACTIVE,
@@ -346,6 +368,31 @@ export default function PdfImportForm() {
                 Simular respuesta AI (sin llamadas al gateway)
               </Label>
             </div>
+
+            {simulateResponse && (
+              <div className="flex items-center gap-3">
+                <Label htmlFor="simulate-scenario" className="text-sm">
+                  Escenario de simulación
+                </Label>
+                <select
+                  id="simulate-scenario"
+                  value={simulateScenario}
+                  onChange={event =>
+                    setSimulateScenario(
+                      event.target.value as "default" | "variants"
+                    )
+                  }
+                  className="border-input bg-background h-9 rounded-md border
+                    px-3 text-sm"
+                  disabled={isParsing || isSaving}
+                >
+                  <option value="default">Menú simple</option>
+                  <option value="variants">
+                    Múltiples variantes por producto
+                  </option>
+                </select>
+              </div>
+            )}
 
             <Button
               onClick={handleParse}

@@ -963,6 +963,7 @@ export type BulkMenuItem = {
   name: string
   description?: string
   price: number
+  variantName?: string
   status?: string
   category?: string
   currency?: "MXN" | "USD"
@@ -973,6 +974,7 @@ export const bulkMenuItemSchema = z.array(
     name: z.string().min(1),
     description: z.string().optional(),
     price: z.number().min(0),
+    variantName: z.string().optional(),
     status: z.string().optional(),
     category: z.string().optional(),
     currency: z.enum(["MXN", "USD"]).optional()
