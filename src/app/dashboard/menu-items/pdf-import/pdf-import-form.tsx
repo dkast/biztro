@@ -18,6 +18,8 @@ import { useRouter } from "next/navigation"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import {
   Table,
   TableBody,
@@ -27,10 +29,16 @@ import {
   TableRow
 } from "@/components/ui/table"
 import { bulkCreateItems } from "@/server/actions/item/mutations"
-import { parsePdfMenu, type PdfMenuItem } from "@/server/actions/item/pdf-mutations"
+import {
+  parsePdfMenu,
+  type PdfMenuItem
+} from "@/server/actions/item/pdf-mutations"
 import { MenuItemStatus } from "@/lib/types"
 
 type EditableItem = PdfMenuItem & { _id: string }
+
+const MAX_PDF_FILE_SIZE_MB = 6
+const MAX_PDF_FILE_SIZE_BYTES = MAX_PDF_FILE_SIZE_MB * 1024 * 1024
 
 function generateId() {
   return Math.random().toString(36).slice(2)
@@ -41,6 +49,7 @@ export default function PdfImportForm() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [items, setItems] = useState<EditableItem[]>([])
   const [isParsing, setIsParsing] = useState(false)
+  const [simulateResponse, setSimulateResponse] = useState(true)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [parseError, setParseError] = useState<string | null>(null)
 
@@ -90,6 +99,16 @@ export default function PdfImportForm() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
+
+    if (file.size > MAX_PDF_FILE_SIZE_BYTES) {
+      setSelectedFile(null)
+      setItems([])
+      setParseError(
+        `El archivo es demasiado grande. El tamaño máximo permitido es ${MAX_PDF_FILE_SIZE_MB} MB.`
+      )
+      return
+    }
+
     setSelectedFile(file)
     setParseError(null)
     setItems([])
@@ -108,14 +127,14 @@ export default function PdfImportForm() {
         setIsParsing(false)
         return
       }
-      executeParse({ pdfBase64: base64 })
+      executeParse({ pdfBase64: base64, simulateResponse })
     }
     reader.onerror = () => {
       setParseError("Error al leer el archivo")
       setIsParsing(false)
     }
     reader.readAsDataURL(selectedFile)
-  }, [selectedFile, executeParse])
+  }, [selectedFile, executeParse, simulateResponse])
 
   const handleUpdateItem = (
     id: string,
@@ -181,7 +200,8 @@ export default function PdfImportForm() {
               {selectedFile ? selectedFile.name : "Selecciona un archivo PDF"}
             </p>
             <p className="text-muted-foreground text-xs">
-              Haz clic para seleccionar un PDF de tu menú
+              Haz clic para seleccionar un PDF de tu menú (máximo{" "}
+              {MAX_PDF_FILE_SIZE_MB} MB)
             </p>
           </div>
           <input
@@ -194,18 +214,36 @@ export default function PdfImportForm() {
         </div>
 
         {selectedFile && (
-          <Button
-            onClick={handleParse}
-            disabled={isParsing || isSaving}
-            className="self-start"
-          >
-            {isParsing ? (
-              <Loader className="mr-2 size-4 animate-spin" />
-            ) : (
-              <Upload className="mr-2 size-4" />
-            )}
-            {isParsing ? "Extrayendo productos..." : "Extraer productos del PDF"}
-          </Button>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <Switch
+                id="simulate-pdf-ai"
+                checked={simulateResponse}
+                onCheckedChange={setSimulateResponse}
+                disabled={isParsing || isSaving}
+              />
+              <Label htmlFor="simulate-pdf-ai" className="text-sm">
+                Simular respuesta AI (sin llamadas al gateway)
+              </Label>
+            </div>
+
+            <Button
+              onClick={handleParse}
+              disabled={isParsing || isSaving}
+              className="self-start"
+            >
+              {isParsing ? (
+                <Loader className="mr-2 size-4 animate-spin" />
+              ) : (
+                <Upload className="mr-2 size-4" />
+              )}
+              {isParsing
+                ? "Extrayendo productos..."
+                : simulateResponse
+                  ? "Simular extracción"
+                  : "Extraer productos del PDF"}
+            </Button>
+          </div>
         )}
       </div>
 
@@ -241,11 +279,11 @@ export default function PdfImportForm() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="min-w-[180px]">Nombre *</TableHead>
-                  <TableHead className="min-w-[220px]">Descripción</TableHead>
-                  <TableHead className="min-w-[100px]">Precio *</TableHead>
-                  <TableHead className="min-w-[130px]">Categoría</TableHead>
-                  <TableHead className="min-w-[90px]">Moneda</TableHead>
+                  <TableHead className="min-w-45">Nombre *</TableHead>
+                  <TableHead className="min-w-55">Descripción</TableHead>
+                  <TableHead className="min-w-25">Precio *</TableHead>
+                  <TableHead className="min-w-32.5">Categoría</TableHead>
+                  <TableHead className="min-w-22.5">Moneda</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
               </TableHeader>
@@ -299,11 +337,7 @@ export default function PdfImportForm() {
                       <Input
                         value={item.category ?? ""}
                         onChange={e =>
-                          handleUpdateItem(
-                            item._id,
-                            "category",
-                            e.target.value
-                          )
+                          handleUpdateItem(item._id, "category", e.target.value)
                         }
                         placeholder="Categoría"
                         disabled={isSaving}
@@ -321,8 +355,8 @@ export default function PdfImportForm() {
                           )
                         }
                         disabled={isSaving}
-                        className="border-input bg-background text-foreground h-8
-                          w-full rounded-md border px-2 text-sm"
+                        className="border-input bg-background text-foreground
+                          h-8 w-full rounded-md border px-2 text-sm"
                       >
                         <option value="MXN">MXN</option>
                         <option value="USD">USD</option>
