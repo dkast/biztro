@@ -1,3 +1,4 @@
+import { simulatePdfAi } from "@/flags"
 import { FileText } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
@@ -19,6 +20,8 @@ export default async function PdfImportPage() {
     return notFound()
   }
 
+  const simulateEnabled = await simulatePdfAi()
+
   return (
     <div className="mx-auto w-full max-w-5xl grow px-4 sm:px-6">
       <PageSubtitle>
@@ -34,7 +37,7 @@ export default async function PdfImportPage() {
         </PageSubtitle.Actions>
       </PageSubtitle>
       <div className="mt-6">
-        <PdfImportForm />
+        <PdfImportForm simulateEnabled={simulateEnabled} />
       </div>
     </div>
   )

@@ -22,7 +22,7 @@ import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyb
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+// Simulation flag is provided by server; no local UI switch needed
 import { bulkCreateItems } from "@/server/actions/item/mutations"
 import {
   parsePdfMenu,
@@ -40,12 +40,16 @@ function generateId() {
   return Math.random().toString(36).slice(2)
 }
 
-export default function PdfImportForm() {
+export default function PdfImportForm({
+  simulateEnabled = true
+}: {
+  simulateEnabled?: boolean
+}) {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [items, setItems] = useState<EditableItem[]>([])
   const [isParsing, setIsParsing] = useState(false)
-  const [simulateResponse, setSimulateResponse] = useState(true)
+  const simulateResponse = simulateEnabled
   const [simulateScenario, setSimulateScenario] = useState<
     "default" | "variants"
   >("default")
@@ -91,6 +95,11 @@ export default function PdfImportForm() {
       toast.success(
         `${response.data?.success?.length} productos importados correctamente`
       )
+      // Clear UI state: items grid and selected file
+      setItems([])
+      setSelectedFile(null)
+      setParseError(null)
+      if (fileInputRef.current) fileInputRef.current.value = ""
       resetBulkCreate()
       router.push("/dashboard/menu-items")
     },
@@ -290,6 +299,33 @@ export default function PdfImportForm() {
     readOnly: isSaving
   })
 
+  const groupPreview = useMemo(() => {
+    const groupedByName = new Map<string, number>()
+
+    for (const item of items) {
+      const normalizedName = item.name.trim()
+      if (!normalizedName) continue
+
+      const key = normalizedName.toLowerCase()
+      groupedByName.set(key, (groupedByName.get(key) ?? 0) + 1)
+    }
+
+    const totalRows = Array.from(groupedByName.values()).reduce(
+      (sum, count) => sum + count,
+      0
+    )
+    const groupedItems = groupedByName.size
+    const multiVariantItems = Array.from(groupedByName.values()).filter(
+      count => count > 1
+    ).length
+
+    return {
+      totalRows,
+      groupedItems,
+      multiVariantItems
+    }
+  }, [items])
+
   const handleAddItem = () => {
     setItems(prev => [
       ...prev,
@@ -357,19 +393,16 @@ export default function PdfImportForm() {
 
         {selectedFile && (
           <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <Switch
-                id="simulate-pdf-ai"
-                checked={simulateResponse}
-                onCheckedChange={setSimulateResponse}
-                disabled={isParsing || isSaving}
-              />
-              <Label htmlFor="simulate-pdf-ai" className="text-sm">
-                Simular respuesta AI (sin llamadas al gateway)
-              </Label>
-            </div>
+            {/* <div className="flex items-center gap-3">
+              <p className="text-sm">
+                Simulación AI:
+                <span className="font-medium">
+                  {simulateEnabled ? "Disponible" : "Desactivada"}
+                </span>
+              </p>
+            </div> */}
 
-            {simulateResponse && (
+            {simulateEnabled && simulateResponse && (
               <div className="flex items-center gap-3">
                 <Label htmlFor="simulate-scenario" className="text-sm">
                   Escenario de simulación
@@ -427,10 +460,24 @@ export default function PdfImportForm() {
       {items.length > 0 && (
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium">
-              {items.length} producto{items.length !== 1 ? "s" : ""} extraído
-              {items.length !== 1 ? "s" : ""}. Revisa y edita antes de guardar.
-            </p>
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-medium">
+                {items.length} producto{items.length !== 1 ? "s" : ""} extraído
+                {items.length !== 1 ? "s" : ""}. Revisa y edita antes de
+                guardar.
+              </p>
+              <p className="text-muted-foreground text-xs">
+                Vista previa de guardado: {groupPreview.totalRows} fila
+                {groupPreview.totalRows !== 1 ? "s" : ""} →{" "}
+                {groupPreview.groupedItems} producto
+                {groupPreview.groupedItems !== 1 ? "s" : ""} con{" "}
+                {groupPreview.totalRows} variante
+                {groupPreview.totalRows !== 1 ? "s" : ""}
+                {groupPreview.multiVariantItems > 0
+                  ? ` (${groupPreview.multiVariantItems} con múltiples variantes)`
+                  : ""}
+              </p>
+            </div>
             <Button
               variant="outline"
               size="sm"
