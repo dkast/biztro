@@ -1,8 +1,10 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import type { CellSelectOption } from "@/types/data-grid"
 import * as Sentry from "@sentry/nextjs"
+import type { ColumnDef } from "@tanstack/react-table"
 import {
   AlertCircle,
   FileText,
@@ -15,24 +17,18 @@ import {
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 
+import { DataGrid } from "@/components/data-grid/data-grid"
+import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "@/components/ui/table"
 import { bulkCreateItems } from "@/server/actions/item/mutations"
 import {
   parsePdfMenu,
   type PdfMenuItem
 } from "@/server/actions/item/pdf-mutations"
+import { useDataGrid } from "@/hooks/use-data-grid"
 import { MenuItemStatus } from "@/lib/types"
 
 type EditableItem = PdfMenuItem & { _id: string }
@@ -53,11 +49,12 @@ export default function PdfImportForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [parseError, setParseError] = useState<string | null>(null)
 
-  const { execute: executeParse } = useAction(parsePdfMenu, {
+  const { execute: executeParse, reset } = useAction(parsePdfMenu, {
     onSuccess: response => {
       if (response.data?.failure) {
         setParseError(response.data.failure.reason)
         setIsParsing(false)
+        reset()
         return
       }
       const extracted = (response.data?.success ?? []).map(item => ({
@@ -66,6 +63,7 @@ export default function PdfImportForm() {
       }))
       setItems(extracted)
       setIsParsing(false)
+      reset()
     },
     onError: error => {
       console.error(error)
@@ -75,26 +73,29 @@ export default function PdfImportForm() {
     }
   })
 
-  const { execute: executeBulkCreate, isPending: isSaving } = useAction(
-    bulkCreateItems,
-    {
-      onSuccess: response => {
-        if (response.data?.failure) {
-          toast.error(response.data.failure.reason)
-          return
-        }
-        toast.success(
-          `${response.data?.success?.length} productos importados correctamente`
-        )
-        router.push("/dashboard/menu-items")
-      },
-      onError: error => {
-        console.error(error)
-        Sentry.captureException(error, { tags: { section: "pdf-import-save" } })
-        toast.error("Error al guardar los productos")
+  const {
+    execute: executeBulkCreate,
+    isPending: isSaving,
+    reset: resetBulkCreate
+  } = useAction(bulkCreateItems, {
+    onSuccess: response => {
+      if (response.data?.failure) {
+        toast.error(response.data.failure.reason)
+        resetBulkCreate()
+        return
       }
+      toast.success(
+        `${response.data?.success?.length} productos importados correctamente`
+      )
+      resetBulkCreate()
+      router.push("/dashboard/menu-items")
+    },
+    onError: error => {
+      console.error(error)
+      Sentry.captureException(error, { tags: { section: "pdf-import-save" } })
+      toast.error("Error al guardar los productos")
     }
-  )
+  })
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -136,19 +137,138 @@ export default function PdfImportForm() {
     reader.readAsDataURL(selectedFile)
   }, [selectedFile, executeParse, simulateResponse])
 
-  const handleUpdateItem = (
-    id: string,
-    field: keyof PdfMenuItem,
-    value: string | number
-  ) => {
-    setItems(prev =>
-      prev.map(item => (item._id === id ? { ...item, [field]: value } : item))
-    )
-  }
-
-  const handleDeleteItem = (id: string) => {
+  const handleDeleteItem = useCallback((id: string) => {
     setItems(prev => prev.filter(item => item._id !== id))
-  }
+  }, [])
+
+  const currencyOptions: CellSelectOption[] = useMemo(
+    () => [
+      { label: "MXN", value: "MXN" },
+      { label: "USD", value: "USD" }
+    ],
+    []
+  )
+
+  const handleDataChange = useCallback((newData: EditableItem[]) => {
+    setItems(
+      newData.map(item => ({
+        ...item,
+        description: item.description ?? "",
+        category: item.category ?? "",
+        currency: item.currency === "USD" ? "USD" : "MXN",
+        price:
+          typeof item.price === "number" && !Number.isNaN(item.price)
+            ? item.price
+            : 0
+      }))
+    )
+  }, [])
+
+  const handleRowsDelete = useCallback((rows: EditableItem[]) => {
+    if (rows.length === 0) return
+
+    const idsToDelete = new Set(rows.map(row => row._id))
+    setItems(prev => prev.filter(item => !idsToDelete.has(item._id)))
+  }, [])
+
+  const columns: ColumnDef<EditableItem>[] = useMemo(
+    () => [
+      {
+        id: "name",
+        accessorKey: "name",
+        header: "Nombre *",
+        size: 220,
+        minSize: 180,
+        meta: {
+          label: "Nombre",
+          cell: { variant: "short-text" as const }
+        }
+      },
+      {
+        id: "description",
+        accessorKey: "description",
+        header: "Descripción",
+        size: 300,
+        minSize: 220,
+        meta: {
+          label: "Descripción",
+          cell: { variant: "long-text" as const }
+        }
+      },
+      {
+        id: "price",
+        accessorKey: "price",
+        header: "Precio *",
+        size: 140,
+        minSize: 120,
+        meta: {
+          label: "Precio",
+          cell: {
+            variant: "number" as const,
+            min: 0,
+            step: 0.01
+          }
+        }
+      },
+      {
+        id: "category",
+        accessorKey: "category",
+        header: "Categoría",
+        size: 180,
+        minSize: 140,
+        meta: {
+          label: "Categoría",
+          cell: { variant: "short-text" as const }
+        }
+      },
+      {
+        id: "currency",
+        accessorKey: "currency",
+        header: "Moneda",
+        size: 120,
+        minSize: 100,
+        meta: {
+          label: "Moneda",
+          cell: {
+            variant: "select" as const,
+            options: currencyOptions
+          }
+        }
+      },
+      {
+        id: "actions",
+        header: () => <span className="sr-only">Acciones</span>,
+        size: 64,
+        minSize: 64,
+        maxSize: 64,
+        enableSorting: false,
+        enableColumnFilter: false,
+        cell: ({ row }) => (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleDeleteItem(row.original._id)}
+            disabled={isSaving}
+            className="size-8"
+            aria-label="Eliminar producto"
+          >
+            <Trash2 className="size-4" />
+          </Button>
+        )
+      }
+    ],
+    [currencyOptions, handleDeleteItem, isSaving]
+  )
+
+  const { table, ...dataGridProps } = useDataGrid({
+    data: items,
+    columns,
+    onDataChange: handleDataChange,
+    onRowsDelete: handleRowsDelete,
+    getRowId: row => row._id,
+    enableSearch: true,
+    readOnly: isSaving
+  })
 
   const handleAddItem = () => {
     setItems(prev => [
@@ -275,109 +395,15 @@ export default function PdfImportForm() {
             </Button>
           </div>
 
-          <div className="overflow-auto rounded-lg border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="min-w-45">Nombre *</TableHead>
-                  <TableHead className="min-w-55">Descripción</TableHead>
-                  <TableHead className="min-w-25">Precio *</TableHead>
-                  <TableHead className="min-w-32.5">Categoría</TableHead>
-                  <TableHead className="min-w-22.5">Moneda</TableHead>
-                  <TableHead className="w-10" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {items.map(item => (
-                  <TableRow key={item._id}>
-                    <TableCell>
-                      <Input
-                        value={item.name}
-                        onChange={e =>
-                          handleUpdateItem(item._id, "name", e.target.value)
-                        }
-                        placeholder="Nombre del producto"
-                        disabled={isSaving}
-                        className="h-8 text-sm"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        value={item.description ?? ""}
-                        onChange={e =>
-                          handleUpdateItem(
-                            item._id,
-                            "description",
-                            e.target.value
-                          )
-                        }
-                        placeholder="Descripción"
-                        disabled={isSaving}
-                        className="h-8 text-sm"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        value={item.price}
-                        onChange={e =>
-                          handleUpdateItem(
-                            item._id,
-                            "price",
-                            parseFloat(e.target.value) || 0
-                          )
-                        }
-                        disabled={isSaving}
-                        className="h-8 text-sm"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        value={item.category ?? ""}
-                        onChange={e =>
-                          handleUpdateItem(item._id, "category", e.target.value)
-                        }
-                        placeholder="Categoría"
-                        disabled={isSaving}
-                        className="h-8 text-sm"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <select
-                        value={item.currency ?? "MXN"}
-                        onChange={e =>
-                          handleUpdateItem(
-                            item._id,
-                            "currency",
-                            e.target.value as "MXN" | "USD"
-                          )
-                        }
-                        disabled={isSaving}
-                        className="border-input bg-background text-foreground
-                          h-8 w-full rounded-md border px-2 text-sm"
-                      >
-                        <option value="MXN">MXN</option>
-                        <option value="USD">USD</option>
-                      </select>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteItem(item._id)}
-                        disabled={isSaving}
-                        className="size-8"
-                        aria-label="Eliminar producto"
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div className="rounded-lg border">
+            <DataGridKeyboardShortcuts enableSearch />
+            <DataGrid
+              table={table}
+              {...dataGridProps}
+              columns={columns}
+              height={400}
+              stretchColumns
+            />
           </div>
 
           <div className="flex justify-end">
