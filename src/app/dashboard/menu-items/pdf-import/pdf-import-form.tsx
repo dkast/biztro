@@ -363,16 +363,18 @@ export default function PdfImportForm({
   return (
     <div className="flex flex-col gap-6">
       {/* File Upload */}
-      <div className="flex flex-col gap-3">
+      <div className="flex w-full flex-col gap-3">
         <div
-          className="flex cursor-pointer flex-col items-center justify-center
-            gap-3 rounded-lg border-2 border-dashed border-gray-300 p-8
-            transition-colors hover:border-gray-400 hover:bg-gray-50
-            dark:border-gray-700 dark:hover:border-gray-600
-            dark:hover:bg-gray-900/50"
+          className="group border-border hover:border-primary
+            hover:bg-primary/10 flex cursor-pointer flex-col items-center
+            justify-center gap-3 rounded-lg border-2 border-dashed p-8
+            transition-colors"
           onClick={() => fileInputRef.current?.click()}
         >
-          <FileText className="text-muted-foreground size-10" />
+          <FileText
+            className="text-muted-foreground group-hover:text-primary size-10
+              transition-colors"
+          />
           <div className="text-center">
             <p className="text-sm font-medium">
               {selectedFile ? selectedFile.name : "Selecciona un archivo PDF"}
@@ -393,15 +395,6 @@ export default function PdfImportForm({
 
         {selectedFile && (
           <div className="flex flex-col gap-3">
-            {/* <div className="flex items-center gap-3">
-              <p className="text-sm">
-                Simulación AI:
-                <span className="font-medium">
-                  {simulateEnabled ? "Disponible" : "Desactivada"}
-                </span>
-              </p>
-            </div> */}
-
             {simulateEnabled && simulateResponse && (
               <div className="flex items-center gap-3">
                 <Label htmlFor="simulate-scenario" className="text-sm">

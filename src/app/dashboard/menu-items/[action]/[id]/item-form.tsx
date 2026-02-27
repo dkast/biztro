@@ -15,7 +15,6 @@ import type { z } from "zod/v4"
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { ImageField } from "@/components/dashboard/image-field"
 import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
-import PageSubtitle from "@/components/dashboard/page-subtitle"
 import {
   Combobox,
   ComboboxContent,
@@ -298,12 +297,13 @@ export default function ItemForm({
   return (
     <div className="pb-20">
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <PageSubtitle
-          className="border-border bg-background sticky top-18 z-10 rounded-xl
-            border px-4 py-3 shadow-xs group-[.is-dialog]:top-0"
+        <div
+          className="border-border bg-background sticky top-18 z-10 flex
+            items-center justify-between rounded-xl border px-4 py-3 shadow-xs
+            group-[.is-dialog]:top-0"
         >
-          <PageSubtitle.Title>{title}</PageSubtitle.Title>
-          <PageSubtitle.Actions>
+          <h4>{title}</h4>
+          <div>
             <div className="flex gap-2">
               <Button
                 type="button"
@@ -323,8 +323,8 @@ export default function ItemForm({
                 </TextMorph>
               </Button>
             </div>
-          </PageSubtitle.Actions>
-        </PageSubtitle>
+          </div>
+        </div>
         <div className="mt-10">
           <FieldGroup>
             <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3">

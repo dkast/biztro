@@ -236,7 +236,7 @@ function ContextMenuImpl<TData>({
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onSelect={onDelete}>
               <Trash2Icon />
-              Delete rows
+              Eliminar fila(s)
             </DropdownMenuItem>
           </>
         )}

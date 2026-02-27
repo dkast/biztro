@@ -350,8 +350,8 @@ export default function ItemImport() {
           </DialogHeader>
 
           <Button
-            variant="link"
-            className="mb-4 h-fit w-fit p-0 text-green-600 dark:text-green-400"
+            variant="outline"
+            className="mb-4 text-green-600 dark:text-green-400"
             onClick={handleDownloadTemplate}
             disabled={isPending}
           >

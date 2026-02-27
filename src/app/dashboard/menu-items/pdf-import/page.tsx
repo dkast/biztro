@@ -23,18 +23,13 @@ export default async function PdfImportPage() {
   const simulateEnabled = await simulatePdfAi()
 
   return (
-    <div className="mx-auto w-full max-w-5xl grow px-4 sm:px-6">
+    <div className="mx-auto w-full grow px-4 sm:px-6">
       <PageSubtitle>
         <PageSubtitle.Icon icon={FileText} />
         <PageSubtitle.Title>Importar desde PDF</PageSubtitle.Title>
         <PageSubtitle.Description>
           Sube un PDF de tu menú y extrae los productos automáticamente con IA
         </PageSubtitle.Description>
-        <PageSubtitle.Actions>
-          <Button variant="outline" asChild size="sm">
-            <Link href="/dashboard/menu-items">Cancelar</Link>
-          </Button>
-        </PageSubtitle.Actions>
       </PageSubtitle>
       <div className="mt-6">
         <PdfImportForm simulateEnabled={simulateEnabled} />

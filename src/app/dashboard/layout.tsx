@@ -19,7 +19,7 @@ export default async function Layout({
   const organization = getCurrentOrganization()
 
   return (
-    <div className="flex grow flex-col">
+    <div className="flex grow flex-col overscroll-contain">
       <SidebarProvider>
         <Sidebar>
           <Suspense fallback={<SkeletonWorkgroup />}>
@@ -27,7 +27,8 @@ export default async function Layout({
           </Suspense>
         </Sidebar>
         <main
-          className="relative flex grow flex-col bg-gray-50 dark:bg-gray-950"
+          className="relative flex grow flex-col overscroll-contain bg-white
+            dark:bg-gray-950"
         >
           <Header showLogo={false} className="sticky top-0 z-10 w-full">
             <SidebarTrigger className="size-5 text-gray-400 dark:text-gray-500" />
