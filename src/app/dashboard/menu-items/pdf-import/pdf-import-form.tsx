@@ -9,13 +9,14 @@ import {
   AlertCircle,
   FileText,
   Loader,
-  Plus,
   Save,
+  SparklesIcon,
   Trash2,
   Upload
 } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
+import { TextMorph } from "torph/react"
 
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
@@ -185,9 +186,28 @@ export default function PdfImportForm({
   const handleRowsDelete = useCallback((rows: EditableItem[]) => {
     if (rows.length === 0) return
 
-    const idsToDelete = new Set(rows.map(row => row._id))
-    setItems(prev => prev.filter(item => !idsToDelete.has(item._id)))
+    setItems(prev => prev.filter(row => !rows.includes(row)))
   }, [])
+
+  const handleRowAdd = useCallback(() => {
+    setItems(prev => [
+      ...prev,
+      {
+        _id: generateId(),
+        name: "",
+        variantName: "Regular",
+        description: "",
+        price: 0,
+        category: "",
+        currency: "MXN"
+      }
+    ])
+
+    return {
+      rowIndex: items.length,
+      columnId: "name"
+    }
+  }, [items.length])
 
   const columns: ColumnDef<EditableItem>[] = useMemo(
     () => [
@@ -293,6 +313,7 @@ export default function PdfImportForm({
     data: items,
     columns,
     onDataChange: handleDataChange,
+    onRowAdd: handleRowAdd,
     onRowsDelete: handleRowsDelete,
     getRowId: row => row._id,
     enableSearch: true,
@@ -325,21 +346,6 @@ export default function PdfImportForm({
       multiVariantItems
     }
   }, [items])
-
-  const handleAddItem = () => {
-    setItems(prev => [
-      ...prev,
-      {
-        _id: generateId(),
-        name: "",
-        variantName: "Regular",
-        description: "",
-        price: 0,
-        category: "",
-        currency: "MXN"
-      }
-    ])
-  }
 
   const handleSave = () => {
     const validItems = items.filter(item => item.name.trim())
@@ -394,7 +400,7 @@ export default function PdfImportForm({
         </div>
 
         {selectedFile && (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col items-center justify-center gap-3">
             {simulateEnabled && simulateResponse && (
               <div className="flex items-center gap-3">
                 <Label htmlFor="simulate-scenario" className="text-sm">
@@ -420,15 +426,11 @@ export default function PdfImportForm({
               </div>
             )}
 
-            <Button
-              onClick={handleParse}
-              disabled={isParsing || isSaving}
-              className="self-start"
-            >
+            <Button onClick={handleParse} disabled={isParsing || isSaving}>
               {isParsing ? (
-                <Loader className="mr-2 size-4 animate-spin" />
+                <Loader className="mr-1 size-4 animate-spin" />
               ) : (
-                <Upload className="mr-2 size-4" />
+                <SparklesIcon className="mr-1 size-4 fill-current" />
               )}
               {isParsing
                 ? "Extrayendo productos..."
@@ -452,34 +454,11 @@ export default function PdfImportForm({
       {/* Items Table */}
       {items.length > 0 && (
         <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">
-                {items.length} producto{items.length !== 1 ? "s" : ""} extraído
-                {items.length !== 1 ? "s" : ""}. Revisa y edita antes de
-                guardar.
-              </p>
-              <p className="text-muted-foreground text-xs">
-                Vista previa de guardado: {groupPreview.totalRows} fila
-                {groupPreview.totalRows !== 1 ? "s" : ""} →{" "}
-                {groupPreview.groupedItems} producto
-                {groupPreview.groupedItems !== 1 ? "s" : ""} con{" "}
-                {groupPreview.totalRows} variante
-                {groupPreview.totalRows !== 1 ? "s" : ""}
-                {groupPreview.multiVariantItems > 0
-                  ? ` (${groupPreview.multiVariantItems} con múltiples variantes)`
-                  : ""}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleAddItem}
-              disabled={isSaving}
-            >
-              <Plus className="mr-1 size-4" />
-              Agregar producto
-            </Button>
+          <div className="flex flex-row items-baseline gap-2">
+            <p className="text-sm font-medium">
+              {items.length} producto{items.length !== 1 ? "s" : ""} extraído
+              {items.length !== 1 ? "s" : ""}. Revisa y edita antes de guardar.
+            </p>
           </div>
 
           <div className="rounded-lg border">
@@ -493,14 +472,29 @@ export default function PdfImportForm({
             />
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex justify-between">
+            <p className="text-muted-foreground text-xs">
+              {groupPreview.totalRows} fila
+              {groupPreview.totalRows !== 1 ? "s" : ""} →{" "}
+              {groupPreview.groupedItems} producto
+              {groupPreview.groupedItems !== 1 ? "s" : ""} con{" "}
+              {groupPreview.totalRows} variante
+              {groupPreview.totalRows !== 1 ? "s" : ""}
+              {groupPreview.multiVariantItems > 0
+                ? ` (${groupPreview.multiVariantItems} con múltiples variantes)`
+                : ""}
+            </p>
             <Button onClick={handleSave} disabled={isSaving}>
               {isSaving ? (
-                <Loader className="mr-2 size-4 animate-spin" />
+                <Loader className="mr-1 size-4 animate-spin" />
               ) : (
-                <Save className="mr-2 size-4" />
+                <Save className="mr-1 size-4" />
               )}
-              {isSaving ? "Guardando..." : `Guardar ${items.length} productos`}
+              <TextMorph>
+                {isSaving
+                  ? "Guardando..."
+                  : `Guardar ${items.length} productos`}
+              </TextMorph>
             </Button>
           </div>
         </div>
