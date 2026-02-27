@@ -72,7 +72,10 @@ export function OnboardingCards({
       </div>
       <CollapsibleContent>
         <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-          <Card className="rounded-xl p-0">
+          <Card
+            className="rounded-xl bg-white/70 p-0 backdrop-blur-lg
+              dark:bg-black/30"
+          >
             <CardHeader
               className="flex flex-row items-center justify-between space-y-1
                 p-3 pb-1"
@@ -110,7 +113,10 @@ export function OnboardingCards({
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl p-0">
+          <Card
+            className="rounded-xl bg-white/70 p-0 backdrop-blur-lg
+              dark:bg-black/30"
+          >
             <CardHeader
               className="flex flex-row items-center justify-between space-y-1
                 p-3 pb-1"
@@ -148,7 +154,10 @@ export function OnboardingCards({
             </CardContent>
           </Card>
 
-          <Card className="rounded-xl p-0">
+          <Card
+            className="rounded-xl bg-white/70 p-0 backdrop-blur-lg
+              dark:bg-black/30"
+          >
             <CardHeader
               className="flex flex-row items-center justify-between space-y-1
                 p-3 pb-1"

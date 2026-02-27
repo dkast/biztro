@@ -38,10 +38,36 @@ export default async function DashboardPage() {
   const menus = getMenus(currentOrg?.id as string)
 
   return (
-    <div className="flex grow bg-gray-50 pb-4 dark:bg-gray-950">
+    <div className="relative flex grow pb-4">
+      {/* Light mode gradient */}
       <div
-        className="mx-auto grid grow auto-rows-min justify-center gap-10 px-4
-          py-10 sm:grid-cols-300 sm:px-6 sm:py-12"
+        className="absolute inset-0 z-0 dark:hidden"
+        style={{
+          background: `
+          radial-gradient(ellipse 120% 80% at 70% 20%, rgba(255, 20, 147, 0.06), transparent 50%),
+          radial-gradient(ellipse 100% 60% at 30% 10%, rgba(0, 200, 220, 0.05), transparent 60%),
+          radial-gradient(ellipse 90% 70% at 50% 0%, rgba(138, 43, 226, 0.07), transparent 65%),
+          radial-gradient(ellipse 110% 50% at 80% 30%, rgba(255, 180, 0, 0.04), transparent 40%),
+          transparent
+        `
+        }}
+      />
+      {/* Dark mode gradient */}
+      <div
+        className="absolute inset-0 z-0 hidden dark:block"
+        style={{
+          background: `
+          radial-gradient(ellipse 120% 80% at 70% 20%, rgba(255, 20, 147, 0.15), transparent 50%),
+          radial-gradient(ellipse 100% 60% at 30% 10%, rgba(0, 255, 255, 0.12), transparent 60%),
+          radial-gradient(ellipse 90% 70% at 50% 0%, rgba(138, 43, 226, 0.18), transparent 65%),
+          radial-gradient(ellipse 110% 50% at 80% 30%, rgba(255, 215, 0, 0.08), transparent 40%),
+          transparent
+        `
+        }}
+      />
+      <div
+        className="z-10 mx-auto grid grow auto-rows-min justify-center gap-10
+          px-4 py-10 sm:grid-cols-300 sm:px-6 sm:py-12"
       >
         <div className="col-span-full">
           <Suspense fallback={<OnboardingSkeleton />}>
@@ -61,7 +87,12 @@ export default async function DashboardPage() {
             </PageSubtitle.Info>
             <PageSubtitle.Actions>
               {currentOrg?.slug && (
-                <Item size="sm" variant="outline" asChild>
+                <Item
+                  size="sm"
+                  variant="outline"
+                  className="bg-white/70 dark:bg-black/30"
+                  asChild
+                >
                   <Link
                     href={`/${currentOrg.slug}`}
                     className="block w-full"
