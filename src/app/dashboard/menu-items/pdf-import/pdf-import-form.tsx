@@ -428,9 +428,9 @@ export default function PdfImportForm({
 
             <Button onClick={handleParse} disabled={isParsing || isSaving}>
               {isParsing ? (
-                <Loader className="mr-1 size-4 animate-spin" />
+                <Loader className="size-4 animate-spin" />
               ) : (
-                <SparklesIcon className="mr-1 size-4 fill-current" />
+                <SparklesIcon className="size-4 fill-current" />
               )}
               {isParsing
                 ? "Extrayendo productos..."
@@ -486,9 +486,9 @@ export default function PdfImportForm({
             </p>
             <Button onClick={handleSave} disabled={isSaving}>
               {isSaving ? (
-                <Loader className="mr-1 size-4 animate-spin" />
+                <Loader className="size-4 animate-spin" />
               ) : (
-                <Save className="mr-1 size-4" />
+                <Save className="size-4" />
               )}
               <TextMorph>
                 {isSaving
