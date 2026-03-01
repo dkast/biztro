@@ -157,7 +157,7 @@ export default function ToolboxPanel({
               categoryColor={hexToRgba(selectedColorTheme.accentColor)}
               // categoryHeadingBgColor={selectedColorTheme.brandColor}
               itemColor={hexToRgba(selectedColorTheme.textColor)}
-              priceColor={hexToRgba(selectedColorTheme.accentColor)}
+              priceColor={hexToRgba(selectedColorTheme.textColor)}
               descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
             />
           )
@@ -199,7 +199,7 @@ export default function ToolboxPanel({
               priceFontFamily={selectedFontTheme.fontText}
               descriptionFontFamily={selectedFontTheme.fontText}
               itemColor={hexToRgba(selectedColorTheme.textColor)}
-              priceColor={hexToRgba(selectedColorTheme.accentColor)}
+              priceColor={hexToRgba(selectedColorTheme.textColor)}
               descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
             />
           )

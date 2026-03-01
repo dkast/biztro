@@ -249,7 +249,7 @@ export default function ThemeSelector({
                 categoryColor: hexToRgba(selectedTheme.accentColor),
                 // categoryHeadingBgColor: hexToRgba(selectedTheme.surfaceColor),
                 itemColor: hexToRgba(selectedTheme.textColor),
-                priceColor: hexToRgba(selectedTheme.accentColor),
+                priceColor: hexToRgba(selectedTheme.textColor),
                 descriptionColor: hexToRgba(selectedTheme.mutedColor)
               }))
             })
@@ -258,7 +258,7 @@ export default function ThemeSelector({
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {
                 itemColor: hexToRgba(selectedTheme.textColor),
-                priceColor: hexToRgba(selectedTheme.accentColor),
+                priceColor: hexToRgba(selectedTheme.textColor),
                 descriptionColor: hexToRgba(selectedTheme.mutedColor)
               }))
             })
