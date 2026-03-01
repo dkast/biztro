@@ -5,7 +5,7 @@ import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
-import PdfImportForm from "@/app/dashboard/menu-items/pdf-import/pdf-import-form"
+import PdfImportForm from "@/app/dashboard/menu-items/menu-import/menu-import-form"
 
 export const metadata: Metadata = {
   title: "Importar Productos desde Archivo"

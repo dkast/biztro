@@ -3,6 +3,8 @@
 import { Prisma } from "@/generated/prisma-client/client"
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import * as Sentry from "@sentry/nextjs"
+import { gateway, generateText, Output } from "ai"
+import { MockLanguageModelV3 } from "ai/test"
 import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
@@ -31,6 +33,261 @@ const R2 = new S3Client({
     secretAccessKey: env.R2_SECRET_KEY_ID
   }
 })
+
+const menuImportItemSchema = z.object({
+  items: z.array(
+    z.object({
+      name: z.string().describe("Name of the menu item"),
+      variantName: z
+        .string()
+        .optional()
+        .describe("Variant or size name, e.g. Chico, Mediano, Grande"),
+      description: z
+        .string()
+        .optional()
+        .describe("Description of the menu item"),
+      price: z.number().describe("Price of the menu item as a number"),
+      category: z.string().optional().describe("Category the item belongs to"),
+      currency: z
+        .enum(["MXN", "USD"])
+        .optional()
+        .describe("Currency code, either MXN or USD")
+    })
+  )
+})
+
+export type MenuImportItem = z.infer<
+  typeof menuImportItemSchema
+>["items"][number]
+
+const supportedUploadMimeTypeSchema = z.enum([
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+  "image/webp"
+])
+
+const mockedMenuImportResult = {
+  items: [
+    {
+      name: "Tacos al Pastor",
+      variantName: "Regular",
+      description: "Tortilla de maíz con cerdo adobado y piña",
+      price: 95,
+      category: "Tacos",
+      currency: "MXN" as const
+    },
+    {
+      name: "Quesadilla de Champiñones",
+      variantName: "Regular",
+      description: "Queso Oaxaca, champiñones salteados y salsa verde",
+      price: 88,
+      category: "Antojitos",
+      currency: "MXN" as const
+    },
+    {
+      name: "Limonada",
+      variantName: "Regular",
+      description: "Bebida fresca de limón natural",
+      price: 45,
+      category: "Bebidas",
+      currency: "MXN" as const
+    }
+  ]
+}
+
+const mockedMenuImportWithVariantsResult = {
+  items: [
+    {
+      name: "Hamburguesa Clásica",
+      variantName: "Sencilla",
+      description: "Carne de res, lechuga, jitomate y aderezo especial",
+      price: 119,
+      category: "Hamburguesas",
+      currency: "MXN" as const
+    },
+    {
+      name: "Hamburguesa Clásica",
+      variantName: "Doble",
+      description: "Carne de res, lechuga, jitomate y aderezo especial",
+      price: 149,
+      category: "Hamburguesas",
+      currency: "MXN" as const
+    },
+    {
+      name: "Limonada",
+      variantName: "Chica",
+      description: "Bebida fresca de limón natural",
+      price: 39,
+      category: "Bebidas",
+      currency: "MXN" as const
+    },
+    {
+      name: "Limonada",
+      variantName: "Grande",
+      description: "Bebida fresca de limón natural",
+      price: 59,
+      category: "Bebidas",
+      currency: "MXN" as const
+    }
+  ]
+}
+
+const createMockMenuImportModel = (scenario: "default" | "variants") =>
+  new MockLanguageModelV3({
+    doGenerate: async () => ({
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            scenario === "variants"
+              ? mockedMenuImportWithVariantsResult
+              : mockedMenuImportResult
+          )
+        }
+      ],
+      finishReason: { unified: "stop", raw: undefined },
+      usage: {
+        inputTokens: {
+          total: 10,
+          noCache: 10,
+          cacheRead: undefined,
+          cacheWrite: undefined
+        },
+        outputTokens: {
+          total: 40,
+          text: 40,
+          reasoning: undefined
+        }
+      },
+      warnings: []
+    })
+  })
+
+/**
+ * Parses a menu file (PDF or image) and extracts structured menu items using AI.
+ */
+export const parseMenuFile = authMemberActionClient
+  .inputSchema(
+    z.object({
+      fileBase64: z
+        .string()
+        .min(1)
+        .describe("Base64 encoded file content (PDF or image)"),
+      mimeType: supportedUploadMimeTypeSchema.describe(
+        "Uploaded file MIME type (PDF or image)"
+      ),
+      simulateResponse: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe("When true, simulates AI response using AI SDK test mocks"),
+      simulateScenario: z
+        .enum(["default", "variants"])
+        .optional()
+        .default("default")
+        .describe("Mock response scenario for testing")
+    })
+  )
+  .action(
+    async ({
+      parsedInput: { fileBase64, mimeType, simulateResponse, simulateScenario }
+    }) => {
+      if (simulateResponse) {
+        try {
+          const result = await generateText({
+            model: createMockMenuImportModel(simulateScenario),
+            output: Output.object({ schema: menuImportItemSchema }),
+            prompt: "Extract menu items from this menu file"
+          })
+
+          return {
+            success: result.output.items
+          }
+        } catch (error) {
+          console.error(error)
+          Sentry.captureException(error, {
+            tags: { section: "menu-import-mock" }
+          })
+
+          return {
+            failure: {
+              reason:
+                "No se pudo simular la extracción del archivo. Intenta nuevamente."
+            }
+          }
+        }
+      }
+
+      if (!env.AI_GATEWAY_API_KEY) {
+        return {
+          failure: {
+            reason:
+              "La funcionalidad de importar archivos requiere configurar una clave de API del AI Gateway"
+          }
+        }
+      }
+
+      const fileOrImageContent =
+        mimeType === "application/pdf"
+          ? {
+              type: "file" as const,
+              data: fileBase64,
+              mediaType: mimeType
+            }
+          : {
+              type: "image" as const,
+              image: `data:${mimeType};base64,${fileBase64}`
+            }
+
+      try {
+        const result = await generateText({
+          model: gateway("mistral/mistral-small-latest"),
+          output: Output.object({ schema: menuImportItemSchema }),
+          messages: [
+            {
+              role: "user",
+              content: [
+                fileOrImageContent,
+                {
+                  type: "text",
+                  text: `Extract all menu items from this menu file (PDF or image). For each item, extract:
+- name: the item name
+- variantName: if the item has sizes/presentations, include the variant label (e.g., Small/Medium/Large). If not present, use "Regular"
+- description: a brief description if available
+- price: the numeric price (just the number, no currency symbols)
+- category: the section or category the item belongs to (e.g., "Entradas", "Platos Principales", "Bebidas", etc.)
+- currency: if the currency is clearly stated use "MXN" or "USD", otherwise default to "MXN"
+
+Important extraction rules:
+1) If a section is add-ons/toppings (e.g., "Extras") and lists names under a shared section price, create one row per listed add-on using that shared price.
+2) If a section (e.g., beverages) lists item names and shows one shared price in an icon/circle/badge, apply that shared price to each listed beverage.
+3) If a price is not clearly tied to an item, infer using nearest visual grouping/section header; do not omit obvious items from grouped sections.
+
+Return all items you find in the menu. If an item has multiple variants, return multiple rows with the same name and different variantName/price.`
+                }
+              ]
+            }
+          ]
+        })
+
+        return {
+          success: result.output.items
+        }
+      } catch (error) {
+        console.error(error)
+        Sentry.captureException(error, {
+          tags: { section: "menu-import" }
+        })
+        return {
+          failure: {
+            reason:
+              "No se pudo procesar el archivo. Asegúrate de que sea un menú válido en PDF o imagen."
+          }
+        }
+      }
+    }
+  )
 
 /**
  * Creates a new item in the menu.

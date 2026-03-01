@@ -23,15 +23,15 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 // Simulation flag is provided by server; no local UI switch needed
-import { bulkCreateItems } from "@/server/actions/item/mutations"
 import {
-  parsePdfMenu,
-  type PdfMenuItem
-} from "@/server/actions/item/pdf-mutations"
+  bulkCreateItems,
+  parseMenuFile,
+  type MenuImportItem
+} from "@/server/actions/item/mutations"
 import { useDataGrid } from "@/hooks/use-data-grid"
 import { MenuItemStatus } from "@/lib/types"
 
-type EditableItem = PdfMenuItem & { _id: string }
+type EditableItem = MenuImportItem & { _id: string }
 
 const MAX_PDF_FILE_SIZE_MB = 6
 const MAX_PDF_FILE_SIZE_BYTES = MAX_PDF_FILE_SIZE_MB * 1024 * 1024
@@ -88,7 +88,7 @@ export default function PdfImportForm({
     useState<SupportedUploadMimeType | null>(null)
   const [parseError, setParseError] = useState<string | null>(null)
 
-  const { execute: executeParse, reset } = useAction(parsePdfMenu, {
+  const { execute: executeParse, reset } = useAction(parseMenuFile, {
     onSuccess: response => {
       if (response.data?.failure) {
         setParseError(response.data.failure.reason)

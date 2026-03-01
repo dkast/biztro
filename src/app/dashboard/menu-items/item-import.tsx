@@ -320,9 +320,9 @@ export default function ItemImport() {
               Exportar Productos
             </DropdownMenuItem>
             <DropdownMenuItem asChild disabled={isPending || isExporting}>
-              <Link href="/dashboard/menu-items/pdf-import">
+              <Link href="/dashboard/menu-items/menu-import">
                 <FileText className="size-4" />
-                Importar desde PDF
+                Importar desde menú
               </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
