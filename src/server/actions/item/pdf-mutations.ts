@@ -231,6 +231,11 @@ export const parsePdfMenu = authMemberActionClient
 - category: the section or category the item belongs to (e.g., "Entradas", "Platos Principales", "Bebidas", etc.)
 - currency: if the currency is clearly stated use "MXN" or "USD", otherwise default to "MXN"
 
+Important extraction rules:
+1) If a section is add-ons/toppings (e.g., "Extras") and lists names under a shared section price, create one row per listed add-on using that shared price.
+2) If a section (e.g., beverages) lists item names and shows one shared price in an icon/circle/badge, apply that shared price to each listed beverage.
+3) If a price is not clearly tied to an item, infer using nearest visual grouping/section header; do not omit obvious items from grouped sections.
+
 Return all items you find in the menu. If an item has multiple variants, return multiple rows with the same name and different variantName/price.`
                 }
               ]
