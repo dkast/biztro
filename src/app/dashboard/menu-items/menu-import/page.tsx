@@ -5,7 +5,7 @@ import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
-import PdfImportForm from "@/app/dashboard/menu-items/menu-import/menu-import-form"
+import MenuImportForm from "@/app/dashboard/menu-items/menu-import/menu-import-form"
 
 export const metadata: Metadata = {
   title: "Importar Productos desde Archivo"
@@ -31,7 +31,7 @@ export default async function PdfImportPage() {
         </PageSubtitle.Description>
       </PageSubtitle>
       <div className="mt-6">
-        <PdfImportForm simulateEnabled={simulateEnabled} />
+        <MenuImportForm simulateEnabled={simulateEnabled} />
       </div>
     </div>
   )

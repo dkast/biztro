@@ -319,12 +319,6 @@ export default function ItemImport() {
               <Download className="size-4" />
               Exportar Productos
             </DropdownMenuItem>
-            <DropdownMenuItem asChild disabled={isPending || isExporting}>
-              <Link href="/dashboard/menu-items/menu-import">
-                <FileText className="size-4" />
-                Importar desde menú
-              </Link>
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </ButtonGroup>
@@ -342,51 +336,96 @@ export default function ItemImport() {
             </div>
           )}
           <DialogHeader>
-            <DialogTitle>Importar productos desde CSV</DialogTitle>
-            <DialogDescription>
-              Sube un archivo CSV con las columnas: nombre, descripcion
-              (opcional), precio, categoria (opcional)
+            <DialogTitle className="text-balance">
+              Importar productos
+            </DialogTitle>
+            <DialogDescription className="text-pretty">
+              Elige cómo quieres importar tus productos.
             </DialogDescription>
           </DialogHeader>
 
-          <Button
-            variant="outline"
-            className="mb-4 text-green-600 dark:text-green-400"
-            onClick={handleDownloadTemplate}
-            disabled={isPending}
-          >
-            <FileSpreadsheet className="mr-1" />
-            Descargar plantilla CSV de ejemplo
-          </Button>
+          <div className="space-y-4">
+            <div className="rounded-lg border p-4">
+              <div className="mb-3 flex items-start gap-3">
+                <FileSpreadsheet className="text-muted-foreground size-5" />
+                <div>
+                  <p className="font-medium">Importar desde CSV</p>
+                  <p className="text-muted-foreground text-sm text-pretty">
+                    Sube un archivo CSV con las columnas: nombre, descripcion
+                    (opcional), precio y categoria (opcional).
+                  </p>
+                </div>
+              </div>
 
-          {errors.length > 0 && (
-            <Alert variant="destructive">
-              <AlertCircle className="size-4" />
-              <AlertTitle>Errores en el archivo</AlertTitle>
-              <AlertDescription>
-                <ul className="list-inside list-disc">
-                  {errors.map((error, i) => (
-                    <li key={i}>
-                      Fila {error.row}: {error.errors.join(", ")}
-                    </li>
-                  ))}
-                </ul>
-              </AlertDescription>
-            </Alert>
-          )}
+              <Button
+                variant="outline"
+                className="mb-4"
+                onClick={handleDownloadTemplate}
+                disabled={isPending}
+              >
+                <FileSpreadsheet className="mr-1" />
+                Descargar plantilla CSV de ejemplo
+              </Button>
 
-          <input
-            type="file"
-            accept=".csv"
-            onChange={handleFileUpload}
-            disabled={isPending}
-            aria-busy={isPending}
-            className="file:bg-primary file:text-primary-foreground
-              hover:file:bg-primary/90 cursor-pointer file:mr-4
-              file:cursor-pointer file:rounded-md file:border-0 file:px-4
-              file:py-2 file:text-sm file:font-semibold
-              disabled:cursor-not-allowed"
-          />
+              {errors.length > 0 && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="size-4" />
+                  <AlertTitle>Errores en el archivo</AlertTitle>
+                  <AlertDescription>
+                    <ul className="list-inside list-disc">
+                      {errors.map((error, i) => (
+                        <li key={i}>
+                          Fila {error.row}: {error.errors.join(", ")}
+                        </li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleFileUpload}
+                disabled={isPending}
+                aria-busy={isPending}
+                className="file:bg-primary file:text-primary-foreground
+                  hover:file:bg-primary/90 cursor-pointer file:mr-4
+                  file:cursor-pointer file:rounded-md file:border-0 file:px-4
+                  file:py-2 file:text-sm file:font-semibold
+                  disabled:cursor-not-allowed"
+              />
+            </div>
+            <div className="relative">
+              <div
+                className="animate-rotate-slow pointer-events-none absolute
+                  inset-0 rounded-lg bg-linear-to-r from-indigo-600 via-pink-600
+                  to-orange-600 opacity-50 blur-xs"
+              ></div>
+              <div
+                className="bg-background relative rounded-lg p-4 ring-1
+                  ring-black/10 dark:ring-white/15"
+              >
+                <div className="mb-3 flex items-start gap-3">
+                  <FileText className="text-muted-foreground size-5" />
+                  <div>
+                    <p className="font-medium">
+                      Importar desde PDF o imagen con IA
+                    </p>
+                    <p className="text-muted-foreground text-sm text-pretty">
+                      Usa el nuevo flujo con IA para extraer productos desde una
+                      carta, PDF o imagen de menú.
+                    </p>
+                  </div>
+                </div>
+                <Button asChild variant="outline" disabled={isPending}>
+                  <Link href="/dashboard/menu-items/menu-import">
+                    Importar tu menú con IA
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </>

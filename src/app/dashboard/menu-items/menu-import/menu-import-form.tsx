@@ -70,7 +70,7 @@ function generateId() {
   return Math.random().toString(36).slice(2)
 }
 
-export default function PdfImportForm({
+export default function MenuImportForm({
   simulateEnabled = true
 }: {
   simulateEnabled?: boolean
@@ -478,7 +478,12 @@ export default function PdfImportForm({
               </div>
             )}
 
-            <Button onClick={handleParse} disabled={isParsing || isSaving}>
+            <Button
+              onClick={handleParse}
+              disabled={isParsing || isSaving}
+              className="bg-linear-to-r/oklch from-indigo-500 via-pink-500
+                to-orange-500"
+            >
               {isParsing ? (
                 <Loader className="size-4 animate-spin" />
               ) : (
@@ -537,11 +542,7 @@ export default function PdfImportForm({
                 : ""}
             </p>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? (
-                <Loader className="size-4 animate-spin" />
-              ) : (
-                <Save className="size-4" />
-              )}
+              {isSaving && <Loader className="size-4 animate-spin" />}
               <TextMorph>
                 {isSaving
                   ? "Guardando..."
