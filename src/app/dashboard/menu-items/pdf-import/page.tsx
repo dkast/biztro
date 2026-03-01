@@ -1,16 +1,14 @@
 import { simulatePdfAi } from "@/flags"
 import { FileText } from "lucide-react"
 import type { Metadata } from "next"
-import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
-import { Button } from "@/components/ui/button"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import PdfImportForm from "@/app/dashboard/menu-items/pdf-import/pdf-import-form"
 
 export const metadata: Metadata = {
-  title: "Importar Productos desde PDF"
+  title: "Importar Productos desde Archivo"
 }
 
 export default async function PdfImportPage() {
@@ -26,9 +24,10 @@ export default async function PdfImportPage() {
     <div className="mx-auto w-full grow px-4 sm:px-6">
       <PageSubtitle>
         <PageSubtitle.Icon icon={FileText} />
-        <PageSubtitle.Title>Importar desde PDF</PageSubtitle.Title>
+        <PageSubtitle.Title>Importar desde PDF o imagen</PageSubtitle.Title>
         <PageSubtitle.Description>
-          Sube un PDF de tu menú y extrae los productos automáticamente con IA
+          Sube un PDF o imagen de tu menú y extrae los productos automáticamente
+          con IA
         </PageSubtitle.Description>
       </PageSubtitle>
       <div className="mt-6">

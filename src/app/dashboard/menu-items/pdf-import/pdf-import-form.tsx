@@ -11,8 +11,7 @@ import {
   Loader,
   Save,
   SparklesIcon,
-  Trash2,
-  Upload
+  Trash2
 } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
@@ -37,6 +36,36 @@ type EditableItem = PdfMenuItem & { _id: string }
 const MAX_PDF_FILE_SIZE_MB = 6
 const MAX_PDF_FILE_SIZE_BYTES = MAX_PDF_FILE_SIZE_MB * 1024 * 1024
 
+const SUPPORTED_UPLOAD_MIME_TYPES = [
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+  "image/webp"
+] as const
+
+type SupportedUploadMimeType = (typeof SUPPORTED_UPLOAD_MIME_TYPES)[number]
+
+const FILE_INPUT_ACCEPT =
+  ".pdf,application/pdf,.png,image/png,.jpg,.jpeg,image/jpeg,.webp,image/webp"
+
+function getSupportedMimeType(file: File): SupportedUploadMimeType | null {
+  if (
+    SUPPORTED_UPLOAD_MIME_TYPES.includes(file.type as SupportedUploadMimeType)
+  ) {
+    return file.type as SupportedUploadMimeType
+  }
+
+  const lowercaseName = file.name.toLowerCase()
+  if (lowercaseName.endsWith(".pdf")) return "application/pdf"
+  if (lowercaseName.endsWith(".png")) return "image/png"
+  if (lowercaseName.endsWith(".jpg") || lowercaseName.endsWith(".jpeg")) {
+    return "image/jpeg"
+  }
+  if (lowercaseName.endsWith(".webp")) return "image/webp"
+
+  return null
+}
+
 function generateId() {
   return Math.random().toString(36).slice(2)
 }
@@ -55,6 +84,8 @@ export default function PdfImportForm({
     "default" | "variants"
   >("default")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedMimeType, setSelectedMimeType] =
+    useState<SupportedUploadMimeType | null>(null)
   const [parseError, setParseError] = useState<string | null>(null)
 
   const { execute: executeParse, reset } = useAction(parsePdfMenu, {
@@ -99,6 +130,7 @@ export default function PdfImportForm({
       // Clear UI state: items grid and selected file
       setItems([])
       setSelectedFile(null)
+      setSelectedMimeType(null)
       setParseError(null)
       if (fileInputRef.current) fileInputRef.current.value = ""
       resetBulkCreate()
@@ -115,8 +147,18 @@ export default function PdfImportForm({
     const file = event.target.files?.[0]
     if (!file) return
 
+    const mimeType = getSupportedMimeType(file)
+    if (!mimeType) {
+      setSelectedFile(null)
+      setSelectedMimeType(null)
+      setItems([])
+      setParseError("Formato no soportado. Usa PDF, PNG, JPG/JPEG o WEBP.")
+      return
+    }
+
     if (file.size > MAX_PDF_FILE_SIZE_BYTES) {
       setSelectedFile(null)
+      setSelectedMimeType(null)
       setItems([])
       setParseError(
         `El archivo es demasiado grande. El tamaño máximo permitido es ${MAX_PDF_FILE_SIZE_MB} MB.`
@@ -125,12 +167,13 @@ export default function PdfImportForm({
     }
 
     setSelectedFile(file)
+    setSelectedMimeType(mimeType)
     setParseError(null)
     setItems([])
   }
 
   const handleParse = useCallback(async () => {
-    if (!selectedFile) return
+    if (!selectedFile || !selectedMimeType) return
     setIsParsing(true)
     setParseError(null)
 
@@ -143,7 +186,8 @@ export default function PdfImportForm({
         return
       }
       executeParse({
-        pdfBase64: base64,
+        fileBase64: base64,
+        mimeType: selectedMimeType,
         simulateResponse,
         simulateScenario
       })
@@ -153,7 +197,13 @@ export default function PdfImportForm({
       setIsParsing(false)
     }
     reader.readAsDataURL(selectedFile)
-  }, [selectedFile, executeParse, simulateResponse, simulateScenario])
+  }, [
+    selectedFile,
+    selectedMimeType,
+    executeParse,
+    simulateResponse,
+    simulateScenario
+  ])
 
   const handleDeleteItem = useCallback((id: string) => {
     setItems(prev => prev.filter(item => item._id !== id))
@@ -383,17 +433,19 @@ export default function PdfImportForm({
           />
           <div className="text-center">
             <p className="text-sm font-medium">
-              {selectedFile ? selectedFile.name : "Selecciona un archivo PDF"}
+              {selectedFile
+                ? selectedFile.name
+                : "Selecciona un archivo (PDF o imagen)"}
             </p>
             <p className="text-muted-foreground text-xs">
-              Haz clic para seleccionar un PDF de tu menú (máximo{" "}
+              Haz clic para seleccionar un PDF o imagen de tu menú (máximo{" "}
               {MAX_PDF_FILE_SIZE_MB} MB)
             </p>
           </div>
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,application/pdf"
+            accept={FILE_INPUT_ACCEPT}
             onChange={handleFileChange}
             className="hidden"
           />
@@ -436,7 +488,7 @@ export default function PdfImportForm({
                 ? "Extrayendo productos..."
                 : simulateResponse
                   ? "Simular extracción"
-                  : "Extraer productos del PDF"}
+                  : "Extraer productos del archivo"}
             </Button>
           </div>
         )}
@@ -446,7 +498,7 @@ export default function PdfImportForm({
       {parseError && (
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
-          <AlertTitle>Error al procesar el PDF</AlertTitle>
+          <AlertTitle>Error al procesar el archivo</AlertTitle>
           <AlertDescription>{parseError}</AlertDescription>
         </Alert>
       )}

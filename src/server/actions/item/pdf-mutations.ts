@@ -32,6 +32,13 @@ const pdfMenuItemSchema = z.object({
 
 export type PdfMenuItem = z.infer<typeof pdfMenuItemSchema>["items"][number]
 
+const supportedMimeTypeSchema = z.enum([
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+  "image/webp"
+])
+
 const mockedPdfExtractionResult = {
   items: [
     {
@@ -135,7 +142,13 @@ const createMockPdfModel = (scenario: "default" | "variants") =>
 export const parsePdfMenu = authMemberActionClient
   .inputSchema(
     z.object({
-      pdfBase64: z.string().min(1).describe("Base64 encoded PDF file content"),
+      fileBase64: z
+        .string()
+        .min(1)
+        .describe("Base64 encoded file content (PDF or image)"),
+      mimeType: supportedMimeTypeSchema.describe(
+        "Uploaded file MIME type (PDF or image)"
+      ),
       simulateResponse: z
         .boolean()
         .optional()
@@ -150,7 +163,7 @@ export const parsePdfMenu = authMemberActionClient
   )
   .action(
     async ({
-      parsedInput: { pdfBase64, simulateResponse, simulateScenario }
+      parsedInput: { fileBase64, mimeType, simulateResponse, simulateScenario }
     }) => {
       if (simulateResponse) {
         try {
@@ -182,10 +195,22 @@ export const parsePdfMenu = authMemberActionClient
         return {
           failure: {
             reason:
-              "La funcionalidad de importar PDF requiere configurar una clave de API del AI Gateway"
+              "La funcionalidad de importar archivos requiere configurar una clave de API del AI Gateway"
           }
         }
       }
+
+      const fileOrImageContent =
+        mimeType === "application/pdf"
+          ? {
+              type: "file" as const,
+              data: fileBase64,
+              mediaType: mimeType
+            }
+          : {
+              type: "image" as const,
+              image: `data:${mimeType};base64,${fileBase64}`
+            }
 
       try {
         const result = await generateObject({
@@ -195,14 +220,10 @@ export const parsePdfMenu = authMemberActionClient
             {
               role: "user",
               content: [
-                {
-                  type: "file",
-                  data: pdfBase64,
-                  mediaType: "application/pdf"
-                },
+                fileOrImageContent,
                 {
                   type: "text",
-                  text: `Extract all menu items from this PDF menu. For each item, extract:
+                  text: `Extract all menu items from this menu file (PDF or image). For each item, extract:
 - name: the item name
 - variantName: if the item has sizes/presentations, include the variant label (e.g., Small/Medium/Large). If not present, use "Regular"
 - description: a brief description if available
@@ -228,7 +249,7 @@ Return all items you find in the menu. If an item has multiple variants, return 
         return {
           failure: {
             reason:
-              "No se pudo procesar el PDF. Asegúrate de que el archivo sea un menú válido."
+              "No se pudo procesar el archivo. Asegúrate de que sea un menú válido en PDF o imagen."
           }
         }
       }
