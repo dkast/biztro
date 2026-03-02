@@ -8,13 +8,6 @@ resolved_path = "skills/dotagents"
 commit = "48327d48ecd02ed8bdd97b4d8839a6695132273f"
 integrity = "sha256-bVx96wBmjIF6NPfPH7GMDWUJLulbAHWZhRWi1UAZ6Ws="
 
-[skills.sentry-cocoa-sdk]
-source = "getsentry/sentry-agent-skills"
-resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
-resolved_path = "skills/sentry-cocoa-sdk"
-commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
-integrity = "sha256-eUeiTgTFGPJZ82KnUbHAu7JoLqE3BNxI5jhlE506Jbg="
-
 [skills.sentry-create-alert]
 source = "getsentry/sentry-agent-skills"
 resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
@@ -22,26 +15,12 @@ resolved_path = "skills/sentry-create-alert"
 commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
 integrity = "sha256-Z+DwVEFVdVsH4uDae4sZB45dCMZhCn0pzlqLRLJtONw="
 
-[skills.sentry-dotnet-sdk]
-source = "getsentry/sentry-agent-skills"
-resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
-resolved_path = "skills/sentry-dotnet-sdk"
-commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
-integrity = "sha256-cNH1LhxnxJNPnBIJL1W7X5cs8YXT6yk0tQAhZjmdmKg="
-
 [skills.sentry-fix-issues]
 source = "getsentry/sentry-agent-skills"
 resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
 resolved_path = "skills/sentry-fix-issues"
 commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
 integrity = "sha256-+61ENWSENnyIOON3R7hXnbctH6oO3nbb8ybrlfG8mbY="
-
-[skills.sentry-go-sdk]
-source = "getsentry/sentry-agent-skills"
-resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
-resolved_path = "skills/sentry-go-sdk"
-commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
-integrity = "sha256-yCC9yMSds0FqqzeGTW8SlMNmOqnCvhjG2RZCBIy1Fl4="
 
 [skills.sentry-nextjs-sdk]
 source = "getsentry/sentry-agent-skills"
@@ -64,34 +43,6 @@ resolved_path = "skills/sentry-pr-code-review"
 commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
 integrity = "sha256-o4SKbENEPJP6NOvqmSGrLT1bFdpkObrLYYLLtqT5Hbk="
 
-[skills.sentry-python-sdk]
-source = "getsentry/sentry-agent-skills"
-resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
-resolved_path = "skills/sentry-python-sdk"
-commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
-integrity = "sha256-VzsjJqurX8MGzxlJBWZYAI9P7dPEjnyHVGQPvFONU60="
-
-[skills.sentry-react-native-sdk]
-source = "getsentry/sentry-agent-skills"
-resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
-resolved_path = "skills/sentry-react-native-sdk"
-commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
-integrity = "sha256-ebz1KzRzxd7Q7lCk5n5vXEbPpZ9A+BTQ/Sd1YK+kufo="
-
-[skills.sentry-react-sdk]
-source = "getsentry/sentry-agent-skills"
-resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
-resolved_path = "skills/sentry-react-sdk"
-commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
-integrity = "sha256-DCJ5kyLwPqxjsMpgdXbDVupkJWz+nDH+s/KdLixiUXk="
-
-[skills.sentry-ruby-sdk]
-source = "getsentry/sentry-agent-skills"
-resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
-resolved_path = "skills/sentry-ruby-sdk"
-commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
-integrity = "sha256-ByHxok1+V6ZH4Wu3sxuVz9JKSnrZeoT+JLDYvfuQGtI="
-
 [skills.sentry-sdk-skill-creator]
 source = "getsentry/sentry-agent-skills"
 resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
@@ -105,10 +56,3 @@ resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
 resolved_path = "skills/sentry-setup-ai-monitoring"
 commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
 integrity = "sha256-ZoEJ5ugtnZLusywjVAUfwQV9Zi7sTKLBKkzrGcS/Lpg="
-
-[skills.sentry-svelte-sdk]
-source = "getsentry/sentry-agent-skills"
-resolved_url = "https://github.com/getsentry/sentry-agent-skills.git"
-resolved_path = "skills/sentry-svelte-sdk"
-commit = "9f54eb021916a7cff2c04a9f4e4c1f9439f3202c"
-integrity = "sha256-qJ+iid0QD0GJ8ROmScGf96NIsxQVKR6T9Gzn3HIJ5oA="

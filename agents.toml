@@ -13,3 +13,13 @@ source = "getsentry/dotagents"
 [[skills]]
 name = "*"
 source = "getsentry/sentry-agent-skills"
+exclude = [
+  "sentry-cocoa-sdk",
+  "sentry-dotnet-sdk",
+  "sentry-go-sdk",
+  "sentry-python-sdk",
+  "sentry-react-native-sdk",
+  "sentry-react-sdk",
+  "sentry-ruby-sdk",
+  "sentry-svelte-sdk",
+]
