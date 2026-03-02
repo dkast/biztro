@@ -20,6 +20,7 @@ import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { Label } from "@/components/ui/label"
 // Simulation flag is provided by server; no local UI switch needed
 import {
@@ -171,7 +172,7 @@ export default function MenuImportForm({
     setItems([])
   }
 
-  const handleParse = useCallback(async () => {
+  const handleParse = useCallback(() => {
     if (!selectedFile || !selectedMimeType) return
     setIsParsing(true)
     setParseError(null)
@@ -415,6 +416,13 @@ export default function MenuImportForm({
     )
   }
 
+  const isMac =
+    typeof navigator !== "undefined"
+      ? /Mac|iPhone|iPad|iPod/.test(navigator.userAgent)
+      : false
+
+  const modKey = isMac ? "⌘" : "Ctrl"
+
   return (
     <div className="flex flex-col gap-6">
       {/* File Upload */}
@@ -510,10 +518,21 @@ export default function MenuImportForm({
       {/* Items Table */}
       {items.length > 0 && (
         <div className="flex flex-col gap-3">
-          <div className="flex flex-row items-baseline gap-2">
+          <div className="flex flex-row items-end-safe gap-2 px-3">
             <p className="text-sm font-medium">
               {items.length} producto{items.length !== 1 ? "s" : ""} extraído
               {items.length !== 1 ? "s" : ""}. Revisa y edita antes de guardar.
+            </p>
+            <p className="text-muted-foreground text-xs">
+              {groupPreview.totalRows} fila
+              {groupPreview.totalRows !== 1 ? "s" : ""} →{" "}
+              {groupPreview.groupedItems} producto
+              {groupPreview.groupedItems !== 1 ? "s" : ""} con{" "}
+              {groupPreview.totalRows} variante
+              {groupPreview.totalRows !== 1 ? "s" : ""}
+              {groupPreview.multiVariantItems > 0
+                ? ` (${groupPreview.multiVariantItems} con múltiples variantes)`
+                : ""}
             </p>
           </div>
 
@@ -529,17 +548,18 @@ export default function MenuImportForm({
           </div>
 
           <div className="flex justify-between">
-            <p className="text-muted-foreground text-xs">
-              {groupPreview.totalRows} fila
-              {groupPreview.totalRows !== 1 ? "s" : ""} →{" "}
-              {groupPreview.groupedItems} producto
-              {groupPreview.groupedItems !== 1 ? "s" : ""} con{" "}
-              {groupPreview.totalRows} variante
-              {groupPreview.totalRows !== 1 ? "s" : ""}
-              {groupPreview.multiVariantItems > 0
-                ? ` (${groupPreview.multiVariantItems} con múltiples variantes)`
-                : ""}
-            </p>
+            <div className="px-2">
+              <span className="text-muted-foreground text-xs">
+                Presiona <Kbd>Enter</Kbd> para iniciar cambios en una celda,{" "}
+                <Kbd>Esc</Kbd> para cancelar la edición.
+                <br />
+                Presiona{" "}
+                <KbdGroup>
+                  <Kbd>{modKey}</Kbd> + <Kbd>/</Kbd>
+                </KbdGroup>{" "}
+                para mostrar la lista completa de comandos.
+              </span>
+            </div>
             <Button onClick={handleSave} disabled={isSaving}>
               {isSaving && <Loader className="size-4 animate-spin" />}
               <TextMorph>

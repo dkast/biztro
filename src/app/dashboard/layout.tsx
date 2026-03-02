@@ -11,11 +11,7 @@ import {
 } from "@/components/ui/sidebar"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 
-export default async function Layout({
-  children
-}: {
-  children: React.ReactNode
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const organization = getCurrentOrganization()
 
   return (

@@ -135,33 +135,34 @@ const mockedMenuImportWithVariantsResult = {
 
 const createMockMenuImportModel = (scenario: "default" | "variants") =>
   new MockLanguageModelV3({
-    doGenerate: async () => ({
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(
-            scenario === "variants"
-              ? mockedMenuImportWithVariantsResult
-              : mockedMenuImportResult
-          )
-        }
-      ],
-      finishReason: { unified: "stop", raw: undefined },
-      usage: {
-        inputTokens: {
-          total: 10,
-          noCache: 10,
-          cacheRead: undefined,
-          cacheWrite: undefined
+    doGenerate: () =>
+      Promise.resolve({
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              scenario === "variants"
+                ? mockedMenuImportWithVariantsResult
+                : mockedMenuImportResult
+            )
+          }
+        ],
+        finishReason: { unified: "stop", raw: undefined },
+        usage: {
+          inputTokens: {
+            total: 10,
+            noCache: 10,
+            cacheRead: undefined,
+            cacheWrite: undefined
+          },
+          outputTokens: {
+            total: 40,
+            text: 40,
+            reasoning: undefined
+          }
         },
-        outputTokens: {
-          total: 40,
-          text: 40,
-          reasoning: undefined
-        }
-      },
-      warnings: []
-    })
+        warnings: []
+      })
   })
 
 /**
