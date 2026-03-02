@@ -9,7 +9,6 @@ import {
   AlertCircle,
   FileText,
   Loader,
-  Save,
   SparklesIcon,
   Trash2
 } from "lucide-react"

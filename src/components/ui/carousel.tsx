@@ -267,7 +267,7 @@ const CarouselDots = React.forwardRef<
       try {
         setSelectedIndex(api.selectedScrollSnap())
         setSlides(api.scrollSnapList().length)
-      } catch (e) {
+      } catch (_e) {
         /* ignore */
       }
     }
