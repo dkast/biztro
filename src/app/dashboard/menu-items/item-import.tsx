@@ -41,6 +41,7 @@ import { MenuItemStatus, type BulkMenuItem } from "@/lib/types"
 
 type CSVRow = {
   nombre: string
+  variante?: string
   descripcion?: string
   precio: string
   categoria?: string
@@ -113,47 +114,32 @@ export default function ItemImport() {
         return
       }
 
-      const csvRows: CSVRow[] = items.map(item => {
-        // For items with multiple variants, export price range (min - max)
-        // For items with single variant, export the single price
-        let priceValue: string
-        if (item.variants && item.variants.length > 1) {
-          // Filter out any variants with invalid prices and map to price values in one pass
-          const prices = item.variants
-            .filter(v => typeof v.price === "number" && !isNaN(v.price))
-            .map(v => v.price)
+      const csvRows: CSVRow[] = items.flatMap(item => {
+        const variants = item.variants?.length
+          ? item.variants
+          : [{ name: "Regular", price: 0 }]
 
-          if (prices.length > 0) {
-            const minPrice = Math.min(...prices)
-            const maxPrice = Math.max(...prices)
-            // Only show range if prices differ, otherwise show single price
-            priceValue =
-              minPrice === maxPrice
-                ? minPrice.toFixed(2)
-                : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`
-          } else {
-            // Fallback if no valid prices found
-            priceValue = "0.00"
-          }
-        } else {
-          // Single variant case - validate price before using it
-          const price = item.variants?.[0]?.price
+        return variants.map(variant => {
           const validPrice =
-            typeof price === "number" && !isNaN(price) ? price : 0
-          priceValue = validPrice.toFixed(2)
-        }
+            typeof variant.price === "number" && !isNaN(variant.price)
+              ? variant.price
+              : 0
 
-        return {
-          nombre: item.name,
-          descripcion: item.description ?? "",
-          precio: priceValue,
-          categoria: item.category?.name,
-          moneda: item.currency ?? "MXN"
-        }
+          return {
+            nombre: item.name,
+            variante: variant.name,
+            descripcion: item.description ?? "",
+            precio: validPrice.toFixed(2),
+            categoria: item.category?.name,
+            moneda: item.currency ?? "MXN"
+          }
+        })
       })
 
-      downloadCsvFile(csvRows, "productos-exportados.csv")
-      toast.success("CSV generado correctamente")
+      downloadCsvFile(csvRows, "productos-exportados-con-variantes.csv")
+      toast.success(
+        "CSV generado correctamente (1 fila por variante de producto)"
+      )
       resetExport()
     },
     onError: error => {
@@ -235,6 +221,7 @@ export default function ItemImport() {
             const currency = (row.moneda ?? "MXN").trim().toUpperCase()
             validItems.push({
               name: row.nombre,
+              variantName: row.variante?.trim() || undefined,
               description: row.descripcion,
               price: parseFloat(row.precio),
               status: MenuItemStatus.ACTIVE,
@@ -263,8 +250,17 @@ export default function ItemImport() {
     const template: CSVRow[] = [
       {
         nombre: "Producto ejemplo",
+        variante: "Regular",
         descripcion: "Descripcion del producto",
         precio: "100.00",
+        categoria: "Categoria (opcional)",
+        moneda: "MXN"
+      },
+      {
+        nombre: "Producto ejemplo",
+        variante: "Grande",
+        descripcion: "Descripcion del producto",
+        precio: "120.00",
         categoria: "Categoria (opcional)",
         moneda: "MXN"
       }
@@ -352,7 +348,8 @@ export default function ItemImport() {
                   <p className="font-medium">Importar desde CSV</p>
                   <p className="text-muted-foreground text-sm text-pretty">
                     Sube un archivo CSV con las columnas: nombre, descripcion
-                    (opcional), precio y categoria (opcional).
+                    (opcional), variante (opcional), precio y categoria
+                    (opcional).
                   </p>
                 </div>
               </div>
