@@ -607,7 +607,7 @@ export default function ItemForm({
                         value={field.value}
                         setValue={(v: string) => form.setValue("allergens", v)}
                       >
-                        <TagsTrigger placeholder="Buscar o añadir alérgenos">
+                        <TagsTrigger placeholder="Buscar alérgenos o indicadores">
                           {values.map(val => (
                             <TagsValue
                               variant="indigo"
@@ -623,7 +623,7 @@ export default function ItemForm({
                           ))}
                         </TagsTrigger>
                         <TagsContent>
-                          <TagsInput placeholder="Buscar o añadir alérgenos" />
+                          <TagsInput placeholder="Buscar alérgenos o indicadores" />
                           <TagsList>
                             <TagsEmpty className="p-2" />
                             <TagsGroup>
