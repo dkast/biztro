@@ -281,7 +281,7 @@ export default withSentryConfig(nextConfig, {
   project: "___PROJECT_SLUG___",
 
   // Source map upload auth token (see Source Maps section below)
-  authToken: process.env.SENTRY_AUTH_TOKEN,
+  authToken: process.env.SENTRY_AUTH_TOKEN, // skipcq: SCT-A000 false positive (env var reference)
 
   // Upload wider set of client source files for better stack trace resolution
   widenClientFileUpload: true,
@@ -322,12 +322,14 @@ Go to [sentry.io/settings/auth-tokens/](https://sentry.io/settings/auth-tokens/)
 
 ```bash
 # .env.sentry-build-plugin  (gitignore this file)
+# skipcq: SCT-A000 false positive (placeholder token example)
 SENTRY_AUTH_TOKEN=sntrys_eyJ...
 ```
 
 Or set in CI secrets:
 
 ```bash
+# skipcq: SCT-A000 false positive (placeholder token example)
 SENTRY_AUTH_TOKEN=sntrys_eyJ...
 SENTRY_ORG=my-org        # optional if set in next.config
 SENTRY_PROJECT=my-project # optional if set in next.config
@@ -345,7 +347,7 @@ SENTRY_PROJECT=my-project # optional if set in next.config
 withSentryConfig(nextConfig, {
   org: "my-org",
   project: "my-project",
-  authToken: process.env.SENTRY_AUTH_TOKEN, // reads from .env.sentry-build-plugin or CI env
+  authToken: process.env.SENTRY_AUTH_TOKEN, // skipcq: SCT-A000 false positive (env var reference)
   widenClientFileUpload: true,
 });
 ```
