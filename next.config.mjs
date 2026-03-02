@@ -16,7 +16,7 @@ const config = {
   reactStrictMode: true,
   experimental: {
     serverActions: {
-      bodySizeLimit: "8mb"
+      bodySizeLimit: "10mb"
     }
   },
   images: {

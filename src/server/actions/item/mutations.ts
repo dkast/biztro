@@ -60,12 +60,14 @@ export type MenuImportItem = z.infer<
   typeof menuImportItemSchema
 >["items"][number]
 
-const supportedUploadMimeTypeSchema = z.enum([
+export const SUPPORTED_UPLOAD_MIME_TYPES = [
   "application/pdf",
   "image/png",
   "image/jpeg",
   "image/webp"
-])
+] as const
+
+const supportedUploadMimeTypeSchema = z.enum(SUPPORTED_UPLOAD_MIME_TYPES)
 
 const mockedMenuImportResult = {
   items: [

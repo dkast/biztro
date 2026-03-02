@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label"
 import {
   bulkCreateItems,
   parseMenuFile,
+  SUPPORTED_UPLOAD_MIME_TYPES,
   type MenuImportItem
 } from "@/server/actions/item/mutations"
 import { useDataGrid } from "@/hooks/use-data-grid"
@@ -33,15 +34,8 @@ import { MenuItemStatus } from "@/lib/types"
 
 type EditableItem = MenuImportItem & { _id: string }
 
-const MAX_PDF_FILE_SIZE_MB = 6
+const MAX_PDF_FILE_SIZE_MB = 5
 const MAX_PDF_FILE_SIZE_BYTES = MAX_PDF_FILE_SIZE_MB * 1024 * 1024
-
-const SUPPORTED_UPLOAD_MIME_TYPES = [
-  "application/pdf",
-  "image/png",
-  "image/jpeg",
-  "image/webp"
-] as const
 
 type SupportedUploadMimeType = (typeof SUPPORTED_UPLOAD_MIME_TYPES)[number]
 
@@ -433,6 +427,14 @@ export default function MenuImportForm({
             justify-center gap-3 rounded-lg border-2 border-dashed p-8
             transition-colors"
           onClick={() => fileInputRef.current?.click()}
+          role="button"
+          tabIndex={0}
+          onKeyDown={event => {
+            if (event.key === "Enter" || event.code === "Space") {
+              event.preventDefault()
+              fileInputRef.current?.click()
+            }
+          }}
         >
           <FileText
             className="text-muted-foreground group-hover:text-primary size-10
