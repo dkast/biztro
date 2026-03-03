@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useRef, useState } from "react"
 import toast from "react-hot-toast"
-import type { CellSelectOption } from "@/types/data-grid"
+import { type CellSelectOption } from "@/types/data-grid"
 import * as Sentry from "@sentry/nextjs"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
@@ -26,11 +26,11 @@ import { Label } from "@/components/ui/label"
 import {
   bulkCreateItems,
   parseMenuFile,
-  SUPPORTED_UPLOAD_MIME_TYPES,
   type MenuImportItem
 } from "@/server/actions/item/mutations"
 import { useDataGrid } from "@/hooks/use-data-grid"
-import { MenuItemStatus } from "@/lib/types"
+import { SUPPORTED_UPLOAD_MIME_TYPES } from "@/lib/types/media"
+import { MenuItemStatus } from "@/lib/types/menu-item"
 
 type EditableItem = MenuImportItem & { _id: string }
 

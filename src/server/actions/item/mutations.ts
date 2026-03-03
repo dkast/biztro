@@ -14,14 +14,15 @@ import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
+import { BasicPlanLimits } from "@/lib/types/billing"
+import { categorySchema } from "@/lib/types/category"
+import { SUPPORTED_UPLOAD_MIME_TYPES } from "@/lib/types/media"
 import {
-  BasicPlanLimits,
   bulkMenuItemSchema,
-  categorySchema,
   menuItemSchema,
   MenuItemStatus,
   variantSchema
-} from "@/lib/types"
+} from "@/lib/types/menu-item"
 import { env } from "@/env.mjs"
 
 // Create an Cloudflare R2 service client object
@@ -59,13 +60,6 @@ const menuImportItemSchema = z.object({
 export type MenuImportItem = z.infer<
   typeof menuImportItemSchema
 >["items"][number]
-
-export const SUPPORTED_UPLOAD_MIME_TYPES = [
-  "application/pdf",
-  "image/png",
-  "image/jpeg",
-  "image/webp"
-] as const
 
 const supportedUploadMimeTypeSchema = z.enum(SUPPORTED_UPLOAD_MIME_TYPES)
 

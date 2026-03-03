@@ -1,7 +1,7 @@
 "use server"
 
 import prisma from "@/lib/prisma"
-import { SubscriptionStatus } from "@/lib/types"
+import { SubscriptionStatus } from "@/lib/types/billing"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
 /**

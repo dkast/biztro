@@ -3,9 +3,9 @@ import { Colorful, hexToHsva, Sketch } from "@uiw/react-color"
 import { useAtomValue } from "jotai"
 import { AlignCenter, AlignLeft, AlignRight, Paintbrush } from "lucide-react"
 
-import type {
-  CategoryBlockProps,
-  CategoryHeadingShape
+import {
+  type CategoryBlockProps,
+  type CategoryHeadingShape
 } from "@/components/menu-editor/blocks/category-block"
 import SideSection from "@/components/menu-editor/side-section"
 import { Button } from "@/components/ui/button"
@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorListAtom, colorThemeAtom } from "@/lib/atoms"
-import { FONT_SIZES } from "@/lib/types"
+import { FONT_SIZES } from "@/lib/types/theme"
 
 // Helper to normalize color value (handles both hex string and legacy RgbaColor object)
 function normalizeColor(

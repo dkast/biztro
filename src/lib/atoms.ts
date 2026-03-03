@@ -1,7 +1,7 @@
 import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 
-import { FrameSize, type colorThemes } from "@/lib/types"
+import { FrameSize, type colorThemes } from "@/lib/types/theme"
 
 export const elementPropsAtom = atom<{ [x: string]: unknown }>({})
 

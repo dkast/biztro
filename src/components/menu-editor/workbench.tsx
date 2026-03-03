@@ -11,7 +11,7 @@ import {
 } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { toast } from "react-hot-toast"
-import type { Layout } from "react-resizable-panels"
+import { type Layout } from "react-resizable-panels"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import * as Sentry from "@sentry/nextjs"
@@ -73,7 +73,7 @@ import type { getMenuById } from "@/server/actions/menu/queries"
 import type { getCurrentOrganization } from "@/server/actions/user/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorThemeAtom, fontThemeAtom, frameSizeAtom } from "@/lib/atoms"
-import { FrameSize } from "@/lib/types"
+import { FrameSize } from "@/lib/types/theme"
 import { cn } from "@/lib/utils"
 
 export enum PanelType {

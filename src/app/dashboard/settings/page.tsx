@@ -1,5 +1,5 @@
 import { Store } from "lucide-react"
-import type { Metadata } from "next"
+import { type Metadata } from "next"
 import { headers } from "next/headers"
 import { notFound } from "next/navigation"
 
@@ -11,7 +11,7 @@ import {
 } from "@/server/actions/user/queries"
 import OrganizationDelete from "@/app/dashboard/settings/organization-delete"
 import OrganizationForm from "@/app/dashboard/settings/organization-form"
-import { SubscriptionStatus } from "@/lib/types"
+import { SubscriptionStatus } from "@/lib/types/billing"
 
 export const metadata: Metadata = {
   title: "Mi Organización",

@@ -20,7 +20,7 @@ import { Separator } from "@/components/ui/separator"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { appConfig } from "@/app/config"
 import { authClient } from "@/lib/auth-client"
-import { Plan, Tiers } from "@/lib/types"
+import { Plan, Tiers } from "@/lib/types/billing"
 
 export function BasicPlanView({ itemCount }: { itemCount: number }) {
   const theme = useTheme()

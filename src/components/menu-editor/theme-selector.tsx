@@ -40,7 +40,7 @@ import { updateMenuSerialData } from "@/server/actions/menu/mutations"
 import { type getMenuById } from "@/server/actions/menu/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorListAtom, colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
-import { fontThemes } from "@/lib/types"
+import { fontThemes } from "@/lib/types/theme"
 import { ColorThemeEditor } from "./color-theme-editor"
 
 function ThemedSelector<T>({

@@ -1,10 +1,10 @@
 "use client"
 
-import type { Category } from "@/generated/prisma-client/client"
+import { type Category } from "@/generated/prisma-client/client"
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
 
 import { DataTableFilter } from "@/components/data-table/data-table-filter"
-import { MenuItemStatus } from "@/lib/types"
+import { MenuItemStatus } from "@/lib/types/menu-item"
 
 const status = [
   {

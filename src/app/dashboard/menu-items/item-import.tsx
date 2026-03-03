@@ -37,7 +37,7 @@ import {
   exportMenuItems
 } from "@/server/actions/item/mutations"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { MenuItemStatus, type BulkMenuItem } from "@/lib/types"
+import { MenuItemStatus, type BulkMenuItem } from "@/lib/types/menu-item"
 
 type CSVRow = {
   nombre: string

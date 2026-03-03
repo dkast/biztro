@@ -10,7 +10,7 @@ import { Check, Loader, PlusCircle, TriangleAlert, X } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
-import type { z } from "zod/v4"
+import { type z } from "zod/v4"
 
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { ImageField } from "@/components/dashboard/image-field"
@@ -70,12 +70,12 @@ import {
 import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
 import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
 import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
+import { ImageType } from "@/lib/types/media"
 import {
   Allergens,
-  ImageType,
   menuItemSchema,
   MenuItemStatus
-} from "@/lib/types"
+} from "@/lib/types/menu-item"
 import { cn } from "@/lib/utils"
 
 export default function ItemForm({

@@ -13,7 +13,8 @@ import {
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
-import { BasicPlanLimits, menuSchema, MenuStatus } from "@/lib/types"
+import { BasicPlanLimits } from "@/lib/types/billing"
+import { menuSchema, MenuStatus } from "@/lib/types/menu"
 
 /**
  * Creates a menu.

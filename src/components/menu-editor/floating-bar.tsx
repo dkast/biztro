@@ -17,7 +17,7 @@ import { useSetUnsavedChanges } from "@/components/dashboard/unsaved-changes-pro
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { elementPropsAtom, frameSizeAtom } from "@/lib/atoms"
-import { FrameSize } from "@/lib/types"
+import { FrameSize } from "@/lib/types/theme"
 
 export default function FloatingBar() {
   const { enabled, canUndo, canRedo, actions, query, selectedNodeId, store } =

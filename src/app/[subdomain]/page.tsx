@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 import lz from "lzutf8"
-import type { Metadata, ResolvingMetadata } from "next"
+import { type Metadata, type ResolvingMetadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
@@ -15,7 +15,7 @@ import {
 } from "@/server/actions/organization/queries"
 import PublicMenuTracker from "@/app/[subdomain]/public-menu-tracker"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
-import { SubscriptionStatus } from "@/lib/types"
+import { SubscriptionStatus } from "@/lib/types/billing"
 
 // Add generateStaticParams to pre-render specific paths
 export async function generateStaticParams() {

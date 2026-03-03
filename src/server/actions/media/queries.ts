@@ -4,7 +4,7 @@ import { cacheTag } from "next/cache"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
-import { MediaAssetScope } from "@/lib/types"
+import { MediaAssetScope } from "@/lib/types/media"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 import { CACHE_TAGS } from "./constants"
 

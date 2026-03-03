@@ -4,7 +4,7 @@ import { cacheTag } from "next/cache"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
-import type { MenuItemQueryFilter } from "@/lib/types"
+import { type MenuItemQueryFilter } from "@/lib/types/menu-item"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 import { env } from "@/env.mjs"
 
