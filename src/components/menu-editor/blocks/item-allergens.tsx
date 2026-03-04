@@ -1,4 +1,4 @@
-import { Allergens as AllergenTypes } from "@/lib/types"
+import { Allergens as AllergenTypes } from "@/lib/types/menu-item"
 import { cn } from "@/lib/utils"
 
 type AllergenIcon = {

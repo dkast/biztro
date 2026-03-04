@@ -8,7 +8,7 @@ import { useSearchParams } from "next/navigation"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { signIn } from "@/lib/auth-client"
-import { providers } from "@/lib/types"
+import { providers } from "@/lib/types/auth"
 
 export default function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   const params = useSearchParams()

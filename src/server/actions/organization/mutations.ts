@@ -11,7 +11,7 @@ import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { deleteOrganizationAssetsFromR2 } from "@/lib/r2"
 import { actionClient, authActionClient } from "@/lib/safe-actions"
-import { orgSchema } from "@/lib/types"
+import { orgSchema } from "@/lib/types/organization"
 
 /**
  * Bootstrap an organization by creating a new organization with the provided name, description, and subdomain.

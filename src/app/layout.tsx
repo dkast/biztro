@@ -56,8 +56,8 @@ export default function RootLayout({
   const shouldInjectToolbar = process.env.NODE_ENV === "development"
   return (
     <html
-      className={`${monaSans.variable} ${inter.variable} scroll-smooth
-        antialiased`}
+      className={`${monaSans.variable} ${inter.variable} overscroll-none
+        scroll-smooth antialiased`}
       suppressHydrationWarning
       lang="es-MX"
     >
@@ -74,7 +74,7 @@ export default function RootLayout({
           }
         >
           <Providers>
-            <div className="flex min-h-dvh flex-col">
+            <div className="flex min-h-dvh flex-col overscroll-auto">
               {children}
               {shouldInjectToolbar && <VercelToolbar />}
               {shouldInjectToolbar && <Agentation />}

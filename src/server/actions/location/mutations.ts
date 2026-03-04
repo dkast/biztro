@@ -4,7 +4,7 @@ import { updateTag } from "next/cache"
 
 import prisma from "@/lib/prisma"
 import { authActionClient, authMemberActionClient } from "@/lib/safe-actions"
-import { hoursSchema, locationSchema } from "@/lib/types"
+import { hoursSchema, locationSchema } from "@/lib/types/location"
 
 /**
  * Creates a location with the provided information.

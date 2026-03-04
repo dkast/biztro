@@ -1,7 +1,7 @@
 "use client"
 
 import { Fragment, useEffect } from "react"
-import type { TimeValue } from "react-aria"
+import { type TimeValue } from "react-aria"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 // import { DevTool } from "@hookform/devtools"
@@ -24,7 +24,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { updateHours } from "@/server/actions/location/mutations"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
-import { hoursSchema } from "@/lib/types"
+import { hoursSchema } from "@/lib/types/location"
 
 export default function HoursForm({
   data

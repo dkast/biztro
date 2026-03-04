@@ -7,7 +7,7 @@ import { headers } from "next/headers"
 
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
-import { SubscriptionStatus } from "@/lib/types"
+import { SubscriptionStatus } from "@/lib/types/billing"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
 // Get current organization for the user

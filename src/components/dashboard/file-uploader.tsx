@@ -23,7 +23,7 @@ import "@uppy/image-editor/dist/style.min.css"
 import { useTheme } from "next-themes"
 
 import { resizeImage } from "@/lib/image-resize"
-import type { ImageType } from "@/lib/types"
+import { type ImageType } from "@/lib/types/media"
 
 // Explicit types for richer error and file meta handling
 interface HttpError extends Error {

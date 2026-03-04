@@ -215,7 +215,7 @@ export const TagsEmpty = ({
   ...props
 }: TagsEmptyProps) => (
   <CommandEmpty className={cn(className)} {...props}>
-    {children ?? "No tags found."}
+    {children ?? "No se encontraron resultados"}
   </CommandEmpty>
 )
 

@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { subscriptionsEnabled } from "@/flags"
 import { AlertCircle, Wallet } from "lucide-react"
-import type { Metadata } from "next"
+import { type Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -16,7 +16,7 @@ import {
 import { BasicPlanView } from "@/app/dashboard/settings/billing/basic-plan-view"
 import { ProPlanView } from "@/app/dashboard/settings/billing/pro-plan-view"
 import RevalidateStatus from "@/app/dashboard/settings/billing/revalidate-status"
-import { MembershipRole } from "@/lib/types"
+import { MembershipRole } from "@/lib/types/organization"
 
 export const metadata: Metadata = {
   title: "Suscripción"

@@ -7,7 +7,7 @@ import { useParams } from "next/navigation"
 
 import { FileUploader } from "@/components/dashboard/file-uploader"
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
-import type { ContainerBlockProps } from "@/components/menu-editor/blocks/container-block"
+import { type ContainerBlockProps } from "@/components/menu-editor/blocks/container-block"
 import SideSection from "@/components/menu-editor/side-section"
 import { Button } from "@/components/ui/button"
 import {
@@ -29,7 +29,7 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { getUploadedBackgrounds } from "@/server/actions/media/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { BgImages, ImageType } from "@/lib/types"
+import { BgImages, ImageType } from "@/lib/types/media"
 import { cn } from "@/lib/utils"
 
 function BackgroundPreview({

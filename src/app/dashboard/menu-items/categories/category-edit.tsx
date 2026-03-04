@@ -8,7 +8,7 @@ import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { usePostHog } from "posthog-js/react"
 import { TextMorph } from "torph/react"
-import type { z } from "zod/v4"
+import { type z } from "zod/v4"
 
 import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
 import { Button } from "@/components/ui/button"
@@ -33,7 +33,7 @@ import { Input } from "@/components/ui/input"
 import { createCategory, updateCategory } from "@/server/actions/item/mutations"
 import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { ActionType, categorySchema } from "@/lib/types"
+import { ActionType, categorySchema } from "@/lib/types/category"
 
 export default function CategoryEdit({
   children,

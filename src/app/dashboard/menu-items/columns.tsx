@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import type { ColumnDef, Row } from "@tanstack/react-table"
+import { type ColumnDef, type Row } from "@tanstack/react-table"
 import {
   ChevronDown,
   ChevronsUpDown,
@@ -24,7 +24,7 @@ import {
 import type { getMenuItemById } from "@/server/actions/item/queries"
 import ItemDelete from "@/app/dashboard/menu-items/item-delete"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
-import { MenuItemStatus } from "@/lib/types"
+import { MenuItemStatus } from "@/lib/types/menu-item"
 
 export const columns: ColumnDef<Awaited<ReturnType<typeof getMenuItemById>>>[] =
   [

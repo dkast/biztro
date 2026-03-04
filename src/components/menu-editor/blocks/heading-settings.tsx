@@ -1,7 +1,7 @@
 import { useEditor, useNode } from "@craftjs/core"
 import { AlignCenter, AlignLeft, AlignRight, Paintbrush } from "lucide-react"
 
-import type { HeadingElementProps } from "@/components/menu-editor/blocks/heading-element"
+import { type HeadingElementProps } from "@/components/menu-editor/blocks/heading-element"
 import SideSection from "@/components/menu-editor/side-section"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -18,7 +18,7 @@ import {
   TooltipContent,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { FONT_SIZES } from "@/lib/types"
+import { FONT_SIZES } from "@/lib/types/theme"
 
 export default function HeadingSettings() {
   const {

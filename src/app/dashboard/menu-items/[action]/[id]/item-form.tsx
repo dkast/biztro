@@ -10,12 +10,11 @@ import { Check, Loader, PlusCircle, TriangleAlert, X } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
-import type { z } from "zod/v4"
+import { type z } from "zod/v4"
 
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { ImageField } from "@/components/dashboard/image-field"
 import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
-import PageSubtitle from "@/components/dashboard/page-subtitle"
 import {
   Combobox,
   ComboboxContent,
@@ -71,12 +70,12 @@ import {
 import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
 import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
 import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
+import { ImageType } from "@/lib/types/media"
 import {
   Allergens,
-  ImageType,
   menuItemSchema,
   MenuItemStatus
-} from "@/lib/types"
+} from "@/lib/types/menu-item"
 import { cn } from "@/lib/utils"
 
 export default function ItemForm({
@@ -298,12 +297,13 @@ export default function ItemForm({
   return (
     <div className="pb-20">
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <PageSubtitle
-          className="border-border bg-background sticky top-18 z-10 rounded-xl
-            border px-4 py-3 shadow-xs group-[.is-dialog]:top-0"
+        <div
+          className="border-border bg-background sticky top-18 z-10 flex
+            items-center justify-between rounded-xl border px-4 py-3 shadow-xs
+            group-[.is-dialog]:top-0"
         >
-          <PageSubtitle.Title>{title}</PageSubtitle.Title>
-          <PageSubtitle.Actions>
+          <h4>{title}</h4>
+          <div>
             <div className="flex gap-2">
               <Button
                 type="button"
@@ -323,8 +323,8 @@ export default function ItemForm({
                 </TextMorph>
               </Button>
             </div>
-          </PageSubtitle.Actions>
-        </PageSubtitle>
+          </div>
+        </div>
         <div className="mt-10">
           <FieldGroup>
             <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3">
@@ -607,7 +607,7 @@ export default function ItemForm({
                         value={field.value}
                         setValue={(v: string) => form.setValue("allergens", v)}
                       >
-                        <TagsTrigger placeholder="Buscar o añadir alérgenos">
+                        <TagsTrigger placeholder="Buscar alérgenos o indicadores">
                           {values.map(val => (
                             <TagsValue
                               variant="indigo"
@@ -623,7 +623,7 @@ export default function ItemForm({
                           ))}
                         </TagsTrigger>
                         <TagsContent>
-                          <TagsInput placeholder="Buscar o añadir alérgenos" />
+                          <TagsInput placeholder="Buscar alérgenos o indicadores" />
                           <TagsList>
                             <TagsEmpty className="p-2" />
                             <TagsGroup>

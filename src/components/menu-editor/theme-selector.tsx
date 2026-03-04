@@ -40,7 +40,7 @@ import { updateMenuSerialData } from "@/server/actions/menu/mutations"
 import { type getMenuById } from "@/server/actions/menu/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorListAtom, colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
-import { fontThemes } from "@/lib/types"
+import { fontThemes } from "@/lib/types/theme"
 import { ColorThemeEditor } from "./color-theme-editor"
 
 function ThemedSelector<T>({
@@ -249,7 +249,7 @@ export default function ThemeSelector({
                 categoryColor: hexToRgba(selectedTheme.accentColor),
                 // categoryHeadingBgColor: hexToRgba(selectedTheme.surfaceColor),
                 itemColor: hexToRgba(selectedTheme.textColor),
-                priceColor: hexToRgba(selectedTheme.accentColor),
+                priceColor: hexToRgba(selectedTheme.textColor),
                 descriptionColor: hexToRgba(selectedTheme.mutedColor)
               }))
             })
@@ -258,7 +258,7 @@ export default function ThemeSelector({
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {
                 itemColor: hexToRgba(selectedTheme.textColor),
-                priceColor: hexToRgba(selectedTheme.accentColor),
+                priceColor: hexToRgba(selectedTheme.textColor),
                 descriptionColor: hexToRgba(selectedTheme.mutedColor)
               }))
             })

@@ -1,5 +1,5 @@
 import { ShoppingBag } from "lucide-react"
-import type { Metadata } from "next"
+import { type Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -8,7 +8,7 @@ import { getCurrentOrganization } from "@/server/actions/user/queries"
 import ItemCreate from "@/app/dashboard/menu-items/item-create"
 import ItemImport from "@/app/dashboard/menu-items/item-import"
 import ItemTable from "@/app/dashboard/menu-items/item-table"
-import type { MenuItemQueryFilter } from "@/lib/types"
+import { type MenuItemQueryFilter } from "@/lib/types/menu-item"
 
 export const metadata: Metadata = {
   title: "Productos"

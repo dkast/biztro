@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import type { Metadata } from "next/types"
+import { type Metadata } from "next/types"
 
 import { EmptyState } from "@/components/dashboard/empty-state"
 import PageHeader from "@/components/dashboard/page-header"
@@ -10,7 +10,7 @@ import {
   getCurrentMembership,
   getCurrentOrganization
 } from "@/server/actions/user/queries"
-import { MembershipRole } from "@/lib/types"
+import { MembershipRole } from "@/lib/types/organization"
 import { getInitials } from "@/lib/utils"
 
 export const metadata: Metadata = {

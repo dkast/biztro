@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import type { Location } from "@/generated/prisma-client/client"
+import { type Location } from "@/generated/prisma-client/client"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
@@ -36,7 +36,7 @@ import {
   createLocation,
   updateLocation
 } from "@/server/actions/location/mutations"
-import { locationSchema } from "@/lib/types"
+import { locationSchema } from "@/lib/types/location"
 
 export default function LocationForm({
   data,

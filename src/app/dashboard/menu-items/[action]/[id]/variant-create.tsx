@@ -7,7 +7,7 @@ import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
-import type { z } from "zod/v4"
+import { type z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -29,7 +29,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { createVariant } from "@/server/actions/item/mutations"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { variantSchema } from "@/lib/types"
+import { variantSchema } from "@/lib/types/menu-item"
 
 export function VariantCreate({
   open,

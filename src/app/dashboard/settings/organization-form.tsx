@@ -10,7 +10,7 @@ import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
-import type { z } from "zod/v4"
+import { type z } from "zod/v4"
 
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { FileUploader } from "@/components/dashboard/file-uploader"
@@ -41,12 +41,9 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { updateOrg } from "@/server/actions/organization/mutations"
 import type { getCurrentOrganization } from "@/server/actions/user/queries"
-import {
-  ImageType,
-  orgSchema,
-  type Plan,
-  type SubscriptionStatus
-} from "@/lib/types"
+import { type Plan, type SubscriptionStatus } from "@/lib/types/billing"
+import { ImageType } from "@/lib/types/media"
+import { orgSchema } from "@/lib/types/organization"
 import { getInitials } from "@/lib/utils"
 
 export default function OrganizationForm({

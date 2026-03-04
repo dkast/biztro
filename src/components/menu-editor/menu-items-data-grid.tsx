@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import type { CellSelectOption } from "@/types/data-grid"
+import { type CellSelectOption } from "@/types/data-grid"
 import * as Sentry from "@sentry/nextjs"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Loader, ShoppingBag } from "lucide-react"
@@ -24,7 +24,7 @@ import {
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useDataGrid } from "@/hooks/use-data-grid"
-import { Allergens } from "@/lib/types"
+import { Allergens } from "@/lib/types/menu-item"
 import { cn } from "@/lib/utils"
 import type { MenuItemRow, MenuItemsDataGridProps } from "./types"
 import { VariantsEditDialog } from "./variants-edit-dialog"

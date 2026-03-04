@@ -9,7 +9,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
-import type { z } from "zod/v4"
+import { type z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -35,7 +35,8 @@ import {
 } from "@/components/ui/input-group"
 import { Textarea } from "@/components/ui/textarea"
 import { bootstrapOrg } from "@/server/actions/organization/mutations"
-import { orgSchema, Plan, SubscriptionStatus } from "@/lib/types"
+import { Plan, SubscriptionStatus } from "@/lib/types/billing"
+import { orgSchema } from "@/lib/types/organization"
 
 export default function NewOrgForm() {
   const form = useForm<z.infer<typeof orgSchema>>({

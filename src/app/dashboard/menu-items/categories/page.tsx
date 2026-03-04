@@ -1,5 +1,5 @@
 import { Layers } from "lucide-react"
-import type { Metadata } from "next"
+import { type Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -8,7 +8,7 @@ import { getCategories } from "@/server/actions/item/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import CategoryEdit from "@/app/dashboard/menu-items/categories/category-edit"
 import CategoryTable from "@/app/dashboard/menu-items/categories/category-table"
-import { ActionType } from "@/lib/types"
+import { ActionType } from "@/lib/types/category"
 
 export const metadata: Metadata = {
   title: "Categorías"

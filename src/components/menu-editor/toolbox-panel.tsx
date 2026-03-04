@@ -22,16 +22,16 @@ import SideSection from "@/components/menu-editor/side-section"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import type {
-  getCategoriesWithItems,
-  getFeaturedItems,
-  getMenuItemsWithoutCategory
+import {
+  type getCategoriesWithItems,
+  type getFeaturedItems,
+  type getMenuItemsWithoutCategory
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { getThemes } from "@/server/actions/menu/queries"
 import type { getCurrentOrganization } from "@/server/actions/user/queries"
 import { colorListAtom, colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
-import { colorThemes, fontThemes } from "@/lib/types"
+import { colorThemes, fontThemes } from "@/lib/types/theme"
 import { cn } from "@/lib/utils"
 
 export default function ToolboxPanel({
@@ -157,7 +157,7 @@ export default function ToolboxPanel({
               categoryColor={hexToRgba(selectedColorTheme.accentColor)}
               // categoryHeadingBgColor={selectedColorTheme.brandColor}
               itemColor={hexToRgba(selectedColorTheme.textColor)}
-              priceColor={hexToRgba(selectedColorTheme.accentColor)}
+              priceColor={hexToRgba(selectedColorTheme.textColor)}
               descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
             />
           )
@@ -199,7 +199,7 @@ export default function ToolboxPanel({
               priceFontFamily={selectedFontTheme.fontText}
               descriptionFontFamily={selectedFontTheme.fontText}
               itemColor={hexToRgba(selectedColorTheme.textColor)}
-              priceColor={hexToRgba(selectedColorTheme.accentColor)}
+              priceColor={hexToRgba(selectedColorTheme.textColor)}
               descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
             />
           )

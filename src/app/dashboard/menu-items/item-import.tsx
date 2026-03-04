@@ -8,10 +8,12 @@ import {
   ChevronDown,
   Download,
   FileSpreadsheet,
+  FileText,
   Loader,
   Upload
 } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
+import Link from "next/link"
 import Papa from "papaparse"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -35,10 +37,11 @@ import {
   exportMenuItems
 } from "@/server/actions/item/mutations"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { MenuItemStatus, type BulkMenuItem } from "@/lib/types"
+import { MenuItemStatus, type BulkMenuItem } from "@/lib/types/menu-item"
 
 type CSVRow = {
   nombre: string
+  variante?: string
   descripcion?: string
   precio: string
   categoria?: string
@@ -111,47 +114,32 @@ export default function ItemImport() {
         return
       }
 
-      const csvRows: CSVRow[] = items.map(item => {
-        // For items with multiple variants, export price range (min - max)
-        // For items with single variant, export the single price
-        let priceValue: string
-        if (item.variants && item.variants.length > 1) {
-          // Filter out any variants with invalid prices and map to price values in one pass
-          const prices = item.variants
-            .filter(v => typeof v.price === "number" && !isNaN(v.price))
-            .map(v => v.price)
+      const csvRows: CSVRow[] = items.flatMap(item => {
+        const variants = item.variants?.length
+          ? item.variants
+          : [{ name: "Regular", price: 0 }]
 
-          if (prices.length > 0) {
-            const minPrice = Math.min(...prices)
-            const maxPrice = Math.max(...prices)
-            // Only show range if prices differ, otherwise show single price
-            priceValue =
-              minPrice === maxPrice
-                ? minPrice.toFixed(2)
-                : `${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`
-          } else {
-            // Fallback if no valid prices found
-            priceValue = "0.00"
-          }
-        } else {
-          // Single variant case - validate price before using it
-          const price = item.variants?.[0]?.price
+        return variants.map(variant => {
           const validPrice =
-            typeof price === "number" && !isNaN(price) ? price : 0
-          priceValue = validPrice.toFixed(2)
-        }
+            typeof variant.price === "number" && !isNaN(variant.price)
+              ? variant.price
+              : 0
 
-        return {
-          nombre: item.name,
-          descripcion: item.description ?? "",
-          precio: priceValue,
-          categoria: item.category?.name,
-          moneda: item.currency ?? "MXN"
-        }
+          return {
+            nombre: item.name,
+            variante: variant.name,
+            descripcion: item.description ?? "",
+            precio: validPrice.toFixed(2),
+            categoria: item.category?.name,
+            moneda: item.currency ?? "MXN"
+          }
+        })
       })
 
-      downloadCsvFile(csvRows, "productos-exportados.csv")
-      toast.success("CSV generado correctamente")
+      downloadCsvFile(csvRows, "productos-exportados-con-variantes.csv")
+      toast.success(
+        "CSV generado correctamente (1 fila por variante de producto)"
+      )
       resetExport()
     },
     onError: error => {
@@ -233,6 +221,7 @@ export default function ItemImport() {
             const currency = (row.moneda ?? "MXN").trim().toUpperCase()
             validItems.push({
               name: row.nombre,
+              variantName: row.variante?.trim() || undefined,
               description: row.descripcion,
               price: parseFloat(row.precio),
               status: MenuItemStatus.ACTIVE,
@@ -261,8 +250,17 @@ export default function ItemImport() {
     const template: CSVRow[] = [
       {
         nombre: "Producto ejemplo",
+        variante: "Regular",
         descripcion: "Descripcion del producto",
         precio: "100.00",
+        categoria: "Categoria (opcional)",
+        moneda: "MXN"
+      },
+      {
+        nombre: "Producto ejemplo",
+        variante: "Grande",
+        descripcion: "Descripcion del producto",
+        precio: "120.00",
         categoria: "Categoria (opcional)",
         moneda: "MXN"
       }
@@ -334,51 +332,97 @@ export default function ItemImport() {
             </div>
           )}
           <DialogHeader>
-            <DialogTitle>Importar productos desde CSV</DialogTitle>
-            <DialogDescription>
-              Sube un archivo CSV con las columnas: nombre, descripcion
-              (opcional), precio, categoria (opcional)
+            <DialogTitle className="text-balance">
+              Importar productos
+            </DialogTitle>
+            <DialogDescription className="text-pretty">
+              Elige cómo quieres importar tus productos.
             </DialogDescription>
           </DialogHeader>
 
-          <Button
-            variant="link"
-            className="mb-4 h-fit w-fit p-0 text-green-600 dark:text-green-400"
-            onClick={handleDownloadTemplate}
-            disabled={isPending}
-          >
-            <FileSpreadsheet className="mr-1" />
-            Descargar plantilla CSV de ejemplo
-          </Button>
+          <div className="space-y-4">
+            <div className="rounded-lg border p-4">
+              <div className="mb-3 flex items-start gap-3">
+                <FileSpreadsheet className="text-muted-foreground size-5" />
+                <div>
+                  <p className="font-medium">Importar desde CSV</p>
+                  <p className="text-muted-foreground text-sm text-pretty">
+                    Sube un archivo CSV con las columnas: nombre, descripcion
+                    (opcional), variante (opcional), precio y categoria
+                    (opcional).
+                  </p>
+                </div>
+              </div>
 
-          {errors.length > 0 && (
-            <Alert variant="destructive">
-              <AlertCircle className="size-4" />
-              <AlertTitle>Errores en el archivo</AlertTitle>
-              <AlertDescription>
-                <ul className="list-inside list-disc">
-                  {errors.map((error, i) => (
-                    <li key={i}>
-                      Fila {error.row}: {error.errors.join(", ")}
-                    </li>
-                  ))}
-                </ul>
-              </AlertDescription>
-            </Alert>
-          )}
+              <Button
+                variant="outline"
+                className="mb-4"
+                onClick={handleDownloadTemplate}
+                disabled={isPending}
+              >
+                <FileSpreadsheet className="mr-1" />
+                Descargar plantilla CSV de ejemplo
+              </Button>
 
-          <input
-            type="file"
-            accept=".csv"
-            onChange={handleFileUpload}
-            disabled={isPending}
-            aria-busy={isPending}
-            className="file:bg-primary file:text-primary-foreground
-              hover:file:bg-primary/90 cursor-pointer file:mr-4
-              file:cursor-pointer file:rounded-md file:border-0 file:px-4
-              file:py-2 file:text-sm file:font-semibold
-              disabled:cursor-not-allowed"
-          />
+              {errors.length > 0 && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="size-4" />
+                  <AlertTitle>Errores en el archivo</AlertTitle>
+                  <AlertDescription>
+                    <ul className="list-inside list-disc">
+                      {errors.map((error, i) => (
+                        <li key={i}>
+                          Fila {error.row}: {error.errors.join(", ")}
+                        </li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleFileUpload}
+                disabled={isPending}
+                aria-busy={isPending}
+                className="file:bg-primary file:text-primary-foreground
+                  hover:file:bg-primary/90 cursor-pointer file:mr-4
+                  file:cursor-pointer file:rounded-md file:border-0 file:px-4
+                  file:py-2 file:text-sm file:font-semibold
+                  disabled:cursor-not-allowed"
+              />
+            </div>
+            <div className="relative">
+              <div
+                className="animate-rotate-slow pointer-events-none absolute
+                  inset-0 rounded-lg bg-linear-to-r from-indigo-600 via-pink-600
+                  to-orange-600 opacity-50 blur-xs"
+              ></div>
+              <div
+                className="bg-background relative rounded-lg p-4 ring-1
+                  ring-black/10 dark:ring-white/15"
+              >
+                <div className="mb-3 flex items-start gap-3">
+                  <FileText className="text-muted-foreground size-5" />
+                  <div>
+                    <p className="font-medium">
+                      Importar desde PDF o imagen con IA
+                    </p>
+                    <p className="text-muted-foreground text-sm text-pretty">
+                      Usa el nuevo flujo con IA para extraer productos desde una
+                      carta, PDF o imagen de menú.
+                    </p>
+                  </div>
+                </div>
+                <Button asChild variant="outline" disabled={isPending}>
+                  <Link href="/dashboard/menu-items/menu-import">
+                    Importar tu menú con IA
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </>

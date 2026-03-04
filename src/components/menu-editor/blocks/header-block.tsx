@@ -62,7 +62,6 @@ export default function HeaderBlock({
           className={cn("px-4 pt-3 pb-4", hasBanner && "relative z-10 -mt-10")}
         >
           <div
-            className="rounded-xl border border-black/10 shadow-sm"
             style={{
               color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
             }}
@@ -92,7 +91,7 @@ export default function HeaderBlock({
               </div>
             </div>
             {showSocialMedia && (
-              <div className="mt-1 border-t border-black/10 px-2.5 pt-2 pb-2">
+              <div className="mt-1 px-2.5 pt-2 pb-2">
                 <SocialMedia
                   location={location}
                   isVisible={showSocialMedia}

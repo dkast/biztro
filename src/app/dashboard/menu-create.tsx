@@ -11,7 +11,7 @@ import { usePostHog } from "posthog-js/react"
 
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { createMenu } from "@/server/actions/menu/mutations"
-import { BasicPlanLimits } from "@/lib/types"
+import { BasicPlanLimits } from "@/lib/types/billing"
 
 export default function MenuCreate() {
   const router = useRouter()
