@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "next build --webpack",
+    "build": "next build",
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "eslint .",
