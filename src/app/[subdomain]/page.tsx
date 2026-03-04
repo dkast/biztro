@@ -1,5 +1,4 @@
 import { Suspense } from "react"
-import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 import lz from "lzutf8"
 import { type Metadata, type ResolvingMetadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
@@ -197,6 +196,15 @@ export default async function SitePage(props: {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
+type RgbaColor = { r: number; g: number; b: number; a?: number }
+
+function rgbaToHex({ r, g, b, a = 1 }: RgbaColor) {
+  const clamp = (value: number) => Math.max(0, Math.min(255, Math.round(value)))
+  const hex = (value: number) => clamp(value).toString(16).padStart(2, "0")
+  const alpha = Math.max(0, Math.min(1, a))
+  return `#${hex(r)}${hex(g)}${hex(b)}${hex(alpha * 255)}`
 }
 
 // skipcq: JS-0116
