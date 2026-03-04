@@ -12,7 +12,8 @@ import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { Button } from "@/components/ui/button"
 import { createItem } from "@/server/actions/item/mutations"
 import { appConfig } from "@/app/config"
-import { BasicPlanLimits, MenuItemStatus } from "@/lib/types"
+import { BasicPlanLimits } from "@/lib/types/billing"
+import { MenuItemStatus } from "@/lib/types/menu-item"
 
 export default function ItemCreate() {
   const [isPending, startTransition] = useTransition()

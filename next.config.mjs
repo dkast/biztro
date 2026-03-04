@@ -14,6 +14,11 @@ await import("./src/env.mjs")
 const config = {
   cacheComponents: true,
   reactStrictMode: true,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb"
+    }
+  },
   images: {
     remotePatterns: [
       {

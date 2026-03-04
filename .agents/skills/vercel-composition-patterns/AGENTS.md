@@ -16,6 +16,12 @@ January 2026
 
 Composition patterns for building flexible, maintainable React components. Avoid boolean prop proliferation by using compound components, lifting state, and composing internals. These patterns make codebases easier for both humans and AI agents to work with as they scale.
 
+### Biztro Type Module Note
+
+- Keep shared types domain-scoped in `src/lib/types/*` (for example `menu-item.ts`, `media.ts`, `organization.ts`).
+- In updated code, import from the specific domain module instead of `@/lib/types` whenever practical.
+- Treat `src/lib/types.ts` as compatibility-only during migrations; do not add new symbols there.
+
 ---
 
 ## Table of Contents

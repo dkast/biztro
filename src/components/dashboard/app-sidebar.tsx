@@ -10,7 +10,7 @@ import {
 } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
-import type { feedbackIntegration } from "@sentry/nextjs"
+import { type feedbackIntegration } from "@sentry/nextjs"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ChevronRight,
@@ -70,7 +70,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { switchOrganization } from "@/server/actions/user/mutations"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import { authClient } from "@/lib/auth-client"
-import { Plan } from "@/lib/types"
+import { Plan } from "@/lib/types/billing"
 import { getInitials } from "@/lib/utils"
 
 type NavigationItem = {

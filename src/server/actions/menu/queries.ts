@@ -6,7 +6,8 @@ import { cacheTag } from "next/cache"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
-import { MenuStatus, SubscriptionStatus } from "@/lib/types"
+import { SubscriptionStatus } from "@/lib/types/billing"
+import { MenuStatus } from "@/lib/types/menu"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
 export async function getMenus(currentOrgId: string) {

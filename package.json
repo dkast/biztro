@@ -89,6 +89,7 @@
     "@uppy/progress-bar": "^4.3.2",
     "@uppy/react": "^4.5.2",
     "@vercel/toolbar": "^0.2.2",
+    "ai": "^6.0.99",
     "better-auth": "^1.4.18",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",

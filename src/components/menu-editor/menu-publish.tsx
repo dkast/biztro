@@ -63,10 +63,10 @@ import {
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
-import type {
-  getCategoriesWithItems,
-  getFeaturedItems,
-  getMenuItemsWithoutCategory
+import {
+  type getCategoriesWithItems,
+  type getFeaturedItems,
+  type getMenuItemsWithoutCategory
 } from "@/server/actions/item/queries"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import {
@@ -81,7 +81,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { colorThemeAtom, fontThemeAtom, tourModeAtom } from "@/lib/atoms"
 import exportAsImage from "@/lib/export-as-image"
 import { syncEditorWithMenuState } from "@/lib/sync-status"
-import { MenuStatus } from "@/lib/types"
+import { MenuStatus } from "@/lib/types/menu"
 import { getBaseUrl } from "@/lib/utils"
 
 export default function MenuPublish({

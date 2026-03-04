@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import lz from "lzutf8"
-import type { Metadata, ResolvingMetadata } from "next"
+import { type Metadata, type ResolvingMetadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
@@ -14,7 +14,7 @@ import {
 } from "@/server/actions/organization/queries"
 import PublicMenuTracker from "@/app/[subdomain]/public-menu-tracker"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
-import { SubscriptionStatus } from "@/lib/types"
+import { SubscriptionStatus } from "@/lib/types/billing"
 
 // Add generateStaticParams to pre-render specific paths
 export async function generateStaticParams() {
@@ -28,7 +28,7 @@ async function getCachedOrganizationBySubdomain(subdomain: string) {
   "use cache"
   cacheTag(`subdomain-${subdomain}`)
   cacheLife("days")
-  return getOrganizationBySlug(subdomain)
+  return await getOrganizationBySlug(subdomain)
 }
 
 export async function generateMetadata(
@@ -207,6 +207,7 @@ function rgbaToHex({ r, g, b, a = 1 }: RgbaColor) {
   return `#${hex(r)}${hex(g)}${hex(b)}${hex(alpha * 255)}`
 }
 
+// skipcq: JS-0116
 async function getCachedMenuRenderData(menuId: string, snapshot: string) {
   "use cache"
   cacheTag(`menu-${menuId}`)

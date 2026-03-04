@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import { CustomerPortalButton } from "@/app/dashboard/settings/billing/customer-portal-button"
-import { SubscriptionStatus, Tiers } from "@/lib/types"
+import { SubscriptionStatus, Tiers } from "@/lib/types/billing"
 
 export async function ProPlanView() {
   const org = await getCurrentOrganization()

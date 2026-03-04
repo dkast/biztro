@@ -55,9 +55,9 @@ import {
   deleteColorTheme,
   updateColorTheme
 } from "@/server/actions/menu/mutations"
-import type { getMenuById } from "@/server/actions/menu/queries"
+import { type getMenuById } from "@/server/actions/menu/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { ThemeScope, type colorThemes } from "@/lib/types"
+import { colorThemes, ThemeScope } from "@/lib/types/theme"
 
 export function ColorThemeEditor({
   menu,

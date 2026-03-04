@@ -14,7 +14,7 @@ import {
   MediaAssetScope,
   MediaAssetType,
   MediaUsageEntityType
-} from "@/lib/types"
+} from "@/lib/types/media"
 import { env } from "@/env.mjs"
 
 // Create an Cloudflare R2 service client object

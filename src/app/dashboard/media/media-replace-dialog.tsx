@@ -22,7 +22,7 @@ import {
   DrawerTitle
 } from "@/components/ui/drawer"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { ImageType } from "@/lib/types"
+import { ImageType } from "@/lib/types/media"
 
 type MediaAsset = {
   id: string

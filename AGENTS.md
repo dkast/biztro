@@ -72,6 +72,7 @@ Use `bun run <script>` unless the user requests otherwise.
 - Prefer the existing components in `@/components/ui`.
 - Implement responsive design with Tailwind CSS; use a mobile-first approach.
 - Use React Hook Forms with Zod validation when creating Forms.
+- Use TextMorph for animated text transitions in states like saving/loading.
 
 ## Performance Optimization
 
@@ -98,9 +99,12 @@ Use `bun run <script>` unless the user requests otherwise.
 - Prefer React Server Components; keep `use client` components small and scoped.
 - Use `src/env.mjs` as the source of truth for required env vars.
 - Auth rules/route protection live in `src/proxy.ts`; consult it before changing auth behavior.
+- Types are domain-scoped under `src/lib/types/*`; add new shared types to the closest domain module instead of growing a monolithic file.
+- Prefer direct imports from domain modules (for example `@/lib/types/menu-item`) in new/edited code; keep `src/lib/types.ts` only as a temporary compatibility shim.
 - Prisma schema/migrations live in `prisma/`; if changing schema, create a migration and mention the required command(s). Run `bunx prisma generate` after schema changes.
 - Avoid editing generated output under `src/generated/` unless that is explicitly the task.
 - When adding error handling, capture and log errors with Sentry.
+- When using server actions on the client, ensure to use reset() on success to avoid stale form state. Use TextMorph for any saving/loading states.
 
 ## Commit messages
 

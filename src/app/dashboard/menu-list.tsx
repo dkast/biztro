@@ -2,7 +2,7 @@
 
 import { use, useState } from "react"
 import toast from "react-hot-toast"
-import type { Menu } from "@/generated/prisma-client/client"
+import { type Menu } from "@/generated/prisma-client/client"
 import { CircleCheck, MoreHorizontal } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
@@ -26,7 +26,8 @@ import { duplicateMenu, setActiveMenu } from "@/server/actions/menu/mutations"
 import MenuCreate from "@/app/dashboard/menu-create"
 import MenuDelete from "@/app/dashboard/menu-delete"
 import { MenuRename } from "@/app/dashboard/menu-rename"
-import { BasicPlanLimits, MenuStatus } from "@/lib/types"
+import { BasicPlanLimits } from "@/lib/types/billing"
+import { MenuStatus } from "@/lib/types/menu"
 
 export default function MenuList({
   promiseMenus
