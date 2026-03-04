@@ -29,7 +29,7 @@ async function getCachedOrganizationBySubdomain(subdomain: string) {
   "use cache"
   cacheTag(`subdomain-${subdomain}`)
   cacheLife("days")
-  return getOrganizationBySlug(subdomain)
+  return await getOrganizationBySlug(subdomain)
 }
 
 export async function generateMetadata(
@@ -199,6 +199,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
 }
 
+// skipcq: JS-0116
 async function getCachedMenuRenderData(menuId: string, snapshot: string) {
   "use cache"
   cacheTag(`menu-${menuId}`)
