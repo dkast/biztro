@@ -57,7 +57,7 @@ import {
 } from "@/server/actions/menu/mutations"
 import { type getMenuById } from "@/server/actions/menu/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { ThemeScope, type colorThemes } from "@/lib/types/theme"
+import { colorThemes, ThemeScope } from "@/lib/types/theme"
 
 export function ColorThemeEditor({
   menu,
