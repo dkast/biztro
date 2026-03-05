@@ -72,6 +72,7 @@ export function PreviewToggle({ json }: { json?: string }) {
                   <div
                     className="h-full w-full overflow-y-auto bg-white
                       text-gray-900 dark:bg-gray-950 dark:text-gray-50"
+                    data-menu-scroll-root="true"
                   >
                     <ResolveEditor json={json} />
                   </div>

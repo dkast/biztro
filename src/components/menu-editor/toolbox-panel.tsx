@@ -101,7 +101,6 @@ export default function ToolboxPanel({
   // Blocks
   const headerBlock = (
     <HeaderBlock
-      layout="classic"
       organization={organization}
       location={location ?? undefined}
       accentColor={hexToRgba(selectedColorTheme.brandColor)}

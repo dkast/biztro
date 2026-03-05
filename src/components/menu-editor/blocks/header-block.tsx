@@ -3,6 +3,13 @@
 import * as React from "react"
 import { useNode } from "@craftjs/core"
 import { type RgbaColor } from "@uiw/react-color"
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform
+} from "motion/react"
 import Image from "next/image"
 
 import GradientBlur from "@/components/flare-ui/gradient-blur"
@@ -20,7 +27,6 @@ import type { getCurrentOrganization } from "@/server/actions/user/queries"
 import { cn, getInitials } from "@/lib/utils"
 
 export type HeaderBlockProps = {
-  layout: "classic" | "modern"
   organization: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>
   location?: Awaited<ReturnType<typeof getDefaultLocation>>
   fontFamily?: string
@@ -35,7 +41,6 @@ export type HeaderBlockProps = {
 export default function HeaderBlock({
   organization,
   location,
-  layout,
   fontFamily,
   accentColor,
   backgroundColor,
@@ -47,141 +52,244 @@ export default function HeaderBlock({
   const {
     connectors: { connect }
   } = useNode()
+  const headerRef = React.useRef<HTMLElement | null>(null)
+  const scrollContainerRef = React.useRef<HTMLElement | null>(null)
+  const [hasContainerScrollRoot, setHasContainerScrollRoot] =
+    React.useState(false)
+  const [isCollapsed, setIsCollapsed] = React.useState(false)
 
-  const renderClassic = () => {
-    const hasBanner = Boolean(organization.banner && showBanner)
+  const { scrollY: viewportScrollY } = useScroll()
+  const { scrollY: containerScrollY } = useScroll(
+    hasContainerScrollRoot ? { container: scrollContainerRef } : {}
+  )
 
-    return (
-      <>
-        <Banner
-          banner={organization.banner}
-          isBannerVisible={showBanner ?? false}
-          className="relative h-28"
-        />
-        <div
-          className={cn("px-4 pt-3 pb-4", hasBanner && "relative z-10 -mt-10")}
-        >
-          <div
-            style={{
-              color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-            }}
-          >
-            <div className="flex items-start gap-3 p-2.5">
-              <Logo
-                logo={organization.logo}
-                orgName={organization.name}
-                isLogoVisible={showLogo ?? false}
-                className="size-18 rounded-lg shadow-none"
-              />
-              <div className="min-w-0 flex-1">
-                <FontWrapper fontFamily={fontFamily}>
-                  <h1
-                    className="text-xl leading-tight font-semibold text-balance
-                      text-shadow-lg/30"
-                  >
-                    {organization?.name}
-                  </h1>
-                </FontWrapper>
-                <LocationData
-                  isBusinessInfoVisible={showAddress ?? false}
-                  isOpenHoursVisible={showAddress ?? false}
-                  location={location}
-                  className="mt-1 items-start"
-                />
-              </div>
-            </div>
-            {showSocialMedia && (
-              <div className="mt-1 px-2.5 pt-2 pb-2">
-                <SocialMedia
-                  location={location}
-                  isVisible={showSocialMedia}
-                  className="justify-start gap-4 p-0"
-                  iconClassName="size-6"
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      </>
-    )
-  }
+  const activeScrollY = useTransform(() =>
+    hasContainerScrollRoot ? containerScrollY.get() : viewportScrollY.get()
+  )
 
-  const renderModern = () => {
-    return (
-      <div className="flex flex-col items-center justify-center pt-8 pb-4">
-        <div className="absolute inset-0 origin-top">
-          <Banner
-            banner={organization.banner}
-            isBannerVisible={showBanner ?? false}
-          />
-          {showBanner && organization.banner && (
-            <>
-              <GradientBlur className="inset-x-0 bottom-0 h-2/3" />
-              <div
-                className="absolute inset-x-0 bottom-0 z-20 h-2/3"
-                style={{
-                  background: `linear-gradient(180deg, rgba(0,0,0,0), rgba(${Object.values(backgroundColor ?? { r: 0, g: 0, b: 0, a: 1 })}))`
-                }}
-              ></div>
-            </>
-          )}
-        </div>
-        <div className="z-20 flex flex-col items-center gap-2">
-          <Logo
-            logo={organization.logo}
-            orgName={organization.name}
-            isLogoVisible={showLogo ?? false}
-            className="size-24 rounded-full shadow-lg"
-          />
-          <FontWrapper fontFamily={fontFamily}>
-            <h1
-              className={cn(
-                "text-xl font-semibold text-balance text-shadow-md"
-              )}
-              style={{
-                color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-              }}
-            >
-              {organization?.name}
-            </h1>
-          </FontWrapper>
-          <div
-            style={{
-              color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-            }}
-          >
-            <LocationData
-              isBusinessInfoVisible={showAddress ?? false}
-              isOpenHoursVisible={showAddress ?? false}
-              location={location}
-              className="items-center"
-            />
-          </div>
-        </div>
-        <div
-          style={{
-            color: `rgb(${Object.values(accentColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-          }}
-          className="z-20 mt-2"
-        >
-          <SocialMedia location={location} isVisible={showSocialMedia} />
-        </div>
-      </div>
-    )
-  }
+  useMotionValueEvent(activeScrollY, "change", latest => {
+    setIsCollapsed(previousValue => {
+      if (latest >= 72) return true
+      if (latest <= 24) return false
+      return previousValue
+    })
+  })
+
+  React.useEffect(() => {
+    const headerNode = headerRef.current
+    if (!headerNode) return
+
+    const scrollRoot = getScrollRoot(headerNode)
+    scrollContainerRef.current = isElementScrollRoot(scrollRoot)
+      ? scrollRoot
+      : null
+    setHasContainerScrollRoot(scrollContainerRef.current !== null)
+
+    const initialScrollTop = getScrollTop(scrollRoot, headerNode.ownerDocument)
+    setIsCollapsed(initialScrollTop >= 72)
+  }, [])
+
+  React.useEffect(() => {
+    const headerNode = headerRef.current
+    if (!headerNode) return
+
+    const ownerWindow = headerNode.ownerDocument.defaultView ?? window
+
+    const publishHeaderOffset = () => {
+      headerNode.ownerDocument.documentElement.style.setProperty(
+        "--menu-header-offset",
+        `${headerNode.offsetHeight}px`
+      )
+    }
+
+    publishHeaderOffset()
+
+    const ResizeObserverClass = ownerWindow.ResizeObserver ?? ResizeObserver
+    const resizeObserver = new ResizeObserverClass(publishHeaderOffset)
+    resizeObserver.observe(headerNode)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
+
+  const textColor = rgbaToCss(accentColor, { r: 0, g: 0, b: 0, a: 1 })
+  const background = rgbaToCss(backgroundColor, {
+    r: 255,
+    g: 255,
+    b: 255,
+    a: 1
+  })
+  const expandedHeight = showAddress || showSocialMedia ? 250 : 214
+  const collapsedHeight = 104
 
   return (
-    <div
+    <motion.header
       ref={ref => {
+        headerRef.current = ref
         if (ref) {
           connect(ref)
         }
       }}
-      className="relative"
+      className="sticky top-0 z-30 overflow-hidden"
+      initial={false}
+      animate={{ height: isCollapsed ? collapsedHeight : expandedHeight }}
+      transition={HEADER_SPRING_TRANSITION}
+      style={{
+        color: textColor
+      }}
     >
-      {layout === "classic" ? renderClassic() : renderModern()}
-    </div>
+      <div className="absolute inset-0 origin-top">
+        <Banner
+          banner={organization.banner}
+          isBannerVisible={showBanner ?? false}
+          className="h-full"
+        />
+        {showBanner && organization.banner && (
+          <>
+            <GradientBlur className="inset-x-0 bottom-0 h-2/3" />
+            <motion.div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(180deg, rgba(0, 0, 0, 0.08), ${background})`
+              }}
+              animate={{ opacity: isCollapsed ? 0.75 : 0.5 }}
+              transition={HEADER_OPACITY_TRANSITION}
+            />
+          </>
+        )}
+      </div>
+
+      <div className="relative z-20 h-full">
+        <AnimatePresence mode="wait" initial={false}>
+          {isCollapsed ? (
+            <motion.div
+              key="collapsed-layout"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={HEADER_OPACITY_TRANSITION}
+              className={cn(
+                "flex h-full items-center px-4 py-2",
+                showLogo ? "justify-start gap-3" : "justify-center",
+                showBanner ? "" : "backdrop-blur-md"
+              )}
+            >
+              <Logo
+                logo={organization.logo}
+                orgName={organization.name}
+                isLogoVisible={showLogo ?? false}
+                className="mt-3 size-14 rounded-full shadow-lg"
+              />
+              <FontWrapper fontFamily={fontFamily}>
+                <h2
+                  className="truncate text-lg leading-tight font-semibold
+                    text-shadow-md"
+                >
+                  {organization.name}
+                </h2>
+              </FontWrapper>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="expanded-layout"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={HEADER_OPACITY_TRANSITION}
+              className="flex h-full flex-col items-center justify-center px-4
+                py-4 text-center"
+            >
+              <Logo
+                logo={organization.logo}
+                orgName={organization.name}
+                isLogoVisible={showLogo ?? false}
+                className="size-24 rounded-full shadow-lg"
+              />
+              <div className="mt-2">
+                <FontWrapper fontFamily={fontFamily}>
+                  <h1
+                    className="text-xl leading-tight font-semibold text-balance
+                      text-shadow-md"
+                  >
+                    {organization.name}
+                  </h1>
+                </FontWrapper>
+              </div>
+              {showAddress && (
+                <LocationData
+                  isBusinessInfoVisible={showAddress}
+                  isOpenHoursVisible={showAddress}
+                  location={location}
+                  className="mt-1 items-center"
+                />
+              )}
+              {showSocialMedia && (
+                <div className="mt-1">
+                  <SocialMedia
+                    location={location}
+                    isVisible={showSocialMedia}
+                  />
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.header>
   )
+}
+
+const HEADER_SPRING_TRANSITION = {
+  type: "spring" as const,
+  stiffness: 300,
+  damping: 30
+}
+
+const HEADER_OPACITY_TRANSITION = { duration: 0.2 }
+
+type ScrollRoot = Window | HTMLElement
+
+function getScrollRoot(node: HTMLElement): ScrollRoot {
+  let current: HTMLElement | null = node.parentElement
+  const ownerWindow = node.ownerDocument.defaultView ?? window
+
+  while (current) {
+    if (current.dataset.menuScrollRoot === "true") {
+      return current
+    }
+
+    const styles = ownerWindow.getComputedStyle(current)
+    const overflowY = styles.overflowY
+
+    if (
+      /(auto|scroll|overlay)/.test(overflowY) &&
+      current.scrollHeight > current.clientHeight
+    ) {
+      return current
+    }
+
+    current = current.parentElement
+  }
+
+  return ownerWindow
+}
+
+function getScrollTop(root: ScrollRoot, ownerDocument: Document) {
+  if (isElementScrollRoot(root)) {
+    return root.scrollTop
+  }
+
+  return root.scrollY || ownerDocument.documentElement.scrollTop || 0
+}
+
+function isElementScrollRoot(root: ScrollRoot): root is HTMLElement {
+  return "scrollTop" in root
+}
+
+function rgbaToCss(color: RgbaColor | undefined, fallback: RgbaColor) {
+  const value = color ?? fallback
+  return `rgba(${value.r}, ${value.g}, ${value.b}, ${value.a ?? 1})`
 }
 
 function Banner({
@@ -196,7 +304,7 @@ function Banner({
   return (
     banner &&
     isBannerVisible && (
-      <div className={cn("h-32", className)}>
+      <div className={cn("relative", className)}>
         <Image
           alt="Banner"
           className="object-cover"
@@ -309,7 +417,6 @@ function SocialMedia({
 HeaderBlock.craft = {
   displayName: "Cabecera",
   props: {
-    layout: "modern",
     fontFamily: "Inter",
     color: { r: 38, g: 50, b: 56, a: 1 },
     accentColor: { r: 38, g: 50, b: 56, a: 1 },

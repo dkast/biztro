@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
 import type { RgbaColor } from "@uiw/react-color"
 import { ChevronsRight, Menu } from "lucide-react"
-import { AnimatePresence, motion } from "motion/react"
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform
+} from "motion/react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
@@ -37,7 +43,21 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
   const observer = useRef<IntersectionObserver | null>(null)
   const navRef = useRef<HTMLElement | null>(null)
   const ulRef = useRef<HTMLUListElement | null>(null)
+  const scrollContainerRef = useRef<HTMLElement | null>(null)
+  const [hasContainerScrollRoot, setHasContainerScrollRoot] = useState(false)
   const isMobile = useIsMobile()
+
+  const { scrollY: viewportScrollY } = useScroll()
+  const { scrollY: containerScrollY } = useScroll(
+    hasContainerScrollRoot ? { container: scrollContainerRef } : {}
+  )
+  const activeScrollY = useTransform(() =>
+    hasContainerScrollRoot ? containerScrollY.get() : viewportScrollY.get()
+  )
+
+  useMotionValueEvent(activeScrollY, "change", latest => {
+    setIsSticky(latest > 8)
+  })
 
   const handleSectionNavigation = (id: string, shouldCloseDrawer = false) => {
     if (shouldCloseDrawer) {
@@ -50,10 +70,14 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
       if (target) {
         // Calculate target scroll position accounting for the sticky nav height
         const navHeight = navRef.current?.offsetHeight ?? 0
+        const headerOffset = getHeaderOffset()
         const extraSpacing = 8 // small breathing room so heading isn't flush with nav
         const targetRect = target.getBoundingClientRect()
         const absoluteTop = window.scrollY + targetRect.top
-        const scrollTop = Math.max(0, absoluteTop - navHeight - extraSpacing)
+        const scrollTop = Math.max(
+          0,
+          absoluteTop - navHeight - headerOffset - extraSpacing
+        )
 
         window.scrollTo({ top: scrollTop, behavior: "smooth" })
       }
@@ -87,25 +111,15 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
   }, [nodes])
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsSticky(!entry?.isIntersecting)
-      },
-      {
-        rootMargin: "-1px 0px 0px 0px",
-        threshold: [1]
-      }
-    )
+    const navNode = navRef.current
+    if (!navNode) return
 
-    if (navRef.current) {
-      observer.observe(navRef.current)
-    }
-
-    return () => {
-      if (navRef.current) {
-        observer.unobserve(navRef.current)
-      }
-    }
+    const scrollRoot = getScrollRoot(navNode)
+    scrollContainerRef.current = isElementScrollRoot(scrollRoot)
+      ? scrollRoot
+      : null
+    setHasContainerScrollRoot(scrollContainerRef.current !== null)
+    setIsSticky(getScrollTop(scrollRoot, navNode.ownerDocument) > 8)
   }, [])
 
   useEffect(() => {
@@ -189,14 +203,17 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
           navRef.current = ref
         }}
         className={cn(
-          `sticky top-0 z-10 w-screen p-4 transition delay-150 ease-in-out
-          sm:w-full`,
+          "sticky z-20 w-screen p-4 transition delay-150 ease-in-out sm:w-full",
           {
-            "bg-black/60 text-white! backdrop-blur-md": isSticky
+            "backdrop-blur-md": isSticky
           }
         )}
         style={{
-          color: `rgb(${Object.values(color ?? { r: 255, g: 255, b: 255, a: 1 })})`
+          top: "var(--menu-header-offset, 0px)",
+          color: isSticky
+            ? "rgba(255, 255, 255, 0.96)"
+            : rgbaToCss(color, { r: 255, g: 255, b: 255, a: 1 }),
+          backgroundColor: isSticky ? "rgba(0, 0, 0, 0.62)" : "transparent"
         }}
       >
         {ids.length === 0 ? (
@@ -305,4 +322,60 @@ NavigatorBlock.craft = {
   custom: {
     iconKey: "navigator"
   }
+}
+
+function getHeaderOffset() {
+  const rawValue = window
+    .getComputedStyle(document.documentElement)
+    .getPropertyValue("--menu-header-offset")
+    .trim()
+
+  const parsedValue = Number.parseFloat(rawValue)
+  if (Number.isNaN(parsedValue)) return 0
+
+  return parsedValue
+}
+
+type ScrollRoot = Window | HTMLElement
+
+function getScrollRoot(node: HTMLElement): ScrollRoot {
+  let current: HTMLElement | null = node.parentElement
+  const ownerWindow = node.ownerDocument.defaultView ?? window
+
+  while (current) {
+    if (current.dataset.menuScrollRoot === "true") {
+      return current
+    }
+
+    const styles = ownerWindow.getComputedStyle(current)
+    const overflowY = styles.overflowY
+
+    if (
+      /(auto|scroll|overlay)/.test(overflowY) &&
+      current.scrollHeight > current.clientHeight
+    ) {
+      return current
+    }
+
+    current = current.parentElement
+  }
+
+  return ownerWindow
+}
+
+function getScrollTop(root: ScrollRoot, ownerDocument: Document) {
+  if (isElementScrollRoot(root)) {
+    return root.scrollTop
+  }
+
+  return root.scrollY || ownerDocument.documentElement.scrollTop || 0
+}
+
+function isElementScrollRoot(root: ScrollRoot): root is HTMLElement {
+  return "scrollTop" in root
+}
+
+function rgbaToCss(color: RgbaColor | undefined, fallback: RgbaColor) {
+  const value = color ?? fallback
+  return `rgba(${value.r}, ${value.g}, ${value.b}, ${value.a ?? 1})`
 }
