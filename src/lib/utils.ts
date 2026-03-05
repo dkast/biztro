@@ -37,6 +37,23 @@ export const getBaseUrl = () => {
   return "http://localhost:3000"
 }
 
+export const getPublishedMenuUrl = (subdomain: string) => {
+  const baseUrl = getBaseUrl()
+  if (!subdomain) return baseUrl
+
+  try {
+    const url = new URL(baseUrl)
+    const isBiztroDomain = url.hostname === "biztro.co"
+    const isBiztroSubdomain = url.hostname.endsWith(".biztro.co")
+
+    if (!isBiztroDomain && !isBiztroSubdomain) return `${baseUrl}/${subdomain}`
+
+    return `${url.protocol}//${subdomain}.biztro.co`
+  } catch {
+    return `${baseUrl}/${subdomain}`
+  }
+}
+
 export function getOpenHoursLegend(openingHours: OpeningHours[]) {
   let status = "Cerrado"
 
