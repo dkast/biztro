@@ -82,7 +82,7 @@ import { colorThemeAtom, fontThemeAtom, tourModeAtom } from "@/lib/atoms"
 import exportAsImage from "@/lib/export-as-image"
 import { syncEditorWithMenuState } from "@/lib/sync-status"
 import { MenuStatus } from "@/lib/types/menu"
-import { getBaseUrl } from "@/lib/utils"
+import { getPublishedMenuUrl } from "@/lib/utils"
 
 export default function MenuPublish({
   menu,
@@ -335,6 +335,7 @@ export default function MenuPublish({
   }, [timelineLength, lastSavedTimelineLength, handleUpdateSerialData])
 
   const orgSlug = menu?.organization.slug ?? ""
+  const publishedMenuUrl = getPublishedMenuUrl(orgSlug)
 
   const hasPendingPublishChanges = Boolean(
     menu?.publishedAt &&
@@ -412,12 +413,12 @@ export default function MenuPublish({
             <ItemContent>
               <ItemTitle>
                 <Link
-                  href={`${getBaseUrl()}/${orgSlug}`}
+                  href={publishedMenuUrl}
                   // className="text-blue-600 hover:text-blue-800"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {`${getBaseUrl()}/${orgSlug}`}
+                  {publishedMenuUrl}
                 </Link>
               </ItemTitle>
             </ItemContent>
@@ -428,9 +429,7 @@ export default function MenuPublish({
                 aria-label="Copiar liga"
                 onClick={async () => {
                   try {
-                    await navigator.clipboard.writeText(
-                      `${getBaseUrl()}/${orgSlug}`
-                    )
+                    await navigator.clipboard.writeText(publishedMenuUrl)
                     toast.success("Liga copiada al portapapeles")
                   } catch (error) {
                     toast.error(
@@ -446,7 +445,7 @@ export default function MenuPublish({
             </ItemActions>
           </Item>
           <QrCodeEditor
-            value={`${getBaseUrl()}/${orgSlug}`}
+            value={publishedMenuUrl}
             logoURL={menu.organization.logo ?? undefined}
           />
           {menu.status === MenuStatus.DRAFT && (
@@ -523,13 +522,11 @@ export default function MenuPublish({
                 <span className="text-sm font-medium">Liga Menú</span>
                 <div className="flex flex-row items-center gap-1">
                   <Link
-                    href={`/${orgSlug}`}
+                    href={publishedMenuUrl}
                     className="flex flex-row items-center justify-center gap-2"
                     target="_blank"
                   >
-                    <span className="text-xs">
-                      {getBaseUrl()}/{orgSlug}
-                    </span>
+                    <span className="text-xs">{publishedMenuUrl}</span>
                     <ExternalLink className="size-3.5 text-gray-500" />
                   </Link>
                 </div>
