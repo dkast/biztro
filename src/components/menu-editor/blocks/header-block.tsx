@@ -3,13 +3,7 @@
 import * as React from "react"
 import { useNode } from "@craftjs/core"
 import { type RgbaColor } from "@uiw/react-color"
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-  useTransform
-} from "motion/react"
+import { motion, useScroll, useSpring, useTransform } from "motion/react"
 import Image from "next/image"
 
 import GradientBlur from "@/components/flare-ui/gradient-blur"
@@ -56,23 +50,20 @@ export default function HeaderBlock({
   const scrollContainerRef = React.useRef<HTMLElement | null>(null)
   const [hasContainerScrollRoot, setHasContainerScrollRoot] =
     React.useState(false)
-  const [isCollapsed, setIsCollapsed] = React.useState(false)
 
   const { scrollY: viewportScrollY } = useScroll()
   const { scrollY: containerScrollY } = useScroll(
     hasContainerScrollRoot ? { container: scrollContainerRef } : {}
   )
 
-  const activeScrollY = useTransform(() =>
+  const rawScrollY = useTransform(() =>
     hasContainerScrollRoot ? containerScrollY.get() : viewportScrollY.get()
   )
 
-  useMotionValueEvent(activeScrollY, "change", latest => {
-    setIsCollapsed(previousValue => {
-      if (latest >= 72) return true
-      if (latest <= 24) return false
-      return previousValue
-    })
+  const activeScrollY = useSpring(rawScrollY, {
+    stiffness: 400,
+    damping: 40,
+    restDelta: 0.5
   })
 
   React.useEffect(() => {
@@ -84,9 +75,6 @@ export default function HeaderBlock({
       ? scrollRoot
       : null
     setHasContainerScrollRoot(scrollContainerRef.current !== null)
-
-    const initialScrollTop = getScrollTop(scrollRoot, headerNode.ownerDocument)
-    setIsCollapsed(initialScrollTop >= 72)
   }, [])
 
   React.useEffect(() => {
@@ -123,6 +111,36 @@ export default function HeaderBlock({
   const expandedHeight = showAddress || showSocialMedia ? 250 : 214
   const collapsedHeight = 104
 
+  const headerHeight = useTransform(
+    activeScrollY,
+    [0, SCROLL_END],
+    [expandedHeight, collapsedHeight]
+  )
+
+  // Staggered crossfade: expanded fades out in the first half,
+  // collapsed fades in during the second half. This avoids both
+  // layers sitting at ~50% opacity simultaneously.
+  const expandedOpacity = useTransform(activeScrollY, [0, SCROLL_MID], [1, 0])
+  const expandedY = useTransform(activeScrollY, [0, SCROLL_MID], [0, -12])
+  const expandedScale = useTransform(activeScrollY, [0, SCROLL_MID], [1, 0.95])
+
+  const collapsedOpacity = useTransform(
+    activeScrollY,
+    [SCROLL_MID, SCROLL_END],
+    [0, 1]
+  )
+  const collapsedY = useTransform(
+    activeScrollY,
+    [SCROLL_MID, SCROLL_END],
+    [8, 0]
+  )
+
+  const bannerOverlayOpacity = useTransform(
+    activeScrollY,
+    [0, SCROLL_END],
+    [0.5, 0.75]
+  )
+
   return (
     <motion.header
       ref={ref => {
@@ -132,11 +150,9 @@ export default function HeaderBlock({
         }
       }}
       className="sticky top-0 z-30 overflow-hidden"
-      initial={false}
-      animate={{ height: isCollapsed ? collapsedHeight : expandedHeight }}
-      transition={HEADER_SPRING_TRANSITION}
       style={{
-        color: textColor
+        color: textColor,
+        height: headerHeight
       }}
     >
       <div className="absolute inset-0 origin-top">
@@ -151,102 +167,88 @@ export default function HeaderBlock({
             <motion.div
               className="absolute inset-0"
               style={{
-                background: `linear-gradient(180deg, rgba(0, 0, 0, 0.08), ${background})`
+                background: `linear-gradient(180deg, rgba(0, 0, 0, 0.08), ${background})`,
+                opacity: bannerOverlayOpacity
               }}
-              animate={{ opacity: isCollapsed ? 0.75 : 0.5 }}
-              transition={HEADER_OPACITY_TRANSITION}
             />
           </>
         )}
       </div>
 
       <div className="relative z-20 h-full">
-        <AnimatePresence mode="wait" initial={false}>
-          {isCollapsed ? (
-            <motion.div
-              key="collapsed-layout"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={HEADER_OPACITY_TRANSITION}
-              className={cn(
-                "flex h-full items-center px-4 py-2",
-                showLogo ? "justify-start gap-3" : "justify-center",
-                showBanner ? "" : "backdrop-blur-md"
-              )}
-            >
-              <Logo
-                logo={organization.logo}
-                orgName={organization.name}
-                isLogoVisible={showLogo ?? false}
-                className="mt-3 size-14 rounded-full shadow-lg"
-              />
-              <FontWrapper fontFamily={fontFamily}>
-                <h2
-                  className="truncate text-lg leading-tight font-semibold
-                    text-shadow-md"
-                >
-                  {organization.name}
-                </h2>
-              </FontWrapper>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="expanded-layout"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={HEADER_OPACITY_TRANSITION}
-              className="flex h-full flex-col items-center justify-center px-4
-                py-4 text-center"
-            >
-              <Logo
-                logo={organization.logo}
-                orgName={organization.name}
-                isLogoVisible={showLogo ?? false}
-                className="size-24 rounded-full shadow-lg"
-              />
-              <div className="mt-2">
-                <FontWrapper fontFamily={fontFamily}>
-                  <h1
-                    className="text-xl leading-tight font-semibold text-balance
-                      text-shadow-md"
-                  >
-                    {organization.name}
-                  </h1>
-                </FontWrapper>
-              </div>
-              {showAddress && (
-                <LocationData
-                  isBusinessInfoVisible={showAddress}
-                  isOpenHoursVisible={showAddress}
-                  location={location}
-                  className="mt-1 items-center"
-                />
-              )}
-              {showSocialMedia && (
-                <div className="mt-1">
-                  <SocialMedia
-                    location={location}
-                    isVisible={showSocialMedia}
-                  />
-                </div>
-              )}
-            </motion.div>
+        {/* Expanded layout — fades out as user scrolls down */}
+        <motion.div
+          style={{
+            opacity: expandedOpacity,
+            y: expandedY,
+            scale: expandedScale
+          }}
+          className="pointer-events-none absolute inset-0 flex flex-col
+            items-center justify-center px-4 py-4 text-center"
+        >
+          <Logo
+            logo={organization.logo}
+            orgName={organization.name}
+            isLogoVisible={showLogo ?? false}
+            className="size-24 rounded-full shadow-lg"
+          />
+          <div className="mt-2">
+            <FontWrapper fontFamily={fontFamily}>
+              <h1
+                className="text-xl leading-tight font-semibold text-balance
+                  text-shadow-md"
+              >
+                {organization.name}
+              </h1>
+            </FontWrapper>
+          </div>
+          {showAddress && (
+            <LocationData
+              isBusinessInfoVisible={showAddress}
+              isOpenHoursVisible={showAddress}
+              location={location}
+              className="mt-1 items-center"
+            />
           )}
-        </AnimatePresence>
+          {showSocialMedia && (
+            <div className="mt-1">
+              <SocialMedia location={location} isVisible={showSocialMedia} />
+            </div>
+          )}
+        </motion.div>
+
+        {/* Collapsed layout — fades in as user scrolls down */}
+        <motion.div
+          style={{ opacity: collapsedOpacity, y: collapsedY }}
+          className={cn(
+            `pointer-events-none absolute inset-0 flex h-full items-center px-4
+            py-2`,
+            showLogo ? "justify-start gap-3" : "justify-center",
+            showBanner ? "" : "backdrop-blur-md"
+          )}
+        >
+          <Logo
+            logo={organization.logo}
+            orgName={organization.name}
+            isLogoVisible={showLogo ?? false}
+            className="mt-3 size-14 rounded-full shadow-lg"
+          />
+          <FontWrapper fontFamily={fontFamily}>
+            <h2
+              className="truncate text-lg leading-tight font-semibold
+                text-shadow-md"
+            >
+              {organization.name}
+            </h2>
+          </FontWrapper>
+        </motion.div>
       </div>
     </motion.header>
   )
 }
 
-const HEADER_SPRING_TRANSITION = {
-  type: "spring" as const,
-  stiffness: 300,
-  damping: 30
-}
-
-const HEADER_OPACITY_TRANSITION = { duration: 0.2 }
+const SCROLL_MID = 60
+const SCROLL_END = 120
 
 type ScrollRoot = Window | HTMLElement
 
@@ -275,7 +277,7 @@ function getScrollRoot(node: HTMLElement): ScrollRoot {
   return ownerWindow
 }
 
-function getScrollTop(root: ScrollRoot, ownerDocument: Document) {
+function _getScrollTop(root: ScrollRoot, ownerDocument: Document) {
   if (isElementScrollRoot(root)) {
     return root.scrollTop
   }
