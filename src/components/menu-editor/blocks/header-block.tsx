@@ -99,6 +99,9 @@ export default function HeaderBlock({
 
     return () => {
       resizeObserver.disconnect()
+      headerNode.ownerDocument.documentElement.style.removeProperty(
+        "--menu-header-offset"
+      )
     }
   }, [])
 
