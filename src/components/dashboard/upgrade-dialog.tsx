@@ -127,7 +127,24 @@ export function ProGuard({
 
   return (
     <>
-      <div onClick={() => setOpen(true)}>{children}</div>
+      <div
+        role="button"
+        tabIndex={0}
+        onClickCapture={event => {
+          event.preventDefault()
+          event.stopPropagation()
+          setOpen(true)
+        }}
+        onKeyDownCapture={event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault()
+            event.stopPropagation()
+            setOpen(true)
+          }
+        }}
+      >
+        {children}
+      </div>
       <UpgradeDialog
         open={open}
         onClose={onClose}

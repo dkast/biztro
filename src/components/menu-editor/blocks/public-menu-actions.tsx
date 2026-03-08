@@ -76,10 +76,14 @@ export function PublicMenuActions() {
   )
   const deferredQuery = React.useDeferredValue(query.trim())
 
-  const fuse = new Fuse(items, fuseOptions)
-  const results = deferredQuery
-    ? fuse.search(deferredQuery).map(result => result.item)
-    : []
+  const fuse = React.useMemo(() => new Fuse(items, fuseOptions), [items])
+  const results = React.useMemo(
+    () =>
+      deferredQuery
+        ? fuse.search(deferredQuery).map(result => result.item)
+        : [],
+    [fuse, deferredQuery]
+  )
 
   React.useEffect(() => {
     if (!isSearchOpen && pendingItem) {

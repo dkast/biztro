@@ -73,13 +73,26 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
         const headerOffset = getHeaderOffset()
         const extraSpacing = 8 // small breathing room so heading isn't flush with nav
         const targetRect = target.getBoundingClientRect()
-        const absoluteTop = window.scrollY + targetRect.top
-        const scrollTop = Math.max(
-          0,
-          absoluteTop - navHeight - headerOffset - extraSpacing
-        )
+        const scrollRoot = scrollContainerRef.current
 
-        window.scrollTo({ top: scrollTop, behavior: "smooth" })
+        if (scrollRoot) {
+          // Container scroll: compute offset relative to the scroll container
+          const containerRect = scrollRoot.getBoundingClientRect()
+          const absoluteTop =
+            scrollRoot.scrollTop + targetRect.top - containerRect.top
+          const scrollTop = Math.max(
+            0,
+            absoluteTop - navHeight - headerOffset - extraSpacing
+          )
+          scrollRoot.scrollTo({ top: scrollTop, behavior: "smooth" })
+        } else {
+          const absoluteTop = window.scrollY + targetRect.top
+          const scrollTop = Math.max(
+            0,
+            absoluteTop - navHeight - headerOffset - extraSpacing
+          )
+          window.scrollTo({ top: scrollTop, behavior: "smooth" })
+        }
       }
 
       window.history.replaceState(null, "", `#${id}`)
