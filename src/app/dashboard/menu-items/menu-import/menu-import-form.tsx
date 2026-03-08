@@ -1,6 +1,6 @@
 "use client"
 
-import { type ChangeEvent, useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState, type ChangeEvent } from "react"
 import toast from "react-hot-toast"
 import { type CellSelectOption } from "@/types/data-grid"
 import * as Sentry from "@sentry/nextjs"
@@ -16,6 +16,7 @@ import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
 
+import { useProGuard } from "@/components/dashboard/upgrade-dialog"
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -65,9 +66,11 @@ function generateId() {
 }
 
 export default function MenuImportForm({
-  simulateEnabled = true
+  simulateEnabled = true,
+  isPro = false
 }: {
   simulateEnabled?: boolean
+  isPro?: boolean
 }) {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -198,6 +201,12 @@ export default function MenuImportForm({
     simulateResponse,
     simulateScenario
   ])
+
+  const { guard, dialog: upgradeDialog } = useProGuard(isPro, {
+    title: "Actualizar a Pro",
+    description:
+      "Actualiza tu plan a Pro para importar tu menú desde archivos PDF o imágenes usando IA ✨"
+  })
 
   const handleDeleteItem = useCallback((id: string) => {
     setItems(prev => prev.filter(item => item._id !== id))
@@ -487,23 +496,26 @@ export default function MenuImportForm({
               </div>
             )}
 
-            <Button
-              onClick={handleParse}
-              disabled={isParsing || isSaving}
-              className="bg-linear-to-r/oklch from-indigo-500 via-pink-500
-                to-orange-500"
-            >
-              {isParsing ? (
-                <Loader className="size-4 animate-spin" />
-              ) : (
-                <SparklesIcon className="size-4 fill-current" />
-              )}
-              {isParsing
-                ? "Extrayendo productos..."
-                : simulateResponse
-                  ? "Simular extracción"
-                  : "Extraer productos del archivo"}
-            </Button>
+            <>
+              <Button
+                onClick={() => guard(handleParse)}
+                disabled={isParsing || isSaving}
+                className="bg-linear-to-r/oklch from-indigo-500 via-pink-500
+                  to-orange-500"
+              >
+                {isParsing ? (
+                  <Loader className="size-4 animate-spin" />
+                ) : (
+                  <SparklesIcon className="size-4 fill-current" />
+                )}
+                {isParsing
+                  ? "Extrayendo productos..."
+                  : simulateResponse
+                    ? "Simular extracción"
+                    : "Extraer productos del archivo"}
+              </Button>
+              {upgradeDialog}
+            </>
           </div>
         )}
       </div>

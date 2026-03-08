@@ -203,7 +203,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
           navRef.current = ref
         }}
         className={cn(
-          "sticky z-20 w-screen p-4 transition delay-150 ease-in-out sm:w-full",
+          "sticky z-20 w-screen p-3 transition delay-150 ease-in-out sm:w-full",
           {
             "backdrop-blur-md": isSticky
           }
@@ -281,11 +281,11 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
       {/* Mobile drawer for navigation */}
       {isMobile && ids.length > 0 && (
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-          <DrawerContent>
+          <DrawerContent className="max-h-[85%]">
             <DrawerHeader>
               <DrawerTitle>Navegación</DrawerTitle>
             </DrawerHeader>
-            <nav className="px-4 pb-8">
+            <nav className="no-scrollbar overflow-y-auto px-4 pb-8">
               <ul className="flex flex-col space-y-2">
                 {ids.map((id, index) => (
                   <li key={id}>

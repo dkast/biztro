@@ -1,5 +1,6 @@
 "use client"
 
+import { useCallback, useState } from "react"
 import { CircleFadingArrowUp } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -32,8 +33,8 @@ export function UpgradeDialog({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className="bg-linear-to-t from-indigo-500/30 via-transparent
-          to-transparent"
+        className="bg-linear-to-t from-indigo-300 via-transparent to-transparent
+          dark:from-indigo-500"
       >
         <DialogHeader className="flex items-center gap-4 pb-6">
           <div
@@ -69,5 +70,70 @@ export function UpgradeDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  )
+}
+
+// Hook to guard actions behind the Pro plan.
+// Usage: const { guard, openDialog, dialog } = useProGuard(isPro)
+// then call `guard(() => doProAction())` or render `dialog` anywhere in the tree.
+export function useProGuard(
+  isPro: boolean,
+  opts?: { title?: string; description?: string }
+) {
+  const [open, setOpen] = useState(false)
+  const onClose = useCallback(() => setOpen(false), [])
+
+  const guard = useCallback(
+    (action: () => void) => {
+      if (isPro) {
+        action()
+        return true
+      }
+      setOpen(true)
+      return false
+    },
+    [isPro]
+  )
+
+  const dialog = (
+    <UpgradeDialog
+      open={open}
+      onClose={onClose}
+      title={opts?.title ?? "Actualizar a Pro"}
+      description={opts?.description ?? "Esta función requiere Pro."}
+    />
+  )
+
+  return { guard, openDialog: () => setOpen(true), dialog }
+}
+
+// Simple wrapper component to conditionally render children for Pro users,
+// otherwise opens the UpgradeDialog when the children are interacted with.
+export function ProGuard({
+  isPro,
+  children,
+  title,
+  description
+}: {
+  isPro: boolean
+  children: React.ReactNode
+  title?: string
+  description?: string
+}) {
+  const [open, setOpen] = useState(false)
+  const onClose = useCallback(() => setOpen(false), [])
+
+  if (isPro) return <>{children}</>
+
+  return (
+    <>
+      <div onClick={() => setOpen(true)}>{children}</div>
+      <UpgradeDialog
+        open={open}
+        onClose={onClose}
+        title={title ?? "Actualizar a Pro"}
+        description={description ?? "Esta función requiere Pro."}
+      />
+    </>
   )
 }

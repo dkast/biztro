@@ -109,7 +109,7 @@ export default function HeaderBlock({
     a: 1
   })
   const expandedHeight = showAddress || showSocialMedia ? 286 : 238
-  const collapsedHeight = 96
+  const collapsedHeight = 76
 
   const headerHeight = useTransform(
     activeScrollY,
@@ -192,7 +192,7 @@ export default function HeaderBlock({
             pointerEvents: expandedPointerEvents
           }}
           className="absolute inset-0 flex flex-col items-center justify-center
-            px-4 py-8 text-center"
+            px-4 text-center"
         >
           <Logo
             logo={organization.logo}
