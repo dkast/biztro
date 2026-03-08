@@ -14,6 +14,7 @@ import { TwitterIcon } from "@/components/icons/twitter-icon"
 import { WhatsappIcon } from "@/components/icons/whatsapp-icon"
 import HeaderSettings from "@/components/menu-editor/blocks/header-settings"
 import LocationData from "@/components/menu-editor/blocks/location-data"
+import { PublicMenuActions } from "@/components/menu-editor/blocks/public-menu-actions"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
@@ -156,7 +157,7 @@ export default function HeaderBlock({
           connect(ref)
         }
       }}
-      className="sticky top-0 z-30 overflow-hidden"
+      className="sticky top-0 z-30 overflow-visible"
       style={{
         color: textColor,
         height: headerHeight
@@ -180,6 +181,12 @@ export default function HeaderBlock({
             />
           </>
         )}
+      </div>
+
+      <div className="pointer-events-none absolute top-3 right-3 z-30">
+        <div className="pointer-events-auto">
+          <PublicMenuActions />
+        </div>
       </div>
 
       <div className="relative z-20 h-full">
