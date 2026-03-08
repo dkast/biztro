@@ -63,6 +63,17 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@index([identifier])
+}
+
 model Organization {
   id            String       @id @default(cuid())
   name          String
