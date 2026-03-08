@@ -5,21 +5,14 @@ import toast from "react-hot-toast"
 import { Menu } from "bloom-menu"
 import Fuse, { type IFuseOptions } from "fuse.js"
 import { MoreHorizontal, Search, Share } from "lucide-react"
+import Image from "next/image"
 
 import {
   ItemDetail,
   type DetailItem
 } from "@/components/menu-editor/blocks/item-detail"
 import { usePublicMenu } from "@/components/menu-editor/public-menu-context"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Command,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList
-} from "@/components/ui/command"
 import {
   Drawer,
   DrawerContent,
@@ -34,10 +27,22 @@ import {
   EmptyMedia,
   EmptyTitle
 } from "@/components/ui/empty"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput
+} from "@/components/ui/input-group"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle
+} from "@/components/ui/item"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
 import type { PublicMenuSearchItem } from "@/lib/menu-search"
-import { cn } from "@/lib/utils"
 
 const bloomItemClassName =
   "text-foreground hover:bg-accent flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors"
@@ -74,7 +79,7 @@ export function PublicMenuActions() {
   const fuse = new Fuse(items, fuseOptions)
   const results = deferredQuery
     ? fuse.search(deferredQuery).map(result => result.item)
-    : items
+    : []
 
   React.useEffect(() => {
     if (!isSearchOpen && pendingItem) {
@@ -86,10 +91,6 @@ export function PublicMenuActions() {
   if (!publicMenu) {
     return null
   }
-
-  const resultsHeading = deferredQuery
-    ? `${results.length} ${results.length === 1 ? "coincidencia" : "coincidencias"}`
-    : "Todos los productos"
 
   async function handleShare() {
     try {
@@ -164,61 +165,57 @@ export function PublicMenuActions() {
         open={isSearchOpen}
         onOpenChange={open => {
           setIsSearchOpen(open)
-          if (!open) {
-            setQuery("")
-          }
+          if (!open) setQuery("")
         }}
       >
-        <DrawerContent className="flex h-[82vh] flex-col px-0">
-          <DrawerHeader className="pb-2">
+        <DrawerContent className="flex h-[82vh] flex-col">
+          <DrawerHeader className="pb-8">
             <DrawerTitle>Buscar productos</DrawerTitle>
             <DrawerDescription>
               Busca coincidencias por nombre o descripción.
             </DrawerDescription>
           </DrawerHeader>
 
-          <div className="flex min-h-0 flex-1 flex-col px-4 pb-4">
-            <Command
-              shouldFilter={false}
-              className="flex min-h-0 flex-1 rounded-2xl border shadow-sm"
-            >
-              <CommandInput
-                value={query}
-                onValueChange={setQuery}
-                placeholder="Tacos, picante, vegetariano..."
-              />
+          <div className="flex min-h-0 flex-1 flex-col gap-4 pb-4">
+            <div className="px-4">
+              <InputGroup>
+                <InputGroupAddon>
+                  <Search />
+                </InputGroupAddon>
+                <InputGroupInput
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  placeholder="Tacos, picante, vegetariano..."
+                  autoFocus
+                />
+              </InputGroup>
+            </div>
 
-              <ScrollArea className="min-h-0 flex-1">
-                {results.length ? (
-                  <CommandList className="max-h-none">
-                    <CommandGroup heading={resultsHeading}>
-                      {results.map(item => (
-                        <CommandItem
-                          key={item.id}
-                          value={`${item.name} ${item.description ?? ""}`}
-                          onSelect={() => handleResultSelect(item)}
-                          className="items-start rounded-xl px-3 py-3"
-                        >
-                          <SearchResultRow item={item} />
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                ) : (
-                  <Empty className="border-0 px-6 py-12">
-                    <EmptyHeader>
-                      <EmptyMedia variant="icon">
-                        <Search className="size-5" />
-                      </EmptyMedia>
-                      <EmptyTitle>Sin resultados</EmptyTitle>
-                      <EmptyDescription>
-                        Intenta con otro nombre o una palabra de la descripción.
-                      </EmptyDescription>
-                    </EmptyHeader>
-                  </Empty>
-                )}
-              </ScrollArea>
-            </Command>
+            <ScrollArea className="min-h-0 flex-1">
+              {!deferredQuery ? null : results.length ? (
+                <ItemGroup className="gap-0.5">
+                  {results.map(item => (
+                    <SearchResultRow
+                      key={item.id}
+                      item={item}
+                      onSelect={() => handleResultSelect(item)}
+                    />
+                  ))}
+                </ItemGroup>
+              ) : (
+                <Empty className="border-0 px-6 py-12">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Search />
+                    </EmptyMedia>
+                    <EmptyTitle>Sin resultados</EmptyTitle>
+                    <EmptyDescription>
+                      Intenta con otro nombre o una palabra de la descripción.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              )}
+            </ScrollArea>
           </div>
         </DrawerContent>
       </Drawer>
@@ -234,7 +231,13 @@ export function PublicMenuActions() {
   )
 }
 
-function SearchResultRow({ item }: { item: PublicMenuSearchItem }) {
+function SearchResultRow({
+  item,
+  onSelect
+}: {
+  item: PublicMenuSearchItem
+  onSelect: () => void
+}) {
   const firstVariant = item.variants[0]
   const pricePreview = firstVariant
     ? formatPrice(
@@ -244,44 +247,46 @@ function SearchResultRow({ item }: { item: PublicMenuSearchItem }) {
     : null
 
   return (
-    <div className="flex w-full items-start gap-3">
-      <div
-        className={cn(
-          `bg-muted flex size-14 shrink-0 items-center justify-center rounded-xl
-          border bg-cover bg-center`,
-          !item.image && "bg-[url('/bg/leaf.svg')]"
-        )}
-        style={
-          item.image
-            ? {
-                backgroundImage: `url(${item.image})`
-              }
-            : undefined
+    <Item
+      role="button"
+      tabIndex={0}
+      size="sm"
+      className="cursor-pointer"
+      onClick={onSelect}
+      onKeyDown={e => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          onSelect()
         }
-      />
-
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="truncate font-medium">{item.name}</p>
-            <p className="text-muted-foreground line-clamp-2 text-xs">
-              {item.description || "Sin descripción disponible"}
-            </p>
-          </div>
-
-          {item.categoryName && (
-            <Badge variant="secondary" className="shrink-0">
-              {item.categoryName}
-            </Badge>
-          )}
-        </div>
-
+      }}
+    >
+      <ItemMedia
+        variant="image"
+        className="size-12 rounded-lg inset-ring inset-ring-black/10
+          dark:inset-ring-white/10"
+      >
+        <Image
+          src={item.image ?? "/bg/leaf.svg"}
+          alt={item.name}
+          width={48}
+          height={48}
+          className="size-full object-cover"
+          unoptimized
+        />
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle>{item.name}</ItemTitle>
+        {item.description && (
+          <ItemDescription className="line-clamp-1">
+            {item.description}
+          </ItemDescription>
+        )}
         {pricePreview && (
           <p className="text-muted-foreground text-xs">
             {item.variants.length > 1 ? `Desde ${pricePreview}` : pricePreview}
           </p>
         )}
-      </div>
-    </div>
+      </ItemContent>
+    </Item>
   )
 }
