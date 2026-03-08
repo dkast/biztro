@@ -96,7 +96,7 @@ export default function LocationData({
           </div>
         )}
       </div>
-      <span>{legend}</span>
+      <span>Info</span>
       <InfoIcon className="ml-1 inline-block size-3" />
     </button>
   )

@@ -40,16 +40,6 @@ export const getBaseUrl = () => {
 export function getOpenHoursLegend(openingHours: OpeningHours[]) {
   let status = "Cerrado"
 
-  // If there are no defined opening hours, show that there's no schedule.
-  if (!openingHours || openingHours.length === 0) {
-    return "Sin horario"
-  }
-
-  // If all days are marked as closed (allDay: false), show that there's no schedule.
-  if (openingHours.every(hour => hour.allDay === false)) {
-    return "Sin horario"
-  }
-
   const currentDate = today(getLocalTimeZone())
   const now = new Date()
   const currentTime = toCalendarDateTime(
