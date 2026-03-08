@@ -163,12 +163,13 @@ export function PublicMenuActions() {
 
       <Drawer
         open={isSearchOpen}
+        repositionInputs={false}
         onOpenChange={open => {
           setIsSearchOpen(open)
           if (!open) setQuery("")
         }}
       >
-        <DrawerContent className="flex h-[82vh] flex-col">
+        <DrawerContent className="flex h-[92dvh] flex-col">
           <DrawerHeader className="pb-8">
             <DrawerTitle>Buscar productos</DrawerTitle>
             <DrawerDescription>
@@ -183,10 +184,12 @@ export function PublicMenuActions() {
                   <Search />
                 </InputGroupAddon>
                 <InputGroupInput
+                  name="search"
                   value={query}
                   onChange={e => setQuery(e.target.value)}
                   placeholder="Tacos, picante, vegetariano..."
-                  autoFocus
+                  inputMode="search"
+                  enterKeyHint="search"
                 />
               </InputGroup>
             </div>
