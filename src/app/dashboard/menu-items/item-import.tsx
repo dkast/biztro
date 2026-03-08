@@ -197,11 +197,11 @@ export default function ItemImport() {
           return
         }
 
-        if (results.data.length > 50) {
+        if (results.data.length > 200) {
           setErrors([
             {
               row: 0,
-              errors: ["No puedes importar más de 50 productos a la vez"]
+              errors: ["No puedes importar más de 200 productos a la vez"]
             }
           ])
           return

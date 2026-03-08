@@ -1,4 +1,3 @@
-import type { MenuItemGetPayload } from "@/generated/prisma-client/models/MenuItem"
 import Image from "next/image"
 
 import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
@@ -19,11 +18,21 @@ import { Label } from "@/components/ui/label"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
 
-type DetailItem = MenuItemGetPayload<{
-  include: {
-    variants: true
-  }
-}>
+type DetailVariant = {
+  id: string
+  name?: string | null
+  price?: number | null
+}
+
+export type DetailItem = {
+  id: string
+  name: string
+  description?: string | null
+  image?: string | null
+  allergens?: string | null
+  currency?: string | null
+  variants: DetailVariant[]
+}
 
 interface ItemDetailProps {
   item: DetailItem
@@ -40,11 +49,11 @@ export function ItemDetail({
   item,
   isOpen,
   onClose,
-  itemFontFamily,
-  itemFontWeight,
-  descriptionFontFamily,
-  priceFontFamily,
-  priceFontWeight
+  itemFontFamily = "Inter",
+  itemFontWeight = "400",
+  descriptionFontFamily = "Inter",
+  priceFontFamily = "Inter",
+  priceFontWeight = "400"
 }: ItemDetailProps) {
   const isMobile = useIsMobile()
 
@@ -96,10 +105,8 @@ export function ItemDetail({
                 }
               >
                 {formatPrice(
-                  variant.price,
-                  resolveCurrency(
-                    (item as unknown as { currency?: string }).currency
-                  )
+                  variant.price ?? 0,
+                  resolveCurrency(item.currency ?? undefined)
                 )}
               </span>
             </div>

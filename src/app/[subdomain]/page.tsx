@@ -6,6 +6,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
+import { PublicMenuProvider } from "@/components/menu-editor/public-menu-context"
 // import GradientBlur from "@/components/flare-ui/gradient-blur"
 import { getActiveMenuByOrganizationSlug } from "@/server/actions/menu/queries"
 import {
@@ -14,6 +15,8 @@ import {
 } from "@/server/actions/organization/queries"
 import PublicMenuTracker from "@/app/[subdomain]/public-menu-tracker"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
+import { normalizePublicMenuItems } from "@/lib/menu-search"
+import { extractMenuDataFromNodes } from "@/lib/sync-status"
 import { SubscriptionStatus } from "@/lib/types/billing"
 
 // Add generateStaticParams to pre-render specific paths
@@ -130,7 +133,8 @@ export default async function SitePage(props: {
     return notFound()
   }
 
-  const { serializedNodes, backgroundColor, textColor } = renderData
+  const { serializedNodes, backgroundColor, textColor, searchableItems } =
+    renderData
 
   return (
     <>
@@ -148,9 +152,11 @@ export default async function SitePage(props: {
         }}
         className="relative flex min-h-screen flex-col"
       >
-        <div className="flex grow">
-          <ResolveEditor json={serializedNodes} />
-        </div>
+        <PublicMenuProvider items={searchableItems}>
+          <div className="flex grow">
+            <ResolveEditor json={serializedNodes} />
+          </div>
+        </PublicMenuProvider>
         <div
           className="fixed inset-x-0 bottom-0 flex items-center justify-between
             gap-x-4 p-2 text-xs"
@@ -235,6 +241,11 @@ async function getCachedMenuRenderData(menuId: string, snapshot: string) {
 
   const { nodes: sanitizedNodes, changed } = sanitizeCraftNodes(parsed)
   const serializedNodes = changed ? JSON.stringify(sanitizedNodes) : json
+  const searchableItems = normalizePublicMenuItems(
+    extractMenuDataFromNodes(
+      sanitizedNodes as Parameters<typeof extractMenuDataFromNodes>[0]
+    )
+  )
 
   let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
   let textColor: RgbaColor = { r: 0, g: 0, b: 0, a: 1 }
@@ -253,7 +264,7 @@ async function getCachedMenuRenderData(menuId: string, snapshot: string) {
     }
   })
 
-  return { serializedNodes, backgroundColor, textColor }
+  return { serializedNodes, backgroundColor, textColor, searchableItems }
 }
 
 function sanitizeCraftNodes(nodes: Record<string, unknown>) {

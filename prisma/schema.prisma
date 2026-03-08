@@ -153,6 +153,7 @@ model Variant {
 }
 
 // Media asset management models for tracking R2 storage
+
 model MediaAsset {
   id             String           @id @default(cuid())
   organizationId String
@@ -193,6 +194,7 @@ model MediaUsage {
 }
 
 // Waitlist requests from the landing page. Drop in the future
+
 model Waitlist {
   id      String  @id @default(cuid())
   email   String  @unique
@@ -201,13 +203,4 @@ model Waitlist {
   @@index([email])
 }
 
-model Verification {
-  id         String    @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
-}
-
-// `Member` and `Invitation` models are defined in `auth.prisma`
+// Auth-related models live in `prisma/models/auth.prisma`.

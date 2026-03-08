@@ -55,7 +55,7 @@ function extractEmailFromContext(ctx: Record<string, unknown> | undefined) {
 
 // skipcq: JS-0339
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-01-28.clover"
+  apiVersion: "2026-02-25.clover"
 })
 
 export const auth = betterAuth({
@@ -140,6 +140,7 @@ export const auth = betterAuth({
     }
   },
   hooks: {
+    // skipcq: JS-0116 This is not a global middleware, it's only applied to specific routes as needed.
     before: createAuthMiddleware(async ctx => {
       const path = ctx.path ?? ""
 
@@ -225,7 +226,7 @@ export const auth = betterAuth({
         const baseUrl = getBaseUrl()
         const inviteLink = `${baseUrl}/invite/${data.id}`
         // console.log("Invite link:", inviteLink)
-        sendOrganizationInvitation({
+        await sendOrganizationInvitation({
           email: data.email,
           invitedByUsername: data.inviter.user.name,
           invitedByEmail: data.inviter.user.email,

@@ -20,8 +20,10 @@ export default async function PdfImportPage() {
 
   const simulateEnabled = await simulatePdfAi()
 
+  const isPro = currentOrg.plan?.toUpperCase() === "PRO"
+
   return (
-    <div className="mx-auto w-full grow px-4 sm:px-6">
+    <div className="mx-auto w-full min-w-0 grow px-4 sm:px-6">
       <PageSubtitle>
         <PageSubtitle.Icon icon={FileText} />
         <PageSubtitle.Title>Importar desde PDF o imagen</PageSubtitle.Title>
@@ -31,7 +33,7 @@ export default async function PdfImportPage() {
         </PageSubtitle.Description>
       </PageSubtitle>
       <div className="mt-6">
-        <MenuImportForm simulateEnabled={simulateEnabled} />
+        <MenuImportForm simulateEnabled={simulateEnabled} isPro={isPro} />
       </div>
     </div>
   )

@@ -55,7 +55,7 @@ export const bootstrapOrg = authActionClient
             slug,
             keepCurrentActiveOrganization: true,
             userId: user.id,
-            description,
+            description: description ?? "",
             status: "ACTIVE",
             plan: "BASIC",
             banner: "",
@@ -174,10 +174,11 @@ export const createOrg = authActionClient
             slug,
             keepCurrentActiveOrganization: true,
             userId: user.id,
-            description,
+            description: description ?? "",
             status: "ACTIVE",
             plan: "BASIC",
-            banner: ""
+            banner: "",
+            updatedAt: new Date().toISOString()
           },
           headers: await headers()
         })
@@ -275,7 +276,7 @@ export const updateOrg = authActionClient
           data: {
             name,
             slug,
-            description
+            description: description ?? ""
           },
           organizationId: id as string
         },
