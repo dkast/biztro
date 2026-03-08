@@ -108,8 +108,8 @@ export default function HeaderBlock({
     b: 255,
     a: 1
   })
-  const expandedHeight = showAddress || showSocialMedia ? 250 : 214
-  const collapsedHeight = 104
+  const expandedHeight = showAddress || showSocialMedia ? 286 : 238
+  const collapsedHeight = 96
 
   const headerHeight = useTransform(
     activeScrollY,
@@ -135,6 +135,13 @@ export default function HeaderBlock({
     [8, 0]
   )
 
+  const expandedPointerEvents = useTransform(activeScrollY, value =>
+    value < SCROLL_MID ? "auto" : "none"
+  )
+  const collapsedPointerEvents = useTransform(activeScrollY, value =>
+    value >= SCROLL_MID ? "auto" : "none"
+  )
+
   const bannerOverlayOpacity = useTransform(
     activeScrollY,
     [0, SCROLL_END],
@@ -155,7 +162,7 @@ export default function HeaderBlock({
         height: headerHeight
       }}
     >
-      <div className="absolute inset-0 origin-top">
+      <div className="pointer-events-none absolute inset-0 origin-top">
         <Banner
           banner={organization.banner}
           isBannerVisible={showBanner ?? false}
@@ -181,10 +188,11 @@ export default function HeaderBlock({
           style={{
             opacity: expandedOpacity,
             y: expandedY,
-            scale: expandedScale
+            scale: expandedScale,
+            pointerEvents: expandedPointerEvents
           }}
-          className="pointer-events-none absolute inset-0 flex flex-col
-            items-center justify-center px-4 py-4 text-center"
+          className="absolute inset-0 flex flex-col items-center justify-center
+            px-4 py-8 text-center"
         >
           <Logo
             logo={organization.logo}
@@ -219,10 +227,21 @@ export default function HeaderBlock({
 
         {/* Collapsed layout — fades in as user scrolls down */}
         <motion.div
-          style={{ opacity: collapsedOpacity, y: collapsedY }}
+          style={{
+            opacity: collapsedOpacity,
+            y: collapsedY,
+            pointerEvents: collapsedPointerEvents,
+            backgroundColor: showBanner
+              ? undefined
+              : rgbaToCss(backgroundColor, {
+                  r: 255,
+                  g: 255,
+                  b: 255,
+                  a: 1
+                })
+          }}
           className={cn(
-            `pointer-events-none absolute inset-0 flex h-full items-center px-4
-            py-2`,
+            "absolute inset-0 flex h-full items-center px-4 py-2",
             showLogo ? "justify-start gap-3" : "justify-center",
             showBanner ? "" : "backdrop-blur-md"
           )}
@@ -231,7 +250,7 @@ export default function HeaderBlock({
             logo={organization.logo}
             orgName={organization.name}
             isLogoVisible={showLogo ?? false}
-            className="mt-3 size-14 rounded-full shadow-lg"
+            className="size-14 rounded-full shadow-lg"
           />
           <FontWrapper fontFamily={fontFamily}>
             <h2
