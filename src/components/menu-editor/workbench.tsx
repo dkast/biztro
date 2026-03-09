@@ -775,7 +775,7 @@ export default function Workbench({
                   <HeaderBlock
                     organization={organization}
                     location={location ?? undefined}
-                    showBanner={organization.banner !== null}
+                    showBanner={Boolean(organization.banner?.trim())}
                   />
                 </Element>
               </Frame>
