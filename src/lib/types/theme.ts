@@ -108,7 +108,7 @@ export const fontThemes = [
   },
   {
     name: "SACRAMENTO",
-    fontDisplay: "Sacramento",
+    fontDisplay: "Dancing Script",
     fontText: "Playfair Display"
   },
   {
@@ -153,7 +153,7 @@ export const fontThemes = [
   },
   {
     name: "LUMEN",
-    fontDisplay: "Great Vibes",
+    fontDisplay: "Kaushan Script",
     fontText: "Manrope"
   },
   {
@@ -190,6 +190,46 @@ export const fontThemes = [
     name: "RIO",
     fontDisplay: "Julius Sans One",
     fontText: "Krub"
+  },
+  {
+    name: "VIENNA",
+    fontDisplay: "Abril Fatface",
+    fontText: "Lora"
+  },
+  {
+    name: "ROCKET",
+    fontDisplay: "Fredoka",
+    fontText: "Nunito"
+  },
+  {
+    name: "SOHO",
+    fontDisplay: "Syne",
+    fontText: "DM Sans"
+  },
+  {
+    name: "NAPA",
+    fontDisplay: "Playfair Display SC",
+    fontText: "Source Serif 4"
+  },
+  {
+    name: "OAXACA",
+    fontDisplay: "Archivo Black",
+    fontText: "Source Sans 3"
+  },
+  {
+    name: "LYON",
+    fontDisplay: "Fraunces",
+    fontText: "Commissioner"
+  },
+  {
+    name: "TOKIO",
+    fontDisplay: "Noto Serif Display",
+    fontText: "Plus Jakarta Sans"
+  },
+  {
+    name: "MEMPHIS",
+    fontDisplay: "Alfa Slab One",
+    fontText: "Bitter"
   }
 ]
 
@@ -482,6 +522,106 @@ export const colorThemes = [
     accentColor: "#e879f9",
     textColor: "#fdf4ff",
     mutedColor: "#f0abfc",
+    scope: "GLOBAL"
+  },
+  {
+    id: "CACAO_LIGHT",
+    name: "Cacao",
+    surfaceColor: "#fdf8f3",
+    brandColor: "#2c1810",
+    accentColor: "#8b5a3c",
+    textColor: "#2c1810",
+    mutedColor: "#6b4c3b",
+    scope: "GLOBAL"
+  },
+  {
+    id: "CACAO_DARK",
+    name: "Cacao oscuro",
+    surfaceColor: "#1a110c",
+    brandColor: "#f0e4d8",
+    accentColor: "#c68b59",
+    textColor: "#f0e4d8",
+    mutedColor: "#d4a574",
+    scope: "GLOBAL"
+  },
+  {
+    id: "NOIR_LIGHT",
+    name: "Noir",
+    surfaceColor: "#fafaf8",
+    brandColor: "#0a0a0a",
+    accentColor: "#b8860b",
+    textColor: "#0a0a0a",
+    mutedColor: "#6b6b6b",
+    scope: "GLOBAL"
+  },
+  {
+    id: "NOIR_DARK",
+    name: "Noir oscuro",
+    surfaceColor: "#0a0a0a",
+    brandColor: "#f5f5f0",
+    accentColor: "#d4a843",
+    textColor: "#f5f5f0",
+    mutedColor: "#c9b458",
+    scope: "GLOBAL"
+  },
+  {
+    id: "PASTEL_LIGHT",
+    name: "Pastel",
+    surfaceColor: "#fef7f5",
+    brandColor: "#3d2020",
+    accentColor: "#d4848a",
+    textColor: "#3d2020",
+    mutedColor: "#a66e72",
+    scope: "GLOBAL"
+  },
+  {
+    id: "PASTEL_DARK",
+    name: "Pastel oscuro",
+    surfaceColor: "#1f1216",
+    brandColor: "#f5e0e4",
+    accentColor: "#e8a0a8",
+    textColor: "#f5e0e4",
+    mutedColor: "#d4b0b8",
+    scope: "GLOBAL"
+  },
+  {
+    id: "CARBON_LIGHT",
+    name: "Carbon",
+    surfaceColor: "#f7f5f2",
+    brandColor: "#1c1917",
+    accentColor: "#c2710c",
+    textColor: "#1c1917",
+    mutedColor: "#78716c",
+    scope: "GLOBAL"
+  },
+  {
+    id: "CARBON_DARK",
+    name: "Carbon oscuro",
+    surfaceColor: "#131210",
+    brandColor: "#f5f2ed",
+    accentColor: "#e09422",
+    textColor: "#f5f2ed",
+    mutedColor: "#d4a86a",
+    scope: "GLOBAL"
+  },
+  {
+    id: "OLIVA_LIGHT",
+    name: "Oliva",
+    surfaceColor: "#f8f6f0",
+    brandColor: "#1a2118",
+    accentColor: "#5c7a3a",
+    textColor: "#1a2118",
+    mutedColor: "#7a8a5c",
+    scope: "GLOBAL"
+  },
+  {
+    id: "OLIVA_DARK",
+    name: "Oliva oscuro",
+    surfaceColor: "#141a12",
+    brandColor: "#ede8dc",
+    accentColor: "#9ab060",
+    textColor: "#ede8dc",
+    mutedColor: "#b8c488",
     scope: "GLOBAL"
   }
 ]
