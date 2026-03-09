@@ -189,17 +189,24 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
     }
   }, [ids])
 
-  // Auto-scroll navigation to keep active section in view
+  // Auto-scroll navigation to keep active section in view.
+  // Scroll only horizontally within the <ul> — never scroll the page vertically.
+  // Using scrollIntoView() would pull the entire page up to reveal the nav when
+  // it has scrolled off-screen (position: relative in the editor), causing the
+  // "jump to top" bug.
   useEffect(() => {
     if (visibleId && ulRef.current) {
       const activeIndex = ids.indexOf(visibleId)
       if (activeIndex !== -1) {
         const activeLink = ulRef.current.children[activeIndex] as HTMLElement
         if (activeLink) {
-          activeLink.scrollIntoView({
-            behavior: "smooth",
-            block: "nearest",
-            inline: "center"
+          const ul = ulRef.current
+          const targetScrollLeft =
+            activeLink.offsetLeft -
+            (ul.offsetWidth - activeLink.offsetWidth) / 2
+          ul.scrollTo({
+            left: Math.max(0, targetScrollLeft),
+            behavior: "smooth"
           })
         }
       }

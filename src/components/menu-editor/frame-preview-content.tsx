@@ -54,6 +54,22 @@ export function FramePreviewContent({
   location,
   updateFrameHeight
 }: FramePreviewContentProps) {
+  // Disable sticky header in the editor preview so it scrolls with content
+  // instead of pinning to the top of the iframe's own viewport.
+  useEffect(() => {
+    if (!frameDocument) return
+    const existing = frameDocument.getElementById("editor-canvas-overrides")
+    existing?.remove()
+    const style = frameDocument.createElement("style")
+    style.id = "editor-canvas-overrides"
+    style.textContent =
+      "header, nav { position: relative !important; top: unset !important; }"
+    frameDocument.head.appendChild(style)
+    return () => {
+      frameDocument.getElementById("editor-canvas-overrides")?.remove()
+    }
+  }, [frameDocument])
+
   useEffect(() => {
     frameDocRef.current = frameDocument ?? null
     if (!frameDocument) return
@@ -83,7 +99,7 @@ export function FramePreviewContent({
           <HeaderBlock
             organization={organization}
             location={location ?? undefined}
-            showBanner={organization.banner !== null}
+            showBanner={Boolean(organization.banner?.trim())}
           />
         </Element>
       </Frame>
