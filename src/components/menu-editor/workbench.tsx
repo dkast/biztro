@@ -769,16 +769,24 @@ export default function Workbench({
               persistedVersion={persistedMenuVersion}
               revertVersion={revertVersion}
             />
-            <div className="pb-20">
-              <Frame data={json}>
-                <Element is={ContainerBlock} canvas>
-                  <HeaderBlock
-                    organization={organization}
-                    location={location ?? undefined}
-                    showBanner={Boolean(organization.banner?.trim())}
-                  />
-                </Element>
-              </Frame>
+            <div className="editor-canvas-mobile pb-20">
+              {/* Disable sticky header/nav so they scroll with content in the editor */}
+              <style>
+                {
+                  "[data-editor-canvas-mobile] header, [data-editor-canvas-mobile] nav { position: relative !important; top: unset !important; }"
+                }
+              </style>
+              <div data-editor-canvas-mobile>
+                <Frame data={json}>
+                  <Element is={ContainerBlock} canvas>
+                    <HeaderBlock
+                      organization={organization}
+                      location={location ?? undefined}
+                      showBanner={Boolean(organization.banner?.trim())}
+                    />
+                  </Element>
+                </Frame>
+              </div>
               <FloatingBar />
               <BottomBar
                 setActivePanel={setActivePanel}
