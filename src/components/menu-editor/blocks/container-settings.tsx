@@ -252,11 +252,11 @@ export default function ContainerSettings() {
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>{triggerButton}</DialogTrigger>
               <DialogContent className="max-h-[90vh] sm:max-w-[625px]">
-                <DialogHeader className="px-6 py-4">
+                <DialogHeader>
                   <DialogTitle>Seleccionar fondo</DialogTitle>
                 </DialogHeader>
                 <div
-                  className="custom-scrollbar max-h-[calc(90vh-8rem)]
+                  className="no-scrollbar max-h-[calc(90vh-8rem)]
                     overflow-y-auto px-6 pb-6"
                 >
                   <BackgroundSelector
