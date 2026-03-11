@@ -132,12 +132,7 @@ export function ItemView({
         role="button"
         tabIndex={0}
       >
-        <div
-          className={cn(
-            "flex flex-row justify-between gap-2",
-            hasVariants ? "items-start" : "items-center"
-          )}
-        >
+        <div className={cn("flex flex-col items-start justify-between gap-2")}>
           <div
             className={cn(
               "flex gap-3",
@@ -195,7 +190,7 @@ export function ItemView({
               {item.variants.map(variant => (
                 <div
                   key={variant.id}
-                  className="grid grid-cols-[1fr_60px] gap-1 text-right"
+                  className="grid grid-cols-[1fr_80px] gap-1 text-right"
                 >
                   <FontWrapper fontFamily={descriptionFontFamily}>
                     <span
