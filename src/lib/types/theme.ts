@@ -10,10 +10,11 @@ export const enum ThemeType {
   COLOR = "COLOR"
 }
 
-export const enum ThemeScope {
-  GLOBAL = "GLOBAL",
-  USER = "USER"
-}
+export const ThemeScope = {
+  GLOBAL: "GLOBAL",
+  USER: "USER"
+} as const
+export type ThemeScope = (typeof ThemeScope)[keyof typeof ThemeScope]
 
 export type FontTheme = {
   name: string
@@ -30,7 +31,7 @@ export type ColorTheme = {
   accentColor: string
   textColor: string
   mutedColor: string
-  scope: string
+  scope: ThemeScope
   tags?: string[]
 }
 
@@ -901,8 +902,9 @@ export const themePresets: ThemePreset[] = [
 ]
 
 // Image-based presets — each pairs a background photo with complementary fonts
-// and colors. foregroundTextTone "light" → dark color theme (light text);
-// foregroundTextTone "dark" → light color theme (dark text).
+// and colors. `foregroundTextTone` indicates whether the primary text over
+// the image is visually light or dark, and presets choose a colorTheme that
+// provides sufficient contrast; this is a heuristic hint, not a strict mapping.
 export const imagePresets: ThemePreset[] = [
   // ── light-tone foreground (dark images) → dark color themes ──────────────
   {
