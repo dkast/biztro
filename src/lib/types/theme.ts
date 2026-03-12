@@ -41,6 +41,7 @@ export type ThemePreset = {
   fontTheme: string
   colorTheme: string
   tags: string[]
+  bgImage?: string
 }
 
 export const fontThemes: FontTheme[] = [
@@ -896,5 +897,256 @@ export const themePresets: ThemePreset[] = [
     fontTheme: "COSTA",
     colorTheme: "ESMERALDA_LIGHT",
     tags: ["tropical", "fresh", "seafood"]
+  }
+]
+
+// Image-based presets — each pairs a background photo with complementary fonts
+// and colors. foregroundTextTone "light" → dark color theme (light text);
+// foregroundTextTone "dark" → light color theme (dark text).
+export const imagePresets: ThemePreset[] = [
+  // ── light-tone foreground (dark images) → dark color themes ──────────────
+  {
+    id: "img-burger",
+    name: "Burger Joint",
+    description: "Industrial y audaz para hamburgueserías",
+    fontTheme: "CHICAGO",
+    colorTheme: "CARBON_DARK",
+    bgImage: "bg-top-burger-1.jpg",
+    tags: ["bbq", "bold", "dark"]
+  },
+  {
+    id: "img-burger-2",
+    name: "Street Burger",
+    description: "Enérgico y llamativo para comida rápida",
+    fontTheme: "MADRID",
+    colorTheme: "FUEGO_DARK",
+    bgImage: "bg-bottom-burger-2.jpg",
+    tags: ["fast-food", "bold", "dark"]
+  },
+  {
+    id: "img-cafe",
+    name: "Coffee House",
+    description: "Cálido y ahumado para cafeterías de especialidad",
+    fontTheme: "PORTLAND",
+    colorTheme: "CACAO_DARK",
+    bgImage: "bg-center-cafe-1.jpg",
+    tags: ["coffee", "warm", "dark"]
+  },
+  {
+    id: "img-fresco",
+    name: "Jardín Natural",
+    description: "Fresco y botánico para cocina orgánica",
+    fontTheme: "BOSQUE",
+    colorTheme: "ESMERALDA_DARK",
+    bgImage: "bg-top-tomates-1.jpg",
+    tags: ["vegan", "natural", "dark"]
+  },
+  {
+    id: "img-salad",
+    name: "Ensaladas & Bowls",
+    description: "Saludable y vibrante para restaurantes plant-based",
+    fontTheme: "COSTA",
+    colorTheme: "FLORA_DARK",
+    bgImage: "bg-top-salad-1.jpg",
+    tags: ["vegan", "fresh", "dark"]
+  },
+  {
+    id: "img-fusion",
+    name: "Fusión Asiática",
+    description: "Sofisticado y moderno para cocina de fusión",
+    fontTheme: "TOKIO",
+    colorTheme: "AZURE_DARK",
+    bgImage: "bg-top-fusion-1.jpg",
+    tags: ["asian", "modern", "dark"]
+  },
+  {
+    id: "img-fusion-2",
+    name: "Urban Fusion",
+    description: "Trendy y contemporáneo para conceptos de autor",
+    fontTheme: "NOMADA",
+    colorTheme: "FLORA_DARK",
+    bgImage: "bg-top-fusion-2.jpg",
+    tags: ["modern", "trendy", "dark"]
+  },
+  {
+    id: "img-italiano",
+    name: "Trattoria",
+    description: "Clásico y rústico para cocina italiana tradicional",
+    fontTheme: "ROMA",
+    colorTheme: "TERRA_DARK",
+    bgImage: "bg-center-pizza-1.jpg",
+    tags: ["italian", "classic", "dark"]
+  },
+  {
+    id: "img-mariscos-2",
+    name: "Marisquería Costera",
+    description: "Marino y elegante para restaurantes de mariscos",
+    fontTheme: "OSLO",
+    colorTheme: "OCEANO_DARK",
+    bgImage: "bg-top-mariscos-2.jpg",
+    tags: ["seafood", "cool", "dark"]
+  },
+  {
+    id: "img-mexicano",
+    name: "Cocina Mexicana",
+    description: "Tradicional y sabroso para restaurantes mexicanos",
+    fontTheme: "OAXACA",
+    colorTheme: "MOSTAZA_DARK",
+    bgImage: "bg-center-molcajete-1.jpg",
+    tags: ["mexican", "bold", "dark"]
+  },
+  {
+    id: "img-parrilla",
+    name: "Asador",
+    description: "Robusto y oscuro para asadores y steakhouses",
+    fontTheme: "ALAMO",
+    colorTheme: "NOIR_DARK",
+    bgImage: "bg-center-parrilla-1.jpg",
+    tags: ["bbq", "steakhouse", "dark"]
+  },
+  {
+    id: "img-pizza",
+    name: "Pizzería Artesanal",
+    description: "Cálido y artesanal para pizzerías de horno de leña",
+    fontTheme: "MILAN",
+    colorTheme: "CARMESI_DARK",
+    bgImage: "bg-center-pizza-2.jpg",
+    tags: ["italian", "pizzeria", "dark"]
+  },
+  {
+    id: "img-sushi",
+    name: "Sushi Bar",
+    description: "Minimalista y elegante para restaurantes japoneses",
+    fontTheme: "TOKIO",
+    colorTheme: "NOIR_DARK",
+    bgImage: "bg-center-sushi-1.jpg",
+    tags: ["asian", "elegant", "dark"]
+  },
+  {
+    id: "img-tacos",
+    name: "Taquería Nocturna",
+    description: "Vibrante y nocturno para tacos de noche",
+    fontTheme: "DESIERTO",
+    colorTheme: "FUEGO_DARK",
+    bgImage: "bg-top-tacos-2.jpg",
+    tags: ["taqueria", "mexican", "dark"]
+  },
+  {
+    id: "img-tacos-2",
+    name: "Taco Spot",
+    description: "Audaz y callejero para taquerías urbanas",
+    fontTheme: "MEMPHIS",
+    colorTheme: "CARBON_DARK",
+    bgImage: "bg-center-tacos-3.jpg",
+    tags: ["taqueria", "bold", "dark"]
+  },
+  // ── dark-tone foreground (light images) → light color themes ─────────────
+  {
+    id: "img-cafe-2",
+    name: "Café de Barrio",
+    description: "Artesanal y acogedor para cafeterías con luz natural",
+    fontTheme: "GOTHAM",
+    colorTheme: "CACAO_DARK",
+    bgImage: "bg-center-cafe-2.jpg",
+    tags: ["coffee", "warm", "light"]
+  },
+  {
+    id: "img-helados",
+    name: "Heladería Retro",
+    description: "Colorido y divertido para heladerías y gelatinas",
+    fontTheme: "ORLANDO",
+    colorTheme: "PASTEL_LIGHT",
+    bgImage: "bg-top-ice-cream-1.jpg",
+    tags: ["ice-cream", "playful", "light"]
+  },
+  {
+    id: "img-helados-2",
+    name: "Ice Cream Lab",
+    description: "Moderno y vibrante para heladerías de autor",
+    fontTheme: "ROCKET",
+    colorTheme: "MAGENTA_LIGHT",
+    bgImage: "bg-top-ice-cream-2.jpg",
+    tags: ["ice-cream", "bold", "light"]
+  },
+  {
+    id: "img-yogurt",
+    name: "Yogurt & Açaí",
+    description: "Suave y fresco para bares de smoothies y yogurt",
+    fontTheme: "LUMEN",
+    colorTheme: "PASTEL_DARK",
+    bgImage: "bg-center-ice-cream-3.jpg",
+    tags: ["ice-cream", "soft", "light"]
+  },
+  {
+    id: "img-mariscos",
+    name: "Mariscos Frescos",
+    description: "Fresco y luminoso para cevicherías y marisquerías",
+    fontTheme: "COSTA",
+    colorTheme: "OCEANO_LIGHT",
+    bgImage: "bg-top-mariscos-1.jpg",
+    tags: ["seafood", "fresh", "light"]
+  },
+  {
+    id: "img-pastor",
+    name: "Taco de Pastor",
+    description: "Luminoso y festivo para taquerías diurnas",
+    fontTheme: "OAXACA",
+    colorTheme: "FUEGO_DARK",
+    bgImage: "bg-top-tacos-1.jpg",
+    tags: ["taqueria", "vibrant", "light"]
+  },
+  {
+    id: "img-pizza-2",
+    name: "Pizzería Rústica",
+    description: "Rústico y artesanal para pizzas de masa madre",
+    fontTheme: "FLORENCIA",
+    colorTheme: "HELIOS_DARK",
+    bgImage: "bg-center-pizza-3.jpg",
+    tags: ["italian", "rustic", "light"]
+  },
+  {
+    id: "img-sushi-2",
+    name: "Omakase",
+    description: "Refinado y minimalista para alta cocina japonesa",
+    fontTheme: "NAPA",
+    colorTheme: "AZURE_LIGHT",
+    bgImage: "bg-center-sushi-2.jpg",
+    tags: ["asian", "fine-dining", "light"]
+  },
+  {
+    id: "img-postre",
+    name: "Pastelería Fina",
+    description: "Elegante y delicado para pastelerías boutique",
+    fontTheme: "SACRAMENTO",
+    colorTheme: "PASTEL_DARK",
+    bgImage: "bg-top-bakery-1.jpg",
+    tags: ["bakery", "elegant", "light"]
+  },
+  {
+    id: "img-postre-2",
+    name: "Boulangerie",
+    description: "Artesanal y cálido para panaderías francesas",
+    fontTheme: "FLORENCIA",
+    colorTheme: "HELIOS_LIGHT",
+    bgImage: "bg-top-bakery-2.jpg",
+    tags: ["bakery", "warm", "light"]
+  },
+  {
+    id: "img-pancakes",
+    name: "Brunch Club",
+    description: "Luminoso y acogedor para brunch y desayunos",
+    fontTheme: "ALDEA",
+    colorTheme: "HELIOS_DARK",
+    bgImage: "bg-top-breakfast-1.jpg",
+    tags: ["brunch", "warm", "light"]
+  },
+  {
+    id: "img-waffles",
+    name: "Morning Table",
+    description: "Cálido y hogareño para desayunos y wafles",
+    fontTheme: "SACRAMENTO",
+    colorTheme: "CACAO_DARK",
+    bgImage: "bg-top-breakfast-2.jpg",
+    tags: ["brunch", "coffee", "light"]
   }
 ]

@@ -1,7 +1,8 @@
 import { useNode } from "@craftjs/core"
-import type { RgbaColor } from "@uiw/react-color"
+import { rgbaToHex, type RgbaColor } from "@uiw/react-color"
 
 import ContainerSettings from "@/components/menu-editor/blocks/container-settings"
+import { cn, isColorDark } from "@/lib/utils"
 
 export type ContainerBlockProps = {
   backgroundColor?: RgbaColor
@@ -47,6 +48,13 @@ export default function ContainerBlock({
     return "none"
   }
 
+  const isDarkTheme = isColorDark(
+    backgroundColor ? rgbaToHex(backgroundColor) : "#ffffff"
+  )
+  const overlayClass = isDarkTheme
+    ? "bg-gradient-to-b from-black/30 to-black/80"
+    : "bg-gradient-to-b from-white/20 via-transparent to-white/60"
+
   return (
     <div
       className="relative flex grow"
@@ -74,10 +82,7 @@ export default function ContainerBlock({
         }}
       >
         {(isPredefinedPhoto || isUploadedImage) && (
-          <div
-            className="absolute inset-0 bg-linear-to-b from-black/20
-              to-black/80"
-          ></div>
+          <div className={cn("absolute inset-0", overlayClass)}></div>
         )}
       </div>
       <main className="mx-auto flex max-w-(--breakpoint-md) grow flex-col">

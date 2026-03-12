@@ -382,9 +382,25 @@ export default function ThemeSelector({
           colorThemes={colorThemes}
           currentFontTheme={fontThemeId}
           currentColorTheme={colorThemeId}
-          onSelect={(font, color) => {
+          currentBgImage={
+            Object.values(nodes).find(n => n.data?.name === "ContainerBlock")
+              ?.data?.props?.backgroundImage as string | undefined
+          }
+          onSelect={(font, color, bgImage) => {
             setFontThemeId(font)
             setColorThemeId(color)
+            // bgImage === undefined means a solid preset — clear any existing bg.
+            // bgImage === string means an image preset — apply it.
+            const targetBg = bgImage ?? "none"
+            for (const [key, value] of Object.entries(nodes)) {
+              if (value.data?.name === "ContainerBlock") {
+                const { setProp: setIgnoreProp } = actions.history.ignore()
+                setIgnoreProp(key, props => {
+                  props.backgroundImage = targetBg
+                })
+                break
+              }
+            }
           }}
         />
       </SideSection>
