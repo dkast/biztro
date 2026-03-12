@@ -1,7 +1,7 @@
 import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 
-import { colorThemes, FrameSize } from "@/lib/types/theme"
+import { FrameSize, type ColorTheme } from "@/lib/types/theme"
 
 export const elementPropsAtom = atom<{ [x: string]: unknown }>({})
 
@@ -18,4 +18,4 @@ export const onboardingCardsCollapsedAtom = atomWithStorage(
   false
 )
 
-export const colorListAtom = atom<(typeof colorThemes)[0][]>([])
+export const colorListAtom = atom<ColorTheme[]>([])

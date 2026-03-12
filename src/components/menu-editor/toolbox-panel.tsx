@@ -31,7 +31,12 @@ import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { getThemes } from "@/server/actions/menu/queries"
 import type { getCurrentOrganization } from "@/server/actions/user/queries"
 import { colorListAtom, colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
-import { colorThemes, fontThemes } from "@/lib/types/theme"
+import {
+  colorThemes,
+  fontThemes,
+  type ColorTheme,
+  type FontTheme
+} from "@/lib/types/theme"
 import { cn } from "@/lib/utils"
 
 export default function ToolboxPanel({
@@ -60,10 +65,8 @@ export default function ToolboxPanel({
 
   // Save the colorThemes and userColorThemes in the atom state
   const setColorList = useSetAtom(colorListAtom)
-  const [selectedColorTheme, setSelectedColorTheme] =
-    useState<(typeof colorThemes)[0]>()
-  const [selectedFontTheme, setSelectedFontTheme] =
-    useState<(typeof fontThemes)[0]>()
+  const [selectedColorTheme, setSelectedColorTheme] = useState<ColorTheme>()
+  const [selectedFontTheme, setSelectedFontTheme] = useState<FontTheme>()
 
   useEffect(() => {
     if (userColorThemes) {

@@ -38,6 +38,7 @@ export const columns: ColumnDef<Awaited<ReturnType<typeof getMenuItemById>>>[] =
           }
           onCheckedChange={() => table.toggleAllPageRowsSelected()}
           aria-label="Selecciona todas las filas"
+          className="hit-area-3 translate-y-0.5"
         />
       ),
       cell: ({ row }) => {
@@ -47,7 +48,7 @@ export const columns: ColumnDef<Awaited<ReturnType<typeof getMenuItemById>>>[] =
               checked={row.getIsSelected()}
               onCheckedChange={() => row.toggleSelected()}
               aria-label="Selecciona fila"
-              className="translate-y-0.5"
+              className="hit-area-3 translate-y-0.5"
             />
           </div>
         )

@@ -12,6 +12,7 @@ import { useAction } from "next-safe-action/hooks"
 
 import { useSetUnsavedChanges } from "@/components/dashboard/unsaved-changes-provider"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
+import PresetSelector from "@/components/menu-editor/preset-selector"
 import SideSection from "@/components/menu-editor/side-section"
 import { Button } from "@/components/ui/button"
 import {
@@ -40,7 +41,7 @@ import { updateMenuSerialData } from "@/server/actions/menu/mutations"
 import { type getMenuById } from "@/server/actions/menu/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorListAtom, colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
-import { fontThemes } from "@/lib/types/theme"
+import { fontThemes, type ColorTheme, type FontTheme } from "@/lib/types/theme"
 import { ColorThemeEditor } from "./color-theme-editor"
 
 function ThemedSelector<T>({
@@ -133,11 +134,11 @@ export default function ThemeSelector({
   // Hooks
   const [openColorThemeEditor, setOpenColorThemeEditor] = useState(false)
   const [selectedFontTheme, setSelectedFontTheme] = useState<
-    (typeof fontThemes)[0] | undefined
+    FontTheme | undefined
   >(undefined)
   const [colorThemeId, setColorThemeId] = useAtom(colorThemeAtom)
   const [selectedColorTheme, setSelectedColorTheme] = useState<
-    (typeof colorThemes)[0] | undefined
+    ColorTheme | undefined
   >(undefined)
   const isMobile = useIsMobile()
 
@@ -376,6 +377,33 @@ export default function ThemeSelector({
 
   return (
     <div className="editor-theme flex flex-col">
+      <SideSection title="Tema predefinido">
+        <PresetSelector
+          colorThemes={colorThemes}
+          currentFontTheme={fontThemeId}
+          currentColorTheme={colorThemeId}
+          currentBgImage={
+            Object.values(nodes).find(n => n.data?.name === "ContainerBlock")
+              ?.data?.props?.backgroundImage as string | undefined
+          }
+          onSelect={(font, color, bgImage) => {
+            setFontThemeId(font)
+            setColorThemeId(color)
+            // bgImage === undefined means a solid preset — clear any existing bg.
+            // bgImage === string means an image preset — apply it.
+            const targetBg = bgImage ?? "none"
+            for (const [key, value] of Object.entries(nodes)) {
+              if (value.data?.name === "ContainerBlock") {
+                const { setProp: setIgnoreProp } = actions.history.ignore()
+                setIgnoreProp(key, props => {
+                  props.backgroundImage = targetBg
+                })
+                break
+              }
+            }
+          }}
+        />
+      </SideSection>
       <SideSection title="Tipografía">
         <ThemedSelector
           isMobile={isMobile}
@@ -512,7 +540,7 @@ export default function ThemeSelector({
                   fontDisplay={selectedFontTheme?.fontDisplay}
                   fontText={selectedFontTheme?.fontText}
                   theme={selectedColorTheme}
-                  setTheme={(theme: (typeof colorThemes)[0]) => {
+                  setTheme={(theme: ColorTheme) => {
                     const selectedTheme = colorThemes.find(
                       t => t.id === theme.id
                     )
@@ -524,6 +552,7 @@ export default function ThemeSelector({
                       const index = colorThemes.findIndex(
                         t => t.id === theme.id
                       )
+                      // eslint-disable-next-line react-hooks/immutability
                       colorThemes[index] = theme
                       // Manually update the theme
                       setColorThemeId(colorThemeId)

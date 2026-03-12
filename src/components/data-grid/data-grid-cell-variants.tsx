@@ -1028,7 +1028,7 @@ export function CheckboxCell<TData>({
         checked={value}
         onCheckedChange={onCheckedChange}
         disabled={readOnly}
-        className="border-primary"
+        className="border-primary hit-area-3"
         onClick={onCheckboxClick}
         onMouseDown={onCheckboxMouseDown}
         onDoubleClick={onCheckboxDoubleClick}

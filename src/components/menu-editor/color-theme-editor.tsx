@@ -57,7 +57,7 @@ import {
 } from "@/server/actions/menu/mutations"
 import { type getMenuById } from "@/server/actions/menu/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { colorThemes, ThemeScope } from "@/lib/types/theme"
+import { ThemeScope, type ColorTheme } from "@/lib/types/theme"
 
 export function ColorThemeEditor({
   menu,
@@ -70,8 +70,8 @@ export function ColorThemeEditor({
   menu: Awaited<ReturnType<typeof getMenuById>>
   fontDisplay?: string
   fontText?: string
-  theme: (typeof colorThemes)[0]
-  setTheme: (theme: (typeof colorThemes)[0]) => void
+  theme: ColorTheme
+  setTheme: (theme: ColorTheme) => void
   removeTheme: (themeId: string) => void
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -622,7 +622,7 @@ function ThemePreview({
   menu: Awaited<ReturnType<typeof getMenuById>>
   fontDisplay?: string
   fontText?: string
-  theme: (typeof colorThemes)[0]
+  theme: ColorTheme
 }) {
   return (
     <div
