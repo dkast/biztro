@@ -1,113 +1,146 @@
+export type ForegroundTextTone = "light" | "dark"
+
 export const BgImages = [
   {
     image: "bg-top-burger-1.jpg",
-    name: "Burger"
+    name: "Burger",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-bottom-burger-2.jpg",
-    name: "Burger 2"
+    name: "Burger 2",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-center-cafe-1.jpg",
-    name: "Café"
+    name: "Café",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-center-cafe-2.jpg",
-    name: "Café 2"
+    name: "Café 2",
+    foregroundTextTone: "dark"
   },
   {
     image: "bg-top-tomates-1.jpg",
-    name: "Fresco"
+    name: "Fresco",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-top-salad-1.jpg",
-    name: "Fresco 2"
+    name: "Fresco 2",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-top-fusion-1.jpg",
-    name: "Fusión"
+    name: "Fusión",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-top-fusion-2.jpg",
-    name: "Fusión 2"
+    name: "Fusión 2",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-top-ice-cream-1.jpg",
-    name: "Helados"
+    name: "Helados",
+    foregroundTextTone: "dark"
   },
   {
     image: "bg-top-ice-cream-2.jpg",
-    name: "Helados 2"
+    name: "Helados 2",
+    foregroundTextTone: "dark"
   },
   {
     image: "bg-center-ice-cream-3.jpg",
-    name: "Yogurt"
+    name: "Yogurt",
+    foregroundTextTone: "dark"
   },
   {
     image: "bg-center-pizza-1.jpg",
-    name: "Italiano"
+    name: "Italiano",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-top-mariscos-1.jpg",
-    name: "Mariscos"
+    name: "Mariscos",
+    foregroundTextTone: "dark"
   },
   {
     image: "bg-top-mariscos-2.jpg",
-    name: "Mariscos 2"
+    name: "Mariscos 2",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-center-molcajete-1.jpg",
-    name: "Mexicano"
+    name: "Mexicano",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-center-parrilla-1.jpg",
-    name: "Parrilla"
+    name: "Parrilla",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-top-tacos-1.jpg",
-    name: "Pastor"
+    name: "Pastor",
+    foregroundTextTone: "dark"
   },
   {
     image: "bg-center-pizza-2.jpg",
-    name: "Pizza"
+    name: "Pizza",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-center-pizza-3.jpg",
-    name: "Pizza 2"
+    name: "Pizza 2",
+    foregroundTextTone: "dark"
   },
   {
     image: "bg-center-sushi-1.jpg",
-    name: "Sushi"
+    name: "Sushi",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-center-sushi-2.jpg",
-    name: "Sushi 2"
+    name: "Sushi 2",
+    foregroundTextTone: "dark"
   },
   {
     image: "bg-top-tacos-2.jpg",
-    name: "Tacos"
+    name: "Tacos",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-center-tacos-3.jpg",
-    name: "Tacos 2"
+    name: "Tacos 2",
+    foregroundTextTone: "light"
   },
   {
     image: "bg-top-bakery-1.jpg",
-    name: "Postre"
+    name: "Postre",
+    foregroundTextTone: "dark"
   },
   {
     image: "bg-top-bakery-2.jpg",
-    name: "Postre 2"
+    name: "Postre 2",
+    foregroundTextTone: "dark"
   },
   {
     image: "bg-top-breakfast-1.jpg",
-    name: "Pancakes"
+    name: "Pancakes",
+    foregroundTextTone: "dark"
   },
   {
     image: "bg-top-breakfast-2.jpg",
-    name: "Waffles"
+    name: "Waffles",
+    foregroundTextTone: "dark"
   }
-]
+] satisfies Array<{
+  image: string
+  name: string
+  foregroundTextTone: ForegroundTextTone
+}>
 
 export const enum ImageType {
   LOGO = "LOGO",
