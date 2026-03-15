@@ -19,7 +19,7 @@ function getSubdomainFromHost(hostname: string) {
   return null
 }
 
-export async function proxy(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (pathname.startsWith("/dashboard")) {
