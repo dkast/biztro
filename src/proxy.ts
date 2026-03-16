@@ -2,7 +2,15 @@ import { getSessionCookie } from "better-auth/cookies"
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
-const RESERVED_SUBDOMAINS = new Set(["preview", "www"])
+const RESERVED_SUBDOMAINS = new Set([
+  "preview",
+  "www",
+  "images",
+  "static",
+  "mail",
+  "pm-bounces",
+  "send"
+])
 
 function getSubdomainFromHost(hostname: string) {
   if (hostname === "biztro.co" || hostname === "localhost") return null
