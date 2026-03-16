@@ -170,7 +170,7 @@ async function getCachedOrganization(subdomain: string) {
   "use cache"
   cacheTag(`subdomain-${subdomain}`)
   cacheLife("days")
-  return getOrganizationBySlug(subdomain)
+  return await getOrganizationBySlug(subdomain)
 }
 
 export default async function Image({
