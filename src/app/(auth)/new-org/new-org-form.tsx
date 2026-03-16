@@ -136,6 +136,9 @@ export default function NewOrgForm() {
                   <Field>
                     <FieldLabel htmlFor={field.name}>Sitio web</FieldLabel>
                     <InputGroup>
+                      <InputGroupAddon>
+                        <InputGroupText>https://</InputGroupText>
+                      </InputGroupAddon>
                       <InputGroupInput
                         {...field}
                         id={field.name}
@@ -143,8 +146,8 @@ export default function NewOrgForm() {
                         placeholder="tu-sitio"
                         className="!pl-1"
                       />
-                      <InputGroupAddon>
-                        <InputGroupText>https://.biztro.co/</InputGroupText>
+                      <InputGroupAddon align="inline-end">
+                        <InputGroupText>.biztro.co</InputGroupText>
                       </InputGroupAddon>
                     </InputGroup>
                     <FieldDescription>

@@ -20,6 +20,7 @@ import {
   hasOrganizations
 } from "@/server/actions/user/queries"
 import MenuList from "@/app/dashboard/menu-list"
+import { getPublishedMenuUrl } from "@/lib/utils"
 
 export const metadata: Metadata = {
   title: "Inicio"
@@ -94,7 +95,7 @@ export default async function DashboardPage() {
                   asChild
                 >
                   <Link
-                    href={`/${currentOrg.slug}`}
+                    href={getPublishedMenuUrl(currentOrg.slug)}
                     className="block w-full"
                     target="_blank"
                     rel="noopener noreferrer"

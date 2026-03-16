@@ -201,6 +201,9 @@ export default function OrganizationForm({
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>Sitio web</FieldLabel>
                 <InputGroup>
+                  <InputGroupAddon>
+                    <InputGroupText>https://</InputGroupText>
+                  </InputGroupAddon>
                   <InputGroupInput
                     {...field}
                     id={field.name}
@@ -208,8 +211,8 @@ export default function OrganizationForm({
                     placeholder="tu-sitio"
                     className="pl-1!"
                   />
-                  <InputGroupAddon>
-                    <InputGroupText>https://.biztro.co/</InputGroupText>
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupText>.biztro.co</InputGroupText>
                   </InputGroupAddon>
                 </InputGroup>
                 <FieldDescription>
