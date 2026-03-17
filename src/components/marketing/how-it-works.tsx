@@ -99,8 +99,9 @@ export default function Component() {
             width={500}
           />
           <Link
-            href="https://biztro.co/la-bella-italia"
+            href="https://la-bella-italia.biztro.co"
             target="_blank"
+            rel="noopener noreferrer"
             className="z-10"
           >
             <Image
@@ -117,8 +118,9 @@ export default function Component() {
           >
             Escanea para ver un{" "}
             <Link
-              href="https://biztro.co/la-bella-italia"
+              href="https://la-bella-italia.biztro.co"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-taupe-600 underline underline-offset-2
                 hover:text-taupe-500 dark:text-taupe-400"
             >
