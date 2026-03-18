@@ -11,10 +11,7 @@ import { TranslationProvider } from "@/components/menu-editor/translation-provid
 import LanguageSwitcher from "@/components/menu-editor/language-switcher"
 // import GradientBlur from "@/components/flare-ui/gradient-blur"
 import { getActiveMenuByOrganizationSlug } from "@/server/actions/menu/queries"
-import {
-  getAvailableTranslations,
-  SUPPORTED_LOCALES
-} from "@/server/actions/item/translations"
+import { getAvailableTranslations } from "@/server/actions/item/translations"
 import {
   getAllActiveOrganizations,
   getOrganizationBySlug
@@ -23,6 +20,7 @@ import PublicMenuTracker from "@/app/[subdomain]/public-menu-tracker"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { normalizePublicMenuItems } from "@/lib/menu-search"
 import { extractMenuDataFromNodes } from "@/lib/sync-status"
+import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 import { SubscriptionStatus } from "@/lib/types/billing"
 
 // Add generateStaticParams to pre-render specific paths

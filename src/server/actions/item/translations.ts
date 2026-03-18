@@ -8,19 +8,11 @@ import { z } from "zod/v4"
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
+import {
+  SUPPORTED_LOCALES,
+  type SupportedLocaleCode
+} from "@/lib/types/translations"
 import { env } from "@/env.mjs"
-
-export const SUPPORTED_LOCALES = [
-  { code: "en", label: "English" },
-  { code: "fr", label: "Français" },
-  { code: "de", label: "Deutsch" },
-  { code: "pt", label: "Português" },
-  { code: "it", label: "Italiano" },
-  { code: "ja", label: "日本語" },
-  { code: "zh", label: "中文" }
-] as const
-
-export type SupportedLocaleCode = (typeof SUPPORTED_LOCALES)[number]["code"]
 
 const translateMenuItemsInputSchema = z.object({
   locale: z.string().min(2).max(10)

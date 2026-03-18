@@ -27,10 +27,12 @@ import {
 } from "@/components/ui/select"
 import {
   deleteMenuTranslation,
-  SUPPORTED_LOCALES,
-  translateMenuItems,
-  type SupportedLocaleCode
+  translateMenuItems
 } from "@/server/actions/item/translations"
+import {
+  SUPPORTED_LOCALES,
+  type SupportedLocaleCode
+} from "@/lib/types/translations"
 
 type AvailableTranslation = {
   locale: string

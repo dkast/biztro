@@ -10,7 +10,7 @@ import {
 } from "react"
 import { parseAsString, useQueryState } from "nuqs"
 
-import type { SUPPORTED_LOCALES } from "@/server/actions/item/translations"
+import type { SUPPORTED_LOCALES } from "@/lib/types/translations"
 
 type TranslationMap = Record<string, { name: string; description?: string | null }>
 
