@@ -7,8 +7,14 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import { PublicMenuProvider } from "@/components/menu-editor/public-menu-context"
+import { TranslationProvider } from "@/components/menu-editor/translation-provider"
+import LanguageSwitcher from "@/components/menu-editor/language-switcher"
 // import GradientBlur from "@/components/flare-ui/gradient-blur"
 import { getActiveMenuByOrganizationSlug } from "@/server/actions/menu/queries"
+import {
+  getAvailableTranslations,
+  SUPPORTED_LOCALES
+} from "@/server/actions/item/translations"
 import {
   getAllActiveOrganizations,
   getOrganizationBySlug
@@ -136,6 +142,15 @@ export default async function SitePage(props: {
   const { serializedNodes, backgroundColor, textColor, searchableItems } =
     renderData
 
+  // Load available translations (cached by org)
+  cacheTag(`translations-${siteMenu.organizationId}`)
+  const translationRows = await getAvailableTranslations(
+    siteMenu.organizationId
+  )
+  const availableLocales = translationRows
+    .map(row => SUPPORTED_LOCALES.find(l => l.code === row.locale))
+    .filter((l): l is (typeof SUPPORTED_LOCALES)[number] => l !== undefined)
+
   return (
     <>
       <Suspense fallback={null}>
@@ -146,56 +161,65 @@ export default async function SitePage(props: {
         />
       </Suspense>
       <style>{`body { background-color: ${rgbaToHex(backgroundColor)} }`}</style>
-      <div
-        style={{
-          backgroundColor: `${rgbaToHex(backgroundColor)}`
-        }}
-        className="relative flex min-h-screen flex-col"
+      <TranslationProvider
+        subdomain={params.subdomain}
+        availableLocales={availableLocales}
       >
-        <PublicMenuProvider items={searchableItems}>
-          <div className="flex grow">
-            <ResolveEditor json={serializedNodes} />
-          </div>
-        </PublicMenuProvider>
         <div
-          className="fixed inset-x-0 bottom-0 flex items-center justify-between
-            gap-x-4 p-2 text-xs"
           style={{
-            color: `${rgbaToHex(textColor)}`
+            backgroundColor: `${rgbaToHex(backgroundColor)}`
           }}
+          className="relative flex min-h-screen flex-col"
         >
-          <div className="z-20 rounded-full px-3 py-1 backdrop-blur-md">
-            Últ. actualiazión:{" "}
-            {siteMenu.publishedAt
-              ? new Intl.DateTimeFormat("es-MX", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric"
-                }).format(new Date(siteMenu.publishedAt))
-              : ""}
-          </div>
-          <Link href="https://biztro.co" target="_blank" className="z-20">
-            <div
-              className="flex items-center justify-center gap-x-2 rounded-full
-                bg-black/50 px-3 py-1"
-            >
-              <Image
-                src="/safari-pinned-tab.svg"
-                alt="Logo"
-                width={12}
-                height={12}
-                className="opacity-90 invert"
-                unoptimized
-              />
-              <span className="text-xs text-gray-100">
-                <em className="hidden not-italic sm:inline">Powered by </em>
-                Biztro
-              </span>
+          <PublicMenuProvider items={searchableItems}>
+            <div className="flex grow">
+              <ResolveEditor json={serializedNodes} />
             </div>
-          </Link>
-          {/* <GradientBlur className="inset-0 md:hidden" /> */}
+          </PublicMenuProvider>
+          <div
+            className="fixed inset-x-0 bottom-0 flex items-center justify-between
+              gap-x-4 p-2 text-xs"
+            style={{
+              color: `${rgbaToHex(textColor)}`
+            }}
+          >
+            <div className="z-20 rounded-full px-3 py-1 backdrop-blur-md">
+              Últ. actualiazión:{" "}
+              {siteMenu.publishedAt
+                ? new Intl.DateTimeFormat("es-MX", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric"
+                  }).format(new Date(siteMenu.publishedAt))
+                : ""}
+            </div>
+            <div className="z-20 flex items-center gap-2">
+              {availableLocales.length > 0 && (
+                <LanguageSwitcher color={rgbaToHex(textColor)} />
+              )}
+              <Link href="https://biztro.co" target="_blank">
+                <div
+                  className="flex items-center justify-center gap-x-2 rounded-full
+                    bg-black/50 px-3 py-1"
+                >
+                  <Image
+                    src="/safari-pinned-tab.svg"
+                    alt="Logo"
+                    width={12}
+                    height={12}
+                    className="opacity-90 invert"
+                    unoptimized
+                  />
+                  <span className="text-xs text-gray-100">
+                    <em className="hidden not-italic sm:inline">Powered by </em>
+                    Biztro
+                  </span>
+                </div>
+              </Link>
+            </div>
+          </div>
         </div>
-      </div>
+      </TranslationProvider>
     </>
   )
 }
