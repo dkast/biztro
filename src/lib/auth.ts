@@ -12,6 +12,7 @@ import {
   getActiveOrganization,
   isWaitlistEnabled
 } from "@/server/actions/user/queries"
+import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
 
@@ -252,8 +253,8 @@ export const auth = betterAuth({
             // skipcq: JS-0339
             priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC!,
             limits: {
-              menus: 1,
-              products: 10
+              menus: appConfig.menuLimit,
+              products: appConfig.itemLimit
             }
           },
           {
