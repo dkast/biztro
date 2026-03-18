@@ -18,6 +18,11 @@ const translateMenuItemsInputSchema = z.object({
   locale: z.string().min(2).max(10)
 })
 
+const categoryTranslationSchema = z.object({
+  categoryId: z.string().describe("Original category ID"),
+  name: z.string().describe("Translated category name")
+})
+
 const translationOutputSchema = z.object({
   items: z.array(
     z.object({
@@ -38,7 +43,8 @@ const translationOutputSchema = z.object({
         })
       )
     })
-  )
+  ),
+  categories: z.array(categoryTranslationSchema)
 })
 
 /**
@@ -71,6 +77,11 @@ export const translateMenuItems = authMemberActionClient
       include: { variants: true }
     })
 
+    // Load all categories for this organization
+    const categories = await prisma.category.findMany({
+      where: { organizationId: currentOrgId }
+    })
+
     if (items.length === 0) {
       return {
         failure: {
@@ -93,6 +104,11 @@ export const translateMenuItems = authMemberActionClient
       }))
     }))
 
+    const categoriesPayload = categories.map(cat => ({
+      categoryId: cat.id,
+      name: cat.name
+    }))
+
     try {
       const result = await generateText({
         model: gateway("mistral/mistral-small-latest"),
@@ -100,13 +116,16 @@ export const translateMenuItems = authMemberActionClient
         messages: [
           {
             role: "user",
-            content: `You are a professional restaurant menu translator. Translate the following menu items from their original language to ${localeName} (locale: ${locale}).
+            content: `You are a professional restaurant menu translator. Translate the following menu items and categories from their original language to ${localeName} (locale: ${locale}).
 
 Rules:
 - Translate names and descriptions naturally; preserve proper nouns (brand names, specific ingredient names) when appropriate.
 - If a field is empty or undefined, leave it empty in the output.
-- Return exactly the same IDs (menuItemId, variantId) without modification.
+- Return exactly the same IDs (menuItemId, variantId, categoryId) without modification.
 - Keep translations concise and appropriate for a restaurant menu.
+
+Categories to translate:
+${JSON.stringify(categoriesPayload, null, 2)}
 
 Menu items to translate:
 ${JSON.stringify(itemsPayload, null, 2)}`
@@ -163,6 +182,23 @@ ${JSON.stringify(itemsPayload, null, 2)}`
             })
           }
         }
+
+        for (const translatedCategory of result.output.categories) {
+          await tx.categoryTranslation.upsert({
+            where: {
+              categoryId_locale: {
+                categoryId: translatedCategory.categoryId,
+                locale
+              }
+            },
+            update: { name: translatedCategory.name },
+            create: {
+              categoryId: translatedCategory.categoryId,
+              locale,
+              name: translatedCategory.name
+            }
+          })
+        }
       })
 
       updateTag(`translations-${currentOrgId}`)
@@ -212,10 +248,16 @@ export const deleteMenuTranslation = authMemberActionClient
         select: { id: true, variants: { select: { id: true } } }
       })
 
+      const orgCategories = await prisma.category.findMany({
+        where: { organizationId: currentOrgId },
+        select: { id: true }
+      })
+
       const variantIds = orgItems.flatMap(item =>
         item.variants.map(v => v.id)
       )
       const itemIds = orgItems.map(item => item.id)
+      const categoryIds = orgCategories.map(cat => cat.id)
 
       await prisma.$transaction([
         prisma.variantTranslation.deleteMany({
@@ -223,6 +265,9 @@ export const deleteMenuTranslation = authMemberActionClient
         }),
         prisma.menuItemTranslation.deleteMany({
           where: { menuItemId: { in: itemIds }, locale }
+        }),
+        prisma.categoryTranslation.deleteMany({
+          where: { categoryId: { in: categoryIds }, locale }
         })
       ])
 
@@ -287,6 +332,13 @@ export async function getMenuTranslationsByLocale(
     }
   })
 
+  const categoryTranslations = await prisma.categoryTranslation.findMany({
+    where: {
+      locale,
+      category: { organizationId }
+    }
+  })
+
   return {
     items: Object.fromEntries(
       translations.map(t => [
@@ -299,6 +351,9 @@ export async function getMenuTranslationsByLocale(
         t.variantId,
         { name: t.name, description: t.description }
       ])
+    ),
+    categories: Object.fromEntries(
+      categoryTranslations.map(t => [t.categoryId, { name: t.name }])
     )
   }
 }

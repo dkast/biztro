@@ -11,12 +11,14 @@ import {
 import { parseAsString, useQueryState } from "nuqs"
 
 import type { SUPPORTED_LOCALES } from "@/lib/types/translations"
+import { getUILabels, type UILabelKey } from "@/lib/ui-labels"
 
 type TranslationMap = Record<string, { name: string; description?: string | null }>
 
 type TranslationsData = {
   items: TranslationMap
   variants: TranslationMap
+  categories: TranslationMap
 }
 
 type TranslationContextValue = {
@@ -31,6 +33,10 @@ type TranslationContextValue = {
   getVariantTranslation: (
     variantId: string
   ) => { name: string; description?: string | null } | null
+  getCategoryTranslation: (
+    categoryId: string
+  ) => { name: string } | null
+  t: (key: UILabelKey, vars?: Record<string, string>) => string
 }
 
 const TranslationContext = createContext<TranslationContextValue | null>(null)
@@ -101,6 +107,21 @@ export function TranslationProvider({
     [translations]
   )
 
+  const getCategoryTranslation = useCallback(
+    (categoryId: string) => {
+      const t = translations?.categories[categoryId]
+      return t ? { name: t.name } : null
+    },
+    [translations]
+  )
+
+  const t = useCallback(
+    (key: UILabelKey, vars?: Record<string, string>) => {
+      return getUILabels(activeLocale)(key, vars)
+    },
+    [activeLocale]
+  )
+
   return (
     <TranslationContext.Provider
       value={{
@@ -110,7 +131,9 @@ export function TranslationProvider({
         isLoading,
         availableLocales,
         getItemTranslation,
-        getVariantTranslation
+        getVariantTranslation,
+        getCategoryTranslation,
+        t
       }}
     >
       {children}

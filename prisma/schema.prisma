@@ -133,13 +133,14 @@ model MenuItem {
 }
 
 model Category {
-  id             String       @id @default(cuid())
+  id             String                @id @default(cuid())
   name           String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   menuItems      MenuItem[]
+  translations   CategoryTranslation[]
 }
 
 model Variant {
@@ -181,6 +182,20 @@ model VariantTranslation {
 
   @@unique([variantId, locale])
   @@index([variantId])
+  @@index([locale])
+}
+
+model CategoryTranslation {
+  id         String   @id @default(cuid())
+  locale     String
+  name       String
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([categoryId, locale])
+  @@index([categoryId])
   @@index([locale])
 }
 

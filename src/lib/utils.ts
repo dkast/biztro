@@ -15,6 +15,7 @@ import { twMerge } from "tailwind-merge"
 
 import { authClient } from "@/lib/auth-client"
 import { env } from "@/env.mjs"
+import { getUILabels } from "@/lib/ui-labels"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -53,17 +54,21 @@ export const getPublishedMenuUrl = (subdomain: string) => {
   }
 }
 
-export function getOpenHoursLegend(openingHours: OpeningHours[]) {
-  let status = "Cerrado"
+export function getOpenHoursLegend(
+  openingHours: OpeningHours[],
+  locale?: string | null
+) {
+  const t = getUILabels(locale ?? null)
+  let status = t("closed")
 
   // If there are no defined opening hours, show that there's no schedule.
   if (!openingHours || openingHours.length === 0) {
-    return "Sin horario"
+    return t("no_schedule")
   }
 
   // If all days are marked as closed (allDay: false), show that there's no schedule.
   if (openingHours.every(hour => hour.allDay === false)) {
-    return "Sin horario"
+    return t("no_schedule")
   }
 
   const currentDate = today(getLocalTimeZone())
@@ -122,9 +127,10 @@ export function getOpenHoursLegend(openingHours: OpeningHours[]) {
       closeDateTime = toCalendarDateTime(dayDate, endTime)
     }
 
+    const timeLocale = locale ?? "es-MX"
     const formatClosed = closeDateTime
       .toDate(getLocalTimeZone())
-      .toLocaleTimeString("es-MX", {
+      .toLocaleTimeString(timeLocale, {
         hour: "2-digit",
         minute: "2-digit"
       })
@@ -134,7 +140,9 @@ export function getOpenHoursLegend(openingHours: OpeningHours[]) {
       currentTime.compare(openDateTime) >= 0 &&
       currentTime.compare(closeDateTime) <= 0
     ) {
-      status = `Abierto - Hasta ${endTime.hour === 1 ? "la" : "las"} ${formatClosed}`
+      status = t(endTime.hour === 1 ? "open_until_singular" : "open_until_plural", {
+        time: formatClosed
+      })
       break
     }
   }

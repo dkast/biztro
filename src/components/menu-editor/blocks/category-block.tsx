@@ -4,6 +4,7 @@ import type { RgbaColor } from "@uiw/react-color"
 
 import CategorySettings from "@/components/menu-editor/blocks/category-settings"
 import { ItemView } from "@/components/menu-editor/blocks/item-block"
+import { useTranslation } from "@/components/menu-editor/translation-provider"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
 import { cn } from "@/lib/utils"
 
@@ -91,6 +92,9 @@ export default function CategoryBlock({
   const { isEditing } = useEditor(state => ({
     isEditing: state.options.enabled
   }))
+  const translation = useTranslation()
+  const displayCategoryName =
+    translation?.getCategoryTranslation(data.id)?.name ?? data.name
   return (
     <div
       ref={ref => {
@@ -127,7 +131,7 @@ export default function CategoryBlock({
             } as React.CSSProperties
           }
         >
-          {data.name}
+          {displayCategoryName}
         </h2>
         <div
           className={cn(
