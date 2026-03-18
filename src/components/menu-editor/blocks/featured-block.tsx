@@ -170,7 +170,18 @@ export default function FeaturedBlock({
 
       {selectedItem && (
         <ItemDetail
-          item={selectedItem}
+          item={{
+            ...selectedItem,
+            name: translation?.getItemTranslation(selectedItem.id)?.name ?? selectedItem.name,
+            description:
+              translation?.getItemTranslation(selectedItem.id)?.description !== undefined
+                ? translation.getItemTranslation(selectedItem.id)?.description
+                : selectedItem.description,
+            variants: selectedItem.variants.map(v => ({
+              ...v,
+              name: translation?.getVariantTranslation(v.id)?.name ?? v.name
+            }))
+          }}
           isOpen={!!selectedItem}
           onClose={() => setSelectedItem(null)}
           itemFontFamily={itemFontFamily}

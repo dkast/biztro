@@ -184,7 +184,7 @@ export default async function SitePage(props: {
             }}
           >
             <div className="z-20 rounded-full px-3 py-1 backdrop-blur-md">
-              Últ. actualiazión:{" "}
+              Últ. actualización:{" "}
               {siteMenu.publishedAt
                 ? new Intl.DateTimeFormat("es-MX", {
                     year: "numeric",

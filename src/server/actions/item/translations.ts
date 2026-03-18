@@ -2,7 +2,7 @@
 
 import * as Sentry from "@sentry/nextjs"
 import { gateway, generateText, Output } from "ai"
-import { updateTag } from "next/cache"
+import { cacheTag, updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
@@ -253,7 +253,6 @@ export const deleteMenuTranslation = authMemberActionClient
 export async function getAvailableTranslations(organizationId: string) {
   "use cache"
 
-  const { cacheTag } = await import("next/cache")
   cacheTag(`translations-${organizationId}`)
 
   const rows = await prisma.menuItemTranslation.groupBy({
@@ -280,7 +279,6 @@ export async function getMenuTranslationsByLocale(
 ) {
   "use cache"
 
-  const { cacheTag } = await import("next/cache")
   cacheTag(`translations-${organizationId}`)
 
   const translations = await prisma.menuItemTranslation.findMany({

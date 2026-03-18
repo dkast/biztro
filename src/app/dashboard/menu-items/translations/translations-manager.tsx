@@ -48,6 +48,10 @@ export default function TranslationsManager({
     useState<AvailableTranslation[]>(initialTranslations)
   const [selectedLocale, setSelectedLocale] = useState<string>("")
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [translatingLocale, setTranslatingLocale] = useState<string | null>(
+    null
+  )
+  const [deletingLocale, setDeletingLocale] = useState<string | null>(null)
 
   const existingLocales = new Set(translations.map(t => t.locale))
   const availableToAdd = SUPPORTED_LOCALES.filter(
@@ -60,6 +64,7 @@ export default function TranslationsManager({
       onSuccess: response => {
         if (response.data?.failure) {
           toast.error(response.data.failure.reason)
+          setTranslatingLocale(null)
           return
         }
         const { locale, count } = response.data?.success ?? {}
@@ -79,12 +84,14 @@ export default function TranslationsManager({
             return [...prev, { locale, count: count ?? 0 }]
           })
         }
+        setTranslatingLocale(null)
         setDialogOpen(false)
         setSelectedLocale("")
       },
       onError: error => {
         Sentry.captureException(error, { tags: { section: "translate-menu" } })
         toast.error("Error al traducir los productos")
+        setTranslatingLocale(null)
       }
     }
   )
@@ -92,28 +99,32 @@ export default function TranslationsManager({
   const { execute: executeDelete, isPending: isDeleting } = useAction(
     deleteMenuTranslation,
     {
-      onSuccess: (response, input) => {
+      onSuccess: response => {
         if (response.data?.failure) {
           toast.error(response.data.failure.reason)
+          setDeletingLocale(null)
           return
         }
-        const locale = (input as { locale?: string })?.locale
+        const locale = deletingLocale
         const localeName =
           SUPPORTED_LOCALES.find(l => l.code === locale)?.label ?? locale
         toast.success(`Traducción al ${localeName} eliminada`)
         setTranslations(prev => prev.filter(t => t.locale !== locale))
+        setDeletingLocale(null)
       },
       onError: error => {
         Sentry.captureException(error, {
           tags: { section: "delete-translation" }
         })
         toast.error("Error al eliminar la traducción")
+        setDeletingLocale(null)
       }
     }
   )
 
   const handleTranslate = () => {
     if (!selectedLocale) return
+    setTranslatingLocale(selectedLocale)
     executeTranslate({ locale: selectedLocale as SupportedLocaleCode })
   }
 
@@ -227,13 +238,14 @@ export default function TranslationsManager({
                       size="sm"
                       className="gap-2"
                       disabled={isTranslating || isDeleting}
-                      onClick={() =>
+                      onClick={() => {
+                        setTranslatingLocale(translation.locale)
                         executeTranslate({
                           locale: translation.locale as SupportedLocaleCode
                         })
-                      }
+                      }}
                     >
-                      {isTranslating ? (
+                      {translatingLocale === translation.locale ? (
                         <Loader className="size-4 animate-spin" />
                       ) : (
                         <Sparkles className="size-4" />
@@ -244,12 +256,13 @@ export default function TranslationsManager({
                       variant="ghost"
                       size="icon"
                       disabled={isDeleting || isTranslating}
-                      onClick={() =>
+                      onClick={() => {
+                        setDeletingLocale(translation.locale)
                         executeDelete({ locale: translation.locale })
-                      }
+                      }}
                       aria-label={`Eliminar traducción al ${localeInfo?.label ?? translation.locale}`}
                     >
-                      {isDeleting ? (
+                      {deletingLocale === translation.locale ? (
                         <Loader className="size-4 animate-spin" />
                       ) : (
                         <Trash2 className="size-4" />

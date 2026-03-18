@@ -264,7 +264,15 @@ export function ItemView({
       <ItemDetail
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
-        item={item}
+        item={{
+          ...item,
+          name: displayName,
+          description: displayDescription,
+          variants: item.variants.map(v => ({
+            ...v,
+            name: translation?.getVariantTranslation(v.id)?.name ?? v.name
+          }))
+        }}
         itemFontWeight={itemFontWeight ?? "400"}
         itemFontFamily={itemFontFamily ?? "Inter"}
         priceFontWeight={priceFontWeight ?? "400"}
