@@ -4,10 +4,9 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
-  useState,
   type ReactNode
 } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { parseAsString, useQueryState } from "nuqs"
 
 import type { SUPPORTED_LOCALES } from "@/lib/types/translations"
@@ -58,33 +57,22 @@ export function TranslationProvider({
     "lang",
     parseAsString.withDefault("")
   )
-  const [translations, setTranslations] = useState<TranslationsData | null>(
-    null
-  )
-  const [isLoading, setIsLoading] = useState(false)
 
   const activeLocale = locale || null
 
-  useEffect(() => {
-    if (!activeLocale) {
-      setTranslations(null)
-      return
-    }
-
-    setIsLoading(true)
-    fetch(
-      `/api/public/translations?subdomain=${encodeURIComponent(subdomain)}&locale=${encodeURIComponent(activeLocale)}`
-    )
-      .then(res => res.json())
-      .then((data: TranslationsData) => {
-        setTranslations(data)
-        setIsLoading(false)
-      })
-      .catch(() => {
-        setTranslations(null)
-        setIsLoading(false)
-      })
-  }, [activeLocale, subdomain])
+  const { data: translations = null, isLoading } = useQuery<TranslationsData>({
+    queryKey: ["translations", subdomain, activeLocale],
+    queryFn: async () => {
+      if (!activeLocale) return null
+      const res = await fetch(
+        `/api/public/translations?subdomain=${encodeURIComponent(subdomain)}&locale=${encodeURIComponent(activeLocale)}`
+      )
+      if (!res.ok) throw new Error("Failed to fetch translations")
+      return res.json() as Promise<TranslationsData>
+    },
+    enabled: !!activeLocale,
+    staleTime: 5 * 60 * 1000
+  })
 
   const setLocale = useCallback(
     (newLocale: string | null) => {
@@ -109,8 +97,8 @@ export function TranslationProvider({
 
   const getCategoryTranslation = useCallback(
     (categoryId: string) => {
-      const t = translations?.categories[categoryId]
-      return t ? { name: t.name } : null
+      const entry = translations?.categories[categoryId]
+      return entry ? { name: entry.name } : null
     },
     [translations]
   )

@@ -19,6 +19,14 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog"
 import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle
+} from "@/components/ui/item"
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -210,31 +218,25 @@ export default function TranslationsManager({
             No hay traducciones disponibles. Agrega un idioma para empezar.
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <ItemGroup>
             {translations.map(translation => {
               const localeInfo = SUPPORTED_LOCALES.find(
                 l => l.code === translation.locale
               )
               return (
-                <div
-                  key={translation.locale}
-                  className="flex items-center justify-between rounded-lg border
-                    p-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <p className="text-sm font-medium">
-                        {localeInfo?.label ?? translation.locale}
-                      </p>
-                      <p className="text-muted-foreground text-xs">
-                        {translation.count} producto
-                        {translation.count !== 1 ? "s" : ""} traducido
-                        {translation.count !== 1 ? "s" : ""}
-                      </p>
-                    </div>
-                    <Badge variant="default">{translation.locale}</Badge>
-                  </div>
-                  <div className="flex items-center gap-2">
+                <Item key={translation.locale} variant="outline">
+                  <ItemContent>
+                    <ItemTitle>
+                      {localeInfo?.label ?? translation.locale}
+                      <Badge variant="default">{translation.locale}</Badge>
+                    </ItemTitle>
+                    <ItemDescription>
+                      {translation.count} producto
+                      {translation.count !== 1 ? "s" : ""} traducido
+                      {translation.count !== 1 ? "s" : ""}
+                    </ItemDescription>
+                  </ItemContent>
+                  <ItemActions>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -270,11 +272,11 @@ export default function TranslationsManager({
                         <Trash2 className="size-4" />
                       )}
                     </Button>
-                  </div>
-                </div>
+                  </ItemActions>
+                </Item>
               )
             })}
-          </div>
+          </ItemGroup>
         )}
       </div>
 
