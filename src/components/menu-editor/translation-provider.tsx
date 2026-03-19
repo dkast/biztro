@@ -1,18 +1,15 @@
 "use client"
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  type ReactNode
-} from "react"
+import { createContext, useCallback, useContext, type ReactNode } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { parseAsString, useQueryState } from "nuqs"
 
-import type { SUPPORTED_LOCALES } from "@/lib/types/translations"
 import { getUILabels, type UILabelKey } from "@/lib/ui-labels"
 
-type TranslationMap = Record<string, { name: string; description?: string | null }>
+type TranslationMap = Record<
+  string,
+  { name: string; description?: string | null }
+>
 
 type TranslationsData = {
   items: TranslationMap
@@ -32,21 +29,19 @@ type TranslationContextValue = {
   getVariantTranslation: (
     variantId: string
   ) => { name: string; description?: string | null } | null
-  getCategoryTranslation: (
-    categoryId: string
-  ) => { name: string } | null
+  getCategoryTranslation: (categoryId: string) => { name: string } | null
   t: (key: UILabelKey, vars?: Record<string, string>) => string
 }
 
 const TranslationContext = createContext<TranslationContextValue | null>(null)
 
-type SupportedLocale = (typeof SUPPORTED_LOCALES)[number]
-
 type TranslationProviderProps = {
   children: ReactNode
   subdomain: string
-  availableLocales: Array<Pick<SupportedLocale, "code" | "label">>
+  availableLocales: Array<{ code: string; label: string }>
 }
+
+type TranslationsQueryKey = readonly ["translations", string, string | null]
 
 export function TranslationProvider({
   children,
@@ -60,12 +55,20 @@ export function TranslationProvider({
 
   const activeLocale = locale || null
 
-  const { data: translations = null, isLoading } = useQuery<TranslationsData>({
-    queryKey: ["translations", subdomain, activeLocale],
-    queryFn: async () => {
-      if (!activeLocale) return null
+  const translationsQuery = useQuery<
+    TranslationsData,
+    Error,
+    TranslationsData,
+    TranslationsQueryKey
+  >({
+    queryKey: ["translations", subdomain, activeLocale] as const,
+    queryFn: async ({ queryKey }): Promise<TranslationsData> => {
+      const [, currentSubdomain, currentLocale] = queryKey
+
+      if (!currentLocale) throw new Error("Locale is required")
+
       const res = await fetch(
-        `/api/public/translations?subdomain=${encodeURIComponent(subdomain)}&locale=${encodeURIComponent(activeLocale)}`
+        `/api/public/translations?subdomain=${encodeURIComponent(currentSubdomain)}&locale=${encodeURIComponent(currentLocale)}`
       )
       if (!res.ok) throw new Error("Failed to fetch translations")
       return res.json() as Promise<TranslationsData>
@@ -73,6 +76,9 @@ export function TranslationProvider({
     enabled: !!activeLocale,
     staleTime: 5 * 60 * 1000
   })
+
+  const translations = activeLocale ? (translationsQuery.data ?? null) : null
+  const isLoading = !!activeLocale && translationsQuery.isLoading
 
   const setLocale = useCallback(
     (newLocale: string | null) => {

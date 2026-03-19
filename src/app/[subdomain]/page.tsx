@@ -1,4 +1,3 @@
-import { Suspense } from "react"
 import lz from "lzutf8"
 import { type Metadata, type ResolvingMetadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
@@ -6,22 +5,22 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import { PublicMenuProvider } from "@/components/menu-editor/public-menu-context"
-import { TranslationProvider } from "@/components/menu-editor/translation-provider"
 import LanguageSwitcher from "@/components/menu-editor/language-switcher"
+import { PublicMenuProvider } from "@/components/menu-editor/public-menu-context"
+import PublishedAtLabel from "@/components/menu-editor/published-at-label"
+import { TranslationProvider } from "@/components/menu-editor/translation-provider"
+import { getAvailableTranslations } from "@/server/actions/item/translations"
 // import GradientBlur from "@/components/flare-ui/gradient-blur"
 import { getActiveMenuByOrganizationSlug } from "@/server/actions/menu/queries"
-import { getAvailableTranslations } from "@/server/actions/item/translations"
 import {
   getAllActiveOrganizations,
   getOrganizationBySlug
 } from "@/server/actions/organization/queries"
-import PublicMenuTracker from "@/app/[subdomain]/public-menu-tracker"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { normalizePublicMenuItems } from "@/lib/menu-search"
 import { extractMenuDataFromNodes } from "@/lib/sync-status"
-import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 import { SubscriptionStatus } from "@/lib/types/billing"
+import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 
 // Add generateStaticParams to pre-render specific paths
 export async function generateStaticParams() {
@@ -151,13 +150,6 @@ export default async function SitePage(props: {
 
   return (
     <>
-      <Suspense fallback={null}>
-        <PublicMenuTracker
-          organizationId={siteMenu.organizationId}
-          menuId={siteMenu.id}
-          slug={params.subdomain}
-        />
-      </Suspense>
       <style>{`body { background-color: ${rgbaToHex(backgroundColor)} }`}</style>
       <TranslationProvider
         subdomain={params.subdomain}
@@ -175,21 +167,17 @@ export default async function SitePage(props: {
             </div>
           </PublicMenuProvider>
           <div
-            className="fixed inset-x-0 bottom-0 flex items-center justify-between
-              gap-x-4 p-2 text-xs"
+            className="fixed inset-x-0 bottom-0 flex items-center
+              justify-between gap-x-4 p-2 text-xs"
             style={{
               color: `${rgbaToHex(textColor)}`
             }}
           >
             <div className="z-20 rounded-full px-3 py-1 backdrop-blur-md">
               Últ. actualización:{" "}
-              {siteMenu.publishedAt
-                ? new Intl.DateTimeFormat("es-MX", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric"
-                  }).format(new Date(siteMenu.publishedAt))
-                : ""}
+              <PublishedAtLabel
+                publishedAt={siteMenu.publishedAt?.getTime() ?? null}
+              />
             </div>
             <div className="z-20 flex items-center gap-2">
               {availableLocales.length > 0 && (
@@ -197,8 +185,8 @@ export default async function SitePage(props: {
               )}
               <Link href="https://biztro.co" target="_blank">
                 <div
-                  className="flex items-center justify-center gap-x-2 rounded-full
-                    bg-black/50 px-3 py-1"
+                  className="flex items-center justify-center gap-x-2
+                    rounded-full bg-black/50 px-3 py-1"
                 >
                   <Image
                     src="/safari-pinned-tab.svg"

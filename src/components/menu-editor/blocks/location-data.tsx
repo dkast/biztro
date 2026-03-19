@@ -10,6 +10,7 @@ import {
   ShoppingBag
 } from "lucide-react"
 
+import { useTranslation } from "@/components/menu-editor/translation-provider"
 import {
   Dialog,
   DialogContent,
@@ -34,16 +35,15 @@ import {
   ItemTitle
 } from "@/components/ui/item"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
-import { useTranslation } from "@/components/menu-editor/translation-provider"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { formatPrice } from "@/lib/currency"
+import { getUILabels } from "@/lib/ui-labels"
 import {
   cn,
   getFormattedTime,
   getOpenHoursLegend,
   getOpenHoursStatus
 } from "@/lib/utils"
-import { getUILabels } from "@/lib/ui-labels"
 
 export default function LocationData({
   isBusinessInfoVisible,
@@ -59,6 +59,7 @@ export default function LocationData({
   const isMobile = useIsMobile()
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false)
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
+  const [currentDate, setCurrentDate] = React.useState<Date | null>(null)
   const translation = useTranslation()
   const locale = translation?.locale ?? null
   const t = translation?.t ?? getUILabels(locale)
@@ -82,10 +83,32 @@ export default function LocationData({
     }
   }, [isMobile])
 
+  React.useEffect(() => {
+    const updateCurrentDate = () => {
+      setCurrentDate(new Date())
+    }
+
+    updateCurrentDate()
+
+    const intervalId = window.setInterval(updateCurrentDate, 60_000)
+
+    return () => {
+      window.clearInterval(intervalId)
+    }
+  }, [])
+
   if (!location) return null
 
-  const isOpenNow = getOpenHoursStatus(location.openingHours ?? []) === "OPEN"
-  const legend = getOpenHoursLegend(location.openingHours ?? [], locale)
+  const isOpenNow =
+    currentDate !== null
+      ? getOpenHoursStatus(location.openingHours ?? [], currentDate) === "OPEN"
+      : false
+  const legend =
+    currentDate !== null
+      ? getOpenHoursLegend(location.openingHours ?? [], locale, currentDate)
+      : location.openingHours?.length
+        ? t("closed")
+        : t("no_schedule")
 
   const hoursTrigger = (
     <button
@@ -131,10 +154,11 @@ export default function LocationData({
           "FRIDAY",
           "SATURDAY"
         ] as const
-        const todayName = DAY_INDEX_TO_NAME[new Date().getDay()]
+        const todayName =
+          currentDate !== null ? DAY_INDEX_TO_NAME[currentDate.getDay()] : null
 
         return location.openingHours?.map(day => {
-          const isToday = day.day === todayName
+          const isToday = todayName !== null && day.day === todayName
 
           return (
             <div
