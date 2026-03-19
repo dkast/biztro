@@ -110,46 +110,93 @@ model Theme {
 }
 
 model MenuItem {
-  id             String       @id @default(cuid())
+  id             String                  @id @default(cuid())
   name           String
   description    String?
   image          String?
   imageAssetId   String?
-  imageAsset     MediaAsset?  @relation("MenuItemImageAsset", fields: [imageAssetId], references: [id], onDelete: SetNull)
-  status         String       @default("DRAFT")
-  featured       Boolean      @default(false)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  imageAsset     MediaAsset?             @relation("MenuItemImageAsset", fields: [imageAssetId], references: [id], onDelete: SetNull)
+  status         String                  @default("DRAFT")
+  featured       Boolean                 @default(false)
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
   categoryId     String?
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  category       Category?    @relation(fields: [categoryId], references: [id])
+  organization   Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category       Category?               @relation(fields: [categoryId], references: [id])
   variants       Variant[]
   allergens      String?
-  currency       Currency     @default(MXN)
+  currency       Currency                @default(MXN)
+  translations   MenuItemTranslation[]
 
   @@unique([organizationId, name])
 }
 
 model Category {
-  id             String       @id @default(cuid())
+  id             String                @id @default(cuid())
   name           String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   menuItems      MenuItem[]
+  translations   CategoryTranslation[]
 }
 
 model Variant {
+  id           String               @id @default(cuid())
+  name         String
+  description  String?
+  price        Float
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  menuItemId   String
+  menuItem     MenuItem             @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  translations VariantTranslation[]
+}
+
+model MenuItemTranslation {
   id          String   @id @default(cuid())
+  locale      String
   name        String
   description String?
-  price       Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   menuItemId  String
   menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([menuItemId, locale])
+  @@index([menuItemId])
+  @@index([locale])
+}
+
+model VariantTranslation {
+  id          String   @id @default(cuid())
+  locale      String
+  name        String
+  description String?
+  variantId   String
+  variant     Variant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([variantId, locale])
+  @@index([variantId])
+  @@index([locale])
+}
+
+model CategoryTranslation {
+  id         String   @id @default(cuid())
+  locale     String
+  name       String
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([categoryId, locale])
+  @@index([categoryId])
+  @@index([locale])
 }
 
 // Media asset management models for tracking R2 storage

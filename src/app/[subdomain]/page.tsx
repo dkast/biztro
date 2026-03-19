@@ -1,4 +1,3 @@
-import { Suspense } from "react"
 import lz from "lzutf8"
 import { type Metadata, type ResolvingMetadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
@@ -6,18 +5,22 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
+import LanguageSwitcher from "@/components/menu-editor/language-switcher"
 import { PublicMenuProvider } from "@/components/menu-editor/public-menu-context"
+import PublishedAtLabel from "@/components/menu-editor/published-at-label"
+import { TranslationProvider } from "@/components/menu-editor/translation-provider"
+import { getAvailableTranslations } from "@/server/actions/item/translations"
 // import GradientBlur from "@/components/flare-ui/gradient-blur"
 import { getActiveMenuByOrganizationSlug } from "@/server/actions/menu/queries"
 import {
   getAllActiveOrganizations,
   getOrganizationBySlug
 } from "@/server/actions/organization/queries"
-import PublicMenuTracker from "@/app/[subdomain]/public-menu-tracker"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { normalizePublicMenuItems } from "@/lib/menu-search"
 import { extractMenuDataFromNodes } from "@/lib/sync-status"
 import { SubscriptionStatus } from "@/lib/types/billing"
+import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 
 // Add generateStaticParams to pre-render specific paths
 export async function generateStaticParams() {
@@ -136,66 +139,73 @@ export default async function SitePage(props: {
   const { serializedNodes, backgroundColor, textColor, searchableItems } =
     renderData
 
+  // Load available translations (cached by org)
+  cacheTag(`translations-${siteMenu.organizationId}`)
+  const translationRows = await getAvailableTranslations(
+    siteMenu.organizationId
+  )
+  const availableLocales = translationRows
+    .map(row => SUPPORTED_LOCALES.find(l => l.code === row.locale))
+    .filter((l): l is (typeof SUPPORTED_LOCALES)[number] => l !== undefined)
+
   return (
     <>
-      <Suspense fallback={null}>
-        <PublicMenuTracker
-          organizationId={siteMenu.organizationId}
-          menuId={siteMenu.id}
-          slug={params.subdomain}
-        />
-      </Suspense>
       <style>{`body { background-color: ${rgbaToHex(backgroundColor)} }`}</style>
-      <div
-        style={{
-          backgroundColor: `${rgbaToHex(backgroundColor)}`
-        }}
-        className="relative flex min-h-screen flex-col"
+      <TranslationProvider
+        subdomain={params.subdomain}
+        availableLocales={availableLocales}
       >
-        <PublicMenuProvider items={searchableItems}>
-          <div className="flex grow">
-            <ResolveEditor json={serializedNodes} />
-          </div>
-        </PublicMenuProvider>
         <div
-          className="fixed inset-x-0 bottom-0 flex items-center justify-between
-            gap-x-4 p-2 text-xs"
           style={{
-            color: `${rgbaToHex(textColor)}`
+            backgroundColor: `${rgbaToHex(backgroundColor)}`
           }}
+          className="relative flex min-h-screen flex-col"
         >
-          <div className="z-20 rounded-full px-3 py-1 backdrop-blur-md">
-            Últ. actualiazión:{" "}
-            {siteMenu.publishedAt
-              ? new Intl.DateTimeFormat("es-MX", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric"
-                }).format(new Date(siteMenu.publishedAt))
-              : ""}
-          </div>
-          <Link href="https://biztro.co" target="_blank" className="z-20">
-            <div
-              className="flex items-center justify-center gap-x-2 rounded-full
-                bg-black/50 px-3 py-1"
-            >
-              <Image
-                src="/safari-pinned-tab.svg"
-                alt="Logo"
-                width={12}
-                height={12}
-                className="opacity-90 invert"
-                unoptimized
-              />
-              <span className="text-xs text-gray-100">
-                <em className="hidden not-italic sm:inline">Powered by </em>
-                Biztro
-              </span>
+          <PublicMenuProvider items={searchableItems}>
+            <div className="flex grow">
+              <ResolveEditor json={serializedNodes} />
             </div>
-          </Link>
-          {/* <GradientBlur className="inset-0 md:hidden" /> */}
+          </PublicMenuProvider>
+          <div
+            className="fixed inset-x-0 bottom-0 flex items-center
+              justify-between gap-x-4 p-2 text-xs"
+            style={{
+              color: `${rgbaToHex(textColor)}`
+            }}
+          >
+            <div className="z-20 rounded-full px-3 py-1 backdrop-blur-md">
+              Últ. actualización:{" "}
+              <PublishedAtLabel
+                publishedAt={siteMenu.publishedAt?.getTime() ?? null}
+              />
+            </div>
+            <div className="z-20 flex items-center gap-2">
+              {availableLocales.length > 0 && (
+                <LanguageSwitcher color={rgbaToHex(textColor)} />
+              )}
+              <Link href="https://biztro.co" target="_blank">
+                <div
+                  className="flex items-center justify-center gap-x-2
+                    rounded-full bg-black/50 px-3 py-1"
+                >
+                  <Image
+                    src="/safari-pinned-tab.svg"
+                    alt="Logo"
+                    width={12}
+                    height={12}
+                    className="opacity-90 invert"
+                    unoptimized
+                  />
+                  <span className="text-xs text-gray-100">
+                    <em className="hidden not-italic sm:inline">Powered by </em>
+                    Biztro
+                  </span>
+                </div>
+              </Link>
+            </div>
+          </div>
         </div>
-      </div>
+      </TranslationProvider>
     </>
   )
 }

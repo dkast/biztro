@@ -12,6 +12,7 @@ import {
   type DetailItem
 } from "@/components/menu-editor/blocks/item-detail"
 import { usePublicMenu } from "@/components/menu-editor/public-menu-context"
+import { useTranslation } from "@/components/menu-editor/translation-provider"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -42,6 +43,7 @@ import {
 } from "@/components/ui/item"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
+import { getUILabels } from "@/lib/ui-labels"
 import type { PublicMenuSearchItem } from "@/lib/menu-search"
 
 const bloomItemClassName =
@@ -75,6 +77,8 @@ export function PublicMenuActions() {
     null
   )
   const deferredQuery = React.useDeferredValue(query.trim())
+  const translation = useTranslation()
+  const t = translation?.t ?? getUILabels(null)
 
   const fuse = React.useMemo(() => new Fuse(items, fuseOptions), [items])
   const results = React.useMemo(
@@ -99,9 +103,9 @@ export function PublicMenuActions() {
   async function handleShare() {
     try {
       await navigator.clipboard.writeText(window.location.href)
-      toast("Enlace copiado")
+      toast(t("link_copied"))
     } catch {
-      toast("No se pudo copiar el enlace")
+      toast(t("link_copy_error"))
     }
   }
 
@@ -152,14 +156,14 @@ export function PublicMenuActions() {
               }}
             >
               <Share className="size-4" />
-              Compartir
+              {t("share")}
             </Menu.Item>
             <Menu.Item
               className={bloomItemClassName}
               onSelect={handleSearchOpen}
             >
               <Search className="size-4" />
-              Buscar
+              {t("search")}
             </Menu.Item>
           </Menu.Content>
         </Menu.Container>
@@ -175,9 +179,9 @@ export function PublicMenuActions() {
       >
         <DrawerContent className="flex h-[92dvh] flex-col">
           <DrawerHeader className="pb-8">
-            <DrawerTitle>Buscar productos</DrawerTitle>
+            <DrawerTitle>{t("search_products")}</DrawerTitle>
             <DrawerDescription>
-              Busca coincidencias por nombre o descripción.
+              {t("search_description")}
             </DrawerDescription>
           </DrawerHeader>
 
@@ -215,9 +219,9 @@ export function PublicMenuActions() {
                     <EmptyMedia variant="icon">
                       <Search />
                     </EmptyMedia>
-                    <EmptyTitle>Sin resultados</EmptyTitle>
+                    <EmptyTitle>{t("no_results")}</EmptyTitle>
                     <EmptyDescription>
-                      Intenta con otro nombre o una palabra de la descripción.
+                      {t("no_results_description")}
                     </EmptyDescription>
                   </EmptyHeader>
                 </Empty>
@@ -252,6 +256,8 @@ function SearchResultRow({
         resolveCurrency(item.currency ?? undefined)
       )
     : null
+  const translation = useTranslation()
+  const t = translation?.t ?? getUILabels(null)
 
   return (
     <Item
@@ -290,7 +296,9 @@ function SearchResultRow({
         )}
         {pricePreview && (
           <p className="text-muted-foreground text-xs">
-            {item.variants.length > 1 ? `Desde ${pricePreview}` : pricePreview}
+            {item.variants.length > 1
+              ? `${t("from")} ${pricePreview}`
+              : pricePreview}
           </p>
         )}
       </ItemContent>

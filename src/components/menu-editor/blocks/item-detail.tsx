@@ -2,6 +2,7 @@ import Image from "next/image"
 
 import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
+import { useTranslation } from "@/components/menu-editor/translation-provider"
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
+import { getUILabels } from "@/lib/ui-labels"
 
 type DetailVariant = {
   id: string
@@ -56,6 +58,8 @@ export function ItemDetail({
   priceFontWeight = "400"
 }: ItemDetailProps) {
   const isMobile = useIsMobile()
+  const translation = useTranslation()
+  const t = translation?.t ?? getUILabels(null)
 
   const content = (
     <div className="flex flex-col gap-4">
@@ -88,7 +92,7 @@ export function ItemDetail({
         </h2>
       </FontWrapper>
       <FontWrapper fontFamily={descriptionFontFamily}>
-        <Label className="text-gray-500">Descripción</Label>
+        <Label className="text-gray-500">{t("description")}</Label>
         <p className="text-pretty">{item.description}</p>
       </FontWrapper>
       <FontWrapper fontFamily={priceFontFamily}>
@@ -124,7 +128,7 @@ export function ItemDetail({
       <Drawer open={isOpen} onOpenChange={onClose}>
         <DrawerContent className="h-[96%] px-3">
           <DrawerHeader>
-            <DrawerTitle>Detalle del menú</DrawerTitle>
+            <DrawerTitle>{t("menu_detail")}</DrawerTitle>
           </DrawerHeader>
           {content}
         </DrawerContent>
@@ -136,7 +140,7 @@ export function ItemDetail({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Detalle del menú</DialogTitle>
+          <DialogTitle>{t("menu_detail")}</DialogTitle>
         </DialogHeader>
         {content}
       </DialogContent>

@@ -10,6 +10,7 @@ import {
   ShoppingBag
 } from "lucide-react"
 
+import { useTranslation } from "@/components/menu-editor/translation-provider"
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,7 @@ import {
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { formatPrice } from "@/lib/currency"
+import { getUILabels } from "@/lib/ui-labels"
 import {
   cn,
   getFormattedTime,
@@ -57,6 +59,23 @@ export default function LocationData({
   const isMobile = useIsMobile()
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false)
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
+  const [currentDate, setCurrentDate] = React.useState<Date | null>(null)
+  const translation = useTranslation()
+  const locale = translation?.locale ?? null
+  const t = translation?.t ?? getUILabels(locale)
+
+  const DAY_LABELS = React.useMemo<Record<string, string>>(
+    () => ({
+      MONDAY: t("monday"),
+      TUESDAY: t("tuesday"),
+      WEDNESDAY: t("wednesday"),
+      THURSDAY: t("thursday"),
+      FRIDAY: t("friday"),
+      SATURDAY: t("saturday"),
+      SUNDAY: t("sunday")
+    }),
+    [t]
+  )
 
   React.useEffect(() => {
     if (!isMobile) {
@@ -64,10 +83,32 @@ export default function LocationData({
     }
   }, [isMobile])
 
+  React.useEffect(() => {
+    const updateCurrentDate = () => {
+      setCurrentDate(new Date())
+    }
+
+    updateCurrentDate()
+
+    const intervalId = window.setInterval(updateCurrentDate, 60_000)
+
+    return () => {
+      window.clearInterval(intervalId)
+    }
+  }, [])
+
   if (!location) return null
 
-  const isOpenNow = getOpenHoursStatus(location.openingHours ?? []) === "OPEN"
-  const legend = getOpenHoursLegend(location.openingHours ?? [])
+  const isOpenNow =
+    currentDate !== null
+      ? getOpenHoursStatus(location.openingHours ?? [], currentDate) === "OPEN"
+      : false
+  const legend =
+    currentDate !== null
+      ? getOpenHoursLegend(location.openingHours ?? [], locale, currentDate)
+      : location.openingHours?.length
+        ? t("closed")
+        : t("no_schedule")
 
   const hoursTrigger = (
     <button
@@ -113,10 +154,11 @@ export default function LocationData({
           "FRIDAY",
           "SATURDAY"
         ] as const
-        const todayName = DAY_INDEX_TO_NAME[new Date().getDay()]
+        const todayName =
+          currentDate !== null ? DAY_INDEX_TO_NAME[currentDate.getDay()] : null
 
         return location.openingHours?.map(day => {
-          const isToday = day.day === todayName
+          const isToday = todayName !== null && day.day === todayName
 
           return (
             <div
@@ -132,13 +174,7 @@ export default function LocationData({
                   isToday && "text-indigo-700 dark:text-indigo-300"
                 )}
               >
-                {day.day === "MONDAY" && "Lunes"}
-                {day.day === "TUESDAY" && "Martes"}
-                {day.day === "WEDNESDAY" && "Miércoles"}
-                {day.day === "THURSDAY" && "Jueves"}
-                {day.day === "FRIDAY" && "Viernes"}
-                {day.day === "SATURDAY" && "Sábado"}
-                {day.day === "SUNDAY" && "Domingo"}
+                {DAY_LABELS[day.day] ?? day.day}
               </span>
               <span
                 className={cn(
@@ -151,7 +187,7 @@ export default function LocationData({
               >
                 {day.allDay
                   ? `${getFormattedTime(day.startTime)} - ${getFormattedTime(day.endTime)}`
-                  : "Cerrado"}
+                  : t("closed")}
               </span>
             </div>
           )
@@ -162,7 +198,7 @@ export default function LocationData({
 
   const servicesList = (
     <div className="text-sm">
-      <div className="font-medium">Servicios disponibles</div>
+      <div className="font-medium">{t("available_services")}</div>
       <ItemGroup className="mt-2 gap-1">
         {location.serviceDelivery && (
           <Item size="sm" variant="outline">
@@ -171,10 +207,10 @@ export default function LocationData({
             </ItemMedia>
             <ItemContent>
               <ItemTitle>
-                Entrega a domicilio —{" "}
+                {t("delivery")} —{" "}
                 <span className="text-muted-foreground">
                   {location.deliveryFee === 0
-                    ? "Gratis"
+                    ? t("free")
                     : formatPrice(
                         location.deliveryFee,
                         location.currency as "MXN" | "USD"
@@ -191,7 +227,7 @@ export default function LocationData({
               <ShoppingBag />
             </ItemMedia>
             <ItemContent>
-              <ItemTitle>Para llevar</ItemTitle>
+              <ItemTitle>{t("takeout")}</ItemTitle>
             </ItemContent>
           </Item>
         )}
@@ -202,7 +238,7 @@ export default function LocationData({
               <HandPlatter />
             </ItemMedia>
             <ItemContent>
-              <ItemTitle>Comer en el lugar</ItemTitle>
+              <ItemTitle>{t("dine_in")}</ItemTitle>
             </ItemContent>
           </Item>
         )}
@@ -213,7 +249,7 @@ export default function LocationData({
   const address = location.address ? (
     <Item size="sm" variant="muted" className="py-2">
       <ItemContent>
-        <ItemTitle>Dirección</ItemTitle>
+        <ItemTitle>{t("address")}</ItemTitle>
         <ItemDescription>{location.address}</ItemDescription>
       </ItemContent>
       <ItemActions>
@@ -263,7 +299,7 @@ export default function LocationData({
               <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
                 <DrawerContent className="space-y-1 px-4 pb-8">
                   <DrawerHeader>
-                    <DrawerTitle>Información</DrawerTitle>
+                    <DrawerTitle>{t("information")}</DrawerTitle>
                     <p className="text-muted-foreground text-xs">{legend}</p>
                   </DrawerHeader>
                   {address}
@@ -277,7 +313,7 @@ export default function LocationData({
               <DialogTrigger asChild>{hoursTrigger}</DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Información</DialogTitle>
+                  <DialogTitle>{t("information")}</DialogTitle>
                   <DialogDescription className="text-xs">
                     {legend}
                   </DialogDescription>

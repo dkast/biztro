@@ -8,6 +8,10 @@ const SecondaryNavItems = [
   {
     title: "Categorías",
     href: "dashboard/menu-items/categories"
+  },
+  {
+    title: "Traducciones",
+    href: "dashboard/menu-items/translations"
   }
 ]
 

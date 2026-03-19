@@ -530,7 +530,7 @@ export default function ItemForm({
                           form.setValue("categoryId", val)
                         }}
                       >
-                        <ComboboxTrigger className="min-w-[300px]" />
+                        <ComboboxTrigger className="min-w-75" />
                         <ComboboxContent>
                           <ComboboxInput
                             value={searchCategory}
