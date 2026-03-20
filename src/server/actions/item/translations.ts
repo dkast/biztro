@@ -8,10 +8,7 @@ import { z } from "zod/v4"
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
-import {
-  SUPPORTED_LOCALES,
-  type SupportedLocaleCode
-} from "@/lib/types/translations"
+import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 import { env } from "@/env.mjs"
 
 const translateMenuItemsInputSchema = z.object({
@@ -253,9 +250,7 @@ export const deleteMenuTranslation = authMemberActionClient
         select: { id: true }
       })
 
-      const variantIds = orgItems.flatMap(item =>
-        item.variants.map(v => v.id)
-      )
+      const variantIds = orgItems.flatMap(item => item.variants.map(v => v.id))
       const itemIds = orgItems.map(item => item.id)
       const categoryIds = orgCategories.map(cat => cat.id)
 
