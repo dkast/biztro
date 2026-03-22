@@ -167,7 +167,7 @@ export default function HeaderBlock({
       }}
     >
       <div className="pointer-events-none absolute inset-0 origin-top">
-        <Banner
+        <BannerImage
           banner={organization.banner}
           isBannerVisible={showBanner ?? false}
           className="h-full"
@@ -323,7 +323,7 @@ function rgbaToCss(color: RgbaColor | undefined, fallback: RgbaColor) {
   return `rgba(${value.r}, ${value.g}, ${value.b}, ${value.a ?? 1})`
 }
 
-function Banner({
+function BannerImage({
   banner,
   className,
   isBannerVisible

@@ -43,8 +43,8 @@ import {
 } from "@/components/ui/item"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
-import { getUILabels } from "@/lib/ui-labels"
 import type { PublicMenuSearchItem } from "@/lib/menu-search"
+import { getUILabels } from "@/lib/ui-labels"
 
 const bloomItemClassName =
   "text-foreground hover:bg-accent flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors"
@@ -180,9 +180,7 @@ export function PublicMenuActions() {
         <DrawerContent className="flex h-[92dvh] flex-col">
           <DrawerHeader className="pb-8">
             <DrawerTitle>{t("search_products")}</DrawerTitle>
-            <DrawerDescription>
-              {t("search_description")}
-            </DrawerDescription>
+            <DrawerDescription>{t("search_description")}</DrawerDescription>
           </DrawerHeader>
 
           <div className="flex min-h-0 flex-1 flex-col gap-4 pb-4">
