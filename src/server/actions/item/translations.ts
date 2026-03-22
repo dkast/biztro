@@ -5,7 +5,6 @@ import { gateway, generateText, Output } from "ai"
 import { cacheTag, updateTag } from "next/cache"
 import { z } from "zod/v4"
 
-import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
 import { SUPPORTED_LOCALES } from "@/lib/types/translations"
@@ -351,19 +350,4 @@ export async function getMenuTranslationsByLocale(
       categoryTranslations.map(t => [t.categoryId, { name: t.name }])
     )
   }
-}
-
-/**
- * Fetch translation availability for the current membership's organization.
- * Used by dashboard pages.
- */
-export async function getAvailableTranslationsForCurrentOrg() {
-  const membership = await getCurrentMembership()
-  const currentOrg = membership?.organizationId
-
-  if (!currentOrg) {
-    return []
-  }
-
-  return getAvailableTranslations(currentOrg)
 }
