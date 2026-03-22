@@ -68,7 +68,6 @@ const fuseOptions = {
 
 export function PublicMenuActions() {
   const publicMenu = usePublicMenu()
-  const items = publicMenu?.items ?? []
   const [isActionMenuOpen, setIsActionMenuOpen] = React.useState(false)
   const [isSearchOpen, setIsSearchOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
@@ -80,7 +79,32 @@ export function PublicMenuActions() {
   const translation = useTranslation()
   const t = translation?.t ?? getUILabels(null)
 
-  const fuse = React.useMemo(() => new Fuse(items, fuseOptions), [items])
+  const translatedItems = React.useMemo(() => {
+    const items = publicMenu?.items ?? []
+
+    return items.map(item => {
+      const itemTranslation = translation?.getItemTranslation(item.id)
+
+      return {
+        ...item,
+        name: itemTranslation?.name ?? item.name,
+        description:
+          itemTranslation?.description !== undefined
+            ? itemTranslation.description
+            : item.description,
+        variants: item.variants.map(variant => ({
+          ...variant,
+          name:
+            translation?.getVariantTranslation(variant.id)?.name ?? variant.name
+        }))
+      }
+    })
+  }, [publicMenu?.items, translation])
+
+  const fuse = React.useMemo(
+    () => new Fuse(translatedItems, fuseOptions),
+    [translatedItems]
+  )
   const results = React.useMemo(
     () =>
       deferredQuery
