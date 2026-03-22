@@ -1,6 +1,7 @@
 "use client"
 // Empty state
 
+// DEPRECATED: This component is deprecated and will be removed in a future release. Please use the Empty component from "@/components/ui/empty" instead.
 export function EmptyState({
   icon,
   title

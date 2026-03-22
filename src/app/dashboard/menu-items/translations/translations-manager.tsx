@@ -231,7 +231,7 @@ export default function TranslationsManager({
                   Agregar idioma
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="sm:max-w-sm">
                 <DialogHeader>
                   <DialogTitle>Traducir menú con IA</DialogTitle>
                   <DialogDescription>
@@ -245,7 +245,7 @@ export default function TranslationsManager({
                     onValueChange={setSelectedLocale}
                     disabled={isTranslating}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue
                         placeholder={
                           isTranslating && selectedLocale
@@ -280,8 +280,7 @@ export default function TranslationsManager({
                   <Button
                     onClick={handleTranslate}
                     disabled={!selectedLocale || isTranslating}
-                    className="bg-linear-to-r/oklch from-indigo-500 via-pink-500
-                      to-orange-500"
+                    className="bg-linear-65/oklch from-orange-500 to-indigo-500"
                   >
                     {isTranslating ? (
                       <Loader className="size-4 animate-spin" />

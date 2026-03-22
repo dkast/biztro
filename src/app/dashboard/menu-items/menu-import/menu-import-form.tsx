@@ -7,6 +7,7 @@ import * as Sentry from "@sentry/nextjs"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   AlertCircle,
+  CircleAlert,
   FileText,
   Loader,
   SparklesIcon,
@@ -20,6 +21,13 @@ import { TextMorph } from "torph/react"
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
+import {
+  Banner,
+  BannerAction,
+  BannerClose,
+  BannerIcon,
+  BannerTitle
+} from "@/components/kibo-ui/banner"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
@@ -474,7 +482,7 @@ export default function MenuImportForm({
         </div>
 
         {selectedFile && (
-          <div className="flex flex-col items-center justify-center gap-3">
+          <div className="mt-6 flex flex-col items-center justify-center gap-3">
             {simulateEnabled && simulateResponse && (
               <div className="flex items-center gap-3">
                 <Label htmlFor="simulate-scenario" className="text-sm">
@@ -504,8 +512,7 @@ export default function MenuImportForm({
               <Button
                 onClick={handleParse}
                 disabled={isParsing || isSaving}
-                className="bg-linear-to-r/oklch from-indigo-500 via-pink-500
-                  to-orange-500"
+                className="bg-linear-65/oklch from-orange-500 to-indigo-500"
               >
                 {isParsing ? (
                   <Loader className="size-4 animate-spin" />
@@ -540,23 +547,19 @@ export default function MenuImportForm({
 
       {/* Items Table */}
       {items.length > 0 && (
-        <div className="mt-20 flex flex-col gap-5">
+        <div className="mt-10 flex flex-col gap-5">
           {!isPro && groupPreview.groupedItems > appConfig.itemLimit && (
-            <Alert variant="warning">
-              <AlertCircle className="size-4" />
-              <AlertTitle>Límite de productos del plan básico</AlertTitle>
-              <AlertDescription>
+            <Banner inset>
+              <BannerIcon icon={CircleAlert} />
+              <BannerTitle>
                 Tienes {groupPreview.groupedItems} productos para importar, pero
-                el plan básico permite hasta {appConfig.itemLimit}.{" "}
-                <Link
-                  href="/dashboard/settings/billing"
-                  className="font-medium underline underline-offset-2"
-                >
-                  Actualiza a Pro
-                </Link>{" "}
-                para importar todos los productos.
-              </AlertDescription>
-            </Alert>
+                el plan básico permite hasta {appConfig.itemLimit}.
+              </BannerTitle>
+              <BannerAction asChild>
+                <Link href="/dashboard/settings/billing">Actualizar a Pro</Link>
+              </BannerAction>
+              <BannerClose />
+            </Banner>
           )}
           <div className="flex flex-row items-end-safe gap-2 px-3">
             <p className="text-sm font-medium">
@@ -600,7 +603,11 @@ export default function MenuImportForm({
                 para mostrar la lista completa de comandos.
               </span>
             </div>
-            <Button onClick={handleSave} disabled={isSaving}>
+            <Button
+              variant="secondary"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
               {isSaving && <Loader className="size-4 animate-spin" />}
               <TextMorph>
                 {isSaving
