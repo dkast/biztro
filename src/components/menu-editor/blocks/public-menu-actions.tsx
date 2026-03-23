@@ -40,6 +40,7 @@ import {
   ItemMedia,
   ItemTitle
 } from "@/components/ui/item"
+import { LanguageFlag } from "@/components/ui/language-flag"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
 import type { PublicMenuSearchItem } from "@/lib/menu-search"
@@ -169,8 +170,16 @@ export function PublicMenuActions() {
                   size="sm"
                   className={`${floatingTriggerClassName} gap-1.5 rounded-full
                   px-3`}
+                  aria-label={translation.locale ? "Cambiar idioma" : "Español"}
                 >
-                  <Globe className="size-4" />
+                  {translation.locale ? (
+                    <LanguageFlag
+                      locale={translation.locale}
+                      className="size-4"
+                    />
+                  ) : (
+                    <Globe className="size-4" />
+                  )}
                 </Button>
               </Menu.Trigger>
               <Menu.Content className="w-fit p-2">
