@@ -549,16 +549,30 @@ export default function MenuImportForm({
       {items.length > 0 && (
         <div className="mt-10 flex flex-col gap-5">
           {!isPro && groupPreview.groupedItems > appConfig.itemLimit && (
-            <Banner inset>
-              <BannerIcon icon={CircleAlert} />
+            <Banner
+              inset
+              className="bg-linear-to-r/oklch from-indigo-500 to-pink-500
+                text-white"
+            >
+              <BannerIcon
+                icon={CircleAlert}
+                className="border-white/20 bg-white/10 text-white"
+              />
               <BannerTitle>
                 Tienes {groupPreview.groupedItems} productos para importar, pero
                 el plan básico permite hasta {appConfig.itemLimit}.
               </BannerTitle>
-              <BannerAction asChild>
+              <BannerAction
+                asChild
+                className="border-white/20 bg-white/10 text-white
+                  hover:bg-white/20 hover:text-white"
+              >
                 <Link href="/dashboard/settings/billing">Actualizar a Pro</Link>
               </BannerAction>
-              <BannerClose />
+              <BannerClose
+                aria-label="Cerrar aviso"
+                className="text-white hover:bg-white/20 hover:text-white"
+              />
             </Banner>
           )}
           <div className="flex flex-row items-end-safe gap-2 px-3">

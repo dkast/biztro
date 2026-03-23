@@ -3,13 +3,29 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
-import { Languages, Loader, PlusCircle, Sparkles, Trash2 } from "lucide-react"
+import {
+  CircleFadingArrowUp,
+  Languages,
+  Loader,
+  PlusCircle,
+  Sparkles,
+  Trash2
+} from "lucide-react"
 import { useOptimisticAction } from "next-safe-action/hooks"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
 
 import InfoHelper from "@/components/dashboard/info-helper"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
+import { useProGuard } from "@/components/dashboard/upgrade-dialog"
+import {
+  Banner,
+  BannerAction,
+  BannerClose,
+  BannerIcon,
+  BannerTitle
+} from "@/components/kibo-ui/banner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -18,8 +34,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger
+  DialogTitle
 } from "@/components/ui/dialog"
 import {
   Empty,
@@ -60,10 +75,12 @@ type AvailableTranslation = {
 
 type TranslationsManagerProps = {
   availableTranslations: AvailableTranslation[]
+  isPro: boolean
 }
 
 export default function TranslationsManager({
-  availableTranslations: initialTranslations
+  availableTranslations: initialTranslations,
+  isPro
 }: TranslationsManagerProps) {
   const [selectedLocale, setSelectedLocale] = useState<string>("")
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -80,6 +97,15 @@ export default function TranslationsManager({
   const spanishLanguageNames = new Intl.DisplayNames(["es"], {
     type: "language"
   })
+
+  const { guard: guardTranslation, dialog: upgradeDialog } = useProGuard(
+    isPro,
+    {
+      title: "Actualiza a Pro",
+      description:
+        "La traducción automática de productos está disponible solo en el plan Pro. Actualiza para agregar nuevos idiomas al menú."
+    }
+  )
 
   function getLocaleLabel(locale?: string | null) {
     if (!locale) return ""
@@ -225,12 +251,14 @@ export default function TranslationsManager({
         {availableToAdd.length > 0 && (
           <PageSubtitle.Actions>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="default" className="gap-2">
-                  <PlusCircle className="size-4" />
-                  Agregar idioma
-                </Button>
-              </DialogTrigger>
+              <Button
+                variant="default"
+                className="gap-2"
+                onClick={() => guardTranslation(() => setDialogOpen(true))}
+              >
+                <PlusCircle className="size-4" />
+                Agregar idioma
+              </Button>
               <DialogContent className="sm:max-w-sm">
                 <DialogHeader>
                   <DialogTitle>Traducir menú con IA</DialogTitle>
@@ -297,6 +325,34 @@ export default function TranslationsManager({
           </PageSubtitle.Actions>
         )}
       </PageSubtitle>
+
+      {!isPro && availableToAdd.length > 0 && (
+        <Banner
+          inset
+          className="bg-linear-to-r/oklch from-indigo-500 to-pink-500
+            text-white"
+        >
+          <BannerIcon
+            icon={CircleFadingArrowUp}
+            className="border-white/20 bg-white/10 text-white"
+          />
+          <BannerTitle>
+            La traducción automática de productos requiere el plan Pro.
+            Actualiza para agregar idiomas al menú.
+          </BannerTitle>
+          <BannerAction
+            asChild
+            className="border-white/20 bg-white/10 text-white hover:bg-white/20
+              hover:text-white"
+          >
+            <Link href="/dashboard/settings/billing">Actualizar a Pro</Link>
+          </BannerAction>
+          <BannerClose
+            aria-label="Cerrar aviso"
+            className="text-white hover:bg-white/20 hover:text-white"
+          />
+        </Banner>
+      )}
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
@@ -390,6 +446,8 @@ export default function TranslationsManager({
           </ItemGroup>
         )}
       </div>
+
+      {upgradeDialog}
     </div>
   )
 }
