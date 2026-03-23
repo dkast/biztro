@@ -246,6 +246,8 @@ const deleteMenuTranslationInputSchema = z.object({
   locale: z.enum(SUPPORTED_LOCALE_CODES)
 })
 
+const supportedLocaleCodeSet = new Set<string>(SUPPORTED_LOCALE_CODES)
+
 /**
  * Delete all translations for a given locale for the current organization.
  */
@@ -321,8 +323,7 @@ export async function getAvailableTranslations(organizationId: string) {
 
   const isSupportedLocaleCode = (
     locale: string
-  ): locale is SupportedLocaleCode =>
-    SUPPORTED_LOCALES.some(supportedLocale => supportedLocale.code === locale)
+  ): locale is SupportedLocaleCode => supportedLocaleCodeSet.has(locale)
 
   return rows
     .filter((row): row is typeof row & { locale: SupportedLocaleCode } =>
