@@ -46,6 +46,12 @@ export const switchOrganization = authActionClient
         if (currentOrganizationId) {
           updateTag(`organization-${currentOrganizationId}-members`)
         }
+        updateTag(`menus-${organizationId}`)
+        updateTag(`translations-${organizationId}`)
+        if (currentOrganizationId) {
+          updateTag(`menus-${currentOrganizationId}`)
+          updateTag(`translations-${currentOrganizationId}`)
+        }
         updateTag("subscription-current")
         updateTag("page-settings")
         updateTag("page-settings-members")
@@ -53,7 +59,7 @@ export const switchOrganization = authActionClient
         updateTag(`page-settings-members-${organizationId}`)
         if (currentOrganizationId) {
           updateTag(`page-settings-${currentOrganizationId}`)
-          updateTag(`page-settings-members:${currentOrganizationId}`)
+          updateTag(`page-settings-members-${currentOrganizationId}`)
         }
         return { success: true }
       } catch (error) {

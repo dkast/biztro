@@ -9,7 +9,12 @@ import {
 } from "@tanstack/react-table"
 import { SearchX } from "lucide-react"
 
-import { EmptyState } from "@/components/dashboard/empty-state"
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from "@/components/ui/empty"
 import { Input } from "@/components/ui/input"
 import {
   Table,
@@ -72,7 +77,7 @@ export function DataTable<TData, TValue>({
           placeholder="Buscar en resultados"
           value={globalFilter}
           onChange={e => setGlobalFilter(e.target.value)}
-          className="h-8 w-[200px]"
+          className="h-8 w-50"
         />
         {toolbar}
       </div>
@@ -124,10 +129,14 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  <EmptyState
-                    icon={<SearchX />}
-                    title="No se encontraron datos"
-                  />
+                  <Empty className="border-0 p-0">
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <SearchX className="size-5" />
+                      </EmptyMedia>
+                      <EmptyTitle>No se encontraron datos</EmptyTitle>
+                    </EmptyHeader>
+                  </Empty>
                 </TableCell>
               </TableRow>
             )}

@@ -73,7 +73,7 @@ export default function CategoryEdit({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Categoría</DialogTitle>
           <DialogDescription>

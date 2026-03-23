@@ -341,6 +341,35 @@ export default function ItemImport() {
           </DialogHeader>
 
           <div className="space-y-4">
+            <div className="relative">
+              <div
+                className="animate-rotate-slow pointer-events-none absolute
+                  inset-0 rounded-lg bg-linear-to-r from-indigo-600 via-pink-600
+                  to-orange-600 opacity-50 blur-xs"
+              ></div>
+              <div
+                className="bg-background relative rounded-lg p-4 ring-1
+                  ring-black/10 dark:ring-white/15"
+              >
+                <div className="mb-3 flex items-start gap-3">
+                  <FileText className="text-muted-foreground size-5" />
+                  <div>
+                    <p className="font-medium">
+                      Importar desde PDF o imagen con IA
+                    </p>
+                    <p className="text-muted-foreground text-sm text-pretty">
+                      Usa el nuevo flujo con IA para extraer productos desde una
+                      carta, PDF o imagen de menú.
+                    </p>
+                  </div>
+                </div>
+                <Button asChild variant="outline" disabled={isPending}>
+                  <Link href="/dashboard/menu-items/menu-import">
+                    Importar tu menú con IA
+                  </Link>
+                </Button>
+              </div>
+            </div>
             <div className="rounded-lg border p-4">
               <div className="mb-3 flex items-start gap-3">
                 <FileSpreadsheet className="text-muted-foreground size-5" />
@@ -392,35 +421,6 @@ export default function ItemImport() {
                   file:py-2 file:text-sm file:font-semibold
                   disabled:cursor-not-allowed"
               />
-            </div>
-            <div className="relative">
-              <div
-                className="animate-rotate-slow pointer-events-none absolute
-                  inset-0 rounded-lg bg-linear-to-r from-indigo-600 via-pink-600
-                  to-orange-600 opacity-50 blur-xs"
-              ></div>
-              <div
-                className="bg-background relative rounded-lg p-4 ring-1
-                  ring-black/10 dark:ring-white/15"
-              >
-                <div className="mb-3 flex items-start gap-3">
-                  <FileText className="text-muted-foreground size-5" />
-                  <div>
-                    <p className="font-medium">
-                      Importar desde PDF o imagen con IA
-                    </p>
-                    <p className="text-muted-foreground text-sm text-pretty">
-                      Usa el nuevo flujo con IA para extraer productos desde una
-                      carta, PDF o imagen de menú.
-                    </p>
-                  </div>
-                </div>
-                <Button asChild variant="outline" disabled={isPending}>
-                  <Link href="/dashboard/menu-items/menu-import">
-                    Importar tu menú con IA
-                  </Link>
-                </Button>
-              </div>
             </div>
           </div>
         </DialogContent>
