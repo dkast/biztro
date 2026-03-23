@@ -319,13 +319,14 @@ export async function getAvailableTranslations(organizationId: string) {
     _count: { locale: true }
   })
 
-  const supportedLocaleCodes = new Set<SupportedLocaleCode>(
-    SUPPORTED_LOCALE_CODES
-  )
+  const isSupportedLocaleCode = (
+    locale: string
+  ): locale is SupportedLocaleCode =>
+    SUPPORTED_LOCALES.some(supportedLocale => supportedLocale.code === locale)
 
   return rows
     .filter((row): row is typeof row & { locale: SupportedLocaleCode } =>
-      supportedLocaleCodes.has(row.locale as SupportedLocaleCode)
+      isSupportedLocaleCode(row.locale)
     )
     .map(row => ({
       locale: row.locale,
