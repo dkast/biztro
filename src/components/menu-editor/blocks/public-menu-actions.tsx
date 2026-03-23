@@ -51,7 +51,7 @@ const bloomItemClassName =
   "text-foreground hover:bg-accent flex items-center rounded-lg gap-2 px-2 py-2 text-sm transition-colors"
 
 const bloomMenuShellClassName =
-  "border border-white/10 bg-background/75 shadow-xl backdrop-blur-xl dark:bg-background/75"
+  "border border-white/10 bg-background/70 ring-1 ring-black/10 backdrop-blur-md"
 
 const floatingTriggerClassName =
   "border border-white/10 bg-background/70 hover:bg-background/90 shadow-lg ring-1 ring-black/10 backdrop-blur-md"
@@ -163,14 +163,10 @@ export function PublicMenuActions() {
               menuRadius={12}
               className={bloomMenuShellClassName}
             >
-              <Menu.Trigger>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  className={`${floatingTriggerClassName} gap-1.5 rounded-full
-                  px-3`}
-                  aria-label={translation.locale ? "Cambiar idioma" : "Español"}
+              <Menu.Trigger className="text-foreground">
+                <div
+                  className="text-foreground flex size-10 items-center
+                    justify-center"
                 >
                   {translation.locale ? (
                     <LanguageFlag
@@ -178,11 +174,14 @@ export function PublicMenuActions() {
                       className="size-4"
                     />
                   ) : (
-                    <Globe className="size-4" />
+                    <Globe className="text-foreground size-4" />
                   )}
-                </Button>
+                  <span className="sr-only">
+                    {translation.locale ? "Cambiar idioma" : "Español"}
+                  </span>
+                </div>
               </Menu.Trigger>
-              <Menu.Content className="w-fit p-2">
+              <Menu.Content className="p-2">
                 <Menu.Item
                   className={cn(
                     bloomItemClassName,
@@ -224,7 +223,6 @@ export function PublicMenuActions() {
 
       <Drawer
         open={isSearchOpen}
-        repositionInputs={false}
         onOpenChange={open => {
           setIsSearchOpen(open)
           if (!open) setQuery("")
