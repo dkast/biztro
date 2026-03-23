@@ -5,13 +5,14 @@ import { gateway, generateText, Output } from "ai"
 import { cacheTag, updateTag } from "next/cache"
 import { z } from "zod/v4"
 
+import { isProMember } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
 import {
   SUPPORTED_LOCALE_CODES,
-  SUPPORTED_LOCALES
+  SUPPORTED_LOCALES,
+  type SupportedLocaleCode
 } from "@/lib/types/translations"
-import { isProMember } from "@/server/actions/user/queries"
 import { env } from "@/env.mjs"
 
 const translateMenuItemsInputSchema = z.object({
@@ -66,8 +67,7 @@ export const translateMenuItems = authMemberActionClient
     if (!proMember) {
       return {
         failure: {
-          reason:
-            "La traducción de menú es una función exclusiva del plan Pro"
+          reason: "La traducción de menú es una función exclusiva del plan Pro"
         }
       }
     }
@@ -214,7 +214,11 @@ ${JSON.stringify(itemsPayload, null, 2)}`
             })
         )
 
-        await Promise.all([...itemUpserts, ...variantUpserts, ...categoryUpserts])
+        await Promise.all([
+          ...itemUpserts,
+          ...variantUpserts,
+          ...categoryUpserts
+        ])
       })
 
       updateTag(`translations-${currentOrgId}`)
@@ -315,10 +319,18 @@ export async function getAvailableTranslations(organizationId: string) {
     _count: { locale: true }
   })
 
-  return rows.map(row => ({
-    locale: row.locale as string,
-    count: row._count.locale
-  }))
+  const supportedLocaleCodes = new Set<SupportedLocaleCode>(
+    SUPPORTED_LOCALE_CODES
+  )
+
+  return rows
+    .filter((row): row is typeof row & { locale: SupportedLocaleCode } =>
+      supportedLocaleCodes.has(row.locale as SupportedLocaleCode)
+    )
+    .map(row => ({
+      locale: row.locale,
+      count: row._count.locale
+    }))
 }
 
 /**

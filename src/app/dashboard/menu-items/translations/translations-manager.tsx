@@ -69,7 +69,7 @@ import {
 } from "@/lib/types/translations"
 
 type AvailableTranslation = {
-  locale: string
+  locale: SupportedLocaleCode
   count: number
 }
 
