@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { Suspense } from "react"
 
 import { PublicMenuProvider } from "@/components/menu-editor/public-menu-context"
 import PublishedAtLabel from "@/components/menu-editor/published-at-label"
@@ -15,6 +16,7 @@ import {
   getAllActiveOrganizations,
   getOrganizationBySlug
 } from "@/server/actions/organization/queries"
+import PublicMenuTracker from "@/app/[subdomain]/public-menu-tracker"
 import ResolveEditor from "@/app/[subdomain]/resolve-editor"
 import { normalizePublicMenuItems } from "@/lib/menu-search"
 import { extractMenuDataFromNodes } from "@/lib/sync-status"
@@ -150,6 +152,13 @@ export default async function SitePage(props: {
   return (
     <>
       <style>{`body { background-color: ${rgbaToHex(backgroundColor)} }`}</style>
+      <Suspense fallback={null}>
+        <PublicMenuTracker
+          organizationId={siteMenu.organizationId}
+          menuId={siteMenu.id}
+          slug={params.subdomain}
+        />
+      </Suspense>
       <TranslationProvider
         subdomain={params.subdomain}
         availableLocales={availableLocales}
