@@ -1,10 +1,9 @@
 "use client"
 
 import * as React from "react"
-import toast from "react-hot-toast"
 import { Menu } from "bloom-menu"
 import Fuse, { type IFuseOptions } from "fuse.js"
-import { MoreHorizontal, Search, Share } from "lucide-react"
+import { Globe, Search } from "lucide-react"
 import Image from "next/image"
 
 import {
@@ -45,9 +44,16 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
 import type { PublicMenuSearchItem } from "@/lib/menu-search"
 import { getUILabels } from "@/lib/ui-labels"
+import { cn } from "@/lib/utils"
 
 const bloomItemClassName =
-  "text-foreground hover:bg-accent flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors"
+  "text-foreground hover:bg-accent flex items-center rounded-lg gap-2 px-2 py-2 text-sm transition-colors"
+
+const bloomMenuShellClassName =
+  "border border-white/10 bg-background/75 shadow-xl backdrop-blur-xl dark:bg-background/75"
+
+const floatingTriggerClassName =
+  "border border-white/10 bg-background/70 hover:bg-background/90 shadow-lg ring-1 ring-black/10 backdrop-blur-md"
 
 const fuseOptions = {
   ignoreLocation: true,
@@ -68,7 +74,7 @@ const fuseOptions = {
 
 export function PublicMenuActions() {
   const publicMenu = usePublicMenu()
-  const [isActionMenuOpen, setIsActionMenuOpen] = React.useState(false)
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = React.useState(false)
   const [isSearchOpen, setIsSearchOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
   const [pendingItem, setPendingItem] = React.useState<DetailItem | null>(null)
@@ -78,6 +84,7 @@ export function PublicMenuActions() {
   const deferredQuery = React.useDeferredValue(query.trim())
   const translation = useTranslation()
   const t = translation?.t ?? getUILabels(null)
+  const availableLocales = translation?.availableLocales ?? []
 
   const translatedItems = React.useMemo(() => {
     const items = publicMenu?.items ?? []
@@ -124,18 +131,13 @@ export function PublicMenuActions() {
     return null
   }
 
-  async function handleShare() {
-    try {
-      await navigator.clipboard.writeText(window.location.href)
-      toast(t("link_copied"))
-    } catch {
-      toast(t("link_copy_error"))
-    }
+  function handleSearchOpen() {
+    setIsSearchOpen(true)
   }
 
-  function handleSearchOpen() {
-    setIsActionMenuOpen(false)
-    setIsSearchOpen(true)
+  function handleLanguageSelect(locale: string | null) {
+    translation?.setLocale(locale)
+    setIsLanguageMenuOpen(false)
   }
 
   function handleResultSelect(item: DetailItem) {
@@ -146,52 +148,70 @@ export function PublicMenuActions() {
 
   return (
     <>
-      <Menu.Root
-        open={isActionMenuOpen}
-        onOpenChange={setIsActionMenuOpen}
-        direction="bottom"
-        anchor="end"
-      >
-        <Menu.Container
-          buttonSize={40}
-          menuWidth={180}
-          menuRadius={18}
-          className="border-border bg-background/95 border shadow-xl
-            backdrop-blur-md"
+      <div className="flex items-center gap-2">
+        {translation && availableLocales.length > 0 && (
+          <Menu.Root
+            open={isLanguageMenuOpen}
+            onOpenChange={setIsLanguageMenuOpen}
+            direction="bottom"
+            anchor="end"
+          >
+            <Menu.Container
+              buttonSize={40}
+              menuWidth={160}
+              menuRadius={12}
+              className={bloomMenuShellClassName}
+            >
+              <Menu.Trigger>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  className={`${floatingTriggerClassName} gap-1.5 rounded-full
+                  px-3`}
+                >
+                  <Globe className="size-4" />
+                </Button>
+              </Menu.Trigger>
+              <Menu.Content className="w-fit p-2">
+                <Menu.Item
+                  className={cn(
+                    bloomItemClassName,
+                    !translation.locale && "bg-accent/70 text-foreground"
+                  )}
+                  onSelect={() => handleLanguageSelect(null)}
+                >
+                  Español (original)
+                </Menu.Item>
+                {availableLocales.map(locale => (
+                  <Menu.Item
+                    key={locale.code}
+                    className={cn(
+                      bloomItemClassName,
+                      translation.locale === locale.code &&
+                        "bg-accent/70 text-foreground"
+                    )}
+                    onSelect={() => handleLanguageSelect(locale.code)}
+                  >
+                    {locale.label}
+                  </Menu.Item>
+                ))}
+              </Menu.Content>
+            </Menu.Container>
+          </Menu.Root>
+        )}
+
+        <Button
+          type="button"
+          variant="secondary"
+          size="icon-sm"
+          className={`${floatingTriggerClassName} size-10 rounded-full`}
+          onClick={handleSearchOpen}
         >
-          <Menu.Trigger>
-            <Button
-              type="button"
-              variant="secondary"
-              size="icon-sm"
-              className="bg-background/85 hover:bg-background size-10
-                rounded-full shadow-lg ring-1 ring-black/10 backdrop-blur-md"
-            >
-              <MoreHorizontal />
-              <span className="sr-only">Abrir acciones del menú</span>
-            </Button>
-          </Menu.Trigger>
-          <Menu.Content className="p-2">
-            <Menu.Item
-              className={bloomItemClassName}
-              onSelect={() => {
-                setIsActionMenuOpen(false)
-                void handleShare()
-              }}
-            >
-              <Share className="size-4" />
-              {t("share")}
-            </Menu.Item>
-            <Menu.Item
-              className={bloomItemClassName}
-              onSelect={handleSearchOpen}
-            >
-              <Search className="size-4" />
-              {t("search")}
-            </Menu.Item>
-          </Menu.Content>
-        </Menu.Container>
-      </Menu.Root>
+          <Search className="size-4" />
+          <span className="sr-only">{t("search")}</span>
+        </Button>
+      </div>
 
       <Drawer
         open={isSearchOpen}

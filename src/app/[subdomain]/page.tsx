@@ -5,7 +5,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import LanguageSwitcher from "@/components/menu-editor/language-switcher"
 import { PublicMenuProvider } from "@/components/menu-editor/public-menu-context"
 import PublishedAtLabel from "@/components/menu-editor/published-at-label"
 import { TranslationProvider } from "@/components/menu-editor/translation-provider"
@@ -180,9 +179,6 @@ export default async function SitePage(props: {
               />
             </div>
             <div className="z-20 flex items-center gap-2">
-              {availableLocales.length > 0 && (
-                <LanguageSwitcher color={rgbaToHex(textColor)} />
-              )}
               <Link href="https://biztro.co" target="_blank">
                 <div
                   className="flex items-center justify-center gap-x-2
