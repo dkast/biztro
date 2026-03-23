@@ -78,7 +78,6 @@ export function PublicMenuActions() {
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = React.useState(false)
   const [isSearchOpen, setIsSearchOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
-  const [pendingItem, setPendingItem] = React.useState<DetailItem | null>(null)
   const [selectedItem, setSelectedItem] = React.useState<DetailItem | null>(
     null
   )
@@ -121,13 +120,6 @@ export function PublicMenuActions() {
     [fuse, deferredQuery]
   )
 
-  React.useEffect(() => {
-    if (!isSearchOpen && pendingItem) {
-      setSelectedItem(pendingItem)
-      setPendingItem(null)
-    }
-  }, [isSearchOpen, pendingItem])
-
   if (!publicMenu) {
     return null
   }
@@ -142,9 +134,7 @@ export function PublicMenuActions() {
   }
 
   function handleResultSelect(item: DetailItem) {
-    setPendingItem(item)
-    setIsSearchOpen(false)
-    setQuery("")
+    setSelectedItem(item)
   }
 
   return (
