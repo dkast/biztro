@@ -215,7 +215,10 @@ export function PublicMenuActions() {
         open={isSearchOpen}
         onOpenChange={open => {
           setIsSearchOpen(open)
-          if (!open) setQuery("")
+          if (!open) {
+            setQuery("")
+            setSelectedItem(null)
+          }
         }}
       >
         <DrawerContent className="flex h-[92dvh] flex-col">
@@ -267,16 +270,17 @@ export function PublicMenuActions() {
               )}
             </ScrollArea>
           </div>
+
+          {selectedItem && (
+            <ItemDetail
+              item={selectedItem}
+              isOpen={!!selectedItem}
+              onClose={() => setSelectedItem(null)}
+              nested
+            />
+          )}
         </DrawerContent>
       </Drawer>
-
-      {selectedItem && (
-        <ItemDetail
-          item={selectedItem}
-          isOpen={!!selectedItem}
-          onClose={() => setSelectedItem(null)}
-        />
-      )}
     </>
   )
 }
