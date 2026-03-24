@@ -32,7 +32,7 @@ export default async function PdfImportPage() {
           con IA
         </PageSubtitle.Description>
       </PageSubtitle>
-      <div className="mt-6">
+      <div className="mt-10">
         <MenuImportForm simulateEnabled={simulateEnabled} isPro={isPro} />
       </div>
     </div>

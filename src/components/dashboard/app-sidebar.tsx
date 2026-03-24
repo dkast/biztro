@@ -88,7 +88,8 @@ const navigation: NavigationItem[] = [
     icon: ShoppingBag,
     items: [
       { title: "Productos", url: "/dashboard/menu-items" },
-      { title: "Categorías", url: "/dashboard/menu-items/categories" }
+      { title: "Categorías", url: "/dashboard/menu-items/categories" },
+      { title: "Traducciones", url: "/dashboard/menu-items/translations" }
     ]
   },
   { title: "Medios", url: "/dashboard/media", icon: Images },

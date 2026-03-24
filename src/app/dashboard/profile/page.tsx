@@ -1,10 +1,17 @@
+import { UserRound } from "lucide-react"
 import { notFound } from "next/navigation"
 import { type Metadata } from "next/types"
 
-import { EmptyState } from "@/components/dashboard/empty-state"
 import PageHeader from "@/components/dashboard/page-header"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from "@/components/ui/empty"
 import { Label } from "@/components/ui/label"
 import {
   getCurrentMembership,
@@ -107,7 +114,20 @@ export default async function ProfilePage() {
                   </div>
                 </div>
               ) : (
-                <EmptyState title="No tienes membresía en ninguna organización" />
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <UserRound className="size-5" />
+                    </EmptyMedia>
+                    <EmptyTitle>
+                      No tienes membresía en ninguna organización
+                    </EmptyTitle>
+                    <EmptyDescription>
+                      Pide acceso a una organización para ver tu perfil
+                      completo.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
               )}
             </div>
           </div>

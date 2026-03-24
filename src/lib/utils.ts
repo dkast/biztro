@@ -1,19 +1,13 @@
 import InviteUserEmail from "@/emails/invite"
 import type { OpeningHours } from "@/generated/prisma-client/client"
-import {
-  getLocalTimeZone,
-  parseTime,
-  startOfWeek,
-  Time,
-  toCalendarDateTime,
-  today
-} from "@internationalized/date"
+import { parseTime } from "@internationalized/date"
 import * as Sentry from "@sentry/nextjs"
 import { clsx, type ClassValue } from "clsx"
 import { Resend } from "resend"
 import { twMerge } from "tailwind-merge"
 
 import { authClient } from "@/lib/auth-client"
+import { getUILabels } from "@/lib/ui-labels"
 import { env } from "@/env.mjs"
 
 export function cn(...inputs: ClassValue[]) {
@@ -53,88 +47,124 @@ export const getPublishedMenuUrl = (subdomain: string) => {
   }
 }
 
-export function getOpenHoursLegend(openingHours: OpeningHours[]) {
-  let status = "Cerrado"
+const DAY_NAME_TO_INDEX = {
+  SUNDAY: 0,
+  MONDAY: 1,
+  TUESDAY: 2,
+  WEDNESDAY: 3,
+  THURSDAY: 4,
+  FRIDAY: 5,
+  SATURDAY: 6
+} as const satisfies Record<OpeningHours["day"], number>
+
+function getDayIndex(day: OpeningHours["day"]) {
+  return DAY_NAME_TO_INDEX[day as keyof typeof DAY_NAME_TO_INDEX]
+}
+
+function getMinutesForTime(time: string | null | undefined) {
+  if (!time) {
+    return null
+  }
+
+  const parsedTime = parseTime(time)
+  return parsedTime.hour * 60 + parsedTime.minute
+}
+
+function formatMinutesForLocale(minutes: number, locale: string) {
+  const hour = Math.floor(minutes / 60) % 24
+  const minute = minutes % 60
+  const fixedDate = new Date(Date.UTC(2000, 0, 1, hour, minute))
+
+  return new Intl.DateTimeFormat(locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "UTC"
+  }).format(fixedDate)
+}
+
+function isOpenAtTime({
+  currentDayIndex,
+  currentMinutes,
+  dayIndex,
+  startMinutes,
+  endMinutes
+}: {
+  currentDayIndex: number
+  currentMinutes: number
+  dayIndex: number
+  startMinutes: number
+  endMinutes: number
+}) {
+  if (endMinutes < startMinutes) {
+    return (
+      (currentDayIndex === dayIndex && currentMinutes >= startMinutes) ||
+      (currentDayIndex === (dayIndex + 1) % 7 && currentMinutes <= endMinutes)
+    )
+  }
+
+  return (
+    currentDayIndex === dayIndex &&
+    currentMinutes >= startMinutes &&
+    currentMinutes <= endMinutes
+  )
+}
+
+export function getOpenHoursLegend(
+  openingHours: OpeningHours[],
+  locale?: string | null,
+  referenceDate?: Date
+) {
+  const t = getUILabels(locale ?? null)
+  let status = t("closed")
 
   // If there are no defined opening hours, show that there's no schedule.
   if (!openingHours || openingHours.length === 0) {
-    return "Sin horario"
+    return t("no_schedule")
   }
 
   // If all days are marked as closed (allDay: false), show that there's no schedule.
   if (openingHours.every(hour => hour.allDay === false)) {
-    return "Sin horario"
+    return t("no_schedule")
   }
 
-  const currentDate = today(getLocalTimeZone())
-  const now = new Date()
-  const currentTime = toCalendarDateTime(
-    currentDate,
-    new Time(now.getHours(), now.getMinutes())
-  )
-  const startWeek = startOfWeek(currentDate, "es-MX")
-  // console.log("startWeek", startWeek)
+  if (!referenceDate) {
+    return t("closed")
+  }
+
+  const currentDayIndex = referenceDate.getDay()
+  const currentMinutes =
+    referenceDate.getHours() * 60 + referenceDate.getMinutes()
+  const timeLocale = locale ?? "es-MX"
 
   for (const day of openingHours) {
-    // convert day to date based on the week start
-    let weekDayNbr = 0
-    switch (day.day) {
-      case "MONDAY":
-        weekDayNbr = 1
-        break
-      case "TUESDAY":
-        weekDayNbr = 2
-        break
-      case "WEDNESDAY":
-        weekDayNbr = 3
-        break
-      case "THURSDAY":
-        weekDayNbr = 4
-        break
-      case "FRIDAY":
-        weekDayNbr = 5
-        break
-      case "SATURDAY":
-        weekDayNbr = 6
-        break
-      case "SUNDAY":
-        weekDayNbr = 0
-        break
-      default:
-        break
-    }
-
     if (!day.allDay) {
       continue
     }
 
-    const dayDate = startWeek.add({ days: weekDayNbr })
-    // console.log(startWeek, weekDayNbr, dayDate)
-    const startTime = parseTime(day.startTime ?? "")
-    const endTime = parseTime(day.endTime ?? "")
+    const startMinutes = getMinutesForTime(day.startTime)
+    const endMinutes = getMinutesForTime(day.endTime)
 
-    const openDateTime = toCalendarDateTime(dayDate, startTime)
-
-    let closeDateTime
-    if (endTime.hour < startTime.hour) {
-      closeDateTime = toCalendarDateTime(dayDate.add({ days: 1 }), endTime)
-    } else {
-      closeDateTime = toCalendarDateTime(dayDate, endTime)
+    if (startMinutes === null || endMinutes === null) {
+      continue
     }
 
-    const formatClosed = closeDateTime
-      .toDate(getLocalTimeZone())
-      .toLocaleTimeString("es-MX", {
-        hour: "2-digit",
-        minute: "2-digit"
-      })
-
-    // console.log(currentTime, openDateTime, closeDateTime)
     if (
-      currentTime.compare(openDateTime) >= 0 &&
-      currentTime.compare(closeDateTime) <= 0
+      isOpenAtTime({
+        currentDayIndex,
+        currentMinutes,
+        dayIndex: getDayIndex(day.day),
+        startMinutes,
+        endMinutes
+      })
     ) {
-      status = `Abierto - Hasta ${endTime.hour === 1 ? "la" : "las"} ${formatClosed}`
+      status = t(
+        ((endMinutes / 60) % 12 || 12) === 1
+          ? "open_until_singular"
+          : "open_until_plural",
+        {
+          time: formatMinutesForLocale(endMinutes, timeLocale)
+        }
+      )
       break
     }
   }
@@ -142,66 +172,40 @@ export function getOpenHoursLegend(openingHours: OpeningHours[]) {
   return status
 }
 
-export function getOpenHoursStatus(openingHours: OpeningHours[]) {
+export function getOpenHoursStatus(
+  openingHours: OpeningHours[],
+  referenceDate?: Date
+) {
   let status = "CLOSED"
-  const currentDate = today(getLocalTimeZone())
-  const now = new Date()
-  const currentTime = toCalendarDateTime(
-    currentDate,
-    new Time(now.getHours(), now.getMinutes())
-  )
 
-  const startWeek = startOfWeek(currentDate, "es-MX")
+  if (!referenceDate) {
+    return status
+  }
+
+  const currentDayIndex = referenceDate.getDay()
+  const currentMinutes =
+    referenceDate.getHours() * 60 + referenceDate.getMinutes()
 
   for (const day of openingHours) {
-    // convert day to date based on the week start
-    let weekDayNbr = 0
-    switch (day.day) {
-      case "MONDAY":
-        weekDayNbr = 1
-        break
-      case "TUESDAY":
-        weekDayNbr = 2
-        break
-      case "WEDNESDAY":
-        weekDayNbr = 3
-        break
-      case "THURSDAY":
-        weekDayNbr = 4
-        break
-      case "FRIDAY":
-        weekDayNbr = 5
-        break
-      case "SATURDAY":
-        weekDayNbr = 6
-        break
-      case "SUNDAY":
-        weekDayNbr = 0
-        break
-      default:
-        break
-    }
-
     if (!day.allDay) {
       continue
     }
 
-    const dayDate = startWeek.add({ days: weekDayNbr })
-    const startTime = parseTime(day.startTime ?? "")
-    const endTime = parseTime(day.endTime ?? "")
+    const startMinutes = getMinutesForTime(day.startTime)
+    const endMinutes = getMinutesForTime(day.endTime)
 
-    const openDateTime = toCalendarDateTime(dayDate, startTime)
-
-    let closeDateTime
-    if (endTime.hour < startTime.hour) {
-      closeDateTime = toCalendarDateTime(dayDate.add({ days: 1 }), endTime)
-    } else {
-      closeDateTime = toCalendarDateTime(dayDate, endTime)
+    if (startMinutes === null || endMinutes === null) {
+      continue
     }
 
     if (
-      currentTime.compare(openDateTime) >= 0 &&
-      currentTime.compare(closeDateTime) <= 0
+      isOpenAtTime({
+        currentDayIndex,
+        currentMinutes,
+        dayIndex: getDayIndex(day.day),
+        startMinutes,
+        endMinutes
+      })
     ) {
       status = "OPEN"
       break
@@ -215,12 +219,17 @@ export function getFormattedTime(time: string | null | undefined) {
   if (!time) {
     return "NA"
   }
+
   const parsedTime = parseTime(time)
-  const currentDate = today(getLocalTimeZone())
-  const timeDate = toCalendarDateTime(currentDate, parsedTime)
-  return timeDate
-    .toDate(getLocalTimeZone())
-    .toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })
+  const fixedDate = new Date(
+    Date.UTC(2000, 0, 1, parsedTime.hour, parsedTime.minute)
+  )
+
+  return new Intl.DateTimeFormat("es-MX", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "UTC"
+  }).format(fixedDate)
 }
 
 export const calculateTrialEndUnixTimestamp = (

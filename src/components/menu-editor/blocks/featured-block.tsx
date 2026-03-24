@@ -10,6 +10,7 @@ import { CircleAlert } from "lucide-react"
 import FeaturedSettings from "@/components/menu-editor/blocks/featured-settings"
 import { ItemDetail } from "@/components/menu-editor/blocks/item-detail"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
+import { useTranslation } from "@/components/menu-editor/translation-provider"
 import {
   Carousel,
   CarouselContent,
@@ -58,6 +59,7 @@ export default function FeaturedBlock({
   )
 
   const isMobile = useIsMobile()
+  const translation = useTranslation()
 
   if (!items?.length)
     return (
@@ -143,7 +145,7 @@ export default function FeaturedBlock({
                           className="flex flex-row gap-3"
                         >
                           <h3 className="text-lg font-semibold text-white">
-                            {item.name}
+                            {translation?.getItemTranslation(item.id)?.name ?? item.name}
                           </h3>
                         </FontWrapper>
                       </div>
@@ -168,7 +170,18 @@ export default function FeaturedBlock({
 
       {selectedItem && (
         <ItemDetail
-          item={selectedItem}
+          item={{
+            ...selectedItem,
+            name: translation?.getItemTranslation(selectedItem.id)?.name ?? selectedItem.name,
+            description:
+              translation?.getItemTranslation(selectedItem.id)?.description !== undefined
+                ? translation.getItemTranslation(selectedItem.id)?.description
+                : selectedItem.description,
+            variants: selectedItem.variants.map(v => ({
+              ...v,
+              name: translation?.getVariantTranslation(v.id)?.name ?? v.name
+            }))
+          }}
           isOpen={!!selectedItem}
           onClose={() => setSelectedItem(null)}
           itemFontFamily={itemFontFamily}

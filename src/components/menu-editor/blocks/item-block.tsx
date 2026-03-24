@@ -9,6 +9,7 @@ import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
 import { ItemDetail } from "@/components/menu-editor/blocks/item-detail"
 import ItemSettings from "@/components/menu-editor/blocks/item-settings"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
+import { useTranslation } from "@/components/menu-editor/translation-provider"
 import type { getMenuItemsWithoutCategory } from "@/server/actions/item/queries"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
 import { cn } from "@/lib/utils"
@@ -113,6 +114,14 @@ export function ItemView({
 }: ItemBlockProps) {
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const hasVariants = item.variants.length > 1
+  const translation = useTranslation()
+  const itemTranslation = translation?.getItemTranslation(item.id)
+
+  const displayName = itemTranslation?.name ?? item.name
+  const displayDescription =
+    itemTranslation?.description !== undefined
+      ? itemTranslation.description
+      : item.description
 
   return (
     <>
@@ -144,7 +153,7 @@ export function ItemView({
                 src={item.image}
                 width={128}
                 height={96}
-                alt={item.name}
+                alt={displayName}
                 className="h-16 w-20 rounded-sm object-cover"
                 unoptimized
               ></Image>
@@ -159,7 +168,7 @@ export function ItemView({
                       fontWeight: itemFontWeight
                     }}
                   >
-                    {item.name}
+                    {displayName}
                   </h3>
 
                   {item.allergens && (
@@ -180,14 +189,19 @@ export function ItemView({
                     color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
                   }}
                 >
-                  {item.description}
+                  {displayDescription}
                 </span>
               </FontWrapper>
             </div>
           </div>
           {item.variants.length > 1 ? (
             <div className="flex flex-col justify-end gap-1 self-end">
-              {item.variants.map(variant => (
+              {item.variants.map(variant => {
+                const variantTranslation =
+                  translation?.getVariantTranslation(variant.id)
+                const displayVariantName =
+                  variantTranslation?.name ?? variant.name
+                return (
                 <div
                   key={variant.id}
                   className="grid grid-cols-[1fr_80px] gap-1 text-right"
@@ -199,7 +213,7 @@ export function ItemView({
                         color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
                       }}
                     >
-                      {variant.name}
+                      {displayVariantName}
                     </span>
                   </FontWrapper>
                   <FontWrapper fontFamily={priceFontFamily}>
@@ -221,7 +235,8 @@ export function ItemView({
                     </span>
                   </FontWrapper>
                 </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <FontWrapper fontFamily={priceFontFamily}>
@@ -249,7 +264,15 @@ export function ItemView({
       <ItemDetail
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
-        item={item}
+        item={{
+          ...item,
+          name: displayName,
+          description: displayDescription,
+          variants: item.variants.map(v => ({
+            ...v,
+            name: translation?.getVariantTranslation(v.id)?.name ?? v.name
+          }))
+        }}
         itemFontWeight={itemFontWeight ?? "400"}
         itemFontFamily={itemFontFamily ?? "Inter"}
         priceFontWeight={priceFontWeight ?? "400"}

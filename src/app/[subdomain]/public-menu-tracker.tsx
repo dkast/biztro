@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { usePostHog } from "posthog-js/react"
+import posthog from "posthog-js"
 
 interface PublicMenuTrackerProps {
   organizationId: string
@@ -14,8 +14,6 @@ export default function PublicMenuTracker({
   menuId,
   slug
 }: PublicMenuTrackerProps) {
-  const posthog = usePostHog()
-
   useEffect(() => {
     // Track public menu view
     posthog.capture("public_menu_viewed", {
@@ -26,7 +24,7 @@ export default function PublicMenuTracker({
       hostname: window.location.hostname,
       referrer: document.referrer || undefined
     })
-  }, [posthog, organizationId, menuId, slug])
+  }, [organizationId, menuId, slug])
 
   return null
 }

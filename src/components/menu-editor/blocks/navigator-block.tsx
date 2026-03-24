@@ -11,6 +11,7 @@ import {
 } from "motion/react"
 import Link from "next/link"
 
+import { useTranslation } from "@/components/menu-editor/translation-provider"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -46,6 +47,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
   const scrollContainerRef = useRef<HTMLElement | null>(null)
   const [hasContainerScrollRoot, setHasContainerScrollRoot] = useState(false)
   const isMobile = useIsMobile()
+  const translation = useTranslation()
 
   const { scrollY: viewportScrollY } = useScroll()
   const { scrollY: containerScrollY } = useScroll(
@@ -115,13 +117,16 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
     setDisplayNames(
       filteredAndSortedNodes.map(node => {
         if (node.data.name === "CategoryBlock") {
-          return node.data.props.data.name
+          return (
+            translation?.getCategoryTranslation(node.data.props.data.id)
+              ?.name ?? node.data.props.data.name
+          )
         } else {
           return node.data.props.text
         }
       })
     )
-  }, [nodes])
+  }, [nodes, translation])
 
   useEffect(() => {
     const navNode = navRef.current

@@ -7,18 +7,27 @@ import * as Sentry from "@sentry/nextjs"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   AlertCircle,
+  CircleAlert,
   FileText,
   Loader,
   SparklesIcon,
   Trash2
 } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
 
-import { useProGuard } from "@/components/dashboard/upgrade-dialog"
+import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
+import {
+  Banner,
+  BannerAction,
+  BannerClose,
+  BannerIcon,
+  BannerTitle
+} from "@/components/kibo-ui/banner"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
@@ -30,6 +39,7 @@ import {
   type MenuImportItem
 } from "@/server/actions/item/mutations"
 import { useDataGrid } from "@/hooks/use-data-grid"
+import { appConfig } from "@/app/config"
 import { SUPPORTED_UPLOAD_MIME_TYPES } from "@/lib/types/media"
 import { MenuItemStatus } from "@/lib/types/menu-item"
 
@@ -202,11 +212,7 @@ export default function MenuImportForm({
     simulateScenario
   ])
 
-  const { guard, dialog: upgradeDialog } = useProGuard(isPro, {
-    title: "Actualizar a Pro",
-    description:
-      "Actualiza tu plan a Pro para importar tu menú desde archivos PDF o imágenes usando IA ✨"
-  })
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false)
 
   const handleDeleteItem = useCallback((id: string) => {
     setItems(prev => prev.filter(item => item._id !== id))
@@ -406,6 +412,12 @@ export default function MenuImportForm({
       toast.error("Agrega al menos un producto con nombre")
       return
     }
+
+    if (!isPro && groupPreview.groupedItems > appConfig.itemLimit) {
+      setShowUpgradeDialog(true)
+      return
+    }
+
     executeBulkCreate(
       validItems.map(item => ({
         name: item.name,
@@ -470,7 +482,7 @@ export default function MenuImportForm({
         </div>
 
         {selectedFile && (
-          <div className="flex flex-col items-center justify-center gap-3">
+          <div className="mt-6 flex flex-col items-center justify-center gap-3">
             {simulateEnabled && simulateResponse && (
               <div className="flex items-center gap-3">
                 <Label htmlFor="simulate-scenario" className="text-sm">
@@ -498,10 +510,9 @@ export default function MenuImportForm({
 
             <>
               <Button
-                onClick={() => guard(handleParse)}
+                onClick={handleParse}
                 disabled={isParsing || isSaving}
-                className="bg-linear-to-r/oklch from-indigo-500 via-pink-500
-                  to-orange-500"
+                className="bg-linear-65/oklch from-orange-500 to-indigo-500"
               >
                 {isParsing ? (
                   <Loader className="size-4 animate-spin" />
@@ -514,7 +525,12 @@ export default function MenuImportForm({
                     ? "Simular extracción"
                     : "Extraer productos del archivo"}
               </Button>
-              {upgradeDialog}
+              <UpgradeDialog
+                open={showUpgradeDialog}
+                onClose={() => setShowUpgradeDialog(false)}
+                title="Actualizar a Pro"
+                description="Actualiza tu plan a Pro para importar todos tus productos desde archivos PDF o imágenes usando IA ✨"
+              />
             </>
           </div>
         )}
@@ -531,7 +547,34 @@ export default function MenuImportForm({
 
       {/* Items Table */}
       {items.length > 0 && (
-        <div className="flex flex-col gap-3">
+        <div className="mt-10 flex flex-col gap-5">
+          {!isPro && groupPreview.groupedItems > appConfig.itemLimit && (
+            <Banner
+              inset
+              className="bg-linear-to-r/oklch from-indigo-500 to-pink-500
+                text-white"
+            >
+              <BannerIcon
+                icon={CircleAlert}
+                className="border-white/20 bg-white/10 text-white"
+              />
+              <BannerTitle>
+                Tienes {groupPreview.groupedItems} productos para importar, pero
+                el plan básico permite hasta {appConfig.itemLimit}.
+              </BannerTitle>
+              <BannerAction
+                asChild
+                className="border-white/20 bg-white/10 text-white
+                  hover:bg-white/20 hover:text-white"
+              >
+                <Link href="/dashboard/settings/billing">Actualizar a Pro</Link>
+              </BannerAction>
+              <BannerClose
+                aria-label="Cerrar aviso"
+                className="text-white hover:bg-white/20 hover:text-white"
+              />
+            </Banner>
+          )}
           <div className="flex flex-row items-end-safe gap-2 px-3">
             <p className="text-sm font-medium">
               {items.length} producto{items.length !== 1 ? "s" : ""} extraído
@@ -574,7 +617,11 @@ export default function MenuImportForm({
                 para mostrar la lista completa de comandos.
               </span>
             </div>
-            <Button onClick={handleSave} disabled={isSaving}>
+            <Button
+              variant="secondary"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
               {isSaving && <Loader className="size-4 animate-spin" />}
               <TextMorph>
                 {isSaving

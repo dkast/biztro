@@ -94,6 +94,15 @@ Use `bun run <script>` unless the user requests otherwise.
   - Use only for Web API access in small components.
   - Avoid for data fetching or state management.
 
+### next-safe-action patterns
+
+- Prefer `useOptimisticAction` when the UI needs immediate feedback for server-backed collections such as lists, counts, or delete/update flows.
+- Keep local React state for transient UI only, such as dialog open state, selected filters, or pending inputs. Do not mirror server-backed list data with `useState` if optimistic state can own the rendered list.
+- Always call `reset()` on a successful action, and also on error when the hook result should be cleared, so stale success state does not replay on cached navigation or when `Activity`-hidden trees remount.
+- Pass callbacks through the hook configuration; keep `execute()` focused on the action input.
+- After a successful optimistic action, call `router.refresh()` or revalidate the relevant path only when server data must be re-fetched.
+- When showing user-facing locale or language names, prefer Spanish display names or the app's localized labels over raw locale codes or source-language names.
+
 ## Practical repo guardrails
 
 - Prefer React Server Components; keep `use client` components small and scoped.

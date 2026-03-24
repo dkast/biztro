@@ -14,6 +14,21 @@ function markFontAsReady(fontFamily: string) {
   loadingFontFamilies.delete(fontFamily)
 }
 
+type WebFontLoaderModule = {
+  load?: (config: {
+    google: { families: string[] }
+    active: () => void
+    inactive: () => void
+  }) => void
+  default?: {
+    load?: (config: {
+      google: { families: string[] }
+      active: () => void
+      inactive: () => void
+    }) => void
+  }
+}
+
 // Cache font requests so multiple previews mounting at once only trigger one WebFontLoader call.
 function ensureFontLoaded(fontFamily: string) {
   if (PRELOADED_FONT_FAMILIES.has(fontFamily)) {
@@ -36,9 +51,18 @@ function ensureFontLoaded(fontFamily: string) {
   }
 
   const promise = import("webfontloader")
-    .then(WebFont => {
+    .then(module => {
+      const webFontLoader = (module as WebFontLoaderModule).load
+        ? (module as WebFontLoaderModule)
+        : (module as WebFontLoaderModule).default
+      const loadWebFont = webFontLoader?.load
+
+      if (!loadWebFont) {
+        throw new Error("webfontloader did not expose a load function")
+      }
+
       return new Promise<void>(resolve => {
-        WebFont.default.load({
+        loadWebFont({
           google: {
             families: [`${fontFamily}:300,400,500,700`]
           },
