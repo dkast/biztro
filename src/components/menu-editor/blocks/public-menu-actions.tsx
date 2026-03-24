@@ -175,7 +175,7 @@ export function PublicMenuActions() {
                 <Menu.Item
                   className={cn(
                     bloomItemClassName,
-                    !translation.locale && "bg-accent/70 text-foreground"
+                    !translation.locale && "font-semibold"
                   )}
                   onSelect={() => handleLanguageSelect(null)}
                 >
@@ -186,8 +186,7 @@ export function PublicMenuActions() {
                     key={locale.code}
                     className={cn(
                       bloomItemClassName,
-                      translation.locale === locale.code &&
-                        "bg-accent/70 text-foreground"
+                      translation.locale === locale.code && "font-semibold"
                     )}
                     onSelect={() => handleLanguageSelect(locale.code)}
                   >
