@@ -13,6 +13,7 @@ import {
   Drawer,
   DrawerContent,
   DrawerHeader,
+  DrawerNested,
   DrawerTitle
 } from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
@@ -40,6 +41,7 @@ interface ItemDetailProps {
   item: DetailItem
   isOpen: boolean
   onClose: () => void
+  nested?: boolean
   itemFontFamily?: string
   itemFontWeight?: string
   descriptionFontFamily?: string
@@ -51,6 +53,7 @@ export function ItemDetail({
   item,
   isOpen,
   onClose,
+  nested = false,
   itemFontFamily = "Inter",
   itemFontWeight = "400",
   descriptionFontFamily = "Inter",
@@ -124,15 +127,16 @@ export function ItemDetail({
   )
 
   if (isMobile) {
+    const DrawerRoot = nested ? DrawerNested : Drawer
     return (
-      <Drawer open={isOpen} onOpenChange={onClose}>
+      <DrawerRoot open={isOpen} onOpenChange={onClose}>
         <DrawerContent className="h-[96%] px-3">
           <DrawerHeader>
             <DrawerTitle>{t("menu_detail")}</DrawerTitle>
           </DrawerHeader>
           {content}
         </DrawerContent>
-      </Drawer>
+      </DrawerRoot>
     )
   }
 
