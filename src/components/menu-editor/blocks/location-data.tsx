@@ -282,7 +282,6 @@ export default function LocationData({
             <div className="flex flex-row items-center gap-1.5">
               <Phone className="inline-block size-2.5" />
               <span>
-                {/* Tel:&nbsp; */}
                 <a href={`tel:${location.phone}`} className="underline">
                   {location.phone}
                 </a>

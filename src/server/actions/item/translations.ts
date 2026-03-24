@@ -5,13 +5,18 @@ import { gateway, generateText, Output } from "ai"
 import { cacheTag, updateTag } from "next/cache"
 import { z } from "zod/v4"
 
+import { isProMember } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
-import { SUPPORTED_LOCALES } from "@/lib/types/translations"
+import {
+  SUPPORTED_LOCALE_CODES,
+  SUPPORTED_LOCALES,
+  type SupportedLocaleCode
+} from "@/lib/types/translations"
 import { env } from "@/env.mjs"
 
 const translateMenuItemsInputSchema = z.object({
-  locale: z.string().min(2).max(10)
+  locale: z.enum(SUPPORTED_LOCALE_CODES)
 })
 
 const categoryTranslationSchema = z.object({
@@ -55,6 +60,15 @@ export const translateMenuItems = authMemberActionClient
     if (!currentOrgId) {
       return {
         failure: { reason: "No se pudo obtener la organización actual" }
+      }
+    }
+
+    const proMember = await isProMember()
+    if (!proMember) {
+      return {
+        failure: {
+          reason: "La traducción de menú es una función exclusiva del plan Pro"
+        }
       }
     }
 
@@ -135,10 +149,11 @@ ${JSON.stringify(itemsPayload, null, 2)}`
         }
       }
 
-      // Upsert translations in the database
+      // Upsert translations in the database — run all upserts in parallel
+      // batches within a single transaction to reduce sequential round-trips.
       await prisma.$transaction(async tx => {
-        for (const translatedItem of result.output.items) {
-          await tx.menuItemTranslation.upsert({
+        const itemUpserts = result.output.items.map(translatedItem =>
+          tx.menuItemTranslation.upsert({
             where: {
               menuItemId_locale: {
                 menuItemId: translatedItem.menuItemId,
@@ -156,9 +171,11 @@ ${JSON.stringify(itemsPayload, null, 2)}`
               description: translatedItem.description ?? null
             }
           })
+        )
 
-          for (const translatedVariant of translatedItem.variants) {
-            await tx.variantTranslation.upsert({
+        const variantUpserts = result.output.items.flatMap(translatedItem =>
+          translatedItem.variants.map(translatedVariant =>
+            tx.variantTranslation.upsert({
               where: {
                 variantId_locale: {
                   variantId: translatedVariant.variantId,
@@ -176,25 +193,32 @@ ${JSON.stringify(itemsPayload, null, 2)}`
                 description: translatedVariant.description ?? null
               }
             })
-          }
-        }
+          )
+        )
 
-        for (const translatedCategory of result.output.categories) {
-          await tx.categoryTranslation.upsert({
-            where: {
-              categoryId_locale: {
+        const categoryUpserts = result.output.categories.map(
+          translatedCategory =>
+            tx.categoryTranslation.upsert({
+              where: {
+                categoryId_locale: {
+                  categoryId: translatedCategory.categoryId,
+                  locale
+                }
+              },
+              update: { name: translatedCategory.name },
+              create: {
                 categoryId: translatedCategory.categoryId,
-                locale
+                locale,
+                name: translatedCategory.name
               }
-            },
-            update: { name: translatedCategory.name },
-            create: {
-              categoryId: translatedCategory.categoryId,
-              locale,
-              name: translatedCategory.name
-            }
-          })
-        }
+            })
+        )
+
+        await Promise.all([
+          ...itemUpserts,
+          ...variantUpserts,
+          ...categoryUpserts
+        ])
       })
 
       updateTag(`translations-${currentOrgId}`)
@@ -219,8 +243,10 @@ ${JSON.stringify(itemsPayload, null, 2)}`
   })
 
 const deleteMenuTranslationInputSchema = z.object({
-  locale: z.string().min(2).max(10)
+  locale: z.enum(SUPPORTED_LOCALE_CODES)
 })
+
+const supportedLocaleCodeSet = new Set<string>(SUPPORTED_LOCALE_CODES)
 
 /**
  * Delete all translations for a given locale for the current organization.
@@ -237,8 +263,9 @@ export const deleteMenuTranslation = authMemberActionClient
     }
 
     try {
-      // Delete menu item translations (variant translations are cascade-deleted
-      // by the DB but we need to handle them explicitly since they're on variants)
+      // Delete all translation types explicitly: variant translations relate to
+      // Variant (not MenuItemTranslation), so they are NOT cascade-deleted when
+      // menu item translations are removed and must be deleted here directly.
       const orgItems = await prisma.menuItem.findMany({
         where: { organizationId: currentOrgId },
         select: { id: true, variants: { select: { id: true } } }
@@ -294,10 +321,18 @@ export async function getAvailableTranslations(organizationId: string) {
     _count: { locale: true }
   })
 
-  return rows.map(row => ({
-    locale: row.locale as string,
-    count: row._count.locale
-  }))
+  const isSupportedLocaleCode = (
+    locale: string
+  ): locale is SupportedLocaleCode => supportedLocaleCodeSet.has(locale)
+
+  return rows
+    .filter((row): row is typeof row & { locale: SupportedLocaleCode } =>
+      isSupportedLocaleCode(row.locale)
+    )
+    .map(row => ({
+      locale: row.locale,
+      count: row._count.locale
+    }))
 }
 
 /**

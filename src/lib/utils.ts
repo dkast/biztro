@@ -158,7 +158,7 @@ export function getOpenHoursLegend(
       })
     ) {
       status = t(
-        Math.floor(endMinutes / 60) === 1
+        ((endMinutes / 60) % 12 || 12) === 1
           ? "open_until_singular"
           : "open_until_plural",
         {
