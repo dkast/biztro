@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
-import JoyRide, {
+import {
+  Joyride,
   type BeaconRenderProps,
   type CallBackProps,
   type Step,
@@ -99,7 +100,7 @@ export default function MenuTourMobile() {
   if (!isMounted) return null
 
   return (
-    <JoyRide
+    <Joyride
       run={tourMode}
       callback={handleCallback}
       steps={steps}
