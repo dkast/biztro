@@ -12,23 +12,23 @@ const data = [
     id: 1,
     title: "1. Configura tu negocio",
     content:
-      "Agrega la información de tu negocio, horarios de atención y redes sociales. Nuestro sistema se encargará de todo lo demás.",
+      "Agrega el nombre de tu negocio, tus horarios y tus redes sociales. Nosotros nos encargamos del resto.",
     image: "/configuration.png",
     icon: <Store className="size-6" />
   },
   {
     id: 2,
-    title: "2. Lista tus productos",
+    title: "2. Agrega tus productos",
     content:
-      "Captura tus productos, agrega una breve descripción, precio y estarás listo para crear tu menú.",
+      "Añade tus productos con descripción y precio para dejar tu menú listo en pocos minutos.",
     image: "/products.png",
     icon: <ShoppingBag className="size-6" />
   },
   {
     id: 3,
-    title: "3. Lanza tu menú",
+    title: "3. Personaliza y publica",
     content:
-      "Personaliza tu menú con el editor web, publícalo y comparte el enlace y código QR con tus clientes. ¡Así de fácil!",
+      "Ajusta el diseño en el editor, publica tu menú y compártelo con un enlace o un código QR.",
     image: "/editor.png",
     icon: <Rocket className="size-6" />
   }
@@ -46,7 +46,7 @@ export default function Component() {
     >
       <TitleSection
         eyebrow="Cómo funciona"
-        title="Solo 3 pasos para iniciar"
+        title="Crea tu menú en 3 pasos"
         className="mb-16"
       />
       <Features collapseDelay={6000} data={data} linePosition="bottom" />
@@ -59,28 +59,27 @@ export default function Component() {
             className="mb-4 text-lg font-semibold text-taupe-950 sm:text-2xl
               lg:text-3xl dark:text-taupe-50"
           >
-            Genera y descarga tu código QR
+            Comparte tu menú con un código QR
           </h3>
           <div
             className="flex flex-col gap-3 text-taupe-700 sm:text-lg
               dark:text-taupe-300"
           >
             <p>
-              Desde el editor de Biztro, puedes descargar tu código QR.
-              Imprímelo y colócalo en un lugar visible en tu establecimiento.
+              Descarga tu código QR desde el editor en segundos. Después,
+              imprímelo y colócalo en un lugar visible de tu negocio.
             </p>
             <p>
-              Tus clientes podrán escanear el código QR con su teléfono móvil y
-              acceder a tu menú digital.{" "}
+              Tus clientes solo tienen que escanearlo con su teléfono para abrir
+              tu menú al instante.{" "}
               <span className="text-taupe-950 dark:text-taupe-50">
-                Puedes compartir el enlace de tu menú en redes sociales
+                También puedes compartir el enlace en redes sociales
               </span>{" "}
-              o en tu página web.
+              o en tu sitio web.
             </p>
             <p>
-              Los menús digitales de Biztro son responsivos y se adaptan a
-              cualquier dispositivo móvil. Son fáciles de leer y navegar, y no
-              necesitas instalar ninguna aplicación adicional.
+              Tu menú se adapta a celulares y tablets, es fácil de leer y no
+              requiere instalar ninguna app.
             </p>
           </div>
         </div>
@@ -116,7 +115,7 @@ export default function Component() {
             className="z-10 flex gap-2 text-taupe-700 text-shadow-white
               dark:text-taupe-300"
           >
-            Escanea para ver un{" "}
+            Escanea para ver un menú de ejemplo{" "}
             <Link
               href="https://la-bella-italia.biztro.co"
               target="_blank"
