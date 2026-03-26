@@ -20,20 +20,21 @@ export default function CTABanner() {
           >
             <Image
               src="/logo-bistro.svg"
-              alt="Logo"
+              alt="Logo de Biztro"
               width={40}
               height={40}
               unoptimized
             />
           </div>
           <p className="mt-4 mb-1 text-lg text-taupe-300">
-            ¿Listo para mejorar tu servicio con un menú digital?
+            ¿Quieres lanzar tu menú digital de manera rápida y sencilla?
           </p>
           <h3 className="font-display mb-4 text-center text-3xl text-white">
-            Crea tu menú online con Biztro
+            Solicita acceso anticipado a Biztro
           </h3>
           <span className="mb-4 text-taupe-300">
-            Únete a nuestra lista de espera
+            Déjanos tu correo y te avisaremos cuando abramos nuevos accesos a la
+            beta
           </span>
           <Waitlist />
         </div>

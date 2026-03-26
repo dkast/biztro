@@ -4,11 +4,9 @@ import { useRef } from "react"
 import { motion, useInView } from "motion/react"
 import Image from "next/image"
 
-// import { BorderBeam } from "@/components/flare-ui/border-beam"
 import GradientBlur from "@/components/flare-ui/gradient-blur"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
-// import editorDark from "../../../public/editor-dark.png"
 import editorLight from "../../../public/editor-light.png"
 
 export default function EditorPreview() {
@@ -75,11 +73,6 @@ export default function EditorPreview() {
           className="relative block h-full w-full dark:hidden"
           alt="Imagen del editor de menús en web"
         />
-        {/* <Image
-          src={editorDark}
-          className="relative hidden h-full w-full dark:block"
-          alt="Imagen del editor de menús en web"
-        /> */}
 
         {/* Fading ring — masked so it disappears with the image fade */}
         <div
@@ -89,12 +82,7 @@ export default function EditorPreview() {
             sm:rounded-xl"
         />
 
-        {!isMobile && (
-          <>
-            <GradientBlur className="-inset-x-px -bottom-px h-1/4" />
-            {/* <BorderBeam size={150} /> */}
-          </>
-        )}
+        {!isMobile && <GradientBlur className="-inset-x-px -bottom-px h-1/4" />}
       </motion.div>
     </section>
   )

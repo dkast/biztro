@@ -69,7 +69,7 @@ export default function Hero() {
                       px-4 py-1 text-xs transition ease-out hover:text-taupe-900
                       hover:duration-300 sm:text-sm dark:hover:text-taupe-100"
                   >
-                    📣 Biztro en versión beta
+                    📣 Biztro está en beta
                     <ArrowRightIcon
                       className="ml-1 size-3 transition-transform duration-300
                         ease-in-out group-hover:translate-x-1"
@@ -80,13 +80,19 @@ export default function Hero() {
                   href="/blog/beta-biztro"
                   className="z-50 col-start-1 row-start-1"
                 >
-                  <span className="block h-full w-full"></span>
+                  <span className="sr-only">
+                    Leer más sobre la beta de Biztro
+                  </span>
+                  <span
+                    className="block h-full w-full"
+                    aria-hidden="true"
+                  ></span>
                 </Link>
               </div>
               <motion.h1
                 ref={fadeInRef}
                 className="font-display bg-linear-to-br from-taupe-950 from-30%
-                  to-taupe-800/70 bg-clip-text px-2 py-6 pb-8 text-5xl
+                  to-taupe-800/70 bg-clip-text px-2 pt-6 pb-8 text-5xl
                   leading-[1.1] font-semibold tracking-tight text-transparent
                   sm:text-5xl md:text-6xl lg:text-7xl dark:from-taupe-50
                   dark:to-taupe-300/60"
@@ -100,8 +106,7 @@ export default function Hero() {
                   type: "spring"
                 }}
               >
-                Tu menú digital, <br />
-                sin complicaciones
+                Crea tu menú digital <br />y publícalo en minutos
               </motion.h1>
 
               <motion.p
@@ -117,7 +122,8 @@ export default function Hero() {
                   type: "spring"
                 }}
               >
-                Crea, actualiza y comparte el menú de tu restaurante en minutos.
+                Diseña un menú QR profesional para tu restaurante o cafetería,
+                actualízalo cuando quieras y compártelo sin complicarte.
               </motion.p>
 
               <motion.div
@@ -133,7 +139,7 @@ export default function Hero() {
                 }}
               >
                 <span className="text-taupe-500 dark:text-taupe-400">
-                  Únete a nuestra lista de espera
+                  Solicita acceso anticipado
                 </span>
                 <Waitlist />
               </motion.div>

@@ -32,15 +32,14 @@ export default async function Footer() {
         </div>
 
         <ul className="flex items-center justify-center gap-x-5 sm:gap-x-10">
-          <a
-            href="mailto:contacto@biztro.co"
+          <li
             className="text-[15px]/normal font-medium text-taupe-500
               transition-all duration-100 ease-linear hover:text-taupe-950
               hover:underline hover:underline-offset-4 dark:text-taupe-400
               dark:hover:text-taupe-50"
           >
-            Contacto
-          </a>
+            <a href="mailto:contacto@biztro.co">Contacto</a>
+          </li>
           {links.map((link, index) => (
             <li
               key={index}

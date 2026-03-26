@@ -16,41 +16,43 @@ const BENEFITS = [
   {
     title: "Llega a más clientes",
     Icon: BadgeCheck,
-    description: "Comparte tu menú en línea y refuerza tu presencia digital.",
+    description:
+      "Comparte tu menú por QR o enlace para que tus clientes lo consulten en cualquier momento.",
     soon: false
   },
   {
     title: "Actualiza tu menú fácilmente",
     Icon: RefreshCcw,
     description:
-      "Cambia precios y agrega platillos en segundos sin complicaciones.",
+      "Cambia precios, productos o disponibilidad sin reimprimir cartas ni PDFs.",
     soon: false
   },
   {
     title: "Destaca tu negocio",
     Icon: QrCodeIcon,
-    description: "Usa códigos QR personalizados que muestran tu estilo único.",
+    description:
+      "Personaliza tu código QR y el diseño del menú para que se sientan parte de tu marca.",
     soon: false
   },
   {
     title: "Menú flexible",
     Icon: Group,
     description:
-      "Crea menús especiales para eventos o promociones sin esfuerzo.",
+      "Crea menús para temporadas, eventos o promociones y publícalos cuando los necesites.",
     soon: false
   },
   {
     title: "Promociona tu negocio",
     Icon: Gem,
     description:
-      "Resalta ofertas y platillos destacados para atraer más clientes.",
+      "Pronto podrás destacar ofertas y productos clave para impulsar más pedidos.",
     soon: true
   },
   {
     title: "Sin compromisos",
     Icon: Handshake,
     description:
-      "Empieza sin contratos largos y adapta tu menú a tus necesidades.",
+      "Empieza con un plan gratuito y cambia solo cuando tu negocio necesite más.",
     soon: false
   }
 ]
@@ -72,8 +74,8 @@ export default function Benefits() {
       />
       <div className="relative z-10">
         <TitleSection
-          eyebrow="Por qué elegir Biztro"
-          title="Transforma la experiencia de tus clientes y aumenta tus ingresos"
+          eyebrow="Por qué usar Biztro"
+          title="Más control para tu negocio, mejor experiencia para tus clientes"
         />
         <div
           className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 px-4
@@ -109,10 +111,7 @@ const BenefitItem = ({
           />
         )}
       </div>
-      <h4
-        className="space-x-1 text-lg font-semibold text-taupe-950
-          dark:text-taupe-100"
-      >
+      <h4 className="text-lg font-semibold text-taupe-950 dark:text-taupe-100">
         {title}
         {soon && (
           <div>

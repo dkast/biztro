@@ -11,10 +11,10 @@ import { Ripple } from "@/components/ui/ripple"
 const features = [
   {
     Icon: SwatchBook,
-    name: "Diseño a tu medida",
+    name: "Diseño alineado a tu marca",
     description:
-      "Empieza con una plantilla y personalízala para crear un menú que refleje tu negocio. Agrega imágenes de alta calidad, etiquetas de alérgenos y más para destacar tus platillos.",
-    cta: "Explorar diseños",
+      "Empieza con una plantilla y ajusta colores, imágenes y etiquetas como alérgenos para que tu menú se vea como tu negocio.",
+    cta: "Ver diseños",
     background: (
       <div className="absolute inset-0 origin-top">
         <Image
@@ -33,11 +33,11 @@ const features = [
   },
   {
     Icon: MousePointerClick,
-    name: "Editor intuitivo",
+    name: "Editor fácil de usar",
     description:
-      "Nuestro editor ofrece una interfaz de arrastrar y soltar que facilita la creación de tu menú en minutos.",
+      "Edita secciones, productos y precios desde un editor visual. No necesitas experiencia técnica para dejar tu menú listo.",
     href: undefined,
-    cta: "Conocer el editor",
+    cta: "Ver el editor",
     background: (
       <div
         className="absolute inset-x-0 top-1/3 flex items-start justify-center
@@ -63,21 +63,22 @@ const features = [
   },
   {
     Icon: QrCodeIcon,
-    name: "Código QR listo",
+    name: "QR y enlace para compartir",
     description:
-      "Tus clientes pueden abrir tu menú desde su teléfono al escanear el código, sin instalar ninguna app.",
+      "Tus clientes pueden abrir tu menú desde su teléfono al escanear el código o entrar desde un enlace, sin instalar ninguna app.",
     href: undefined,
-    cta: "Ver cómo funciona",
+    cta: "Ver ejemplo",
     background: (
       <>
         <div
-          className="absolte inset-0 flex origin-top items-center justify-center
-            pt-8 transition-all duration-300 ease-out group-hover:scale-95"
+          className="absolute inset-0 -top-30 flex origin-top items-center
+            justify-center pt-8 transition-all duration-300 ease-out
+            group-hover:scale-95"
         >
           <div
             className="overflow-hidden rounded-lg shadow-xl shadow-taupe-900/50"
           >
-            <div className="z-999">
+            <div className="z-10">
               <QRCode
                 value="https://biztro.co"
                 logoImage="/logo-bistro.svg"
@@ -104,17 +105,18 @@ export default function FeaturesBento() {
           xl:max-w-none"
       >
         <h2
-          className="font-display text-3xl tracking-tight text-balance
-            text-taupe-950 sm:text-4xl md:text-5xl dark:text-taupe-50"
+          className="font-display mx-auto max-w-[20ch] text-3xl tracking-tight
+            text-pretty text-taupe-950 sm:text-4xl md:text-5xl
+            dark:text-taupe-50"
         >
-          Publica tu menú online en minutos
+          Todo lo que necesitas para publicar tu menú online
         </h2>
         <p
           className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8
             text-pretty text-taupe-700 dark:text-taupe-300"
         >
-          Deja atrás los PDFs estáticos. Crea y actualiza tu menú desde el
-          navegador con una experiencia simple, sin conocimientos técnicos.
+          Olvídate de los PDFs desactualizados. Edita precios, fotos y secciones
+          desde el navegador, y tus cambios se verán al instante.
         </p>
       </section>
       <section className="mx-auto mt-16 max-w-5xl px-4 sm:mt-32 sm:px-6 lg:px-8">

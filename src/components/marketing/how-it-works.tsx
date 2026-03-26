@@ -3,7 +3,6 @@ import Image from "next/image"
 import Link from "next/link"
 
 import Features from "@/components/flare-ui/features-horizontal"
-import FlickeringGrid from "@/components/flare-ui/flickering-grid"
 import TitleSection from "@/components/marketing/title-section"
 import QRimage from "../../../public/qr-example.png"
 
@@ -12,7 +11,7 @@ const data = [
     id: 1,
     title: "1. Configura tu negocio",
     content:
-      "Agrega el nombre de tu negocio, tus horarios y tus redes sociales. Nosotros nos encargamos del resto.",
+      "Agrega el nombre de tu negocio, tus horarios y tus redes sociales. Biztro organiza la información por ti.",
     image: "/configuration.png",
     icon: <Store className="size-6" />
   },
@@ -20,7 +19,7 @@ const data = [
     id: 2,
     title: "2. Agrega tus productos",
     content:
-      "Añade tus productos con descripción y precio para dejar tu menú listo en pocos minutos.",
+      "Añade tus productos con descripción, precio e imagen para dejar tu menú listo en pocos minutos.",
     image: "/products.png",
     icon: <ShoppingBag className="size-6" />
   },
@@ -46,7 +45,7 @@ export default function Component() {
     >
       <TitleSection
         eyebrow="Cómo funciona"
-        title="Crea tu menú en 3 pasos"
+        title="Publica tu menú en 3 pasos"
         className="mb-16"
       />
       <Features collapseDelay={6000} data={data} linePosition="bottom" />
@@ -59,26 +58,26 @@ export default function Component() {
             className="mb-4 text-lg font-semibold text-taupe-950 sm:text-2xl
               lg:text-3xl dark:text-taupe-50"
           >
-            Comparte tu menú con un código QR
+            Comparte tu menú con un código QR y un enlace
           </h3>
           <div
             className="flex flex-col gap-3 text-taupe-700 sm:text-lg
               dark:text-taupe-300"
           >
             <p>
-              Descarga tu código QR desde el editor en segundos. Después,
-              imprímelo y colócalo en un lugar visible de tu negocio.
+              Descarga tu código QR desde el editor en segundos. Después puedes
+              imprimirlo y colocarlo en mesas, mostrador o escaparate.
             </p>
             <p>
-              Tus clientes solo tienen que escanearlo con su teléfono para abrir
-              tu menú al instante.{" "}
+              Tus clientes solo tienen que escanearlo con la cámara de su
+              teléfono para abrir tu menú al instante.{" "}
               <span className="text-taupe-950 dark:text-taupe-50">
-                También puedes compartir el enlace en redes sociales
+                También puedes compartir el mismo enlace en redes sociales
               </span>{" "}
               o en tu sitio web.
             </p>
             <p>
-              Tu menú se adapta a celulares y tablets, es fácil de leer y no
+              El menú se adapta a celulares y tablets, se lee con claridad y no
               requiere instalar ninguna app.
             </p>
           </div>
@@ -87,15 +86,12 @@ export default function Component() {
           className="relative flex flex-col items-center justify-center gap-3
             overflow-hidden"
         >
-          <FlickeringGrid
-            className="absolute inset-0 z-0 hidden size-full sm:block"
-            squareSize={4}
-            gridGap={6}
-            color="#a8927a"
-            maxOpacity={0.2}
-            flickerChance={0.05}
-            height={500}
-            width={500}
+          <div
+            className="absolute inset-0 z-0 hidden sm:block"
+            style={{
+              background:
+                "radial-gradient(ellipse 60% 60% at 50% 50%, oklch(71.4% 0.014 41.2 / 0.25), transparent 70%)"
+            }}
           />
           <Link
             href="https://la-bella-italia.biztro.co"
@@ -112,20 +108,20 @@ export default function Component() {
             />
           </Link>
           <span
-            className="z-10 flex gap-2 text-taupe-700 text-shadow-white
+            className="z-10 flex items-center gap-2 text-sm text-taupe-700
               dark:text-taupe-300"
           >
-            Escanea para ver un menú de ejemplo{" "}
+            Escanea o{" "}
             <Link
               href="https://la-bella-italia.biztro.co"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-taupe-600 underline underline-offset-2
-                hover:text-taupe-500 dark:text-taupe-400"
+              className="inline-flex items-center gap-1 text-taupe-600 underline
+                underline-offset-2 hover:text-taupe-500 dark:text-taupe-400"
             >
-              ejemplo
+              abre el ejemplo
+              <CornerRightUp className="size-3" />
             </Link>
-            <CornerRightUp className="size-4" />
           </span>
         </div>
       </div>

@@ -8,31 +8,23 @@ import {
 const FAQ = [
   {
     question: "¿Qué es un menú QR?",
-    answer: `Un menú QR es un menú de restaurante que puede ser leído directamente en 
-      el teléfono móvil del cliente, escaneando el código QR.`
+    answer: `Es un menú digital que tus clientes abren al escanear un código QR con la cámara de su teléfono.`
   },
   {
     question: "¿Cómo funcionan los menús QR para los restaurantes?",
-    answer: `El restaurante publica el menú en línea y crea un código QR que pueden poner en su negocio. 
-      Los clientes simplemente escanean el código QR con su teléfono móvil y el menú les es mostrado
-      en su navegador.`
+    answer: `Publicas tu menú una sola vez, colocas el código QR en tu negocio y tus clientes lo abren en el navegador. Si haces cambios, el QR sigue siendo el mismo.`
   },
   {
     question: "¿Cómo creo un código QR para el menú de mi restaurante?",
-    answer: `Primero se necesita publicar el menú de tu restaurante online, entonces puedes generar un código QR convirtiendo 
-      el enlace hacia tu menú en un código QR. Con Biztro puedes crear tu menú digital online, descargar tu código QR y
-      utilizarlo en tu material impreso.`
+    answer: `Primero publicas tu menú y después descargas el código QR desde Biztro. Luego puedes imprimirlo y usarlo en mesas, mostrador o material promocional.`
   },
   {
     question: "¿Puedo actualizar el menú sin reimprimir el código QR?",
-    answer: `Sí, la ventaja de un menú digital es que puedes editarlo en cualquier momento sin necesidad de reimprimir 
-      o actualizar una imagen o PDF de tu menú.`
+    answer: `Sí. Puedes cambiar productos, precios o descripciones cuando quieras y el mismo código QR seguirá funcionando.`
   },
   {
-    question: "¿Cómo escaneo un código QR para mi menú?",
-    answer: `En tu dispositivo con Android o iOS puedes simplemente abrir la aplicación de la cámara y escanear tu código QR. 
-      Después de esto, el menú se desplegará en tu navegador, como lo hace una página web normal. No necesitas 
-      descargar una aplicación para leer el código QR de tu menú.`
+    question: "¿Mis clientes necesitan una app para abrir el menú?",
+    answer: `No. Solo necesitan abrir la cámara de su teléfono y escanear el código QR. El menú se abre en el navegador, como cualquier página web.`
   }
 ]
 
@@ -47,7 +39,7 @@ export default function Faq() {
           className="font-display text-3xl tracking-tight text-balance
             text-taupe-950 sm:text-4xl dark:text-taupe-50"
         >
-          Preguntas y Respuestas
+          Preguntas frecuentes
         </h2>
         <div>
           <Accordion type="single" collapsible>
@@ -74,10 +66,10 @@ export default function Faq() {
         </div>
         <div className="col-span-full">
           <p className="text-center text-taupe-700 dark:text-taupe-300">
-            ¿Tienes más preguntas? Envíanos un correo a{" "}
+            ¿Te quedó alguna duda? Escríbenos a{" "}
             <a
               href="mailto:contacto@biztro.co"
-              className="text-taupe-600 hover:underline"
+              className="text-taupe-600 hover:underline focus-visible:underline"
             >
               contacto@biztro.co
             </a>

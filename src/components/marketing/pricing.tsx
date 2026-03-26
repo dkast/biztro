@@ -15,16 +15,15 @@ const marketingTiers = [
     href: "#cta-banner",
     priceMonthly: "$0",
     priceYearly: "$0",
-    description:
-      "El plan gratuito te permite comenzar a publicar tu menú en línea sin costo.",
+    description: "Publica tu primer menú digital sin costo.",
     features: [
-      "10 productos",
-      "Un menú por negocio",
-      "Temas personalizados",
+      "Hasta 10 productos",
+      "1 menú por negocio",
+      "Personaliza el diseño",
       "Descargar código QR"
     ],
     featured: false,
-    cta: "Inicia ahora"
+    cta: "Solicitar acceso"
   },
   {
     name: "Pro",
@@ -32,18 +31,19 @@ const marketingTiers = [
     href: "#cta-banner",
     priceMonthly: "$149",
     priceYearly: "$1,490",
-    description: "Desbloquea todas las características de Biztro.",
+    description:
+      "Más capacidad y herramientas para negocios con varios menús o más movimiento.",
     features: [
       "Productos ilimitados",
       "Menús ilimitados",
-      "Temas personalizados",
+      "Personaliza el diseño",
       "Código QR personalizado",
-      "Analítica de visitas (próximamente)",
+      "Analítica básica de visitas (próximamente)",
       "Promociones y ofertas (próximamente)",
       "Soporte por correo electrónico"
     ],
     featured: true,
-    cta: "Prueba gratis por 30 días"
+    cta: "Solicitar acceso Pro"
   }
 ]
 
@@ -75,7 +75,7 @@ export default function Pricing() {
       <div className="mx-auto max-w-2xl text-center lg:max-w-4xl">
         <TitleSection
           eyebrow="Precios"
-          title="Escoge el plan correcto para ti"
+          title="Elige el plan que mejor se adapta a tu negocio"
         />
       </div>
       <div className="mx-auto mt-8 flex items-center justify-center">
@@ -118,8 +118,8 @@ export default function Pricing() {
         className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8
           text-pretty text-taupe-700 dark:text-taupe-300"
       >
-        Inicia con el plan gratuito, o desbloquea productos ilimitados y
-        características con el plan Pro.
+        Empieza gratis. Cuando necesites más productos, más menús y soporte,
+        pasa a Pro.
       </p>
       <div
         className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6
