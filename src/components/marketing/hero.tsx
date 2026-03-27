@@ -5,9 +5,12 @@ import { ArrowRightIcon } from "lucide-react"
 import { motion, useInView } from "motion/react"
 import Link from "next/link"
 
-import AnimatedShinyText from "@/components/flare-ui/animated-shiny-text"
+import {
+  Announcement,
+  AnnouncementTag,
+  AnnouncementTitle
+} from "@/components/kibo-ui/announcement"
 import Waitlist from "@/components/marketing/waitlist"
-import { cn } from "@/lib/utils"
 
 export default function Hero() {
   const fadeInRef = useRef(null)
@@ -41,60 +44,51 @@ export default function Hero() {
             bg-[radial-gradient(circle_at_top_right,oklch(92.2%_0.005_34.3)_0%,transparent_40%),radial-gradient(circle_at_top_left,oklch(86.8%_0.007_39.5)_0%,transparent_30%)]
             opacity-70 dark:opacity-10"
         />
-        <div className="relative z-10 container flex flex-col">
-          <div className="mt-20 grid grid-cols-1">
-            <div className="flex flex-col items-center gap-6 pb-8 text-center">
+        <div
+          className="relative z-10 mx-auto flex max-w-6xl flex-col px-4 sm:px-6
+            lg:px-8"
+        >
+          <div
+            className="mt-20 grid grid-cols-1 gap-x-8 gap-y-8 pb-8
+              md:grid-cols-3"
+          >
+            {/* Badge + H1: spans cols 1–2 */}
+            <div
+              className="flex flex-col items-center gap-6 text-center
+                md:col-span-2 md:items-start md:text-left"
+            >
               {/* Top announcement */}
-              <div className="grid grid-cols-1 grid-rows-1">
-                <motion.div
-                  className={cn(
-                    `group relative col-start-1 row-start-1 cursor-pointer
-                    rounded-full border border-taupe-300/80 bg-taupe-50/80
-                    shadow-sm shadow-taupe-200 transition-all ease-in
-                    hover:border-taupe-400 hover:bg-taupe-100
-                    dark:border-taupe-600/30 dark:bg-taupe-900/40
-                    dark:hover:bg-taupe-900/60`
-                  )}
-                  animate={fadeInInView ? "animate" : "hidden"}
-                  variants={fadeUpVariants}
-                  initial={false}
-                  transition={{
-                    duration: 0.6,
-                    delay: 0,
-                    ease: "easeIn"
-                  }}
-                >
-                  <AnimatedShinyText
-                    className="inset-0 inline-flex items-center justify-center
-                      px-4 py-1 text-xs transition ease-out hover:text-taupe-900
-                      hover:duration-300 sm:text-sm dark:hover:text-taupe-100"
+              <motion.div
+                animate={fadeInInView ? "animate" : "hidden"}
+                variants={fadeUpVariants}
+                initial={false}
+                transition={{
+                  duration: 0.6,
+                  delay: 0,
+                  ease: "easeIn"
+                }}
+              >
+                <Link href="/blog/beta-biztro">
+                  <Announcement
+                    className="inset-ring-taupe-950/20 hover:ring-taupe-950/30"
                   >
-                    📣 Biztro está en beta
-                    <ArrowRightIcon
-                      className="ml-1 size-3 transition-transform duration-300
-                        ease-in-out group-hover:translate-x-1"
-                    />
-                  </AnimatedShinyText>
-                </motion.div>
-                <Link
-                  href="/blog/beta-biztro"
-                  className="z-50 col-start-1 row-start-1"
-                >
-                  <span className="sr-only">
-                    Leer más sobre la beta de Biztro
-                  </span>
-                  <span
-                    className="block h-full w-full"
-                    aria-hidden="true"
-                  ></span>
+                    <AnnouncementTag>Beta</AnnouncementTag>
+                    <AnnouncementTitle className="pr-0.5">
+                      Biztro está en beta
+                      <ArrowRightIcon
+                        className="ml-1 size-3 transition-transform duration-300
+                          ease-in-out group-hover:translate-x-1"
+                      />
+                    </AnnouncementTitle>
+                  </Announcement>
                 </Link>
-              </div>
+              </motion.div>
               <motion.h1
                 ref={fadeInRef}
                 className="font-display bg-linear-to-br from-taupe-950 from-30%
-                  to-taupe-800/70 bg-clip-text px-2 pt-6 pb-8 text-5xl
-                  leading-[1.1] font-semibold tracking-tight text-transparent
-                  sm:text-5xl md:text-6xl lg:text-7xl dark:from-taupe-50
+                  to-taupe-800/70 bg-clip-text pt-6 text-4xl leading-[1.1]
+                  font-semibold tracking-tight text-pretty text-transparent
+                  sm:text-5xl md:text-5xl lg:text-6xl dark:from-taupe-50
                   dark:to-taupe-300/60"
                 animate={fadeInInView ? "animate" : "initial"}
                 variants={fadeUpVariants}
@@ -106,44 +100,48 @@ export default function Hero() {
                   type: "spring"
                 }}
               >
-                Crea tu menú digital <br />y publícalo en minutos
+                Crea tu menú digital y publícalo en minutos
               </motion.h1>
-
-              <motion.p
-                className="text-lg tracking-tight text-balance text-taupe-700
-                  md:text-xl dark:text-taupe-300"
-                animate={fadeInInView ? "animate" : "initial"}
-                variants={fadeUpVariants}
-                initial={false}
-                transition={{
-                  duration: 0.6,
-                  delay: 0.2,
-                  ease: [0.21, 0.47, 0.32, 0.98],
-                  type: "spring"
-                }}
-              >
-                Diseña un menú QR profesional para tu restaurante o cafetería,
-                actualízalo cuando quieras y compártelo sin complicarte.
-              </motion.p>
-
-              <motion.div
-                animate={fadeInInView ? "animate" : "initial"}
-                variants={fadeUpVariants}
-                className="mt-10 flex flex-col gap-4"
-                initial={false}
-                transition={{
-                  duration: 0.6,
-                  delay: 0.3,
-                  ease: [0.21, 0.47, 0.32, 0.98],
-                  type: "spring"
-                }}
-              >
-                <span className="text-taupe-500 dark:text-taupe-400">
-                  Solicita acceso anticipado
-                </span>
-                <Waitlist />
-              </motion.div>
             </div>
+
+            {/* Tagline: cols 1–2, row 2 */}
+            <motion.p
+              className="text-center text-lg tracking-tight text-balance
+                text-taupe-700 md:col-span-2 md:col-start-1 md:row-start-2
+                md:text-left md:text-xl dark:text-taupe-300"
+              animate={fadeInInView ? "animate" : "initial"}
+              variants={fadeUpVariants}
+              initial={false}
+              transition={{
+                duration: 0.6,
+                delay: 0.2,
+                ease: [0.21, 0.47, 0.32, 0.98],
+                type: "spring"
+              }}
+            >
+              Diseña un menú QR profesional para tu restaurante o cafetería,
+              actualízalo cuando quieras y compártelo sin complicarte.
+            </motion.p>
+
+            {/* CTA: col 3, rows 1–2, centered */}
+            <motion.div
+              animate={fadeInInView ? "animate" : "initial"}
+              variants={fadeUpVariants}
+              className="flex flex-col items-center gap-2 text-sm md:col-start-3
+                md:row-span-2 md:row-start-1 md:items-start md:justify-end"
+              initial={false}
+              transition={{
+                duration: 0.6,
+                delay: 0.3,
+                ease: [0.21, 0.47, 0.32, 0.98],
+                type: "spring"
+              }}
+            >
+              <span className="px-3.5 text-taupe-500 dark:text-taupe-400">
+                Solicita acceso anticipado
+              </span>
+              <Waitlist />
+            </motion.div>
           </div>
         </div>
       </div>

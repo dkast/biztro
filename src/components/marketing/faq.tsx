@@ -32,8 +32,8 @@ export default function Faq() {
   return (
     <section id="faq" className="pt-20 pb-28 sm:py-32">
       <div
-        className="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-4 sm:grid-cols-2
-          sm:gap-12 sm:px-6 lg:max-w-6xl lg:gap-16"
+        className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 sm:grid-cols-2
+          sm:gap-12 sm:px-6 lg:gap-16"
       >
         <h2
           className="font-display text-3xl tracking-tight text-balance

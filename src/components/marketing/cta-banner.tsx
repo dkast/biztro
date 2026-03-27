@@ -8,7 +8,7 @@ export default function CTABanner() {
       id="cta-banner"
       className="flex w-full flex-col justify-center pb-16 lg:pb-32"
     >
-      <div className="mx-auto w-full max-w-5xl px-4 lg:max-w-6xl">
+      <div className="mx-auto w-full max-w-6xl px-4">
         <div
           className="flex flex-col items-center justify-center rounded-xl
             bg-linear-to-br from-taupe-800 via-taupe-900 to-taupe-950 p-8

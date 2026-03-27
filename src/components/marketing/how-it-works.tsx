@@ -37,8 +37,8 @@ export default function Component() {
   return (
     <section
       id="how-it-works"
-      className="mx-auto max-w-5xl px-4 pt-20 pb-8 sm:px-6 sm:py-32 sm:pb-28
-        lg:max-w-7xl lg:px-8"
+      className="mx-auto max-w-6xl px-4 pt-20 pb-8 sm:px-6 sm:py-32 sm:pb-28
+        lg:px-8"
       style={
         { "--primary": "oklch(64.6% 0.222 41.116)" } as React.CSSProperties
       }
@@ -46,17 +46,17 @@ export default function Component() {
       <TitleSection
         eyebrow="Cómo funciona"
         title="Publica tu menú en 3 pasos"
-        className="mb-16"
+        className="mb-8"
       />
       <Features collapseDelay={6000} data={data} linePosition="bottom" />
       <div
-        className="mx-auto mt-0 grid max-w-5xl grid-cols-1 gap-8 px-4 sm:mt-28
+        className="mx-auto mt-0 grid max-w-6xl grid-cols-1 gap-8 px-4 sm:mt-28
           sm:grid-cols-2 sm:px-0"
       >
         <div>
           <h3
-            className="mb-4 text-lg font-semibold text-taupe-950 sm:text-2xl
-              lg:text-3xl dark:text-taupe-50"
+            className="font-display mb-4 text-lg font-semibold text-taupe-950
+              sm:text-2xl lg:text-3xl dark:text-taupe-50"
           >
             Comparte tu menú con un código QR y un enlace
           </h3>

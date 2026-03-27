@@ -61,8 +61,7 @@ export default function Benefits() {
   return (
     <section id="benefits" className="relative pt-20 pb-28 sm:py-32">
       <div
-        className="absolute inset-0 h-full w-full items-center px-5 py-24
-          sm:inset-x-4 sm:w-auto sm:rounded-3xl"
+        className="absolute inset-0 h-full w-full items-center px-5 py-24"
         style={{
           background: `
           radial-gradient(ellipse 120% 80% at 70% 20%, oklch(92.2% 0.005 34.3 / 0.3), transparent 50%),
@@ -78,8 +77,8 @@ export default function Benefits() {
           title="Más control para tu negocio, mejor experiencia para tus clientes"
         />
         <div
-          className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 px-4
-            sm:grid-cols-3 sm:gap-12 sm:px-6 lg:max-w-7xl lg:gap-16 lg:px-8"
+          className="mx-auto mt-8 grid max-w-6xl grid-cols-1 gap-8 px-4
+            sm:grid-cols-3 sm:gap-12 sm:px-6 lg:gap-16 lg:px-8"
         >
           {BENEFITS.map((benefit, index) => (
             <BenefitItem key={index} {...benefit} />

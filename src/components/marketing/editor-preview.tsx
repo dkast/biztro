@@ -45,9 +45,9 @@ export default function EditorPreview() {
           type: "spring"
         }}
         className={cn(
-          `relative mt-0 h-full w-full overflow-hidden rounded-md after:absolute
-          after:inset-0 after:z-10 sm:mt-10 sm:rounded-xl`,
-          // isMobile
+          `relative mt-0 mb-20 h-full w-full overflow-hidden rounded-md
+          after:absolute after:inset-0 after:z-10 sm:mt-10 sm:mb-30
+          sm:rounded-xl`,
           isMobile
             ? `after:[background:linear-gradient(to_top,#f3f1f1_10%,transparent)]
               dark:after:[background:linear-gradient(to_top,#0a0a0a_10%,transparent)]`
@@ -59,11 +59,7 @@ export default function EditorPreview() {
           className={cn(
             `absolute inset-0 bottom-1/3 h-full w-full transform-gpu
             filter-[blur(120px)]`,
-
-            // light styles
             "bg-[linear-gradient(to_bottom,#fb923c,transparent_30%)]",
-
-            // dark styles
             "dark:bg-[linear-gradient(to_bottom,#fb923c,transparent_30%)]"
           )}
         />
@@ -82,7 +78,7 @@ export default function EditorPreview() {
             sm:rounded-xl"
         />
 
-        {!isMobile && <GradientBlur className="-inset-x-px -bottom-px h-1/4" />}
+        {!isMobile && <GradientBlur className="-inset-x-px -bottom-px h-1/5" />}
       </motion.div>
     </section>
   )

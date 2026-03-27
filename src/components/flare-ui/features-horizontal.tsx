@@ -170,7 +170,7 @@ export default function Features({
 
   return (
     <section ref={ref} id="features">
-      <div className="mx-4">
+      <div className="mx-0">
         <div className="mx-auto max-w-6xl">
           <div className="">
             <div
@@ -248,10 +248,11 @@ export default function Features({
                     <AccordionTrigger>
                       <div className="relative flex flex-col items-center">
                         <div
-                          className="item-box bg-primary text-primary-foreground
-                            ring-primary/20 mx-2 flex size-16 shrink-0
-                            items-center justify-center rounded-full ring-1
-                            ring-inset sm:mx-6"
+                          className="item-box mx-2 flex size-16 shrink-0
+                            items-center justify-center rounded-full
+                            bg-taupe-900 text-taupe-100 ring-1 ring-taupe-700
+                            ring-inset sm:mx-6 dark:bg-taupe-800
+                            dark:ring-taupe-600"
                         >
                           {item.icon}
                         </div>

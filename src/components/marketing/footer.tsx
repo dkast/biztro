@@ -14,7 +14,7 @@ export default async function Footer() {
   "use cache"
   return (
     <footer
-      className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 lg:py-10 lg:pb-10"
+      className="mx-auto max-w-6xl px-4 py-5 sm:px-6 lg:px-8 lg:py-10 lg:pb-10"
     >
       <div className="flex items-center justify-between gap-x-5">
         <div className="flex items-center gap-x-2">
