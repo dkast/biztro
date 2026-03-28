@@ -73,8 +73,10 @@ export default function Benefits() {
       />
       <div className="relative z-10">
         <TitleSection
+          align="left"
           eyebrow="Por qué usar Biztro"
           title="Más control para tu negocio, mejor experiencia para tus clientes"
+          className="mx-auto mb-8 px-4 sm:mb-12 sm:px-6 lg:mb-16 lg:px-8"
         />
         <div
           className="mx-auto mt-8 grid max-w-6xl grid-cols-1 gap-8 px-4
@@ -101,33 +103,32 @@ const BenefitItem = ({
   soon: boolean
 }): JSX.Element => {
   return (
-    <div className="flex flex-col items-center gap-2 text-center">
-      <div className="mb-2">
-        {Icon && (
-          <Icon
-            className="size-10 rounded-xl bg-taupe-200 p-2 text-taupe-700
-              dark:bg-taupe-800/50 dark:text-taupe-300"
-          />
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <div
+          className="flex size-10 items-center justify-center rounded-lg border
+            border-taupe-200 bg-taupe-50 dark:border-taupe-700/50
+            dark:bg-taupe-800/40"
+        >
+          <Icon className="size-5 text-taupe-700 dark:text-taupe-300" />
+        </div>
+        {soon && (
+          <Badge
+            variant="outline"
+            className="border-taupe-200 bg-taupe-100 tracking-wide
+              text-taupe-600 uppercase dark:border-taupe-700/50
+              dark:bg-taupe-800/20 dark:text-taupe-400"
+          >
+            Pronto
+          </Badge>
         )}
       </div>
-      <h4 className="text-lg font-semibold text-taupe-950 dark:text-taupe-100">
-        {title}
-        {soon && (
-          <div>
-            <Badge
-              variant="outline"
-              className="border-taupe-200 bg-taupe-100 tracking-wide
-                text-taupe-600 uppercase dark:border-taupe-700/50
-                dark:bg-taupe-800/20 dark:text-taupe-400"
-            >
-              Pronto
-            </Badge>
-          </div>
-        )}
-      </h4>
-      <span className="text-balance text-taupe-700 dark:text-taupe-300">
+      <p className="text-taupe-700 dark:text-taupe-300">
+        <span className="font-semibold text-taupe-950 dark:text-taupe-100">
+          {title}.{" "}
+        </span>
         {description}
-      </span>
+      </p>
     </div>
   )
 }

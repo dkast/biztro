@@ -26,7 +26,7 @@ export default function CTABanner() {
               unoptimized
             />
           </div>
-          <p className="mt-4 mb-1 text-lg text-taupe-300">
+          <p className="mt-4 mb-1 hidden text-lg text-taupe-300 sm:block">
             ¿Quieres lanzar tu menú digital de manera rápida y sencilla?
           </p>
           <h3 className="font-display mb-4 text-center text-3xl text-white">

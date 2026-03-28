@@ -3,6 +3,7 @@
 import type { Metadata } from "next"
 import { cacheLife } from "next/cache"
 
+import AIFeatures from "@/components/marketing/ai-features"
 import Benefits from "@/components/marketing/benefits"
 import FeaturesBento from "@/components/marketing/bento-features"
 import CTABanner from "@/components/marketing/cta-banner"
@@ -32,6 +33,7 @@ export default async function Page() {
       <FeaturesBento />
       <HowItWorks />
       <Benefits />
+      <AIFeatures />
       <Pricing />
       <Faq />
       <CTABanner />

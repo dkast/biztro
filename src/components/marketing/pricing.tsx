@@ -78,6 +78,7 @@ export default function Pricing() {
           <TitleSection
             eyebrow="Precios"
             title="Elige el plan que mejor se adapta a tu negocio"
+            className="mb-8"
           />
         </div>
         <div className="mx-auto mt-4 flex items-center justify-center">

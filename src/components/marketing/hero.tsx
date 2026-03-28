@@ -87,7 +87,7 @@ export default function Hero() {
                 ref={fadeInRef}
                 className="font-display bg-linear-to-br from-taupe-950 from-30%
                   to-taupe-800/70 bg-clip-text pt-6 text-4xl leading-[1.1]
-                  font-semibold tracking-tight text-pretty text-transparent
+                  font-semibold tracking-tighter text-pretty text-transparent
                   sm:text-5xl md:text-5xl lg:text-6xl dark:from-taupe-50
                   dark:to-taupe-300/60"
                 animate={fadeInInView ? "animate" : "initial"}

@@ -6,6 +6,7 @@ import Image from "next/image"
 
 import { BentoCard, BentoGrid } from "@/components/flare-ui/bento-grid"
 import GradientBlur from "@/components/flare-ui/gradient-blur"
+import TitleSection from "@/components/marketing/title-section"
 import { Ripple } from "@/components/ui/ripple"
 
 const features = [
@@ -101,18 +102,11 @@ export default function FeaturesBento() {
   return (
     <>
       <section className="mx-auto mt-0 max-w-6xl px-4 sm:px-6 lg:px-8">
-        <h2
-          className="font-display max-w-[35ch] text-2xl tracking-tighter
-            text-pretty sm:text-3xl md:text-4xl"
-        >
-          <span className="text-taupe-950 dark:text-taupe-50">
-            Olvídate de los PDFs desactualizados.{" "}
-          </span>
-          <span className="max-w-[30ch] text-taupe-400 dark:text-taupe-500">
-            Edita precios, fotos y secciones desde el navegador, y tus cambios
-            se verán al instante.
-          </span>
-        </h2>
+        <TitleSection
+          title="Olvídate de los PDFs desactualizados."
+          tagline="Edita precios, fotos y categorías desde el navegador, y tus cambios se publican al instante."
+          align="left"
+        />
       </section>
       <section className="mx-auto mt-8 max-w-6xl px-4 sm:mt-12 sm:px-6 lg:px-8">
         <BentoGrid className="sm:grid-cols-2 sm:grid-rows-3">
