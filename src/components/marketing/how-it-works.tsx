@@ -9,7 +9,7 @@ import QRimage from "../../../public/qr-example.png"
 const data = [
   {
     id: 1,
-    title: "1. Configura tu negocio",
+    title: "Configura tu negocio",
     content:
       "Agrega el nombre de tu negocio, tus horarios y tus redes sociales. Biztro organiza la información por ti.",
     image: "/configuration.png",
@@ -17,7 +17,7 @@ const data = [
   },
   {
     id: 2,
-    title: "2. Agrega tus productos",
+    title: "Agrega tus productos",
     content:
       "Añade tus productos con descripción, precio e imagen para dejar tu menú listo en pocos minutos.",
     image: "/products.png",
@@ -25,7 +25,7 @@ const data = [
   },
   {
     id: 3,
-    title: "3. Personaliza y publica",
+    title: "Personaliza y publica",
     content:
       "Ajusta el diseño en el editor, publica tu menú y compártelo con un enlace o un código QR.",
     image: "/editor.png",
