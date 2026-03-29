@@ -1,7 +1,13 @@
 "use client"
 
 import { useRef } from "react"
-import { ChevronLeft, ChevronRight, Languages, ScanText } from "lucide-react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  Languages,
+  LockIcon,
+  ScanText
+} from "lucide-react"
 import { motion, useInView } from "motion/react"
 
 import TitleSection from "@/components/marketing/title-section"
@@ -39,31 +45,13 @@ function BrowserChrome({
         </div>
         {/* Address bar */}
         <div
-          className="mx-2 flex flex-1 items-center gap-2 rounded-md
-            bg-taupe-950/60 px-3 py-1 ring-1 ring-white/6"
+          className="mx-2 flex flex-1 items-center justify-center gap-2
+            rounded-md bg-taupe-950/60 px-3 py-1 ring-1 ring-white/6"
         >
-          <svg
-            viewBox="0 0 16 16"
-            className="size-3 shrink-0 text-taupe-500"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.5}
-          >
-            <circle cx="8" cy="8" r="5.5" />
-            <path
-              d="M8 2.5v0M8 13.5v0M2.5 8h0M13.5 8h0"
-              strokeLinecap="round"
-            />
-          </svg>
+          <LockIcon className="size-3 text-taupe-700" />
           <span className="truncate text-[11px] text-taupe-400">{url}</span>
         </div>
-        {/* <span
-          className={`font-display hidden text-[10px] font-semibold
-            tracking-widest uppercase sm:block ${accentColor}`}
-        >
-          Biztro
-        </span> */}
-        <div className="w-12" />
+        <div className="w-20" />
       </div>
       {/* Page content area */}
       <div className="relative flex-1 overflow-hidden">{children}</div>
@@ -85,7 +73,7 @@ function ScannerIllustration() {
             ring-white/6"
         >
           {/* Simulated menu page skeleton */}
-          <div className="space-y-2.5">
+          <div className="space-y-2.5 p-3">
             <div className="h-3 w-24 rounded-full bg-taupe-700/50" />
             <div className="h-2 w-full rounded-full bg-taupe-800/60" />
             <div className="h-2 w-5/6 rounded-full bg-taupe-800/60" />
@@ -103,7 +91,7 @@ function ScannerIllustration() {
             initial={{ top: "10%" }}
             animate={{ top: ["10%", "90%", "10%"] }}
             transition={{
-              duration: 3,
+              duration: 8,
               repeat: Infinity,
               ease: "easeInOut"
             }}
@@ -115,7 +103,7 @@ function ScannerIllustration() {
             initial={{ top: "8%" }}
             animate={{ top: ["8%", "88%", "8%"] }}
             transition={{
-              duration: 3,
+              duration: 8,
               repeat: Infinity,
               ease: "easeInOut"
             }}
@@ -153,7 +141,8 @@ function ScannerIllustration() {
             duration: 4,
             repeat: Infinity,
             times: [0, 0.15, 0.75, 1],
-            ease: "easeInOut"
+            ease: "easeInOut",
+            delay: 2
           }}
         >
           <div
@@ -166,7 +155,7 @@ function ScannerIllustration() {
             <p className="text-xs font-semibold text-taupe-100">
               Escaneando elementos del menú...{" "}
               <motion.span
-                className="text-orange-400"
+                className="ml-2 text-orange-400"
                 animate={{ opacity: [1, 0.4, 1] }}
                 transition={{ duration: 1.2, repeat: Infinity }}
               >
@@ -423,8 +412,9 @@ export default function AIFeatures() {
         {/* Section header */}
         <TitleSection
           align="left"
-          eyebrow="Automatización inteligente"
-          title="Inteligencia artificial al servicio de tu menú"
+          eyebrow="Automatización con IA"
+          title="Tu menú, listo en menos tiempo."
+          tagline="Sube una foto o un PDF y deja que la IA convierta tu menú en contenido editable para que puedas enfocarte en atender a tus clientes."
           inverted
         />
 
@@ -432,8 +422,8 @@ export default function AIFeatures() {
         <FeatureRow
           icon={ScanText}
           accent="bg-orange-500/20 text-orange-400"
-          title="Digitalización instantánea"
-          description="Importa un PDF o una foto de tu menú físico y deja que nuestra IA extraiga platillos, precios y descripciones. Convierte horas de captura manual en segundos."
+          title="Digitaliza tu menú en segundos"
+          description="Sube un PDF o una foto de tu menú impreso y la IA detecta platillos, precios y descripciones para convertirlos en contenido editable."
           illustration={<ScannerIllustration />}
           delay={0.1}
         />
@@ -442,8 +432,8 @@ export default function AIFeatures() {
         <FeatureRow
           icon={Languages}
           accent="bg-violet-500/20 text-violet-400"
-          title="Alcance global"
-          description="Traduce automáticamente tu menú a los idiomas más comunes para atender a cada comensal. Rompe barreras de idioma y haz que todos se sientan como en casa."
+          title="Traducción para cada cliente"
+          description="Traduce tu menú a varios idiomas para que cada comensal entienda lo que ofreces y se sienta bien atendido."
           illustration={<TranslationIllustration />}
           reverse
           delay={0.1}
