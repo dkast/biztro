@@ -32,10 +32,6 @@ export default function CTABanner() {
           <h3 className="font-display mb-4 text-center text-3xl text-white">
             Solicita acceso anticipado a Biztro
           </h3>
-          <span className="mb-4 text-taupe-300">
-            Déjanos tu correo y te avisaremos cuando abramos nuevos accesos a la
-            beta
-          </span>
           <Waitlist />
         </div>
       </div>

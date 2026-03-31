@@ -10,6 +10,7 @@ export const links: Link[] = [
   { text: "Privacidad", url: "/privacy" }
 ]
 
+// skipcq: JS-0116
 export default async function Footer() {
   "use cache"
   return (

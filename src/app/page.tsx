@@ -23,6 +23,7 @@ export const metadata: Metadata = {
     "menú digital, menú QR, restaurante, cafetería, carta digital, menú online"
 }
 
+// skipcq: JS-0116
 export default async function Page() {
   cacheLife("weeks")
   return (

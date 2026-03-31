@@ -256,7 +256,7 @@ export default function Features({
       <div
         className={cn(
           "relative w-full overflow-hidden rounded-xl sm:rounded-2xl",
-          "min-h-55 sm:min-h-145 lg:min-h-157.5",
+          "aspect-2984/1644",
           `bg-taupe-100 ring-1 ring-taupe-200 dark:bg-taupe-900
           dark:ring-taupe-800`,
           ltr && "md:order-1"
@@ -277,7 +277,7 @@ export default function Features({
                 alt={data[currentIndex].title}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1100px"
-                className="object-cover"
+                className="object-contain object-top"
                 priority={currentIndex === 0}
               />
             </motion.div>
