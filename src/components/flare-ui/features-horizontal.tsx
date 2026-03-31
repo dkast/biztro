@@ -326,7 +326,7 @@ export default function Features({
               className={cn(
                 `card relative mr-6 grid shrink-0 snap-center items-start gap-2
                 rounded-xl px-4 py-4`,
-                "w-[16.25rem] transition-colors duration-200",
+                "w-65 transition-colors duration-200",
                 isActive
                   ? `bg-taupe-100 ring-1 ring-taupe-200 dark:bg-taupe-900
                     dark:ring-taupe-700`
