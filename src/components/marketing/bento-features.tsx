@@ -2,42 +2,43 @@
 
 import { QRCode } from "react-qrcode-logo"
 import { MousePointerClick, QrCodeIcon, SwatchBook } from "lucide-react"
+import Image from "next/image"
 
 import { BentoCard, BentoGrid } from "@/components/flare-ui/bento-grid"
 import GradientBlur from "@/components/flare-ui/gradient-blur"
+import TitleSection from "@/components/marketing/title-section"
 import { Ripple } from "@/components/ui/ripple"
 
 const features = [
   {
     Icon: SwatchBook,
-    name: "Diseño",
+    name: "Diseño alineado a tu marca",
     description:
-      "Inicia con una plantilla y modifícala a tu gusto para crear algo original que se ajuste a tú negocio. Con un diseño optimizado para dispositivos móviles.",
-    href: undefined,
-    cta: "Ver más",
+      "Empieza con una plantilla y ajusta colores, imágenes y etiquetas como alérgenos para que tu menú se vea como tu negocio.",
+    cta: "Ver diseños",
     background: (
       <div className="absolute inset-0 origin-top">
-        <img
-          src="iphone-hero.png"
-          alt="Diseño"
-          className="w-full
-            [mask-image:linear-gradient(to_top,transparent_30%,#000_80%)]
-            transition-all duration-300 ease-out group-hover:scale-105
-            sm:[mask-image:linear-gradient(to_top,transparent_10%,#000_80%)]"
+        <Image
+          src="/handheld-menu.png"
+          alt="Vista del menú en un celular"
+          className="w-full translate-y-[-8%] transition-all duration-300
+            ease-out group-hover:scale-105"
+          width={600}
+          height={600}
         />
         <GradientBlur className="inset-x-0 bottom-0 h-2/3 sm:h-1/3" />
       </div>
     ),
     className:
-      "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3 bg-taupe-800 dark:bg-taupe-800 dark:text-taupe-50 text-taupe-50"
+      "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3 bg-orange-600 dark:bg-orange-600 dark:text-orange-50 text-orange-50"
   },
   {
     Icon: MousePointerClick,
-    name: "Editor web",
+    name: "Editor fácil de usar",
     description:
-      "Con una interfaz de arrastrar y soltar, es fácil realizar cambios y los resultados se pueden ver al instante.",
+      "Edita secciones, productos y precios desde un editor visual. No necesitas experiencia técnica para dejar tu menú listo.",
     href: undefined,
-    cta: "Ver más",
+    cta: "Ver el editor",
     background: (
       <div
         className="absolute inset-x-0 top-1/3 flex items-start justify-center
@@ -53,7 +54,7 @@ const features = [
             className="relative inline-flex rounded-full bg-green-600 px-4 py-2
               font-medium text-green-50 shadow-lg shadow-green-600/30"
           >
-            Publicar Menú
+            Publicar menú
           </button>
         </div>
       </div>
@@ -63,21 +64,22 @@ const features = [
   },
   {
     Icon: QrCodeIcon,
-    name: "Genera tu código QR",
+    name: "QR y enlace para compartir",
     description:
-      "Permite a tus clientes consultar tu menú utilizando su télefono móvil. Sin necesidad de instalar aplicaciones adicionales.",
+      "Tus clientes pueden abrir tu menú desde su teléfono al escanear el código o entrar desde un enlace, sin instalar ninguna app.",
     href: undefined,
-    cta: "Ver más",
+    cta: "Ver ejemplo",
     background: (
       <>
         <div
-          className="absolte inset-0 flex origin-top items-center justify-center
-            pt-8 transition-all duration-300 ease-out group-hover:scale-95"
+          className="absolute inset-0 -top-30 flex origin-top items-center
+            justify-center pt-8 transition-all duration-300 ease-out
+            group-hover:scale-95"
         >
           <div
             className="overflow-hidden rounded-lg shadow-xl shadow-taupe-900/50"
           >
-            <div className="z-999">
+            <div className="z-10">
               <QRCode
                 value="https://biztro.co"
                 logoImage="/logo-bistro.svg"
@@ -99,25 +101,14 @@ const features = [
 export default function FeaturesBento() {
   return (
     <>
-      <section
-        className="mt-0 max-w-2xl text-center md:mx-auto md:mt-0 md:text-center
-          xl:max-w-none"
-      >
-        <h2
-          className="font-display text-3xl tracking-tight text-balance
-            text-taupe-950 sm:text-4xl md:text-5xl dark:text-taupe-50"
-        >
-          Publica tu menú en Internet, fácil y rápido
-        </h2>
-        <p
-          className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8
-            text-pretty text-taupe-700 dark:text-taupe-300"
-        >
-          Sin necesidad de conocimientos técnicos, crea tu menú utilizando una
-          interfaz intuitiva y amigable, solo necesitas tu navegador web.
-        </p>
+      <section className="mx-auto mt-0 max-w-6xl px-4 sm:px-6 lg:px-8">
+        <TitleSection
+          title="Olvídate de los PDFs desactualizados."
+          tagline="Edita precios, fotos y categorías desde el navegador, y tus cambios se publican al instante."
+          align="left"
+        />
       </section>
-      <section className="mx-auto mt-16 max-w-5xl px-4 sm:mt-32 sm:px-6 lg:px-8">
+      <section className="mx-auto mt-8 max-w-6xl px-4 sm:mt-12 sm:px-6 lg:px-8">
         <BentoGrid className="sm:grid-cols-2 sm:grid-rows-3">
           {features.map(feature => (
             <BentoCard key={feature.name} {...feature} />

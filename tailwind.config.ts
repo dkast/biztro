@@ -35,7 +35,7 @@ const config = {
       }
     },
     fontFamily: {
-      display: ["var(--font-mona-sans)", ...defaultTheme.fontFamily.sans],
+      display: ["var(--font-be-vietnam-pro)", ...defaultTheme.fontFamily.sans],
       sans: ["var(--font-inter)", ...defaultTheme.fontFamily.sans]
     },
     extend: {

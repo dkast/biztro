@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react"
-import JoyRide, {
+import { useEffect, useState } from "react"
+import {
+  Joyride,
   type BeaconRenderProps,
-  type CallBackProps,
+  type EventData,
   type Step,
   type TooltipRenderProps
 } from "react-joyride"
@@ -90,7 +91,7 @@ export default function MenuTourMobile() {
     setIsMounted(true)
   }, [])
 
-  const handleCallback = (data: CallBackProps) => {
+  const handleCallback = (data: EventData) => {
     if (data.status === "finished" || data.status === "skipped") {
       setTourMode(false)
     }
@@ -99,21 +100,19 @@ export default function MenuTourMobile() {
   if (!isMounted) return null
 
   return (
-    <JoyRide
+    <Joyride
       run={tourMode}
-      callback={handleCallback}
+      onEvent={handleCallback}
       steps={steps}
-      showProgress
-      showSkipButton
+      options={{
+        showProgress: true,
+        buttons: ["back", "skip", "primary"],
+        zIndex: 1000
+      }}
       beaconComponent={Beacon}
       tooltipComponent={Tooltip}
-      floaterProps={{
+      floatingOptions={{
         hideArrow: true
-      }}
-      styles={{
-        options: {
-          zIndex: 1000
-        }
       }}
       locale={{
         back: "Anterior",
@@ -172,27 +171,23 @@ function Tooltip({
   )
 }
 
-const Beacon = React.forwardRef<HTMLButtonElement, BeaconRenderProps>(
-  (props, ref) => {
-    const buttonProps = props as unknown as
-      | React.ButtonHTMLAttributes<HTMLButtonElement>
-      | BeaconRenderProps
-
-    return (
-      <div className="relative">
-        <span
-          className="absolute -top-1 -left-1 size-8 animate-ping rounded-full
-            bg-blue-400"
-        />
-        <button
-          ref={ref}
-          {...(buttonProps as React.ButtonHTMLAttributes<HTMLButtonElement>)}
-          className="absolute inset-auto inline-block size-6 rounded-full
-            bg-blue-500 ring-4 ring-blue-400"
-        />
-      </div>
-    )
-  }
-)
-
-Beacon.displayName = "Beacon"
+function Beacon({
+  continuous: _continuous,
+  index: _index,
+  isLastStep: _isLastStep,
+  size: _size,
+  step: _step
+}: BeaconRenderProps) {
+  return (
+    <div className="relative">
+      <span
+        className="absolute -top-1 -left-1 size-8 animate-ping rounded-full
+          bg-blue-400"
+      />
+      <span
+        className="absolute inset-auto inline-block size-6 rounded-full
+          bg-blue-500 ring-4 ring-blue-400"
+      />
+    </div>
+  )
+}

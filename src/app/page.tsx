@@ -3,6 +3,7 @@
 import type { Metadata } from "next"
 import { cacheLife } from "next/cache"
 
+import AIFeatures from "@/components/marketing/ai-features"
 import Benefits from "@/components/marketing/benefits"
 import FeaturesBento from "@/components/marketing/bento-features"
 import CTABanner from "@/components/marketing/cta-banner"
@@ -15,13 +16,14 @@ import Navbar from "@/components/marketing/nav-bar"
 import Pricing from "@/components/marketing/pricing"
 
 export const metadata: Metadata = {
-  title: "Biztro | Crea tu menú digital profesional en minutos",
+  title: "Biztro | Crea y publica tu menú digital en minutos",
   description:
-    "Diseña, actualiza y comparte menús QR profesionales. Aumenta tus ventas y mejora la experiencia de tus clientes sin conocimientos técnicos.",
+    "Crea un menú QR profesional para tu restaurante o cafetería, actualízalo cuando quieras y compártelo sin depender de PDFs ni conocimientos técnicos.",
   keywords:
-    "menu digital, menu QR, restaurante, cafetería, hostelería, menú online"
+    "menú digital, menú QR, restaurante, cafetería, carta digital, menú online"
 }
 
+// skipcq: JS-0116
 export default async function Page() {
   cacheLife("weeks")
   return (
@@ -32,6 +34,7 @@ export default async function Page() {
       <FeaturesBento />
       <HowItWorks />
       <Benefits />
+      <AIFeatures />
       <Pricing />
       <Faq />
       <CTABanner />

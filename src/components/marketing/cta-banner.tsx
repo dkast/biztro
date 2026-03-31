@@ -8,7 +8,7 @@ export default function CTABanner() {
       id="cta-banner"
       className="flex w-full flex-col justify-center pb-16 lg:pb-32"
     >
-      <div className="mx-auto w-full max-w-5xl px-4 lg:max-w-6xl">
+      <div className="mx-auto w-full max-w-6xl px-4">
         <div
           className="flex flex-col items-center justify-center rounded-xl
             bg-linear-to-br from-taupe-800 via-taupe-900 to-taupe-950 p-8
@@ -20,21 +20,18 @@ export default function CTABanner() {
           >
             <Image
               src="/logo-bistro.svg"
-              alt="Logo"
+              alt="Logo de Biztro"
               width={40}
               height={40}
               unoptimized
             />
           </div>
-          <p className="mt-4 mb-1 text-lg text-taupe-300">
-            ¿Listo para mejorar tu servicio con un menú digital?
+          <p className="mt-4 mb-1 hidden text-lg text-taupe-300 sm:block">
+            ¿Quieres lanzar tu menú digital de manera rápida y sencilla?
           </p>
           <h3 className="font-display mb-4 text-center text-3xl text-white">
-            Crea tu menú online con Biztro
+            Solicita acceso anticipado a Biztro
           </h3>
-          <span className="mb-4 text-taupe-300">
-            Únete a nuestra lista de espera
-          </span>
           <Waitlist />
         </div>
       </div>

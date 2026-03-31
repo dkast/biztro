@@ -51,7 +51,6 @@ export default function Waitlist() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col items-center space-y-4"
       >
-        {/* <span className="text-gray-500">Unirse a la lista de espera</span> */}
         {!isSubmitted ? (
           <div
             className="flex flex-row items-center justify-center gap-x-2
@@ -64,11 +63,11 @@ export default function Waitlist() {
                 <Field>
                   <Input
                     type="email"
-                    placeholder="nombre@correo.com"
-                    className="h-8 max-w-[300px] rounded-full border-0
-                      bg-transparent text-white placeholder:text-taupe-400
-                      focus-visible:ring-0 focus-visible:ring-offset-0
-                      dark:bg-transparent"
+                    aria-label="Correo electrónico"
+                    placeholder="tu@correo.com"
+                    className="h-8 max-w-75 rounded-full border-0 bg-transparent
+                      text-white placeholder:text-taupe-400 focus-visible:ring-0
+                      focus-visible:ring-offset-0 dark:bg-transparent"
                     {...field}
                   />
                 </Field>
@@ -87,7 +86,7 @@ export default function Waitlist() {
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               <TextMorph>
-                {status === "executing" ? "Procesando..." : "Unirse"}
+                {status === "executing" ? "Enviando..." : "Solicitar acceso"}
               </TextMorph>
             </Button>
           </div>
@@ -101,11 +100,11 @@ export default function Waitlist() {
                 dark:border-taupe-700/30 dark:bg-taupe-900/20"
             >
               <AlertTitle className="text-taupe-950 dark:text-taupe-50">
-                ¡Gracias por tu interés!
+                Ya estás en la lista
               </AlertTitle>
               <AlertDescription className="text-taupe-700 dark:text-taupe-300">
-                Te enviaremos un correo electrónico cuando estemos listos para
-                que puedas probar la aplicación.
+                Te avisaremos por correo cuando abramos nuevos accesos a la
+                beta.
               </AlertDescription>
             </Alert>
           </motion.div>

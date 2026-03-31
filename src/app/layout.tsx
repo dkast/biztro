@@ -2,7 +2,7 @@ import React, { Suspense } from "react"
 import { VercelToolbar } from "@vercel/toolbar/next"
 import { Agentation } from "agentation"
 import { type Metadata, type Viewport } from "next"
-import { Inter, Mona_Sans } from "next/font/google"
+import { Be_Vietnam_Pro, Inter } from "next/font/google"
 
 import "../../styles/globals.css"
 import "../../styles/gradient-blur.css"
@@ -35,11 +35,11 @@ export const viewport: Viewport = {
   userScalable: false
 }
 
-const monaSans = Mona_Sans({
+const beVietnamPro = Be_Vietnam_Pro({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
-  variable: "--font-mona-sans",
-  display: "swap",
-  axes: ["wdth"]
+  variable: "--font-be-vietnam-pro",
+  display: "swap"
 })
 
 const inter = Inter({
@@ -56,7 +56,7 @@ export default function RootLayout({
   const shouldInjectToolbar = process.env.NODE_ENV === "development"
   return (
     <html
-      className={`${monaSans.variable} ${inter.variable} overscroll-none
+      className={`${beVietnamPro.variable} ${inter.variable} overscroll-none
         scroll-smooth antialiased`}
       suppressHydrationWarning
       lang="es-MX"

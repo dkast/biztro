@@ -10,11 +10,12 @@ export const links: Link[] = [
   { text: "Privacidad", url: "/privacy" }
 ]
 
+// skipcq: JS-0116
 export default async function Footer() {
   "use cache"
   return (
     <footer
-      className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 lg:py-10 lg:pb-10"
+      className="mx-auto max-w-6xl px-4 py-5 sm:px-6 lg:px-8 lg:py-10 lg:pb-10"
     >
       <div className="flex items-center justify-between gap-x-5">
         <div className="flex items-center gap-x-2">
@@ -32,15 +33,14 @@ export default async function Footer() {
         </div>
 
         <ul className="flex items-center justify-center gap-x-5 sm:gap-x-10">
-          <a
-            href="mailto:contacto@biztro.co"
+          <li
             className="text-[15px]/normal font-medium text-taupe-500
               transition-all duration-100 ease-linear hover:text-taupe-950
               hover:underline hover:underline-offset-4 dark:text-taupe-400
               dark:hover:text-taupe-50"
           >
-            Contacto
-          </a>
+            <a href="mailto:contacto@biztro.co">Contacto</a>
+          </li>
           {links.map((link, index) => (
             <li
               key={index}

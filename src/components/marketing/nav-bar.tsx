@@ -41,7 +41,12 @@ export default function Navbar({
           justify-between px-4 sm:px-6 lg:px-8"
       >
         <Link href="/" className="flex flex-row items-center gap-2">
-          <Image src="/logo-bistro.svg" alt="Logo" width={32} height={32} />
+          <Image
+            src="/logo-bistro.svg"
+            alt="Logo de Biztro"
+            width={32}
+            height={32}
+          />
           <span
             className="font-sans text-xl font-semibold text-taupe-950
               dark:text-taupe-50"
@@ -53,22 +58,22 @@ export default function Navbar({
           <nav className="hidden space-x-6 text-sm md:flex">
             <Link
               href="#how-it-works"
-              className="text-taupe-700 hover:text-taupe-950 dark:text-taupe-300
-                dark:hover:text-taupe-50"
+              className="text-taupe-700 transition-colors hover:text-taupe-950
+                dark:text-taupe-300 dark:hover:text-taupe-50"
             >
-              Cómo Funciona
+              Cómo funciona
             </Link>
             <Link
               href="#benefits"
-              className="text-taupe-700 hover:text-taupe-950 dark:text-taupe-300
-                dark:hover:text-taupe-50"
+              className="text-taupe-700 transition-colors hover:text-taupe-950
+                dark:text-taupe-300 dark:hover:text-taupe-50"
             >
               Beneficios
             </Link>
             <Link
               href="#pricing"
-              className="text-taupe-700 hover:text-taupe-950 dark:text-taupe-300
-                dark:hover:text-taupe-50"
+              className="text-taupe-700 transition-colors hover:text-taupe-950
+                dark:text-taupe-300 dark:hover:text-taupe-50"
             >
               Precios
             </Link>
