@@ -74,7 +74,7 @@ export default function EditorPreview() {
         <div
           className="pointer-events-none absolute inset-0 z-20 rounded-md border
             border-taupe-900/20
-            mask-[linear-gradient(to_bottom,black_50%,transparent_100%)]
+            [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]
             sm:rounded-xl"
         />
 

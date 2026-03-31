@@ -70,6 +70,7 @@ export default function Features({
   }
 
   useEffect(() => {
+    if (!isInView || data.length === 0) return
     const timer = setInterval(() => {
       setCurrentIndex(prevIndex =>
         prevIndex !== undefined ? (prevIndex + 1) % data.length : 0
@@ -77,9 +78,10 @@ export default function Features({
     }, collapseDelay)
 
     return () => clearInterval(timer)
-  }, [currentIndex, collapseDelay, data.length])
+  }, [currentIndex, collapseDelay, data.length, isInView])
 
   useEffect(() => {
+    if (!isInView || data.length === 0) return
     const handleAutoScroll = () => {
       const nextIndex =
         (currentIndex !== undefined ? currentIndex + 1 : 0) % data.length
@@ -89,7 +91,7 @@ export default function Features({
     const autoScrollTimer = setInterval(handleAutoScroll, collapseDelay)
 
     return () => clearInterval(autoScrollTimer)
-  }, [currentIndex, collapseDelay, data.length])
+  }, [currentIndex, collapseDelay, data.length, isInView])
 
   useEffect(() => {
     const carousel = carouselRef.current
@@ -324,7 +326,7 @@ export default function Features({
               className={cn(
                 `card relative mr-6 grid shrink-0 snap-center items-start gap-2
                 rounded-xl px-4 py-4`,
-                "w-65 transition-colors duration-200",
+                "w-[16.25rem] transition-colors duration-200",
                 isActive
                   ? `bg-taupe-100 ring-1 ring-taupe-200 dark:bg-taupe-900
                     dark:ring-taupe-700`

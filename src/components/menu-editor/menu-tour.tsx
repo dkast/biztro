@@ -164,7 +164,13 @@ function Tooltip({
   )
 }
 
-function Beacon(_props: BeaconRenderProps) {
+function Beacon({
+  continuous: _continuous,
+  index: _index,
+  isLastStep: _isLastStep,
+  size: _size,
+  step: _step
+}: BeaconRenderProps) {
   return (
     <div className="relative">
       <span

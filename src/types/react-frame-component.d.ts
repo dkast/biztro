@@ -4,7 +4,7 @@
 // types are available without coupling tsconfig to node_modules internals.
 
 declare module "react-frame-component" {
-  import * as React from "react"
+  import type * as React from "react"
 
   export interface FrameComponentProps
     extends React.IframeHTMLAttributes<HTMLIFrameElement>,

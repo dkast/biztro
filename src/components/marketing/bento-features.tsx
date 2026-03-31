@@ -72,7 +72,7 @@ const features = [
     background: (
       <>
         <div
-          className="absolute inset-0 -top-30 flex origin-top items-center
+          className="absolute inset-0 -top-[7.5rem] flex origin-top items-center
             justify-center pt-8 transition-all duration-300 ease-out
             group-hover:scale-95"
         >
