@@ -101,7 +101,7 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
                       Asegurese de haber descargado todos los datos que desea
                       conservar antes de continuar.{" "}
                       <Link
-                        href="settings/billing"
+                        href="/dashboard/settings/billing"
                         prefetch={false}
                         className="text-blue-600 underline underline-offset-2
                           hover:text-blue-800"
