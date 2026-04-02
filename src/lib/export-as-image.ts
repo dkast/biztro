@@ -1,10 +1,10 @@
-import html2canvas from "html2canvas"
+import { screenshot } from "@renoun/screenshot"
 
 const exportAsImage = async (
   element: HTMLElement,
   imageFilename: string
 ): Promise<void> => {
-  const canvas = await html2canvas(element)
+  const canvas = await screenshot.canvas(element)
   const image = canvas.toDataURL("image/png", 1.0)
 
   downloadImage(image, imageFilename)
