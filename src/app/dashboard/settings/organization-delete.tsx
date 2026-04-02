@@ -102,6 +102,7 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
                       conservar antes de continuar.{" "}
                       <Link
                         href="settings/billing"
+                        prefetch={false}
                         className="text-blue-600 underline underline-offset-2
                           hover:text-blue-800"
                       >

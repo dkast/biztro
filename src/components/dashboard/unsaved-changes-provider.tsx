@@ -239,8 +239,8 @@ export const GuardLink: React.FC<LinkProps> = ({
     <NextLink
       href={href}
       onClick={handleLinkClick}
-      prefetch={nextLinkProps.prefetch ?? false}
       {...nextLinkProps}
+      prefetch={nextLinkProps.prefetch ?? false}
     >
       {children}
     </NextLink>

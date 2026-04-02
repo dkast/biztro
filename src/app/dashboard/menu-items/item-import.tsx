@@ -364,7 +364,10 @@ export default function ItemImport() {
                   </div>
                 </div>
                 <Button asChild variant="outline" disabled={isPending}>
-                  <Link href="/dashboard/menu-items/menu-import">
+                  <Link
+                    href="/dashboard/menu-items/menu-import"
+                    prefetch={false}
+                  >
                     Importar tu menú con IA
                   </Link>
                 </Button>

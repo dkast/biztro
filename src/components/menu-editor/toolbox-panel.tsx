@@ -243,7 +243,7 @@ export default function ToolboxPanel({
             <AlertDescription className="text-xs">
               Agrega productos y categorizalos para incluirlos en tu menú.
             </AlertDescription>
-            <Link href="/dashboard/menu-items">
+            <Link href="/dashboard/menu-items" prefetch={false}>
               <Button
                 variant="outline"
                 size="xs"
