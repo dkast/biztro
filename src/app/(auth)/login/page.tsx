@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   description: "Iniciar sesión en Biztro"
 }
 
+// skipcq: JS-0116
 export default async function LoginPage() {
   return (
     <div className="flex min-h-full flex-1">
