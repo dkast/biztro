@@ -28,7 +28,10 @@ export default function PrivacyPage() {
             recopilemos, usemos y compartamos su información personal de las
             siguientes maneras. Cualquier término en mayúscula que no esté
             definido en esta Política se define en nuestros{" "}
-            <Link href="/terms">Términos de servicio</Link> .
+            <Link href="/terms" prefetch={false}>
+              Términos de servicio
+            </Link>{" "}
+            .
           </p>
         </li>
         <li>

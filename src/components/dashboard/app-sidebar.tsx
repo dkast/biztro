@@ -186,7 +186,7 @@ export default function AppSidebar({
               </CardHeader>
               <CardFooter className="px-3">
                 <Button size="xs" variant="default" className="w-full" asChild>
-                  <Link href="/dashboard/settings/billing">
+                  <Link href="/dashboard/settings/billing" prefetch={false}>
                     Actualiza ahora
                   </Link>
                 </Button>
@@ -212,7 +212,7 @@ function SidebarLink({ item }: { item: NavigationItem }) {
 
   return (
     <SidebarMenuButton asChild isActive={isActive}>
-      <Link href={item.url}>
+      <Link href={item.url} prefetch={false}>
         {item.icon && <item.icon />}
         <span>{item.title}</span>
       </Link>
@@ -226,7 +226,7 @@ function SidebarSubLink({ item }: { item: NavigationItem }) {
 
   return (
     <SidebarMenuSubButton asChild isActive={isActive}>
-      <Link href={item.url}>
+      <Link href={item.url} prefetch={false}>
         <span>{item.title}</span>
       </Link>
     </SidebarMenuSubButton>
@@ -289,7 +289,7 @@ function SidebarWorkgroup() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuButton asChild size="lg">
-            <Link href="/dashboard/create-org">
+            <Link href="/dashboard/create-org" prefetch={false}>
               <div
                 className="border-sidebar-border grid size-8 place-items-center
                   rounded-sm border shadow-sm"
@@ -374,6 +374,7 @@ function SidebarWorkgroup() {
               <DropdownMenuItem asChild className="gap-2 p-2">
                 <Link
                   href="/dashboard/create-org"
+                  prefetch={false}
                   className="flex items-center gap-2"
                 >
                   <div

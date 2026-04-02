@@ -97,6 +97,7 @@ export default function Component() {
             href="https://la-bella-italia.biztro.co"
             target="_blank"
             rel="noopener noreferrer"
+            prefetch={false}
             className="z-10"
           >
             <Image
@@ -116,6 +117,7 @@ export default function Component() {
               href="https://la-bella-italia.biztro.co"
               target="_blank"
               rel="noopener noreferrer"
+              prefetch={false}
               className="inline-flex items-center gap-1 text-taupe-600 underline
                 underline-offset-2 hover:text-taupe-500 dark:text-taupe-400"
             >

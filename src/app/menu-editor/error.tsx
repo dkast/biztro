@@ -28,7 +28,7 @@ export default function MenuEditorError({
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Button onClick={reset}>Reintentar</Button>
-          <Link href="/dashboard">
+          <Link href="/dashboard" prefetch={false}>
             <Button variant="outline">Volver al dashboard</Button>
           </Link>
         </div>

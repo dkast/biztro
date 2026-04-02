@@ -52,7 +52,7 @@ export default async function Page(props: {
                 </div>
               </div>
               <div className="mt-6 text-center">
-                <Link href="/">
+                <Link href="/" prefetch={false}>
                   <Button>Volver al inicio</Button>
                 </Link>
               </div>
@@ -67,6 +67,7 @@ export default async function Page(props: {
             src="https://images.unsplash.com/photo-1529514027228-b808875f9d37?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1980&q=80"
             alt="Imagen restaurant"
             fill
+            sizes="(max-width: 1023px) 0px, 50vw"
             unoptimized
           />
         </div>
@@ -92,7 +93,7 @@ export default async function Page(props: {
               Una disculpa, algo salió mal, te sugerimos intentarlo más tarde.
             </p>
           </div>
-          <Link href="/">
+          <Link href="/" prefetch={false}>
             <Button>Volver al inicio</Button>
           </Link>
         </div>

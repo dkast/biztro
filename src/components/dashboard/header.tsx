@@ -22,8 +22,14 @@ export default function Header({
           lg:px-8"
       >
         {showLogo && (
-          <Link href="/dashboard">
-            <Image src="/logo-bistro.svg" alt="Logo" width={32} height={32} />
+          <Link href="/dashboard" prefetch={false}>
+            <Image
+              src="/logo-bistro.svg"
+              alt="Logo"
+              width={32}
+              height={32}
+              unoptimized
+            />
           </Link>
         )}
         {children}

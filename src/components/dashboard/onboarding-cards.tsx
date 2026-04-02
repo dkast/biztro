@@ -86,7 +86,7 @@ export function OnboardingCards({
                 </Badge>
                 <CardTitle className="text-lg font-medium">Negocio</CardTitle>
               </div>
-              <Link href="/dashboard/settings">
+              <Link href="/dashboard/settings" prefetch={false}>
                 <Button
                   variant={orgReady ? "secondary" : "outline"}
                   size="xs"
@@ -127,7 +127,7 @@ export function OnboardingCards({
                 </Badge>
                 <CardTitle className="text-lg font-medium">Sucursal</CardTitle>
               </div>
-              <Link href="/dashboard/settings/locations">
+              <Link href="/dashboard/settings/locations" prefetch={false}>
                 <Button
                   variant={locationReady ? "secondary" : "outline"}
                   size="xs"
@@ -168,7 +168,7 @@ export function OnboardingCards({
                 </Badge>
                 <CardTitle className="text-lg font-medium">Productos</CardTitle>
               </div>
-              <Link href="/dashboard/menu-items">
+              <Link href="/dashboard/menu-items" prefetch={false}>
                 <Button
                   variant={menuItemsReady ? "secondary" : "outline"}
                   size="xs"

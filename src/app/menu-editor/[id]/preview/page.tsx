@@ -40,7 +40,7 @@ export default async function PreviewPage(props: {
             inset-ring inset-ring-amber-300/50 backdrop-blur-lg"
         >
           Vista previa
-          <Link href={`/menu-editor/${params.id}`}>
+          <Link href={`/menu-editor/${params.id}`} prefetch={false}>
             <Button variant="ghost" size="icon-sm" className="rounded-full">
               <XIcon />
             </Button>

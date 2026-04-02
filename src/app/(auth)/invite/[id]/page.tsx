@@ -41,6 +41,7 @@ export default async function InvitePage(props: {
         alt="Logo"
         width={44}
         height={44}
+        unoptimized
         className="py-6"
       />
       <div className="mt-0">
@@ -70,6 +71,7 @@ const InviteExpiredOrInvalid = ({
         alt="Logo"
         width={44}
         height={44}
+        unoptimized
         className="py-10"
       />
       <h1 className="font-display text-3xl font-semibold">{title}</h1>

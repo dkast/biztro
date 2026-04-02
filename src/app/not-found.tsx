@@ -22,7 +22,7 @@ export default function NotFound() {
           <h2 className="text-2xl sm:text-3xl">Página no encontrada</h2>
           <p>No encontramos la página que estas buscando.</p>
         </div>
-        <Link href="/">
+        <Link href="/" prefetch={false}>
           <Button>Volver al inicio</Button>
         </Link>
       </div>

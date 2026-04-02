@@ -40,6 +40,7 @@ export default function SecondaryNav({
                 <li key={item.href} className="flex-none">
                   <Link
                     href={path}
+                    prefetch={false}
                     className={cn(
                       `my-1 block rounded-lg px-4 py-2 text-sm font-semibold
                       text-gray-500 hover:bg-gray-100 hover:text-gray-900

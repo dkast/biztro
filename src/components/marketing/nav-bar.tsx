@@ -40,12 +40,17 @@ export default function Navbar({
         className="absolute inset-0 mx-auto flex w-full max-w-7xl items-center
           justify-between px-4 sm:px-6 lg:px-8"
       >
-        <Link href="/" className="flex flex-row items-center gap-2">
+        <Link
+          href="/"
+          prefetch={false}
+          className="flex flex-row items-center gap-2"
+        >
           <Image
             src="/logo-bistro.svg"
             alt="Logo de Biztro"
             width={32}
             height={32}
+            unoptimized
           />
           <span
             className="font-sans text-xl font-semibold text-taupe-950
@@ -58,6 +63,7 @@ export default function Navbar({
           <nav className="hidden space-x-6 text-sm md:flex">
             <Link
               href="#how-it-works"
+              prefetch={false}
               className="text-taupe-700 transition-colors hover:text-taupe-950
                 dark:text-taupe-300 dark:hover:text-taupe-50"
             >
@@ -65,6 +71,7 @@ export default function Navbar({
             </Link>
             <Link
               href="#benefits"
+              prefetch={false}
               className="text-taupe-700 transition-colors hover:text-taupe-950
                 dark:text-taupe-300 dark:hover:text-taupe-50"
             >
@@ -72,6 +79,7 @@ export default function Navbar({
             </Link>
             <Link
               href="#pricing"
+              prefetch={false}
               className="text-taupe-700 transition-colors hover:text-taupe-950
                 dark:text-taupe-300 dark:hover:text-taupe-50"
             >
@@ -80,7 +88,7 @@ export default function Navbar({
           </nav>
         )}
         {children}
-        <Link href="/dashboard">
+        <Link href="/dashboard" prefetch={false}>
           <Button
             variant="default"
             size="xs"

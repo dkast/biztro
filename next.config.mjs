@@ -15,6 +15,7 @@ const config = {
   cacheComponents: true,
   reactStrictMode: true,
   experimental: {
+    turbopackFileSystemCacheForBuild: true,
     serverActions: {
       bodySizeLimit: "10mb"
     }

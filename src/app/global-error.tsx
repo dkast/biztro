@@ -57,7 +57,7 @@ export default function GlobalError({
                 tarde.
               </p>
             </div>
-            <Link href="/">
+            <Link href="/" prefetch={false}>
               <Button>Volver al inicio</Button>
             </Link>
           </div>

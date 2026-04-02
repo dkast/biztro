@@ -254,6 +254,7 @@ export default function LocationForm({
                     alt="Facebook"
                     width={24}
                     height={24}
+                    unoptimized
                   />
                   Facebook
                 </FieldLabel>
@@ -278,6 +279,7 @@ export default function LocationForm({
                     alt="Instagram"
                     width={24}
                     height={24}
+                    unoptimized
                   />
                   Instagram
                 </FieldLabel>
@@ -302,6 +304,7 @@ export default function LocationForm({
                     alt="Twitter"
                     width={24}
                     height={24}
+                    unoptimized
                   />
                   Twitter
                 </FieldLabel>
@@ -326,6 +329,7 @@ export default function LocationForm({
                     alt="TikTok"
                     width={24}
                     height={24}
+                    unoptimized
                   />
                   TikTok
                 </FieldLabel>
@@ -350,6 +354,7 @@ export default function LocationForm({
                     alt="WhatsApp"
                     width={24}
                     height={24}
+                    unoptimized
                   />
                   WhatsApp
                 </FieldLabel>

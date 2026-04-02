@@ -45,6 +45,7 @@ export function ImageField({
         className="h-full w-full object-cover"
         loading="lazy"
         fill
+        sizes="(max-width: 768px) 100vw, 50vw"
         unoptimized
       />
       <div
