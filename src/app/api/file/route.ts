@@ -326,5 +326,9 @@ export async function POST(req: NextRequest) {
 //       )
 //     })
 //   )
-//   return NextResponse.json(signedUrls)
+//   return NextResponse.json(signedUrls, {
+//     headers: {
+//       "Cache-Control": "s-maxage=3600"
+//     }
+//   })
 // }

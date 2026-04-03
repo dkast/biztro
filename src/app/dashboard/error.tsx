@@ -29,7 +29,7 @@ export default function DashboardError({
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Button onClick={reset}>Reintentar</Button>
-          <Link href="/">
+          <Link href="/" prefetch={false}>
             <Button variant="outline">Volver al inicio</Button>
           </Link>
         </div>

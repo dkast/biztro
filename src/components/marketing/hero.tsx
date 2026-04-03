@@ -68,7 +68,7 @@ export default function Hero() {
                   ease: "easeIn"
                 }}
               >
-                <Link href="/blog/beta-biztro">
+                <Link href="/blog/beta-biztro" prefetch={false}>
                   <Announcement
                     className="inset-ring-taupe-950/20 hover:ring-taupe-950/30"
                   >

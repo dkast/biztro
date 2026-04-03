@@ -24,6 +24,7 @@ export default async function Footer() {
             alt="Logo"
             width={24}
             height={24}
+            unoptimized
             className="opacity-30 dark:invert"
           />
           <p className="text-sm font-medium text-taupe-500 dark:text-taupe-400">

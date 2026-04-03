@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   description: "Iniciar sesión en Biztro"
 }
 
+// skipcq: JS-0116
 export default async function LoginPage() {
   return (
     <div className="flex min-h-full flex-1">
@@ -20,8 +21,14 @@ export default async function LoginPage() {
       >
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div className="flex flex-col items-center">
-            <Link href="/">
-              <Image src="/logo-bistro.svg" alt="Logo" width={44} height={44} />
+            <Link href="/" prefetch={false}>
+              <Image
+                src="/logo-bistro.svg"
+                alt="Logo"
+                width={44}
+                height={44}
+                unoptimized
+              />
             </Link>
             <h2
               className="font-display mt-4 text-3xl leading-9 font-medium
@@ -49,6 +56,7 @@ export default async function LoginPage() {
           src="https://images.unsplash.com/photo-1653084019129-1f2303bb5bc0?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt=""
           fill
+          sizes="(max-width: 1023px) 0px, 50vw"
           unoptimized
         />
       </div>

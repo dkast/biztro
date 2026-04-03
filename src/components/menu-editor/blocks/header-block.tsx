@@ -341,6 +341,7 @@ function BannerImage({
           className="object-cover"
           src={banner}
           fill
+          sizes="100vw"
           unoptimized
         />
       </div>

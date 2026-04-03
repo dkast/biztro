@@ -99,6 +99,7 @@ export default async function DashboardPage() {
                     className="block w-full"
                     target="_blank"
                     rel="noopener noreferrer"
+                    prefetch={false}
                   >
                     <ItemMedia>
                       <GlobeIcon className="size-4" />

@@ -417,6 +417,7 @@ export default function MenuPublish({
                   // className="text-blue-600 hover:text-blue-800"
                   target="_blank"
                   rel="noopener noreferrer"
+                  prefetch={false}
                 >
                   {publishedMenuUrl}
                 </Link>
@@ -525,6 +526,7 @@ export default function MenuPublish({
                     href={publishedMenuUrl}
                     className="flex flex-row items-center justify-center gap-2"
                     target="_blank"
+                    prefetch={false}
                   >
                     <span className="text-xs">{publishedMenuUrl}</span>
                     <ExternalLink className="size-3.5 text-gray-500" />

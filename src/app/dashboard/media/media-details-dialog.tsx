@@ -111,6 +111,7 @@ export function MediaDetailsDialog({
           src={asset.url}
           alt="Preview"
           fill
+          sizes="(max-width: 768px) 100vw, 32rem"
           className="object-contain"
           unoptimized
         />

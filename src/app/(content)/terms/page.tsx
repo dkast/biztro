@@ -59,7 +59,10 @@ export default function TermsPage() {
         <li>
           <strong>Privacidad.</strong> Estos Términos incluyen las disposiciones
           de este documento, así como las de nuestra{" "}
-          <Link href="/privacy">Política de Privacidad</Link>.
+          <Link href="/privacy" prefetch={false}>
+            Política de Privacidad
+          </Link>
+          .
         </li>
         <li>
           <p>
@@ -131,7 +134,9 @@ export default function TermsPage() {
           <p>
             Si desea que cancelemos su cuenta, siga los procedimientos
             establecidos en nuestra{" "}
-            <Link href="/privacy">Política de Privacidad.</Link>
+            <Link href="/privacy" prefetch={false}>
+              Política de Privacidad.
+            </Link>
           </p>
           <p>
             No puede transferir su cuenta a nadie más sin nuestro permiso previo

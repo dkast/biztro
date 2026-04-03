@@ -677,7 +677,9 @@ export function MenuItemsDataGrid({
                   </EmptyHeader>
                   <EmptyContent>
                     <Button asChild size="sm">
-                      <Link href="/dashboard/menu-items">Crear producto</Link>
+                      <Link href="/dashboard/menu-items" prefetch={false}>
+                        Crear producto
+                      </Link>
                     </Button>
                   </EmptyContent>
                 </Empty>

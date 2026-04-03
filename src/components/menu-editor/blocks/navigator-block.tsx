@@ -273,6 +273,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
                         event.preventDefault()
                         handleSectionNavigation(id)
                       }}
+                      prefetch={false}
                       className={cn(
                         visibleId === id
                           ? "underline decoration-2 underline-offset-4"
@@ -320,6 +321,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
                         event.preventDefault()
                         handleSectionNavigation(id, true)
                       }}
+                      prefetch={false}
                       className={cn(
                         `hover:bg-accent block rounded-md px-4 py-3 text-lg
                         transition-colors`,

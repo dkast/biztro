@@ -76,6 +76,7 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesContext> = ({
         <AlertDialogAction>
           <Link
             href={modalContent?.proceedLinkHref ?? "/"}
+            prefetch={false}
             onClick={() => {
               setShowModal(false)
               modalContent?.proceedAction?.()
@@ -235,7 +236,12 @@ export const GuardLink: React.FC<LinkProps> = ({
   )
 
   return (
-    <NextLink href={href} onClick={handleLinkClick} {...nextLinkProps}>
+    <NextLink
+      href={href}
+      onClick={handleLinkClick}
+      {...nextLinkProps}
+      prefetch={nextLinkProps.prefetch ?? false}
+    >
       {children}
     </NextLink>
   )

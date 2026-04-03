@@ -2,6 +2,10 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import { getOrganizationBySlug } from "@/server/actions/organization/queries"
 
+const responseHeaders = {
+  "Cache-Control": "private, no-store"
+}
+
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams
   const subdomain = searchParams.get("subdomain")
@@ -9,14 +13,20 @@ export async function GET(req: NextRequest) {
   const fields = searchParams.get("fields")?.split(",")
 
   if (!subdomain) {
-    return new NextResponse("Missing subdomain", { status: 400 })
+    return new NextResponse("Missing subdomain", {
+      status: 400,
+      headers: responseHeaders
+    })
   }
   if (secret !== process.env.AUTH_SECRET) {
-    return new NextResponse("Unauthorized", { status: 401 })
+    return new NextResponse("Unauthorized", {
+      status: 401,
+      headers: responseHeaders
+    })
   }
 
   const org = await getOrganizationBySlug(subdomain)
-  if (!org) return NextResponse.json(null)
+  if (!org) return NextResponse.json(null, { headers: responseHeaders })
 
   // If fields param is present, return only those fields
   if (fields && Array.isArray(fields) && fields.length > 0) {
@@ -26,7 +36,7 @@ export async function GET(req: NextRequest) {
         // @ts-expect-error: dynamic key assignment for API response
         filtered[key as keyof typeof org] = org[key as keyof typeof org]
     }
-    return NextResponse.json(filtered)
+    return NextResponse.json(filtered, { headers: responseHeaders })
   }
-  return NextResponse.json(org)
+  return NextResponse.json(org, { headers: responseHeaders })
 }

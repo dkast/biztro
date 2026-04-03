@@ -345,7 +345,9 @@ export default function TranslationsManager({
             className="border-white/20 bg-white/10 text-white hover:bg-white/20
               hover:text-white"
           >
-            <Link href="/dashboard/settings/billing">Actualizar a Pro</Link>
+            <Link href="/dashboard/settings/billing" prefetch={false}>
+              Actualizar a Pro
+            </Link>
           </BannerAction>
           <BannerClose
             aria-label="Cerrar aviso"
