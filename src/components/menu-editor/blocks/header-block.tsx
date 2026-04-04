@@ -149,7 +149,17 @@ export default function HeaderBlock({
   const bannerOverlayOpacity = useTransform(
     activeScrollY,
     [0, SCROLL_END],
-    [0.5, 0.75]
+    [0, 0.3]
+  )
+
+  // Color gradient fades out as the header collapses so the raw banner
+  // image + progressive blur remains visible in the collapsed state.
+  // Driven by rawScrollY (no spring) so it reacts instantly on scroll-back,
+  // avoiding the jarring 1-second delay before blur reappears.
+  const colorGradientOpacity = useTransform(
+    rawScrollY,
+    [0, SCROLL_MID, SCROLL_END],
+    [1, 0.6, 0]
   )
 
   return (
@@ -174,11 +184,37 @@ export default function HeaderBlock({
         />
         {showBanner && organization.banner && (
           <>
-            <GradientBlur className="inset-x-0 bottom-0 h-2/3" />
             <motion.div
-              className="absolute inset-0"
+              className="absolute inset-x-0 bottom-0 h-2/3"
+              style={{ opacity: colorGradientOpacity }}
+            >
+              <GradientBlur className="inset-0" />
+            </motion.div>
+            {/*
+              z-[15] puts this above GradientBlur (z-10) so the solid color at
+              the bottom properly covers the blurred layers and prevents a hard
+              visual seam at the header/content boundary.
+            */}
+            <motion.div
+              className="absolute inset-0 z-15"
               style={{
-                background: `linear-gradient(180deg, rgba(0, 0, 0, 0.08), ${background})`,
+                opacity: colorGradientOpacity,
+                background: (() => {
+                  const bg = backgroundColor ?? {
+                    r: 255,
+                    g: 255,
+                    b: 255,
+                    a: 1
+                  }
+                  const rgb = `${bg.r}, ${bg.g}, ${bg.b}`
+                  return `linear-gradient(to bottom, rgba(${rgb}, 0) 0%, rgba(${rgb}, 0) 30%, rgba(${rgb}, 0.12) 45%, rgba(${rgb}, 0.4) 58%, rgba(${rgb}, 0.72) 72%, rgba(${rgb}, 0.92) 84%, rgba(${rgb}, 1) 93%)`
+                })()
+              }}
+            />
+            <motion.div
+              className="absolute inset-0 z-15"
+              style={{
+                backgroundColor: background,
                 opacity: bannerOverlayOpacity
               }}
             />
