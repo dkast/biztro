@@ -26,7 +26,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="relative flex min-w-0 grow flex-col overscroll-contain
             bg-white dark:bg-gray-950"
         >
-          <Header showLogo={false} className="sticky top-0 z-10 w-full">
+          <Header showLogo={false} className="sticky top-0 z-50 w-full">
             <SidebarTrigger className="size-5 text-gray-400 dark:text-gray-500" />
           </Header>
           {children}

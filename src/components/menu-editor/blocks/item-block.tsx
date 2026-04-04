@@ -197,44 +197,45 @@ export function ItemView({
           {item.variants.length > 1 ? (
             <div className="flex flex-col justify-end gap-1 self-end">
               {item.variants.map(variant => {
-                const variantTranslation =
-                  translation?.getVariantTranslation(variant.id)
+                const variantTranslation = translation?.getVariantTranslation(
+                  variant.id
+                )
                 const displayVariantName =
                   variantTranslation?.name ?? variant.name
                 return (
-                <div
-                  key={variant.id}
-                  className="grid grid-cols-[1fr_80px] gap-1 text-right"
-                >
-                  <FontWrapper fontFamily={descriptionFontFamily}>
-                    <span
-                      className="text-sm"
-                      style={{
-                        color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-                      }}
-                    >
-                      {displayVariantName}
-                    </span>
-                  </FontWrapper>
-                  <FontWrapper fontFamily={priceFontFamily}>
-                    <span
-                      style={{
-                        fontFamily: priceFontFamily,
-                        fontSize: `${priceFontSize}px`,
-                        color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
-                        fontWeight: priceFontWeight
-                      }}
-                      className="text-nowrap"
-                    >
-                      {formatPrice(
-                        variant.price,
-                        resolveCurrency(
-                          (item as unknown as { currency?: string }).currency
-                        )
-                      )}
-                    </span>
-                  </FontWrapper>
-                </div>
+                  <div
+                    key={variant.id}
+                    className="grid grid-cols-[1fr_90px] gap-1 text-right"
+                  >
+                    <FontWrapper fontFamily={descriptionFontFamily}>
+                      <span
+                        className="text-sm"
+                        style={{
+                          color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+                        }}
+                      >
+                        {displayVariantName}
+                      </span>
+                    </FontWrapper>
+                    <FontWrapper fontFamily={priceFontFamily}>
+                      <span
+                        style={{
+                          fontFamily: priceFontFamily,
+                          fontSize: `${priceFontSize}px`,
+                          color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
+                          fontWeight: priceFontWeight
+                        }}
+                        className="text-nowrap"
+                      >
+                        {formatPrice(
+                          variant.price,
+                          resolveCurrency(
+                            (item as unknown as { currency?: string }).currency
+                          )
+                        )}
+                      </span>
+                    </FontWrapper>
+                  </div>
                 )
               })}
             </div>
