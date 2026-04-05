@@ -4,6 +4,7 @@ import { useRef } from "react"
 import {
   ChevronLeft,
   ChevronRight,
+  FileText,
   Languages,
   LockIcon,
   ScanText
@@ -11,6 +12,8 @@ import {
 import { motion, useInView } from "motion/react"
 
 import TitleSection from "@/components/marketing/title-section"
+import { AnimatedBeam } from "@/components/ui/animated-beam"
+import { LanguageFlag } from "@/components/ui/language-flag"
 
 /* ------------------------------------------------------------------ */
 /*  Shared browser chrome for dark illustrations                      */
@@ -54,7 +57,9 @@ function BrowserChrome({
         <div className="w-20" />
       </div>
       {/* Page content area */}
-      <div className="relative flex-1 overflow-hidden">{children}</div>
+      <div className="relative min-h-0 flex-1 overflow-hidden">
+        <div className="absolute inset-0 h-full w-full">{children}</div>
+      </div>
     </div>
   )
 }
@@ -65,85 +70,70 @@ function BrowserChrome({
 
 function ScannerIllustration() {
   return (
-    <BrowserChrome url="biztro.co/scanner">
-      <div className="relative h-full p-4">
-        {/* Fake editor area with menu document */}
-        <div
-          className="relative h-full rounded-lg bg-taupe-950/60 p-4 ring-1
-            ring-white/6"
-        >
-          {/* Simulated menu page skeleton */}
-          <div className="space-y-2.5 p-3">
-            <div className="h-3 w-24 rounded-full bg-taupe-700/50" />
-            <div className="h-2 w-full rounded-full bg-taupe-800/60" />
-            <div className="h-2 w-5/6 rounded-full bg-taupe-800/60" />
-            <div className="mt-3 h-3 w-20 rounded-full bg-taupe-700/50" />
-            <div className="h-2 w-full rounded-full bg-taupe-800/60" />
-            <div className="h-2 w-4/5 rounded-full bg-taupe-800/60" />
-            <div className="mt-3 h-3 w-28 rounded-full bg-taupe-700/50" />
-            <div className="h-2 w-full rounded-full bg-taupe-800/60" />
-          </div>
+    <BrowserChrome url="biztro.co/import">
+      <div className="relative h-full w-full">
+        {/* Simulated menu page skeleton */}
+        <div className="space-y-2.5 px-8 pt-8">
+          <div className="h-3 w-24 rounded-full bg-taupe-700/50" />
+          <div className="h-2 w-full rounded-full bg-taupe-800/60" />
+          <div className="h-2 w-5/6 rounded-full bg-taupe-800/60" />
+          <div className="mt-3 h-3 w-20 rounded-full bg-taupe-700/50" />
+          <div className="h-2 w-full rounded-full bg-taupe-800/60" />
+          <div className="h-2 w-4/5 rounded-full bg-taupe-800/60" />
+          <div className="mt-3 h-3 w-28 rounded-full bg-taupe-700/50" />
+          <div className="h-2 w-full rounded-full bg-taupe-800/60" />
+        </div>
 
-          {/* Animated scan line */}
-          <motion.div
-            className="absolute inset-x-0 h-px bg-linear-to-r from-transparent
-              via-orange-500 to-transparent"
-            initial={{ top: "10%" }}
-            animate={{ top: ["10%", "90%", "10%"] }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-          {/* Glow behind the scan line */}
-          <motion.div
-            className="absolute inset-x-0 h-8 bg-linear-to-r from-transparent
-              via-orange-500/10 to-transparent blur-md"
-            initial={{ top: "8%" }}
-            animate={{ top: ["8%", "88%", "8%"] }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
+        {/* Animated scan line */}
+        <motion.div
+          className="absolute inset-x-0 h-0.5 bg-linear-to-r from-transparent
+            via-orange-500 to-transparent"
+          initial={{ top: "10%" }}
+          animate={{ top: ["10%", "90%", "10%"] }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        {/* Glow behind the scan line */}
+        <motion.div
+          className="absolute inset-x-0 h-8 bg-linear-to-r from-transparent
+            via-orange-500/10 to-transparent blur-md"
+          initial={{ top: "8%" }}
+          animate={{ top: ["8%", "88%", "8%"] }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
 
-          {/* Corner brackets */}
-          <div className="pointer-events-none absolute inset-3">
-            <div
-              className="absolute top-0 left-0 h-4 w-4 rounded-tl-sm border-t-2
-                border-l-2 border-orange-500/70"
-            />
-            <div
-              className="absolute top-0 right-0 h-4 w-4 rounded-tr-sm border-t-2
-                border-r-2 border-orange-500/70"
-            />
-            <div
-              className="absolute bottom-0 left-0 h-4 w-4 rounded-bl-sm
-                border-b-2 border-l-2 border-orange-500/70"
-            />
-            <div
-              className="absolute right-0 bottom-0 h-4 w-4 rounded-br-sm
-                border-r-2 border-b-2 border-orange-500/70"
-            />
-          </div>
+        {/* Corner brackets */}
+        <div className="pointer-events-none absolute inset-4">
+          <div
+            className="absolute top-0 left-0 h-5 w-5 border-t-2 border-l-2
+              border-orange-500/70"
+          />
+          <div
+            className="absolute top-0 right-0 h-5 w-5 border-t-2 border-r-2
+              border-orange-500/70"
+          />
+          <div
+            className="absolute bottom-0 left-0 h-5 w-5 border-b-2 border-l-2
+              border-orange-500/70"
+          />
+          <div
+            className="absolute right-0 bottom-0 h-5 w-5 border-r-2 border-b-2
+              border-orange-500/70"
+          />
         </div>
 
         {/* Floating extraction toast */}
-        <motion.div
+        <div
           className="absolute right-12 bottom-12 left-12 flex items-center gap-3
             rounded-sm bg-taupe-800/90 px-4 py-3 shadow-lg ring-1 ring-white/8
             backdrop-blur-sm"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: [0, 1, 1, 0], y: [12, 0, 0, -4] }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            times: [0, 0.15, 0.75, 1],
-            ease: "easeInOut",
-            delay: 2
-          }}
         >
           <div
             className="flex size-8 shrink-0 items-center justify-center
@@ -153,7 +143,7 @@ function ScannerIllustration() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-taupe-100">
-              Escaneando elementos del menú...{" "}
+              Extrayendo elementos del menú...{" "}
               <motion.span
                 className="ml-2 text-orange-400"
                 animate={{ opacity: [1, 0.4, 1] }}
@@ -163,143 +153,171 @@ function ScannerIllustration() {
               </motion.span>
             </p>
           </div>
-        </motion.div>
+        </div>
       </div>
     </BrowserChrome>
   )
 }
 
 function TranslationIllustration() {
-  return (
-    <BrowserChrome url="biztro.co/translations">
-      <div className="flex h-full flex-col gap-3 p-4">
-        {/* Side-by-side comparison */}
-        <div className="grid flex-1 grid-cols-2 gap-3">
-          {/* Original */}
-          <div
-            className="space-y-3 rounded-lg bg-taupe-950/60 p-3 ring-1
-              ring-white/6"
-          >
-            <span
-              className="text-[10px] font-semibold tracking-widest
-                text-taupe-400 uppercase"
-            >
-              Original
-            </span>
-            <div className="space-y-2">
-              <div className="h-2.5 w-20 rounded-full bg-taupe-700/50" />
-              <div className="h-2 w-full rounded-full bg-taupe-800/60" />
-              <div className="h-2 w-4/5 rounded-full bg-taupe-800/60" />
-            </div>
-            <motion.div
-              className="mt-2 rounded-md bg-taupe-800/60 px-2.5 py-2 ring-1
-                ring-white/6"
-              initial={{ opacity: 0.6 }}
-              animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <p className="text-xs font-medium text-taupe-200 italic">
-                &ldquo;Filete de res...&rdquo;
-              </p>
-            </motion.div>
-          </div>
+  const containerRef = useRef<HTMLDivElement>(null)
+  const sourceRef = useRef<HTMLDivElement>(null)
+  const centerRef = useRef<HTMLDivElement>(null)
+  const enRef = useRef<HTMLDivElement>(null)
+  const frRef = useRef<HTMLDivElement>(null)
+  const deRef = useRef<HTMLDivElement>(null)
+  const itRef = useRef<HTMLDivElement>(null)
+  const jaRef = useRef<HTMLDivElement>(null)
 
-          {/* Translated */}
-          <div
-            className="space-y-3 rounded-lg bg-violet-950/40 p-3 ring-1
-              ring-violet-500/10"
-          >
-            <span
-              className="text-[10px] font-semibold tracking-widest
-                text-violet-400 uppercase"
+  const beamProps = {
+    containerRef,
+    gradientStartColor: "#8b5cf6",
+    gradientStopColor: "#a78bfa",
+    pathColor: "#3f3f46",
+    pathWidth: 1.5
+  } as const
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative flex h-full w-full overflow-hidden rounded-xl
+        bg-taupe-900/80 shadow-2xl ring-1 ring-white/8"
+    >
+      <div
+        className="flex size-full flex-row items-stretch justify-between px-10"
+      >
+        {/* Source — original menu document */}
+        <div className="flex flex-col items-center justify-center">
+          <div className="relative flex flex-col items-center">
+            <div
+              ref={sourceRef}
+              className="relative z-10 flex size-12 items-center justify-center
+                rounded-full bg-taupe-800 shadow-lg ring-1 ring-white/10"
             >
-              Traducción IA
-            </span>
-            <div className="space-y-2">
-              <motion.div
-                className="h-2.5 w-24 rounded-full bg-violet-700/40"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{
-                  duration: 0.8,
-                  repeat: Infinity,
-                  repeatDelay: 4,
-                  ease: "easeOut"
-                }}
-                style={{ originX: 0 }}
-              />
-              <motion.div
-                className="h-2 w-full rounded-full bg-violet-800/30"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{
-                  duration: 0.6,
-                  delay: 0.3,
-                  repeat: Infinity,
-                  repeatDelay: 4.2,
-                  ease: "easeOut"
-                }}
-                style={{ originX: 0 }}
-              />
-              <motion.div
-                className="h-2 w-3/4 rounded-full bg-violet-800/30"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{
-                  duration: 0.5,
-                  delay: 0.5,
-                  repeat: Infinity,
-                  repeatDelay: 4.4,
-                  ease: "easeOut"
-                }}
-                style={{ originX: 0 }}
-              />
+              <FileText className="size-5 text-taupe-300" />
             </div>
-            <motion.div
-              className="mt-2 rounded-md bg-violet-900/40 px-2.5 py-2 ring-1
-                ring-violet-500/10"
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: [0, 1, 1, 0], y: [4, 0, 0, -2] }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                times: [0, 0.2, 0.8, 1],
-                ease: "easeInOut"
-              }}
+            <span
+              className="absolute top-full mt-1.5 text-[10px] text-taupe-500"
             >
-              <p className="text-xs font-medium text-violet-200 italic">
-                &ldquo;Beef Tenderloin...&rdquo;
-              </p>
-            </motion.div>
+              Menú
+            </span>
           </div>
         </div>
 
-        {/* Language pills */}
-        <div className="flex flex-wrap items-center justify-center gap-1.5">
-          {["EN", "FR", "DE", "IT", "PT", "JA", "ZH"].map((lang, i) => (
-            <motion.span
-              key={lang}
-              className="rounded-full bg-white/6 px-2 py-0.5 text-[10px]
-                font-semibold text-taupe-300 ring-1 ring-white/6"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                delay: i * 0.12,
-                repeat: Infinity,
-                repeatDelay: 6,
-                duration: 0.3
-              }}
+        {/* Center AI translation node */}
+        <div className="flex flex-col items-center justify-center">
+          <div className="relative flex flex-col items-center">
+            <div
+              ref={centerRef}
+              className="relative z-10 flex size-14 items-center justify-center
+                rounded-full bg-violet-950 shadow-lg ring-1 shadow-violet-900/40
+                ring-violet-500/40"
             >
-              {lang}
-            </motion.span>
-          ))}
+              <Languages className="size-7 text-violet-400" />
+            </div>
+            <span
+              className="absolute top-full mt-1.5 text-[10px] text-taupe-500"
+            >
+              IA
+            </span>
+          </div>
+        </div>
+
+        {/* Right — language flag nodes */}
+        <div className="flex flex-col items-center justify-center gap-2.5">
+          <div
+            ref={enRef}
+            className="relative z-10 flex size-9 items-center justify-center
+              rounded-full bg-taupe-800/60 ring-1 ring-white/10"
+          >
+            <LanguageFlag locale="en" className="h-5 w-5 rounded-full" />
+          </div>
+          <div
+            ref={frRef}
+            className="relative z-10 flex size-9 items-center justify-center
+              rounded-full bg-taupe-800/60 ring-1 ring-white/10"
+          >
+            <LanguageFlag locale="fr" className="h-5 w-5 rounded-full" />
+          </div>
+          <div
+            ref={deRef}
+            className="relative z-10 flex size-9 items-center justify-center
+              rounded-full bg-taupe-800/60 ring-1 ring-white/10"
+          >
+            <LanguageFlag locale="de" className="h-5 w-5 rounded-full" />
+          </div>
+          <div
+            ref={itRef}
+            className="relative z-10 flex size-9 items-center justify-center
+              rounded-full bg-taupe-800/60 ring-1 ring-white/10"
+          >
+            <LanguageFlag locale="it" className="h-5 w-5 rounded-full" />
+          </div>
+          <div
+            ref={jaRef}
+            className="relative z-10 flex size-9 items-center justify-center
+              rounded-full bg-taupe-800/60 ring-1 ring-white/10"
+          >
+            <LanguageFlag locale="ja" className="h-5 w-5 rounded-full" />
+          </div>
         </div>
       </div>
-    </BrowserChrome>
+
+      {/* Beam: source → center */}
+      <AnimatedBeam
+        {...beamProps}
+        fromRef={sourceRef}
+        toRef={centerRef}
+        duration={3}
+      />
+
+      {/* Beams: center → each language */}
+      <AnimatedBeam
+        {...beamProps}
+        fromRef={centerRef}
+        toRef={enRef}
+        curvature={60}
+        duration={2}
+        delay={0}
+        repeatDelay={3}
+      />
+      <AnimatedBeam
+        {...beamProps}
+        fromRef={centerRef}
+        toRef={frRef}
+        curvature={30}
+        duration={2}
+        delay={0.6}
+        repeatDelay={3}
+      />
+      <AnimatedBeam
+        {...beamProps}
+        fromRef={centerRef}
+        toRef={deRef}
+        curvature={0}
+        duration={2}
+        delay={1.2}
+        repeatDelay={3}
+      />
+      <AnimatedBeam
+        {...beamProps}
+        fromRef={centerRef}
+        toRef={itRef}
+        curvature={-30}
+        duration={2}
+        delay={1.8}
+        repeatDelay={3}
+      />
+      <AnimatedBeam
+        {...beamProps}
+        fromRef={centerRef}
+        toRef={jaRef}
+        curvature={-60}
+        duration={2}
+        delay={2.4}
+        repeatDelay={3}
+      />
+    </div>
   )
 }
 

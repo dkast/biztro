@@ -102,6 +102,7 @@
     "embla-carousel-react": "^8.6.0",
     "extract-colors": "^4.2.1",
     "flags": "^4.0.6",
+    "funky-shadow": "^0.1.0",
     "fuse.js": "^7.2.0",
     "input-otp": "^1.4.2",
     "jotai": "^2.19.0",

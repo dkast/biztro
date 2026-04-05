@@ -85,6 +85,7 @@
         "embla-carousel-react": "^8.6.0",
         "extract-colors": "^4.2.1",
         "flags": "^4.0.6",
+        "funky-shadow": "^0.1.0",
         "fuse.js": "^7.2.0",
         "input-otp": "^1.4.2",
         "jotai": "^2.19.0",
@@ -2449,6 +2450,8 @@
     "function.prototype.name": ["function.prototype.name@1.1.8", "", { "dependencies": { "call-bind": "^1.0.8", "call-bound": "^1.0.3", "define-properties": "^1.2.1", "functions-have-names": "^1.2.3", "hasown": "^2.0.2", "is-callable": "^1.2.7" } }, "sha512-e5iwyodOHhbMr/yNrc7fDYG4qlbIvI5gajyzPnb5TCwyhjApznQh1BMFou9b30SevY43gCJKXycoCBjMbsuW0Q=="],
 
     "functions-have-names": ["functions-have-names@1.2.3", "", {}, "sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ=="],
+
+    "funky-shadow": ["funky-shadow@0.1.0", "", { "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0" }, "optionalPeers": ["react", "react-dom"] }, "sha512-6NEM3J/GkCi5kQFp+N2R+SoskAJY7whO1HA6aLGwYJ8vkHy3vcEXTvMJa/40TTnNbxMUaiQgE15HhGWH6h+06A=="],
 
     "fuse.js": ["fuse.js@7.2.0", "", {}, "sha512-zf4vdcIGpjNKTuXwug33Hm2okqX6a0t2ZEbez+o9oBJQSNhVJ5AqERfeiRD3r8HcLqP66MrjdkmzxrncbAOTUQ=="],
 

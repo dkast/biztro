@@ -1,10 +1,9 @@
-import { CornerRightUp, Rocket, ShoppingBag, Store } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
+import type { CSSProperties } from "react"
+import { Rocket, ShoppingBag, Store } from "lucide-react"
 
 import Features from "@/components/flare-ui/features-horizontal"
+import { HowItWorksQr } from "@/components/marketing/how-it-works-qr"
 import TitleSection from "@/components/marketing/title-section"
-import QRimage from "../../../public/qr-example.png"
 
 const data = [
   {
@@ -39,9 +38,7 @@ export default function Component() {
       id="how-it-works"
       className="mx-auto max-w-6xl px-4 pt-20 pb-8 sm:px-6 sm:py-32 sm:pb-28
         lg:px-8"
-      style={
-        { "--primary": "oklch(64.6% 0.222 41.116)" } as React.CSSProperties
-      }
+      style={{ "--primary": "oklch(64.6% 0.222 41.116)" } as CSSProperties}
     >
       <TitleSection
         eyebrow="Cómo funciona"
@@ -82,50 +79,7 @@ export default function Component() {
             </p>
           </div>
         </div>
-        <div
-          className="relative flex flex-col items-center justify-center gap-3
-            overflow-hidden"
-        >
-          <div
-            className="absolute inset-0 z-0 hidden sm:block"
-            style={{
-              background:
-                "radial-gradient(ellipse 60% 60% at 50% 50%, oklch(71.4% 0.014 41.2 / 0.25), transparent 70%)"
-            }}
-          />
-          <Link
-            href="https://la-bella-italia.biztro.co"
-            target="_blank"
-            rel="noopener noreferrer"
-            prefetch={false}
-            className="z-10"
-          >
-            <Image
-              src={QRimage}
-              alt="Código QR de ejemplo"
-              className="rounded-lg shadow-xl"
-              width={300}
-              height={300}
-            />
-          </Link>
-          <span
-            className="z-10 flex items-center gap-2 text-sm text-taupe-700
-              dark:text-taupe-300"
-          >
-            Escanea o{" "}
-            <Link
-              href="https://la-bella-italia.biztro.co"
-              target="_blank"
-              rel="noopener noreferrer"
-              prefetch={false}
-              className="inline-flex items-center gap-1 text-taupe-600 underline
-                underline-offset-2 hover:text-taupe-500 dark:text-taupe-400"
-            >
-              abre el ejemplo
-              <CornerRightUp className="size-3" />
-            </Link>
-          </span>
-        </div>
+        <HowItWorksQr />
       </div>
     </section>
   )
