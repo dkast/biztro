@@ -1,5 +1,6 @@
 "use client"
 
+import type { ReactNode } from "react"
 import Link from "next/link"
 import { usePathname, useSelectedLayoutSegment } from "next/navigation"
 
@@ -7,11 +8,14 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 
+export type SecondaryNavItem = {
+  href: string
+  title: string
+  icon?: ReactNode
+}
+
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
-  items: {
-    href: string
-    title: string
-  }[]
+  items: SecondaryNavItem[]
 }
 
 export default function SecondaryNav({
@@ -26,7 +30,7 @@ export default function SecondaryNav({
     <div className="max-w-[100vw]">
       <ScrollArea className="whitespace-nowrap">
         <nav className={cn("w-full overflow-hidden", className)} {...props}>
-          <ul className="flex gap-x-6 px-4">
+          <ul className="flex gap-x-8 px-4 sm:px-6">
             {items.map(item => {
               const path = `/${item.href}`
               let isActive = false
@@ -42,12 +46,15 @@ export default function SecondaryNav({
                     href={path}
                     prefetch={false}
                     className={cn(
-                      `my-1 block rounded-lg px-4 py-2 text-sm font-semibold
-                      text-gray-500 hover:bg-gray-100 hover:text-gray-900
-                      dark:hover:bg-gray-800 dark:hover:text-gray-100`,
-                      isActive && "text-orange-600"
+                      `relative flex items-center gap-2 border-b-2
+                      border-transparent py-4 text-sm font-semibold
+                      text-taupe-500 transition-colors hover:text-taupe-100`,
+                      isActive && "border-white text-taupe-50"
                     )}
                   >
+                    {item.icon ? (
+                      <span className="shrink-0">{item.icon}</span>
+                    ) : null}
                     {item.title}
                   </Link>
                 </li>

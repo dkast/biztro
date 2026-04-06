@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import { subscriptionsEnabled } from "@/flags"
-import { AlertCircle, Wallet } from "lucide-react"
+import { AlertCircle, CreditCard } from "lucide-react"
 import { type Metadata } from "next"
 import { notFound } from "next/navigation"
 
@@ -38,7 +38,7 @@ export default async function BillingPage() {
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
       <PageSubtitle>
-        <PageSubtitle.Icon icon={Wallet} />
+        <PageSubtitle.Icon icon={CreditCard} />
         <PageSubtitle.Title>Planes de suscripción</PageSubtitle.Title>
         <PageSubtitle.Description>
           Maneja tu plan de suscripción e historial de pagos
