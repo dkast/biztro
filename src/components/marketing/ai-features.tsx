@@ -183,6 +183,14 @@ function TranslationIllustration() {
       className="relative flex h-full w-full overflow-hidden rounded-xl
         bg-taupe-900/80 shadow-2xl ring-1 ring-white/8"
     >
+      {/* Spotlight */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 60% at 52% 50%, oklch(28% 0.01 60 / 0.5), transparent 80%)"
+        }}
+      />
       <div
         className="flex size-full flex-row items-stretch justify-between px-10"
       >
@@ -210,8 +218,8 @@ function TranslationIllustration() {
             <div
               ref={centerRef}
               className="relative z-10 flex size-14 items-center justify-center
-                rounded-full bg-violet-950 shadow-lg ring-1 shadow-violet-900/40
-                ring-violet-500/40"
+                rounded-full bg-violet-950/40 shadow-lg inset-ring-1
+                shadow-violet-500/10 inset-ring-violet-500/40 backdrop-blur-lg"
             >
               <Languages className="size-7 text-violet-400" />
             </div>
