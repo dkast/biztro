@@ -301,9 +301,11 @@ export default function LocationData({
                     <DrawerTitle>{t("information")}</DrawerTitle>
                     <p className="text-muted-foreground text-xs">{legend}</p>
                   </DrawerHeader>
-                  {address}
-                  {hoursList}
-                  {servicesList}
+                  <div className="space-y-8">
+                    {address}
+                    {hoursList}
+                    {servicesList}
+                  </div>
                 </DrawerContent>
               </Drawer>
             </>
@@ -317,9 +319,11 @@ export default function LocationData({
                     {legend}
                   </DialogDescription>
                 </DialogHeader>
-                {address}
-                {hoursList}
-                {servicesList}
+                <div className="space-y-8">
+                  {address}
+                  {hoursList}
+                  {servicesList}
+                </div>
               </DialogContent>
             </Dialog>
           )}

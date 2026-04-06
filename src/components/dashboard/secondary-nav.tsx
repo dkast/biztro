@@ -46,10 +46,11 @@ export default function SecondaryNav({
                     href={path}
                     prefetch={false}
                     className={cn(
-                      `relative flex items-center gap-2 border-b-2
+                      `text-muted-foreground hover:text-muted-foreground/80
+                      relative flex items-center gap-2 border-b-2
                       border-transparent py-4 text-sm font-semibold
-                      text-taupe-500 transition-colors hover:text-taupe-100`,
-                      isActive && "border-white text-taupe-50"
+                      transition-colors`,
+                      isActive && "text-foreground border-primary"
                     )}
                   >
                     {item.icon ? (
