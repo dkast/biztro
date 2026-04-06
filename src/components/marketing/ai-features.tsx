@@ -232,7 +232,7 @@ function TranslationIllustration() {
         </div>
 
         {/* Right — language flag nodes */}
-        <div className="flex flex-col items-center justify-center gap-2.5">
+        <div className="flex flex-col items-center justify-center gap-4">
           <div
             ref={enRef}
             className="relative z-10 flex size-9 items-center justify-center
@@ -284,7 +284,6 @@ function TranslationIllustration() {
         {...beamProps}
         fromRef={centerRef}
         toRef={enRef}
-        curvature={60}
         duration={2}
         delay={0}
         repeatDelay={3}
@@ -293,7 +292,6 @@ function TranslationIllustration() {
         {...beamProps}
         fromRef={centerRef}
         toRef={frRef}
-        curvature={30}
         duration={2}
         delay={0.6}
         repeatDelay={3}
@@ -302,7 +300,6 @@ function TranslationIllustration() {
         {...beamProps}
         fromRef={centerRef}
         toRef={deRef}
-        curvature={0}
         duration={2}
         delay={1.2}
         repeatDelay={3}
@@ -311,7 +308,6 @@ function TranslationIllustration() {
         {...beamProps}
         fromRef={centerRef}
         toRef={itRef}
-        curvature={-30}
         duration={2}
         delay={1.8}
         repeatDelay={3}
@@ -320,7 +316,6 @@ function TranslationIllustration() {
         {...beamProps}
         fromRef={centerRef}
         toRef={jaRef}
-        curvature={-60}
         duration={2}
         delay={2.4}
         repeatDelay={3}
