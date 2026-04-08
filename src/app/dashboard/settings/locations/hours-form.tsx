@@ -13,7 +13,6 @@ import type { z } from "zod/v4"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { TimeField } from "@/components/ui/date-time-picker/time-field"
 import {
   Field,
@@ -29,8 +28,6 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { updateHours } from "@/server/actions/location/mutations"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { hoursSchema } from "@/lib/types/location"
-
-// ─── constants ────────────────────────────────────────────────────────────────
 
 type DayOfWeek =
   | "MONDAY"
@@ -71,8 +68,6 @@ const DAY_FULL: Record<DayOfWeek, string> = {
   SUNDAY: "Domingo"
 }
 
-// ─── helpers ──────────────────────────────────────────────────────────────────
-
 type HourItem = {
   id?: string
   day: DayOfWeek
@@ -104,8 +99,6 @@ function fromData(
     allDay: item.allDay
   }))
 }
-
-// ─── component ────────────────────────────────────────────────────────────────
 
 export default function HoursForm({
   data
@@ -154,8 +147,6 @@ export default function HoursForm({
     }
   })
 
-  // ── tab switching ────────────────────────────────────────────────────────────
-
   function handleTabChange(value: string) {
     const tab = value as "basic" | "advanced"
 
@@ -184,8 +175,6 @@ export default function HoursForm({
 
     setActiveTab(tab)
   }
-
-  // ── submit ───────────────────────────────────────────────────────────────────
 
   function onSubmit() {
     if (activeTab === "basic") {
@@ -217,8 +206,6 @@ export default function HoursForm({
     }
   }
 
-  // ── sync on data refresh ─────────────────────────────────────────────────────
-
   useEffect(() => {
     const next = fromData(data)
     const nextOpen = next.filter(h => h.allDay)
@@ -232,190 +219,185 @@ export default function HoursForm({
     form.reset({ locationId: data?.id, items: next })
   }, [data, form])
 
-  // ── render ───────────────────────────────────────────────────────────────────
-
   const isExecuting = status === "executing"
   const disabled = data?.id === undefined
 
   return (
-    <div className="mt-10">
-      <Card>
-        <CardContent className="pt-6">
-          <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="mb-6">
-              <TabsTrigger value="basic">Básico</TabsTrigger>
-              <TabsTrigger value="advanced">Avanzado</TabsTrigger>
-            </TabsList>
+    <div className="mt-10 flex flex-col gap-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="flex w-full flex-col"
+      >
+        <TabsList className="mb-6 w-fit" variant="line">
+          <TabsTrigger value="basic">Básico</TabsTrigger>
+          <TabsTrigger value="advanced">Avanzado</TabsTrigger>
+        </TabsList>
 
-            {/* ── Basic mode ── */}
-            <TabsContent value="basic">
-              <FieldSet disabled={disabled}>
-                <FieldGroup>
-                  {showMixedWarning && (
-                    <Alert variant="warning">
-                      <Info className="size-4" />
-                      <AlertDescription>
-                        El horario actual tiene horas diferentes por día. Al
-                        guardar en modo básico, se aplicará el mismo horario a
-                        todos los días seleccionados.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  <Field>
-                    <FieldLabel>Días de atención</FieldLabel>
-                    <ToggleGroup
-                      type="multiple"
-                      variant="outline"
-                      value={selectedDays}
-                      onValueChange={setSelectedDays}
-                      className="flex-wrap justify-start gap-2"
+        {/* ── Basic mode ── */}
+        <TabsContent value="basic">
+          <FieldSet disabled={disabled}>
+            <FieldGroup>
+              {showMixedWarning && (
+                <Alert variant="warning">
+                  <Info className="size-4" />
+                  <AlertDescription>
+                    El horario actual tiene horas diferentes por día. Al guardar
+                    en modo básico, se aplicará el mismo horario a todos los
+                    días seleccionados.
+                  </AlertDescription>
+                </Alert>
+              )}
+              <Field>
+                <FieldLabel>Días de atención</FieldLabel>
+                <ToggleGroup
+                  type="multiple"
+                  variant="outline"
+                  value={selectedDays}
+                  onValueChange={setSelectedDays}
+                  className="flex-wrap justify-start gap-2"
+                >
+                  {DAYS.map(day => (
+                    <ToggleGroupItem
+                      key={day}
+                      value={day}
+                      aria-label={DAY_FULL[day]}
+                      className="data-[state=on]:bg-primary/10
+                        data-[state=on]:border-primary min-w-10 px-3"
                     >
-                      {DAYS.map(day => (
-                        <ToggleGroupItem
-                          key={day}
-                          value={day}
-                          aria-label={DAY_FULL[day]}
-                          className="min-w-10 px-3"
-                        >
-                          {DAY_SHORT[day]}
-                        </ToggleGroupItem>
-                      ))}
-                    </ToggleGroup>
-                    <FieldDescription>
-                      Selecciona los días en que tu negocio está abierto.
-                    </FieldDescription>
-                  </Field>
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-                    <Field className="sm:w-40">
-                      <FieldLabel>Desde</FieldLabel>
-                      <TimeField
-                        isDisabled={disabled || selectedDays.length === 0}
-                        value={basicStart ? parseTime(basicStart) : undefined}
-                        onChange={(value: TimeValue | null) => {
-                          setBasicStart(value?.toString() ?? undefined)
-                        }}
-                      />
-                    </Field>
-                    <Field className="sm:w-40">
-                      <FieldLabel>Hasta</FieldLabel>
-                      <TimeField
-                        isDisabled={disabled || selectedDays.length === 0}
-                        value={basicEnd ? parseTime(basicEnd) : undefined}
-                        onChange={(value: TimeValue | null) => {
-                          setBasicEnd(value?.toString() ?? undefined)
-                        }}
-                      />
-                    </Field>
-                  </div>
-                </FieldGroup>
-              </FieldSet>
-            </TabsContent>
+                      {DAY_SHORT[day]}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+                <FieldDescription>
+                  Selecciona los días en que tu negocio está abierto.
+                </FieldDescription>
+              </Field>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+                <Field className="sm:w-40">
+                  <FieldLabel>Desde</FieldLabel>
+                  <TimeField
+                    isDisabled={disabled || selectedDays.length === 0}
+                    value={basicStart ? parseTime(basicStart) : undefined}
+                    onChange={(value: TimeValue | null) => {
+                      setBasicStart(value?.toString() ?? undefined)
+                    }}
+                  />
+                </Field>
+                <Field className="sm:w-40">
+                  <FieldLabel>Hasta</FieldLabel>
+                  <TimeField
+                    isDisabled={disabled || selectedDays.length === 0}
+                    value={basicEnd ? parseTime(basicEnd) : undefined}
+                    onChange={(value: TimeValue | null) => {
+                      setBasicEnd(value?.toString() ?? undefined)
+                    }}
+                  />
+                </Field>
+              </div>
+            </FieldGroup>
+          </FieldSet>
+        </TabsContent>
 
-            {/* ── Advanced mode ── */}
-            <TabsContent value="advanced">
-              <FieldSet disabled={disabled}>
-                <FieldGroup>
-                  <div className="grid grid-cols-3 gap-4">
-                    {fields.map((field, index) => (
-                      <Fragment key={field.id}>
-                        <div className="flex flex-row items-center gap-3">
-                          <Controller
-                            name={`items.${index}.allDay`}
-                            control={form.control}
-                            render={({ field: ctlField, fieldState }) => (
-                              <Field
-                                className="mt-1 flex flex-1 flex-row
-                                  items-center justify-between space-y-0"
-                              >
-                                <FieldLabel
-                                  htmlFor={`items.${index}.allDay`}
-                                  className="cursor-pointer text-sm font-medium"
-                                >
-                                  {DAY_FULL[field.day as DayOfWeek]}
-                                </FieldLabel>
-                                <span>
-                                  <Switch
-                                    id={`items.${index}.allDay`}
-                                    checked={ctlField.value}
-                                    onCheckedChange={ctlField.onChange}
-                                  />
-                                </span>
-                                {fieldState.invalid && (
-                                  <FieldError errors={[fieldState.error]} />
-                                )}
-                              </Field>
+        {/* ── Advanced mode ── */}
+        <TabsContent value="advanced">
+          <FieldSet disabled={disabled}>
+            <FieldGroup>
+              <div className="grid grid-cols-3 gap-4">
+                {fields.map((field, index) => (
+                  <Fragment key={field.id}>
+                    <div className="flex flex-row items-center gap-3">
+                      <Controller
+                        name={`items.${index}.allDay`}
+                        control={form.control}
+                        render={({ field: ctlField, fieldState }) => (
+                          <Field
+                            className="mt-1 flex flex-1 flex-row items-center
+                              justify-between space-y-0"
+                          >
+                            <FieldLabel
+                              htmlFor={`items.${index}.allDay`}
+                              className="cursor-pointer text-sm font-medium"
+                            >
+                              {DAY_FULL[field.day as DayOfWeek]}
+                            </FieldLabel>
+                            <span>
+                              <Switch
+                                id={`items.${index}.allDay`}
+                                checked={ctlField.value}
+                                onCheckedChange={ctlField.onChange}
+                              />
+                            </span>
+                            {fieldState.invalid && (
+                              <FieldError errors={[fieldState.error]} />
                             )}
+                          </Field>
+                        )}
+                      />
+                    </div>
+                    <Controller
+                      name={`items.${index}.startTime`}
+                      control={form.control}
+                      render={({ field: ctlField, fieldState }) => (
+                        <Field
+                          className="flex flex-row items-center gap-2 space-y-0"
+                        >
+                          <FieldLabel className="hidden sm:inline">
+                            Desde
+                          </FieldLabel>
+                          <TimeField
+                            isDisabled={!form.watch(`items.${index}.allDay`)}
+                            value={
+                              ctlField.value
+                                ? parseTime(ctlField.value)
+                                : undefined
+                            }
+                            onChange={(value: TimeValue | null) => {
+                              ctlField.onChange(value?.toString() ?? "")
+                            }}
                           />
-                        </div>
-                        <Controller
-                          name={`items.${index}.startTime`}
-                          control={form.control}
-                          render={({ field: ctlField, fieldState }) => (
-                            <Field
-                              className="flex flex-row items-center gap-2
-                                space-y-0"
-                            >
-                              <FieldLabel className="hidden sm:inline">
-                                Desde
-                              </FieldLabel>
-                              <TimeField
-                                isDisabled={
-                                  !form.watch(`items.${index}.allDay`)
-                                }
-                                value={
-                                  ctlField.value
-                                    ? parseTime(ctlField.value)
-                                    : undefined
-                                }
-                                onChange={(value: TimeValue | null) => {
-                                  ctlField.onChange(value?.toString() ?? "")
-                                }}
-                              />
-                              {fieldState.invalid && (
-                                <FieldError errors={[fieldState.error]} />
-                              )}
-                            </Field>
+                          {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
                           )}
-                        />
-                        <Controller
-                          name={`items.${index}.endTime`}
-                          control={form.control}
-                          render={({ field: ctlField, fieldState }) => (
-                            <Field
-                              className="flex flex-row items-center gap-2
-                                space-y-0"
-                            >
-                              <FieldLabel className="hidden sm:inline">
-                                Hasta
-                              </FieldLabel>
-                              <TimeField
-                                isDisabled={
-                                  !form.watch(`items.${index}.allDay`)
-                                }
-                                value={
-                                  ctlField.value
-                                    ? parseTime(ctlField.value)
-                                    : undefined
-                                }
-                                onChange={(value: TimeValue | null) => {
-                                  ctlField.onChange(value?.toString() ?? "")
-                                }}
-                              />
-                              {fieldState.invalid && (
-                                <FieldError errors={[fieldState.error]} />
-                              )}
-                            </Field>
+                        </Field>
+                      )}
+                    />
+                    <Controller
+                      name={`items.${index}.endTime`}
+                      control={form.control}
+                      render={({ field: ctlField, fieldState }) => (
+                        <Field
+                          className="flex flex-row items-center gap-2 space-y-0"
+                        >
+                          <FieldLabel className="hidden sm:inline">
+                            Hasta
+                          </FieldLabel>
+                          <TimeField
+                            isDisabled={!form.watch(`items.${index}.allDay`)}
+                            value={
+                              ctlField.value
+                                ? parseTime(ctlField.value)
+                                : undefined
+                            }
+                            onChange={(value: TimeValue | null) => {
+                              ctlField.onChange(value?.toString() ?? "")
+                            }}
+                          />
+                          {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
                           )}
-                        />
-                      </Fragment>
-                    ))}
-                  </div>
-                </FieldGroup>
-              </FieldSet>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-        <CardFooter>
+                        </Field>
+                      )}
+                    />
+                  </Fragment>
+                ))}
+              </div>
+            </FieldGroup>
+          </FieldSet>
+        </TabsContent>
+      </Tabs>
+      <FieldGroup>
+        <Field orientation="responsive">
           <Button
             type="button"
             disabled={isExecuting || disabled}
@@ -426,8 +408,8 @@ export default function HoursForm({
               {isExecuting ? "Guardando..." : "Actualizar Horario"}
             </TextMorph>
           </Button>
-        </CardFooter>
-      </Card>
+        </Field>
+      </FieldGroup>
     </div>
   )
 }

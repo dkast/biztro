@@ -1,6 +1,6 @@
 import React from "react"
-import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { Slot as SlotPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
@@ -44,7 +44,7 @@ interface RainbowButtonProps
 
 const RainbowButton = React.forwardRef<HTMLButtonElement, RainbowButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
+    const Comp = asChild ? SlotPrimitive.Slot : "button"
     return (
       <Comp
         data-slot="button"
