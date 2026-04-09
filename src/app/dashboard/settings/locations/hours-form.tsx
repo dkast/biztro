@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react"
 import { type TimeValue } from "react-aria"
-import { Controller, useFieldArray, useForm } from "react-hook-form"
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { parseTime } from "@internationalized/date"
@@ -131,6 +131,7 @@ export default function HoursForm({
   })
 
   const { fields } = useFieldArray({ control: form.control, name: "items" })
+  const watchedItems = useWatch({ control: form.control, name: "items" })
 
   const { execute, status, reset } = useAction(updateHours, {
     onSuccess: ({ data }) => {
@@ -346,7 +347,7 @@ export default function HoursForm({
                             Desde
                           </FieldLabel>
                           <TimeField
-                            isDisabled={!form.watch(`items.${index}.allDay`)}
+                            isDisabled={!watchedItems?.[index]?.allDay}
                             value={
                               ctlField.value
                                 ? parseTime(ctlField.value)
@@ -373,7 +374,7 @@ export default function HoursForm({
                             Hasta
                           </FieldLabel>
                           <TimeField
-                            isDisabled={!form.watch(`items.${index}.allDay`)}
+                            isDisabled={!watchedItems?.[index]?.allDay}
                             value={
                               ctlField.value
                                 ? parseTime(ctlField.value)
