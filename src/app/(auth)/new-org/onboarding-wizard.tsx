@@ -170,7 +170,7 @@ export default function OnboardingWizard({
   const stepOrder = showOrganizationStep
     ? CREATION_STEP_ORDER
     : DEFAULT_STEP_ORDER
-  const steps = stepOrder.map(step => STEP_DETAILS[step])
+  const steps = CREATION_STEP_ORDER.map(step => STEP_DETAILS[step])
   const [activeStep, setActiveStep] = useState<StepKey>(initialStep)
   const [location, setLocation] = useState<Location | null>(initialLocation)
   const [resolvedSteps, setResolvedSteps] = useState<ResolvedSteps>({
@@ -284,6 +284,7 @@ export default function OnboardingWizard({
         value={activeStep}
         onValueChange={value => moveToStep(value as StepKey)}
         activationMode="manual"
+        orientation="vertical"
       >
         <StepperList>
           {steps.map(step => (
@@ -293,20 +294,20 @@ export default function OnboardingWizard({
               completed={resolvedSteps[step.value]}
               disabled={stepDisabled[step.value]}
             >
-              <StepperTrigger>
+              <StepperTrigger className="not-last:pb-6">
                 <StepperIndicator />
                 <div className="flex flex-col gap-0.5">
                   <StepperTitle>{step.title}</StepperTitle>
                   <StepperDescription>{step.description}</StepperDescription>
                 </div>
               </StepperTrigger>
-              <StepperSeparator className="mx-4" />
+              <StepperSeparator className="absolute inset-y-0 top-5 left-3.5 -z-10 -order-1 h-full -translate-x-1/2" />
             </StepperItem>
           ))}
         </StepperList>
 
-        {showOrganizationStep ? (
-          <StepperContent value="organization" className="mt-6">
+        <StepperContent value="organization">
+          {showOrganizationStep ? (
             <StepShell
               title="Crea tu negocio"
               description="Empieza con la información básica de tu organización y continúa con el resto de la configuración."
@@ -317,10 +318,10 @@ export default function OnboardingWizard({
                 onSuccess={handleOrganizationCreated}
               />
             </StepShell>
-          </StepperContent>
-        ) : null}
+          ) : null}
+        </StepperContent>
 
-        <StepperContent value="logo" className="mt-6">
+        <StepperContent value="logo">
           <StepShell
             title="Logo y portada"
             description="Sube tu logo desde un diálogo y agrega también una portada para tu sitio. Puedes dejar cualquiera para después."
@@ -435,7 +436,7 @@ export default function OnboardingWizard({
           </StepShell>
         </StepperContent>
 
-        <StepperContent value="location" className="mt-6">
+        <StepperContent value="location">
           <StepShell
             title="Tu primera sucursal"
             description="Agrega una ubicación principal. Puedes editarla más tarde desde configuración."
@@ -460,7 +461,7 @@ export default function OnboardingWizard({
           </StepShell>
         </StepperContent>
 
-        <StepperContent value="hours" className="mt-6">
+        <StepperContent value="hours">
           <StepShell
             title="Horarios de atención"
             description="Configura tus horarios de apertura. También puedes dejar esto para más tarde."
@@ -512,7 +513,7 @@ export default function OnboardingWizard({
           </StepShell>
         </StepperContent>
 
-        <StepperContent value="menu" className="mt-6">
+        <StepperContent value="menu">
           <StepShell
             title="Importa tus productos"
             description="Puedes cargar un CSV aqui mismo o usar el flujo con IA para extraer tu menu desde PDF o imagen."
