@@ -16,7 +16,9 @@ function getReturnTo(value: string | string[] | undefined) {
     return undefined
   }
 
-  return value.startsWith("/dashboard") ? value : undefined
+  return value.startsWith("/dashboard") || value.startsWith("/new-org")
+    ? value
+    : undefined
 }
 
 export default async function PdfImportPage(props: {

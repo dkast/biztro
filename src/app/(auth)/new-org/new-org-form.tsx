@@ -52,11 +52,13 @@ export type BootstrappedOrganization = {
 export default function NewOrgForm({
   onSuccess,
   submitLabel,
-  redirectTo
+  redirectTo,
+  withCard = true
 }: {
   onSuccess?: (organization: BootstrappedOrganization) => void
   submitLabel?: string
   redirectTo?: string
+  withCard?: boolean
 }) {
   const form = useForm<z.infer<typeof orgSchema>>({
     resolver: zodResolver(orgSchema),
@@ -110,100 +112,99 @@ export default function NewOrgForm({
     execute(data)
   }
 
+  const fields = (
+    <fieldset className="space-y-4">
+      <Controller
+        name="name"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel htmlFor={field.name}>Nombre del negocio</FieldLabel>
+            <Input
+              {...field}
+              id={field.name}
+              placeholder="Nombre del negocio"
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+      <Controller
+        name="description"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
+            <Textarea {...field} id={field.name} placeholder="Descripción" />
+            <FieldDescription>
+              Escribe una breve descripción de tu negocio
+            </FieldDescription>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+      <Controller
+        name="slug"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel htmlFor={field.name}>Sitio web</FieldLabel>
+            <InputGroup>
+              <InputGroupAddon>
+                <InputGroupText>https://</InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                placeholder="tu-sitio"
+                className="pl-1!"
+              />
+              <InputGroupAddon align="inline-end">
+                <InputGroupText>.biztro.co</InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+            <FieldDescription>
+              Este será el nombre de tu sitio web
+            </FieldDescription>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+    </fieldset>
+  )
+
+  const submitButton = (
+    <Button
+      disabled={status === "executing"}
+      type="submit"
+      className={withCard ? "w-full" : undefined}
+    >
+      {status === "executing" ? (
+        <Loader className="mr-2 h-4 w-4 animate-spin" />
+      ) : (
+        (submitLabel ?? "Continuar")
+      )}
+    </Button>
+  )
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Card className="min-w-96 shadow-xl">
-          <CardHeader>
-            <CardTitle>Datos generales</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <fieldset className="space-y-4">
-              <Controller
-                name="name"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Nombre del negocio
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      placeholder="Nombre del negocio"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-              <Controller
-                name="description"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
-                    <Textarea
-                      {...field}
-                      id={field.name}
-                      placeholder="Descripción"
-                    />
-                    <FieldDescription>
-                      Escribe una breve descripción de tu negocio
-                    </FieldDescription>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-              <Controller
-                name="slug"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Sitio web</FieldLabel>
-                    <InputGroup>
-                      <InputGroupAddon>
-                        <InputGroupText>https://</InputGroupText>
-                      </InputGroupAddon>
-                      <InputGroupInput
-                        {...field}
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        placeholder="tu-sitio"
-                        className="pl-1!"
-                      />
-                      <InputGroupAddon align="inline-end">
-                        <InputGroupText>.biztro.co</InputGroupText>
-                      </InputGroupAddon>
-                    </InputGroup>
-                    <FieldDescription>
-                      Este será el nombre de tu sitio web
-                    </FieldDescription>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-            </fieldset>
-          </CardContent>
-          <CardFooter>
-            <Button
-              disabled={status === "executing"}
-              type="submit"
-              className="w-full"
-            >
-              {status === "executing" ? (
-                <Loader className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                (submitLabel ?? "Continuar")
-              )}
-            </Button>
-          </CardFooter>
-        </Card>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {withCard ? (
+          <Card className="min-w-96 shadow-xl">
+            <CardHeader>
+              <CardTitle>Datos generales</CardTitle>
+            </CardHeader>
+            <CardContent>{fields}</CardContent>
+            <CardFooter>{submitButton}</CardFooter>
+          </Card>
+        ) : (
+          <>
+            {fields}
+            <div className="flex justify-end">{submitButton}</div>
+          </>
+        )}
       </form>
     </Form>
   )
