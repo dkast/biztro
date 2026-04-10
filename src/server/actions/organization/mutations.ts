@@ -100,7 +100,27 @@ export const bootstrapOrg = authActionClient
         }
         updateTag(`subscription-current`)
 
-        return { success: true }
+        return {
+          success: {
+            id: org.id,
+            name: org.name,
+            slug: org.slug,
+            description: org.description ?? description ?? null,
+            status: (org.status ?? "ACTIVE") as
+              | "ACTIVE"
+              | "TRIALING"
+              | "CANCELED"
+              | "INCOMPLETE"
+              | "INCOMPLETE_EXPIRED"
+              | "PAST_DUE"
+              | "UNPAID"
+              | "PAUSED"
+              | "SPONSORED",
+            plan: (org.plan ?? "BASIC") as "BASIC" | "PRO",
+            logo: org.logo ?? null,
+            banner: org.banner ?? null
+          }
+        }
       } catch (error) {
         let message
         if (typeof error === "string") {

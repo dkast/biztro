@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import ConfettiOnMount from "@/components/confetti-on-mount"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import NewOrgForm from "@/app/(auth)/new-org/new-org-form"
+import { getCurrentUser } from "@/lib/session"
 
 export const metadata = {
   title: "Crear nuevo negocio",
@@ -10,6 +11,12 @@ export const metadata = {
 }
 
 export default async function NewOrgPage() {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    redirect("/login")
+  }
+
   const currentOrg = await getCurrentOrganization()
 
   if (currentOrg) {
@@ -23,10 +30,13 @@ export default async function NewOrgPage() {
         ¡Bienvenido a Biztro 🎉!
       </h1>
       <p className="text-muted-foreground mt-2">
-        Cuéntanos un poco sobre tu negocio
+        Empecemos por lo esencial de tu negocio
       </p>
-      <div className="mt-8">
-        <NewOrgForm />
+      <div className="mt-8 w-full max-w-lg px-4 sm:px-6">
+        <NewOrgForm
+          submitLabel="Crear negocio y continuar"
+          redirectTo="/dashboard/onboarding?step=logo"
+        />
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import { redirect } from "next/navigation"
 
 import AppSidebar, {
   SkeletonWorkgroup
@@ -9,17 +10,31 @@ import {
   SidebarProvider,
   SidebarTrigger
 } from "@/components/ui/sidebar"
-import { getCurrentOrganization } from "@/server/actions/user/queries"
+import {
+  getCurrentOrganization,
+  hasOrganizations
+} from "@/server/actions/user/queries"
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  const organization = getCurrentOrganization()
+export default async function Layout({
+  children
+}: {
+  children: React.ReactNode
+}) {
+  const [organization, organizationCount] = await Promise.all([
+    getCurrentOrganization(),
+    hasOrganizations()
+  ])
+
+  if (!organization && !organizationCount) {
+    redirect("/new-org")
+  }
 
   return (
     <div className="flex grow flex-col overscroll-contain">
       <SidebarProvider>
         <Sidebar>
           <Suspense fallback={<SkeletonWorkgroup />}>
-            <AppSidebar promiseOrganization={organization} />
+            <AppSidebar promiseOrganization={Promise.resolve(organization)} />
           </Suspense>
         </Sidebar>
         <main

@@ -11,8 +11,21 @@ export const metadata: Metadata = {
   title: "Importar Productos desde Archivo"
 }
 
-export default async function PdfImportPage() {
-  const currentOrg = await getCurrentOrganization()
+function getReturnTo(value: string | string[] | undefined) {
+  if (typeof value !== "string") {
+    return undefined
+  }
+
+  return value.startsWith("/dashboard") ? value : undefined
+}
+
+export default async function PdfImportPage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const [currentOrg, searchParams] = await Promise.all([
+    getCurrentOrganization(),
+    props.searchParams
+  ])
 
   if (!currentOrg) {
     return notFound()
@@ -21,6 +34,7 @@ export default async function PdfImportPage() {
   const simulateEnabled = await simulatePdfAi()
 
   const isPro = currentOrg.plan?.toUpperCase() === "PRO"
+  const returnTo = getReturnTo(searchParams.returnTo)
 
   return (
     <div className="mx-auto w-full min-w-0 grow px-4 sm:px-6">
@@ -33,7 +47,11 @@ export default async function PdfImportPage() {
         </PageSubtitle.Description>
       </PageSubtitle>
       <div className="mt-10">
-        <MenuImportForm simulateEnabled={simulateEnabled} isPro={isPro} />
+        <MenuImportForm
+          simulateEnabled={simulateEnabled}
+          isPro={isPro}
+          returnTo={returnTo}
+        />
       </div>
     </div>
   )

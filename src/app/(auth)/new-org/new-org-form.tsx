@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, useWatch } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import slugify from "@sindresorhus/slugify"
@@ -38,7 +38,26 @@ import { bootstrapOrg } from "@/server/actions/organization/mutations"
 import { Plan, SubscriptionStatus } from "@/lib/types/billing"
 import { orgSchema } from "@/lib/types/organization"
 
-export default function NewOrgForm() {
+export type BootstrappedOrganization = {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  status: SubscriptionStatus
+  plan: Plan
+  logo: string | null
+  banner: string | null
+}
+
+export default function NewOrgForm({
+  onSuccess,
+  submitLabel,
+  redirectTo
+}: {
+  onSuccess?: (organization: BootstrappedOrganization) => void
+  submitLabel?: string
+  redirectTo?: string
+}) {
   const form = useForm<z.infer<typeof orgSchema>>({
     resolver: zodResolver(orgSchema),
     defaultValues: {
@@ -51,7 +70,11 @@ export default function NewOrgForm() {
   })
   const router = useRouter()
 
-  const slug = form.watch("name", "mi-negocio")
+  const slug = useWatch({
+    control: form.control,
+    name: "name",
+    defaultValue: "mi-negocio"
+  })
   const queryClient = useQueryClient()
 
   useEffect(() => {
@@ -62,12 +85,18 @@ export default function NewOrgForm() {
     onSuccess: ({ data }) => {
       if (data?.failure) {
         toast.error(data.failure.reason ?? "Ocurrió un error")
+        reset()
         return
       } else if (data?.success) {
         queryClient.invalidateQueries({
           queryKey: ["workgroup", "current"]
         })
-        router.push("/dashboard")
+
+        if (onSuccess) {
+          onSuccess(data.success as BootstrappedOrganization)
+        } else {
+          router.push(redirectTo ?? "/dashboard")
+        }
       }
       reset()
     },
@@ -86,7 +115,7 @@ export default function NewOrgForm() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Card className="min-w-96 shadow-xl">
           <CardHeader>
-            <CardTitle>Datos generals</CardTitle>
+            <CardTitle>Datos generales</CardTitle>
           </CardHeader>
           <CardContent>
             <fieldset className="space-y-4">
@@ -144,7 +173,7 @@ export default function NewOrgForm() {
                         id={field.name}
                         aria-invalid={fieldState.invalid}
                         placeholder="tu-sitio"
-                        className="!pl-1"
+                        className="pl-1!"
                       />
                       <InputGroupAddon align="inline-end">
                         <InputGroupText>.biztro.co</InputGroupText>
@@ -170,7 +199,7 @@ export default function NewOrgForm() {
               {status === "executing" ? (
                 <Loader className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                "Continuar"
+                (submitLabel ?? "Continuar")
               )}
             </Button>
           </CardFooter>

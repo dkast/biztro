@@ -28,6 +28,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { updateHours } from "@/server/actions/location/mutations"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { hoursSchema } from "@/lib/types/location"
+import { cn } from "@/lib/utils"
 
 type DayOfWeek =
   | "MONDAY"
@@ -101,9 +102,19 @@ function fromData(
 }
 
 export default function HoursForm({
-  data
+  data,
+  locationId,
+  onSuccess,
+  submitLabel,
+  secondaryAction,
+  className
 }: {
   data: Awaited<ReturnType<typeof getDefaultLocation>> | null
+  locationId?: string
+  onSuccess?: () => void
+  submitLabel?: string
+  secondaryAction?: React.ReactNode
+  className?: string
 }) {
   const initialItems = fromData(data)
   const initialOpen = initialItems.filter(h => h.allDay)
@@ -132,11 +143,13 @@ export default function HoursForm({
 
   const { fields } = useFieldArray({ control: form.control, name: "items" })
   const watchedItems = useWatch({ control: form.control, name: "items" })
+  const effectiveLocationId = locationId ?? data?.id
 
   const { execute, status, reset } = useAction(updateHours, {
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Horario actualizado")
+        onSuccess?.()
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
@@ -184,7 +197,7 @@ export default function HoursForm({
         return
       }
       execute({
-        locationId: data?.id,
+        locationId: effectiveLocationId,
         items: DAYS.map(day => ({
           day,
           allDay: selectedDays.includes(day),
@@ -195,7 +208,7 @@ export default function HoursForm({
     } else {
       form.handleSubmit(values => {
         execute({
-          locationId: data?.id,
+          locationId: effectiveLocationId,
           items: values.items.map(item => ({
             day: item.day,
             startTime: item.startTime,
@@ -221,10 +234,10 @@ export default function HoursForm({
   }, [data, form])
 
   const isExecuting = status === "executing"
-  const disabled = data?.id === undefined
+  const disabled = effectiveLocationId === undefined
 
   return (
-    <div className="mt-10 flex flex-col gap-6">
+    <div className={cn("flex flex-col gap-6", className)}>
       <Tabs
         value={activeTab}
         onValueChange={handleTabChange}
@@ -399,16 +412,24 @@ export default function HoursForm({
       </Tabs>
       <FieldGroup>
         <Field orientation="responsive">
-          <Button
-            type="button"
-            disabled={isExecuting || disabled}
-            onClick={onSubmit}
+          <div
+            className="flex w-full flex-col gap-2 sm:flex-row sm:items-center
+              sm:justify-end"
           >
-            {isExecuting && <Loader className="mr-2 size-4 animate-spin" />}
-            <TextMorph>
-              {isExecuting ? "Guardando..." : "Actualizar Horario"}
-            </TextMorph>
-          </Button>
+            {secondaryAction}
+            <Button
+              type="button"
+              disabled={isExecuting || disabled}
+              onClick={onSubmit}
+            >
+              {isExecuting && <Loader className="mr-2 size-4 animate-spin" />}
+              <TextMorph>
+                {isExecuting
+                  ? "Guardando..."
+                  : (submitLabel ?? "Actualizar Horario")}
+              </TextMorph>
+            </Button>
+          </div>
         </Field>
       </FieldGroup>
     </div>
