@@ -58,8 +58,7 @@ type SetupOrganization = {
 
 type SetupLocation = Awaited<ReturnType<typeof getDefaultLocation>>
 
-type ResolvedSteps = Record<StepKey, boolean>
-type ReachableSteps = Record<StepKey, boolean>
+type CompletedSteps = Record<StepKey, boolean>
 
 const ALL_STEP_ORDER: StepKey[] = [
   "organization",
@@ -117,14 +116,17 @@ const STEP_DETAILS: Record<
 function getReachableSteps(
   activeStep: StepKey,
   stepOrder: StepKey[]
-): ReachableSteps {
+): Record<StepKey, boolean> {
   const activeIndex = stepOrder.indexOf(activeStep)
 
-  return ALL_STEP_ORDER.reduce((steps, step) => {
-    const stepIndex = stepOrder.indexOf(step)
-    steps[step] = stepIndex !== -1 && stepIndex <= activeIndex
-    return steps
-  }, {} as ReachableSteps)
+  return ALL_STEP_ORDER.reduce(
+    (steps, step) => {
+      const stepIndex = stepOrder.indexOf(step)
+      steps[step] = stepIndex !== -1 && stepIndex <= activeIndex
+      return steps
+    },
+    {} as Record<StepKey, boolean>
+  )
 }
 
 function StepShell({
@@ -172,33 +174,32 @@ export default function OnboardingWizard({
     : DEFAULT_STEP_ORDER
   const steps = CREATION_STEP_ORDER.map(step => STEP_DETAILS[step])
   const [activeStep, setActiveStep] = useState<StepKey>(initialStep)
+  const [createdOrganization, setCreatedOrganization] =
+    useState<SetupOrganization | null>(null)
   const [location, setLocation] = useState<Location | null>(initialLocation)
-  const [resolvedSteps, setResolvedSteps] = useState<ResolvedSteps>({
+  const [completedSteps, setCompletedSteps] = useState<CompletedSteps>(() => ({
     organization: !showOrganizationStep || Boolean(organization),
     logo: mediaReady,
     location: locationReady,
     hours: hoursReady,
     menu: menuItemsReady
-  })
-  const [reachableSteps, setReachableSteps] = useState<ReachableSteps>(
-    getReachableSteps(initialStep, stepOrder)
-  )
+  }))
   const [logoUploaded, setLogoUploaded] = useState(Boolean(organization?.logo))
   const [bannerUploaded, setBannerUploaded] = useState(
     Boolean(organization?.banner)
   )
   const [isLogoDialogOpen, setLogoDialogOpen] = useState(false)
+  const currentOrganization = organization ?? createdOrganization
+  const reachableSteps = getReachableSteps(activeStep, stepOrder)
+  const hasLogo = logoUploaded || Boolean(currentOrganization?.logo)
+  const hasBanner = bannerUploaded || Boolean(currentOrganization?.banner)
 
   const markStepResolved = (step: StepKey) => {
-    setResolvedSteps(current => ({ ...current, [step]: true }))
+    setCompletedSteps(current => ({ ...current, [step]: true }))
   }
 
   const moveToStep = (step: StepKey) => {
     setActiveStep(step)
-    setReachableSteps(current => ({
-      ...current,
-      ...getReachableSteps(step, stepOrder)
-    }))
 
     if (typeof window !== "undefined") {
       const nextUrl = new URL(window.location.href)
@@ -212,10 +213,17 @@ export default function OnboardingWizard({
   }
 
   const handleOrganizationCreated = (
-    _organization: BootstrappedOrganization
+    nextOrganization: BootstrappedOrganization
   ) => {
+    setCreatedOrganization({
+      id: nextOrganization.id,
+      name: nextOrganization.name,
+      slug: nextOrganization.slug,
+      logo: nextOrganization.logo,
+      banner: nextOrganization.banner
+    })
     markStepResolved("organization")
-    router.replace("/new-org?step=logo")
+    moveToStep("logo")
   }
 
   const handleLogoUploaded = (_result: UploadResult<Meta, Body>) => {
@@ -276,7 +284,7 @@ export default function OnboardingWizard({
     initialLocation && location?.id === initialLocation.id
       ? initialLocation
       : null
-  const hasUploadedMedia = logoUploaded || bannerUploaded
+  const hasUploadedMedia = hasLogo || hasBanner
 
   return (
     <div className="mx-auto w-full max-w-5xl">
@@ -285,23 +293,30 @@ export default function OnboardingWizard({
         onValueChange={value => moveToStep(value as StepKey)}
         activationMode="manual"
         orientation="vertical"
+        className="items-start gap-8"
       >
-        <StepperList>
+        <StepperList className="w-44 shrink-0 gap-0 self-start">
           {steps.map(step => (
             <StepperItem
               key={step.value}
               value={step.value}
-              completed={resolvedSteps[step.value]}
+              completed={completedSteps[step.value]}
               disabled={stepDisabled[step.value]}
+              className="items-start"
             >
-              <StepperTrigger className="not-last:pb-6">
+              <StepperTrigger
+                className="w-full justify-start gap-3 rounded-none
+                  bg-transparent p-0 pb-3 shadow-none hover:bg-transparent
+                  data-[state=active]:bg-transparent
+                  data-[state=completed]:bg-transparent"
+              >
                 <StepperIndicator />
-                <div className="flex flex-col gap-0.5">
+                <div className="flex min-w-0 flex-col gap-0.5 text-left">
                   <StepperTitle>{step.title}</StepperTitle>
                   <StepperDescription>{step.description}</StepperDescription>
                 </div>
               </StepperTrigger>
-              <StepperSeparator className="absolute inset-y-0 top-5 left-3.5 -z-10 -order-1 h-full -translate-x-1/2" />
+              <StepperSeparator className="ml-3.25 h-6 w-px" />
             </StepperItem>
           ))}
         </StepperList>
@@ -326,24 +341,24 @@ export default function OnboardingWizard({
             title="Logo y portada"
             description="Sube tu logo desde un diálogo y agrega también una portada para tu sitio. Puedes dejar cualquiera para después."
           >
-            {organization ? (
+            {currentOrganization ? (
               <div className="space-y-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   <Avatar className="size-24 rounded-3xl">
-                    {organization.logo ? (
+                    {currentOrganization.logo ? (
                       <AvatarImage
-                        src={organization.logo}
+                        src={currentOrganization.logo}
                         className="rounded-3xl"
                       />
                     ) : null}
                     <AvatarFallback className="text-3xl">
-                      {getInitials(organization.name)}
+                      {getInitials(currentOrganization.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="space-y-3">
                     <div className="space-y-1">
                       <p className="font-medium text-balance">
-                        {organization.name}
+                        {currentOrganization.name}
                       </p>
                       <p className="text-muted-foreground text-sm text-pretty">
                         {hasUploadedMedia
@@ -357,7 +372,7 @@ export default function OnboardingWizard({
                     >
                       <DialogTrigger asChild>
                         <Button type="button" variant="outline">
-                          {logoUploaded ? "Cambiar logo" : "Subir logo"}
+                          {hasLogo ? "Cambiar logo" : "Subir logo"}
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-xl">
@@ -365,7 +380,7 @@ export default function OnboardingWizard({
                           <DialogTitle>Subir imágen</DialogTitle>
                         </DialogHeader>
                         <FileUploader
-                          organizationId={organization.id}
+                          organizationId={currentOrganization.id}
                           imageType={ImageType.LOGO}
                           objectId={ImageType.LOGO}
                           limitDimension={500}
@@ -385,17 +400,17 @@ export default function OnboardingWizard({
                       1200x800 en JPG o PNG.
                     </p>
                   </div>
-                  {organization.banner ? (
+                  {currentOrganization.banner ? (
                     <ImageField
-                      src={organization.banner}
-                      organizationId={organization.id}
+                      src={currentOrganization.banner}
+                      organizationId={currentOrganization.id}
                       imageType={ImageType.BANNER}
                       objectId={ImageType.BANNER}
                       onUploadSuccess={handleBannerUploaded}
                     />
                   ) : (
                     <EmptyImageField
-                      organizationId={organization.id}
+                      organizationId={currentOrganization.id}
                       imageType={ImageType.BANNER}
                       objectId={ImageType.BANNER}
                       onUploadSuccess={handleBannerUploaded}

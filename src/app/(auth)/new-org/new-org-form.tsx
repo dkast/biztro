@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/input-group"
 import { Textarea } from "@/components/ui/textarea"
 import { bootstrapOrg } from "@/server/actions/organization/mutations"
+import { authClient } from "@/lib/auth-client"
 import { Plan, SubscriptionStatus } from "@/lib/types/billing"
 import { orgSchema } from "@/lib/types/organization"
 
@@ -84,18 +85,31 @@ export default function NewOrgForm({
   }, [slug]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { execute, status, reset } = useAction(bootstrapOrg, {
-    onSuccess: ({ data }) => {
+    onSuccess: async ({ data }) => {
       if (data?.failure) {
         toast.error(data.failure.reason ?? "Ocurrió un error")
         reset()
         return
       } else if (data?.success) {
+        const organization = data.success as BootstrappedOrganization
+
+        const { error } = await authClient.organization.setActive({
+          organizationId: organization.id
+        })
+
+        if (error) {
+          toast.error("No se pudo activar el negocio en tu sesión")
+          reset()
+          return
+        }
+
         queryClient.invalidateQueries({
           queryKey: ["workgroup", "current"]
         })
+        router.refresh()
 
         if (onSuccess) {
-          onSuccess(data.success as BootstrappedOrganization)
+          onSuccess(organization)
         } else {
           router.push(redirectTo ?? "/dashboard")
         }

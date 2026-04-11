@@ -77,84 +77,73 @@ export default async function NewOrgPage(props: {
     getCurrentOrganization()
   ])
 
-  if (currentOrg) {
-    const [onboardingStatus, location] = await Promise.all([
-      getOrganizationOnboardingStatus(currentOrg.id),
-      getDefaultLocation(currentOrg.id)
-    ])
+  const [onboardingStatus, location] = currentOrg
+    ? await Promise.all([
+        getOrganizationOnboardingStatus(currentOrg.id),
+        getDefaultLocation(currentOrg.id)
+      ])
+    : [null, null]
 
-    const mediaReady = Boolean(
-      onboardingStatus?.logo || onboardingStatus?.banner
-    )
-    const locationReady = Boolean(location)
-    const hoursReady = Boolean(location?.openingHours.length)
-    const menuItemsReady = Boolean(onboardingStatus?._count.menuItems)
-    const requestedStep = getRequestedStep(searchParams.step, locationReady)
+  const mediaReady = Boolean(onboardingStatus?.logo || onboardingStatus?.banner)
+  const locationReady = Boolean(location)
+  const hoursReady = Boolean(location?.openingHours.length)
+  const menuItemsReady = Boolean(onboardingStatus?._count.menuItems)
+  const requestedStep = currentOrg
+    ? getRequestedStep(searchParams.step, locationReady)
+    : undefined
 
-    if (menuItemsReady && !requestedStep) {
-      redirect("/dashboard")
-    }
+  if (currentOrg && menuItemsReady && !requestedStep) {
+    redirect("/dashboard")
+  }
 
-    const initialStep = deriveStep({
-      requestedStep,
-      mediaReady,
-      locationReady,
-      hoursReady
-    })
+  const initialStep = currentOrg
+    ? deriveStep({
+        requestedStep,
+        mediaReady,
+        locationReady,
+        hoursReady
+      })
+    : "organization"
 
-    return (
-      <div className="mx-auto flex grow flex-col gap-6 px-4 py-8 sm:px-6">
+  return (
+    <div className="min-h-dvh">
+      {!currentOrg && <ConfettiOnMount />}
+      <div
+        className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8
+          sm:px-6"
+      >
         <div className="max-w-3xl">
-          <h1 className="font-display text-3xl font-semibold">
-            Sigue configurando tu negocio
+          <h1 className="font-display text-3xl font-semibold text-balance">
+            Configura tu negocio
           </h1>
           <p
             className="text-muted-foreground mt-2 text-sm text-pretty
               sm:text-base"
           >
-            Tu organización ya existe. Completa el resto del setup a tu ritmo y
-            deja cualquier paso para después si lo necesitas.
+            Sigue estos pasos para dejar listo tu negocio. Puedes omitir
+            cualquier parte y completarla más tarde desde el dashboard.
           </p>
         </div>
 
         <OnboardingWizard
-          organization={{
-            id: currentOrg.id,
-            name: currentOrg.name,
-            slug: currentOrg.slug,
-            logo: currentOrg.logo ?? null,
-            banner: currentOrg.banner ?? null
-          }}
+          organization={
+            currentOrg
+              ? {
+                  id: currentOrg.id,
+                  name: currentOrg.name,
+                  slug: currentOrg.slug,
+                  logo: currentOrg.logo ?? null,
+                  banner: currentOrg.banner ?? null
+                }
+              : null
+          }
           initialLocation={location}
           initialStep={initialStep}
           mediaReady={mediaReady}
           locationReady={locationReady}
           hoursReady={hoursReady}
           menuItemsReady={menuItemsReady}
-        />
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex min-h-dvh flex-col items-center justify-center">
-      <ConfettiOnMount />
-      <h1 className="font-display text-3xl font-semibold">
-        ¡Bienvenido a Biztro 🎉!
-      </h1>
-      <p className="text-muted-foreground mt-2 text-pretty">
-        Empecemos por lo esencial de tu negocio
-      </p>
-      <div className="mt-8 w-full max-w-5xl px-4 sm:px-6">
-        <OnboardingWizard
-          organization={null}
-          initialLocation={null}
-          initialStep="organization"
-          mediaReady={false}
-          locationReady={false}
-          hoursReady={false}
-          menuItemsReady={false}
-          showOrganizationStep
+          showOrganizationStep={!currentOrg}
         />
       </div>
     </div>

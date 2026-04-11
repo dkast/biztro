@@ -638,7 +638,7 @@ function StepperItem(props: StepperItemProps) {
     return () => {
       store.removeStep(itemValue)
     }
-  }, [itemValue, completed, disabled])
+  }, [itemValue])
 
   useIsomorphicLayoutEffect(() => {
     store.setStep(itemValue, completed, disabled)
