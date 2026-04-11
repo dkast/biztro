@@ -75,14 +75,14 @@ function validateRow(row: CSVRow): string[] {
   } else {
     const price = parseFloat(row.precio)
     if (isNaN(price) || price < 0) {
-      errors.push("El precio debe ser un numero positivo")
+      errors.push("El precio debe ser un número positivo")
     }
   }
 
   if (row.moneda) {
     const currency = row.moneda.trim().toUpperCase()
     if (!(currency === "MXN" || currency === "USD")) {
-      errors.push("Moneda invalida (usar MXN o USD)")
+      errors.push("Moneda no válida. Usa MXN o USD.")
     }
   }
 
@@ -137,7 +137,7 @@ export default function MenuImportOptions({
       encoding: "utf-8",
       complete: results => {
         if (results.data.length === 0) {
-          setErrors([{ row: 0, errors: ["El archivo esta vacio"] }])
+          setErrors([{ row: 0, errors: ["El archivo está vacío"] }])
           return
         }
 
@@ -145,7 +145,7 @@ export default function MenuImportOptions({
           setErrors([
             {
               row: 0,
-              errors: ["No puedes importar mas de 200 productos a la vez"]
+              errors: ["No puedes importar más de 200 productos a la vez"]
             }
           ])
           return
@@ -189,7 +189,7 @@ export default function MenuImportOptions({
         setErrors([
           {
             row: 0,
-            errors: [`Error al procesar el archivo: ${error.message}`]
+            errors: [`No pudimos procesar el archivo CSV: ${error.message}`]
           }
         ])
       }
@@ -215,50 +215,74 @@ export default function MenuImportOptions({
             opacity-50 blur-xs"
         />
         <div
-          className="bg-background relative rounded-lg p-4 ring-1 ring-black/10
+          className="bg-background relative rounded-2xl p-4 ring-1 ring-black/10
             dark:ring-white/15"
         >
           <div className="mb-3 flex items-start gap-3">
             <FileText className="text-muted-foreground size-5" />
             <div>
-              <p className="font-medium">Importar desde PDF o imagen con IA</p>
+              <p className="font-medium">
+                Importar menú desde PDF o imagen con IA
+              </p>
               <p className="text-muted-foreground text-sm text-pretty">
-                Usa el flujo con IA para extraer productos desde una carta, PDF
-                o imagen de menu.
+                Usa la importación con IA para extraer productos desde una
+                carta, PDF o imagen de menú.
               </p>
             </div>
           </div>
           <Button asChild variant="outline" disabled={isPending}>
             <Link href={aiImportHref} prefetch={false}>
-              Importar tu menu con IA
+              Importar menú con IA
             </Link>
           </Button>
         </div>
       </div>
 
-      <div className="rounded-lg border p-4">
+      <div className="border-border/60 bg-card rounded-2xl border p-5 shadow-sm">
         <div className="mb-3 flex items-start gap-3">
           <FileSpreadsheet className="text-muted-foreground size-5" />
           <div>
             <p className="font-medium">Importar desde CSV</p>
             <p className="text-muted-foreground text-sm text-pretty">
-              Sube un archivo CSV con las columnas: nombre, descripcion
-              (opcional), variante (opcional), precio y categoria (opcional).
+              Sube un CSV con estas columnas: nombre y precio obligatorios;
+              descripción, variante, categoría y moneda son opcionales.
             </p>
           </div>
         </div>
 
-        <Button
-          variant="outline"
-          className="mb-4"
-          onClick={() =>
-            downloadCsvFile(getTemplateRows(), "plantilla-productos.csv")
-          }
-          disabled={isPending}
-        >
-          <FileSpreadsheet className="mr-1" />
-          Descargar plantilla CSV de ejemplo
-        </Button>
+        <div className="mb-4 flex flex-col gap-4">
+          <Button
+            variant="outline"
+            className="w-full justify-start sm:w-fit"
+            onClick={() =>
+              downloadCsvFile(getTemplateRows(), "plantilla-productos.csv")
+            }
+            disabled={isPending}
+          >
+            <FileSpreadsheet className="mr-1" />
+            Descargar plantilla CSV
+          </Button>
+
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Subir archivo CSV</p>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleFileUpload}
+              disabled={isPending}
+              aria-busy={isPending}
+              className="border-border bg-background file:bg-primary
+                file:text-primary-foreground hover:file:bg-primary/90
+                focus-visible:ring-ring block w-full cursor-pointer rounded-lg
+                border text-sm shadow-sm file:mr-4 file:cursor-pointer
+                file:rounded-md file:border-0 file:px-4 file:py-2 file:text-sm
+                file:font-semibold focus-visible:ring-2
+                focus-visible:ring-offset-2 focus-visible:outline-none
+                disabled:cursor-not-allowed disabled:opacity-60
+                motion-safe:transition-colors"
+            />
+          </div>
+        </div>
 
         {errors.length > 0 && (
           <Alert variant="destructive" className="mb-4">
@@ -275,19 +299,6 @@ export default function MenuImportOptions({
             </AlertDescription>
           </Alert>
         )}
-
-        <input
-          type="file"
-          accept=".csv"
-          onChange={handleFileUpload}
-          disabled={isPending}
-          aria-busy={isPending}
-          className="file:bg-primary file:text-primary-foreground
-            hover:file:bg-primary/90 cursor-pointer file:mr-4
-            file:cursor-pointer file:rounded-md file:border-0 file:px-4
-            file:py-2 file:text-sm file:font-semibold
-            disabled:cursor-not-allowed"
-        />
       </div>
     </div>
   )

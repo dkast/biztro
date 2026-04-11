@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 
 import ConfettiOnMount from "@/components/confetti-on-mount"
+import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { getDefaultLocation } from "@/server/actions/location/queries"
 import { getOrganizationOnboardingStatus } from "@/server/actions/organization/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
@@ -106,24 +107,24 @@ export default async function NewOrgPage(props: {
     : "organization"
 
   return (
-    <div className="min-h-dvh">
+    <div className="flex min-h-dvh items-center">
       {!currentOrg && <ConfettiOnMount />}
       <div
-        className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8
+        className="mx-auto flex w-full max-w-5xl flex-col gap-20 px-4 py-8
           sm:px-6"
       >
-        <div className="max-w-3xl">
-          <h1 className="font-display text-3xl font-semibold text-balance">
-            Configura tu negocio
-          </h1>
-          <p
-            className="text-muted-foreground mt-2 text-sm text-pretty
-              sm:text-base"
+        <PageSubtitle className="w-full max-w-3xl">
+          <PageSubtitle.Title
+            className="font-display text-2xl font-semibold text-balance
+              sm:text-4xl"
           >
-            Sigue estos pasos para dejar listo tu negocio. Puedes omitir
-            cualquier parte y completarla más tarde desde el dashboard.
-          </p>
-        </div>
+            Bienvenido a Biztro
+          </PageSubtitle.Title>
+          <PageSubtitle.Description className="mt-2 text-pretty sm:text-base">
+            Completa esta configuración paso a paso. Puedes omitir cualquier
+            parte y volver más tarde desde el dashboard.
+          </PageSubtitle.Description>
+        </PageSubtitle>
 
         <OnboardingWizard
           organization={

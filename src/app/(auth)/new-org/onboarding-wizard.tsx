@@ -94,7 +94,7 @@ const STEP_DETAILS: Record<
   logo: {
     value: "logo",
     title: "Imágenes",
-    description: "Sube tu logo y portada"
+    description: "Sube tu logo y tu portada"
   },
   location: {
     value: "location",
@@ -104,12 +104,12 @@ const STEP_DETAILS: Record<
   hours: {
     value: "hours",
     title: "Horarios",
-    description: "Define tus horas de atención"
+    description: "Configura tus horarios de atención"
   },
   menu: {
     value: "menu",
     title: "Productos",
-    description: "Importa tu menu inicial"
+    description: "Importa tus primeros productos"
   }
 }
 
@@ -325,7 +325,7 @@ export default function OnboardingWizard({
           {showOrganizationStep ? (
             <StepShell
               title="Crea tu negocio"
-              description="Empieza con la información básica de tu organización y continúa con el resto de la configuración."
+              description="Empieza con el nombre y los datos básicos de tu negocio para seguir con la configuración."
             >
               <NewOrgForm
                 withCard={false}
@@ -339,7 +339,7 @@ export default function OnboardingWizard({
         <StepperContent value="logo">
           <StepShell
             title="Logo y portada"
-            description="Sube tu logo desde un diálogo y agrega también una portada para tu sitio. Puedes dejar cualquiera para después."
+            description="Sube tu logo y una portada para tu sitio. Si todavía no los tienes, puedes seguir más tarde."
           >
             {currentOrganization ? (
               <div className="space-y-6">
@@ -362,8 +362,8 @@ export default function OnboardingWizard({
                       </p>
                       <p className="text-muted-foreground text-sm text-pretty">
                         {hasUploadedMedia
-                          ? "Ya tienes recursos visuales cargados. Puedes reemplazarlos o continuar."
-                          : "Recomendado: logo 500x500 y portada 1200x800 en JPG o PNG."}
+                          ? "Ya cargaste recursos visuales. Puedes reemplazarlos o seguir adelante."
+                          : "Recomendado: logo de 500×500 y portada de 1200×800, en JPG o PNG."}
                       </p>
                     </div>
                     <Dialog
@@ -377,7 +377,7 @@ export default function OnboardingWizard({
                       </DialogTrigger>
                       <DialogContent className="max-w-xl">
                         <DialogHeader>
-                          <DialogTitle>Subir imágen</DialogTitle>
+                          <DialogTitle>Subir imagen</DialogTitle>
                         </DialogHeader>
                         <FileUploader
                           organizationId={currentOrganization.id}
@@ -393,11 +393,11 @@ export default function OnboardingWizard({
                 <div className="space-y-3">
                   <div className="space-y-1">
                     <p className="font-medium text-balance">
-                      Imágen de portada
+                      Imagen de portada
                     </p>
                     <p className="text-muted-foreground text-sm text-pretty">
-                      Se mostrará de forma prominente en tu sitio. Recomendado:
-                      1200x800 en JPG o PNG.
+                      Se mostrará en la parte principal de tu sitio.
+                      Recomendado: 1200×800 en JPG o PNG.
                     </p>
                   </div>
                   {currentOrganization.banner ? (
@@ -417,13 +417,7 @@ export default function OnboardingWizard({
                     />
                   )}
                 </div>
-                <div
-                  className="flex flex-col gap-2 sm:flex-row sm:justify-between"
-                >
-                  <Button type="button" variant="ghost" disabled>
-                    <ArrowLeft className="mr-2 size-4" />
-                    Negocio creado
-                  </Button>
+                <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <Button
                       type="button"
@@ -454,7 +448,7 @@ export default function OnboardingWizard({
         <StepperContent value="location">
           <StepShell
             title="Tu primera sucursal"
-            description="Agrega una ubicación principal. Puedes editarla más tarde desde configuración."
+            description="Agrega una ubicación principal. Podrás editarla más tarde desde configuración."
           >
             <LocationForm
               data={location}
@@ -479,7 +473,7 @@ export default function OnboardingWizard({
         <StepperContent value="hours">
           <StepShell
             title="Horarios de atención"
-            description="Configura tus horarios de apertura. También puedes dejar esto para más tarde."
+            description="Configura cuándo abres. Si todavía no estás listo, puedes hacerlo después."
           >
             {location ? (
               <HoursForm
@@ -503,9 +497,9 @@ export default function OnboardingWizard({
                   border border-dashed p-6"
               >
                 <p className="text-muted-foreground text-sm text-pretty">
-                  Sin una sucursal no puedes guardar horarios todavia. Puedes
-                  continuar con la importacion de productos y completar esto
-                  despues desde configuracion.
+                  Sin una sucursal no puedes guardar horarios todavía. Puedes
+                  seguir con la importación de productos y completar esto
+                  después desde configuración.
                 </p>
                 <div
                   className="flex flex-col gap-2 sm:flex-row sm:justify-between"
@@ -531,7 +525,7 @@ export default function OnboardingWizard({
         <StepperContent value="menu">
           <StepShell
             title="Importa tus productos"
-            description="Puedes cargar un CSV aqui mismo o usar el flujo con IA para extraer tu menu desde PDF o imagen."
+            description="Puedes subir un CSV aquí mismo o usar la importación con IA para extraer tus productos desde un PDF o una imagen."
           >
             <MenuImportOptions
               aiImportHref={menuImportHref}
