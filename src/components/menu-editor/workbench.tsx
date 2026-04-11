@@ -746,7 +746,7 @@ export default function Workbench({
             }}
             onRender={RenderNode}
           >
-            <Header className="editor-topbar relative py-4">
+            <Header className="editor-topbar bg-sidebar relative py-4">
               <MenuPublish
                 menu={persistedMenu}
                 onPersistedMenuUpdate={handlePersistedMenuUpdate}
@@ -813,7 +813,7 @@ export default function Workbench({
           onRender={RenderNode}
           onNodesChange={handleNodesChange}
         >
-          <Header className="fixed inset-x-0 top-0">
+          <Header className="bg-sidebar fixed inset-x-0 top-0">
             <div className="mx-10 grid grow grid-cols-3 items-center">
               <div className="flex items-center gap-1">
                 <GuardLink href={"/dashboard"}>
@@ -857,7 +857,7 @@ export default function Workbench({
             <MenuTour />
           </Header>
           <ResizablePanelGroup
-            className="bg-card grow pt-16"
+            className="bg-sidebar grow pt-16"
             orientation="horizontal"
             defaultLayout={serverDefaultLayout}
             onLayoutChange={onLayoutChange}

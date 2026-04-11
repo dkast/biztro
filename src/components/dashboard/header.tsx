@@ -15,7 +15,10 @@ export default function Header({
 }) {
   return (
     <header
-      className={cn("border-border bg-card z-50 flex h-16 border-b", className)}
+      className={cn(
+        "border-border bg-background z-50 flex h-16 border-b",
+        className
+      )}
     >
       <div
         className="mx-auto flex w-full items-center justify-between px-4 sm:px-6
