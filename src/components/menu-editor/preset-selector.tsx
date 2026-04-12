@@ -18,6 +18,7 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from "@/components/ui/drawer"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useIsMobile } from "@/hooks/use-mobile"
 import {
@@ -55,10 +56,10 @@ function PresetCard({
       type="button"
       onClick={onClick}
       className={cn(
-        `group relative w-full overflow-hidden rounded-lg border-2 text-left
-        transition-colors focus-visible:outline-none focus-visible:ring-2
-        focus-visible:ring-ring focus-visible:ring-offset-2
-        focus-visible:ring-offset-background`,
+        `group focus-visible:ring-ring focus-visible:ring-offset-background
+        relative w-full overflow-hidden rounded-lg border-2 text-left
+        transition-colors focus-visible:ring-2 focus-visible:ring-offset-2
+        focus-visible:outline-none`,
         isActive
           ? "border-indigo-500"
           : `border-gray-200 hover:border-gray-400 dark:border-gray-800
@@ -185,10 +186,10 @@ function ImagePresetCard({
       type="button"
       onClick={onClick}
       className={cn(
-        `group relative w-full overflow-hidden rounded-lg border-2 text-left
-        transition-colors focus-visible:outline-none focus-visible:ring-2
-        focus-visible:ring-ring focus-visible:ring-offset-2
-        focus-visible:ring-offset-background`,
+        `group focus-visible:ring-ring focus-visible:ring-offset-background
+        relative w-full overflow-hidden rounded-lg border-2 text-left
+        transition-colors focus-visible:ring-2 focus-visible:ring-offset-2
+        focus-visible:outline-none`,
         isActive
           ? "border-indigo-500"
           : `border-gray-200 hover:border-gray-400 dark:border-gray-800
@@ -383,11 +384,11 @@ export default function PresetSelector({
   const triggerButton = (
     <button
       type="button"
-      className="flex w-full flex-row items-center justify-between rounded-lg
-        border border-gray-200 px-4 py-2 text-left shadow-xs transition-colors
-        hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2
-        focus-visible:ring-ring focus-visible:ring-offset-2
-        focus-visible:ring-offset-background dark:border-gray-800 dark:bg-gray-950
+      className="focus-visible:ring-ring focus-visible:ring-offset-background
+        flex w-full flex-row items-center justify-between rounded-lg border
+        border-gray-200 px-4 py-2 text-left shadow-xs transition-colors
+        hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-offset-2
+        focus-visible:outline-none dark:border-gray-800 dark:bg-gray-950
         dark:hover:bg-gray-800"
     >
       <span className="text-sm">{activePresetName ?? "Elegir tema"}</span>
@@ -405,15 +406,16 @@ export default function PresetSelector({
           <DrawerHeader>
             <DrawerTitle>Temas predefinidos</DrawerTitle>
           </DrawerHeader>
-          <div className="relative min-h-[600px]">
-            <div
-              className="no-scrollbar absolute inset-0 overflow-y-scroll
-                overscroll-contain"
-              data-vaul-no-drag
-            >
-              {content}
-            </div>
-          </div>
+          <ScrollArea
+            className={cn(
+              "h-150",
+              "**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y"
+              // "**:data-[slot=scroll-area-viewport]:[--mask-offset-top:8px]",
+              // "**:data-[slot=scroll-area-viewport]:[--mask-offset-bottom:8px]"
+            )}
+          >
+            {content}
+          </ScrollArea>
         </DrawerContent>
       </DrawerNested>
     )
@@ -426,14 +428,16 @@ export default function PresetSelector({
         <DialogHeader>
           <DialogTitle>Temas predefinidos</DialogTitle>
         </DialogHeader>
-        <div className="relative min-h-[600px]">
-          <div
-            className="no-scrollbar absolute inset-0 overflow-y-scroll
-              overscroll-contain"
-          >
-            {content}
-          </div>
-        </div>
+        <ScrollArea
+          className={cn(
+            "h-150",
+            "**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y"
+            // "**:data-[slot=scroll-area-viewport]:[--mask-offset-top:8px]",
+            // "**:data-[slot=scroll-area-viewport]:[--mask-offset-bottom:8px]"
+          )}
+        >
+          {content}
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   )

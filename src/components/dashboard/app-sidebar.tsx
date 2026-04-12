@@ -173,15 +173,6 @@ export default function AppSidebar({
             </SidebarMenu>
           </SidebarContent>
         </SidebarGroup>
-        <SidebarGroup className="mt-auto">
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <AttachToFeedbackButton />
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
         {currentOrg?.plan === Plan.BASIC && (
@@ -210,6 +201,15 @@ export default function AppSidebar({
             </Card>
           </div>
         )}
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <AttachToFeedbackButton />
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarFooter>
     </>
   )

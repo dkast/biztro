@@ -91,7 +91,7 @@
     "lodash.isequal": "^4.5.0",
     "lodash.isobject": "^3.0.2",
     "lodash.transform": "^4.6.0",
-    "lucide-react": "^1.7.0",
+    "lucide-react": "^1.8.0",
     "lzutf8": "^0.6.3",
     "motion": "^12.38.0",
     "nanoid": "^5.1.7",

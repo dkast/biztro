@@ -746,7 +746,9 @@ export default function Workbench({
             }}
             onRender={RenderNode}
           >
-            <Header className="editor-topbar bg-sidebar relative py-4">
+            <Header
+              className="editor-topbar dark:bg-sidebar relative bg-gray-50 py-4"
+            >
               <MenuPublish
                 menu={persistedMenu}
                 onPersistedMenuUpdate={handlePersistedMenuUpdate}
@@ -813,7 +815,7 @@ export default function Workbench({
           onRender={RenderNode}
           onNodesChange={handleNodesChange}
         >
-          <Header className="bg-sidebar fixed inset-x-0 top-0">
+          <Header className="dark:bg-sidebar fixed inset-x-0 top-0 bg-gray-50">
             <div className="mx-10 grid grow grid-cols-3 items-center">
               <div className="flex items-center gap-1">
                 <GuardLink href={"/dashboard"}>

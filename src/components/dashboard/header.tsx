@@ -16,7 +16,7 @@ export default function Header({
   return (
     <header
       className={cn(
-        "border-border bg-background z-50 flex h-16 border-b",
+        "border-border dark:bg-background z-50 flex h-16 border-b bg-gray-50",
         className
       )}
     >

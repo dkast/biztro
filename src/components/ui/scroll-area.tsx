@@ -15,6 +15,7 @@ const ScrollArea = React.forwardRef<
     {...props}
   >
     <ScrollAreaPrimitive.Viewport
+      data-slot="radix-scroll-area-viewport"
       className="h-full w-full overflow-y-scroll! rounded-[inherit]"
     >
       {children}
