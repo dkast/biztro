@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, type JSX } from "react"
+import { useEffect, useState, useSyncExternalStore, type JSX } from "react"
 import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
 import { useQueryClient } from "@tanstack/react-query"
@@ -63,6 +63,16 @@ function ThemedSelector<T>({
   triggerContent: JSX.Element
   renderItem: (item: T) => JSX.Element
 }) {
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
+
+  if (!isMounted) {
+    return triggerContent
+  }
+
   return isMobile ? (
     <DrawerNested>
       <DrawerTrigger asChild>{triggerContent}</DrawerTrigger>

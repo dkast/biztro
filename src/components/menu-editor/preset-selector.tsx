@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useSyncExternalStore } from "react"
 import { Check } from "lucide-react"
 
 import FontWrapper from "@/components/menu-editor/font-wrapper"
@@ -397,6 +397,16 @@ export default function PresetSelector({
       </span>
     </button>
   )
+
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
+
+  if (!isMounted) {
+    return triggerButton
+  }
 
   if (isMobile) {
     return (
