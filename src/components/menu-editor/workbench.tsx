@@ -11,7 +11,7 @@ import {
 } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { toast } from "react-hot-toast"
-import { type Layout } from "react-resizable-panels"
+import { type Layout, type PanelImperativeHandle } from "react-resizable-panels"
 import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import * as Sentry from "@sentry/nextjs"
@@ -314,6 +314,9 @@ export default function Workbench({
   const [persistedMenu, setPersistedMenu] = useState(menu)
   const [persistedMenuVersion, setPersistedMenuVersion] = useState(0)
   const [revertVersion, setRevertVersion] = useState(0)
+  const leftPanelRef = useRef<PanelImperativeHandle | null>(null)
+  const dataGridPanelRef = useRef<PanelImperativeHandle | null>(null)
+  const rightPanelRef = useRef<PanelImperativeHandle | null>(null)
 
   // Unsaved changes context for grid dirty state
   const { setUnsavedChanges, clearUnsavedChanges } = useSetUnsavedChanges()
@@ -345,6 +348,19 @@ export default function Workbench({
   useEffect(() => {
     setPersistedMenu(menu)
   }, [menu])
+
+  useEffect(() => {
+    if (isDataGridView) {
+      leftPanelRef.current?.collapse()
+      rightPanelRef.current?.collapse()
+      dataGridPanelRef.current?.resize("70%")
+      return
+    }
+
+    dataGridPanelRef.current?.collapse()
+    leftPanelRef.current?.resize("18%")
+    rightPanelRef.current?.resize("18%")
+  }, [isDataGridView])
 
   const handlePersistedMenuUpdate = useCallback(
     (patch: Partial<MenuRecord>) => {
@@ -864,13 +880,15 @@ export default function Workbench({
             defaultLayout={serverDefaultLayout}
             onLayoutChange={onLayoutChange}
           >
-            <Activity mode={isDataGridView ? "hidden" : "visible"}>
-              <ResizablePanel
-                id="left"
-                defaultSize="18%"
-                minSize="15%"
-                maxSize="25%"
-              >
+            <ResizablePanel
+              id="left"
+              panelRef={leftPanelRef}
+              defaultSize={isDataGridView ? "0%" : "18%"}
+              minSize="15%"
+              maxSize="25%"
+              collapsible
+            >
+              <Activity mode={isDataGridView ? "hidden" : "visible"}>
                 <ScrollArea
                   key={`left-panel-${scrollAreaKey}`}
                   className="h-full"
@@ -888,10 +906,16 @@ export default function Workbench({
                     <Layers renderLayer={DefaultLayer} />
                   </div>
                 </ScrollArea>
-              </ResizablePanel>
-            </Activity>
-            <Activity mode={isDataGridView ? "visible" : "hidden"}>
-              <ResizablePanel id="data-grid" defaultSize="70%">
+              </Activity>
+            </ResizablePanel>
+            {!isDataGridView && <ResizableHandle />}
+            <ResizablePanel
+              id="data-grid"
+              panelRef={dataGridPanelRef}
+              defaultSize={isDataGridView ? "70%" : "0%"}
+              collapsible
+            >
+              <Activity mode={isDataGridView ? "visible" : "hidden"}>
                 <MenuItemsDataGrid
                   categories={effectiveItemsState.categories}
                   soloItems={effectiveItemsState.soloItems}
@@ -903,9 +927,9 @@ export default function Workbench({
                   isSaving={isBatchSaving}
                   onManualSave={batchSaveGridItems}
                 />
-              </ResizablePanel>
-            </Activity>
-            <ResizableHandle withHandle={isDataGridView} />
+              </Activity>
+            </ResizablePanel>
+            {isDataGridView && <ResizableHandle withHandle />}
             <ResizablePanel
               id="canvas"
               minSize={200}
@@ -988,14 +1012,16 @@ export default function Workbench({
                 </Activity>
               </div>
             </ResizablePanel>
-            <ResizableHandle />
-            <Activity mode={isDataGridView ? "hidden" : "visible"}>
-              <ResizablePanel
-                id="right"
-                defaultSize="18%"
-                minSize="15%"
-                maxSize="25%"
-              >
+            {!isDataGridView && <ResizableHandle />}
+            <ResizablePanel
+              id="right"
+              panelRef={rightPanelRef}
+              defaultSize={isDataGridView ? "0%" : "18%"}
+              minSize="15%"
+              maxSize="25%"
+              collapsible
+            >
+              <Activity mode={isDataGridView ? "hidden" : "visible"}>
                 <ScrollArea
                   key={`right-panel-${scrollAreaKey}`}
                   className="h-full"
@@ -1003,8 +1029,8 @@ export default function Workbench({
                   <ThemeSelector menu={menu} />
                   <SettingsPanel />
                 </ScrollArea>
-              </ResizablePanel>
-            </Activity>
+              </Activity>
+            </ResizablePanel>
           </ResizablePanelGroup>
         </Editor>
       )}
