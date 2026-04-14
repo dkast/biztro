@@ -41,6 +41,7 @@ import {
 import { updateMenuSerialData } from "@/server/actions/menu/mutations"
 import { type getMenuById } from "@/server/actions/menu/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useScrollFadeSupport } from "@/hooks/use-scroll-fade-support"
 import { colorListAtom, colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import { fontThemes, type ColorTheme, type FontTheme } from "@/lib/types/theme"
 import { cn } from "@/lib/utils"
@@ -68,6 +69,7 @@ function ThemedSelector<T>({
     () => true,
     () => false
   )
+  const supportsScrollFade = useScrollFadeSupport()
 
   if (!isMounted) {
     return triggerContent
@@ -83,7 +85,8 @@ function ThemedSelector<T>({
         <ScrollArea
           className={cn(
             "h-100",
-            "**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y"
+            supportsScrollFade &&
+              "**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y"
             // "**:data-[slot=scroll-area-viewport]:[--mask-offset-top:8px]",
             // "**:data-[slot=scroll-area-viewport]:[--mask-offset-bottom:8px]"
           )}
@@ -108,7 +111,8 @@ function ThemedSelector<T>({
         <ScrollArea
           className={cn(
             "h-100",
-            "**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y"
+            supportsScrollFade &&
+              "**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y"
             // "**:data-[slot=scroll-area-viewport]:[--mask-offset-top:8px]",
             // "**:data-[slot=scroll-area-viewport]:[--mask-offset-bottom:8px]"
           )}
