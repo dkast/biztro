@@ -21,7 +21,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { useScrollFadeSupport } from "@/hooks/use-scroll-fade-support"
 import {
   colorThemes as builtInColorThemes,
   fontThemes,
@@ -404,8 +403,6 @@ export default function PresetSelector({
     () => true,
     () => false
   )
-  const supportsScrollFade = useScrollFadeSupport()
-
   if (!isMounted) {
     return triggerButton
   }
@@ -419,13 +416,8 @@ export default function PresetSelector({
             <DrawerTitle>Temas predefinidos</DrawerTitle>
           </DrawerHeader>
           <ScrollArea
-            className={cn(
-              "h-150",
-              supportsScrollFade &&
-                "**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y"
-              // "**:data-[slot=scroll-area-viewport]:[--mask-offset-top:8px]",
-              // "**:data-[slot=scroll-area-viewport]:[--mask-offset-bottom:8px]"
-            )}
+            className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y
+              h-150"
           >
             {content}
           </ScrollArea>
@@ -442,13 +434,8 @@ export default function PresetSelector({
           <DialogTitle>Temas predefinidos</DialogTitle>
         </DialogHeader>
         <ScrollArea
-          className={cn(
-            "h-150",
-            supportsScrollFade &&
-              "**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y"
-            // "**:data-[slot=scroll-area-viewport]:[--mask-offset-top:8px]",
-            // "**:data-[slot=scroll-area-viewport]:[--mask-offset-bottom:8px]"
-          )}
+          className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y
+            h-150"
         >
           {content}
         </ScrollArea>

@@ -41,10 +41,8 @@ import {
 import { updateMenuSerialData } from "@/server/actions/menu/mutations"
 import { type getMenuById } from "@/server/actions/menu/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { useScrollFadeSupport } from "@/hooks/use-scroll-fade-support"
 import { colorListAtom, colorThemeAtom, fontThemeAtom } from "@/lib/atoms"
 import { fontThemes, type ColorTheme, type FontTheme } from "@/lib/types/theme"
-import { cn } from "@/lib/utils"
 import { ColorThemeEditor } from "./color-theme-editor"
 
 function ThemedSelector<T>({
@@ -69,8 +67,6 @@ function ThemedSelector<T>({
     () => true,
     () => false
   )
-  const supportsScrollFade = useScrollFadeSupport()
-
   if (!isMounted) {
     return triggerContent
   }
@@ -83,13 +79,8 @@ function ThemedSelector<T>({
           <DrawerTitle>{title}</DrawerTitle>
         </DrawerHeader>
         <ScrollArea
-          className={cn(
-            "h-100",
-            supportsScrollFade &&
-              "**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y"
-            // "**:data-[slot=scroll-area-viewport]:[--mask-offset-top:8px]",
-            // "**:data-[slot=scroll-area-viewport]:[--mask-offset-bottom:8px]"
-          )}
+          className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y
+            h-100"
         >
           <div className="flex flex-col gap-2">
             <RadioGroup
@@ -109,13 +100,8 @@ function ThemedSelector<T>({
       <PopoverContent className="max-w-[250px]">
         <Label className="mb-4 block">{title}</Label>
         <ScrollArea
-          className={cn(
-            "h-100",
-            supportsScrollFade &&
-              "**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y"
-            // "**:data-[slot=scroll-area-viewport]:[--mask-offset-top:8px]",
-            // "**:data-[slot=scroll-area-viewport]:[--mask-offset-bottom:8px]"
-          )}
+          className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y
+            h-100"
         >
           <div className="flex h-max flex-col gap-2">
             <RadioGroup
