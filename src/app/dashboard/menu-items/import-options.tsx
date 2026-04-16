@@ -238,7 +238,10 @@ export default function MenuImportOptions({
         </div>
       </div>
 
-      <div className="border-border/60 bg-card rounded-2xl border p-5 shadow-sm">
+      <div
+        className="border-border/60 bg-background rounded-2xl border p-5
+          shadow-sm"
+      >
         <div className="mb-3 flex items-start gap-3">
           <FileSpreadsheet className="text-muted-foreground size-5" />
           <div>

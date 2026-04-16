@@ -139,7 +139,10 @@ function StepShell({
   children: React.ReactNode
 }) {
   return (
-    <Card className="border-border/60 bg-card shadow-sm">
+    <Card
+      className="dark:border-border/60 border-0 bg-white/70 backdrop-blur-sm
+        dark:border dark:bg-black/30"
+    >
       <CardHeader>
         <CardTitle className="text-balance">{title}</CardTitle>
         <CardDescription className="text-pretty">{description}</CardDescription>
@@ -295,7 +298,10 @@ export default function OnboardingWizard({
         orientation="vertical"
         className="items-start gap-8"
       >
-        <StepperList className="w-44 shrink-0 gap-0 self-start">
+        <StepperList
+          className="w-44 shrink-0 gap-0 self-start rounded-xl bg-white/50 p-3
+            backdrop-blur-sm dark:bg-black/20"
+        >
           {steps.map(step => (
             <StepperItem
               key={step.value}
