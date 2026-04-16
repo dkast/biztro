@@ -696,19 +696,33 @@
   --mask-offset-top: 0px;
   --mask-offset-bottom: 0px;
   --scroll-buffer: 2rem;
+  -webkit-mask-image:
+    linear-gradient(to top, transparent, black 90%),
+    linear-gradient(to bottom, transparent 0%, black 100%),
+    linear-gradient(black, black);
   mask-image:
     linear-gradient(to top, transparent, black 90%),
     linear-gradient(to bottom, transparent 0%, black 100%),
     linear-gradient(black, black);
+  -webkit-mask-size:
+    100% var(--top-mask-height),
+    100% var(--bottom-mask-height),
+    100% 100%;
   mask-size:
     100% var(--top-mask-height),
     100% var(--bottom-mask-height),
     100% 100%;
+  -webkit-mask-repeat: no-repeat, no-repeat, no-repeat;
   mask-repeat: no-repeat, no-repeat, no-repeat;
+  -webkit-mask-position:
+    0 var(--mask-offset-top),
+    0 calc(100% - var(--mask-offset-bottom)),
+    0 0;
   mask-position:
     0 var(--mask-offset-top),
     0 calc(100% - var(--mask-offset-bottom)),
     0 0;
+  -webkit-mask-composite: xor;
   mask-composite: exclude;
   animation-name: show-top-mask, hide-bottom-mask;
   animation-timeline: scroll(self), scroll(self);
@@ -723,19 +737,33 @@
   --mask-offset-left: 0px;
   --mask-offset-right: 0px;
   --scroll-buffer: 2rem;
+  -webkit-mask-image:
+    linear-gradient(to left, transparent, black 90%),
+    linear-gradient(to right, transparent 0%, black 100%),
+    linear-gradient(black, black);
   mask-image:
     linear-gradient(to left, transparent, black 90%),
     linear-gradient(to right, transparent 0%, black 100%),
     linear-gradient(black, black);
+  -webkit-mask-size:
+    var(--left-mask-width) 100%,
+    var(--right-mask-width) 100%,
+    100% 100%;
   mask-size:
     var(--left-mask-width) 100%,
     var(--right-mask-width) 100%,
     100% 100%;
+  -webkit-mask-repeat: no-repeat, no-repeat, no-repeat;
   mask-repeat: no-repeat, no-repeat, no-repeat;
+  -webkit-mask-position:
+    var(--mask-offset-left) 0,
+    calc(100% - var(--mask-offset-right)) 0,
+    0 0;
   mask-position:
     var(--mask-offset-left) 0,
     calc(100% - var(--mask-offset-right)) 0,
     0 0;
+  -webkit-mask-composite: xor;
   mask-composite: exclude;
   animation-name: show-left-mask, hide-right-mask;
   animation-timeline: scroll(self inline), scroll(self inline);

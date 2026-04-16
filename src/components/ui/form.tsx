@@ -10,7 +10,7 @@ import {
   type FieldPath,
   type FieldValues
 } from "react-hook-form"
-import { Slot as SlotPrimitive, type Label as LabelPrimitive } from "radix-ui"
+import { Slot as SlotPrimitive } from "radix-ui"
 
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
@@ -89,7 +89,7 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 function FormLabel({
   className,
   ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+}: React.ComponentProps<typeof Label>) {
   const { error, formItemId } = useFormField()
 
   return (

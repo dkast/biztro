@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 export type CopyState = "idle" | "done" | "error"
 
@@ -17,6 +17,14 @@ export function useCopyToClipboard({
 }: UseCopyToClipboardOptions = {}) {
   const [state, setState] = useState<CopyState>("idle")
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (resetTimeoutRef.current) {
+        clearTimeout(resetTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const copy = useCallback(
     async (text: string | (() => string)) => {

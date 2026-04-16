@@ -882,7 +882,7 @@ export default function Workbench({
           >
             <ResizablePanel
               id="left"
-              panelRef={leftPanelRef}
+              ref={leftPanelRef}
               defaultSize={isDataGridView ? "0%" : "18%"}
               minSize="15%"
               maxSize="25%"
@@ -911,7 +911,7 @@ export default function Workbench({
             {!isDataGridView && <ResizableHandle />}
             <ResizablePanel
               id="data-grid"
-              panelRef={dataGridPanelRef}
+              ref={dataGridPanelRef}
               defaultSize={isDataGridView ? "70%" : "0%"}
               collapsible
             >
@@ -1015,7 +1015,7 @@ export default function Workbench({
             {!isDataGridView && <ResizableHandle />}
             <ResizablePanel
               id="right"
-              panelRef={rightPanelRef}
+              ref={rightPanelRef}
               defaultSize={isDataGridView ? "0%" : "18%"}
               minSize="15%"
               maxSize="25%"
