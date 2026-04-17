@@ -1,4 +1,4 @@
-import { Layers } from "lucide-react"
+import { Tags } from "lucide-react"
 import { type Metadata } from "next"
 import { notFound } from "next/navigation"
 
@@ -26,7 +26,7 @@ export default async function CategoriesPage() {
   return (
     <div className="mx-auto grow px-4 sm:px-6">
       <PageSubtitle>
-        <PageSubtitle.Icon icon={Layers} />
+        <PageSubtitle.Icon icon={Tags} />
         <PageSubtitle.Title>Categorías</PageSubtitle.Title>
         <PageSubtitle.Description>
           Administra las categorías de tu menú

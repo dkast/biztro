@@ -1,9 +1,9 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
-import * as Accordion from "@radix-ui/react-accordion"
 import { AnimatePresence, motion, useInView } from "motion/react"
 import Image from "next/image"
+import { Accordion as AccordionPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
@@ -120,17 +120,19 @@ export default function Features({
       <div
         className={cn("hidden md:flex", ltr ? "justify-end" : "justify-start")}
       >
-        <Accordion.Root
+        <AccordionPrimitive.Root
           className="grid w-full gap-x-6 py-8 md:grid-cols-3 lg:gap-x-10"
           type="single"
           defaultValue={`item-${currentIndex}`}
           value={`item-${currentIndex}`}
-          onValueChange={value => setCurrentIndex(Number(value.split("-")[1]))}
+          onValueChange={(value: string) =>
+            setCurrentIndex(Number(value.split("-")[1]))
+          }
         >
           {data.map((item, index) => {
             const isActive = currentIndex === index
             return (
-              <Accordion.Item
+              <AccordionPrimitive.Item
                 key={item.id}
                 className="group relative cursor-pointer pb-6"
                 value={`item-${index}`}
@@ -188,8 +190,8 @@ export default function Features({
                   </div>
                 )}
 
-                <Accordion.Header>
-                  <Accordion.Trigger className="w-full text-left">
+                <AccordionPrimitive.Header>
+                  <AccordionPrimitive.Trigger className="w-full text-left">
                     <div className="flex flex-col items-center gap-3">
                       {/* Icon */}
                       <div
@@ -246,12 +248,12 @@ export default function Features({
                         {item.content}
                       </p>
                     </div>
-                  </Accordion.Trigger>
-                </Accordion.Header>
-              </Accordion.Item>
+                  </AccordionPrimitive.Trigger>
+                </AccordionPrimitive.Header>
+              </AccordionPrimitive.Item>
             )
           })}
-        </Accordion.Root>
+        </AccordionPrimitive.Root>
       </div>
 
       {/* ── Image / Video display ── */}

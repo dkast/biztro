@@ -64,7 +64,8 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarMenuSubItem
+  SidebarMenuSubItem,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { switchOrganization } from "@/server/actions/user/mutations"
@@ -112,10 +113,15 @@ export default function AppSidebar({
   promiseOrganization: ReturnType<typeof getCurrentOrganization>
 }) {
   const currentOrg = use(promiseOrganization)
+  const { isMobile, setOpenMobile } = useSidebar()
+
+  const closeMobileSidebar = () => {
+    if (isMobile) setOpenMobile(false)
+  }
 
   return (
     <>
-      <SidebarWorkgroup />
+      <SidebarWorkgroup onNavigate={closeMobileSidebar} />
       <SidebarContent>
         <SidebarGroup>
           <SidebarContent>
@@ -144,7 +150,10 @@ export default function AppSidebar({
                           <SidebarMenuSub>
                             {item.items?.map(subItem => (
                               <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarSubLink item={subItem} />
+                                <SidebarSubLink
+                                  item={subItem}
+                                  onNavigate={closeMobileSidebar}
+                                />
                               </SidebarMenuSubItem>
                             ))}
                           </SidebarMenuSub>
@@ -153,22 +162,16 @@ export default function AppSidebar({
                     </Collapsible>
                   ) : (
                     <SidebarMenuItem>
-                      <SidebarLink item={item} />
+                      <SidebarLink
+                        item={item}
+                        onNavigate={closeMobileSidebar}
+                      />
                     </SidebarMenuItem>
                   )}
                 </Fragment>
               ))}
             </SidebarMenu>
           </SidebarContent>
-        </SidebarGroup>
-        <SidebarGroup className="mt-auto">
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <AttachToFeedbackButton />
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
@@ -186,7 +189,11 @@ export default function AppSidebar({
               </CardHeader>
               <CardFooter className="px-3">
                 <Button size="xs" variant="default" className="w-full" asChild>
-                  <Link href="/dashboard/settings/billing" prefetch={false}>
+                  <Link
+                    href="/dashboard/settings/billing"
+                    prefetch={false}
+                    onClick={closeMobileSidebar}
+                  >
                     Actualiza ahora
                   </Link>
                 </Button>
@@ -194,12 +201,27 @@ export default function AppSidebar({
             </Card>
           </div>
         )}
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <AttachToFeedbackButton />
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarFooter>
     </>
   )
 }
 
-function SidebarLink({ item }: { item: NavigationItem }) {
+function SidebarLink({
+  item,
+  onNavigate
+}: {
+  item: NavigationItem
+  onNavigate?: () => void
+}) {
   const pathname = usePathname()
   const segment = useSelectedLayoutSegment()
 
@@ -212,7 +234,7 @@ function SidebarLink({ item }: { item: NavigationItem }) {
 
   return (
     <SidebarMenuButton asChild isActive={isActive}>
-      <Link href={item.url} prefetch={false}>
+      <Link href={item.url} prefetch={false} onClick={onNavigate}>
         {item.icon && <item.icon />}
         <span>{item.title}</span>
       </Link>
@@ -220,20 +242,26 @@ function SidebarLink({ item }: { item: NavigationItem }) {
   )
 }
 
-function SidebarSubLink({ item }: { item: NavigationItem }) {
+function SidebarSubLink({
+  item,
+  onNavigate
+}: {
+  item: NavigationItem
+  onNavigate?: () => void
+}) {
   const pathname = usePathname()
   const isActive = item.url === pathname
 
   return (
     <SidebarMenuSubButton asChild isActive={isActive}>
-      <Link href={item.url} prefetch={false}>
+      <Link href={item.url} prefetch={false} onClick={onNavigate}>
         <span>{item.title}</span>
       </Link>
     </SidebarMenuSubButton>
   )
 }
 
-function SidebarWorkgroup() {
+function SidebarWorkgroup({ onNavigate }: { onNavigate?: () => void }) {
   const { data: organizations, refetch } = authClient.useListOrganizations()
 
   const { data: currentOrg } = useQuery({
@@ -259,6 +287,7 @@ function SidebarWorkgroup() {
         startTransition(() => {
           router.replace("/dashboard")
         })
+        onNavigate?.()
       } else if (data?.failure?.reason) {
         toast.error(data.failure.reason)
       }
@@ -289,7 +318,11 @@ function SidebarWorkgroup() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuButton asChild size="lg">
-            <Link href="/dashboard/create-org" prefetch={false}>
+            <Link
+              href="/dashboard/create-org"
+              prefetch={false}
+              onClick={onNavigate}
+            >
               <div
                 className="border-sidebar-border grid size-8 place-items-center
                   rounded-sm border shadow-sm"
@@ -375,6 +408,7 @@ function SidebarWorkgroup() {
                 <Link
                   href="/dashboard/create-org"
                   prefetch={false}
+                  onClick={onNavigate}
                   className="flex items-center gap-2"
                 >
                   <div

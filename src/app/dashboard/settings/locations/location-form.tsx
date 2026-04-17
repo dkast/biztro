@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, type ReactNode } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { type Location } from "@/generated/prisma-client/client"
@@ -40,10 +40,16 @@ import { locationSchema } from "@/lib/types/location"
 
 export default function LocationForm({
   data,
-  enabled
+  enabled,
+  onSuccess,
+  submitLabel,
+  secondaryAction
 }: {
   data: Location | null
   enabled: boolean
+  onSuccess?: (location: Location) => void
+  submitLabel?: string
+  secondaryAction?: ReactNode
 }) {
   const form = useForm<z.infer<typeof locationSchema>>({
     resolver: zodResolver(locationSchema),
@@ -97,6 +103,7 @@ export default function LocationForm({
           currency: (result.currency as "MXN" | "USD") ?? "MXN",
           organizationId: result.organizationId ?? undefined
         })
+        onSuccess?.(result)
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
@@ -105,6 +112,7 @@ export default function LocationForm({
     },
     onError: () => {
       toast.error("No se pudo actualizar la sucursal")
+      resetCreate()
     }
   })
 
@@ -116,6 +124,7 @@ export default function LocationForm({
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast.success("Sucursal actualizada")
+        onSuccess?.(data.success)
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
       }
@@ -123,6 +132,7 @@ export default function LocationForm({
     },
     onError: () => {
       toast.error("No se pudo actualizar la sucursal")
+      resetUpdate()
     }
   })
 
@@ -482,24 +492,29 @@ export default function LocationForm({
             />
           </div>
           <Field orientation="responsive">
-            <Button
-              type="submit"
-              disabled={
-                statusUpdate === "executing" || statusCreate === "executing"
-              }
+            <div
+              className="flex w-full flex-col gap-2 sm:flex-row sm:items-center
+                sm:justify-end"
             >
-              {(statusUpdate === "executing" ||
-                statusCreate === "executing") && (
-                <Loader className="mr-2 size-4 animate-spin" />
-              )}
-              <TextMorph>
-                {statusUpdate === "executing" || statusCreate === "executing"
-                  ? "Guardando..."
-                  : data
-                    ? "Actualizar sucursal"
-                    : "Crear sucursal"}
-              </TextMorph>
-            </Button>
+              {secondaryAction}
+              <Button
+                type="submit"
+                disabled={
+                  statusUpdate === "executing" || statusCreate === "executing"
+                }
+              >
+                {(statusUpdate === "executing" ||
+                  statusCreate === "executing") && (
+                  <Loader className="mr-2 size-4 animate-spin" />
+                )}
+                <TextMorph>
+                  {statusUpdate === "executing" || statusCreate === "executing"
+                    ? "Guardando..."
+                    : (submitLabel ??
+                      (data ? "Actualizar sucursal" : "Crear sucursal"))}
+                </TextMorph>
+              </Button>
+            </div>
           </Field>
         </FieldGroup>
       </FieldSet>

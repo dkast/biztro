@@ -72,7 +72,9 @@ export default function Hero() {
                   <Announcement
                     className="inset-ring-taupe-950/20 hover:ring-taupe-950/30"
                   >
-                    <AnnouncementTag>Beta</AnnouncementTag>
+                    <AnnouncementTag className="bg-indigo-100 text-indigo-800">
+                      Nuevo
+                    </AnnouncementTag>
                     <AnnouncementTitle className="pr-0.5">
                       Biztro está en beta
                       <ArrowRightIcon

@@ -77,10 +77,12 @@ function generateId() {
 
 export default function MenuImportForm({
   simulateEnabled = true,
-  isPro = false
+  isPro = false,
+  returnTo
 }: {
   simulateEnabled?: boolean
   isPro?: boolean
+  returnTo?: string
 }) {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -141,7 +143,7 @@ export default function MenuImportForm({
       setParseError(null)
       if (fileInputRef.current) fileInputRef.current.value = ""
       resetBulkCreate()
-      router.push("/dashboard/menu-items")
+      router.push(returnTo ?? "/dashboard/menu-items")
     },
     onError: error => {
       console.error(error)

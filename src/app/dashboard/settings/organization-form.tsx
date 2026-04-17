@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { DialogTitle } from "@radix-ui/react-dialog"
 import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
@@ -21,6 +20,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog"
 import {

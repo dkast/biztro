@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, useWatch } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import slugify from "@sindresorhus/slugify"
@@ -35,10 +35,32 @@ import {
 } from "@/components/ui/input-group"
 import { Textarea } from "@/components/ui/textarea"
 import { bootstrapOrg } from "@/server/actions/organization/mutations"
+import { authClient } from "@/lib/auth-client"
 import { Plan, SubscriptionStatus } from "@/lib/types/billing"
 import { orgSchema } from "@/lib/types/organization"
 
-export default function NewOrgForm() {
+export type BootstrappedOrganization = {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  status: SubscriptionStatus
+  plan: Plan
+  logo: string | null
+  banner: string | null
+}
+
+export default function NewOrgForm({
+  onSuccess,
+  submitLabel,
+  redirectTo,
+  withCard = true
+}: {
+  onSuccess?: (organization: BootstrappedOrganization) => void
+  submitLabel?: string
+  redirectTo?: string
+  withCard?: boolean
+}) {
   const form = useForm<z.infer<typeof orgSchema>>({
     resolver: zodResolver(orgSchema),
     defaultValues: {
@@ -51,7 +73,11 @@ export default function NewOrgForm() {
   })
   const router = useRouter()
 
-  const slug = form.watch("name", "mi-negocio")
+  const slug = useWatch({
+    control: form.control,
+    name: "name",
+    defaultValue: "mi-negocio"
+  })
   const queryClient = useQueryClient()
 
   useEffect(() => {
@@ -59,15 +85,34 @@ export default function NewOrgForm() {
   }, [slug]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { execute, status, reset } = useAction(bootstrapOrg, {
-    onSuccess: ({ data }) => {
+    onSuccess: async ({ data }) => {
       if (data?.failure) {
         toast.error(data.failure.reason ?? "Ocurrió un error")
+        reset()
         return
       } else if (data?.success) {
+        const organization = data.success as BootstrappedOrganization
+
+        const { error } = await authClient.organization.setActive({
+          organizationId: organization.id
+        })
+
+        if (error) {
+          toast.error("No se pudo activar el negocio en tu sesión")
+          reset()
+          return
+        }
+
         queryClient.invalidateQueries({
           queryKey: ["workgroup", "current"]
         })
-        router.push("/dashboard")
+        router.refresh()
+
+        if (onSuccess) {
+          onSuccess(organization)
+        } else {
+          router.push(redirectTo ?? "/dashboard")
+        }
       }
       reset()
     },
@@ -81,100 +126,99 @@ export default function NewOrgForm() {
     execute(data)
   }
 
+  const fields = (
+    <fieldset className="space-y-4">
+      <Controller
+        name="name"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel htmlFor={field.name}>Nombre del negocio</FieldLabel>
+            <Input
+              {...field}
+              id={field.name}
+              placeholder="Nombre del negocio"
+            />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+      <Controller
+        name="description"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
+            <Textarea {...field} id={field.name} placeholder="Descripción" />
+            <FieldDescription>
+              Escribe una breve descripción de tu negocio
+            </FieldDescription>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+      <Controller
+        name="slug"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field>
+            <FieldLabel htmlFor={field.name}>Sitio web</FieldLabel>
+            <InputGroup>
+              <InputGroupAddon>
+                <InputGroupText>https://</InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput
+                {...field}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                placeholder="tu-sitio"
+                className="pl-1!"
+              />
+              <InputGroupAddon align="inline-end">
+                <InputGroupText>.biztro.co</InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+            <FieldDescription>
+              Este será el nombre de tu sitio web
+            </FieldDescription>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+    </fieldset>
+  )
+
+  const submitButton = (
+    <Button
+      disabled={status === "executing"}
+      type="submit"
+      className={withCard ? "w-full" : undefined}
+    >
+      {status === "executing" ? (
+        <Loader className="mr-2 h-4 w-4 animate-spin" />
+      ) : (
+        (submitLabel ?? "Continuar")
+      )}
+    </Button>
+  )
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Card className="min-w-96 shadow-xl">
-          <CardHeader>
-            <CardTitle>Datos generals</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <fieldset className="space-y-4">
-              <Controller
-                name="name"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Nombre del negocio
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id={field.name}
-                      placeholder="Nombre del negocio"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-              <Controller
-                name="description"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
-                    <Textarea
-                      {...field}
-                      id={field.name}
-                      placeholder="Descripción"
-                    />
-                    <FieldDescription>
-                      Escribe una breve descripción de tu negocio
-                    </FieldDescription>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-              <Controller
-                name="slug"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Sitio web</FieldLabel>
-                    <InputGroup>
-                      <InputGroupAddon>
-                        <InputGroupText>https://</InputGroupText>
-                      </InputGroupAddon>
-                      <InputGroupInput
-                        {...field}
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        placeholder="tu-sitio"
-                        className="!pl-1"
-                      />
-                      <InputGroupAddon align="inline-end">
-                        <InputGroupText>.biztro.co</InputGroupText>
-                      </InputGroupAddon>
-                    </InputGroup>
-                    <FieldDescription>
-                      Este será el nombre de tu sitio web
-                    </FieldDescription>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-            </fieldset>
-          </CardContent>
-          <CardFooter>
-            <Button
-              disabled={status === "executing"}
-              type="submit"
-              className="w-full"
-            >
-              {status === "executing" ? (
-                <Loader className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Continuar"
-              )}
-            </Button>
-          </CardFooter>
-        </Card>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {withCard ? (
+          <Card className="min-w-96 shadow-xl">
+            <CardHeader>
+              <CardTitle>Datos generales</CardTitle>
+            </CardHeader>
+            <CardContent>{fields}</CardContent>
+            <CardFooter>{submitButton}</CardFooter>
+          </Card>
+        ) : (
+          <>
+            {fields}
+            <div className="flex justify-end">{submitButton}</div>
+          </>
+        )}
       </form>
     </Form>
   )

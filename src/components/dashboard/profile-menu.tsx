@@ -1,5 +1,6 @@
 "use client"
 
+import { useSyncExternalStore } from "react"
 import { Globe, LogOut, SunMoon, User } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
@@ -23,20 +24,48 @@ import {
 import { authClient } from "@/lib/auth-client"
 import { getInitials } from "@/lib/utils"
 
+function ProfileMenuTrigger({ disabled = false }: { disabled?: boolean }) {
+  return (
+    <button
+      type="button"
+      className="focus:outline-hidden"
+      disabled={disabled}
+      aria-label="Tu Perfil"
+    >
+      <Avatar className="size-8">
+        <AvatarFallback>BT</AvatarFallback>
+      </Avatar>
+      <span className="sr-only">Tu Perfil</span>
+    </button>
+  )
+}
+
 export default function ProfileMenu() {
   const { data: session } = authClient.useSession()
   const user = session?.user
   const { theme, setTheme } = useTheme()
   const router = useRouter()
 
-  if (!user) return null
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
 
-  // console.log(user)
+  if (!isMounted) {
+    return <ProfileMenuTrigger disabled />
+  }
+
+  if (!user) return null
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button" className="focus:outline-hidden">
+        <button
+          type="button"
+          className="focus:outline-hidden"
+          aria-label="Tu Perfil"
+        >
           <Avatar className="size-8">
             <AvatarImage src={user?.image ?? undefined} />
             <AvatarFallback>{getInitials(user.name)}</AvatarFallback>

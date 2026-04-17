@@ -593,7 +593,7 @@ export function MenuItemsDataGrid({
   const isEmpty = data.length === 0
 
   return (
-    <div className="flex h-full flex-col px-3">
+    <div className="bg-background flex h-full flex-col px-3">
       <div className="py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

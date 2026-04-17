@@ -18,7 +18,6 @@ import { useAtomValue, useSetAtom } from "jotai"
 import {
   Check,
   CircleHelp,
-  Copy,
   Download,
   ExternalLink,
   Globe,
@@ -33,6 +32,7 @@ import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import { TextMorph } from "torph/react"
 
+import { CopyButton } from "@/components/copy-button/copy-button"
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import {
   GuardLink,
@@ -424,25 +424,11 @@ export default function MenuPublish({
               </ItemTitle>
             </ItemContent>
             <ItemActions>
-              <Button
+              <CopyButton
                 variant="ghost"
                 size="icon-sm"
-                aria-label="Copiar liga"
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(publishedMenuUrl)
-                    toast.success("Liga copiada al portapapeles")
-                  } catch (error) {
-                    toast.error(
-                      error instanceof Error
-                        ? error.message
-                        : "No se pudo copiar al portapapeles"
-                    )
-                  }
-                }}
-              >
-                <Copy className="size-4" />
-              </Button>
+                text={publishedMenuUrl}
+              />
             </ItemActions>
           </Item>
           <QrCodeEditor

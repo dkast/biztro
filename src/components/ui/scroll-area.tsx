@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
+import { ScrollArea as ScrollAreaPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
@@ -11,10 +11,11 @@ const ScrollArea = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <ScrollAreaPrimitive.Root
     ref={ref}
-    className={cn("relative overflow-hidden", className)}
+    className={cn("relative overflow-clip", className)}
     {...props}
   >
     <ScrollAreaPrimitive.Viewport
+      data-slot="radix-scroll-area-viewport"
       className="h-full w-full overflow-y-scroll! rounded-[inherit]"
     >
       {children}

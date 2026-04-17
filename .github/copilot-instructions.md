@@ -7,6 +7,7 @@ Before editing code:
 - Read `AGENTS.md` and follow it.
 - Do not guess file contents; open files before changing them.
 - Keep changes minimal and consistent with existing patterns.
+- On agentic tasks, when you finalize the changes, explain the changes in a concise format, e.g. "Added X to Y to achieve Z". This helps the next agent understand the rationale behind the change.
 
 High-signal repo conventions:
 

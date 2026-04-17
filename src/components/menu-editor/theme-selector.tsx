@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, type JSX } from "react"
+import { useEffect, useState, useSyncExternalStore, type JSX } from "react"
 import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
 import { useQueryClient } from "@tanstack/react-query"
@@ -29,6 +29,7 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Sheet,
   SheetContent,
@@ -61,6 +62,15 @@ function ThemedSelector<T>({
   triggerContent: JSX.Element
   renderItem: (item: T) => JSX.Element
 }) {
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
+  if (!isMounted) {
+    return triggerContent
+  }
+
   return isMobile ? (
     <DrawerNested>
       <DrawerTrigger asChild>{triggerContent}</DrawerTrigger>
@@ -68,49 +78,41 @@ function ThemedSelector<T>({
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
         </DrawerHeader>
-        <div className="relative min-h-[400px]">
-          <div
-            className="no-scrollbar absolute inset-0 overflow-y-scroll
-              overscroll-contain"
-            data-vaul-no-drag
-          >
-            <div className="flex flex-col items-center gap-2">
-              <RadioGroup
-                value={currentValue}
-                onValueChange={onValueChange}
-                className="w-full"
-              >
-                {items.map(renderItem)}
-              </RadioGroup>
-            </div>
+        <ScrollArea
+          className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y
+            h-100"
+        >
+          <div className="flex flex-col gap-2">
+            <RadioGroup
+              value={currentValue}
+              onValueChange={onValueChange}
+              className="w-full"
+            >
+              {items.map(renderItem)}
+            </RadioGroup>
           </div>
-        </div>
+        </ScrollArea>
       </DrawerContent>
     </DrawerNested>
   ) : (
     <Popover>
       <PopoverTrigger asChild>{triggerContent}</PopoverTrigger>
-      {/* <PopoverAnchor asChild>
-        <div className="-ml-40 size-0" />
-      </PopoverAnchor> */}
       <PopoverContent className="max-w-[250px]">
         <Label className="mb-4 block">{title}</Label>
-        <div className="relative min-h-[400px]">
-          <div
-            className="no-scrollbar absolute inset-0 overflow-y-scroll
-              overscroll-contain"
-          >
-            <div className="flex flex-col items-center gap-2">
-              <RadioGroup
-                value={currentValue}
-                onValueChange={onValueChange}
-                className="w-full"
-              >
-                {items.map(renderItem)}
-              </RadioGroup>
-            </div>
+        <ScrollArea
+          className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y
+            h-100"
+        >
+          <div className="flex h-max flex-col gap-2">
+            <RadioGroup
+              value={currentValue}
+              onValueChange={onValueChange}
+              className="w-full"
+            >
+              {items.map(renderItem)}
+            </RadioGroup>
           </div>
-        </div>
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   )
