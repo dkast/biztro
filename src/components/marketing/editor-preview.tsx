@@ -4,10 +4,8 @@ import { useRef } from "react"
 import { motion, useInView } from "motion/react"
 import Image from "next/image"
 
-import GradientBlur from "@/components/flare-ui/gradient-blur"
-import { useIsMobile } from "@/hooks/use-mobile"
-import { cn } from "@/lib/utils"
-import editorLight from "../../../public/editor-light.png"
+import editorDark from "../../../public/editor-dark.png"
+import landingBg from "../../../public/landing-bg-2.png"
 
 export default function EditorPreview() {
   const fadeInRef = useRef(null)
@@ -26,8 +24,6 @@ export default function EditorPreview() {
     }
   }
 
-  const isMobile = useIsMobile()
-
   return (
     <section
       id="editor-preview"
@@ -44,41 +40,30 @@ export default function EditorPreview() {
           ease: [0.21, 0.47, 0.32, 0.98],
           type: "spring"
         }}
-        className={cn(
-          `relative mt-0 mb-20 h-full w-full overflow-hidden rounded-md
-          after:absolute after:inset-0 after:z-10 sm:mt-10 sm:mb-30
-          sm:rounded-xl`,
-          isMobile
-            ? `after:[background:linear-gradient(to_top,#f3f1f1_10%,transparent)]
-              dark:after:[background:linear-gradient(to_top,#0a0a0a_10%,transparent)]`
-            : `after:[background:linear-gradient(to_top,#f3f1f1_0%,transparent_50%)]
-              dark:after:[background:linear-gradient(to_top,#0a0a0a_0%,transparent)]`
-        )}
+        className="relative mt-0 mb-20 rounded-xl sm:mt-10 sm:mb-30"
       >
-        <div
-          className={cn(
-            `absolute inset-0 bottom-1/3 h-full w-full transform-gpu
-            filter-[blur(120px)]`,
-            "bg-[linear-gradient(to_bottom,#fb923c,transparent_30%)]",
-            "dark:bg-[linear-gradient(to_bottom,#fb923c,transparent_30%)]"
-          )}
-        />
+        {/* Background scene */}
+        <div className="absolute inset-0 overflow-hidden rounded-xl">
+          <Image
+            src={landingBg}
+            fill
+            alt=""
+            aria-hidden="true"
+            className="object-cover object-center"
+            sizes="(max-width: 768px) 100vw, 1152px"
+            priority
+          />
+        </div>
 
-        <Image
-          src={editorLight}
-          className="relative block h-full w-full dark:hidden"
-          alt="Imagen del editor de menús en web"
-        />
-
-        {/* Fading ring — masked so it disappears with the image fade */}
-        <div
-          className="pointer-events-none absolute inset-0 z-20 rounded-md border
-            border-taupe-900/20
-            mask-[linear-gradient(to_bottom,black_50%,transparent_100%)]
-            sm:rounded-xl"
-        />
-
-        {!isMobile && <GradientBlur className="-inset-x-px -bottom-px h-1/5" />}
+        {/* Editor screenshot framed over the background */}
+        <div className="relative z-10 px-6 py-12 sm:px-16 sm:py-20">
+          <Image
+            src={editorDark}
+            className="block w-full rounded-xl
+              shadow-[0_32px_80px_rgba(0,0,0,0.35)] ring-1 ring-black/10"
+            alt="Imagen del editor de menús en web"
+          />
+        </div>
       </motion.div>
     </section>
   )
