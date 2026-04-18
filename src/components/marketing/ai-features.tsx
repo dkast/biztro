@@ -71,46 +71,9 @@ function BrowserChrome({
 function ScannerIllustration() {
   return (
     <BrowserChrome url="biztro.co/import">
-      <div className="relative h-full w-full">
-        {/* Simulated menu page skeleton */}
-        <div className="space-y-2.5 px-8 pt-8">
-          <div className="h-3 w-24 rounded-full bg-taupe-700/50" />
-          <div className="h-2 w-full rounded-full bg-taupe-800/60" />
-          <div className="h-2 w-5/6 rounded-full bg-taupe-800/60" />
-          <div className="mt-3 h-3 w-20 rounded-full bg-taupe-700/50" />
-          <div className="h-2 w-full rounded-full bg-taupe-800/60" />
-          <div className="h-2 w-4/5 rounded-full bg-taupe-800/60" />
-          <div className="mt-3 h-3 w-28 rounded-full bg-taupe-700/50" />
-          <div className="h-2 w-full rounded-full bg-taupe-800/60" />
-        </div>
-
-        {/* Animated scan line */}
-        <motion.div
-          className="absolute inset-x-0 h-0.5 bg-linear-to-r from-transparent
-            via-orange-500 to-transparent"
-          initial={{ top: "10%" }}
-          animate={{ top: ["10%", "90%", "10%"] }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        {/* Glow behind the scan line */}
-        <motion.div
-          className="absolute inset-x-0 h-8 bg-linear-to-r from-transparent
-            via-orange-500/10 to-transparent blur-md"
-          initial={{ top: "8%" }}
-          animate={{ top: ["8%", "88%", "8%"] }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-
-        {/* Corner brackets */}
-        <div className="pointer-events-none absolute inset-4">
+      <div className="relative h-full w-full px-8 pt-5">
+        {/* Corner brackets — outside the document, relative to the browser area */}
+        <div className="pointer-events-none absolute inset-x-4 top-2 bottom-16">
           <div
             className="absolute top-0 left-0 h-5 w-5 border-t-2 border-l-2
               border-orange-500/70"
@@ -129,7 +92,63 @@ function ScannerIllustration() {
           />
         </div>
 
-        {/* Floating extraction toast */}
+        {/* Document rectangle — narrower white sheet centered in the dark browser */}
+        <div
+          className="relative mx-auto w-4/5 overflow-hidden rounded-sm bg-white
+            shadow-xl ring-1 ring-black/8"
+        >
+          {/* PDF skeleton content */}
+          <div className="space-y-4 px-5 pt-5 pb-6">
+            {/* Document header */}
+            <div
+              className="flex flex-col items-center gap-1.5 border-b
+                border-gray-100 pb-3"
+            >
+              <div className="h-3.5 w-20 rounded bg-gray-200" />
+              <div className="h-2 w-12 rounded bg-gray-100" />
+            </div>
+            {/* Category label */}
+            <div className="h-2 w-14 rounded bg-gray-200" />
+            {/* Menu item rows: image + title + price */}
+            {[0, 1, 2].map(i => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="h-11 w-11 shrink-0 rounded-md bg-gray-200" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-2.5 w-3/4 rounded bg-gray-200" />
+                  <div className="h-2 w-1/2 rounded bg-gray-100" />
+                </div>
+                <div className="h-2.5 w-9 shrink-0 rounded bg-gray-200" />
+              </div>
+            ))}
+          </div>
+
+          {/* Animated scan line — scoped to the document */}
+          <motion.div
+            className="absolute inset-x-0 h-0.5 bg-linear-to-r from-transparent
+              via-orange-500 to-transparent"
+            initial={{ top: "10%" }}
+            animate={{ top: ["10%", "90%", "10%"] }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          {/* Glow behind the scan line */}
+          <motion.div
+            className="absolute inset-x-0 h-8 bg-linear-to-r from-transparent
+              via-orange-500/10 to-transparent blur-md"
+            initial={{ top: "8%" }}
+            animate={{ top: ["8%", "88%", "8%"] }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </div>
+
+        {/* Floating extraction toast — anchored to the browser content area */}
         <div
           className="absolute right-12 bottom-12 left-12 flex items-center gap-3
             rounded-sm bg-taupe-800/90 px-4 py-3 shadow-lg ring-1 ring-white/8

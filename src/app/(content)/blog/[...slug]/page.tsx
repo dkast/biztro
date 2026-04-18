@@ -93,21 +93,17 @@ function Header({
         <h1 className="font-display text-4xl font-medium sm:text-5xl">
           {title}
         </h1>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Image
             src={`/${avatar}`}
             alt={`Imagen de perfil de ${author}`}
-            width={44}
-            height={44}
+            width={32}
+            height={32}
             className="rounded-full shadow-md"
           />
           <div className="flex flex-col">
-            <span className="text-base lg:text-lg lg:leading-tight">
-              {author}
-            </span>
-            <span className="text-sm text-gray-400 lg:text-base">
-              {position}
-            </span>
+            <span className="text-sm leading-tight">{author}</span>
+            <span className="text-xs text-gray-400">{position}</span>
           </div>
         </div>
       </div>

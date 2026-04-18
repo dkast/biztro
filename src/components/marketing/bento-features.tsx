@@ -30,7 +30,7 @@ const features = [
       </div>
     ),
     className:
-      "lg:row-start-1 lg:row-end-4 lg:col-start-2 lg:col-end-3 bg-orange-600 dark:bg-orange-600 dark:text-orange-50 text-orange-50"
+      "lg:row-start-1 lg:row-end-4 lg:col-start-1 lg:col-end-2 bg-orange-600 dark:bg-orange-600 dark:text-orange-50 text-orange-50"
   },
   {
     Icon: MousePointerClick,
@@ -60,7 +60,7 @@ const features = [
       </div>
     ),
     className:
-      "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-2 text-taupe-50 bg-taupe-950 dark:bg-taupe-900"
+      "lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2 text-taupe-50 bg-taupe-950 dark:bg-taupe-900"
   },
   {
     Icon: QrCodeIcon,
@@ -94,7 +94,7 @@ const features = [
       </>
     ),
     className:
-      "lg:col-start-1 lg:col-end-2 lg:row-start-2 lg:row-end-4 bg-taupe-200 dark:bg-taupe-700 dark:text-taupe-50 text-taupe-950"
+      "lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-4 bg-taupe-200 dark:bg-taupe-700 dark:text-taupe-50 text-taupe-950"
   }
 ]
 

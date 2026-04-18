@@ -49,6 +49,7 @@ export default function EditorPreview() {
             fill
             alt=""
             aria-hidden="true"
+            quality={75}
             className="object-cover object-center"
             sizes="(max-width: 768px) 100vw, 1152px"
             priority
@@ -56,13 +57,22 @@ export default function EditorPreview() {
         </div>
 
         {/* Editor screenshot framed over the background */}
-        <div className="relative z-10 px-6 py-12 sm:px-16 sm:py-20">
-          <Image
-            src={editorDark}
-            className="block w-full rounded-xl
-              shadow-[0_32px_80px_rgba(0,0,0,0.35)] ring-1 ring-black/10"
-            alt="Imagen del editor de menús en web"
-          />
+        <div className="relative z-10 px-6 py-12">
+          <div
+            className="relative inline-block overflow-hidden rounded-lg
+              shadow-[0_32px_80px_rgba(0,0,0,0.45)]"
+          >
+            <Image
+              src={editorDark}
+              className="block w-full"
+              alt="Imagen del editor de menús en web"
+            />
+            {/* Overlay ring on top of the image */}
+            <div
+              className="pointer-events-none absolute inset-0 rounded-lg
+                inset-ring inset-ring-white/10"
+            />
+          </div>
         </div>
       </motion.div>
     </section>

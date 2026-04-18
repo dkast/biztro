@@ -72,7 +72,7 @@ export default function Hero() {
                   <Announcement
                     className="inset-ring-taupe-950/20 hover:ring-taupe-950/30"
                   >
-                    <AnnouncementTag className="bg-indigo-100 text-indigo-800">
+                    <AnnouncementTag className="bg-taupe-300 text-taupe-950">
                       Nuevo
                     </AnnouncementTag>
                     <AnnouncementTitle className="pr-0.5">
