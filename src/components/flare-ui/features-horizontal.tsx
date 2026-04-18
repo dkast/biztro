@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from "react"
-import { AnimatePresence, motion, useInView } from "motion/react"
+import React, { Activity, useEffect, useRef, useState } from "react"
+import { motion, useInView } from "motion/react"
 import Image from "next/image"
 import { Accordion as AccordionPrimitive } from "radix-ui"
 
@@ -266,50 +266,39 @@ export default function Features({
           ltr && "md:order-1"
         )}
       >
-        <AnimatePresence mode="sync">
-          {data[currentIndex]?.image ? (
-            <motion.div
-              key={`img-${currentIndex}`}
-              className="absolute inset-0"
-              initial={{ opacity: 0, scale: 0.97 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.97 }}
-              transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >
-              <Image
-                src={data[currentIndex].image!}
-                alt={data[currentIndex].title}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1100px"
-                className="object-contain object-top"
-                priority={currentIndex === 0}
-              />
-            </motion.div>
-          ) : data[currentIndex]?.video ? (
-            <motion.video
-              key={`vid-${currentIndex}`}
-              preload="auto"
-              src={data[currentIndex].video}
-              className="absolute inset-0 h-full w-full object-cover"
-              initial={{ opacity: 0, scale: 0.97 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.97 }}
-              transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-              autoPlay
-              loop
-              muted
-            />
-          ) : (
-            <motion.div
-              key={`empty-${currentIndex}`}
-              className="absolute inset-0 bg-taupe-100 dark:bg-taupe-900"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            />
-          )}
-        </AnimatePresence>
+        {data.map((item, index) => {
+          const isActive = currentIndex === index
+          return (
+            <Activity key={item.id} mode={isActive ? "visible" : "hidden"}>
+              <motion.div
+                className="absolute inset-0"
+                initial={{ opacity: 0, scale: 0.97 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                {item.image ? (
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1100px"
+                    className="object-contain object-top"
+                    priority={index === 0}
+                  />
+                ) : item.video ? (
+                  <video
+                    preload="auto"
+                    src={item.video}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    autoPlay
+                    loop
+                    muted
+                  />
+                ) : null}
+              </motion.div>
+            </Activity>
+          )
+        })}
       </div>
 
       {/* ── Mobile carousel ── */}
