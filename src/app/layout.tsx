@@ -63,7 +63,7 @@ export default function RootLayout({
     >
       {/* <AxiomWebVitals /> */}
       <body
-        className="bg-taupe-100 text-taupe-950 dark:bg-taupe-950
+        className="bg-taupe-100 text-taupe-950 dark:bg-taupe-950/95
           dark:text-taupe-50"
       >
         <Suspense

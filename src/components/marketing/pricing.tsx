@@ -133,7 +133,8 @@ export default function Pricing() {
               key={tier.id}
               className={cn(
                 tier.featured
-                  ? "relative bg-taupe-950 shadow-2xl/30 dark:bg-taupe-900"
+                  ? `relative overflow-hidden bg-taupe-950 shadow-2xl/30
+                    dark:bg-taupe-900`
                   : `bg-taupe-50/60 ring-taupe-200 sm:mx-8 lg:mx-0
                     dark:bg-taupe-900/20 dark:ring-taupe-700/30`,
                 tier.featured
@@ -145,6 +146,13 @@ export default function Pricing() {
                 "rounded-3xl p-8 ring-1 sm:p-10"
               )}
             >
+              {tier.featured && (
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 bottom-0
+                    h-2/3 bg-linear-to-t from-orange-500/15 to-transparent"
+                />
+              )}
               <h3
                 id={tier.id}
                 className={cn(
@@ -218,8 +226,8 @@ export default function Pricing() {
                 aria-describedby={tier.id}
                 className={cn(
                   tier.featured
-                    ? `bg-taupe-100 text-taupe-950 shadow-xs hover:bg-taupe-200
-                      focus-visible:outline-taupe-100`
+                    ? `bg-orange-500 text-white shadow-xs shadow-orange-500/30
+                      hover:bg-orange-400 focus-visible:outline-orange-500`
                     : `text-taupe-700 ring-1 ring-taupe-300 ring-inset
                       hover:ring-taupe-400 focus-visible:outline-taupe-600
                       dark:text-taupe-300 dark:ring-taupe-700/50

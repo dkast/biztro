@@ -146,6 +146,12 @@
   }
 }
 
+@utility prose-drop-cap {
+  &::first-letter {
+    @apply float-left mt-1 mr-2 text-6xl leading-none;
+  }
+}
+
 /* Category Heading Shape Utilities */
 /* Base class for all heading shapes - uses ::before pseudo-element so text isn't clipped */
 @utility heading-shape {

@@ -68,15 +68,15 @@ export default function Hero() {
                   ease: "easeIn"
                 }}
               >
-                <Link href="/blog/beta-biztro" prefetch={false}>
+                <Link href="/blog/funciones-ia" prefetch={false}>
                   <Announcement
                     className="inset-ring-taupe-950/20 hover:ring-taupe-950/30"
                   >
-                    <AnnouncementTag className="bg-indigo-100 text-indigo-800">
+                    <AnnouncementTag className="bg-taupe-200 text-taupe-700">
                       Nuevo
                     </AnnouncementTag>
                     <AnnouncementTitle className="pr-0.5">
-                      Biztro está en beta
+                      Funciones IA para tu menú
                       <ArrowRightIcon
                         className="ml-1 size-3 transition-transform duration-300
                           ease-in-out group-hover:translate-x-1"

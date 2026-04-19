@@ -699,12 +699,13 @@ function QrCodeEditor({
                 logoImage={showLogo && logoBase64 ? logoBase64 : ""}
                 logoWidth={showLogo ? 60 : 0}
                 logoPadding={showLogo ? 4 : 0}
-                logoPaddingRadius={4}
+                // logoPaddingRadius={showLogo ? 4 : 0}
+                logoPaddingStyle="circle"
                 logoOpacity={1}
                 removeQrCodeBehindLogo={showLogo}
                 enableCORS
                 fgColor={rgbaToHex(color)}
-                qrStyle="fluid"
+                qrStyle="dots"
                 eyeRadius={[
                   {
                     // top/left eye
