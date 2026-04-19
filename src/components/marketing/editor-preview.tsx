@@ -49,7 +49,7 @@ export default function EditorPreview() {
             fill
             alt=""
             aria-hidden="true"
-            quality={75}
+            quality={50}
             className="object-cover object-center"
             sizes="(max-width: 768px) 100vw, 1152px"
             priority
