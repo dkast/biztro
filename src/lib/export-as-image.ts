@@ -4,7 +4,9 @@ const exportAsImage = async (
   element: HTMLElement,
   imageFilename: string
 ): Promise<void> => {
-  const canvas = await screenshot.canvas(element)
+  const canvas = await screenshot.canvas(element, {
+    scale: 3
+  })
   const image = canvas.toDataURL("image/png", 1.0)
 
   downloadImage(image, imageFilename)

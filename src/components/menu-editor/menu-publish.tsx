@@ -694,7 +694,7 @@ function QrCodeEditor({
             <div ref={exportRef} className="p-1">
               <QRCode
                 value={value}
-                size={200}
+                size={300}
                 ecLevel={showLogo ? "H" : "M"}
                 logoImage={showLogo && logoBase64 ? logoBase64 : ""}
                 logoWidth={showLogo ? 60 : 0}
