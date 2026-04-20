@@ -22,7 +22,8 @@ const features = [
           src="/handheld-menu.png"
           alt="Vista del menú en un celular"
           className="w-full translate-y-[-8%] transition-all duration-300
-            ease-out group-hover:scale-105"
+            ease-out group-hover:scale-105 sm:h-full sm:w-full sm:translate-y-0
+            sm:object-contain sm:object-bottom"
           width={600}
           height={600}
         />
@@ -30,7 +31,7 @@ const features = [
       </div>
     ),
     className:
-      "lg:row-start-1 lg:row-end-4 lg:col-start-1 lg:col-end-2 bg-orange-600 dark:bg-orange-600 dark:text-orange-50 text-orange-50"
+      "sm:row-start-1 sm:row-end-4 sm:col-start-1 sm:col-end-2 bg-orange-600 dark:bg-orange-600 dark:text-orange-50 text-orange-50"
   },
   {
     Icon: MousePointerClick,
@@ -60,7 +61,7 @@ const features = [
       </div>
     ),
     className:
-      "lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2 text-taupe-50 bg-taupe-950 dark:bg-taupe-900"
+      "sm:col-start-2 sm:col-end-3 sm:row-start-1 sm:row-end-2 text-taupe-50 bg-taupe-950 dark:bg-taupe-900"
   },
   {
     Icon: QrCodeIcon,
@@ -94,21 +95,21 @@ const features = [
       </>
     ),
     className:
-      "lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-4 bg-taupe-200 dark:bg-taupe-700 dark:text-taupe-50 text-taupe-950"
+      "sm:col-start-2 sm:col-end-3 sm:row-start-2 sm:row-end-4 bg-taupe-200 dark:bg-taupe-700 dark:text-taupe-50 text-taupe-950"
   }
 ]
 
 export default function FeaturesBento() {
   return (
     <>
-      <section className="mx-auto mt-0 max-w-6xl px-4 sm:px-6 lg:px-8">
+      <section className="mx-auto mt-0 max-w-6xl px-4 sm:px-6 sm:px-8">
         <TitleSection
           title="Olvídate de los PDFs desactualizados."
           tagline="Edita precios, fotos y categorías desde el navegador, y tus cambios se publican al instante."
           align="left"
         />
       </section>
-      <section className="mx-auto mt-8 max-w-6xl px-4 sm:mt-12 sm:px-6 lg:px-8">
+      <section className="mx-auto mt-8 max-w-6xl px-4 sm:mt-12 sm:px-6 sm:px-8">
         <BentoGrid className="sm:grid-cols-2 sm:grid-rows-3">
           {features.map(feature => (
             <BentoCard key={feature.name} {...feature} />

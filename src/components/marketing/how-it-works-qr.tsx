@@ -36,11 +36,12 @@ export function HowItWorksQr() {
           offsetY={7}
           preset="forest"
           opacity={0.3}
+          radius={16}
         >
           <Image
             src={QRimage}
             alt="Código QR de ejemplo"
-            className="rounded-lg"
+            style={{ clipPath: "inset(0 round 20px)", display: "block" }}
             width={300}
           />
         </FunkyShadow>
