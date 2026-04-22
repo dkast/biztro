@@ -62,11 +62,15 @@ const fuseOptions = {
   keys: [
     {
       name: "name",
-      weight: 0.7
+      weight: 0.55
     },
     {
       name: "description",
-      weight: 0.3
+      weight: 0.2
+    },
+    {
+      name: "categoryName",
+      weight: 0.25
     }
   ],
   minMatchCharLength: 2,
