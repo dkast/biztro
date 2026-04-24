@@ -1,5 +1,7 @@
 import { z } from "zod/v4"
 
+import { SUPPORTED_LOCALE_CODES } from "@/lib/types/translations"
+
 export const variantSchema = z.object({
   id: z.string().optional(),
   name: z
@@ -16,6 +18,28 @@ export const variantSchema = z.object({
   description: z.string().optional(),
   price: z.number().min(0, { error: "Precio no puede ser negativo" }),
   menuItemId: z.string().optional()
+})
+
+export const menuItemTranslationSchema = z.object({
+  locale: z.enum(SUPPORTED_LOCALE_CODES),
+  name: z
+    .string({
+      error: issue =>
+        issue.input === undefined ? "Nombre es requerido" : undefined
+    })
+    .min(3, {
+      error: "Nombre muy corto"
+    })
+    .max(100, {
+      error: "Nombre muy largo"
+    }),
+  description: z.string().optional()
+})
+
+export const menuItemFormTranslationSchema = z.object({
+  locale: z.enum(SUPPORTED_LOCALE_CODES),
+  name: z.string().optional(),
+  description: z.string().optional()
 })
 
 export const menuItemSchema = z.object({
@@ -40,8 +64,13 @@ export const menuItemSchema = z.object({
   currency: z.enum(["MXN", "USD"]).default("MXN").optional(),
   variants: z.tuple([variantSchema], variantSchema),
   allergens: z.string().optional(),
+  translations: z.array(menuItemTranslationSchema).optional(),
   updatePublishedMenus: z.boolean().optional(),
   rememberPublishedChoice: z.boolean().optional()
+})
+
+export const menuItemFormSchema = menuItemSchema.extend({
+  translations: z.array(menuItemFormTranslationSchema).optional()
 })
 
 export type MenuItemQueryFilter = {

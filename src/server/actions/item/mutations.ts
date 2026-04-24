@@ -696,6 +696,7 @@ export const updateItem = authMemberActionClient
         featured,
         allergens,
         currency,
+        translations,
         updatePublishedMenus,
         rememberPublishedChoice
       }
@@ -723,12 +724,38 @@ export const updateItem = authMemberActionClient
                   price: variant.price
                 }
               }))
-            }
+            },
+            translations: translations
+              ? {
+                  upsert: translations.map(translation => ({
+                    where: {
+                      menuItemId_locale: {
+                        menuItemId: id ?? "",
+                        locale: translation.locale
+                      }
+                    },
+                    create: {
+                      locale: translation.locale,
+                      name: translation.name,
+                      description: translation.description?.trim()
+                        ? translation.description
+                        : null
+                    },
+                    update: {
+                      name: translation.name,
+                      description: translation.description?.trim()
+                        ? translation.description
+                        : null
+                    }
+                  }))
+                }
+              : undefined
           }
         })
 
         updateTag(`menu-items-${organizationId}`)
         updateTag(`menu-item-${id}`)
+        updateTag(`translations-${organizationId}`)
 
         const sync = await executeMenuSyncWithPreference({
           organizationId: organizationId ?? "",
