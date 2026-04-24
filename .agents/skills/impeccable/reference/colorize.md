@@ -1,31 +1,14 @@
----
-name: colorize
-description: Add strategic color to features that are too monochromatic or lack visual interest. Makes interfaces more engaging and expressive.
-user-invokable: true
-args:
-  - name: target
-    description: The feature or component to colorize (optional)
-    required: false
----
+> **Additional context needed**: existing brand colors.
 
 Strategically introduce color to designs that are too monochromatic, gray, or lacking in visual warmth and personality.
 
-## MANDATORY PREPARATION
+---
 
-### Context Gathering (Do This First)
+## Register
 
-You cannot do a great job without having necessary context, such as target audience (critical), desired use-cases (critical), brand personality/tone, and especially existing brand colors.
+Brand: palette IS voice. Pick a color strategy first per SKILL.md (Restrained / Committed / Full palette / Drenched) and follow its dosage. Committed, Full palette, and Drenched deliberately exceed the ≤10% rule — that rule is Restrained only. Unexpected combinations are allowed; a dominant color can own the page when the chosen strategy calls for it.
 
-Attempt to gather these from the current thread or codebase.
-
-1. If you don't find _exact_ information and have to infer from existing design and functionality, you MUST STOP and STOP and call the AskUserQuestionTool to clarify. whether you got it right.
-2. Otherwise, if you can't fully infer or your level of confidence is medium or lower, you MUST STOP and call the AskUserQuestionTool to clarify. clarifying questions first to complete your context.
-
-Do NOT proceed until you have answers. Guessing leads to generic AI slop colors.
-
-### Use frontend-design skill
-
-Use the frontend-design skill for design principles and anti-patterns. Do NOT proceed until it has executed and you know all DO's and DON'Ts.
+Product: semantic-first and almost always Restrained. Accent color is reserved for primary action, current selection, and state indicators — not decoration. Every color has a consistent meaning across every screen.
 
 ---
 
@@ -47,7 +30,7 @@ Analyze the current state and identify opportunities:
    - **Wayfinding**: Helping users navigate and understand structure
    - **Delight**: Moments of visual interest and personality
 
-If any of these are unclear from the codebase, STOP and call the AskUserQuestionTool to clarify.
+If any of these are unclear from the codebase, ask the user directly to clarify what you cannot infer.
 
 **CRITICAL**: More color ≠ better. Strategic color beats rainbow vomit every time. Every color should have a purpose.
 
@@ -103,10 +86,13 @@ Add color systematically across these dimensions:
 
 ### Borders & Accents
 
-- **Accent borders**: Add colored left/top borders to cards or sections
+- **Hairline borders**: 1px colored borders on full perimeter (not side-stripes — see the absolute ban on `border-left/right > 1px`)
 - **Underlines**: Color underlines for emphasis or active states
 - **Dividers**: Subtle colored dividers instead of gray lines
 - **Focus rings**: Colored focus indicators matching brand
+- **Surface tints**: A 4-8% background wash of the accent color instead of a stripe
+
+**NEVER**: `border-left` or `border-right` greater than 1px as a colored accent stripe. This is one of the three absolute bans in the parent skill. If you want to mark a card as "active" or "warning", use a full hairline border, a background tint, a leading glyph, or a numbered prefix — not a side stripe.
 
 ### Typography Color
 
@@ -167,3 +153,21 @@ Test that colorization improves the experience:
 - **Not overwhelming**: Is color balanced and purposeful?
 
 Remember: Color is emotional and powerful. Use it to create warmth, guide attention, communicate meaning, and express personality. But restraint and strategy matter more than saturation and variety. Be colorful, but be intentional.
+
+## Live-mode signature params
+
+When invoked from live mode, each variant MUST declare a `color-amount` param so the user can dial between a restrained accent and a drenched surface without regeneration. Author the variant's CSS against `var(--p-color-amount, 0.5)` — typically as the alpha multiplier on backgrounds, or as a scaling factor on the chroma axis in an OKLCH expression. 0 = neutral/monochrome, 1 = full saturation / dominant coverage.
+
+```json
+{
+  "id": "color-amount",
+  "kind": "range",
+  "min": 0,
+  "max": 1,
+  "step": 0.05,
+  "default": 0.5,
+  "label": "Color amount"
+}
+```
+
+Layer 1-2 variant-specific params on top: palette selection (`steps` with named options), temperature warmth, or tint vs. true color. See `reference/live.md` for the full params contract.
