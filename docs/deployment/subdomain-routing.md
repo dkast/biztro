@@ -45,6 +45,12 @@ Create or update the wildcard DNS record:
 - Proxy status: `Proxied`
 - TTL: `Auto`
 
+Keep the apex web record for `biztro.co` aligned with the Vercel project configuration.
+If the root domain is served by Vercel, verify the apex record in Vercel's Domains UI and make sure the Cloudflare apex DNS target matches what Vercel expects for that project.
+
+Do not assume the wildcard record is enough to keep the root domain healthy.
+The wildcard `*` record covers tenant subdomains, but `biztro.co` itself still depends on the explicit apex DNS record.
+
 Keep explicit DNS records for non-tenant hosts that should not resolve through tenant routing. Current reserved hosts in infrastructure are:
 
 - `www`
@@ -60,6 +66,15 @@ If a host should bypass tenant routing, it must have either:
 - an explicit DNS record in Cloudflare, and/or
 - an entry in the Worker `RESERVED_SUBDOMAINS` set.
 
+### CAA records
+
+Avoid a restrictive CAA policy unless you intend to maintain it actively.
+
+If you add a `CAA` record, it must allow the certificate authorities that Cloudflare may use for Universal SSL issuance and renewal.
+A single manual record such as only `letsencrypt.org` can block certificate issuance when Cloudflare uses a different partner CA.
+
+If there is no strict compliance requirement for CAA, it is safer to omit custom CAA records entirely.
+
 ## Cloudflare SSL/TLS Configuration
 
 Set Cloudflare SSL mode to:
@@ -67,6 +82,16 @@ Set Cloudflare SSL mode to:
 - `Full (strict)`
 
 This allows Cloudflare to terminate the wildcard certificate for `*.biztro.co` while still validating the Vercel origin certificate.
+
+### Edge certificate check
+
+On the Cloudflare `SSL/TLS` -> `Edge Certificates` page, verify that there is an active primary certificate for `*.biztro.co, biztro.co`.
+
+Important:
+
+- `Backup` certificates are fallback certificates, not the normal active certificate used in routine traffic.
+- The page should also show the primary `Universal` certificate or another active primary certificate covering `biztro.co` and `*.biztro.co`.
+- If you only see `Backup` certificates, treat that as a misconfiguration or incomplete issuance and re-check Universal SSL.
 
 ## Vercel Configuration
 
@@ -234,6 +259,8 @@ After deploying the Worker and DNS changes, validate the following:
 - `https://slug.biztro.co/some-path` resolves through the same tenant.
 - Static assets still load correctly.
 - QR codes and publish links use `https://slug.biztro.co`.
+- Cloudflare `Edge Certificates` shows an active primary certificate, not only `Backup` rows.
+- The apex DNS record for `biztro.co` matches the current Vercel domain configuration.
 
 ## Known Failure Modes
 
@@ -279,6 +306,39 @@ Cause:
 Fix:
 
 - Turn on the orange-cloud proxy for the wildcard record.
+
+### Edge certificates page only shows backup certificates
+
+Cause:
+
+- Cloudflare backup certificates exist, but the primary Universal certificate is missing, pending, or not deployed.
+
+Fix:
+
+- Confirm `Universal SSL` is enabled.
+- Verify that Cloudflare shows an active primary certificate for `biztro.co` and `*.biztro.co`.
+- If needed, retry issuance by toggling Universal SSL off and back on after confirming DNS and validation records are correct.
+
+### Certificate renewal fails after adding a manual CAA record
+
+Cause:
+
+- The CAA record only authorizes one CA, while Cloudflare is attempting issuance with a different partner CA.
+
+Fix:
+
+- Remove the restrictive CAA record, or expand it to allow the CAs Cloudflare may use for Universal SSL.
+
+### Root domain fails while wildcard subdomains are configured correctly
+
+Cause:
+
+- The apex `biztro.co` DNS record points to the wrong origin, even though the wildcard `*` record is correct.
+
+Fix:
+
+- Check the Vercel Domains configuration for `biztro.co`.
+- Update the explicit apex DNS record in Cloudflare to match Vercel's expected target for the project.
 
 ### Wildcard works in Cloudflare but fails in Vercel
 
