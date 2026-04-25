@@ -78,7 +78,6 @@ import {
   FieldGroup,
   FieldLabel,
   FieldLegend,
-  FieldSeparator,
   FieldSet
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -91,7 +90,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch" // Add this import
+import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { createCategory, updateItem } from "@/server/actions/item/mutations"
@@ -179,6 +178,30 @@ function getTabForIssuePath(path: string): FormTab {
     : "details"
 }
 
+function getMenuItemStatusMeta(status: MenuItemStatus) {
+  switch (status) {
+    case MenuItemStatus.ACTIVE:
+      return {
+        label: "Activo",
+        variant: "green",
+        description: "Visible para mostrarse en los menús activos."
+      } as const
+    case MenuItemStatus.ARCHIVED:
+      return {
+        label: "Archivado",
+        variant: "secondary",
+        description: "Fuera de circulación, pero conservado para referencia."
+      } as const
+    case MenuItemStatus.DRAFT:
+    default:
+      return {
+        label: "Borrador",
+        variant: "yellow",
+        description: "Todavía no se muestra a clientes hasta publicarlo."
+      } as const
+  }
+}
+
 export default function ItemForm({
   promiseItem,
   // categories,
@@ -246,6 +269,14 @@ export default function ItemForm({
   const { fields } = useFieldArray({
     control: form.control,
     name: "variants"
+  })
+  const currentStatus = useWatch({
+    control: form.control,
+    name: "status"
+  })
+  const currentCategoryId = useWatch({
+    control: form.control,
+    name: "categoryId"
   })
   const translations = useWatch({
     control: form.control,
@@ -424,6 +455,24 @@ export default function ItemForm({
     queryFn: () => getCategories(item?.organizationId ?? ""),
     initialData: [] // default value
   })
+
+  const categoryList = categories as Array<{ id: string; name: string }>
+  const statusMeta = getMenuItemStatusMeta(
+    (currentStatus ?? MenuItemStatus.DRAFT) as MenuItemStatus
+  )
+  const selectedCategoryName =
+    categoryList.find(category => category.id === currentCategoryId)?.name ??
+    "Sin categoría"
+  const introCopy =
+    action === "new"
+      ? "Completa los datos principales y guarda el producto."
+      : "Actualiza los datos del producto y guarda los cambios."
+  const activeViewSummary =
+    activeTab === "details"
+      ? "Datos, visibilidad y organización del producto."
+      : activeLocaleLabel
+        ? `${activeLocaleLabel}: texto visible para el cliente.`
+        : "Texto de los idiomas existentes."
 
   const saveRef = React.useRef<HTMLButtonElement>(null)
 
@@ -719,754 +768,938 @@ export default function ItemForm({
 
   return (
     <div className="pb-20">
-      <form onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)}>
-        <div
-          className="border-border bg-background sticky top-18 z-10 flex
-            items-center justify-between rounded-xl border px-4 py-3 shadow-xs
-            group-[.is-dialog]:top-0"
-        >
-          <h4>{title}</h4>
-          <div>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => router.back()}
-                ref={saveRef}
+      <form
+        onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)}
+        className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_18rem]"
+      >
+        <div className="min-w-0 space-y-6">
+          <section
+            className="border-border bg-background rounded-2xl border px-5 py-5
+              shadow-xs sm:px-6 sm:py-6"
+          >
+            <div className="space-y-2">
+              <h1
+                className="font-display text-2xl font-semibold tracking-tight
+                  text-balance sm:text-3xl"
               >
-                Cerrar
-              </Button>
-              <Button disabled={status === "executing"} size="sm" type="submit">
-                {status === "executing" && (
-                  <Loader className="mr-2 size-4 animate-spin" />
-                )}
-                <TextMorph>
-                  {status === "executing" ? "Guardando" : "Guardar"}
-                </TextMorph>
-              </Button>
+                {title}
+              </h1>
+              <p
+                className="text-muted-foreground max-w-3xl text-sm leading-6
+                  text-pretty"
+              >
+                {introCopy}
+              </p>
             </div>
-          </div>
-        </div>
+          </section>
 
-        {form.formState.submitCount > 0 && validationIssues.length > 0 && (
-          <Alert variant="warning" className="mt-6">
-            <TriangleAlert className="size-4" />
-            <AlertTitle>No se pudo guardar el producto</AlertTitle>
-            <AlertDescription>
-              <div className="flex flex-col gap-2 text-sm">
-                <p className="text-pretty">
-                  Corrige los campos marcados antes de volver a guardar.
-                </p>
-                <ul className="list-disc pl-5">
-                  {validationIssues.slice(0, 5).map(issue => (
-                    <li key={`${issue.path}-${issue.message}`}>
-                      {getIssueLabel(issue.path)}: {issue.message}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </AlertDescription>
-          </Alert>
-        )}
+          {form.formState.submitCount > 0 && validationIssues.length > 0 && (
+            <Alert variant="warning">
+              <TriangleAlert className="size-4" />
+              <AlertTitle>No se pudo guardar el producto</AlertTitle>
+              <AlertDescription>
+                <div className="flex flex-col gap-2 text-sm">
+                  <p className="text-pretty">
+                    Corrige los campos marcados antes de volver a guardar.
+                  </p>
+                  <ul className="list-disc pl-5">
+                    {validationIssues.slice(0, 5).map(issue => (
+                      <li key={`${issue.path}-${issue.message}`}>
+                        {getIssueLabel(issue.path)}: {issue.message}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
 
-        <Tabs
-          value={activeTab}
-          onValueChange={value => setActiveTab(value as FormTab)}
-          className="mt-10 gap-6"
-        >
-          <TabsList>
-            <TabsTrigger value="details">Detalles</TabsTrigger>
-            <TabsTrigger value="translations">Traducciones</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="details">
-            <FieldGroup>
+          <Tabs
+            value={activeTab}
+            onValueChange={value => setActiveTab(value as FormTab)}
+            className="space-y-6"
+          >
+            <div
+              className="border-border bg-background sticky top-18 z-10
+                rounded-2xl border px-4 py-4 shadow-xs group-[.is-dialog]:top-0
+                sm:px-5"
+            >
               <div
-                className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3"
+                className="flex flex-col gap-4 xl:flex-row xl:items-center
+                  xl:justify-between"
               >
-                <FieldSet className="lg:col-span-2">
-                  <FieldLegend>Detalles del Producto</FieldLegend>
-                  <FieldGroup>
-                    <Controller
-                      name="name"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid || undefined}>
-                          <FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
-                          <Input
-                            {...field}
-                            id={field.name}
-                            aria-invalid={fieldState.invalid || undefined}
-                            placeholder="Nombre del producto"
-                          />
-                          {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} />
-                          )}
-                        </Field>
-                      )}
-                    />
-                    <Controller
-                      name="description"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid || undefined}>
-                          <FieldLabel htmlFor={field.name}>
-                            Descripción
-                          </FieldLabel>
-                          <Textarea
-                            {...field}
-                            id={field.name}
-                            aria-invalid={fieldState.invalid || undefined}
-                            placeholder="Agrega una descripción. Describe detalles como ingredientes, sabor, etc."
-                          />
-                          {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} />
-                          )}
-                        </Field>
-                      )}
-                    />
-                  </FieldGroup>
-                </FieldSet>
-                <FieldSet>
-                  <FieldLegend>Imágen del Producto</FieldLegend>
-                  <div className="h-full">
-                    {item?.image ? (
-                      <ImageField
-                        className="h-full"
-                        src={item.image}
-                        organizationId={item.organizationId}
-                        imageType={ImageType.MENUITEM}
-                        objectId={item.id}
-                        onUploadSuccess={() => {
-                          router.refresh()
-                        }}
-                      />
-                    ) : (
-                      <EmptyImageField
-                        className="h-full"
-                        organizationId={item.organizationId}
-                        imageType={ImageType.MENUITEM}
-                        objectId={item.id}
-                        onUploadSuccess={() => {
-                          router.refresh()
-                        }}
-                      />
-                    )}
-                  </div>
-                </FieldSet>
-              </div>
-              <FieldSeparator />
-              <FieldSet>
-                <FieldContent className="flex gap-4 sm:flex-row">
-                  <Controller
-                    name="status"
-                    control={form.control}
-                    render={({ field }) => (
-                      <Field className="border-border rounded-lg border p-4">
-                        <FieldLabel htmlFor={field.name}>
-                          Estatus del Producto
-                        </FieldLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar estado" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value={MenuItemStatus.ACTIVE}>
-                              Activo
-                            </SelectItem>
-                            <SelectItem value={MenuItemStatus.DRAFT}>
-                              Borrador
-                            </SelectItem>
-                            <SelectItem value={MenuItemStatus.ARCHIVED}>
-                              Archivado
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FieldDescription>
-                          Cambia el estado del producto para mostrarlo u
-                          ocultarlo en el menú
-                        </FieldDescription>
-                      </Field>
-                    )}
-                  />
-                  <Controller
-                    name="currency"
-                    control={form.control}
-                    render={({ field }) => (
-                      <Field className="border-border rounded-lg border p-4">
-                        <FieldLabel htmlFor={field.name}>Moneda</FieldLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar moneda" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value={"MXN"}>MXN</SelectItem>
-                            <SelectItem value={"USD"}>USD</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FieldDescription>
-                          Selecciona la moneda del producto
-                        </FieldDescription>
-                      </Field>
-                    )}
-                  />
-                  <Controller
-                    name="featured"
-                    control={form.control}
-                    render={({ field }) => (
-                      <Field
-                        className="border-border
-                          has-data-[state=checked]:bg-primary/10
-                          has-data-[state=checked]:border-primary rounded-lg
-                          border p-4"
-                        orientation="horizontal"
-                      >
-                        <FieldContent>
-                          <FieldLabel>Recomendado</FieldLabel>
-                          <FieldDescription>
-                            Mostrar producto en la sección de recomendados
-                          </FieldDescription>
-                        </FieldContent>
-
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
+                <div className="min-w-0 space-y-3">
+                  <div
+                    className="flex flex-col gap-3 lg:flex-row lg:items-center
+                      lg:justify-between"
+                  >
+                    <TabsList
+                      className="bg-muted/40 grid w-full max-w-md grid-cols-2
+                        rounded-xl p-1"
+                    >
+                      <TabsTrigger value="details" className="rounded-lg">
+                        Detalles
+                      </TabsTrigger>
+                      <TabsTrigger value="translations" className="rounded-lg">
+                        Traducciones
+                      </TabsTrigger>
+                    </TabsList>
+                    <div
+                      className="flex flex-wrap items-center justify-start gap-2
+                        lg:justify-end"
+                    >
+                      {form.formState.isDirty && (
+                        <span
+                          aria-label="Cambios sin guardar"
+                          title="Cambios sin guardar"
+                          className="inline-block size-2 rounded-full
+                            bg-yellow-500"
                         />
-                      </Field>
-                    )}
-                  />
-                </FieldContent>
-              </FieldSet>
-              <FieldSeparator />
-              <FieldSet>
-                <FieldLegend>Variantes</FieldLegend>
-                <FieldDescription>
-                  Agrega variantes para mostrar diferentes opciones de un mismo
-                  producto
-                </FieldDescription>
-                <FieldGroup className="md:max-w-md lg:max-w-lg">
-                  <VariantForm fieldArray={fields} parentForm={form} />
+                      )}
+                      {form.formState.submitCount > 0 &&
+                        validationIssues.length > 0 && (
+                          <Badge variant="destructive">
+                            {validationIssues.length} pendiente
+                            {validationIssues.length === 1 ? "" : "s"}
+                          </Badge>
+                        )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap justify-end gap-2">
                   <Button
                     type="button"
-                    variant="outline"
-                    onClick={handleOpenVariant}
-                    className="w-full gap-1"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => router.back()}
+                    ref={saveRef}
                   >
-                    <PlusCircle className="size-3.5" />
-                    Crear variante
+                    Cerrar
                   </Button>
-                </FieldGroup>
-              </FieldSet>
-              <FieldSeparator />
-              <FieldSet>
-                <FieldLegend>Categoría</FieldLegend>
-                <FieldDescription>
-                  Asigna una categoría para agrupar productos similares y
-                  mostrarlos juntos en el menú.
-                </FieldDescription>
-                <Controller
-                  name="categoryId"
-                  control={form.control}
-                  render={({ field }) => (
-                    <Field>
-                      <div className="flex items-center gap-2">
-                        <Combobox
-                          data={categories.map(
-                            (c: { id: string; name: string }) => ({
-                              label: c.name,
-                              value: c.id
-                            })
-                          )}
-                          type="Categoría"
-                          value={field.value}
-                          onValueChange={(val: string) => {
-                            form.setValue("categoryId", val)
-                          }}
-                        >
-                          <ComboboxTrigger className="min-w-75" />
-                          <ComboboxContent>
-                            <ComboboxInput
-                              value={searchCategory}
-                              onValueChange={setSearchCategory}
-                              placeholder="Buscar categoría..."
-                            />
-                            <ComboboxList>
-                              <ComboboxEmpty>
-                                <ComboboxCreateNew
-                                  onCreateNew={handleAddCategory}
-                                />
-                              </ComboboxEmpty>
-                              <ComboboxGroup>
-                                {categories.map(
-                                  (category: { id: string; name: string }) => (
-                                    <ComboboxItem
-                                      value={category.id}
-                                      key={category.id}
-                                      className="py-2 text-base sm:py-1.5
-                                        sm:text-sm"
-                                    >
-                                      <Check
-                                        className={cn(
-                                          "mr-2 size-4",
-                                          category.id === field.value
-                                            ? "opacity-100"
-                                            : "opacity-0"
-                                        )}
-                                      />
-                                      {category.name}
-                                    </ComboboxItem>
-                                  )
-                                )}
-                              </ComboboxGroup>
-                            </ComboboxList>
-                          </ComboboxContent>
-                        </Combobox>
-                        {field.value && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            aria-label="Limpiar categoría"
-                            onClick={() => {
-                              form.setValue("categoryId", "")
-                            }}
-                          >
-                            <X className="size-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </Field>
-                  )}
-                />
-              </FieldSet>
-              <FieldSeparator />
-              <FieldSet>
-                <FieldLegend>Alérgenos e Indicadores</FieldLegend>
-                <FieldDescription>
-                  Selecciona los alérgenos o indicadores especiales para este
-                  producto
-                </FieldDescription>
-                <Controller
-                  name="allergens"
-                  control={form.control}
-                  render={({ field, fieldState }) => {
-                    const values =
-                      ((field.value ?? "")
-                        .split(",")
-                        .filter(Boolean) as string[]) || []
+                  <Button
+                    disabled={status === "executing"}
+                    size="sm"
+                    type="submit"
+                  >
+                    {status === "executing" && (
+                      <Loader className="mr-2 size-4 animate-spin" />
+                    )}
+                    <TextMorph>
+                      {status === "executing" ? "Guardando" : "Guardar"}
+                    </TextMorph>
+                  </Button>
+                </div>
+              </div>
+            </div>
 
-                    return (
-                      <Field>
-                        <Tags
-                          value={field.value}
-                          setValue={(v: string) =>
-                            form.setValue("allergens", v)
-                          }
-                        >
-                          <TagsTrigger placeholder="Buscar alérgenos o indicadores">
-                            {values.map(val => (
-                              <TagsValue
-                                variant="indigo"
-                                key={val}
-                                onRemove={() => {
-                                  const next = values.filter(v => v !== val)
-                                  form.setValue("allergens", next.join(","))
-                                }}
-                              >
-                                {Allergens.find(a => a.value === val)?.label ??
-                                  val}
-                              </TagsValue>
-                            ))}
-                          </TagsTrigger>
-                          <TagsContent>
-                            <TagsInput placeholder="Buscar alérgenos o indicadores" />
-                            <TagsList>
-                              <TagsEmpty className="p-2" />
-                              <TagsGroup>
-                                {Allergens.map(allergen => (
-                                  <TagsItem
-                                    key={allergen.value}
-                                    onSelect={() => {
-                                      const next = Array.from(
-                                        new Set([...values, allergen.value])
-                                      )
-                                      form.setValue("allergens", next.join(","))
-                                    }}
-                                  >
-                                    {allergen.label}
-                                  </TagsItem>
-                                ))}
-                              </TagsGroup>
-                            </TagsList>
-                          </TagsContent>
-                        </Tags>
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
-                      </Field>
-                    )
-                  }}
-                />
-              </FieldSet>
-            </FieldGroup>
-          </TabsContent>
-
-          <TabsContent value="translations">
-            <FieldSet>
-              <FieldLegend>Traducciones disponibles</FieldLegend>
-              <FieldDescription className="text-pretty">
-                Selecciona un idioma existente para editar el título y la
-                descripción que verán tus clientes en esa versión del menú.
-              </FieldDescription>
-              {availableLocales.length > 0 ? (
-                <FieldGroup className="max-w-5xl gap-6">
+            <TabsContent value="details" className="mt-0">
+              <div className="space-y-6">
+                <section
+                  className="border-border bg-background rounded-2xl border px-5
+                    py-5 shadow-xs sm:px-6"
+                >
                   <div
                     className="grid gap-6
-                      xl:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]"
+                      xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)]"
                   >
-                    <FieldSet
-                      className="border-border bg-muted/20 rounded-xl border
-                        p-4"
-                    >
-                      <FieldLegend>Idioma activo</FieldLegend>
+                    <FieldSet>
+                      <FieldLegend>Detalles del producto</FieldLegend>
                       <FieldDescription className="text-pretty">
-                        Cambia de versión para revisar exactamente qué texto ve
-                        el cliente en ese idioma.
+                        Nombre y descripción base.
                       </FieldDescription>
                       <FieldGroup>
-                        <Field>
-                          <FieldLabel htmlFor="translation-locale">
-                            Idioma
-                          </FieldLabel>
-                          <Select
-                            value={activeLocale}
-                            onValueChange={value =>
-                              setSelectedLocale(value as SupportedLocaleCode)
-                            }
-                          >
-                            <SelectTrigger
-                              id="translation-locale"
-                              className="w-full"
+                        <Controller
+                          name="name"
+                          control={form.control}
+                          render={({ field, fieldState }) => (
+                            <Field
+                              data-invalid={fieldState.invalid || undefined}
                             >
-                              <SelectValue placeholder="Selecciona un idioma" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                {localeOptions.map(localeOption => (
-                                  <SelectItem
-                                    key={localeOption.locale}
-                                    value={localeOption.locale}
-                                  >
-                                    <span
-                                      className="flex w-full items-center
-                                        justify-between gap-3"
-                                    >
-                                      <span className="flex items-center gap-2">
-                                        <LanguageFlag
-                                          locale={localeOption.locale}
-                                        />
-                                        <span>{localeOption.label}</span>
-                                      </span>
-                                      <span
-                                        className="text-muted-foreground
-                                          text-xs"
-                                      >
-                                        {localeOption.hasItemTranslation
-                                          ? "Producto"
-                                          : "Sin producto"}
-                                        {` · ${localeOption.translatedVariantsCount} variantes`}
-                                      </span>
-                                    </span>
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                          <FieldDescription className="text-pretty">
-                            Solo puedes editar idiomas que ya existen. Agrega
-                            nuevos idiomas desde la sección de traducciones del
-                            menú.
-                          </FieldDescription>
-                        </Field>
-
-                        <div className="flex flex-wrap gap-2">
-                          {shouldShowVariantTranslationSection && (
-                            <Badge variant="indigo">
-                              {activeVariantTranslationCount} variantes
-                              editables
-                            </Badge>
+                              <FieldLabel htmlFor={field.name}>
+                                Nombre
+                              </FieldLabel>
+                              <Input
+                                {...field}
+                                id={field.name}
+                                aria-invalid={fieldState.invalid || undefined}
+                                placeholder="Nombre del producto"
+                              />
+                              {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                              )}
+                            </Field>
                           )}
-                          {shouldShowVariantTranslationSection &&
-                            inactiveVariantTranslationCount > 0 && (
-                              <Badge variant="outline">
-                                {inactiveVariantTranslationCount} sin traducción
-                                aquí
-                              </Badge>
-                            )}
-                        </div>
+                        />
+                        <Controller
+                          name="description"
+                          control={form.control}
+                          render={({ field, fieldState }) => (
+                            <Field
+                              data-invalid={fieldState.invalid || undefined}
+                            >
+                              <FieldLabel htmlFor={field.name}>
+                                Descripción
+                              </FieldLabel>
+                              <Textarea
+                                {...field}
+                                id={field.name}
+                                aria-invalid={fieldState.invalid || undefined}
+                                placeholder="Agrega una descripción. Describe detalles como ingredientes, sabor, etc."
+                              />
+                              {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                              )}
+                            </Field>
+                          )}
+                        />
                       </FieldGroup>
                     </FieldSet>
 
-                    <FieldSet className="border-border rounded-xl border p-4">
-                      <FieldLegend>Texto del producto</FieldLegend>
+                    <FieldSet>
+                      <FieldLegend>Imagen del producto</FieldLegend>
                       <FieldDescription className="text-pretty">
-                        Ajusta el nombre y la descripción que aparecerán en la
-                        versión del menú en {activeLocaleLabel || "este idioma"}
-                        .
+                        Imagen usada en el catálogo y el menú.
                       </FieldDescription>
-                      {selectedTranslationIndex >= 0 ? (
-                        <FieldGroup key={`product-translation-${activeLocale}`}>
-                          <Controller
-                            name={
-                              `translations.${selectedTranslationIndex}.name` as const
-                            }
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field
-                                data-invalid={fieldState.invalid || undefined}
-                              >
-                                <FieldLabel htmlFor={field.name}>
-                                  Título traducido
-                                </FieldLabel>
-                                <Input
-                                  {...field}
-                                  id={field.name}
-                                  aria-invalid={fieldState.invalid || undefined}
-                                  placeholder={`Nombre en ${activeLocaleLabel}`}
-                                />
-                                {fieldState.invalid && (
-                                  <FieldError errors={[fieldState.error]} />
-                                )}
-                              </Field>
-                            )}
+                      <div className="h-full min-h-64">
+                        {item?.image ? (
+                          <ImageField
+                            className="h-full"
+                            src={item.image}
+                            organizationId={item.organizationId}
+                            imageType={ImageType.MENUITEM}
+                            objectId={item.id}
+                            onUploadSuccess={() => {
+                              router.refresh()
+                            }}
                           />
-                          <Controller
-                            name={
-                              `translations.${selectedTranslationIndex}.description` as const
-                            }
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                              <Field
-                                data-invalid={fieldState.invalid || undefined}
-                              >
-                                <FieldLabel htmlFor={field.name}>
-                                  Descripción traducida
-                                </FieldLabel>
-                                <Textarea
-                                  {...field}
-                                  id={field.name}
-                                  value={field.value ?? ""}
-                                  aria-invalid={fieldState.invalid || undefined}
-                                  placeholder={`Descripción en ${activeLocaleLabel}`}
-                                />
-                                {fieldState.invalid && (
-                                  <FieldError errors={[fieldState.error]} />
-                                )}
-                              </Field>
-                            )}
+                        ) : (
+                          <EmptyImageField
+                            className="h-full"
+                            organizationId={item.organizationId}
+                            imageType={ImageType.MENUITEM}
+                            objectId={item.id}
+                            onUploadSuccess={() => {
+                              router.refresh()
+                            }}
                           />
-                        </FieldGroup>
-                      ) : (
-                        <Alert>
-                          <Languages className="size-4" />
-                          <AlertTitle>Sin traducción del producto</AlertTitle>
-                          <AlertDescription>
-                            Este idioma todavía no tiene nombre ni descripción
-                            para el producto. Aquí solo puedes revisar y ajustar
-                            lo que ya existe.
-                          </AlertDescription>
-                        </Alert>
-                      )}
+                        )}
+                      </div>
                     </FieldSet>
                   </div>
+                </section>
 
-                  {shouldShowVariantTranslationSection && (
-                    <FieldSet className="border-border rounded-xl border p-4">
-                      <div
-                        className="flex flex-col gap-3 md:flex-row
-                          md:items-start md:justify-between"
-                      >
-                        <div className="flex flex-col gap-1">
-                          <FieldLegend>Traducciones de variantes</FieldLegend>
-                          <FieldDescription className="text-pretty">
-                            Usa cada bloque para contrastar el contenido base
-                            con la versión traducida que verá el cliente.
-                          </FieldDescription>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <Badge variant="indigo">
-                            {activeVariantTranslationCount} editables
-                          </Badge>
-                          {inactiveVariantTranslationCount > 0 && (
-                            <Badge variant="outline">
-                              {inactiveVariantTranslationCount} pendientes en
-                              otro idioma
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                      {variantTranslationEntries.length > 0 ? (
-                        <Accordion
-                          type="multiple"
-                          className="border-border bg-background rounded-xl
-                            border px-4"
-                        >
-                          {variantTranslationEntries.map(entry => {
-                            const originalVariant =
-                              variants?.[entry.variantIndex]
-                            const originalDescription =
-                              originalVariant?.description?.trim()
-
-                            return (
-                              <AccordionItem
-                                key={`${entry.variantIndex}-${entry.translationIndex}`}
-                                value={`${entry.variantIndex}-${entry.translationIndex}`}
-                                className="px-1"
-                              >
-                                <AccordionTrigger
-                                  className="gap-4 hover:no-underline"
-                                >
-                                  <div className="min-w-0 flex-1">
-                                    <div
-                                      className="flex flex-wrap items-center
-                                        gap-2"
-                                    >
-                                      <span className="font-medium">
-                                        {entry.variantName}
-                                      </span>
-                                    </div>
-                                    <p
-                                      className="text-muted-foreground mt-1
-                                        text-sm text-pretty"
-                                    >
-                                      {originalDescription
-                                        ? `Base: ${originalDescription}`
-                                        : "Sin descripción base para esta variante."}
-                                    </p>
-                                  </div>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                  <FieldGroup>
-                                    <Controller
-                                      name={
-                                        `variants.${entry.variantIndex}.translations.${entry.translationIndex}.name` as const
-                                      }
-                                      control={form.control}
-                                      render={({ field, fieldState }) => (
-                                        <Field
-                                          data-invalid={
-                                            fieldState.invalid || undefined
-                                          }
-                                        >
-                                          <FieldLabel htmlFor={field.name}>
-                                            Nombre de la variante
-                                          </FieldLabel>
-                                          <Input
-                                            {...field}
-                                            id={field.name}
-                                            aria-invalid={
-                                              fieldState.invalid || undefined
-                                            }
-                                            placeholder={`Nombre en ${activeLocaleLabel}`}
-                                          />
-                                          {fieldState.invalid && (
-                                            <FieldError
-                                              errors={[fieldState.error]}
-                                            />
-                                          )}
-                                        </Field>
-                                      )}
-                                    />
-                                    <Controller
-                                      name={
-                                        `variants.${entry.variantIndex}.translations.${entry.translationIndex}.description` as const
-                                      }
-                                      control={form.control}
-                                      render={({ field, fieldState }) => (
-                                        <Field
-                                          data-invalid={
-                                            fieldState.invalid || undefined
-                                          }
-                                        >
-                                          <FieldLabel htmlFor={field.name}>
-                                            Descripción de la variante
-                                          </FieldLabel>
-                                          <Textarea
-                                            {...field}
-                                            id={field.name}
-                                            value={field.value ?? ""}
-                                            aria-invalid={
-                                              fieldState.invalid || undefined
-                                            }
-                                            placeholder={`Descripción en ${activeLocaleLabel}`}
-                                          />
-                                          {fieldState.invalid && (
-                                            <FieldError
-                                              errors={[fieldState.error]}
-                                            />
-                                          )}
-                                        </Field>
-                                      )}
-                                    />
-                                  </FieldGroup>
-                                </AccordionContent>
-                              </AccordionItem>
-                            )
-                          })}
-                        </Accordion>
-                      ) : (
-                        <Alert>
-                          <Languages className="size-4" />
-                          <AlertTitle>Sin traducciones de variantes</AlertTitle>
-                          <AlertDescription>
-                            No hay variantes con traducción editable en
-                            {` ${activeLocaleLabel || "este idioma"}`}. Si
-                            necesitas agregar nuevas traducciones, hazlo desde
-                            la administración de traducciones del menú.
-                          </AlertDescription>
-                        </Alert>
-                      )}
-                    </FieldSet>
-                  )}
-                </FieldGroup>
-              ) : (
-                <Empty
-                  className="border-border bg-muted/20 items-start rounded-xl
-                    border text-left"
+                <section
+                  className="border-border bg-background rounded-2xl border px-5
+                    py-5 shadow-xs sm:px-6"
                 >
-                  <EmptyHeader className="items-start text-left">
-                    <EmptyMedia variant="icon">
-                      <Languages />
-                    </EmptyMedia>
-                    <EmptyTitle className="text-balance">
-                      Sin traducciones para editar
-                    </EmptyTitle>
-                    <EmptyDescription className="text-pretty">
-                      Agrega un idioma desde la sección de traducciones del menú
-                      para editar aquí el título y la descripción de esa
-                      versión.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                  <EmptyContent className="items-start">
-                    <Button asChild variant="outline">
-                      <Link href="/dashboard/menu-items/translations">
-                        <Languages data-icon="inline-start" />
-                        Administrar traducciones
-                      </Link>
-                    </Button>
-                  </EmptyContent>
-                </Empty>
-              )}
+                  <FieldSet>
+                    <FieldLegend>Disponibilidad y visibilidad</FieldLegend>
+                    <FieldDescription className="text-pretty">
+                      Estado, moneda y visibilidad del producto.
+                    </FieldDescription>
+                    <FieldContent
+                      className="grid gap-0 divide-y xl:grid-cols-3 xl:divide-x
+                        xl:divide-y-0"
+                    >
+                      <Controller
+                        name="status"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FieldSet
+                            className="flex h-full flex-col justify-center px-0
+                              py-4 xl:px-5 xl:py-0"
+                          >
+                            <FieldLegend>Estatus del producto</FieldLegend>
+                            <FieldDescription className="mt-2">
+                              Activo, borrador o archivado.
+                            </FieldDescription>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <SelectTrigger className="mt-3">
+                                <SelectValue placeholder="Seleccionar estado" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value={MenuItemStatus.ACTIVE}>
+                                  Activo
+                                </SelectItem>
+                                <SelectItem value={MenuItemStatus.DRAFT}>
+                                  Borrador
+                                </SelectItem>
+                                <SelectItem value={MenuItemStatus.ARCHIVED}>
+                                  Archivado
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FieldSet>
+                        )}
+                      />
+                      <Controller
+                        name="currency"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FieldSet
+                            className="flex h-full flex-col justify-center px-0
+                              py-4 xl:px-5 xl:py-0"
+                          >
+                            <FieldLegend>Moneda</FieldLegend>
+                            <FieldDescription className="mt-2">
+                              Moneda visible para el cliente.
+                            </FieldDescription>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <SelectTrigger className="mt-3">
+                                <SelectValue placeholder="Seleccionar moneda" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="MXN">MXN</SelectItem>
+                                <SelectItem value="USD">USD</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FieldSet>
+                        )}
+                      />
+                      <Controller
+                        name="featured"
+                        control={form.control}
+                        render={({ field }) => (
+                          <FieldSet
+                            className="flex h-full flex-col justify-center px-0
+                              py-4 xl:px-5 xl:py-0"
+                          >
+                            <div
+                              className="flex items-start justify-between gap-4"
+                            >
+                              <div className="min-w-0 space-y-2">
+                                <FieldLegend>Recomendado</FieldLegend>
+                                <FieldDescription className="mt-2">
+                                  Mostrar en recomendados.
+                                </FieldDescription>
+                              </div>
+
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </div>
+                          </FieldSet>
+                        )}
+                      />
+                    </FieldContent>
+                  </FieldSet>
+                </section>
+
+                <div
+                  className="grid gap-6
+                    xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+                >
+                  <section
+                    className="border-border bg-background rounded-2xl border
+                      px-5 py-5 shadow-xs sm:px-6"
+                  >
+                    <FieldSet>
+                      <FieldLegend>Variantes</FieldLegend>
+                      <FieldDescription className="text-pretty">
+                        Opciones como tamaño o presentación.
+                      </FieldDescription>
+                      <FieldGroup>
+                        <VariantForm fieldArray={fields} parentForm={form} />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleOpenVariant}
+                          className="w-full gap-1"
+                        >
+                          <PlusCircle className="size-3.5" />
+                          Crear variante
+                        </Button>
+                      </FieldGroup>
+                    </FieldSet>
+                  </section>
+
+                  <section
+                    className="border-border bg-background rounded-2xl border
+                      px-5 py-5 shadow-xs sm:px-6"
+                  >
+                    <FieldSet>
+                      <FieldLegend>Categoría</FieldLegend>
+                      <FieldDescription className="text-pretty">
+                        Agrupa este producto dentro del menú.
+                      </FieldDescription>
+                      <Controller
+                        name="categoryId"
+                        control={form.control}
+                        render={({ field }) => (
+                          <Field>
+                            <div className="flex items-center gap-2">
+                              <Combobox
+                                data={categoryList.map(category => ({
+                                  label: category.name,
+                                  value: category.id
+                                }))}
+                                type="Categoría"
+                                value={field.value}
+                                onValueChange={(val: string) => {
+                                  form.setValue("categoryId", val)
+                                }}
+                              >
+                                <ComboboxTrigger className="min-w-75" />
+                                <ComboboxContent>
+                                  <ComboboxInput
+                                    value={searchCategory}
+                                    onValueChange={setSearchCategory}
+                                    placeholder="Buscar categoría..."
+                                  />
+                                  <ComboboxList>
+                                    <ComboboxEmpty>
+                                      <ComboboxCreateNew
+                                        onCreateNew={handleAddCategory}
+                                      />
+                                    </ComboboxEmpty>
+                                    <ComboboxGroup>
+                                      {categoryList.map(category => (
+                                        <ComboboxItem
+                                          value={category.id}
+                                          key={category.id}
+                                          className="py-2 text-base sm:py-1.5
+                                            sm:text-sm"
+                                        >
+                                          <Check
+                                            className={cn(
+                                              "mr-2 size-4",
+                                              category.id === field.value
+                                                ? "opacity-100"
+                                                : "opacity-0"
+                                            )}
+                                          />
+                                          {category.name}
+                                        </ComboboxItem>
+                                      ))}
+                                    </ComboboxGroup>
+                                  </ComboboxList>
+                                </ComboboxContent>
+                              </Combobox>
+                              {field.value && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  aria-label="Limpiar categoría"
+                                  onClick={() => {
+                                    form.setValue("categoryId", "")
+                                  }}
+                                >
+                                  <X className="size-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </Field>
+                        )}
+                      />
+                    </FieldSet>
+                  </section>
+                </div>
+
+                <section
+                  className="border-border bg-background rounded-2xl border px-5
+                    py-5 shadow-xs sm:px-6"
+                >
+                  <FieldSet>
+                    <FieldLegend>Alérgenos e indicadores</FieldLegend>
+                    <FieldDescription className="text-pretty">
+                      Marca alergias o atributos especiales.
+                    </FieldDescription>
+                    <Controller
+                      name="allergens"
+                      control={form.control}
+                      render={({ field, fieldState }) => {
+                        const values =
+                          ((field.value ?? "")
+                            .split(",")
+                            .filter(Boolean) as string[]) || []
+
+                        return (
+                          <Field>
+                            <Tags
+                              value={field.value}
+                              setValue={(v: string) =>
+                                form.setValue("allergens", v)
+                              }
+                            >
+                              <TagsTrigger placeholder="Buscar alérgenos o indicadores">
+                                {values.map(val => (
+                                  <TagsValue
+                                    variant="indigo"
+                                    key={val}
+                                    onRemove={() => {
+                                      const next = values.filter(v => v !== val)
+                                      form.setValue("allergens", next.join(","))
+                                    }}
+                                  >
+                                    {Allergens.find(a => a.value === val)
+                                      ?.label ?? val}
+                                  </TagsValue>
+                                ))}
+                              </TagsTrigger>
+                              <TagsContent>
+                                <TagsInput placeholder="Buscar alérgenos o indicadores" />
+                                <TagsList>
+                                  <TagsEmpty className="p-2" />
+                                  <TagsGroup>
+                                    {Allergens.map(allergen => (
+                                      <TagsItem
+                                        key={allergen.value}
+                                        onSelect={() => {
+                                          const next = Array.from(
+                                            new Set([...values, allergen.value])
+                                          )
+                                          form.setValue(
+                                            "allergens",
+                                            next.join(",")
+                                          )
+                                        }}
+                                      >
+                                        {allergen.label}
+                                      </TagsItem>
+                                    ))}
+                                  </TagsGroup>
+                                </TagsList>
+                              </TagsContent>
+                            </Tags>
+                            {fieldState.invalid && (
+                              <FieldError errors={[fieldState.error]} />
+                            )}
+                          </Field>
+                        )
+                      }}
+                    />
+                  </FieldSet>
+                </section>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="translations" className="mt-0">
+              <FieldSet className="space-y-4">
+                <FieldLegend>Traducciones disponibles</FieldLegend>
+                <FieldDescription className="text-pretty">
+                  Edita los idiomas ya creados.
+                </FieldDescription>
+                {availableLocales.length > 0 ? (
+                  <FieldGroup className="gap-6">
+                    <div
+                      className="grid gap-6
+                        xl:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]"
+                    >
+                      <FieldSet
+                        className="border-border bg-muted/20 rounded-xl border
+                          p-4"
+                      >
+                        <FieldLegend>Idioma activo</FieldLegend>
+                        <FieldDescription className="text-pretty">
+                          Selecciona el idioma que quieres revisar.
+                        </FieldDescription>
+                        <FieldGroup>
+                          <Field>
+                            <FieldLabel htmlFor="translation-locale">
+                              Idioma
+                            </FieldLabel>
+                            <Select
+                              value={activeLocale}
+                              onValueChange={value =>
+                                setSelectedLocale(value as SupportedLocaleCode)
+                              }
+                            >
+                              <SelectTrigger
+                                id="translation-locale"
+                                className="w-full"
+                              >
+                                <SelectValue placeholder="Selecciona un idioma" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  {localeOptions.map(localeOption => (
+                                    <SelectItem
+                                      key={localeOption.locale}
+                                      value={localeOption.locale}
+                                    >
+                                      <span
+                                        className="flex w-full items-center
+                                          justify-between gap-3"
+                                      >
+                                        <span
+                                          className="flex items-center gap-2"
+                                        >
+                                          <LanguageFlag
+                                            locale={localeOption.locale}
+                                          />
+                                          <span>{localeOption.label}</span>
+                                        </span>
+                                        <span
+                                          className="text-muted-foreground
+                                            text-xs"
+                                        >
+                                          {localeOption.hasItemTranslation
+                                            ? "Producto"
+                                            : "Sin producto"}
+                                          {` · ${localeOption.translatedVariantsCount} variantes`}
+                                        </span>
+                                      </span>
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            <FieldDescription className="text-pretty">
+                              Los nuevos idiomas se agregan desde traducciones
+                              del menú.
+                            </FieldDescription>
+                          </Field>
+
+                          <div className="flex flex-wrap gap-2">
+                            {shouldShowVariantTranslationSection && (
+                              <Badge variant="indigo">
+                                {activeVariantTranslationCount} variantes
+                                editables
+                              </Badge>
+                            )}
+                            {shouldShowVariantTranslationSection &&
+                              inactiveVariantTranslationCount > 0 && (
+                                <Badge variant="outline">
+                                  {inactiveVariantTranslationCount} sin
+                                  traducción aquí
+                                </Badge>
+                              )}
+                          </div>
+                        </FieldGroup>
+                      </FieldSet>
+
+                      <FieldSet className="border-border rounded-xl border p-4">
+                        <FieldLegend>Texto del producto</FieldLegend>
+                        <FieldDescription className="text-pretty">
+                          Texto visible en {activeLocaleLabel || "este idioma"}.
+                        </FieldDescription>
+                        {selectedTranslationIndex >= 0 ? (
+                          <FieldGroup
+                            key={`product-translation-${activeLocale}`}
+                          >
+                            <Controller
+                              name={
+                                `translations.${selectedTranslationIndex}.name` as const
+                              }
+                              control={form.control}
+                              render={({ field, fieldState }) => (
+                                <Field
+                                  data-invalid={fieldState.invalid || undefined}
+                                >
+                                  <FieldLabel htmlFor={field.name}>
+                                    Título traducido
+                                  </FieldLabel>
+                                  <Input
+                                    {...field}
+                                    id={field.name}
+                                    aria-invalid={
+                                      fieldState.invalid || undefined
+                                    }
+                                    placeholder={`Nombre en ${activeLocaleLabel}`}
+                                  />
+                                  {fieldState.invalid && (
+                                    <FieldError errors={[fieldState.error]} />
+                                  )}
+                                </Field>
+                              )}
+                            />
+                            <Controller
+                              name={
+                                `translations.${selectedTranslationIndex}.description` as const
+                              }
+                              control={form.control}
+                              render={({ field, fieldState }) => (
+                                <Field
+                                  data-invalid={fieldState.invalid || undefined}
+                                >
+                                  <FieldLabel htmlFor={field.name}>
+                                    Descripción traducida
+                                  </FieldLabel>
+                                  <Textarea
+                                    {...field}
+                                    id={field.name}
+                                    value={field.value ?? ""}
+                                    aria-invalid={
+                                      fieldState.invalid || undefined
+                                    }
+                                    placeholder={`Descripción en ${activeLocaleLabel}`}
+                                  />
+                                  {fieldState.invalid && (
+                                    <FieldError errors={[fieldState.error]} />
+                                  )}
+                                </Field>
+                              )}
+                            />
+                          </FieldGroup>
+                        ) : (
+                          <Alert>
+                            <Languages className="size-4" />
+                            <AlertTitle>Sin traducción del producto</AlertTitle>
+                            <AlertDescription>
+                              Este idioma todavía no tiene texto para este
+                              producto.
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                      </FieldSet>
+                    </div>
+
+                    {shouldShowVariantTranslationSection && (
+                      <FieldSet className="border-border rounded-xl border p-4">
+                        <div
+                          className="flex flex-col gap-3 md:flex-row
+                            md:items-start md:justify-between"
+                        >
+                          <div className="flex flex-col gap-1">
+                            <FieldLegend>Traducciones de variantes</FieldLegend>
+                            <FieldDescription className="text-pretty">
+                              Variantes editables en este idioma.
+                            </FieldDescription>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            <Badge variant="indigo">
+                              {activeVariantTranslationCount} editables
+                            </Badge>
+                            {inactiveVariantTranslationCount > 0 && (
+                              <Badge variant="outline">
+                                {inactiveVariantTranslationCount} pendientes en
+                                otro idioma
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        {variantTranslationEntries.length > 0 ? (
+                          <Accordion
+                            type="multiple"
+                            className="border-border bg-background rounded-xl
+                              border px-4"
+                          >
+                            {variantTranslationEntries.map(entry => {
+                              const originalVariant =
+                                variants?.[entry.variantIndex]
+                              const originalDescription =
+                                originalVariant?.description?.trim()
+
+                              return (
+                                <AccordionItem
+                                  key={`${entry.variantIndex}-${entry.translationIndex}`}
+                                  value={`${entry.variantIndex}-${entry.translationIndex}`}
+                                  className="px-1"
+                                >
+                                  <AccordionTrigger
+                                    className="gap-4 hover:no-underline"
+                                  >
+                                    <div className="min-w-0 flex-1">
+                                      <div
+                                        className="flex flex-wrap items-center
+                                          gap-2"
+                                      >
+                                        <span className="font-medium">
+                                          {entry.variantName}
+                                        </span>
+                                      </div>
+                                      <p
+                                        className="text-muted-foreground mt-1
+                                          text-sm text-pretty"
+                                      >
+                                        {originalDescription
+                                          ? `Base: ${originalDescription}`
+                                          : "Sin descripción base para esta variante."}
+                                      </p>
+                                    </div>
+                                  </AccordionTrigger>
+                                  <AccordionContent>
+                                    <FieldGroup>
+                                      <Controller
+                                        name={
+                                          `variants.${entry.variantIndex}.translations.${entry.translationIndex}.name` as const
+                                        }
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                          <Field
+                                            data-invalid={
+                                              fieldState.invalid || undefined
+                                            }
+                                          >
+                                            <FieldLabel htmlFor={field.name}>
+                                              Nombre de la variante
+                                            </FieldLabel>
+                                            <Input
+                                              {...field}
+                                              id={field.name}
+                                              aria-invalid={
+                                                fieldState.invalid || undefined
+                                              }
+                                              placeholder={`Nombre en ${activeLocaleLabel}`}
+                                            />
+                                            {fieldState.invalid && (
+                                              <FieldError
+                                                errors={[fieldState.error]}
+                                              />
+                                            )}
+                                          </Field>
+                                        )}
+                                      />
+                                      <Controller
+                                        name={
+                                          `variants.${entry.variantIndex}.translations.${entry.translationIndex}.description` as const
+                                        }
+                                        control={form.control}
+                                        render={({ field, fieldState }) => (
+                                          <Field
+                                            data-invalid={
+                                              fieldState.invalid || undefined
+                                            }
+                                          >
+                                            <FieldLabel htmlFor={field.name}>
+                                              Descripción de la variante
+                                            </FieldLabel>
+                                            <Textarea
+                                              {...field}
+                                              id={field.name}
+                                              value={field.value ?? ""}
+                                              aria-invalid={
+                                                fieldState.invalid || undefined
+                                              }
+                                              placeholder={`Descripción en ${activeLocaleLabel}`}
+                                            />
+                                            {fieldState.invalid && (
+                                              <FieldError
+                                                errors={[fieldState.error]}
+                                              />
+                                            )}
+                                          </Field>
+                                        )}
+                                      />
+                                    </FieldGroup>
+                                  </AccordionContent>
+                                </AccordionItem>
+                              )
+                            })}
+                          </Accordion>
+                        ) : (
+                          <Alert>
+                            <Languages className="size-4" />
+                            <AlertTitle>
+                              Sin traducciones de variantes
+                            </AlertTitle>
+                            <AlertDescription>
+                              No hay variantes editables en
+                              {` ${activeLocaleLabel || "este idioma"}`}.
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                      </FieldSet>
+                    )}
+                  </FieldGroup>
+                ) : (
+                  <Empty
+                    className="border-border bg-muted/20 items-start rounded-xl
+                      border text-left"
+                  >
+                    <EmptyHeader className="items-start text-left">
+                      <EmptyMedia variant="icon">
+                        <Languages />
+                      </EmptyMedia>
+                      <EmptyTitle className="text-balance">
+                        Sin traducciones para editar
+                      </EmptyTitle>
+                      <EmptyDescription className="text-pretty">
+                        Agrega un idioma en traducciones del menú para editarlo
+                        aquí.
+                      </EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent className="items-start">
+                      <Button asChild variant="outline">
+                        <Link href="/dashboard/menu-items/translations">
+                          <Languages data-icon="inline-start" />
+                          Administrar traducciones
+                        </Link>
+                      </Button>
+                    </EmptyContent>
+                  </Empty>
+                )}
+              </FieldSet>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
+          <section
+            className="border-border bg-background rounded-2xl border px-5 py-5
+              shadow-xs"
+          >
+            <FieldSet>
+              <FieldLegend>Resumen operativo</FieldLegend>
+              <FieldDescription className="text-pretty">
+                Estado rápido del producto.
+              </FieldDescription>
             </FieldSet>
-          </TabsContent>
-        </Tabs>
+            <dl className="mt-4 space-y-4 text-sm">
+              <div className="flex items-start justify-between gap-3">
+                <dt className="text-muted-foreground">Estado</dt>
+                <dd>
+                  <Badge variant={statusMeta.variant}>{statusMeta.label}</Badge>
+                </dd>
+              </div>
+              <div className="flex items-start justify-between gap-3">
+                <dt className="text-muted-foreground">Categoría</dt>
+                <dd>
+                  <Badge
+                    variant="outline"
+                    className="max-w-44 text-right text-pretty"
+                  >
+                    {selectedCategoryName}
+                  </Badge>
+                </dd>
+              </div>
+              <div className="flex items-start justify-between gap-3">
+                <dt className="text-muted-foreground">Variantes</dt>
+                <dd>
+                  <Badge variant="secondary">
+                    {fields.length > 0
+                      ? `${fields.length} configurada${fields.length === 1 ? "" : "s"}`
+                      : "Sin variantes"}
+                  </Badge>
+                </dd>
+              </div>
+              <div className="flex items-start justify-between gap-3">
+                <dt className="text-muted-foreground">Cobertura</dt>
+                <dd className="max-w-44 text-right font-medium text-pretty">
+                  {availableLocales.length > 0
+                    ? `${availableLocales.length} idioma${availableLocales.length === 1 ? "" : "s"}, ${activeVariantTranslationCount} variante${activeVariantTranslationCount === 1 ? "" : "s"} editables`
+                    : "Sin traducciones cargadas"}
+                </dd>
+              </div>
+            </dl>
+          </section>
+
+          <section
+            className="border-border bg-muted/20 rounded-2xl border px-5 py-5
+              shadow-xs"
+          >
+            <FieldSet>
+              <FieldLegend>En esta vista</FieldLegend>
+            </FieldSet>
+            <p className="mt-3 text-sm font-medium text-pretty">
+              {activeViewSummary}
+            </p>
+            <p className="text-muted-foreground mt-3 text-sm text-pretty">
+              {activeTab === "details"
+                ? "Guarda antes de crear una variante nueva."
+                : "La validación te lleva al idioma con errores."}
+            </p>
+          </section>
+        </aside>
       </form>
       <MenuSyncDialog
         open={syncPrompt.open}

@@ -40,7 +40,10 @@ export default async function ItemPage(props: {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="mx-auto max-w-4xl grow px-4 sm:px-6">
+      <div
+        className="mx-auto w-full max-w-6xl grow px-4 py-6 sm:px-6 sm:py-8
+          lg:px-8"
+      >
         <ItemForm action={params.action} promiseItem={item} />
       </div>
     </HydrationBoundary>
