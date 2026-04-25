@@ -717,11 +717,47 @@ export const updateItem = authMemberActionClient
                 where: { id: variant.id },
                 create: {
                   name: variant.name,
-                  price: variant.price
+                  price: variant.price,
+                  translations: variant.translations
+                    ? {
+                        create: variant.translations.map(translation => ({
+                          locale: translation.locale,
+                          name: translation.name,
+                          description: translation.description?.trim()
+                            ? translation.description
+                            : null
+                        }))
+                      }
+                    : undefined
                 },
                 update: {
                   name: variant.name,
-                  price: variant.price
+                  price: variant.price,
+                  translations: variant.translations
+                    ? {
+                        upsert: variant.translations.map(translation => ({
+                          where: {
+                            variantId_locale: {
+                              variantId: variant.id ?? "",
+                              locale: translation.locale
+                            }
+                          },
+                          create: {
+                            locale: translation.locale,
+                            name: translation.name,
+                            description: translation.description?.trim()
+                              ? translation.description
+                              : null
+                          },
+                          update: {
+                            name: translation.name,
+                            description: translation.description?.trim()
+                              ? translation.description
+                              : null
+                          }
+                        }))
+                      }
+                    : undefined
                 }
               }))
             },

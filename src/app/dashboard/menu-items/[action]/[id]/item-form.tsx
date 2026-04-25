@@ -52,7 +52,14 @@ import {
   TagsTrigger,
   TagsValue
 } from "@/components/kibo-ui/tags"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@/components/ui/accordion"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 // legacy Form helpers removed in favor of Field primitives
 import {
@@ -100,7 +107,8 @@ import {
   Allergens,
   menuItemFormSchema,
   MenuItemStatus,
-  menuItemTranslationSchema
+  menuItemTranslationSchema,
+  variantTranslationSchema
 } from "@/lib/types/menu-item"
 import { type SupportedLocaleCode } from "@/lib/types/translations"
 import { cn } from "@/lib/utils"
@@ -166,7 +174,9 @@ function collectValidationIssues<TFieldValues extends FieldValues>(
 }
 
 function getTabForIssuePath(path: string): FormTab {
-  return path.startsWith("translations.") ? "translations" : "details"
+  return path.startsWith("translations.") || path.includes(".translations.")
+    ? "translations"
+    : "details"
 }
 
 export default function ItemForm({
@@ -196,7 +206,12 @@ export default function ItemForm({
         name: variant.name ?? "",
         price: variant.price ?? 0,
         description: variant.description ?? "",
-        menuItemId: variant.menuItemId ?? ""
+        menuItemId: variant.menuItemId ?? "",
+        translations: (variant.translations ?? []).map(translation => ({
+          locale: translation.locale as SupportedLocaleCode,
+          name: translation.name ?? "",
+          description: translation.description ?? ""
+        }))
       })),
       translations: (item?.translations ?? []).map(translation => ({
         locale: translation.locale as SupportedLocaleCode,
@@ -212,10 +227,16 @@ export default function ItemForm({
   const [activeTab, setActiveTab] = useState<FormTab>("details")
   const [selectedLocale, setSelectedLocale] = useState<
     SupportedLocaleCode | ""
-  >(
-    () =>
-      (item?.translations?.[0]?.locale as SupportedLocaleCode | undefined) ?? ""
-  )
+  >(() => {
+    const itemLocale = item?.translations?.[0]?.locale as
+      | SupportedLocaleCode
+      | undefined
+    const variantLocale = item?.variants?.flatMap(
+      variant => variant.translations ?? []
+    )[0]?.locale as SupportedLocaleCode | undefined
+
+    return itemLocale ?? variantLocale ?? ""
+  })
   const [syncPrompt, setSyncPrompt] = useState({
     open: false,
     organizationId: item?.organizationId ?? "",
@@ -230,17 +251,75 @@ export default function ItemForm({
     control: form.control,
     name: "translations"
   })
+  const variants = useWatch({
+    control: form.control,
+    name: "variants"
+  })
 
   const availableTranslations = translations ?? []
-  const fallbackLocale = availableTranslations[0]?.locale ?? ""
-  const activeLocale = availableTranslations.some(
-    translation => translation.locale === selectedLocale
-  )
-    ? selectedLocale
-    : fallbackLocale
+  const availableLocales = Array.from(
+    new Set([
+      ...availableTranslations.map(translation => translation.locale),
+      ...(variants ?? []).flatMap(variant =>
+        (variant.translations ?? []).map(translation => translation.locale)
+      )
+    ])
+  ).sort() as SupportedLocaleCode[]
+  const fallbackLocale = availableLocales[0] ?? ""
+  const activeLocale =
+    selectedLocale && availableLocales.includes(selectedLocale)
+      ? selectedLocale
+      : fallbackLocale
   const selectedTranslationIndex = availableTranslations.findIndex(
     translation => translation.locale === activeLocale
   )
+  const variantTranslationEntries = (variants ?? []).flatMap(
+    (variant, index) => {
+      const translationIndex = (variant.translations ?? []).findIndex(
+        translation => translation.locale === activeLocale
+      )
+
+      if (translationIndex < 0) {
+        return []
+      }
+
+      return [
+        {
+          variantIndex: index,
+          translationIndex,
+          variantName: variant.name || `Variante ${index + 1}`
+        }
+      ]
+    }
+  )
+  const localeOptions = availableLocales.map(locale => ({
+    locale,
+    label: getLocaleLabel(locale),
+    hasItemTranslation: availableTranslations.some(
+      translation => translation.locale === locale
+    ),
+    translatedVariantsCount: (variants ?? []).reduce(
+      (count, variant) =>
+        count +
+        ((variant.translations ?? []).some(
+          translation => translation.locale === locale
+        )
+          ? 1
+          : 0),
+      0
+    )
+  }))
+  const activeLocaleSummary = localeOptions.find(
+    option => option.locale === activeLocale
+  )
+  const activeLocaleLabel =
+    activeLocaleSummary?.label ?? getLocaleLabel(activeLocale)
+  const activeVariantTranslationCount = variantTranslationEntries.length
+  const inactiveVariantTranslationCount = Math.max(
+    (variants?.length ?? 0) - activeVariantTranslationCount,
+    0
+  )
+  const shouldShowVariantTranslationSection = (variants?.length ?? 0) > 1
   const validationIssues = collectValidationIssues(
     form.formState.errors,
     getTabForIssuePath
@@ -273,6 +352,37 @@ export default function ItemForm({
       }
     }
 
+    if (path.includes(".translations.")) {
+      const [
+        variantsKey,
+        variantIndexText,
+        translationsKey,
+        translationIndexText,
+        fieldName
+      ] = path.split(".")
+
+      if (variantsKey === "variants" && translationsKey === "translations") {
+        const variant = variants?.[Number(variantIndexText)]
+        const translation =
+          variant?.translations?.[Number(translationIndexText)]
+        const localeLabel = getLocaleLabel(translation?.locale)
+        const variantLabel =
+          variant?.name || `Variante ${Number(variantIndexText) + 1}`
+
+        if (fieldName === "name") {
+          return localeLabel
+            ? `Variante ${variantLabel} (${localeLabel})`
+            : `Variante ${variantLabel}`
+        }
+
+        if (fieldName === "description") {
+          return localeLabel
+            ? `Descripción de ${variantLabel} (${localeLabel})`
+            : `Descripción de ${variantLabel}`
+        }
+      }
+    }
+
     if (path.startsWith("variants.")) {
       return "Variantes"
     }
@@ -291,7 +401,12 @@ export default function ItemForm({
         price: variant.price,
         id: variant.id,
         description: variant.description ?? undefined,
-        menuItemId: variant.menuItemId
+        menuItemId: variant.menuItemId,
+        translations: (variant.translations ?? []).map(translation => ({
+          locale: translation.locale as SupportedLocaleCode,
+          name: translation.name ?? "",
+          description: translation.description ?? ""
+        }))
       }))
       form.setValue(
         "variants",
@@ -410,6 +525,7 @@ export default function ItemForm({
 
   const onSubmit = (data: z.infer<typeof menuItemFormSchema>) => {
     form.clearErrors("translations")
+    form.clearErrors("variants")
 
     const selectedTranslation =
       selectedTranslationIndex >= 0
@@ -418,6 +534,10 @@ export default function ItemForm({
     let selectedTranslationPayload:
       | z.infer<typeof menuItemTranslationSchema>
       | undefined
+    const selectedVariantTranslationPayloads = [] as Array<{
+      variantIndex: number
+      translation: z.infer<typeof variantTranslationSchema>
+    }>
 
     if (selectedTranslation) {
       const parsedTranslation =
@@ -448,24 +568,86 @@ export default function ItemForm({
       selectedTranslationPayload = parsedTranslation.data
     }
 
-    // Ensure price is a number before submitting
-    if (data.variants) {
-      const mapped = data.variants.map(variant => ({
-        ...variant,
-        price: Number(variant.price)
-      }))
-      // menuItemSchema may type variants as a non-empty tuple; assert to the expected type
-      data.variants = mapped as unknown as z.infer<
-        typeof menuItemFormSchema
-      >["variants"]
+    for (const entry of variantTranslationEntries) {
+      const selectedVariantTranslation =
+        data.variants?.[entry.variantIndex]?.translations?.[
+          entry.translationIndex
+        ]
+
+      if (!selectedVariantTranslation) {
+        continue
+      }
+
+      const parsedVariantTranslation = variantTranslationSchema.safeParse(
+        selectedVariantTranslation
+      )
+
+      if (!parsedVariantTranslation.success) {
+        setActiveTab("translations")
+        setSelectedLocale(selectedVariantTranslation.locale)
+
+        for (const issue of parsedVariantTranslation.error.issues) {
+          const fieldName = issue.path[0]
+
+          if (fieldName === "name" || fieldName === "description") {
+            form.setError(
+              `variants.${entry.variantIndex}.translations.${entry.translationIndex}.${fieldName}`,
+              {
+                type: "manual",
+                message: issue.message
+              }
+            )
+          }
+        }
+
+        toast.error("Revisa las traducciones de las variantes antes de guardar")
+        return
+      }
+
+      selectedVariantTranslationPayloads.push({
+        variantIndex: entry.variantIndex,
+        translation: parsedVariantTranslation.data
+      })
     }
 
-    execute({
-      ...data,
+    const variantsPayload = data.variants.map((variant, index) => {
+      const selectedVariantTranslation =
+        selectedVariantTranslationPayloads.find(
+          translation => translation.variantIndex === index
+        )
+
+      return {
+        id: variant.id,
+        name: variant.name,
+        price: Number(variant.price),
+        description: variant.description,
+        menuItemId: variant.menuItemId,
+        translations: selectedVariantTranslation
+          ? [selectedVariantTranslation.translation]
+          : undefined
+      }
+    })
+
+    const payload: Parameters<typeof execute>[0] = {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      status: data.status,
+      image: data.image,
+      categoryId: data.categoryId,
+      organizationId: data.organizationId,
+      featured: data.featured,
+      allergens: data.allergens,
+      currency: data.currency,
+      updatePublishedMenus: data.updatePublishedMenus,
+      rememberPublishedChoice: data.rememberPublishedChoice,
+      variants: variantsPayload as Parameters<typeof execute>[0]["variants"],
       translations: selectedTranslationPayload
         ? [selectedTranslationPayload]
         : undefined
-    })
+    }
+
+    execute(payload)
   }
 
   const onInvalidSubmit = (
@@ -484,6 +666,19 @@ export default function ItemForm({
     if (firstIssue.path.startsWith("translations.")) {
       const [, indexText] = firstIssue.path.split(".")
       const translation = availableTranslations[Number(indexText)]
+      if (translation?.locale) {
+        setSelectedLocale(translation.locale)
+      }
+    }
+
+    if (firstIssue.path.includes(".translations.")) {
+      const [, variantIndexText, , translationIndexText] =
+        firstIssue.path.split(".")
+      const translation =
+        variants?.[Number(variantIndexText)]?.translations?.[
+          Number(translationIndexText)
+        ]
+
       if (translation?.locale) {
         setSelectedLocale(translation.locale)
       }
@@ -930,91 +1125,315 @@ export default function ItemForm({
                 Selecciona un idioma existente para editar el título y la
                 descripción que verán tus clientes en esa versión del menú.
               </FieldDescription>
-              {availableTranslations.length > 0 ? (
-                <FieldGroup className="md:max-w-xl">
-                  <Field>
-                    <FieldLabel htmlFor="translation-locale">Idioma</FieldLabel>
-                    <Select
-                      value={activeLocale}
-                      onValueChange={value =>
-                        setSelectedLocale(value as SupportedLocaleCode)
-                      }
+              {availableLocales.length > 0 ? (
+                <FieldGroup className="max-w-5xl gap-6">
+                  <div
+                    className="grid gap-6
+                      xl:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]"
+                  >
+                    <FieldSet
+                      className="border-border bg-muted/20 rounded-xl border
+                        p-4"
                     >
-                      <SelectTrigger id="translation-locale" className="w-full">
-                        <SelectValue placeholder="Selecciona un idioma" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {availableTranslations.map(translation => (
-                            <SelectItem
-                              key={translation.locale}
-                              value={translation.locale}
+                      <FieldLegend>Idioma activo</FieldLegend>
+                      <FieldDescription className="text-pretty">
+                        Cambia de versión para revisar exactamente qué texto ve
+                        el cliente en ese idioma.
+                      </FieldDescription>
+                      <FieldGroup>
+                        <Field>
+                          <FieldLabel htmlFor="translation-locale">
+                            Idioma
+                          </FieldLabel>
+                          <Select
+                            value={activeLocale}
+                            onValueChange={value =>
+                              setSelectedLocale(value as SupportedLocaleCode)
+                            }
+                          >
+                            <SelectTrigger
+                              id="translation-locale"
+                              className="w-full"
                             >
-                              <span className="flex items-center gap-2">
-                                <LanguageFlag locale={translation.locale} />
-                                <span>
-                                  {getLocaleLabel(translation.locale)}
-                                </span>
-                              </span>
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                    <FieldDescription className="text-pretty">
-                      Solo puedes editar idiomas que ya existen. Agrega nuevos
-                      idiomas desde la sección de traducciones del menú.
-                    </FieldDescription>
-                  </Field>
+                              <SelectValue placeholder="Selecciona un idioma" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                {localeOptions.map(localeOption => (
+                                  <SelectItem
+                                    key={localeOption.locale}
+                                    value={localeOption.locale}
+                                  >
+                                    <span
+                                      className="flex w-full items-center
+                                        justify-between gap-3"
+                                    >
+                                      <span className="flex items-center gap-2">
+                                        <LanguageFlag
+                                          locale={localeOption.locale}
+                                        />
+                                        <span>{localeOption.label}</span>
+                                      </span>
+                                      <span
+                                        className="text-muted-foreground
+                                          text-xs"
+                                      >
+                                        {localeOption.hasItemTranslation
+                                          ? "Producto"
+                                          : "Sin producto"}
+                                        {` · ${localeOption.translatedVariantsCount} variantes`}
+                                      </span>
+                                    </span>
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                          <FieldDescription className="text-pretty">
+                            Solo puedes editar idiomas que ya existen. Agrega
+                            nuevos idiomas desde la sección de traducciones del
+                            menú.
+                          </FieldDescription>
+                        </Field>
 
-                  {selectedTranslationIndex >= 0 && (
-                    <>
-                      <Controller
-                        name={
-                          `translations.${selectedTranslationIndex}.name` as const
-                        }
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={fieldState.invalid || undefined}>
-                            <FieldLabel htmlFor={field.name}>
-                              Título traducido
-                            </FieldLabel>
-                            <Input
-                              {...field}
-                              id={field.name}
-                              aria-invalid={fieldState.invalid || undefined}
-                              placeholder={`Nombre en ${getLocaleLabel(activeLocale)}`}
-                            />
-                            {fieldState.invalid && (
-                              <FieldError errors={[fieldState.error]} />
+                        <div className="flex flex-wrap gap-2">
+                          {shouldShowVariantTranslationSection && (
+                            <Badge variant="indigo">
+                              {activeVariantTranslationCount} variantes
+                              editables
+                            </Badge>
+                          )}
+                          {shouldShowVariantTranslationSection &&
+                            inactiveVariantTranslationCount > 0 && (
+                              <Badge variant="outline">
+                                {inactiveVariantTranslationCount} sin traducción
+                                aquí
+                              </Badge>
                             )}
-                          </Field>
-                        )}
-                      />
-                      <Controller
-                        name={
-                          `translations.${selectedTranslationIndex}.description` as const
-                        }
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={fieldState.invalid || undefined}>
-                            <FieldLabel htmlFor={field.name}>
-                              Descripción traducida
-                            </FieldLabel>
-                            <Textarea
-                              {...field}
-                              id={field.name}
-                              value={field.value ?? ""}
-                              aria-invalid={fieldState.invalid || undefined}
-                              placeholder={`Descripción en ${getLocaleLabel(activeLocale)}`}
-                            />
-                            {fieldState.invalid && (
-                              <FieldError errors={[fieldState.error]} />
+                        </div>
+                      </FieldGroup>
+                    </FieldSet>
+
+                    <FieldSet className="border-border rounded-xl border p-4">
+                      <FieldLegend>Texto del producto</FieldLegend>
+                      <FieldDescription className="text-pretty">
+                        Ajusta el nombre y la descripción que aparecerán en la
+                        versión del menú en {activeLocaleLabel || "este idioma"}
+                        .
+                      </FieldDescription>
+                      {selectedTranslationIndex >= 0 ? (
+                        <FieldGroup key={`product-translation-${activeLocale}`}>
+                          <Controller
+                            name={
+                              `translations.${selectedTranslationIndex}.name` as const
+                            }
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                              <Field
+                                data-invalid={fieldState.invalid || undefined}
+                              >
+                                <FieldLabel htmlFor={field.name}>
+                                  Título traducido
+                                </FieldLabel>
+                                <Input
+                                  {...field}
+                                  id={field.name}
+                                  aria-invalid={fieldState.invalid || undefined}
+                                  placeholder={`Nombre en ${activeLocaleLabel}`}
+                                />
+                                {fieldState.invalid && (
+                                  <FieldError errors={[fieldState.error]} />
+                                )}
+                              </Field>
                             )}
-                          </Field>
-                        )}
-                      />
-                    </>
+                          />
+                          <Controller
+                            name={
+                              `translations.${selectedTranslationIndex}.description` as const
+                            }
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                              <Field
+                                data-invalid={fieldState.invalid || undefined}
+                              >
+                                <FieldLabel htmlFor={field.name}>
+                                  Descripción traducida
+                                </FieldLabel>
+                                <Textarea
+                                  {...field}
+                                  id={field.name}
+                                  value={field.value ?? ""}
+                                  aria-invalid={fieldState.invalid || undefined}
+                                  placeholder={`Descripción en ${activeLocaleLabel}`}
+                                />
+                                {fieldState.invalid && (
+                                  <FieldError errors={[fieldState.error]} />
+                                )}
+                              </Field>
+                            )}
+                          />
+                        </FieldGroup>
+                      ) : (
+                        <Alert>
+                          <Languages className="size-4" />
+                          <AlertTitle>Sin traducción del producto</AlertTitle>
+                          <AlertDescription>
+                            Este idioma todavía no tiene nombre ni descripción
+                            para el producto. Aquí solo puedes revisar y ajustar
+                            lo que ya existe.
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                    </FieldSet>
+                  </div>
+
+                  {shouldShowVariantTranslationSection && (
+                    <FieldSet className="border-border rounded-xl border p-4">
+                      <div
+                        className="flex flex-col gap-3 md:flex-row
+                          md:items-start md:justify-between"
+                      >
+                        <div className="flex flex-col gap-1">
+                          <FieldLegend>Traducciones de variantes</FieldLegend>
+                          <FieldDescription className="text-pretty">
+                            Usa cada bloque para contrastar el contenido base
+                            con la versión traducida que verá el cliente.
+                          </FieldDescription>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="indigo">
+                            {activeVariantTranslationCount} editables
+                          </Badge>
+                          {inactiveVariantTranslationCount > 0 && (
+                            <Badge variant="outline">
+                              {inactiveVariantTranslationCount} pendientes en
+                              otro idioma
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      {variantTranslationEntries.length > 0 ? (
+                        <Accordion
+                          type="multiple"
+                          className="border-border bg-background rounded-xl
+                            border px-4"
+                        >
+                          {variantTranslationEntries.map(entry => {
+                            const originalVariant =
+                              variants?.[entry.variantIndex]
+                            const originalDescription =
+                              originalVariant?.description?.trim()
+
+                            return (
+                              <AccordionItem
+                                key={`${entry.variantIndex}-${entry.translationIndex}`}
+                                value={`${entry.variantIndex}-${entry.translationIndex}`}
+                                className="px-1"
+                              >
+                                <AccordionTrigger
+                                  className="gap-4 hover:no-underline"
+                                >
+                                  <div className="min-w-0 flex-1">
+                                    <div
+                                      className="flex flex-wrap items-center
+                                        gap-2"
+                                    >
+                                      <span className="font-medium">
+                                        {entry.variantName}
+                                      </span>
+                                    </div>
+                                    <p
+                                      className="text-muted-foreground mt-1
+                                        text-sm text-pretty"
+                                    >
+                                      {originalDescription
+                                        ? `Base: ${originalDescription}`
+                                        : "Sin descripción base para esta variante."}
+                                    </p>
+                                  </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                  <FieldGroup>
+                                    <Controller
+                                      name={
+                                        `variants.${entry.variantIndex}.translations.${entry.translationIndex}.name` as const
+                                      }
+                                      control={form.control}
+                                      render={({ field, fieldState }) => (
+                                        <Field
+                                          data-invalid={
+                                            fieldState.invalid || undefined
+                                          }
+                                        >
+                                          <FieldLabel htmlFor={field.name}>
+                                            Nombre de la variante
+                                          </FieldLabel>
+                                          <Input
+                                            {...field}
+                                            id={field.name}
+                                            aria-invalid={
+                                              fieldState.invalid || undefined
+                                            }
+                                            placeholder={`Nombre en ${activeLocaleLabel}`}
+                                          />
+                                          {fieldState.invalid && (
+                                            <FieldError
+                                              errors={[fieldState.error]}
+                                            />
+                                          )}
+                                        </Field>
+                                      )}
+                                    />
+                                    <Controller
+                                      name={
+                                        `variants.${entry.variantIndex}.translations.${entry.translationIndex}.description` as const
+                                      }
+                                      control={form.control}
+                                      render={({ field, fieldState }) => (
+                                        <Field
+                                          data-invalid={
+                                            fieldState.invalid || undefined
+                                          }
+                                        >
+                                          <FieldLabel htmlFor={field.name}>
+                                            Descripción de la variante
+                                          </FieldLabel>
+                                          <Textarea
+                                            {...field}
+                                            id={field.name}
+                                            value={field.value ?? ""}
+                                            aria-invalid={
+                                              fieldState.invalid || undefined
+                                            }
+                                            placeholder={`Descripción en ${activeLocaleLabel}`}
+                                          />
+                                          {fieldState.invalid && (
+                                            <FieldError
+                                              errors={[fieldState.error]}
+                                            />
+                                          )}
+                                        </Field>
+                                      )}
+                                    />
+                                  </FieldGroup>
+                                </AccordionContent>
+                              </AccordionItem>
+                            )
+                          })}
+                        </Accordion>
+                      ) : (
+                        <Alert>
+                          <Languages className="size-4" />
+                          <AlertTitle>Sin traducciones de variantes</AlertTitle>
+                          <AlertDescription>
+                            No hay variantes con traducción editable en
+                            {` ${activeLocaleLabel || "este idioma"}`}. Si
+                            necesitas agregar nuevas traducciones, hazlo desde
+                            la administración de traducciones del menú.
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                    </FieldSet>
                   )}
                 </FieldGroup>
               ) : (

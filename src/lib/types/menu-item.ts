@@ -17,7 +17,48 @@ export const variantSchema = z.object({
     }),
   description: z.string().optional(),
   price: z.number().min(0, { error: "Precio no puede ser negativo" }),
-  menuItemId: z.string().optional()
+  menuItemId: z.string().optional(),
+  translations: z
+    .array(
+      z.object({
+        locale: z.enum(SUPPORTED_LOCALE_CODES),
+        name: z
+          .string({
+            error: issue =>
+              issue.input === undefined ? "Nombre es requerido" : undefined
+          })
+          .min(3, {
+            error: "Nombre muy corto"
+          })
+          .max(100, {
+            error: "Nombre muy largo"
+          }),
+        description: z.string().optional()
+      })
+    )
+    .optional()
+})
+
+export const variantTranslationSchema = z.object({
+  locale: z.enum(SUPPORTED_LOCALE_CODES),
+  name: z
+    .string({
+      error: issue =>
+        issue.input === undefined ? "Nombre es requerido" : undefined
+    })
+    .min(3, {
+      error: "Nombre muy corto"
+    })
+    .max(100, {
+      error: "Nombre muy largo"
+    }),
+  description: z.string().optional()
+})
+
+export const variantFormTranslationSchema = z.object({
+  locale: z.enum(SUPPORTED_LOCALE_CODES),
+  name: z.string().optional(),
+  description: z.string().optional()
 })
 
 export const menuItemTranslationSchema = z.object({
@@ -70,6 +111,16 @@ export const menuItemSchema = z.object({
 })
 
 export const menuItemFormSchema = menuItemSchema.extend({
+  variants: z.tuple(
+    [
+      variantSchema.extend({
+        translations: z.array(variantFormTranslationSchema).optional()
+      })
+    ],
+    variantSchema.extend({
+      translations: z.array(variantFormTranslationSchema).optional()
+    })
+  ),
   translations: z.array(menuItemFormTranslationSchema).optional()
 })
 
