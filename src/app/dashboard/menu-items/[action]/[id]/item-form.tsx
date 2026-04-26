@@ -770,7 +770,7 @@ export default function ItemForm({
     <div className="pb-20">
       <form
         onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)}
-        className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_18rem]"
+        className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]"
       >
         <div className="min-w-0 space-y-6">
           <section
@@ -779,8 +779,8 @@ export default function ItemForm({
           >
             <div className="space-y-2">
               <h1
-                className="font-display text-2xl font-semibold tracking-tight
-                  text-balance sm:text-3xl"
+                className="font-display text-xl font-semibold tracking-tight
+                  text-balance sm:text-2xl"
               >
                 {title}
               </h1>
@@ -825,13 +825,13 @@ export default function ItemForm({
                 sm:px-5"
             >
               <div
-                className="flex flex-col gap-4 xl:flex-row xl:items-center
-                  xl:justify-between"
+                className="flex flex-col gap-4 md:flex-row md:items-center
+                  md:justify-between"
               >
                 <div className="min-w-0 space-y-3">
                   <div
-                    className="flex flex-col gap-3 lg:flex-row lg:items-center
-                      lg:justify-between"
+                    className="flex flex-col gap-3 md:flex-row md:items-center
+                      md:justify-between"
                   >
                     <TabsList
                       className="bg-muted/40 grid w-full max-w-md grid-cols-2
@@ -1633,7 +1633,10 @@ export default function ItemForm({
           </Tabs>
         </div>
 
-        <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
+        <aside
+          className="hidden space-y-4 group-[.is-dialog]:top-0 lg:sticky
+            lg:top-24 lg:block lg:self-start"
+        >
           <section
             className="border-border bg-background rounded-2xl border px-5 py-5
               shadow-xs"
