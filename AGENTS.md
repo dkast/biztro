@@ -103,6 +103,13 @@ Use `bun run <script>` unless the user requests otherwise.
 - After a successful optimistic action, call `router.refresh()` or revalidate the relevant path only when server data must be re-fetched.
 - When showing user-facing locale or language names, prefer Spanish display names or the app's localized labels over raw locale codes or source-language names.
 
+### Pro feature patterns
+
+- Use `isProMember()` as the server-side source of truth for Pro entitlements; client plan state is UX only.
+- Gate Pro-only creation or generation flows in the server action itself, even if the client already shows an upgrade dialog.
+- Prefer reusing `useProGuard()` and `UpgradeDialog` for Pro upgrade CTAs instead of inventing one-off gating state in feature screens.
+- If data already exists because it was created while the org had Pro access, keep editing that existing data available unless product requirements explicitly say downgrade should lock it.
+
 ## Practical repo guardrails
 
 - Prefer React Server Components; keep `use client` components small and scoped.

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { use, useEffect, useState } from "react"
+import React, { use, useState } from "react"
 import {
   Controller,
   useFieldArray,
@@ -18,6 +18,7 @@ import {
   Languages,
   Loader,
   PlusCircle,
+  Sparkles,
   TriangleAlert,
   X
 } from "lucide-react"
@@ -30,6 +31,7 @@ import { type z } from "zod/v4"
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { ImageField } from "@/components/dashboard/image-field"
 import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
+import { useProGuard } from "@/components/dashboard/upgrade-dialog"
 import {
   Combobox,
   ComboboxContent,
@@ -98,6 +100,7 @@ import {
   getCategories,
   type getMenuItemById
 } from "@/server/actions/item/queries"
+import { translateMenuItemForLocale } from "@/server/actions/item/translations"
 import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
 import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
 import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
@@ -205,11 +208,15 @@ function getMenuItemStatusMeta(status: MenuItemStatus) {
 export default function ItemForm({
   promiseItem,
   // categories,
-  action
+  action,
+  isPro,
+  availableTranslationLocales = []
 }: {
   promiseItem: ReturnType<typeof getMenuItemById>
   // categories: Prisma.PromiseReturnType<typeof getCategories>
   action: string
+  isPro: boolean
+  availableTranslationLocales: SupportedLocaleCode[]
 }) {
   const item = use(promiseItem)
 
@@ -290,6 +297,7 @@ export default function ItemForm({
   const availableTranslations = translations ?? []
   const availableLocales = Array.from(
     new Set([
+      ...availableTranslationLocales,
       ...availableTranslations.map(translation => translation.locale),
       ...(variants ?? []).flatMap(variant =>
         (variant.translations ?? []).map(translation => translation.locale)
@@ -346,11 +354,16 @@ export default function ItemForm({
   const activeLocaleLabel =
     activeLocaleSummary?.label ?? getLocaleLabel(activeLocale)
   const activeVariantTranslationCount = variantTranslationEntries.length
+  const hasMissingItemTranslation =
+    Boolean(activeLocale) && selectedTranslationIndex < 0
   const inactiveVariantTranslationCount = Math.max(
     (variants?.length ?? 0) - activeVariantTranslationCount,
     0
   )
-  const shouldShowVariantTranslationSection = (variants?.length ?? 0) > 1
+  const hasMissingTranslationsForActiveLocale =
+    Boolean(activeLocale) &&
+    (hasMissingItemTranslation || inactiveVariantTranslationCount > 0)
+  const shouldShowVariantTranslationSection = (variants?.length ?? 0) > 0
   const validationIssues = collectValidationIssues(
     form.formState.errors,
     getTabForIssuePath
@@ -425,27 +438,6 @@ export default function ItemForm({
     return "Formulario"
   }
 
-  useEffect(() => {
-    if (item?.variants && item.variants.length > 0) {
-      const mappedVariants = item.variants.map(variant => ({
-        name: variant.name,
-        price: variant.price,
-        id: variant.id,
-        description: variant.description ?? undefined,
-        menuItemId: variant.menuItemId,
-        translations: (variant.translations ?? []).map(translation => ({
-          locale: translation.locale as SupportedLocaleCode,
-          name: translation.name ?? "",
-          description: translation.description ?? ""
-        }))
-      }))
-      form.setValue(
-        "variants",
-        mappedVariants as z.infer<typeof menuItemFormSchema>["variants"]
-      )
-    }
-  }, [item?.variants, form])
-
   const queryClient = useQueryClient()
 
   const router = useRouter()
@@ -478,6 +470,99 @@ export default function ItemForm({
 
   const title = `${action === "new" ? "Crear" : "Editar"} Producto`
 
+  const { guard: guardTranslationGeneration, dialog: proGuardDialog } =
+    useProGuard(isPro, {
+      title: "Actualiza a Pro",
+      description:
+        "La traducción automática por producto está disponible solo en el plan Pro. Actualiza para completar las traducciones faltantes de este producto."
+    })
+
+  const applyGeneratedTranslations = ({
+    locale,
+    itemTranslation,
+    variantTranslations
+  }: {
+    locale: SupportedLocaleCode
+    itemTranslation: {
+      locale: SupportedLocaleCode
+      name: string
+      description?: string | null
+    } | null
+    variantTranslations: Array<{
+      variantId: string
+      locale: SupportedLocaleCode
+      name: string
+      description?: string | null
+    }>
+  }) => {
+    const currentValues = form.getValues()
+    const nextTranslations = [...(currentValues.translations ?? [])]
+
+    if (
+      itemTranslation &&
+      !nextTranslations.some(translation => translation.locale === locale)
+    ) {
+      nextTranslations.push({
+        locale,
+        name: itemTranslation.name,
+        description: itemTranslation.description ?? ""
+      })
+      nextTranslations.sort((left, right) =>
+        left.locale.localeCompare(right.locale)
+      )
+    }
+
+    const generatedVariantTranslations = new Map(
+      variantTranslations.map(translation => [
+        translation.variantId,
+        translation
+      ])
+    )
+
+    const nextVariants = currentValues.variants.map(variant => {
+      if (!variant.id) {
+        return variant
+      }
+
+      const generatedTranslation = generatedVariantTranslations.get(variant.id)
+
+      if (!generatedTranslation) {
+        return variant
+      }
+
+      const nextVariantTranslations = [...(variant.translations ?? [])]
+
+      if (
+        nextVariantTranslations.some(
+          translation => translation.locale === generatedTranslation.locale
+        )
+      ) {
+        return variant
+      }
+
+      nextVariantTranslations.push({
+        locale: generatedTranslation.locale,
+        name: generatedTranslation.name,
+        description: generatedTranslation.description ?? ""
+      })
+      nextVariantTranslations.sort((left, right) =>
+        left.locale.localeCompare(right.locale)
+      )
+
+      return {
+        ...variant,
+        translations: nextVariantTranslations
+      }
+    })
+
+    form.reset({
+      ...currentValues,
+      translations: nextTranslations,
+      variants: nextVariants
+    })
+    setSelectedLocale(locale)
+  }
+
   const { execute: executeCategory, reset: resetCategory } = useAction(
     createCategory,
     {
@@ -497,6 +582,38 @@ export default function ItemForm({
     }
   )
 
+  const {
+    execute: executeTranslateItem,
+    status: translateItemStatus,
+    reset: resetTranslateItem
+  } = useAction(translateMenuItemForLocale, {
+    onSuccess: ({ data }) => {
+      if (data?.success) {
+        applyGeneratedTranslations(data.success)
+
+        const translatedParts = [
+          data.success.itemTranslation ? "el producto" : null,
+          data.success.variantTranslations.length > 0
+            ? `${data.success.variantTranslations.length} variante${data.success.variantTranslations.length === 1 ? "" : "s"}`
+            : null
+        ].filter(Boolean)
+
+        toast.success(
+          `Se tradujo ${translatedParts.join(" y ")} al ${getLocaleLabel(data.success.locale)}`
+        )
+        router.refresh()
+      } else if (data?.failure?.reason) {
+        toast.error(data.failure.reason)
+      }
+
+      resetTranslateItem()
+    },
+    onError: () => {
+      toast.error("No se pudo traducir el contenido faltante del producto")
+      resetTranslateItem()
+    }
+  })
+
   const handleAddCategory = () => {
     if (searchCategory) {
       executeCategory({ name: searchCategory })
@@ -512,6 +629,29 @@ export default function ItemForm({
       return
     }
     setOpenVariant(true)
+  }
+
+  const handleTranslateMissingContent = () => {
+    if (!activeLocale) {
+      return
+    }
+
+    if (!item?.id) {
+      toast.error("No se pudo encontrar el producto para traducir")
+      return
+    }
+
+    if (form.formState.isDirty) {
+      toast("Guarda los cambios antes de generar traducciones")
+      return
+    }
+
+    guardTranslationGeneration(() => {
+      executeTranslateItem({
+        itemId: item.id,
+        locale: activeLocale
+      })
+    })
   }
 
   const {
@@ -767,20 +907,20 @@ export default function ItemForm({
   }
 
   return (
-    <div className="pb-20">
+    <div className="@container/item-form pb-20">
       <form
         onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)}
-        className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]"
+        className="grid gap-6 @3xl/item-form:grid-cols-[minmax(0,1fr)_18rem]"
       >
-        <div className="min-w-0 space-y-6">
+        <div className="@container/item-main min-w-0 space-y-6">
           <section
             className="border-border bg-background rounded-2xl border px-5 py-5
-              shadow-xs sm:px-6 sm:py-6"
+              shadow-xs @min-[40rem]/item-main:px-6 @min-[40rem]/item-main:py-6"
           >
             <div className="space-y-2">
               <h1
                 className="font-display text-xl font-semibold tracking-tight
-                  text-balance sm:text-2xl"
+                  text-balance @min-[40rem]/item-main:text-2xl"
               >
                 {title}
               </h1>
@@ -822,20 +962,21 @@ export default function ItemForm({
             <div
               className="border-border bg-background sticky top-18 z-10
                 rounded-2xl border px-4 py-4 shadow-xs group-[.is-dialog]:top-0
-                sm:px-5"
+                @min-[40rem]/item-main:px-5"
             >
               <div
-                className="flex flex-col gap-4 md:flex-row md:items-center
-                  md:justify-between"
+                className="flex flex-col gap-4 @2xl/item-main:flex-row
+                  @2xl/item-main:items-center @2xl/item-main:justify-between"
               >
                 <div className="min-w-0 space-y-3">
                   <div
-                    className="flex flex-col gap-3 md:flex-row md:items-center
-                      md:justify-between"
+                    className="flex flex-col gap-3 @2xl/item-main:flex-row
+                      @2xl/item-main:items-center
+                      @2xl/item-main:justify-between"
                   >
                     <TabsList
-                      className="bg-muted/40 grid w-full max-w-md grid-cols-2
-                        rounded-xl p-1"
+                      className="bg-muted/40 grid w-full grid-cols-2 rounded-xl
+                        p-1"
                     >
                       <TabsTrigger value="details" className="rounded-lg">
                         Detalles
@@ -846,14 +987,14 @@ export default function ItemForm({
                     </TabsList>
                     <div
                       className="flex flex-wrap items-center justify-start gap-2
-                        lg:justify-end"
+                        @5xl/item-main:justify-end"
                     >
                       {form.formState.isDirty && (
                         <span
                           aria-label="Cambios sin guardar"
                           title="Cambios sin guardar"
-                          className="inline-block size-2 rounded-full
-                            bg-yellow-500"
+                          className="hidden size-2 rounded-full bg-yellow-500
+                            @2xl/item-main:inline-block"
                         />
                       )}
                       {form.formState.submitCount > 0 &&
@@ -897,11 +1038,11 @@ export default function ItemForm({
               <div className="space-y-6">
                 <section
                   className="border-border bg-background rounded-2xl border px-5
-                    py-5 shadow-xs sm:px-6"
+                    py-5 shadow-xs @min-[40rem]/item-main:px-6"
                 >
                   <div
                     className="grid gap-6
-                      xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)]"
+                      @min-[38rem]/item-main:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)]"
                   >
                     <FieldSet>
                       <FieldLegend>Detalles del producto</FieldLegend>
@@ -991,7 +1132,7 @@ export default function ItemForm({
 
                 <section
                   className="border-border bg-background rounded-2xl border px-5
-                    py-5 shadow-xs sm:px-6"
+                    py-5 shadow-xs @min-[40rem]/item-main:px-6"
                 >
                   <FieldSet>
                     <FieldLegend>Disponibilidad y visibilidad</FieldLegend>
@@ -999,8 +1140,10 @@ export default function ItemForm({
                       Estado, moneda y visibilidad del producto.
                     </FieldDescription>
                     <FieldContent
-                      className="grid gap-0 divide-y xl:grid-cols-3 xl:divide-x
-                        xl:divide-y-0"
+                      className="grid gap-0 divide-y
+                        @min-[38rem]/item-main:grid-cols-3
+                        @min-[38rem]/item-main:divide-x
+                        @min-[38rem]/item-main:divide-y-0"
                     >
                       <Controller
                         name="status"
@@ -1008,17 +1151,15 @@ export default function ItemForm({
                         render={({ field }) => (
                           <FieldSet
                             className="flex h-full flex-col justify-center px-0
-                              py-4 xl:px-5 xl:py-0"
+                              py-4 @min-[38rem]/item-main:px-5
+                              @min-[38rem]/item-main:py-0"
                           >
                             <FieldLegend>Estatus del producto</FieldLegend>
-                            <FieldDescription className="mt-2">
-                              Activo, borrador o archivado.
-                            </FieldDescription>
                             <Select
                               onValueChange={field.onChange}
                               value={field.value}
                             >
-                              <SelectTrigger className="mt-3">
+                              <SelectTrigger className="mt-3 w-full">
                                 <SelectValue placeholder="Seleccionar estado" />
                               </SelectTrigger>
                               <SelectContent>
@@ -1033,6 +1174,9 @@ export default function ItemForm({
                                 </SelectItem>
                               </SelectContent>
                             </Select>
+                            <FieldDescription className="mt-3">
+                              Activo, borrador o archivado.
+                            </FieldDescription>
                           </FieldSet>
                         )}
                       />
@@ -1042,17 +1186,15 @@ export default function ItemForm({
                         render={({ field }) => (
                           <FieldSet
                             className="flex h-full flex-col justify-center px-0
-                              py-4 xl:px-5 xl:py-0"
+                              py-4 @min-[38rem]/item-main:px-5
+                              @min-[38rem]/item-main:py-0"
                           >
                             <FieldLegend>Moneda</FieldLegend>
-                            <FieldDescription className="mt-2">
-                              Moneda visible para el cliente.
-                            </FieldDescription>
                             <Select
                               onValueChange={field.onChange}
                               value={field.value}
                             >
-                              <SelectTrigger className="mt-3">
+                              <SelectTrigger className="mt-3 w-full">
                                 <SelectValue placeholder="Seleccionar moneda" />
                               </SelectTrigger>
                               <SelectContent>
@@ -1060,6 +1202,9 @@ export default function ItemForm({
                                 <SelectItem value="USD">USD</SelectItem>
                               </SelectContent>
                             </Select>
+                            <FieldDescription className="mt-3">
+                              Moneda visible para el cliente.
+                            </FieldDescription>
                           </FieldSet>
                         )}
                       />
@@ -1069,7 +1214,8 @@ export default function ItemForm({
                         render={({ field }) => (
                           <FieldSet
                             className="flex h-full flex-col justify-center px-0
-                              py-4 xl:px-5 xl:py-0"
+                              py-4 @min-[38rem]/item-main:px-5
+                              @min-[38rem]/item-main:py-0"
                           >
                             <div
                               className="flex items-start justify-between gap-4"
@@ -1095,11 +1241,11 @@ export default function ItemForm({
 
                 <div
                   className="grid gap-6
-                    xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+                    @min-[38rem]/item-main:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
                 >
                   <section
                     className="border-border bg-background rounded-2xl border
-                      px-5 py-5 shadow-xs sm:px-6"
+                      px-5 py-5 shadow-xs @min-[40rem]/item-main:px-6"
                   >
                     <FieldSet>
                       <FieldLegend>Variantes</FieldLegend>
@@ -1123,7 +1269,7 @@ export default function ItemForm({
 
                   <section
                     className="border-border bg-background rounded-2xl border
-                      px-5 py-5 shadow-xs sm:px-6"
+                      px-5 py-5 shadow-xs @min-[40rem]/item-main:px-6"
                   >
                     <FieldSet>
                       <FieldLegend>Categoría</FieldLegend>
@@ -1136,53 +1282,56 @@ export default function ItemForm({
                         render={({ field }) => (
                           <Field>
                             <div className="flex items-center gap-2">
-                              <Combobox
-                                data={categoryList.map(category => ({
-                                  label: category.name,
-                                  value: category.id
-                                }))}
-                                type="Categoría"
-                                value={field.value}
-                                onValueChange={(val: string) => {
-                                  form.setValue("categoryId", val)
-                                }}
-                              >
-                                <ComboboxTrigger className="min-w-75" />
-                                <ComboboxContent>
-                                  <ComboboxInput
-                                    value={searchCategory}
-                                    onValueChange={setSearchCategory}
-                                    placeholder="Buscar categoría..."
-                                  />
-                                  <ComboboxList>
-                                    <ComboboxEmpty>
-                                      <ComboboxCreateNew
-                                        onCreateNew={handleAddCategory}
-                                      />
-                                    </ComboboxEmpty>
-                                    <ComboboxGroup>
-                                      {categoryList.map(category => (
-                                        <ComboboxItem
-                                          value={category.id}
-                                          key={category.id}
-                                          className="py-2 text-base sm:py-1.5
-                                            sm:text-sm"
-                                        >
-                                          <Check
-                                            className={cn(
-                                              "mr-2 size-4",
-                                              category.id === field.value
-                                                ? "opacity-100"
-                                                : "opacity-0"
-                                            )}
-                                          />
-                                          {category.name}
-                                        </ComboboxItem>
-                                      ))}
-                                    </ComboboxGroup>
-                                  </ComboboxList>
-                                </ComboboxContent>
-                              </Combobox>
+                              <div className="min-w-0 flex-1">
+                                <Combobox
+                                  data={categoryList.map(category => ({
+                                    label: category.name,
+                                    value: category.id
+                                  }))}
+                                  type="Categoría"
+                                  value={field.value}
+                                  onValueChange={(val: string) => {
+                                    form.setValue("categoryId", val)
+                                  }}
+                                >
+                                  <ComboboxTrigger className="w-full min-w-0" />
+                                  <ComboboxContent className="@container/category-picker">
+                                    <ComboboxInput
+                                      value={searchCategory}
+                                      onValueChange={setSearchCategory}
+                                      placeholder="Buscar categoría..."
+                                    />
+                                    <ComboboxList>
+                                      <ComboboxEmpty>
+                                        <ComboboxCreateNew
+                                          onCreateNew={handleAddCategory}
+                                        />
+                                      </ComboboxEmpty>
+                                      <ComboboxGroup>
+                                        {categoryList.map(category => (
+                                          <ComboboxItem
+                                            value={category.id}
+                                            key={category.id}
+                                            className="py-2 text-base
+                                              @xs/category-picker:py-1.5
+                                              @xs/category-picker:text-sm"
+                                          >
+                                            <Check
+                                              className={cn(
+                                                "mr-2 size-4",
+                                                category.id === field.value
+                                                  ? "opacity-100"
+                                                  : "opacity-0"
+                                              )}
+                                            />
+                                            {category.name}
+                                          </ComboboxItem>
+                                        ))}
+                                      </ComboboxGroup>
+                                    </ComboboxList>
+                                  </ComboboxContent>
+                                </Combobox>
+                              </div>
                               {field.value && (
                                 <Button
                                   type="button"
@@ -1206,7 +1355,7 @@ export default function ItemForm({
 
                 <section
                   className="border-border bg-background rounded-2xl border px-5
-                    py-5 shadow-xs sm:px-6"
+                    py-5 shadow-xs @min-[40rem]/item-main:px-6"
                 >
                   <FieldSet>
                     <FieldLegend>Alérgenos e indicadores</FieldLegend>
@@ -1292,7 +1441,7 @@ export default function ItemForm({
                   <FieldGroup className="gap-6">
                     <div
                       className="grid gap-6
-                        xl:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]"
+                        @min-[38rem]/item-main:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]"
                     >
                       <FieldSet
                         className="border-border bg-muted/20 rounded-xl border
@@ -1453,11 +1602,57 @@ export default function ItemForm({
                       </FieldSet>
                     </div>
 
+                    {hasMissingTranslationsForActiveLocale && (
+                      <Alert variant="warning">
+                        <Sparkles className="size-4" />
+                        <AlertTitle>
+                          Faltan traducciones en {activeLocaleLabel}
+                        </AlertTitle>
+                        <AlertDescription>
+                          <div className="flex flex-col gap-3 text-sm">
+                            <p className="text-pretty">
+                              {hasMissingItemTranslation &&
+                              inactiveVariantTranslationCount > 0
+                                ? `Aun no existe el texto del producto ni ${inactiveVariantTranslationCount} variante${inactiveVariantTranslationCount === 1 ? "" : "s"} en ${activeLocaleLabel}.`
+                                : hasMissingItemTranslation
+                                  ? `Aun no existe el texto del producto en ${activeLocaleLabel}.`
+                                  : `Aun faltan ${inactiveVariantTranslationCount} variante${inactiveVariantTranslationCount === 1 ? "" : "s"} por traducir en ${activeLocaleLabel}.`}
+                            </p>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Button
+                                type="button"
+                                size="sm"
+                                onClick={handleTranslateMissingContent}
+                                disabled={translateItemStatus === "executing"}
+                              >
+                                {translateItemStatus === "executing" ? (
+                                  <Loader className="mr-2 size-4 animate-spin" />
+                                ) : (
+                                  <Sparkles className="mr-2 size-4" />
+                                )}
+                                <TextMorph>
+                                  {translateItemStatus === "executing"
+                                    ? "Traduciendo"
+                                    : "Completar con IA"}
+                                </TextMorph>
+                              </Button>
+                              {!isPro && (
+                                <Badge variant="outline">
+                                  Disponible en Pro
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+
                     {shouldShowVariantTranslationSection && (
                       <FieldSet className="border-border rounded-xl border p-4">
                         <div
-                          className="flex flex-col gap-3 md:flex-row
-                            md:items-start md:justify-between"
+                          className="flex flex-col gap-3 @3xl/item-main:flex-row
+                            @3xl/item-main:items-start
+                            @3xl/item-main:justify-between"
                         >
                           <div className="flex flex-col gap-1">
                             <FieldLegend>Traducciones de variantes</FieldLegend>
@@ -1484,11 +1679,6 @@ export default function ItemForm({
                               border px-4"
                           >
                             {variantTranslationEntries.map(entry => {
-                              const originalVariant =
-                                variants?.[entry.variantIndex]
-                              const originalDescription =
-                                originalVariant?.description?.trim()
-
                               return (
                                 <AccordionItem
                                   key={`${entry.variantIndex}-${entry.translationIndex}`}
@@ -1507,14 +1697,6 @@ export default function ItemForm({
                                           {entry.variantName}
                                         </span>
                                       </div>
-                                      <p
-                                        className="text-muted-foreground mt-1
-                                          text-sm text-pretty"
-                                      >
-                                        {originalDescription
-                                          ? `Base: ${originalDescription}`
-                                          : "Sin descripción base para esta variante."}
-                                      </p>
                                     </div>
                                   </AccordionTrigger>
                                   <AccordionContent>
@@ -1540,37 +1722,6 @@ export default function ItemForm({
                                                 fieldState.invalid || undefined
                                               }
                                               placeholder={`Nombre en ${activeLocaleLabel}`}
-                                            />
-                                            {fieldState.invalid && (
-                                              <FieldError
-                                                errors={[fieldState.error]}
-                                              />
-                                            )}
-                                          </Field>
-                                        )}
-                                      />
-                                      <Controller
-                                        name={
-                                          `variants.${entry.variantIndex}.translations.${entry.translationIndex}.description` as const
-                                        }
-                                        control={form.control}
-                                        render={({ field, fieldState }) => (
-                                          <Field
-                                            data-invalid={
-                                              fieldState.invalid || undefined
-                                            }
-                                          >
-                                            <FieldLabel htmlFor={field.name}>
-                                              Descripción de la variante
-                                            </FieldLabel>
-                                            <Textarea
-                                              {...field}
-                                              id={field.name}
-                                              value={field.value ?? ""}
-                                              aria-invalid={
-                                                fieldState.invalid || undefined
-                                              }
-                                              placeholder={`Descripción en ${activeLocaleLabel}`}
                                             />
                                             {fieldState.invalid && (
                                               <FieldError
@@ -1634,8 +1785,9 @@ export default function ItemForm({
         </div>
 
         <aside
-          className="hidden space-y-4 group-[.is-dialog]:top-0 lg:sticky
-            lg:top-24 lg:block lg:self-start"
+          className="hidden space-y-4 group-[.is-dialog]:top-0
+            @3xl/item-form:sticky @3xl/item-form:top-24 @3xl/item-form:block
+            @3xl/item-form:self-start"
         >
           <section
             className="border-border bg-background rounded-2xl border px-5 py-5
@@ -1722,6 +1874,7 @@ export default function ItemForm({
         open={openVariant}
         setOpen={setOpenVariant}
       />
+      {proGuardDialog}
       {/* <DevTool control={form.control} /> */}
     </div>
   )

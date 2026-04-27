@@ -48,6 +48,31 @@ const translationOutputSchema = z.object({
   categories: z.array(categoryTranslationSchema)
 })
 
+const translateMenuItemForLocaleInputSchema = z.object({
+  itemId: z.string(),
+  locale: z.enum(SUPPORTED_LOCALE_CODES)
+})
+
+const itemTranslationOutputSchema = z.object({
+  item: z
+    .object({
+      menuItemId: z.string().describe("Original menu item ID"),
+      name: z.string().describe("Translated item name"),
+      description: z.string().optional().describe("Translated item description")
+    })
+    .nullable(),
+  variants: z.array(
+    z.object({
+      variantId: z.string().describe("Original variant ID"),
+      name: z.string().describe("Translated variant name"),
+      description: z
+        .string()
+        .optional()
+        .describe("Translated variant description")
+    })
+  )
+})
+
 /**
  * Bulk-translate all active menu items for the current organization into the
  * specified locale using the AI Gateway.
@@ -237,6 +262,223 @@ ${JSON.stringify(itemsPayload, null, 2)}`
         failure: {
           reason:
             "No se pudo completar la traducción. Por favor intenta nuevamente."
+        }
+      }
+    }
+  })
+
+/**
+ * Translate only the missing translations for a single menu item in a specific
+ * locale, including any missing variant translations for that item.
+ */
+export const translateMenuItemForLocale = authMemberActionClient
+  .inputSchema(translateMenuItemForLocaleInputSchema)
+  .action(async ({ parsedInput: { itemId, locale }, ctx: { member } }) => {
+    const currentOrgId = member.organizationId
+
+    if (!currentOrgId) {
+      return {
+        failure: { reason: "No se pudo obtener la organización actual" }
+      }
+    }
+
+    const proMember = await isProMember()
+    if (!proMember) {
+      return {
+        failure: {
+          reason:
+            "La traducción automática por producto es una función exclusiva del plan Pro"
+        }
+      }
+    }
+
+    if (!env.AI_GATEWAY_API_KEY) {
+      return {
+        failure: {
+          reason:
+            "La funcionalidad de traducción requiere configurar una clave de API del AI Gateway"
+        }
+      }
+    }
+
+    const item = await prisma.menuItem.findFirst({
+      where: {
+        id: itemId,
+        organizationId: currentOrgId
+      },
+      include: {
+        translations: {
+          where: { locale }
+        },
+        variants: {
+          include: {
+            translations: {
+              where: { locale }
+            }
+          }
+        }
+      }
+    })
+
+    if (!item) {
+      return {
+        failure: { reason: "No se pudo encontrar el producto a traducir" }
+      }
+    }
+
+    const itemNeedsTranslation = item.translations.length === 0
+    const variantsMissingTranslation = item.variants.filter(
+      variant => variant.translations.length === 0
+    )
+
+    if (!itemNeedsTranslation && variantsMissingTranslation.length === 0) {
+      return {
+        failure: {
+          reason:
+            "Este producto ya tiene todas las traducciones disponibles para ese idioma"
+        }
+      }
+    }
+
+    const localeName =
+      SUPPORTED_LOCALES.find(entry => entry.code === locale)?.label ?? locale
+
+    const itemPayload = itemNeedsTranslation
+      ? {
+          menuItemId: item.id,
+          name: item.name,
+          description: item.description ?? undefined
+        }
+      : null
+
+    const variantsPayload = variantsMissingTranslation.map(variant => ({
+      variantId: variant.id,
+      name: variant.name,
+      description: variant.description ?? undefined
+    }))
+
+    try {
+      const result = await generateText({
+        model: gateway("mistral/mistral-small-latest"),
+        output: Output.object({ schema: itemTranslationOutputSchema }),
+        messages: [
+          {
+            role: "user",
+            content: `You are a professional restaurant menu translator. Translate only the missing content for the following restaurant menu item into ${localeName} (locale: ${locale}).
+
+Rules:
+- Translate names and descriptions naturally; preserve proper nouns when appropriate.
+- If the item payload is null, keep item as null in the response.
+- Return exactly the same IDs (menuItemId, variantId) without modification.
+- If a field is empty or undefined, leave it empty in the output.
+
+Missing item translation to generate:
+${JSON.stringify(itemPayload, null, 2)}
+
+Missing variant translations to generate:
+${JSON.stringify(variantsPayload, null, 2)}`
+          }
+        ]
+      })
+
+      if (!result.output) {
+        return {
+          failure: { reason: "No se pudo obtener la traducción del modelo" }
+        }
+      }
+
+      let createdItemTranslation: {
+        locale: SupportedLocaleCode
+        name: string
+        description: string | null
+      } | null = null
+      const createdVariantTranslations: Array<{
+        variantId: string
+        locale: SupportedLocaleCode
+        name: string
+        description: string | null
+      }> = []
+
+      const outputVariantsById = new Map(
+        result.output.variants.map(variant => [variant.variantId, variant])
+      )
+
+      await prisma.$transaction(async tx => {
+        if (itemPayload && result.output.item) {
+          const created = await tx.menuItemTranslation.create({
+            data: {
+              menuItemId: item.id,
+              locale,
+              name: result.output.item.name,
+              description: result.output.item.description?.trim()
+                ? result.output.item.description
+                : null
+            }
+          })
+
+          createdItemTranslation = {
+            locale: created.locale as SupportedLocaleCode,
+            name: created.name,
+            description: created.description
+          }
+        }
+
+        for (const variant of variantsMissingTranslation) {
+          const translatedVariant = outputVariantsById.get(variant.id)
+
+          if (!translatedVariant) {
+            continue
+          }
+
+          const created = await tx.variantTranslation.create({
+            data: {
+              variantId: variant.id,
+              locale,
+              name: translatedVariant.name,
+              description: translatedVariant.description?.trim()
+                ? translatedVariant.description
+                : null
+            }
+          })
+
+          createdVariantTranslations.push({
+            variantId: created.variantId,
+            locale: created.locale as SupportedLocaleCode,
+            name: created.name,
+            description: created.description
+          })
+        }
+      })
+
+      if (!createdItemTranslation && createdVariantTranslations.length === 0) {
+        return {
+          failure: {
+            reason:
+              "No se generaron nuevas traducciones para este producto. Intenta de nuevo."
+          }
+        }
+      }
+
+      updateTag(`translations-${currentOrgId}`)
+      updateTag(`menu-item-${itemId}`)
+
+      return {
+        success: {
+          locale,
+          itemTranslation: createdItemTranslation,
+          variantTranslations: createdVariantTranslations
+        }
+      }
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "item-translate-single" },
+        extra: { itemId, locale }
+      })
+
+      return {
+        failure: {
+          reason:
+            "No se pudo completar la traducción del producto. Por favor intenta nuevamente."
         }
       }
     }
