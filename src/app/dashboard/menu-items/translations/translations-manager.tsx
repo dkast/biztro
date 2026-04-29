@@ -27,7 +27,6 @@ import {
   BannerTitle
 } from "@/components/kibo-ui/banner"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -370,22 +369,17 @@ export default function TranslationsManager({
         </div>
 
         {translations.length === 0 ? (
-          <Card>
-            <CardContent className="pt-0">
-              <Empty className="border-0 p-0">
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <Languages className="size-5" />
-                  </EmptyMedia>
-                  <EmptyTitle>Empieza con un idioma</EmptyTitle>
-                  <EmptyDescription>
-                    No hay traducciones disponibles. Agrega un idioma para
-                    empezar.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-            </CardContent>
-          </Card>
+          <Empty className="border-border bg-muted/20 rounded-xl border">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Languages />
+              </EmptyMedia>
+              <EmptyTitle>Empieza con un idioma</EmptyTitle>
+              <EmptyDescription>
+                No hay traducciones disponibles. Agrega un idioma para empezar.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ) : (
           <ItemGroup className="gap-4">
             {translations.map(translation => {

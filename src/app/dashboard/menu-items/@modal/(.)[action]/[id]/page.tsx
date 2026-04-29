@@ -10,7 +10,11 @@ import { notFound } from "next/navigation"
 import Panel from "@/components/dashboard/page-panel"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getCategories, getMenuItemById } from "@/server/actions/item/queries"
-import { getCurrentOrganization } from "@/server/actions/user/queries"
+import { getAvailableTranslations } from "@/server/actions/item/translations"
+import {
+  getCurrentOrganization,
+  isProMember
+} from "@/server/actions/user/queries"
 import ItemForm from "@/app/dashboard/menu-items/[action]/[id]/item-form"
 
 export async function generateMetadata(props: {
@@ -42,15 +46,27 @@ export default async function ItemPage(props: {
     queryFn: () => getCategories(org.id)
   })
 
+  const [isPro, availableTranslations] = await Promise.all([
+    isProMember(),
+    getAvailableTranslations(org.id)
+  ])
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Panel className="rounded-lg sm:m-2 sm:h-[95%]">
         <div className="h-full overflow-x-auto">
           <div
-            className="group is-dialog max-w-236 px-4 py-2 sm:mx-auto sm:px-6"
+            className="group is-dialog max-w-6xl px-4 py-2 sm:mx-auto sm:px-6"
           >
             <Suspense fallback={<LoadingItemSkeleton />}>
-              <ItemForm action={params.action} promiseItem={item} />
+              <ItemForm
+                action={params.action}
+                promiseItem={item}
+                isPro={isPro}
+                availableTranslationLocales={availableTranslations.map(
+                  translation => translation.locale
+                )}
+              />
             </Suspense>
           </div>
         </div>

@@ -8,7 +8,7 @@ import {
   type UseFormReturn
 } from "react-hook-form"
 import { Trash } from "lucide-react"
-import { type z } from "zod/v4"
+import { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
@@ -22,14 +22,16 @@ import {
   TableRow
 } from "@/components/ui/table"
 import VariantDelete from "@/app/dashboard/menu-items/[action]/[id]/variant-delete"
-import { type menuItemSchema } from "@/lib/types/menu-item"
+import { menuItemFormSchema } from "@/lib/types/menu-item"
+
+type VariantFormValues = z.infer<typeof menuItemFormSchema>
 
 export default function VariantForm({
   fieldArray,
   parentForm
 }: {
-  fieldArray: FieldArrayWithId<z.infer<typeof menuItemSchema>>[]
-  parentForm: UseFormReturn<z.infer<typeof menuItemSchema>>
+  fieldArray: FieldArrayWithId<VariantFormValues>[]
+  parentForm: UseFormReturn<VariantFormValues>
 }) {
   return (
     <>
@@ -46,8 +48,8 @@ function MultiVariantForm({
   fieldArray,
   parentForm
 }: {
-  fieldArray: FieldArrayWithId<z.infer<typeof menuItemSchema>>[]
-  parentForm: UseFormReturn<z.infer<typeof menuItemSchema>>
+  fieldArray: FieldArrayWithId<VariantFormValues>[]
+  parentForm: UseFormReturn<VariantFormValues>
 }) {
   return (
     <Table>
@@ -132,7 +134,7 @@ function MultiVariantForm({
 function SingleVariantForm({
   control
 }: {
-  control: Control<z.infer<typeof menuItemSchema>>
+  control: Control<VariantFormValues>
 }) {
   return (
     <Controller

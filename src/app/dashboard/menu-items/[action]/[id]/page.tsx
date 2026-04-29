@@ -7,7 +7,11 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { getCategories, getMenuItemById } from "@/server/actions/item/queries"
-import { getCurrentOrganization } from "@/server/actions/user/queries"
+import { getAvailableTranslations } from "@/server/actions/item/translations"
+import {
+  getCurrentOrganization,
+  isProMember
+} from "@/server/actions/user/queries"
 import ItemForm from "@/app/dashboard/menu-items/[action]/[id]/item-form"
 
 export async function generateMetadata(props: {
@@ -38,10 +42,25 @@ export default async function ItemPage(props: {
     queryFn: () => getCategories(org.id)
   })
 
+  const [isPro, availableTranslations] = await Promise.all([
+    isProMember(),
+    getAvailableTranslations(org.id)
+  ])
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="mx-auto max-w-4xl grow px-4 sm:px-6">
-        <ItemForm action={params.action} promiseItem={item} />
+      <div
+        className="mx-auto w-full max-w-6xl grow px-4 py-6 sm:px-6 sm:py-8
+          lg:px-8"
+      >
+        <ItemForm
+          action={params.action}
+          promiseItem={item}
+          isPro={isPro}
+          availableTranslationLocales={availableTranslations.map(
+            translation => translation.locale
+          )}
+        />
       </div>
     </HydrationBoundary>
   )
