@@ -36,6 +36,10 @@ export const variantSchema = z.object({
         description: z.string().optional()
       })
     )
+    .refine(
+      items => new Set(items.map(t => t.locale)).size === items.length,
+      { message: "Locale duplicado en traducciones de variante" }
+    )
     .optional()
 })
 
@@ -105,7 +109,13 @@ export const menuItemSchema = z.object({
   currency: z.enum(["MXN", "USD"]).default("MXN").optional(),
   variants: z.tuple([variantSchema], variantSchema),
   allergens: z.string().optional(),
-  translations: z.array(menuItemTranslationSchema).optional(),
+  translations: z
+    .array(menuItemTranslationSchema)
+    .refine(
+      items => new Set(items.map(t => t.locale)).size === items.length,
+      { message: "Locale duplicado en traducciones" }
+    )
+    .optional(),
   updatePublishedMenus: z.boolean().optional(),
   rememberPublishedChoice: z.boolean().optional()
 })
@@ -114,14 +124,32 @@ export const menuItemFormSchema = menuItemSchema.extend({
   variants: z.tuple(
     [
       variantSchema.extend({
-        translations: z.array(variantFormTranslationSchema).optional()
+        translations: z
+          .array(variantFormTranslationSchema)
+          .refine(
+            items => new Set(items.map(t => t.locale)).size === items.length,
+            { message: "Locale duplicado en traducciones de variante" }
+          )
+          .optional()
       })
     ],
     variantSchema.extend({
-      translations: z.array(variantFormTranslationSchema).optional()
+      translations: z
+        .array(variantFormTranslationSchema)
+        .refine(
+          items => new Set(items.map(t => t.locale)).size === items.length,
+          { message: "Locale duplicado en traducciones de variante" }
+        )
+        .optional()
     })
   ),
-  translations: z.array(menuItemFormTranslationSchema).optional()
+  translations: z
+    .array(menuItemFormTranslationSchema)
+    .refine(
+      items => new Set(items.map(t => t.locale)).size === items.length,
+      { message: "Locale duplicado en traducciones" }
+    )
+    .optional()
 })
 
 export type MenuItemQueryFilter = {

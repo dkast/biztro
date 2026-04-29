@@ -738,7 +738,7 @@ export const updateItem = authMemberActionClient
                         upsert: variant.translations.map(translation => ({
                           where: {
                             variantId_locale: {
-                              variantId: variant.id ?? "",
+                              variantId: variant.id!,
                               locale: translation.locale
                             }
                           },
@@ -766,7 +766,7 @@ export const updateItem = authMemberActionClient
                   upsert: translations.map(translation => ({
                     where: {
                       menuItemId_locale: {
-                        menuItemId: id ?? "",
+                        menuItemId: id!,
                         locale: translation.locale
                       }
                     },

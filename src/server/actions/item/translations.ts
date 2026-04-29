@@ -405,10 +405,22 @@ ${JSON.stringify(variantsPayload, null, 2)}`
 
       await prisma.$transaction(async tx => {
         if (itemPayload && result.output.item) {
-          const created = await tx.menuItemTranslation.create({
-            data: {
+          const upserted = await tx.menuItemTranslation.upsert({
+            where: {
+              menuItemId_locale: {
+                menuItemId: item.id,
+                locale
+              }
+            },
+            create: {
               menuItemId: item.id,
               locale,
+              name: result.output.item.name,
+              description: result.output.item.description?.trim()
+                ? result.output.item.description
+                : null
+            },
+            update: {
               name: result.output.item.name,
               description: result.output.item.description?.trim()
                 ? result.output.item.description
@@ -417,9 +429,9 @@ ${JSON.stringify(variantsPayload, null, 2)}`
           })
 
           createdItemTranslation = {
-            locale: created.locale as SupportedLocaleCode,
-            name: created.name,
-            description: created.description
+            locale: upserted.locale as SupportedLocaleCode,
+            name: upserted.name,
+            description: upserted.description
           }
         }
 
@@ -430,10 +442,22 @@ ${JSON.stringify(variantsPayload, null, 2)}`
             continue
           }
 
-          const created = await tx.variantTranslation.create({
-            data: {
+          const upserted = await tx.variantTranslation.upsert({
+            where: {
+              variantId_locale: {
+                variantId: variant.id,
+                locale
+              }
+            },
+            create: {
               variantId: variant.id,
               locale,
+              name: translatedVariant.name,
+              description: translatedVariant.description?.trim()
+                ? translatedVariant.description
+                : null
+            },
+            update: {
               name: translatedVariant.name,
               description: translatedVariant.description?.trim()
                 ? translatedVariant.description
@@ -442,10 +466,10 @@ ${JSON.stringify(variantsPayload, null, 2)}`
           })
 
           createdVariantTranslations.push({
-            variantId: created.variantId,
-            locale: created.locale as SupportedLocaleCode,
-            name: created.name,
-            description: created.description
+            variantId: upserted.variantId,
+            locale: upserted.locale as SupportedLocaleCode,
+            name: upserted.name,
+            description: upserted.description
           })
         }
       })
