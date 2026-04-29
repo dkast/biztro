@@ -1,6 +1,6 @@
 "use client"
 
-import React, { use, useState } from "react"
+import { use, useState } from "react"
 import {
   Controller,
   useFieldArray,
@@ -455,18 +455,6 @@ export default function ItemForm({
   const selectedCategoryName =
     categoryList.find(category => category.id === currentCategoryId)?.name ??
     "Sin categoría"
-  const introCopy =
-    action === "new"
-      ? "Completa los datos principales y guarda el producto."
-      : "Actualiza los datos del producto y guarda los cambios."
-  const activeViewSummary =
-    activeTab === "details"
-      ? "Datos, visibilidad y organización del producto."
-      : activeLocaleLabel
-        ? `${activeLocaleLabel}: texto visible para el cliente.`
-        : "Texto de los idiomas existentes."
-
-  const saveRef = React.useRef<HTMLButtonElement>(null)
 
   const title = `${action === "new" ? "Crear" : "Editar"} Producto`
 
@@ -913,25 +901,12 @@ export default function ItemForm({
         className="grid gap-6 @3xl/item-form:grid-cols-[minmax(0,1fr)_18rem]"
       >
         <div className="@container/item-main min-w-0 space-y-6">
-          <section
-            className="border-border bg-background rounded-2xl border px-5 py-5
-              shadow-xs @min-[40rem]/item-main:px-6 @min-[40rem]/item-main:py-6"
+          <h1
+            className="font-display px-1 text-xl font-semibold tracking-tight
+              text-balance @min-[40rem]/item-main:text-2xl"
           >
-            <div className="space-y-2">
-              <h1
-                className="font-display text-xl font-semibold tracking-tight
-                  text-balance @min-[40rem]/item-main:text-2xl"
-              >
-                {title}
-              </h1>
-              <p
-                className="text-muted-foreground max-w-3xl text-sm leading-6
-                  text-pretty"
-              >
-                {introCopy}
-              </p>
-            </div>
-          </section>
+            {title}
+          </h1>
 
           {form.formState.submitCount > 0 && validationIssues.length > 0 && (
             <Alert variant="warning">
@@ -961,51 +936,38 @@ export default function ItemForm({
           >
             <div
               className="border-border bg-background sticky top-18 z-10
-                rounded-2xl border px-4 py-4 shadow-xs group-[.is-dialog]:top-0
+                rounded-2xl border px-4 py-3 shadow-xs group-[.is-dialog]:top-0
                 @min-[40rem]/item-main:px-5"
             >
               <div
-                className="flex flex-col gap-4 @2xl/item-main:flex-row
+                className="flex flex-col gap-3 @2xl/item-main:flex-row
                   @2xl/item-main:items-center @2xl/item-main:justify-between"
               >
-                <div className="min-w-0 space-y-3">
-                  <div
-                    className="flex flex-col gap-3 @2xl/item-main:flex-row
-                      @2xl/item-main:items-center
-                      @2xl/item-main:justify-between"
+                <div className="flex items-center gap-2">
+                  <TabsList
+                    className="bg-muted/40 grid grid-cols-2 rounded-xl p-1"
                   >
-                    <TabsList
-                      className="bg-muted/40 grid w-full grid-cols-2 rounded-xl
-                        p-1"
-                    >
-                      <TabsTrigger value="details" className="rounded-lg">
-                        Detalles
-                      </TabsTrigger>
-                      <TabsTrigger value="translations" className="rounded-lg">
-                        Traducciones
-                      </TabsTrigger>
-                    </TabsList>
-                    <div
-                      className="flex flex-wrap items-center justify-start gap-2
-                        @5xl/item-main:justify-end"
-                    >
-                      {form.formState.isDirty && (
-                        <span
-                          aria-label="Cambios sin guardar"
-                          title="Cambios sin guardar"
-                          className="hidden size-2 rounded-full bg-yellow-500
-                            @2xl/item-main:inline-block"
-                        />
-                      )}
-                      {form.formState.submitCount > 0 &&
-                        validationIssues.length > 0 && (
-                          <Badge variant="destructive">
-                            {validationIssues.length} pendiente
-                            {validationIssues.length === 1 ? "" : "s"}
-                          </Badge>
-                        )}
-                    </div>
-                  </div>
+                    <TabsTrigger value="details" className="rounded-lg">
+                      Detalles
+                    </TabsTrigger>
+                    <TabsTrigger value="translations" className="rounded-lg">
+                      Traducciones
+                    </TabsTrigger>
+                  </TabsList>
+                  {form.formState.isDirty && (
+                    <span
+                      aria-label="Cambios sin guardar"
+                      title="Cambios sin guardar"
+                      className="size-2 rounded-full bg-yellow-500"
+                    />
+                  )}
+                  {form.formState.submitCount > 0 &&
+                    validationIssues.length > 0 && (
+                      <Badge variant="destructive">
+                        {validationIssues.length} pendiente
+                        {validationIssues.length === 1 ? "" : "s"}
+                      </Badge>
+                    )}
                 </div>
 
                 <div className="flex flex-wrap justify-end gap-2">
@@ -1014,7 +976,6 @@ export default function ItemForm({
                     variant="secondary"
                     size="sm"
                     onClick={() => router.back()}
-                    ref={saveRef}
                   >
                     Cerrar
                   </Button>
@@ -1174,9 +1135,6 @@ export default function ItemForm({
                                 </SelectItem>
                               </SelectContent>
                             </Select>
-                            <FieldDescription className="mt-3">
-                              Activo, borrador o archivado.
-                            </FieldDescription>
                           </FieldSet>
                         )}
                       />
@@ -1202,9 +1160,6 @@ export default function ItemForm({
                                 <SelectItem value="USD">USD</SelectItem>
                               </SelectContent>
                             </Select>
-                            <FieldDescription className="mt-3">
-                              Moneda visible para el cliente.
-                            </FieldDescription>
                           </FieldSet>
                         )}
                       />
@@ -1813,12 +1768,7 @@ export default function ItemForm({
             className="border-border bg-background rounded-2xl border px-5 py-5
               shadow-xs"
           >
-            <FieldSet>
-              <FieldLegend>Resumen operativo</FieldLegend>
-              <FieldDescription className="text-pretty">
-                Estado rápido del producto.
-              </FieldDescription>
-            </FieldSet>
+            <FieldLegend>Resumen operativo</FieldLegend>
             <dl className="mt-4 space-y-4 text-sm">
               <div className="flex items-start justify-between gap-3">
                 <dt className="text-muted-foreground">Estado</dt>
@@ -1856,23 +1806,6 @@ export default function ItemForm({
                 </dd>
               </div>
             </dl>
-          </section>
-
-          <section
-            className="border-border bg-muted/20 rounded-2xl border px-5 py-5
-              shadow-xs"
-          >
-            <FieldSet>
-              <FieldLegend>En esta vista</FieldLegend>
-            </FieldSet>
-            <p className="mt-3 text-sm font-medium text-pretty">
-              {activeViewSummary}
-            </p>
-            <p className="text-muted-foreground mt-3 text-sm text-pretty">
-              {activeTab === "details"
-                ? "Guarda antes de crear una variante nueva."
-                : "La validación te lleva al idioma con errores."}
-            </p>
           </section>
         </aside>
       </form>
