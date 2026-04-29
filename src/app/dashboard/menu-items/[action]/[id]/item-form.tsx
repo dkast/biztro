@@ -199,7 +199,7 @@ function getMenuItemStatusMeta(status: MenuItemStatus) {
     default:
       return {
         label: "Borrador",
-        variant: "yellow",
+        variant: "violet",
         description: "Todavía no se muestra a clientes hasta publicarlo."
       } as const
   }
@@ -1438,170 +1438,7 @@ export default function ItemForm({
                   Edita los idiomas ya creados.
                 </FieldDescription>
                 {availableLocales.length > 0 ? (
-                  <FieldGroup className="gap-6">
-                    <div
-                      className="grid gap-6
-                        @min-[38rem]/item-main:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]"
-                    >
-                      <FieldSet
-                        className="border-border bg-muted/20 rounded-xl border
-                          p-4"
-                      >
-                        <FieldLegend>Idioma activo</FieldLegend>
-                        <FieldDescription className="text-pretty">
-                          Selecciona el idioma que quieres revisar.
-                        </FieldDescription>
-                        <FieldGroup>
-                          <Field>
-                            <FieldLabel htmlFor="translation-locale">
-                              Idioma
-                            </FieldLabel>
-                            <Select
-                              value={activeLocale}
-                              onValueChange={value =>
-                                setSelectedLocale(value as SupportedLocaleCode)
-                              }
-                            >
-                              <SelectTrigger
-                                id="translation-locale"
-                                className="w-full"
-                              >
-                                <SelectValue placeholder="Selecciona un idioma" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  {localeOptions.map(localeOption => (
-                                    <SelectItem
-                                      key={localeOption.locale}
-                                      value={localeOption.locale}
-                                    >
-                                      <span
-                                        className="flex w-full items-center
-                                          justify-between gap-3"
-                                      >
-                                        <span
-                                          className="flex items-center gap-2"
-                                        >
-                                          <LanguageFlag
-                                            locale={localeOption.locale}
-                                          />
-                                          <span>{localeOption.label}</span>
-                                        </span>
-                                        <span
-                                          className="text-muted-foreground
-                                            text-xs"
-                                        >
-                                          {localeOption.hasItemTranslation
-                                            ? "Producto"
-                                            : "Sin producto"}
-                                          {` · ${localeOption.translatedVariantsCount} variantes`}
-                                        </span>
-                                      </span>
-                                    </SelectItem>
-                                  ))}
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                            <FieldDescription className="text-pretty">
-                              Los nuevos idiomas se agregan desde traducciones
-                              del menú.
-                            </FieldDescription>
-                          </Field>
-
-                          <div className="flex flex-wrap gap-2">
-                            {shouldShowVariantTranslationSection && (
-                              <Badge variant="indigo">
-                                {activeVariantTranslationCount} variantes
-                                editables
-                              </Badge>
-                            )}
-                            {shouldShowVariantTranslationSection &&
-                              inactiveVariantTranslationCount > 0 && (
-                                <Badge variant="outline">
-                                  {inactiveVariantTranslationCount} sin
-                                  traducción aquí
-                                </Badge>
-                              )}
-                          </div>
-                        </FieldGroup>
-                      </FieldSet>
-
-                      <FieldSet className="border-border rounded-xl border p-4">
-                        <FieldLegend>Texto del producto</FieldLegend>
-                        <FieldDescription className="text-pretty">
-                          Texto visible en {activeLocaleLabel || "este idioma"}.
-                        </FieldDescription>
-                        {selectedTranslationIndex >= 0 ? (
-                          <FieldGroup
-                            key={`product-translation-${activeLocale}`}
-                          >
-                            <Controller
-                              name={
-                                `translations.${selectedTranslationIndex}.name` as const
-                              }
-                              control={form.control}
-                              render={({ field, fieldState }) => (
-                                <Field
-                                  data-invalid={fieldState.invalid || undefined}
-                                >
-                                  <FieldLabel htmlFor={field.name}>
-                                    Título traducido
-                                  </FieldLabel>
-                                  <Input
-                                    {...field}
-                                    id={field.name}
-                                    aria-invalid={
-                                      fieldState.invalid || undefined
-                                    }
-                                    placeholder={`Nombre en ${activeLocaleLabel}`}
-                                  />
-                                  {fieldState.invalid && (
-                                    <FieldError errors={[fieldState.error]} />
-                                  )}
-                                </Field>
-                              )}
-                            />
-                            <Controller
-                              name={
-                                `translations.${selectedTranslationIndex}.description` as const
-                              }
-                              control={form.control}
-                              render={({ field, fieldState }) => (
-                                <Field
-                                  data-invalid={fieldState.invalid || undefined}
-                                >
-                                  <FieldLabel htmlFor={field.name}>
-                                    Descripción traducida
-                                  </FieldLabel>
-                                  <Textarea
-                                    {...field}
-                                    id={field.name}
-                                    value={field.value ?? ""}
-                                    aria-invalid={
-                                      fieldState.invalid || undefined
-                                    }
-                                    placeholder={`Descripción en ${activeLocaleLabel}`}
-                                  />
-                                  {fieldState.invalid && (
-                                    <FieldError errors={[fieldState.error]} />
-                                  )}
-                                </Field>
-                              )}
-                            />
-                          </FieldGroup>
-                        ) : (
-                          <Alert>
-                            <Languages className="size-4" />
-                            <AlertTitle>Sin traducción del producto</AlertTitle>
-                            <AlertDescription>
-                              Este idioma todavía no tiene texto para este
-                              producto.
-                            </AlertDescription>
-                          </Alert>
-                        )}
-                      </FieldSet>
-                    </div>
-
+                  <>
                     {hasMissingTranslationsForActiveLocale && (
                       <Alert variant="warning">
                         <Sparkles className="size-4" />
@@ -1624,16 +1461,18 @@ export default function ItemForm({
                                 size="sm"
                                 onClick={handleTranslateMissingContent}
                                 disabled={translateItemStatus === "executing"}
+                                className="bg-linear-65/oklch from-orange-500
+                                  to-indigo-500"
                               >
                                 {translateItemStatus === "executing" ? (
                                   <Loader className="mr-2 size-4 animate-spin" />
                                 ) : (
-                                  <Sparkles className="mr-2 size-4" />
+                                  <Sparkles className="mr-2 size-4 fill-current" />
                                 )}
                                 <TextMorph>
                                   {translateItemStatus === "executing"
                                     ? "Traduciendo"
-                                    : "Completar con IA"}
+                                    : "Traducir con IA"}
                                 </TextMorph>
                               </Button>
                               {!isPro && (
@@ -1647,111 +1486,292 @@ export default function ItemForm({
                       </Alert>
                     )}
 
-                    {shouldShowVariantTranslationSection && (
-                      <FieldSet className="border-border rounded-xl border p-4">
-                        <div
-                          className="flex flex-col gap-3 @3xl/item-main:flex-row
-                            @3xl/item-main:items-start
-                            @3xl/item-main:justify-between"
+                    <FieldGroup className="gap-6">
+                      <div
+                        className="grid gap-6
+                          @min-[38rem]/item-main:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]"
+                      >
+                        <FieldSet
+                          className="border-border bg-muted/20 rounded-xl border
+                            p-4"
                         >
-                          <div className="flex flex-col gap-1">
-                            <FieldLegend>Traducciones de variantes</FieldLegend>
-                            <FieldDescription className="text-pretty">
-                              Variantes editables en este idioma.
-                            </FieldDescription>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            <Badge variant="indigo">
-                              {activeVariantTranslationCount} editables
-                            </Badge>
-                            {inactiveVariantTranslationCount > 0 && (
-                              <Badge variant="outline">
-                                {inactiveVariantTranslationCount} pendientes en
-                                otro idioma
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        {variantTranslationEntries.length > 0 ? (
-                          <Accordion
-                            type="multiple"
-                            className="border-border bg-background rounded-xl
-                              border px-4"
-                          >
-                            {variantTranslationEntries.map(entry => {
-                              return (
-                                <AccordionItem
-                                  key={`${entry.variantIndex}-${entry.translationIndex}`}
-                                  value={`${entry.variantIndex}-${entry.translationIndex}`}
-                                  className="px-1"
+                          <FieldLegend>Idioma activo</FieldLegend>
+                          <FieldDescription className="text-pretty">
+                            Selecciona el idioma que quieres revisar.
+                          </FieldDescription>
+                          <FieldGroup>
+                            <Field>
+                              <FieldLabel htmlFor="translation-locale">
+                                Idioma
+                              </FieldLabel>
+                              <Select
+                                value={activeLocale}
+                                onValueChange={value =>
+                                  setSelectedLocale(
+                                    value as SupportedLocaleCode
+                                  )
+                                }
+                              >
+                                <SelectTrigger
+                                  id="translation-locale"
+                                  className="w-full"
                                 >
-                                  <AccordionTrigger
-                                    className="gap-4 hover:no-underline"
-                                  >
-                                    <div className="min-w-0 flex-1">
-                                      <div
-                                        className="flex flex-wrap items-center
-                                          gap-2"
+                                  <SelectValue placeholder="Selecciona un idioma" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    {localeOptions.map(localeOption => (
+                                      <SelectItem
+                                        key={localeOption.locale}
+                                        value={localeOption.locale}
                                       >
-                                        <span className="font-medium">
-                                          {entry.variantName}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </AccordionTrigger>
-                                  <AccordionContent>
-                                    <FieldGroup>
-                                      <Controller
-                                        name={
-                                          `variants.${entry.variantIndex}.translations.${entry.translationIndex}.name` as const
-                                        }
-                                        control={form.control}
-                                        render={({ field, fieldState }) => (
-                                          <Field
-                                            data-invalid={
-                                              fieldState.invalid || undefined
-                                            }
+                                        <span
+                                          className="flex w-full items-center
+                                            justify-between gap-3"
+                                        >
+                                          <span
+                                            className="flex items-center gap-2"
                                           >
-                                            <FieldLabel htmlFor={field.name}>
-                                              Nombre de la variante
-                                            </FieldLabel>
-                                            <Input
-                                              {...field}
-                                              id={field.name}
-                                              aria-invalid={
+                                            <LanguageFlag
+                                              locale={localeOption.locale}
+                                            />
+                                            <span>{localeOption.label}</span>
+                                          </span>
+                                          <span
+                                            className="text-muted-foreground
+                                              text-xs"
+                                          >
+                                            {localeOption.hasItemTranslation
+                                              ? "Producto"
+                                              : "Sin producto"}
+                                            {` · ${localeOption.translatedVariantsCount} variantes`}
+                                          </span>
+                                        </span>
+                                      </SelectItem>
+                                    ))}
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                              <FieldDescription className="text-pretty">
+                                Los nuevos idiomas se agregan desde traducciones
+                                del menú.
+                              </FieldDescription>
+                            </Field>
+
+                            <div className="flex flex-wrap gap-2">
+                              {shouldShowVariantTranslationSection && (
+                                <Badge variant="indigo">
+                                  {activeVariantTranslationCount} variantes
+                                  editables
+                                </Badge>
+                              )}
+                              {shouldShowVariantTranslationSection &&
+                                inactiveVariantTranslationCount > 0 && (
+                                  <Badge variant="outline">
+                                    {inactiveVariantTranslationCount} sin
+                                    traducción aquí
+                                  </Badge>
+                                )}
+                            </div>
+                          </FieldGroup>
+                        </FieldSet>
+
+                        <FieldSet
+                          className="border-border rounded-xl border p-4"
+                        >
+                          <FieldLegend>Texto del producto</FieldLegend>
+                          <FieldDescription className="text-pretty">
+                            Texto visible en{" "}
+                            {activeLocaleLabel || "este idioma"}.
+                          </FieldDescription>
+                          {selectedTranslationIndex >= 0 ? (
+                            <FieldGroup
+                              key={`product-translation-${activeLocale}`}
+                            >
+                              <Controller
+                                name={
+                                  `translations.${selectedTranslationIndex}.name` as const
+                                }
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                  <Field
+                                    data-invalid={
+                                      fieldState.invalid || undefined
+                                    }
+                                  >
+                                    <FieldLabel htmlFor={field.name}>
+                                      Título traducido
+                                    </FieldLabel>
+                                    <Input
+                                      {...field}
+                                      id={field.name}
+                                      aria-invalid={
+                                        fieldState.invalid || undefined
+                                      }
+                                      placeholder={`Nombre en ${activeLocaleLabel}`}
+                                    />
+                                    {fieldState.invalid && (
+                                      <FieldError errors={[fieldState.error]} />
+                                    )}
+                                  </Field>
+                                )}
+                              />
+                              <Controller
+                                name={
+                                  `translations.${selectedTranslationIndex}.description` as const
+                                }
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                  <Field
+                                    data-invalid={
+                                      fieldState.invalid || undefined
+                                    }
+                                  >
+                                    <FieldLabel htmlFor={field.name}>
+                                      Descripción traducida
+                                    </FieldLabel>
+                                    <Textarea
+                                      {...field}
+                                      id={field.name}
+                                      value={field.value ?? ""}
+                                      aria-invalid={
+                                        fieldState.invalid || undefined
+                                      }
+                                      placeholder={`Descripción en ${activeLocaleLabel}`}
+                                    />
+                                    {fieldState.invalid && (
+                                      <FieldError errors={[fieldState.error]} />
+                                    )}
+                                  </Field>
+                                )}
+                              />
+                            </FieldGroup>
+                          ) : (
+                            <Alert>
+                              <Languages className="size-4" />
+                              <AlertTitle>
+                                Sin traducción del producto
+                              </AlertTitle>
+                              <AlertDescription>
+                                Este idioma todavía no tiene texto para este
+                                producto.
+                              </AlertDescription>
+                            </Alert>
+                          )}
+                        </FieldSet>
+                      </div>
+
+                      {shouldShowVariantTranslationSection && (
+                        <FieldSet
+                          className="border-border rounded-xl border p-4"
+                        >
+                          <div
+                            className="flex flex-col gap-3
+                              @3xl/item-main:flex-row @3xl/item-main:items-start
+                              @3xl/item-main:justify-between"
+                          >
+                            <div className="flex flex-col gap-1">
+                              <FieldLegend>
+                                Traducciones de variantes
+                              </FieldLegend>
+                              <FieldDescription className="text-pretty">
+                                Variantes editables en este idioma.
+                              </FieldDescription>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant="indigo">
+                                {activeVariantTranslationCount} editables
+                              </Badge>
+                              {inactiveVariantTranslationCount > 0 && (
+                                <Badge variant="outline">
+                                  {inactiveVariantTranslationCount} pendientes
+                                  en otro idioma
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          {variantTranslationEntries.length > 0 ? (
+                            <Accordion
+                              type="multiple"
+                              className="border-border bg-background rounded-xl
+                                border px-4"
+                            >
+                              {variantTranslationEntries.map(entry => {
+                                return (
+                                  <AccordionItem
+                                    key={`${entry.variantIndex}-${entry.translationIndex}`}
+                                    value={`${entry.variantIndex}-${entry.translationIndex}`}
+                                    className="px-1"
+                                  >
+                                    <AccordionTrigger
+                                      className="gap-4 hover:no-underline"
+                                    >
+                                      <div className="min-w-0 flex-1">
+                                        <div
+                                          className="flex flex-wrap items-center
+                                            gap-2"
+                                        >
+                                          <span className="font-medium">
+                                            {entry.variantName}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                      <FieldGroup>
+                                        <Controller
+                                          name={
+                                            `variants.${entry.variantIndex}.translations.${entry.translationIndex}.name` as const
+                                          }
+                                          control={form.control}
+                                          render={({ field, fieldState }) => (
+                                            <Field
+                                              data-invalid={
                                                 fieldState.invalid || undefined
                                               }
-                                              placeholder={`Nombre en ${activeLocaleLabel}`}
-                                            />
-                                            {fieldState.invalid && (
-                                              <FieldError
-                                                errors={[fieldState.error]}
+                                            >
+                                              <FieldLabel htmlFor={field.name}>
+                                                Nombre de la variante
+                                              </FieldLabel>
+                                              <Input
+                                                {...field}
+                                                id={field.name}
+                                                aria-invalid={
+                                                  fieldState.invalid ||
+                                                  undefined
+                                                }
+                                                placeholder={`Nombre en ${activeLocaleLabel}`}
                                               />
-                                            )}
-                                          </Field>
-                                        )}
-                                      />
-                                    </FieldGroup>
-                                  </AccordionContent>
-                                </AccordionItem>
-                              )
-                            })}
-                          </Accordion>
-                        ) : (
-                          <Alert>
-                            <Languages className="size-4" />
-                            <AlertTitle>
-                              Sin traducciones de variantes
-                            </AlertTitle>
-                            <AlertDescription>
-                              No hay variantes editables en
-                              {` ${activeLocaleLabel || "este idioma"}`}.
-                            </AlertDescription>
-                          </Alert>
-                        )}
-                      </FieldSet>
-                    )}
-                  </FieldGroup>
+                                              {fieldState.invalid && (
+                                                <FieldError
+                                                  errors={[fieldState.error]}
+                                                />
+                                              )}
+                                            </Field>
+                                          )}
+                                        />
+                                      </FieldGroup>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                )
+                              })}
+                            </Accordion>
+                          ) : (
+                            <Alert>
+                              <Languages className="size-4" />
+                              <AlertTitle>
+                                Sin traducciones de variantes
+                              </AlertTitle>
+                              <AlertDescription>
+                                No hay variantes editables en
+                                {` ${activeLocaleLabel || "este idioma"}`}.
+                              </AlertDescription>
+                            </Alert>
+                          )}
+                        </FieldSet>
+                      )}
+                    </FieldGroup>
+                  </>
                 ) : (
                   <Empty
                     className="border-border bg-muted/20 items-start rounded-xl
