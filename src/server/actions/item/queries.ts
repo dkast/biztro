@@ -44,7 +44,20 @@ export async function getMenuItemById(id: string) {
     },
     include: {
       category: true,
-      variants: true
+      variants: {
+        include: {
+          translations: {
+            orderBy: {
+              locale: "asc"
+            }
+          }
+        }
+      },
+      translations: {
+        orderBy: {
+          locale: "asc"
+        }
+      }
     }
   })
 

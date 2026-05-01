@@ -68,9 +68,9 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
     <>
       <Separator className="my-8" />
       <AlertDialog>
-        <Card className="border-red-500">
+        <Card className="border-destructive/50 border bg-transparent">
           <CardHeader>
-            <CardTitle className="text-base text-red-500">
+            <CardTitle className="text-base text-red-500 dark:text-red-400">
               Eliminar Organización
             </CardTitle>
           </CardHeader>

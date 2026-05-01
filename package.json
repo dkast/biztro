@@ -183,5 +183,8 @@
     "import-in-the-middle": "1.13.1",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3"
+  },
+  "patchedDependencies": {
+    "next@16.2.4": "patches/next@16.2.4.patch"
   }
 }
