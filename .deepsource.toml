@@ -1,0 +1,14 @@
+version = 1
+
+exclude_patterns = [".agents/**", "src/generated/**"]
+
+[[analyzers]]
+name = "javascript"
+enabled = true
+dependency_file_paths = ["."]
+
+[analyzers.meta]
+plugins = ["react"]
+environment = ["nodejs", "browser"]
+module_system = "es-modules"
+dialect = "typescript"
