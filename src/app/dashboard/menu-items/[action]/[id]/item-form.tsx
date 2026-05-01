@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useState } from "react"
+import { use, useEffect, useState } from "react"
 import {
   Controller,
   useFieldArray,
@@ -127,12 +127,87 @@ function getLocaleLabel(locale?: string | null) {
   return spanishLanguageNames.of(locale) ?? locale
 }
 
+function sortTranslationsByLocale<T extends { locale: string }>(
+  translations: T[]
+) {
+  return [...translations].sort((left, right) =>
+    left.locale.localeCompare(right.locale)
+  )
+}
+
+function hasMeaningfulTranslationContent(
+  translation?: {
+    name?: string | null
+    description?: string | null
+  } | null
+) {
+  return Boolean(translation?.name?.trim() || translation?.description?.trim())
+}
+
 type FormTab = "details" | "translations"
+type MenuItemFormValues = z.output<typeof menuItemFormSchema>
 
 type ValidationIssue = {
   path: string
   message: string
   tab: FormTab
+}
+
+function buildLocaleDraftState(
+  values: MenuItemFormValues,
+  locale: SupportedLocaleCode
+) {
+  const currentTranslations = values.translations ?? []
+  let didChange = false
+
+  const nextTranslations = currentTranslations.some(
+    translation => translation.locale === locale
+  )
+    ? currentTranslations
+    : sortTranslationsByLocale([
+        ...currentTranslations,
+        {
+          locale,
+          name: "",
+          description: ""
+        }
+      ])
+
+  if (nextTranslations !== currentTranslations) {
+    didChange = true
+  }
+
+  const nextVariants = values.variants.map(variant => {
+    const currentVariantTranslations = variant.translations ?? []
+
+    if (
+      currentVariantTranslations.some(
+        translation => translation.locale === locale
+      )
+    ) {
+      return variant
+    }
+
+    didChange = true
+
+    return {
+      ...variant,
+      translations: sortTranslationsByLocale([
+        ...currentVariantTranslations,
+        {
+          locale,
+          name: "",
+          description: ""
+        }
+      ])
+    }
+  }) as MenuItemFormValues["variants"]
+
+  return {
+    didChange,
+    nextTranslations,
+    nextVariants
+  }
 }
 
 function collectValidationIssues<TFieldValues extends FieldValues>(
@@ -312,6 +387,10 @@ export default function ItemForm({
   const selectedTranslationIndex = availableTranslations.findIndex(
     translation => translation.locale === activeLocale
   )
+  const activeItemTranslation =
+    selectedTranslationIndex >= 0
+      ? availableTranslations[selectedTranslationIndex]
+      : undefined
   const variantTranslationEntries = (variants ?? []).flatMap(
     (variant, index) => {
       const translationIndex = (variant.translations ?? []).findIndex(
@@ -335,13 +414,17 @@ export default function ItemForm({
     locale,
     label: getLocaleLabel(locale),
     hasItemTranslation: availableTranslations.some(
-      translation => translation.locale === locale
+      translation =>
+        translation.locale === locale &&
+        hasMeaningfulTranslationContent(translation)
     ),
     translatedVariantsCount: (variants ?? []).reduce(
       (count, variant) =>
         count +
         ((variant.translations ?? []).some(
-          translation => translation.locale === locale
+          translation =>
+            translation.locale === locale &&
+            hasMeaningfulTranslationContent(translation)
         )
           ? 1
           : 0),
@@ -355,9 +438,22 @@ export default function ItemForm({
     activeLocaleSummary?.label ?? getLocaleLabel(activeLocale)
   const activeVariantTranslationCount = variantTranslationEntries.length
   const hasMissingItemTranslation =
-    Boolean(activeLocale) && selectedTranslationIndex < 0
+    Boolean(activeLocale) &&
+    !hasMeaningfulTranslationContent(activeItemTranslation)
   const inactiveVariantTranslationCount = Math.max(
-    (variants?.length ?? 0) - activeVariantTranslationCount,
+    (variants?.length ?? 0) -
+      ((variants ?? []).reduce(
+        (count, variant) =>
+          count +
+          ((variant.translations ?? []).some(
+            translation =>
+              translation.locale === activeLocale &&
+              hasMeaningfulTranslationContent(translation)
+          )
+            ? 1
+            : 0),
+        0
+      ) ?? 0),
     0
   )
   const hasMissingTranslationsForActiveLocale =
@@ -368,6 +464,32 @@ export default function ItemForm({
     form.formState.errors,
     getTabForIssuePath
   )
+
+  useEffect(() => {
+    if (activeTab !== "translations" || !activeLocale) {
+      return
+    }
+
+    const { didChange, nextTranslations, nextVariants } = buildLocaleDraftState(
+      form.getValues(),
+      activeLocale
+    )
+
+    if (!didChange) {
+      return
+    }
+
+    form.setValue("translations", nextTranslations, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: false
+    })
+    form.setValue("variants", nextVariants, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: false
+    })
+  }, [activeLocale, activeTab, form])
 
   const getIssueLabel = (path: string) => {
     if (path === "name") {
@@ -486,15 +608,35 @@ export default function ItemForm({
     const currentValues = form.getValues()
     const nextTranslations = [...(currentValues.translations ?? [])]
 
-    if (
-      itemTranslation &&
-      !nextTranslations.some(translation => translation.locale === locale)
-    ) {
-      nextTranslations.push({
-        locale,
-        name: itemTranslation.name,
-        description: itemTranslation.description ?? ""
-      })
+    if (itemTranslation) {
+      const existingTranslationIndex = nextTranslations.findIndex(
+        translation => translation.locale === locale
+      )
+
+      if (existingTranslationIndex >= 0) {
+        const currentTranslation = nextTranslations[existingTranslationIndex]
+
+        if (!currentTranslation) {
+          return
+        }
+
+        nextTranslations[existingTranslationIndex] = {
+          locale,
+          name: currentTranslation.name?.trim()
+            ? currentTranslation.name
+            : itemTranslation.name,
+          description: currentTranslation.description?.trim()
+            ? currentTranslation.description
+            : (itemTranslation.description ?? "")
+        }
+      } else {
+        nextTranslations.push({
+          locale,
+          name: itemTranslation.name,
+          description: itemTranslation.description ?? ""
+        })
+      }
+
       nextTranslations.sort((left, right) =>
         left.locale.localeCompare(right.locale)
       )
@@ -519,11 +661,37 @@ export default function ItemForm({
       }
 
       const nextVariantTranslations = [...(variant.translations ?? [])]
+      const existingVariantTranslationIndex = nextVariantTranslations.findIndex(
+        translation => translation.locale === generatedTranslation.locale
+      )
+
+      if (existingVariantTranslationIndex >= 0) {
+        const currentTranslation =
+          nextVariantTranslations[existingVariantTranslationIndex]
+
+        if (!currentTranslation) {
+          return variant
+        }
+
+        nextVariantTranslations[existingVariantTranslationIndex] = {
+          locale: generatedTranslation.locale,
+          name: currentTranslation.name?.trim()
+            ? currentTranslation.name
+            : generatedTranslation.name,
+          description: currentTranslation.description?.trim()
+            ? currentTranslation.description
+            : (generatedTranslation.description ?? "")
+        }
+
+        return {
+          ...variant,
+          translations: nextVariantTranslations
+        }
+      }
 
       if (
-        nextVariantTranslations.some(
-          translation => translation.locale === generatedTranslation.locale
-        )
+        !generatedTranslation.name.trim() &&
+        !generatedTranslation.description?.trim()
       ) {
         return variant
       }
@@ -642,6 +810,28 @@ export default function ItemForm({
     })
   }
 
+  const handleLocaleChange = (locale: SupportedLocaleCode) => {
+    const { didChange, nextTranslations, nextVariants } = buildLocaleDraftState(
+      form.getValues(),
+      locale
+    )
+
+    if (didChange) {
+      form.setValue("translations", nextTranslations, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false
+      })
+      form.setValue("variants", nextVariants, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false
+      })
+    }
+
+    setSelectedLocale(locale)
+  }
+
   const {
     execute: executeSyncMenus,
     status: statusSyncMenus,
@@ -716,7 +906,10 @@ export default function ItemForm({
       translation: z.infer<typeof variantTranslationSchema>
     }>
 
-    if (selectedTranslation) {
+    if (
+      selectedTranslation &&
+      hasMeaningfulTranslationContent(selectedTranslation)
+    ) {
       const parsedTranslation =
         menuItemTranslationSchema.safeParse(selectedTranslation)
 
@@ -751,7 +944,10 @@ export default function ItemForm({
           entry.translationIndex
         ]
 
-      if (!selectedVariantTranslation) {
+      if (
+        !selectedVariantTranslation ||
+        !hasMeaningfulTranslationContent(selectedVariantTranslation)
+      ) {
         continue
       }
 
@@ -1387,11 +1583,15 @@ export default function ItemForm({
             </TabsContent>
 
             <TabsContent value="translations" className="mt-0">
-              <FieldSet className="space-y-4">
-                <FieldLegend>Traducciones disponibles</FieldLegend>
-                <FieldDescription className="text-pretty">
-                  Edita los idiomas ya creados.
-                </FieldDescription>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h2 className="text-base font-medium">
+                    Traducciones disponibles
+                  </h2>
+                  <FieldDescription className="text-pretty">
+                    Edita los idiomas ya creados.
+                  </FieldDescription>
+                </div>
                 {availableLocales.length > 0 ? (
                   <>
                     {hasMissingTranslationsForActiveLocale && (
@@ -1446,14 +1646,18 @@ export default function ItemForm({
                         className="grid gap-6
                           @min-[38rem]/item-main:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]"
                       >
-                        <FieldSet
+                        <section
                           className="border-border bg-muted/20 rounded-xl border
                             p-4"
                         >
-                          <FieldLegend>Idioma activo</FieldLegend>
-                          <FieldDescription className="text-pretty">
-                            Selecciona el idioma que quieres revisar.
-                          </FieldDescription>
+                          <div className="space-y-2">
+                            <h3 className="text-base font-medium">
+                              Idioma activo
+                            </h3>
+                            <FieldDescription className="text-pretty">
+                              Selecciona el idioma que quieres revisar.
+                            </FieldDescription>
+                          </div>
                           <FieldGroup>
                             <Field>
                               <FieldLabel htmlFor="translation-locale">
@@ -1462,7 +1666,7 @@ export default function ItemForm({
                               <Select
                                 value={activeLocale}
                                 onValueChange={value =>
-                                  setSelectedLocale(
+                                  handleLocaleChange(
                                     value as SupportedLocaleCode
                                   )
                                 }
@@ -1529,16 +1733,18 @@ export default function ItemForm({
                                 )}
                             </div>
                           </FieldGroup>
-                        </FieldSet>
+                        </section>
 
-                        <FieldSet
-                          className="border-border rounded-xl border p-4"
-                        >
-                          <FieldLegend>Texto del producto</FieldLegend>
-                          <FieldDescription className="text-pretty">
-                            Texto visible en{" "}
-                            {activeLocaleLabel || "este idioma"}.
-                          </FieldDescription>
+                        <section className="border-border rounded-xl border p-4">
+                          <div className="space-y-2">
+                            <h3 className="text-base font-medium">
+                              Texto del producto
+                            </h3>
+                            <FieldDescription className="text-pretty">
+                              Texto visible en{" "}
+                              {activeLocaleLabel || "este idioma"}.
+                            </FieldDescription>
+                          </div>
                           {selectedTranslationIndex >= 0 ? (
                             <FieldGroup
                               key={`product-translation-${activeLocale}`}
@@ -1613,22 +1819,20 @@ export default function ItemForm({
                               </AlertDescription>
                             </Alert>
                           )}
-                        </FieldSet>
+                        </section>
                       </div>
 
                       {shouldShowVariantTranslationSection && (
-                        <FieldSet
-                          className="border-border rounded-xl border p-4"
-                        >
+                        <section className="border-border rounded-xl border p-4">
                           <div
                             className="flex flex-col gap-3
                               @3xl/item-main:flex-row @3xl/item-main:items-start
                               @3xl/item-main:justify-between"
                           >
                             <div className="flex flex-col gap-1">
-                              <FieldLegend>
+                              <h3 className="text-base font-medium">
                                 Traducciones de variantes
-                              </FieldLegend>
+                              </h3>
                               <FieldDescription className="text-pretty">
                                 Variantes editables en este idioma.
                               </FieldDescription>
@@ -1723,7 +1927,7 @@ export default function ItemForm({
                               </AlertDescription>
                             </Alert>
                           )}
-                        </FieldSet>
+                        </section>
                       )}
                     </FieldGroup>
                   </>
@@ -1754,7 +1958,7 @@ export default function ItemForm({
                     </EmptyContent>
                   </Empty>
                 )}
-              </FieldSet>
+              </div>
             </TabsContent>
           </Tabs>
         </div>
