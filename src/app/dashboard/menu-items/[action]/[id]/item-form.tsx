@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Controller,
   useFieldArray,
@@ -281,20 +281,18 @@ function getMenuItemStatusMeta(status: MenuItemStatus) {
 }
 
 export default function ItemForm({
-  promiseItem,
+  item,
   // categories,
   action,
   isPro,
   availableTranslationLocales = []
 }: {
-  promiseItem: ReturnType<typeof getMenuItemById>
+  item: Awaited<ReturnType<typeof getMenuItemById>>
   // categories: Prisma.PromiseReturnType<typeof getCategories>
   action: string
   isPro: boolean
   availableTranslationLocales: SupportedLocaleCode[]
 }) {
-  const item = use(promiseItem)
-
   const form = useForm<z.output<typeof menuItemFormSchema>>({
     resolver: zodResolver(menuItemFormSchema),
     defaultValues: {
