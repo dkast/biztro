@@ -61,7 +61,8 @@ export default function Benefits() {
   return (
     <section id="benefits" className="relative pt-20 pb-28 sm:py-32">
       <div
-        className="absolute inset-0 h-full w-full items-center px-5 py-24"
+        className="absolute inset-0 h-full w-full items-center px-5 py-24
+          dark:hidden"
         style={{
           background: `
           radial-gradient(ellipse 120% 80% at 70% 20%, oklch(92.2% 0.005 34.3 / 0.3), transparent 50%),

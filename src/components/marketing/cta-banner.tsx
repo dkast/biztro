@@ -12,7 +12,7 @@ export default function CTABanner() {
         <div
           className="flex flex-col items-center justify-center rounded-xl
             bg-linear-to-br from-taupe-800 via-taupe-900 to-taupe-950 p-8
-            shadow-xl shadow-taupe-900/40 xl:p-16"
+            shadow-xl shadow-taupe-900/40 xl:p-16 dark:shadow-none"
         >
           <div
             className="flex h-14 w-14 items-center justify-center rounded-xl
