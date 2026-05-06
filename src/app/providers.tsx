@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryStreamedHydration } from "@tanstack/react-query-next-experimental"
 import { Provider } from "jotai"
 import { ThemeProvider } from "next-themes"
+import { usePathname } from "next/navigation"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 import { UnsavedChangesProvider } from "@/components/dashboard/unsaved-changes-provider"
@@ -43,6 +44,7 @@ function getQueryClient() {
 
 function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient()
+  const pathname = usePathname()
 
   return (
     <CSPostHogProvider>
@@ -51,6 +53,7 @@ function Providers({ children }: { children: React.ReactNode }) {
         defaultTheme="system"
         enableSystem
         disableTransitionOnChange
+        forcedTheme={pathname === "/" ? "light" : undefined}
       >
         <React.Suspense fallback={null}>
           <NuqsAdapter>
