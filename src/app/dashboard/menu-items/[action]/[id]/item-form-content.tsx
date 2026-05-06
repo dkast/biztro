@@ -38,6 +38,10 @@ export async function ItemFormContent({
     })
   ])
 
+  if (action !== "new" && !item) {
+    notFound()
+  }
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <ItemForm
