@@ -44,7 +44,8 @@ const config = {
         hostname: "lh3.googleusercontent.com",
         port: ""
       }
-    ]
+    ],
+    qualities: [25, 50, 75, 100]
   },
   // skipcq: JS-0116
   async rewrites() {

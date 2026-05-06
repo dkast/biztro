@@ -31,14 +31,16 @@ export default function Panel({
 }) {
   const router = useRouter()
   const isMobile = useIsMobile()
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      router.back()
+    }
+  }
+
   return (
     <>
       {isMobile ? (
-        <Drawer
-          open
-          onOpenChange={open => (!open ? router.back() : null)}
-          modal
-        >
+        <Drawer open onOpenChange={handleOpenChange} modal>
           <DrawerContent
             className={cn(
               className,
@@ -52,11 +54,7 @@ export default function Panel({
           </DrawerContent>
         </Drawer>
       ) : (
-        <Sheet
-          defaultOpen
-          onOpenChange={open => (!open ? router.back() : null)}
-          modal
-        >
+        <Sheet open onOpenChange={handleOpenChange} modal>
           <SheetContent
             className={className}
             onInteractOutside={event => event.preventDefault()}
