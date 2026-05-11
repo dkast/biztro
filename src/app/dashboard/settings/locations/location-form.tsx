@@ -81,7 +81,7 @@ export default function LocationForm({
   } = useAction(createLocation, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Sucursal actualizada")
+        toast.success("Sucursal creada")
         // Reload the form with the latest data
         const result = data?.success
         form.reset({
@@ -400,6 +400,7 @@ export default function LocationForm({
                     </FieldDescription>
                   </FieldContent>
                   <Switch
+                    id={field.name}
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
@@ -418,6 +419,7 @@ export default function LocationForm({
                     <FieldDescription>Habilitar para llevar</FieldDescription>
                   </FieldContent>
                   <Switch
+                    id={field.name}
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
@@ -438,6 +440,7 @@ export default function LocationForm({
                     </FieldDescription>
                   </FieldContent>
                   <Switch
+                    id={field.name}
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
@@ -505,7 +508,7 @@ export default function LocationForm({
               >
                 {(statusUpdate === "executing" ||
                   statusCreate === "executing") && (
-                  <Loader className="mr-2 size-4 animate-spin" />
+                  <Loader className="size-4 animate-spin" />
                 )}
                 <TextMorph>
                   {statusUpdate === "executing" || statusCreate === "executing"

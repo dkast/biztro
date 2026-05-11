@@ -11,7 +11,7 @@ import { useAction } from "next-safe-action/hooks"
 import { TextMorph } from "torph/react"
 import type { z } from "zod/v4"
 
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { TimeField } from "@/components/ui/date-time-picker/time-field"
 import {
@@ -255,10 +255,10 @@ export default function HoursForm({
               {showMixedWarning && (
                 <Alert variant="warning">
                   <Info className="size-4" />
+                  <AlertTitle>Horario mixto detectado</AlertTitle>
                   <AlertDescription>
-                    El horario actual tiene horas diferentes por día. Al guardar
-                    en modo básico, se aplicará el mismo horario a todos los
-                    días seleccionados.
+                    Al guardar en modo básico, se aplicará el mismo horario a
+                    todos los días seleccionados.
                   </AlertDescription>
                 </Alert>
               )}
@@ -317,7 +317,20 @@ export default function HoursForm({
         <TabsContent value="advanced">
           <FieldSet disabled={disabled}>
             <FieldGroup>
-              <div className="grid grid-cols-3 gap-4">
+              <div
+                className="grid
+                  grid-cols-[1fr_minmax(88px,auto)_minmax(88px,auto)] gap-x-4
+                  gap-y-2"
+              >
+                <div className="text-muted-foreground pb-1 text-xs font-medium">
+                  Día
+                </div>
+                <div className="text-muted-foreground pb-1 text-xs font-medium">
+                  Desde
+                </div>
+                <div className="text-muted-foreground pb-1 text-xs font-medium">
+                  Hasta
+                </div>
                 {fields.map((field, index) => (
                   <Fragment key={field.id}>
                     <div className="flex flex-row items-center gap-3">
@@ -326,22 +339,21 @@ export default function HoursForm({
                         control={form.control}
                         render={({ field: ctlField, fieldState }) => (
                           <Field
-                            className="mt-1 flex flex-1 flex-row items-center
-                              justify-between space-y-0"
+                            orientation="horizontal"
+                            className="mt-1 flex flex-row items-center gap-3
+                              space-y-0"
                           >
+                            <Switch
+                              id={`items.${index}.allDay`}
+                              checked={ctlField.value}
+                              onCheckedChange={ctlField.onChange}
+                            />
                             <FieldLabel
                               htmlFor={`items.${index}.allDay`}
                               className="cursor-pointer text-sm font-medium"
                             >
                               {DAY_FULL[field.day as DayOfWeek]}
                             </FieldLabel>
-                            <span>
-                              <Switch
-                                id={`items.${index}.allDay`}
-                                checked={ctlField.value}
-                                onCheckedChange={ctlField.onChange}
-                              />
-                            </span>
                             {fieldState.invalid && (
                               <FieldError errors={[fieldState.error]} />
                             )}
@@ -356,9 +368,7 @@ export default function HoursForm({
                         <Field
                           className="flex flex-row items-center gap-2 space-y-0"
                         >
-                          <FieldLabel className="hidden sm:inline">
-                            Desde
-                          </FieldLabel>
+                          <FieldLabel className="sr-only">Desde</FieldLabel>
                           <TimeField
                             isDisabled={!watchedItems?.[index]?.allDay}
                             value={
@@ -383,9 +393,7 @@ export default function HoursForm({
                         <Field
                           className="flex flex-row items-center gap-2 space-y-0"
                         >
-                          <FieldLabel className="hidden sm:inline">
-                            Hasta
-                          </FieldLabel>
+                          <FieldLabel className="sr-only">Hasta</FieldLabel>
                           <TimeField
                             isDisabled={!watchedItems?.[index]?.allDay}
                             value={
@@ -426,7 +434,7 @@ export default function HoursForm({
               <TextMorph>
                 {isExecuting
                   ? "Guardando..."
-                  : (submitLabel ?? "Actualizar Horario")}
+                  : (submitLabel ?? "Actualizar horario")}
               </TextMorph>
             </Button>
           </div>
