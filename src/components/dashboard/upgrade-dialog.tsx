@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useState } from "react"
-import { CircleFadingArrowUp } from "lucide-react"
+import { Crown } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 import { RainbowButton } from "@/components/magicui/rainbow-button"
@@ -46,7 +46,7 @@ export function UpgradeDialog({
                 text-amber-400 shadow-xs dark:border-amber-800
                 dark:bg-amber-900/50 dark:text-amber-500"
             >
-              <CircleFadingArrowUp className="size-8" />
+              <Crown className="size-8" />
             </div>
           </div>
           <DialogTitle>{title}</DialogTitle>
