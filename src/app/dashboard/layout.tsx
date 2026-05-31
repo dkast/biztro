@@ -43,9 +43,9 @@ export default async function Layout({
             overscroll-contain bg-gray-50"
         >
           <Header showLogo={false} className="sticky top-0 z-50 w-full">
-            <div className="flex w-full items-center gap-2 sm:gap-4">
+            <div className="flex w-full items-center gap-6 sm:gap-4">
               <SidebarTrigger
-                className="size-5 text-gray-400 dark:text-gray-500"
+                className="size-7 text-gray-400 sm:size-5 dark:text-gray-500"
               />
               <ThemeSwitcher />
             </div>
