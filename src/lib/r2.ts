@@ -1,6 +1,8 @@
 import {
+  DeleteObjectCommand,
   DeleteObjectsCommand,
   ListObjectsV2Command,
+  PutObjectCommand,
   S3Client
 } from "@aws-sdk/client-s3"
 
@@ -46,4 +48,32 @@ async function deleteObjectsWithPrefix(prefix: string) {
 
 export async function deleteOrganizationAssetsFromR2(organizationId: string) {
   await deleteObjectsWithPrefix(`orgs/${organizationId}/`)
+}
+
+export async function putObjectToR2({
+  key,
+  body,
+  contentType
+}: {
+  key: string
+  body: Uint8Array | Buffer | string
+  contentType: string
+}) {
+  await R2.send(
+    new PutObjectCommand({
+      Bucket: env.R2_BUCKET_NAME,
+      Key: key,
+      Body: body,
+      ContentType: contentType
+    })
+  )
+}
+
+export async function deleteObjectFromR2(key: string) {
+  await R2.send(
+    new DeleteObjectCommand({
+      Bucket: env.R2_BUCKET_NAME,
+      Key: key
+    })
+  )
 }
