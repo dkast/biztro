@@ -5,7 +5,6 @@ import toast from "react-hot-toast"
 import { type CellSelectOption } from "@/types/data-grid"
 import * as Sentry from "@sentry/nextjs"
 import type { ColumnDef } from "@tanstack/react-table"
-// import { BorderBeam } from "border-beam"
 import {
   AlertCircle,
   Check,
@@ -608,7 +607,6 @@ export default function MenuImportForm({
             )}
 
             <>
-              {/* <BorderBeam size="sm" colorVariant="ocean" duration={3.92}> */}
               <Button onClick={handleParse} disabled={isParsing || isSaving}>
                 {isParsing ? (
                   <Loader className="size-4 animate-spin" />
@@ -621,7 +619,6 @@ export default function MenuImportForm({
                     ? "Simular extracción"
                     : "Extraer productos del archivo"}
               </Button>
-              {/* </BorderBeam> */}
               <UpgradeDialog
                 open={showUpgradeDialog}
                 onClose={() => setShowUpgradeDialog(false)}

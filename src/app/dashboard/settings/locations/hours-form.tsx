@@ -370,7 +370,7 @@ export default function HoursForm({
                         >
                           <FieldLabel className="sr-only">Desde</FieldLabel>
                           <TimeField
-                            isDisabled={!watchedItems?.[index]?.allDay}
+                            isDisabled={disabled || !watchedItems?.[index]?.allDay}
                             value={
                               ctlField.value
                                 ? parseTime(ctlField.value)
@@ -395,7 +395,7 @@ export default function HoursForm({
                         >
                           <FieldLabel className="sr-only">Hasta</FieldLabel>
                           <TimeField
-                            isDisabled={!watchedItems?.[index]?.allDay}
+                            isDisabled={disabled || !watchedItems?.[index]?.allDay}
                             value={
                               ctlField.value
                                 ? parseTime(ctlField.value)
