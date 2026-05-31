@@ -7,6 +7,8 @@ import * as Sentry from "@sentry/nextjs"
 import type { ColumnDef } from "@tanstack/react-table"
 import {
   AlertCircle,
+  Check,
+  ChevronRight,
   CircleAlert,
   FileText,
   Loader,
@@ -42,8 +44,47 @@ import { useDataGrid } from "@/hooks/use-data-grid"
 import { appConfig } from "@/app/config"
 import { SUPPORTED_UPLOAD_MIME_TYPES } from "@/lib/types/media"
 import { MenuItemStatus } from "@/lib/types/menu-item"
+import { cn } from "@/lib/utils"
 
 type EditableItem = MenuImportItem & { _id: string }
+
+function ProcessStep({
+  number,
+  label,
+  active,
+  done
+}: {
+  number: number
+  label: string
+  active?: boolean
+  done?: boolean
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span
+        className={cn(
+          `flex size-6 shrink-0 items-center justify-center rounded-full text-xs
+          font-medium`,
+          done
+            ? "text-secondary-foreground bg-secondary"
+            : active
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground"
+        )}
+      >
+        {done ? <Check className="size-3.5" /> : number}
+      </span>
+      <span
+        className={cn(
+          "text-sm",
+          active ? "text-foreground font-medium" : "text-muted-foreground"
+        )}
+      >
+        {label}
+      </span>
+    </div>
+  )
+}
 
 const MAX_PDF_FILE_SIZE_MB = 5
 const MAX_PDF_FILE_SIZE_BYTES = MAX_PDF_FILE_SIZE_MB * 1024 * 1024
@@ -440,8 +481,32 @@ export default function MenuImportForm({
 
   const modKey = isMac ? "⌘" : "Ctrl"
 
+  const step = items.length > 0 ? 3 : selectedFile ? 2 : 1
+
   return (
     <div className="flex flex-col gap-6">
+      {/* Process steps */}
+      <div
+        className="border-border bg-muted/40 flex flex-wrap items-center gap-x-3
+          gap-y-2 rounded-lg border px-4 py-3"
+      >
+        <ProcessStep
+          number={1}
+          label="Sube tu archivo"
+          active={step === 1}
+          done={step > 1}
+        />
+        <ChevronRight className="text-muted-foreground size-4 shrink-0" />
+        <ProcessStep
+          number={2}
+          label="La IA extrae los productos"
+          active={step === 2}
+          done={step > 2}
+        />
+        <ChevronRight className="text-muted-foreground size-4 shrink-0" />
+        <ProcessStep number={3} label="Revisa y guarda" active={step === 3} />
+      </div>
+
       {/* File Upload */}
       <div className="flex w-full flex-col gap-3">
         <div
@@ -467,12 +532,29 @@ export default function MenuImportForm({
             <p className="text-sm font-medium">
               {selectedFile
                 ? selectedFile.name
-                : "Selecciona un archivo (PDF o imagen)"}
+                : "Haz clic para seleccionar un archivo"}
             </p>
-            <p className="text-muted-foreground text-xs">
-              Haz clic para seleccionar un PDF o imagen de tu menú (máximo{" "}
-              {MAX_PDF_FILE_SIZE_MB} MB)
+            <p className="text-muted-foreground mt-0.5 text-xs">
+              Funciona mejor con menús en texto claro y bien iluminados.
             </p>
+            <div className="mt-2 flex flex-wrap justify-center gap-1.5">
+              {["PDF", "PNG", "JPG", "WEBP"].map(fmt => (
+                <span
+                  key={fmt}
+                  className="bg-muted text-muted-foreground inline-flex
+                    items-center rounded-full px-2 py-0.5 text-[11px]
+                    font-medium"
+                >
+                  {fmt}
+                </span>
+              ))}
+              <span
+                className="bg-muted text-muted-foreground inline-flex
+                  items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
+              >
+                máx. {MAX_PDF_FILE_SIZE_MB} MB
+              </span>
+            </div>
           </div>
           <input
             ref={fileInputRef}
@@ -482,6 +564,20 @@ export default function MenuImportForm({
             className="hidden"
           />
         </div>
+
+        {!isPro && items.length === 0 && (
+          <p className="text-muted-foreground text-center text-xs">
+            El plan básico incluye hasta {appConfig.itemLimit} productos.{" "}
+            <Link
+              href="/dashboard/settings/billing"
+              prefetch={false}
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              Actualiza a Pro
+            </Link>{" "}
+            para importar sin límite.
+          </p>
+        )}
 
         {selectedFile && (
           <div className="mt-6 flex flex-col items-center justify-center gap-3">
@@ -511,11 +607,7 @@ export default function MenuImportForm({
             )}
 
             <>
-              <Button
-                onClick={handleParse}
-                disabled={isParsing || isSaving}
-                className="bg-linear-65/oklch from-orange-500 to-indigo-500"
-              >
+              <Button onClick={handleParse} disabled={isParsing || isSaving}>
                 {isParsing ? (
                   <Loader className="size-4 animate-spin" />
                 ) : (

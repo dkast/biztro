@@ -457,7 +457,7 @@ function AddButton({ onClick }: { onClick: () => void }) {
       </Button>
 
       <GripVertical
-        className="hidden size-5 text-gray-400 sm:block dark:text-gray-600"
+        className="hidden size-5 text-gray-300 sm:block dark:text-gray-700/50"
       />
     </>
   )

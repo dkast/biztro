@@ -4,14 +4,16 @@ This file is the canonical set of repo rules for any coding agent (including Git
 Copilot also reads `.github/copilot-instructions.md`, which should stay short and point here.
 
 - Keep going until the user's query is completely resolved; only stop when solved or genuinely blocked.
+- When genuinely blocked, respond with: `BLOCKED: <one-sentence reason>` and list what information or access is needed to continue.
 - Do not guess file contents or structure; read files before editing.
 - Keep edits minimal and safe; avoid drive-by refactors.
 - Always validate your code changes by running linters, type checkers, and any relevant tests to ensure code quality and correctness
+- If linting or type-checking produces errors, fix them before presenting the change to the user. If a fix would require changes beyond the original scope, report the errors and ask for guidance.
 
 ### Precedence
 
 - User instructions > this file.
-- If `.github/copilot-instructions.md` disagrees with this file, prefer this file and update the Copilot file to match.
+- If `.github/copilot-instructions.md` disagrees with this file, prefer this file. Update the Copilot file to match only when the task is about agent instructions or you are already editing instruction files.
 
 ### Plan Mode
 
@@ -72,11 +74,11 @@ Use `bun run <script>` unless the user requests otherwise.
 - Prefer the existing components in `@/components/ui`.
 - Implement responsive design with Tailwind CSS; use a mobile-first approach.
 - Use React Hook Forms with Zod validation when creating Forms.
-- Use TextMorph for animated text transitions in states like saving/loading.
+- Use TextMorph for animated text transitions specifically in saving and loading states; do not use it for error or empty states unless explicitly requested.
 
 ## Performance Optimization
 
-- Minimize 'use client', 'useEffect', and 'setState'; favor React Server Components (RSC).
+- See Key Conventions for `use client` rules; otherwise minimize `useEffect` and `setState`, and favor React Server Components (RSC).
 - Wrap client components in Suspense with fallback.
 - Use dynamic loading for non-critical components.
 - Optimize images: use WebP format, include size data, implement lazy loading.
@@ -89,10 +91,10 @@ Use `bun run <script>` unless the user requests otherwise.
 - Use 'bun' as a package manager for JavaScript and TypeScript projects.
 - Use 'bun' scripts for common tasks like building, linting, formatting, type checking, and database management.
 - Optimize Web Vitals (LCP, CLS, FID).
-- Limit 'use client':
-  - Favor server components and Next.js SSR.
-  - Use only for Web API access in small components.
-  - Avoid for data fetching or state management.
+- Limit 'use client' to these cases:
+  1. Favor server components and Next.js SSR by default.
+  2. Use it only for Web API access in small, scoped components.
+  3. Do not use it for data fetching or state management.
 
 ### next-safe-action patterns
 
@@ -112,15 +114,16 @@ Use `bun run <script>` unless the user requests otherwise.
 
 ## Practical repo guardrails
 
-- Prefer React Server Components; keep `use client` components small and scoped.
+- Prefer React Server Components; see Key Conventions for `use client` rules.
 - Use `src/env.mjs` as the source of truth for required env vars.
 - Auth rules/route protection live in `src/proxy.ts`; consult it before changing auth behavior.
-- Types are domain-scoped under `src/lib/types/*`; add new shared types to the closest domain module instead of growing a monolithic file.
+- Types are domain-scoped under `src/lib/types/*`; add new shared types to the domain module that owns the primary entity. If a type is shared across more than one domain, place it in `src/lib/types/shared`.
 - Prefer direct imports from domain modules (for example `@/lib/types/menu-item`) in new/edited code; keep `src/lib/types.ts` only as a temporary compatibility shim.
 - Prisma schema/migrations live in `prisma/`; if changing schema, create a migration and mention the required command(s). Run `bunx prisma generate` after schema changes.
+- Before generating a migration that drops or renames a column, explicitly warn the user about the data-loss risk and wait for confirmation before proceeding.
 - Avoid editing generated output under `src/generated/` unless that is explicitly the task.
 - When adding error handling, capture and log errors with Sentry.
-- When using server actions on the client, ensure to use reset() on success to avoid stale form state. Use TextMorph for any saving/loading states.
+- When using server actions on the client, ensure to use `reset()` on success, and also on error when the hook result should be cleared, to avoid stale form state. Use TextMorph only for saving and loading states unless explicitly requested otherwise.
 
 ## Commit messages
 

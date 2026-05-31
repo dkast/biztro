@@ -15,6 +15,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ChevronRight,
   ChevronsUpDown,
+  Crown,
   Images,
   LayoutTemplate,
   Megaphone,
@@ -182,8 +183,16 @@ export default function AppSidebar({
                 from-pink-500/50 via-indigo-500/20 to-transparent shadow-none"
             >
               <CardHeader className="p-3 pb-2">
-                <CardTitle className="text-sm">Actualiza a Pro</CardTitle>
-                <CardDescription className="text-xs">
+                <CardTitle className="text-sm">
+                  <Crown
+                    className="mr-1.5 inline size-4 align-text-top
+                      text-amber-600 dark:text-amber-500"
+                  />
+                  Actualiza a Pro
+                </CardTitle>
+                <CardDescription
+                  className="dark:text-foreground/80 text-foreground/60 text-xs"
+                >
                   Productos y menús ilimitados, componentes adicionales y más.
                 </CardDescription>
               </CardHeader>

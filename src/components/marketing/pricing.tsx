@@ -133,17 +133,19 @@ export default function Pricing() {
               key={tier.id}
               className={cn(
                 tier.featured
-                  ? `relative overflow-hidden bg-taupe-950 shadow-2xl/30
-                    ring-taupe-800/50 dark:bg-taupe-900 dark:ring-white/10`
+                  ? `gradient-border-2 gradient-border-to-t
+                    gradient-border-from-orange-500/60
+                    gradient-border-to-taupe-100/40 relative overflow-hidden
+                    bg-taupe-950 shadow-2xl/30 dark:bg-taupe-900`
                   : `bg-taupe-50/60 ring-taupe-200 sm:mx-8 lg:mx-0
                     dark:bg-taupe-900/20 dark:ring-taupe-700/30`,
                 tier.featured
                   ? ""
                   : tierIdx === 0
-                    ? `rounded-t-3xl sm:rounded-b-none lg:rounded-tr-none
+                    ? `rounded-t-3xl ring-1 sm:rounded-b-none lg:rounded-tr-none
                       lg:rounded-bl-3xl`
                     : "sm:rounded-t-none lg:rounded-tr-3xl lg:rounded-bl-none",
-                "rounded-3xl p-8 ring-1 sm:p-10"
+                "rounded-3xl p-8 sm:p-10"
               )}
             >
               {tier.featured && (

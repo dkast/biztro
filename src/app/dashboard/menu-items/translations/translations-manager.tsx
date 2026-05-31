@@ -307,7 +307,6 @@ export default function TranslationsManager({
                   <Button
                     onClick={handleTranslate}
                     disabled={!selectedLocale || isTranslating}
-                    className="bg-linear-65/oklch from-orange-500 to-indigo-500"
                   >
                     {isTranslating ? (
                       <Loader className="size-4 animate-spin" />

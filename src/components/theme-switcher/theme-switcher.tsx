@@ -22,8 +22,9 @@ function ThemeOption({
   return (
     <button
       className={cn(
-        `relative flex size-6 cursor-default items-center justify-center
-        rounded-full transition-[color] [&_svg]:size-3`,
+        `relative flex size-8 cursor-default items-center justify-center
+        rounded-full transition-[color] sm:size-6 [&_svg]:size-4
+        sm:[&_svg]:size-3`,
         isActive
           ? "text-gray-950 dark:text-gray-50"
           : `text-gray-400 hover:text-gray-950 dark:text-gray-500
