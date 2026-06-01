@@ -11,6 +11,7 @@ import {
   analyzeMenuVisualPackage,
   generateImportedMenuBackground
 } from "@/server/actions/menu-import/ai"
+import { createImportNameAllocator } from "@/server/actions/menu-import/item-names"
 import {
   buildGeneratedMenuSerialData,
   type SerializedMenuCategory,
@@ -171,6 +172,13 @@ async function createImportedItems({
       category.id
     ])
   )
+  const existingItems = await tx.menuItem.findMany({
+    where: { organizationId },
+    select: { name: true }
+  })
+  const allocateItemName = createImportNameAllocator(
+    existingItems.map(item => item.name)
+  )
   const createdItems: CreatedImportItem[] = []
 
   for (const item of items) {
@@ -179,7 +187,7 @@ async function createImportedItems({
     createdItems.push(
       await tx.menuItem.create({
         data: {
-          name: item.name,
+          name: allocateItemName(item.name),
           description: item.description || "",
           status: item.status || MenuItemStatus.ACTIVE,
           categoryId,
@@ -284,12 +292,14 @@ function buildThemeJSON({
 async function optimizeGeneratedBackground(
   image: Awaited<ReturnType<typeof generateImportedMenuBackground>>
 ) {
+  const width = 1080
+  const height = 1920
   const { data, info } = await sharp(Buffer.from(image.uint8Array))
     .resize({
-      width: 1920,
-      height: 1920,
-      fit: "inside",
-      withoutEnlargement: true
+      width,
+      height,
+      fit: "cover",
+      position: "center"
     })
     .webp({ quality: 82 })
     .toBuffer({ resolveWithObject: true })

@@ -220,9 +220,14 @@ export default function MenuImportForm({
         resetBulkCreate()
         return
       }
-      toast.success(
-        `${response.data?.success?.length} productos importados correctamente`
-      )
+      const createdItems = response.data?.success
+      if (!createdItems?.length) {
+        toast.error("No se pudieron guardar los productos importados")
+        resetBulkCreate()
+        return
+      }
+
+      toast.success(`${createdItems.length} productos importados correctamente`)
       // Clear UI state: items grid and selected file
       setItems([])
       setSelectedFile(null)

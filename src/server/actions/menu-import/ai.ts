@@ -1,10 +1,4 @@
-import {
-  gateway,
-  generateImage,
-  generateText,
-  Output,
-  type GeneratedFile
-} from "ai"
+import { gateway, generateText, Output, type GeneratedFile } from "ai"
 import { MockLanguageModelV3 } from "ai/test"
 
 import {
@@ -16,7 +10,7 @@ import {
 } from "@/lib/types/menu-import"
 import { env } from "@/env.mjs"
 
-const MENU_IMPORT_ANALYSIS_MODEL = "deepseek/deepseek-v4-flash"
+const MENU_IMPORT_ANALYSIS_MODEL = "google/gemini-2.5-flash-lite"
 const MENU_IMPORT_BACKGROUND_MODEL = "google/gemini-3.1-flash-image-preview"
 
 const mockedMenuImportResult: MenuImportOutput = {
@@ -123,8 +117,14 @@ const mockedMenuImportWithVariantsResult: MenuImportOutput = {
 const mockedVisualPackage: MenuImportVisualPackage = {
   menuName: "Menú importado",
   styleSummary:
-    "Diseño casual con contraste alto, acentos cálidos y guiños de menú impreso mexicano.",
-  motifs: ["papel texturizado", "ilustraciones de comida", "acentos naranjas"],
+    "Diseño casual con contraste alto, acentos cálidos, textura de papel y motivos gráficos adaptables a móvil.",
+  motifs: [
+    "patrón sutil de papel texturizado",
+    "ilustraciones de comida",
+    "encabezado cálido",
+    "pie decorativo",
+    "separadores orgánicos"
+  ],
   colorTheme: {
     name: "Importado cálido",
     surfaceColor: "#1F130D",
@@ -134,7 +134,7 @@ const mockedVisualPackage: MenuImportVisualPackage = {
     mutedColor: "#FDBA74"
   },
   backgroundPrompt:
-    "Create a vertical restaurant menu background inspired by a warm Mexican printed menu: subtle paper texture, illustrated food motifs around the borders, orange and amber accents, generous empty center area for readable menu text, premium but casual style, no text, no logos, no prices."
+    "Create a mobile-first 9:16 restaurant menu background inspired by a warm Mexican printed menu: subtle paper texture, soft illustrated food motifs, reusable header and footer treatments, delicate section-divider shapes, orange and amber accents, a calm central reading area, premium but casual style, no text, no logos, no prices."
 }
 
 function createMockMenuImportModel(
@@ -197,14 +197,14 @@ function createMockVisualModel() {
 }
 
 function createMockGeneratedImage(): GeneratedFile {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600">
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
     <defs>
       <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0%" stop-color="#1F130D"/>
         <stop offset="55%" stop-color="#3B2114"/>
         <stop offset="100%" stop-color="#7C2D12"/>
       </linearGradient>
-      <radialGradient id="glow" cx="50%" cy="18%" r="60%">
+      <radialGradient id="glow" cx="50%" cy="16%" r="60%">
         <stop offset="0%" stop-color="#FACC15" stop-opacity=".35"/>
         <stop offset="100%" stop-color="#FACC15" stop-opacity="0"/>
       </radialGradient>
@@ -213,11 +213,11 @@ function createMockGeneratedImage(): GeneratedFile {
         <circle cx="64" cy="52" r="2" fill="#FFF7ED" opacity=".16"/>
       </pattern>
     </defs>
-    <rect width="1200" height="1600" fill="url(#bg)"/>
-    <rect width="1200" height="1600" fill="url(#glow)"/>
-    <rect width="1200" height="1600" fill="url(#dots)"/>
-    <path d="M0 230c150-92 245-74 360-22 132 60 270 62 430 4 144-52 268-34 410 42v-254h-1200z" fill="#F97316" opacity=".25"/>
-    <path d="M0 1415c160-96 298-90 430-22 158 82 304 70 454 8 126-52 218-42 316 28v171h-1200z" fill="#FACC15" opacity=".22"/>
+    <rect width="1080" height="1920" fill="url(#bg)"/>
+    <rect width="1080" height="1920" fill="url(#glow)"/>
+    <rect width="1080" height="1920" fill="url(#dots)"/>
+    <path d="M0 260c135-88 220-70 324-20 120 58 244 60 388 4 130-50 242-32 368 40v-284h-1080z" fill="#F97316" opacity=".25"/>
+    <path d="M0 1704c144-92 268-86 388-20 142 78 274 66 408 8 114-50 196-40 284 26v202h-1080z" fill="#FACC15" opacity=".22"/>
   </svg>`
   const uint8Array = new TextEncoder().encode(svg)
 
@@ -228,7 +228,10 @@ function createMockGeneratedImage(): GeneratedFile {
   }
 }
 
-function getFileOrImageContent({ fileBase64, mimeType }: MenuImportFileInput) {
+function getFileOrImageContent({
+  fileBase64,
+  mimeType
+}: Pick<MenuImportFileInput, "fileBase64" | "mimeType">) {
   return mimeType === "application/pdf"
     ? {
         type: "file" as const,
@@ -321,14 +324,14 @@ export async function analyzeMenuVisualPackage(input: MenuImportFileInput) {
           getFileOrImageContent(input),
           {
             type: "text",
-            text: `Analyze this imported printed menu as a visual reference for a digital menu. Return:
+            text: `Analyze this imported printed menu as a visual reference for a mobile-first digital menu. Return:
 - menuName: a concise Spanish name for the generated draft menu
 - styleSummary: Spanish summary of the visual direction
-- motifs: graphics, typography mood, textures, ingredient cues, shapes, or patterns from the menu
+- motifs: reusable graphics, typography mood, textures, ingredient cues, shapes, section dividers, header/footer ideas, or patterns from the menu
 - colorTheme: a contrast-safe #RRGGBB palette for a digital menu with surfaceColor, brandColor, accentColor, textColor, mutedColor
-- backgroundPrompt: an English image-generation prompt for a vertical menu background inspired by the source menu
+- backgroundPrompt: an English image-generation prompt for a 9:16 mobile background inspired by the source menu
 
-The background must preserve visual motifs, graphics, color mood, and layout energy from the source, but it must not include readable text, logos, menu item names, prices, QR codes, phone numbers, or exact brand marks. It should leave a clean central reading area for the app's generated menu text.`
+The background must keep overlaid menu text fully legible while still feeling designed and colorful. Use the palette's surface color as a clean base, but add a confident decorative accent zone using the brand and accent colors. Concentrate the motifs and graphics in one focused area — the top band, the bottom band, or a single corner — so the rest of the canvas stays open for text. The accent zone can use solid color shapes, a color block, or grouped motifs with real saturation, not just faint outlines. Avoid a full-bleed repeating watermark pattern across the whole canvas. The decoration must work when cropped for mobile and when expanded to desktop, so anchor it to an edge or corner rather than the center. It must not include readable text, logos, menu item names, prices, QR codes, phone numbers, or exact brand marks. Keep a clean, high-contrast central reading area for the app's generated menu text.`
           }
         ]
       }
@@ -352,28 +355,41 @@ export async function generateImportedMenuBackground({
     throw new Error("AI_GATEWAY_API_KEY is required for visual menu import")
   }
 
+  const sourceReferenceInstruction =
+    mimeType === "application/pdf"
+      ? "Use the provided visual analysis as the design reference. Do not invent readable menu text."
+      : "Use the attached menu image as a visual reference. Extract and adapt its colors, motifs, texture, layout rhythm, and decorative assets without copying readable text or exact logos."
+
   const promptText = `${visualPackage.backgroundPrompt}
 
 Style notes: ${visualPackage.styleSummary}
-Motifs to incorporate subtly: ${visualPackage.motifs.join(", ")}
+Motifs to feature in the accent zone: ${visualPackage.motifs.join(", ")}
 Palette: surface ${visualPackage.colorTheme.surfaceColor}, brand ${visualPackage.colorTheme.brandColor}, accent ${visualPackage.colorTheme.accentColor}, text-safe contrast around ${visualPackage.colorTheme.textColor}.
+Source reference: ${sourceReferenceInstruction}
 
-Create a premium vertical restaurant menu background, aspect ratio 3:4. No text, no logos, no prices, no QR codes. Keep the center readable and reserve decorative detail for the borders and corners.`
+Create one premium, colorful vertical restaurant menu background optimized for a 9:16 mobile canvas. Use the surface color as a clean base for most of the canvas, but include one confident decorative accent zone that actually uses the brand and accent colors with real saturation — a color block, solid shapes, or a tight group of the menu's motifs. Anchor that accent zone to a single area: the top band, the bottom band, or one corner, so it works both when cropped on mobile and when expanded on desktop. Do not spread a faint repeating watermark pattern across the entire canvas, and do not leave it nearly colorless. Keep the large central area open and high-contrast so dark menu text stays fully readable over it. No readable text, no logos, no prices, no QR codes, no phone numbers, no exact brand marks.`
 
-  const prompt =
-    mimeType === "application/pdf"
-      ? promptText
-      : {
-          images: [Buffer.from(fileBase64, "base64")],
-          text: promptText
-        }
-
-  const result = await generateImage({
-    model: gateway.imageModel(MENU_IMPORT_BACKGROUND_MODEL),
-    prompt,
-    aspectRatio: "3:4",
+  const result = await generateText({
+    model: gateway(MENU_IMPORT_BACKGROUND_MODEL),
+    messages: [
+      {
+        role: "user",
+        content:
+          mimeType === "application/pdf"
+            ? [{ type: "text", text: promptText }]
+            : [
+                getFileOrImageContent({ fileBase64, mimeType }),
+                { type: "text", text: promptText }
+              ]
+      }
+    ],
     maxRetries: 1
   })
+  const image = result.files.find(file => file.mediaType.startsWith("image/"))
 
-  return result.image
+  if (!image) {
+    throw new Error("Nano Banana did not return an image file")
+  }
+
+  return image
 }

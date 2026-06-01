@@ -8,6 +8,7 @@ import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
 import { extractMenuItemsFromFile } from "@/server/actions/menu-import/ai"
+import { createImportNameAllocator } from "@/server/actions/menu-import/item-names"
 import { executeMenuSyncWithPreference } from "@/server/actions/menu/sync"
 import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
@@ -364,6 +365,13 @@ export const bulkCreateItems = authMemberActionClient
         const updatedCategoryMap = new Map(
           updatedCategories.map(cat => [cat.name.toLowerCase(), cat.id])
         )
+        const existingItems = await tx.menuItem.findMany({
+          where: { organizationId: currentOrgId },
+          select: { name: true }
+        })
+        const allocateItemName = createImportNameAllocator(
+          existingItems.map(item => item.name)
+        )
 
         return Promise.all(
           groupedItems.map(item => {
@@ -376,7 +384,7 @@ export const bulkCreateItems = authMemberActionClient
 
             return tx.menuItem.create({
               data: {
-                name: item.name,
+                name: allocateItemName(item.name),
                 description: item.description || "",
                 status: item.status || MenuItemStatus.ACTIVE,
                 categoryId,
@@ -400,24 +408,32 @@ export const bulkCreateItems = authMemberActionClient
       updateTag(`categories-${currentOrgId}`)
       return { success: createdItems }
     } catch (error) {
-      // Add type checking for better error handling
-      if (error instanceof Error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          switch (error.code) {
-            case "P2002":
-              return { failure: { reason: "Entrada duplicada" } }
-            case "P2003":
-              return { failure: { reason: "Referencia invalidad" } }
-            default:
-              return {
-                failure: {
-                  reason: `Error: Verifique que productos no estén duplicados. ${error.code}`
-                }
+      console.error(error)
+      Sentry.captureException(error, {
+        tags: { section: "item-mutations", operation: "bulkCreateItems" },
+        extra: { organizationId: currentOrgId, itemCount: groupedItems.length }
+      })
+
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case "P2002":
+            return { failure: { reason: "Entrada duplicada" } }
+          case "P2003":
+            return { failure: { reason: "Referencia inválida" } }
+          default:
+            return {
+              failure: {
+                reason: `Error: Verifique que productos no estén duplicados. ${error.code}`
               }
-          }
+            }
         }
-      } else {
-        return { failure: { reason: "Error desconocido" } }
+      }
+
+      return {
+        failure: {
+          reason:
+            "No se pudieron guardar los productos importados. Intenta nuevamente."
+        }
       }
     }
   })
