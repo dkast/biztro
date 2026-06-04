@@ -3,14 +3,10 @@
 import { Prisma } from "@/generated/prisma-client/client"
 import * as Sentry from "@sentry/nextjs"
 import { updateTag } from "next/cache"
-import sharp from "sharp"
 import { z } from "zod/v4"
 
 import { getDefaultLocation } from "@/server/actions/location/queries"
-import {
-  analyzeMenuVisualPackage,
-  generateImportedMenuBackground
-} from "@/server/actions/menu-import/ai"
+import { analyzeMenuVisualPackage } from "@/server/actions/menu-import/ai"
 import { createImportNameAllocator } from "@/server/actions/menu-import/item-names"
 import {
   buildGeneratedMenuSerialData,
@@ -22,22 +18,14 @@ import {
   isProMember
 } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
-import { deleteObjectFromR2, putObjectToR2 } from "@/lib/r2"
 import { authMemberActionClient } from "@/lib/safe-actions"
-import {
-  MediaAssetScope,
-  MediaAssetType,
-  MediaUsageEntityType
-} from "@/lib/types/media"
 import {
   menuImportFileInputSchema,
   type MenuImportGeneratedColorTheme
 } from "@/lib/types/menu-import"
 import { bulkMenuItemSchema, MenuItemStatus } from "@/lib/types/menu-item"
 import { ThemeScope, ThemeType } from "@/lib/types/theme"
-import { getCacheBustedImageUrl } from "@/lib/utils"
 import { env } from "@/env.mjs"
-import { CACHE_TAGS } from "../media/constants"
 
 const createImportedMenuSchema = menuImportFileInputSchema.extend({
   menuName: z.string().max(80).optional(),
@@ -289,30 +277,6 @@ function buildThemeJSON({
   })
 }
 
-async function optimizeGeneratedBackground(
-  image: Awaited<ReturnType<typeof generateImportedMenuBackground>>
-) {
-  const width = 1080
-  const height = 1920
-  const { data, info } = await sharp(Buffer.from(image.uint8Array))
-    .resize({
-      width,
-      height,
-      fit: "cover",
-      position: "center"
-    })
-    .webp({ quality: 82 })
-    .toBuffer({ resolveWithObject: true })
-
-  return {
-    buffer: data,
-    bytes: data.byteLength,
-    contentType: "image/webp",
-    width: info.width,
-    height: info.height
-  }
-}
-
 export const createMenuFromImport = authMemberActionClient
   .inputSchema(createImportedMenuSchema)
   .action(async ({ parsedInput, ctx: { member } }) => {
@@ -338,7 +302,7 @@ export const createMenuFromImport = authMemberActionClient
       return {
         failure: {
           reason:
-            "La generación visual requiere configurar una clave de API del AI Gateway"
+            "El diseño visual requiere configurar una clave de API del AI Gateway"
         }
       }
     }
@@ -361,31 +325,10 @@ export const createMenuFromImport = authMemberActionClient
       }
     }
 
-    let storageKey: string | null = null
-
     try {
       const visualPackage = await analyzeMenuVisualPackage(parsedInput)
-      const generatedImage = await generateImportedMenuBackground({
-        fileBase64: parsedInput.fileBase64,
-        mimeType: parsedInput.mimeType,
-        simulateResponse: parsedInput.simulateResponse,
-        visualPackage
-      })
-      const optimizedImage = await optimizeGeneratedBackground(generatedImage)
       const menuId = crypto.randomUUID()
       const themeId = crypto.randomUUID()
-      storageKey = `orgs/${organizationId}/menus/${menuId}/background`
-      const generatedStorageKey = storageKey
-      const backgroundUrl = getCacheBustedImageUrl(
-        generatedStorageKey,
-        new Date()
-      )
-
-      await putObjectToR2({
-        key: generatedStorageKey,
-        body: optimizedImage.buffer,
-        contentType: optimizedImage.contentType
-      })
 
       const defaultLocation = await getDefaultLocation(organizationId)
       const defaultCurrency = (defaultLocation?.currency ?? "MXN") as
@@ -417,8 +360,7 @@ export const createMenuFromImport = authMemberActionClient
         const serialData = buildGeneratedMenuSerialData({
           organization: currentOrg,
           location: defaultLocation,
-          backgroundImage: backgroundUrl,
-          colorTheme: visualPackage.colorTheme,
+          visualPackage,
           categories: serializedCategories
         })
         const createdMenu = await tx.menu.create({
@@ -433,48 +375,6 @@ export const createMenuFromImport = authMemberActionClient
             serialData
           }
         })
-        const asset = await tx.mediaAsset.upsert({
-          where: { storageKey: generatedStorageKey },
-          create: {
-            organizationId,
-            storageKey: generatedStorageKey,
-            type: MediaAssetType.IMAGE,
-            scope: MediaAssetScope.OTHER,
-            bytes: optimizedImage.bytes,
-            contentType: optimizedImage.contentType,
-            width: optimizedImage.width,
-            height: optimizedImage.height
-          },
-          update: {
-            bytes: optimizedImage.bytes,
-            contentType: optimizedImage.contentType,
-            width: optimizedImage.width,
-            height: optimizedImage.height,
-            updatedAt: new Date(),
-            deletedAt: null,
-            unattachedAt: null
-          }
-        })
-
-        await tx.mediaUsage.upsert({
-          where: {
-            assetId_entityType_entityId_field: {
-              assetId: asset.id,
-              entityType: MediaUsageEntityType.ORGANIZATION,
-              entityId: organizationId,
-              field: `menu-background-${menuId}`
-            }
-          },
-          create: {
-            assetId: asset.id,
-            entityType: MediaUsageEntityType.ORGANIZATION,
-            entityId: organizationId,
-            field: `menu-background-${menuId}`
-          },
-          update: {
-            updatedAt: new Date()
-          }
-        })
 
         return createdMenu
       })
@@ -483,9 +383,6 @@ export const createMenuFromImport = authMemberActionClient
       updateTag(`menu-${menu.id}`)
       updateTag(`menu-items-${organizationId}`)
       updateTag(`categories-${organizationId}`)
-      updateTag(CACHE_TAGS.mediaAssets(organizationId))
-      updateTag(CACHE_TAGS.mediaCount(organizationId))
-      updateTag(CACHE_TAGS.mediaBackgrounds(organizationId))
 
       return {
         success: {
@@ -496,21 +393,9 @@ export const createMenuFromImport = authMemberActionClient
     } catch (error) {
       console.error(error)
       Sentry.captureException(error, {
-        tags: { section: "menu-import-visual-generation" },
+        tags: { section: "menu-import-visual-design" },
         extra: { organizationId }
       })
-
-      if (storageKey) {
-        try {
-          await deleteObjectFromR2(storageKey)
-        } catch (cleanupError) {
-          console.error(cleanupError)
-          Sentry.captureException(cleanupError, {
-            tags: { section: "menu-import-r2-cleanup" },
-            extra: { organizationId, storageKey }
-          })
-        }
-      }
 
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
@@ -526,7 +411,7 @@ export const createMenuFromImport = authMemberActionClient
       return {
         failure: {
           reason:
-            "No se pudo generar el menú completo. Intenta nuevamente con un archivo más claro."
+            "No se pudo diseñar el menú completo. Intenta nuevamente con un archivo más claro."
         }
       }
     }

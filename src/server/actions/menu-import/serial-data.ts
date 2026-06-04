@@ -2,7 +2,11 @@ import lz from "lzutf8"
 
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getCurrentOrganization } from "@/server/actions/user/queries"
-import type { MenuImportGeneratedColorTheme } from "@/lib/types/menu-import"
+import type {
+  MenuImportCategoryDesignPattern,
+  MenuImportGeneratedColorTheme,
+  MenuImportVisualPackage
+} from "@/lib/types/menu-import"
 
 type RgbaColor = { r: number; g: number; b: number; a: number }
 
@@ -63,16 +67,51 @@ function createNodeId(prefix: string, index: number) {
   return `${prefix}-${index}-${crypto.randomUUID().slice(0, 8)}`
 }
 
+function normalizeName(value: string) {
+  return value.trim().toLowerCase()
+}
+
+function findCategoryDesign({
+  category,
+  categoryDesigns
+}: {
+  category: SerializedMenuCategory
+  categoryDesigns: MenuImportCategoryDesignPattern[]
+}) {
+  const categoryName = normalizeName(category.name)
+
+  return categoryDesigns.find(design => {
+    const designCategoryName = normalizeName(design.categoryName)
+
+    return (
+      categoryName === designCategoryName ||
+      categoryName.includes(designCategoryName) ||
+      designCategoryName.includes(categoryName)
+    )
+  })
+}
+
+function toRgbaColor(color: string | undefined, fallback: RgbaColor) {
+  return color ? hexToRgba(color) : fallback
+}
+
 function createCategoryNode({
   category,
-  colorTheme
+  colorTheme,
+  categoryDesign
 }: {
   category: SerializedMenuCategory
   colorTheme: MenuImportGeneratedColorTheme
+  categoryDesign?: MenuImportCategoryDesignPattern
 }) {
   const textColor = hexToRgba(colorTheme.textColor)
   const accentColor = hexToRgba(colorTheme.accentColor)
   const mutedColor = hexToRgba(colorTheme.mutedColor)
+  const headingBackgroundColor =
+    categoryDesign?.headingBackgroundColor ?? colorTheme.surfaceColor
+  const headingShape =
+    categoryDesign?.headingShape ??
+    (categoryDesign?.headingBackgroundColor ? "rounded" : "none")
 
   return {
     type: { resolvedName: "CategoryBlock" },
@@ -80,22 +119,25 @@ function createCategoryNode({
     props: {
       backgroundMode: "none",
       categoryFontSize: 24,
-      categoryColor: accentColor,
+      categoryColor: toRgbaColor(categoryDesign?.headingTextColor, accentColor),
       categoryFontWeight: "700",
       categoryFontFamily: "Outfit",
       categoryTextAlign: "center",
-      categoryHeadingBgColor: colorTheme.surfaceColor,
-      categoryHeadingShape: "none",
+      categoryHeadingBgColor: headingBackgroundColor,
+      categoryHeadingShape: headingShape,
       itemFontSize: 16,
-      itemColor: textColor,
+      itemColor: toRgbaColor(categoryDesign?.itemTextColor, textColor),
       itemFontWeight: "500",
       itemFontFamily: "Outfit",
       priceFontSize: 14,
-      priceColor: textColor,
+      priceColor: toRgbaColor(categoryDesign?.priceTextColor, textColor),
       priceFontWeight: "700",
       priceFontFamily: "Outfit",
       descriptionFontFamily: "Outfit",
-      descriptionColor: mutedColor,
+      descriptionColor: toRgbaColor(
+        categoryDesign?.descriptionTextColor,
+        mutedColor
+      ),
       showImage: false,
       data: category
     },
@@ -114,20 +156,19 @@ function createCategoryNode({
 export function buildGeneratedMenuSerialData({
   organization,
   location,
-  backgroundImage,
-  colorTheme,
+  visualPackage,
   categories
 }: {
   organization: Organization
   location: Location | null
-  backgroundImage: string
-  colorTheme: MenuImportGeneratedColorTheme
+  visualPackage: MenuImportVisualPackage
   categories: SerializedMenuCategory[]
 }) {
   const headerId = createNodeId("header", 0)
   const categoryNodeIds = categories.map((_, index) =>
     createNodeId("category", index)
   )
+  const colorTheme = visualPackage.colorTheme
   const surfaceColor = hexToRgba(colorTheme.surfaceColor)
   const textColor = hexToRgba(colorTheme.textColor)
   const brandColor = hexToRgba(colorTheme.brandColor)
@@ -138,7 +179,7 @@ export function buildGeneratedMenuSerialData({
       isCanvas: true,
       props: {
         backgroundColor: surfaceColor,
-        backgroundImage,
+        backgroundImage: "none",
         color: textColor
       },
       displayName: "Sitio",
@@ -180,7 +221,11 @@ export function buildGeneratedMenuSerialData({
           nodeId,
           createCategoryNode({
             category,
-            colorTheme
+            colorTheme,
+            categoryDesign: findCategoryDesign({
+              category,
+              categoryDesigns: visualPackage.categoryDesigns
+            })
           })
         ]
       })

@@ -95,6 +95,7 @@ export default function CategoryBlock({
   const translation = useTranslation()
   const displayCategoryName =
     translation?.getCategoryTranslation(data.id)?.name ?? data.name
+
   return (
     <div
       ref={ref => {

@@ -1,4 +1,4 @@
-import { gateway, generateText, Output, type GeneratedFile } from "ai"
+import { gateway, generateText, Output } from "ai"
 import { MockLanguageModelV3 } from "ai/test"
 
 import {
@@ -11,7 +11,6 @@ import {
 import { env } from "@/env.mjs"
 
 const MENU_IMPORT_ANALYSIS_MODEL = "google/gemini-2.5-flash-lite"
-const MENU_IMPORT_BACKGROUND_MODEL = "google/gemini-3.1-flash-image-preview"
 
 const mockedMenuImportResult: MenuImportOutput = {
   items: [
@@ -133,8 +132,32 @@ const mockedVisualPackage: MenuImportVisualPackage = {
     textColor: "#FFF7ED",
     mutedColor: "#FDBA74"
   },
-  backgroundPrompt:
-    "Create a mobile-first 9:16 restaurant menu background inspired by a warm Mexican printed menu: subtle paper texture, soft illustrated food motifs, reusable header and footer treatments, delicate section-divider shapes, orange and amber accents, a calm central reading area, premium but casual style, no text, no logos, no prices."
+  layoutGuidance:
+    "Usa una base oscura y cálida, títulos con acentos naranja/ámbar y jerarquía clara por categoría sin fondos de bloque.",
+  categoryDesigns: [
+    {
+      categoryName: "Tacos",
+      headingBackgroundColor: "#F97316",
+      headingTextColor: "#FFF7ED",
+      headingShape: "ribbon",
+      designNotes: "Sección principal con tratamiento cálido y enérgico."
+    },
+    {
+      categoryName: "Antojitos",
+      headingBackgroundColor: "#FACC15",
+      headingTextColor: "#1F130D",
+      headingShape: "rounded",
+      designNotes:
+        "Bloque secundario con acento amarillo inspirado en papel impreso."
+    },
+    {
+      categoryName: "Bebidas",
+      headingBackgroundColor: "#FDBA74",
+      headingTextColor: "#1F130D",
+      headingShape: "pill",
+      designNotes: "Diferencia bebidas con un fondo más fresco y contrastado."
+    }
+  ]
 }
 
 function createMockMenuImportModel(
@@ -194,38 +217,6 @@ function createMockVisualModel() {
         warnings: []
       })
   })
-}
-
-function createMockGeneratedImage(): GeneratedFile {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
-    <defs>
-      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#1F130D"/>
-        <stop offset="55%" stop-color="#3B2114"/>
-        <stop offset="100%" stop-color="#7C2D12"/>
-      </linearGradient>
-      <radialGradient id="glow" cx="50%" cy="16%" r="60%">
-        <stop offset="0%" stop-color="#FACC15" stop-opacity=".35"/>
-        <stop offset="100%" stop-color="#FACC15" stop-opacity="0"/>
-      </radialGradient>
-      <pattern id="dots" width="96" height="96" patternUnits="userSpaceOnUse">
-        <circle cx="12" cy="12" r="3" fill="#FDBA74" opacity=".28"/>
-        <circle cx="64" cy="52" r="2" fill="#FFF7ED" opacity=".16"/>
-      </pattern>
-    </defs>
-    <rect width="1080" height="1920" fill="url(#bg)"/>
-    <rect width="1080" height="1920" fill="url(#glow)"/>
-    <rect width="1080" height="1920" fill="url(#dots)"/>
-    <path d="M0 260c135-88 220-70 324-20 120 58 244 60 388 4 130-50 242-32 368 40v-284h-1080z" fill="#F97316" opacity=".25"/>
-    <path d="M0 1704c144-92 268-86 388-20 142 78 274 66 408 8 114-50 196-40 284 26v202h-1080z" fill="#FACC15" opacity=".22"/>
-  </svg>`
-  const uint8Array = new TextEncoder().encode(svg)
-
-  return {
-    mediaType: "image/svg+xml",
-    uint8Array,
-    base64: Buffer.from(uint8Array).toString("base64")
-  }
 }
 
 function getFileOrImageContent({
@@ -324,14 +315,24 @@ export async function analyzeMenuVisualPackage(input: MenuImportFileInput) {
           getFileOrImageContent(input),
           {
             type: "text",
-            text: `Analyze this imported printed menu as a visual reference for a mobile-first digital menu. Return:
+            text: `Analyze this imported printed menu as a visual reference for a mobile-first editable digital menu draft. Return:
 - menuName: a concise Spanish name for the generated draft menu
 - styleSummary: Spanish summary of the visual direction
 - motifs: reusable graphics, typography mood, textures, ingredient cues, shapes, section dividers, header/footer ideas, or patterns from the menu
 - colorTheme: a contrast-safe #RRGGBB palette for a digital menu with surfaceColor, brandColor, accentColor, textColor, mutedColor
-- backgroundPrompt: an English image-generation prompt for a 9:16 mobile background inspired by the source menu
+- layoutGuidance: Spanish guidance for applying the style with editable editor properties, not generated images
+- categoryDesigns: category-specific design patterns that can be applied to category blocks. Each pattern should include categoryName plus any useful editable values: headingBackgroundColor, headingTextColor, headingShape, itemTextColor, priceTextColor, descriptionTextColor, and designNotes.
 
-The background must keep overlaid menu text fully legible while still feeling designed and colorful. Use the palette's surface color as a clean base, but add a confident decorative accent zone using the brand and accent colors. Concentrate the motifs and graphics in one focused area — the top band, the bottom band, or a single corner — so the rest of the canvas stays open for text. The accent zone can use solid color shapes, a color block, or grouped motifs with real saturation, not just faint outlines. Avoid a full-bleed repeating watermark pattern across the whole canvas. The decoration must work when cropped for mobile and when expanded to desktop, so anchor it to an edge or corner rather than the center. It must not include readable text, logos, menu item names, prices, QR codes, phone numbers, or exact brand marks. Keep a clean, high-contrast central reading area for the app's generated menu text.`
+Do not create an image prompt. The draft menu will be built from editable colors, heading treatments, and typography mood. Do not use full category section background colors. Extract category-level design ideas from the source menu when visible, and also use the category semantics when helpful: for example, beverages can use a cooler title treatment, desserts can use a softer accent, and principal categories can use stronger title treatments.
+
+Legibility rules (strict):
+1) Never choose the same color for headingBackgroundColor and headingTextColor.
+2) Never choose near-identical colors for headingBackgroundColor and headingTextColor (including same hue with only tiny brightness change).
+3) When headingBackgroundColor is provided, headingTextColor must also be provided.
+4) Ensure strong text contrast for headings: target WCAG AA equivalent contrast (at least 4.5:1) and prefer higher contrast for small text.
+5) If a sampled source color causes low contrast, adjust lightness/saturation to preserve style while keeping readability.
+
+Keep every returned color contrast-safe for readable mobile menu text. Use only #RRGGBB colors. Use Spanish category names that match or closely correspond to the extracted menu sections.`
           }
         ]
       }
@@ -339,57 +340,4 @@ The background must keep overlaid menu text fully legible while still feeling de
   })
 
   return result.output
-}
-
-export async function generateImportedMenuBackground({
-  fileBase64,
-  mimeType,
-  visualPackage,
-  simulateResponse
-}: Pick<MenuImportFileInput, "fileBase64" | "mimeType" | "simulateResponse"> & {
-  visualPackage: MenuImportVisualPackage
-}) {
-  if (simulateResponse) return createMockGeneratedImage()
-
-  if (!env.AI_GATEWAY_API_KEY) {
-    throw new Error("AI_GATEWAY_API_KEY is required for visual menu import")
-  }
-
-  const sourceReferenceInstruction =
-    mimeType === "application/pdf"
-      ? "Use the provided visual analysis as the design reference. Do not invent readable menu text."
-      : "Use the attached menu image as a visual reference. Extract and adapt its colors, motifs, texture, layout rhythm, and decorative assets without copying readable text or exact logos."
-
-  const promptText = `${visualPackage.backgroundPrompt}
-
-Style notes: ${visualPackage.styleSummary}
-Motifs to feature in the accent zone: ${visualPackage.motifs.join(", ")}
-Palette: surface ${visualPackage.colorTheme.surfaceColor}, brand ${visualPackage.colorTheme.brandColor}, accent ${visualPackage.colorTheme.accentColor}, text-safe contrast around ${visualPackage.colorTheme.textColor}.
-Source reference: ${sourceReferenceInstruction}
-
-Create one premium, colorful vertical restaurant menu background optimized for a 9:16 mobile canvas. Use the surface color as a clean base for most of the canvas, but include one confident decorative accent zone that actually uses the brand and accent colors with real saturation — a color block, solid shapes, or a tight group of the menu's motifs. Anchor that accent zone to a single area: the top band, the bottom band, or one corner, so it works both when cropped on mobile and when expanded on desktop. Do not spread a faint repeating watermark pattern across the entire canvas, and do not leave it nearly colorless. Keep the large central area open and high-contrast so dark menu text stays fully readable over it. No readable text, no logos, no prices, no QR codes, no phone numbers, no exact brand marks.`
-
-  const result = await generateText({
-    model: gateway(MENU_IMPORT_BACKGROUND_MODEL),
-    messages: [
-      {
-        role: "user",
-        content:
-          mimeType === "application/pdf"
-            ? [{ type: "text", text: promptText }]
-            : [
-                getFileOrImageContent({ fileBase64, mimeType }),
-                { type: "text", text: promptText }
-              ]
-      }
-    ],
-    maxRetries: 1
-  })
-  const image = result.files.find(file => file.mediaType.startsWith("image/"))
-
-  if (!image) {
-    throw new Error("Nano Banana did not return an image file")
-  }
-
-  return image
 }

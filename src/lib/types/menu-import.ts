@@ -90,6 +90,48 @@ export const menuImportGeneratedColorThemeSchema = z.object({
   mutedColor: hexColorSchema
 })
 
+export const menuImportCategoryHeadingShapeSchema = z.enum([
+  "none",
+  "rectangle",
+  "rounded",
+  "pill",
+  "slanted",
+  "parallelogram",
+  "chevron",
+  "tab",
+  "scooped",
+  "ribbon"
+])
+
+export const menuImportCategoryDesignPatternSchema = z.object({
+  categoryName: z
+    .string()
+    .min(1)
+    .describe("Category or section name this design applies to"),
+  headingBackgroundColor: hexColorSchema
+    .optional()
+    .describe("Optional category title background color"),
+  headingTextColor: hexColorSchema
+    .optional()
+    .describe("Optional category title text color"),
+  headingShape: menuImportCategoryHeadingShapeSchema
+    .optional()
+    .describe("Optional title treatment shape"),
+  itemTextColor: hexColorSchema
+    .optional()
+    .describe("Optional item name text color for this category"),
+  priceTextColor: hexColorSchema
+    .optional()
+    .describe("Optional price text color for this category"),
+  descriptionTextColor: hexColorSchema
+    .optional()
+    .describe("Optional description text color for this category"),
+  designNotes: z
+    .string()
+    .optional()
+    .describe("Short Spanish note explaining the design pattern")
+})
+
 export const menuImportVisualPackageSchema = z.object({
   menuName: z
     .string()
@@ -106,10 +148,15 @@ export const menuImportVisualPackageSchema = z.object({
     .max(8)
     .describe("Visual motifs, graphics, textures, or layout cues to preserve"),
   colorTheme: menuImportGeneratedColorThemeSchema,
-  backgroundPrompt: z
+  layoutGuidance: z
     .string()
-    .min(40)
-    .describe("Prompt for the background image generator")
+    .min(1)
+    .describe("Spanish guidance for applying the visual style in the editor"),
+  categoryDesigns: z
+    .array(menuImportCategoryDesignPatternSchema)
+    .max(16)
+    .default([])
+    .describe("Category-specific editable design patterns for the draft menu")
 })
 
 export type MenuImportItem = z.infer<typeof menuImportItemSchema>
@@ -120,5 +167,8 @@ export type MenuImportVisualPackage = z.infer<
 >
 export type MenuImportGeneratedColorTheme = z.infer<
   typeof menuImportGeneratedColorThemeSchema
+>
+export type MenuImportCategoryDesignPattern = z.infer<
+  typeof menuImportCategoryDesignPatternSchema
 >
 export type { SupportedUploadMimeType }
