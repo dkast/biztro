@@ -1,7 +1,14 @@
 import { useEditor, useNode } from "@craftjs/core"
 import { Colorful, hexToHsva, Sketch } from "@uiw/react-color"
 import { useAtomValue } from "jotai"
-import { AlignCenter, AlignLeft, AlignRight, Paintbrush } from "lucide-react"
+import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  CaseSensitive,
+  CaseUpper,
+  Paintbrush
+} from "lucide-react"
 
 import {
   type CategoryBlockProps,
@@ -351,10 +358,10 @@ export default function CategorySettings() {
             </Tabs>
           </dd>
           <dt>
-            <Label size="xs">Capitalización</Label>
+            <Label size="xs">Capitaliza</Label>
           </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
+          <dd className="col-span-2">
+            <Tabs
               value={categoryTextTransform ?? "none"}
               onValueChange={value =>
                 setProp(
@@ -364,16 +371,18 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Normal</SelectItem>
-                <SelectItem value="uppercase">Mayúsculas</SelectItem>
-              </SelectContent>
-            </Select>
+              <TabsList className="h-8 p-0.5">
+                <TabsTrigger value="none" aria-label="Capitalización normal">
+                  <CaseSensitive className="size-3.5" />
+                </TabsTrigger>
+                <TabsTrigger
+                  value="uppercase"
+                  aria-label="Capitalización en mayúsculas"
+                >
+                  <CaseUpper className="size-3.5" />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </dd>
           <dt>
             <Label size="xs">Fondo título</Label>
@@ -490,10 +499,10 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label size="xs">Capitalización</Label>
+            <Label size="xs">Capitaliza</Label>
           </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
+          <dd className="col-span-2">
+            <Tabs
               value={itemTextTransform ?? "none"}
               onValueChange={value =>
                 setProp(
@@ -503,16 +512,18 @@ export default function CategorySettings() {
                 )
               }
             >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Normal</SelectItem>
-                <SelectItem value="uppercase">Mayúsculas</SelectItem>
-              </SelectContent>
-            </Select>
+              <TabsList className="h-8 p-0.5">
+                <TabsTrigger value="none" aria-label="Capitalización normal">
+                  <CaseSensitive className="size-3.5" />
+                </TabsTrigger>
+                <TabsTrigger
+                  value="uppercase"
+                  aria-label="Capitalización en mayúsculas"
+                >
+                  <CaseUpper className="size-3.5" />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </dd>
         </div>
       </SideSection>
