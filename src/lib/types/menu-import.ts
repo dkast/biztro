@@ -4,6 +4,7 @@ import {
   SUPPORTED_UPLOAD_MIME_TYPES,
   type SupportedUploadMimeType
 } from "@/lib/types/media"
+import { fontThemeNames, imagePresetBackgroundImages } from "@/lib/types/theme"
 
 export const menuImportReviewCorrectionSchema = z.object({
   field: z
@@ -90,6 +91,13 @@ export const menuImportGeneratedColorThemeSchema = z.object({
   mutedColor: hexColorSchema
 })
 
+export const menuImportFontThemeSchema = z.enum(fontThemeNames)
+
+export const menuImportBackgroundImageSchema = z.union([
+  z.literal("none"),
+  z.enum(imagePresetBackgroundImages)
+])
+
 export const menuImportCategoryHeadingShapeSchema = z.enum([
   "none",
   "rectangle",
@@ -147,6 +155,12 @@ export const menuImportVisualPackageSchema = z.object({
     .min(1)
     .max(8)
     .describe("Visual motifs, graphics, textures, or layout cues to preserve"),
+  fontTheme: menuImportFontThemeSchema.describe(
+    "Existing font theme name selected from the provided catalog"
+  ),
+  backgroundImage: menuImportBackgroundImageSchema.describe(
+    "Background image from the provided preset catalog, or 'none'"
+  ),
   colorTheme: menuImportGeneratedColorThemeSchema,
   layoutGuidance: z
     .string()
@@ -167,6 +181,10 @@ export type MenuImportVisualPackage = z.infer<
 >
 export type MenuImportGeneratedColorTheme = z.infer<
   typeof menuImportGeneratedColorThemeSchema
+>
+export type MenuImportFontTheme = z.infer<typeof menuImportFontThemeSchema>
+export type MenuImportBackgroundImage = z.infer<
+  typeof menuImportBackgroundImageSchema
 >
 export type MenuImportCategoryDesignPattern = z.infer<
   typeof menuImportCategoryDesignPatternSchema

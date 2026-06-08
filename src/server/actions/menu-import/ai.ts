@@ -1,6 +1,7 @@
 import { gateway, generateText, Output } from "ai"
 import { MockLanguageModelV3 } from "ai/test"
 
+import { getMenuImportVisualCatalogPrompt } from "@/server/actions/menu-import/visual-catalog"
 import {
   menuImportOutputSchema,
   menuImportVisualPackageSchema,
@@ -124,6 +125,8 @@ const mockedVisualPackage: MenuImportVisualPackage = {
     "pie decorativo",
     "separadores orgánicos"
   ],
+  fontTheme: "OAXACA",
+  backgroundImage: "bg-center-molcajete-1.jpg",
   colorTheme: {
     name: "Importado cálido",
     surfaceColor: "#1F130D",
@@ -305,6 +308,7 @@ export async function analyzeMenuVisualPackage(input: MenuImportFileInput) {
     throw new Error("AI_GATEWAY_API_KEY is required for visual menu import")
   }
 
+  const visualCatalog = getMenuImportVisualCatalogPrompt()
   const result = await generateText({
     model: gateway(MENU_IMPORT_ANALYSIS_MODEL),
     output: Output.object({ schema: menuImportVisualPackageSchema }),
@@ -319,11 +323,23 @@ export async function analyzeMenuVisualPackage(input: MenuImportFileInput) {
 - menuName: a concise Spanish name for the generated draft menu
 - styleSummary: Spanish summary of the visual direction
 - motifs: reusable graphics, typography mood, textures, ingredient cues, shapes, section dividers, header/footer ideas, or patterns from the menu
-- colorTheme: a contrast-safe #RRGGBB palette for a digital menu with surfaceColor, brandColor, accentColor, textColor, mutedColor
+- fontTheme: one existing font theme name chosen exactly from the provided catalog
+- backgroundImage: one exact background image from the provided catalog, or "none" if no catalog image should be used
+- colorTheme: a contrast-safe #RRGGBB palette for a digital menu with surfaceColor, brandColor, accentColor, textColor, mutedColor. accentColor must stay distinct from every headingBackgroundColor you generate
 - layoutGuidance: Spanish guidance for applying the style with editable editor properties, not generated images
 - categoryDesigns: category-specific design patterns that can be applied to category blocks. Each pattern should include categoryName plus any useful editable values: headingBackgroundColor, headingTextColor, headingShape, itemTextColor, priceTextColor, descriptionTextColor, and designNotes.
 
-Do not create an image prompt. The draft menu will be built from editable colors, heading treatments, and typography mood. Do not use full category section background colors. Extract category-level design ideas from the source menu when visible, and also use the category semantics when helpful: for example, beverages can use a cooler title treatment, desserts can use a softer accent, and principal categories can use stronger title treatments.
+Catalog guidance:
+${visualCatalog}
+
+Selection rules:
+1) Review themePresets first and pick the closest currently available theme direction when one fits the brand/menu. Use that themePreset to guide fontTheme, color mood, and overall styling direction.
+2) Choose fontTheme exactly from themePresets[*].fontTheme or fontThemes[*].name.
+3) Always generate a custom colorTheme that feels unique to the brand/source menu. Never copy a built-in color theme exactly, but you may adapt the selected themePreset's direction.
+4) If a catalog image background strongly fits the imported brand/menu, return its exact bgImage as backgroundImage. Otherwise return "none". Never invent a new asset, filename, or URL.
+5) Keep all user-facing text fields in Spanish. Only exact catalog values such as fontTheme/backgroundImage should stay as their original IDs.
+
+Do not create an image prompt. The draft menu will be built from editable colors, an optional catalog background image, heading treatments, and typography mood. Do not use full category section background colors. Extract category-level design ideas from the source menu when visible, and also use the category semantics when helpful: for example, beverages can use a cooler title treatment, desserts can use a softer accent, and principal categories can use stronger title treatments.
 
 Legibility rules (strict):
 1) Never choose the same color for headingBackgroundColor and headingTextColor.
@@ -331,6 +347,8 @@ Legibility rules (strict):
 3) When headingBackgroundColor is provided, headingTextColor must also be provided.
 4) Ensure strong text contrast for headings: target WCAG AA equivalent contrast (at least 4.5:1) and prefer higher contrast for small text.
 5) If a sampled source color causes low contrast, adjust lightness/saturation to preserve style while keeping readability.
+6) Never use the same hex value for colorTheme.accentColor and any categoryDesigns.headingBackgroundColor.
+7) Avoid near-identical accentColor and headingBackgroundColor values; they must be visually distinct enough that accent elements and heading ribbons/chips do not clash.
 
 Keep every returned color contrast-safe for readable mobile menu text. Use only #RRGGBB colors. Use Spanish category names that match or closely correspond to the extracted menu sections.`
           }

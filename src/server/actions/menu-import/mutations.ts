@@ -24,7 +24,7 @@ import {
   type MenuImportGeneratedColorTheme
 } from "@/lib/types/menu-import"
 import { bulkMenuItemSchema, MenuItemStatus } from "@/lib/types/menu-item"
-import { ThemeScope, ThemeType } from "@/lib/types/theme"
+import { getFontThemeByName, ThemeScope, ThemeType } from "@/lib/types/theme"
 import { env } from "@/env.mjs"
 
 const createImportedMenuSchema = menuImportFileInputSchema.extend({
@@ -327,6 +327,13 @@ export const createMenuFromImport = authMemberActionClient
 
     try {
       const visualPackage = await analyzeMenuVisualPackage(parsedInput)
+      const selectedFontTheme = getFontThemeByName(visualPackage.fontTheme)
+      if (!selectedFontTheme) {
+        throw new Error(
+          `Invalid generated font theme: ${visualPackage.fontTheme}`
+        )
+      }
+
       const menuId = crypto.randomUUID()
       const themeId = crypto.randomUUID()
 
@@ -361,6 +368,7 @@ export const createMenuFromImport = authMemberActionClient
           organization: currentOrg,
           location: defaultLocation,
           visualPackage,
+          fontTheme: selectedFontTheme,
           categories: serializedCategories
         })
         const createdMenu = await tx.menu.create({
@@ -370,7 +378,7 @@ export const createMenuFromImport = authMemberActionClient
             description: `Generado desde un menú importado. ${visualPackage.styleSummary}`,
             status: "DRAFT",
             organizationId,
-            fontTheme: "TUCSON",
+            fontTheme: selectedFontTheme.name,
             colorTheme: themeId,
             serialData
           }

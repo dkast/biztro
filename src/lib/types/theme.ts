@@ -1152,3 +1152,20 @@ export const imagePresets: ThemePreset[] = [
     tags: ["brunch", "coffee", "light"]
   }
 ]
+
+export const fontThemeNames = fontThemes.map(theme => theme.name) as [
+  string,
+  ...string[]
+]
+
+export const imagePresetBackgroundImages = Array.from(
+  new Set(
+    imagePresets
+      .map(preset => preset.bgImage)
+      .filter((bgImage): bgImage is string => Boolean(bgImage))
+  )
+) as [string, ...string[]]
+
+export function getFontThemeByName(name: string) {
+  return fontThemes.find(theme => theme.name === name)
+}

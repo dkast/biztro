@@ -7,6 +7,7 @@ import type {
   MenuImportGeneratedColorTheme,
   MenuImportVisualPackage
 } from "@/lib/types/menu-import"
+import type { FontTheme } from "@/lib/types/theme"
 
 type RgbaColor = { r: number; g: number; b: number; a: number }
 
@@ -97,10 +98,12 @@ function toRgbaColor(color: string | undefined, fallback: RgbaColor) {
 
 function createCategoryNode({
   category,
+  fontTheme,
   colorTheme,
   categoryDesign
 }: {
   category: SerializedMenuCategory
+  fontTheme: FontTheme
   colorTheme: MenuImportGeneratedColorTheme
   categoryDesign?: MenuImportCategoryDesignPattern
 }) {
@@ -121,19 +124,19 @@ function createCategoryNode({
       categoryFontSize: 24,
       categoryColor: toRgbaColor(categoryDesign?.headingTextColor, accentColor),
       categoryFontWeight: "700",
-      categoryFontFamily: "Outfit",
+      categoryFontFamily: fontTheme.fontDisplay,
       categoryTextAlign: "center",
       categoryHeadingBgColor: headingBackgroundColor,
       categoryHeadingShape: headingShape,
       itemFontSize: 16,
       itemColor: toRgbaColor(categoryDesign?.itemTextColor, textColor),
       itemFontWeight: "500",
-      itemFontFamily: "Outfit",
+      itemFontFamily: fontTheme.fontDisplay,
       priceFontSize: 14,
       priceColor: toRgbaColor(categoryDesign?.priceTextColor, textColor),
       priceFontWeight: "700",
-      priceFontFamily: "Outfit",
-      descriptionFontFamily: "Outfit",
+      priceFontFamily: fontTheme.fontText,
+      descriptionFontFamily: fontTheme.fontText,
       descriptionColor: toRgbaColor(
         categoryDesign?.descriptionTextColor,
         mutedColor
@@ -157,11 +160,13 @@ export function buildGeneratedMenuSerialData({
   organization,
   location,
   visualPackage,
+  fontTheme,
   categories
 }: {
   organization: Organization
   location: Location | null
   visualPackage: MenuImportVisualPackage
+  fontTheme: FontTheme
   categories: SerializedMenuCategory[]
 }) {
   const headerId = createNodeId("header", 0)
@@ -179,7 +184,7 @@ export function buildGeneratedMenuSerialData({
       isCanvas: true,
       props: {
         backgroundColor: surfaceColor,
-        backgroundImage: "none",
+        backgroundImage: visualPackage.backgroundImage,
         color: textColor
       },
       displayName: "Sitio",
@@ -192,7 +197,7 @@ export function buildGeneratedMenuSerialData({
       type: { resolvedName: "HeaderBlock" },
       isCanvas: false,
       props: {
-        fontFamily: "Outfit",
+        fontFamily: fontTheme.fontDisplay,
         color: textColor,
         accentColor: brandColor,
         backgroundColor: surfaceColor,
@@ -221,6 +226,7 @@ export function buildGeneratedMenuSerialData({
           nodeId,
           createCategoryNode({
             category,
+            fontTheme,
             colorTheme,
             categoryDesign: findCategoryDesign({
               category,
