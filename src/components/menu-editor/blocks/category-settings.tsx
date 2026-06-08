@@ -185,10 +185,12 @@ export default function CategorySettings() {
     categoryFontSize,
     categoryFontWeight,
     categoryTextAlign,
+    categoryTextTransform,
     categoryHeadingBgColor,
     categoryHeadingShape,
     itemFontSize,
     itemFontWeight,
+    itemTextTransform,
     priceFontSize,
     priceFontWeight,
     showImage
@@ -197,11 +199,13 @@ export default function CategorySettings() {
     categoryColor: node.data.props.categoryColor,
     categoryFontWeight: node.data.props.categoryFontWeight,
     categoryTextAlign: node.data.props.categoryTextAlign,
+    categoryTextTransform: node.data.props.categoryTextTransform,
     categoryHeadingBgColor: node.data.props.categoryHeadingBgColor,
     categoryHeadingShape: node.data.props.categoryHeadingShape,
     itemFontSize: node.data.props.itemFontSize,
     itemColor: node.data.props.itemColor,
     itemFontWeight: node.data.props.itemFontWeight,
+    itemTextTransform: node.data.props.itemTextTransform,
     priceFontSize: node.data.props.priceFontSize,
     priceColor: node.data.props.priceColor,
     priceFontWeight: node.data.props.priceFontWeight,
@@ -217,10 +221,12 @@ export default function CategorySettings() {
       categoryFontSize,
       categoryFontWeight,
       categoryTextAlign,
+      categoryTextTransform: categoryTextTransform ?? "none",
       categoryHeadingBgColor,
       categoryHeadingShape,
       itemFontSize,
       itemFontWeight,
+      itemTextTransform: itemTextTransform ?? "none",
       priceFontSize,
       priceFontWeight,
       showImage
@@ -345,6 +351,31 @@ export default function CategorySettings() {
             </Tabs>
           </dd>
           <dt>
+            <Label size="xs">Capitalización</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={categoryTextTransform ?? "none"}
+              onValueChange={value =>
+                setProp(
+                  (props: CategoryBlockProps) =>
+                    (props.categoryTextTransform =
+                      value as CategoryBlockProps["categoryTextTransform"])
+                )
+              }
+            >
+              <SelectTrigger
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
+              >
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Normal</SelectItem>
+                <SelectItem value="uppercase">Mayúsculas</SelectItem>
+              </SelectContent>
+            </Select>
+          </dd>
+          <dt>
             <Label size="xs">Fondo título</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
@@ -455,6 +486,31 @@ export default function CategorySettings() {
                 <SelectItem value="400">Regular</SelectItem>
                 <SelectItem value="500">Medium</SelectItem>
                 <SelectItem value="700">Negrita</SelectItem>
+              </SelectContent>
+            </Select>
+          </dd>
+          <dt>
+            <Label size="xs">Capitalización</Label>
+          </dt>
+          <dd className="col-span-2 flex items-center">
+            <Select
+              value={itemTextTransform ?? "none"}
+              onValueChange={value =>
+                setProp(
+                  (props: CategoryBlockProps) =>
+                    (props.itemTextTransform =
+                      value as CategoryBlockProps["itemTextTransform"])
+                )
+              }
+            >
+              <SelectTrigger
+                className="focus:ring-transparent sm:h-7! sm:text-xs"
+              >
+                <SelectValue placeholder="Selecciona" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Normal</SelectItem>
+                <SelectItem value="uppercase">Mayúsculas</SelectItem>
               </SelectContent>
             </Select>
           </dd>

@@ -100,11 +100,15 @@ function createCategoryNode({
   category,
   fontTheme,
   colorTheme,
+  categoryTextTransform,
+  itemTextTransform,
   categoryDesign
 }: {
   category: SerializedMenuCategory
   fontTheme: FontTheme
   colorTheme: MenuImportGeneratedColorTheme
+  categoryTextTransform: MenuImportVisualPackage["categoryTextTransform"]
+  itemTextTransform: MenuImportVisualPackage["itemTextTransform"]
   categoryDesign?: MenuImportCategoryDesignPattern
 }) {
   const textColor = hexToRgba(colorTheme.textColor)
@@ -126,12 +130,15 @@ function createCategoryNode({
       categoryFontWeight: "700",
       categoryFontFamily: fontTheme.fontDisplay,
       categoryTextAlign: "center",
+      categoryTextTransform:
+        categoryDesign?.categoryTextTransform ?? categoryTextTransform,
       categoryHeadingBgColor: headingBackgroundColor,
       categoryHeadingShape: headingShape,
       itemFontSize: 16,
       itemColor: toRgbaColor(categoryDesign?.itemTextColor, textColor),
       itemFontWeight: "500",
       itemFontFamily: fontTheme.fontDisplay,
+      itemTextTransform: categoryDesign?.itemTextTransform ?? itemTextTransform,
       priceFontSize: 14,
       priceColor: toRgbaColor(categoryDesign?.priceTextColor, textColor),
       priceFontWeight: "700",
@@ -228,6 +235,8 @@ export function buildGeneratedMenuSerialData({
             category,
             fontTheme,
             colorTheme,
+            categoryTextTransform: visualPackage.categoryTextTransform,
+            itemTextTransform: visualPackage.itemTextTransform,
             categoryDesign: findCategoryDesign({
               category,
               categoryDesigns: visualPackage.categoryDesigns

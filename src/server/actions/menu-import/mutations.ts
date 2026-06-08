@@ -17,6 +17,10 @@ import {
   getCurrentOrganization,
   isProMember
 } from "@/server/actions/user/queries"
+import {
+  normalizeMenuDescriptionText,
+  normalizeMenuLabelCasing
+} from "@/lib/menu-text"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
 import {
@@ -65,22 +69,26 @@ function groupImportItems(items: BulkImportItem[]) {
   const groupedItemsMap = new Map<string, GroupedImportItem>()
 
   for (const item of items) {
-    const normalizedName = item.name.trim()
+    const normalizedName = normalizeMenuLabelCasing(item.name)
     if (!normalizedName) continue
 
     const itemKey = normalizedName.toLowerCase()
     const existingItem = groupedItemsMap.get(itemKey)
-    const category = item.category?.trim() || "Menú"
-    const nextVariantBaseName =
+    const category = normalizeMenuLabelCasing(item.category?.trim() || "Menú")
+    const description = item.description?.trim()
+      ? normalizeMenuDescriptionText(item.description)
+      : undefined
+    const nextVariantBaseName = normalizeMenuLabelCasing(
       item.variantName?.trim() ||
-      (existingItem
-        ? `Variante ${existingItem.variants.length + 1}`
-        : "Regular")
+        (existingItem
+          ? `Variante ${existingItem.variants.length + 1}`
+          : "Regular")
+    )
 
     if (!existingItem) {
       groupedItemsMap.set(itemKey, {
         name: normalizedName,
-        description: item.description?.trim() || undefined,
+        description,
         status: item.status,
         category,
         currency: item.currency,
@@ -98,8 +106,8 @@ function groupImportItems(items: BulkImportItem[]) {
 
     existingItem.variants.push({ name: nextVariantName, price: item.price })
 
-    if (!existingItem.description && item.description?.trim()) {
-      existingItem.description = item.description.trim()
+    if (!existingItem.description && description) {
+      existingItem.description = description
     }
 
     if (!existingItem.currency && item.currency) {

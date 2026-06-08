@@ -20,6 +20,7 @@ import {
   DrawerTitle
 } from "@/components/ui/drawer"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { normalizeMenuLabelCasing } from "@/lib/menu-text"
 import { cn } from "@/lib/utils"
 
 export type NavigatorBlockProps = {
@@ -117,7 +118,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
     setDisplayNames(
       filteredAndSortedNodes.map(node => {
         if (node.data.name === "CategoryBlock") {
-          return (
+          return normalizeMenuLabelCasing(
             translation?.getCategoryTranslation(node.data.props.data.id)
               ?.name ?? node.data.props.data.name
           )

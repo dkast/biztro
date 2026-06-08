@@ -4,7 +4,11 @@ import {
   SUPPORTED_UPLOAD_MIME_TYPES,
   type SupportedUploadMimeType
 } from "@/lib/types/media"
-import { fontThemeNames, imagePresetBackgroundImages } from "@/lib/types/theme"
+import {
+  fontThemeNames,
+  imagePresetBackgroundImages,
+  MENU_TEXT_TRANSFORMS
+} from "@/lib/types/theme"
 
 export const menuImportReviewCorrectionSchema = z.object({
   field: z
@@ -98,6 +102,8 @@ export const menuImportBackgroundImageSchema = z.union([
   z.enum(imagePresetBackgroundImages)
 ])
 
+export const menuImportTextTransformSchema = z.enum(MENU_TEXT_TRANSFORMS)
+
 export const menuImportCategoryHeadingShapeSchema = z.enum([
   "none",
   "rectangle",
@@ -125,9 +131,15 @@ export const menuImportCategoryDesignPatternSchema = z.object({
   headingShape: menuImportCategoryHeadingShapeSchema
     .optional()
     .describe("Optional title treatment shape"),
+  categoryTextTransform: menuImportTextTransformSchema
+    .optional()
+    .describe("Optional category title casing style"),
   itemTextColor: hexColorSchema
     .optional()
     .describe("Optional item name text color for this category"),
+  itemTextTransform: menuImportTextTransformSchema
+    .optional()
+    .describe("Optional item name casing style for this category"),
   priceTextColor: hexColorSchema
     .optional()
     .describe("Optional price text color for this category"),
@@ -161,6 +173,12 @@ export const menuImportVisualPackageSchema = z.object({
   backgroundImage: menuImportBackgroundImageSchema.describe(
     "Background image from the provided preset catalog, or 'none'"
   ),
+  categoryTextTransform: menuImportTextTransformSchema
+    .default("none")
+    .describe("Overall category title casing style"),
+  itemTextTransform: menuImportTextTransformSchema
+    .default("none")
+    .describe("Overall item name casing style"),
   colorTheme: menuImportGeneratedColorThemeSchema,
   layoutGuidance: z
     .string()

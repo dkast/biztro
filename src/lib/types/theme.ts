@@ -5,6 +5,9 @@ export enum FrameSize {
 
 export const FONT_SIZES = [12, 14, 16, 18, 20, 24, 30, 36]
 
+export const MENU_TEXT_TRANSFORMS = ["none", "uppercase"] as const
+export type MenuTextTransform = (typeof MENU_TEXT_TRANSFORMS)[number]
+
 export const enum ThemeType {
   FONT = "FONT",
   COLOR = "COLOR"

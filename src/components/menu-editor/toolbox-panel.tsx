@@ -153,7 +153,9 @@ export default function ToolboxPanel({
               data={category}
               backgroundMode="none"
               categoryFontFamily={selectedFontTheme.fontDisplay}
+              categoryTextTransform="none"
               itemFontFamily={selectedFontTheme.fontDisplay}
+              itemTextTransform="none"
               priceFontFamily={selectedFontTheme.fontText}
               descriptionFontFamily={selectedFontTheme.fontText}
               categoryColor={hexToRgba(selectedColorTheme.accentColor)}
@@ -198,6 +200,7 @@ export default function ToolboxPanel({
               item={item}
               backgroundMode="none"
               itemFontFamily={selectedFontTheme.fontDisplay}
+              itemTextTransform="none"
               priceFontFamily={selectedFontTheme.fontText}
               descriptionFontFamily={selectedFontTheme.fontText}
               itemColor={hexToRgba(selectedColorTheme.textColor)}
