@@ -1161,6 +1161,21 @@ export const fontThemeNames = fontThemes.map(theme => theme.name) as [
   ...string[]
 ]
 
+export const colorThemeIds = colorThemes.map(theme => theme.id) as [
+  string,
+  ...string[]
+]
+
+export const themePresetIds = themePresets.map(preset => preset.id) as [
+  string,
+  ...string[]
+]
+
+export const imagePresetIds = imagePresets.map(preset => preset.id) as [
+  string,
+  ...string[]
+]
+
 export const imagePresetBackgroundImages = Array.from(
   new Set(
     imagePresets

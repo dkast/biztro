@@ -10,13 +10,24 @@ import {
   menuImportOutputSchema,
   menuImportVisualPackageSchema,
   type MenuImportFileInput,
+  type MenuImportGeneratedColorTheme,
   type MenuImportItem,
   type MenuImportOutput,
   type MenuImportVisualPackage
 } from "@/lib/types/menu-import"
+import {
+  colorThemes,
+  fontThemes,
+  imagePresets,
+  themePresets,
+  type ColorTheme,
+  type ThemePreset
+} from "@/lib/types/theme"
 import { env } from "@/env.mjs"
 
-const MENU_IMPORT_ANALYSIS_MODEL = "google/gemini-2.5-flash-lite"
+const MENU_IMPORT_ANALYSIS_MODEL = "google/gemini-3.1-flash-lite"
+const DEFAULT_FONT_THEME = "DEFAULT"
+type VisualTone = "dark" | "light"
 
 const mockedMenuImportResult: MenuImportOutput = {
   items: [
@@ -131,16 +142,19 @@ const mockedVisualPackage: MenuImportVisualPackage = {
     "separadores orgánicos"
   ],
   fontTheme: "OAXACA",
+  presetSource: "imagePreset",
+  imagePresetId: "img-mexicano",
+  colorThemeId: "MOSTAZA_DARK",
   backgroundImage: "bg-center-molcajete-1.jpg",
   categoryTextTransform: "uppercase",
   itemTextTransform: "none",
   colorTheme: {
-    name: "Importado cálido",
-    surfaceColor: "#1F130D",
-    brandColor: "#F97316",
-    accentColor: "#FACC15",
-    textColor: "#FFF7ED",
-    mutedColor: "#FDBA74"
+    name: "Mostaza oscuro",
+    surfaceColor: "#0f0e00",
+    brandColor: "#fefce8",
+    accentColor: "#facc15",
+    textColor: "#fefce8",
+    mutedColor: "#fde047"
   },
   layoutGuidance:
     "Usa una base oscura y cálida, títulos con acentos naranja/ámbar y jerarquía clara por categoría sin fondos de bloque.",
@@ -261,6 +275,237 @@ function normalizeExtractedMenuItem(item: MenuImportItem): MenuImportItem {
   }
 }
 
+function getColorThemeById(colorThemeId: string | undefined) {
+  return colorThemes.find(theme => theme.id === colorThemeId)
+}
+
+function getImagePresetById(imagePresetId: string | undefined) {
+  return imagePresets.find(preset => preset.id === imagePresetId)
+}
+
+function getThemePresetById(themePresetId: string | undefined) {
+  return themePresets.find(preset => preset.id === themePresetId)
+}
+
+function getImagePresetByBackgroundImage(backgroundImage: string) {
+  if (backgroundImage === "none") return undefined
+
+  return imagePresets.find(preset => preset.bgImage === backgroundImage)
+}
+
+function toGeneratedColorTheme(
+  colorTheme: ColorTheme
+): MenuImportGeneratedColorTheme {
+  return {
+    name: colorTheme.name,
+    surfaceColor: colorTheme.surfaceColor,
+    brandColor: colorTheme.brandColor,
+    accentColor: colorTheme.accentColor,
+    textColor: colorTheme.textColor,
+    mutedColor: colorTheme.mutedColor
+  }
+}
+
+function isValidFontTheme(fontTheme: string | undefined): fontTheme is string {
+  return fontThemes.some(theme => theme.name === fontTheme)
+}
+
+function isHexColorDark(hex: string) {
+  const clean = hex.replace("#", "")
+  const r = Number.parseInt(clean.slice(0, 2), 16)
+  const g = Number.parseInt(clean.slice(2, 4), 16)
+  const b = Number.parseInt(clean.slice(4, 6), 16)
+
+  return (r * 299 + g * 587 + b * 114) / 1000 < 128
+}
+
+function getPresetBackgroundTone(preset: ThemePreset | undefined) {
+  if (!preset?.tags.includes("dark")) return undefined
+
+  return "dark" satisfies VisualTone
+}
+
+function getColorThemeTone({
+  surfaceColor,
+  textColor,
+  tags
+}: Pick<MenuImportGeneratedColorTheme, "surfaceColor" | "textColor"> & {
+  tags?: string[]
+}) {
+  if (tags?.includes("dark")) return "dark" satisfies VisualTone
+  if (tags?.includes("light")) return "light" satisfies VisualTone
+
+  const isSurfaceDark = isHexColorDark(surfaceColor)
+  const isTextDark = isHexColorDark(textColor)
+
+  if (isSurfaceDark === isTextDark) return undefined
+
+  return isSurfaceDark ? "dark" : "light"
+}
+
+function matchesRequiredTone({
+  colorTheme,
+  requiredTone
+}: {
+  colorTheme:
+    | ColorTheme
+    | Pick<MenuImportGeneratedColorTheme, "surfaceColor" | "textColor">
+  requiredTone?: VisualTone
+}) {
+  if (!requiredTone) return true
+
+  return (
+    getColorThemeTone({
+      surfaceColor: colorTheme.surfaceColor,
+      textColor: colorTheme.textColor,
+      tags: "tags" in colorTheme ? colorTheme.tags : undefined
+    }) === requiredTone
+  )
+}
+
+function getNormalizedFontTheme({
+  fontTheme,
+  fallbackFontTheme
+}: {
+  fontTheme: string | undefined
+  fallbackFontTheme?: string
+}) {
+  if (isValidFontTheme(fontTheme)) return fontTheme
+  if (isValidFontTheme(fallbackFontTheme)) return fallbackFontTheme
+
+  return DEFAULT_FONT_THEME
+}
+
+function getNormalizedColorTheme({
+  colorTheme,
+  colorThemeId,
+  requiredTone,
+  fallbackColorThemeId
+}: {
+  colorTheme: MenuImportGeneratedColorTheme
+  colorThemeId?: string
+  requiredTone?: VisualTone
+  fallbackColorThemeId?: string
+}) {
+  const matchingColorTheme = getColorThemeById(colorThemeId)
+
+  if (
+    matchingColorTheme &&
+    matchesRequiredTone({ colorTheme: matchingColorTheme, requiredTone })
+  ) {
+    return {
+      colorTheme: toGeneratedColorTheme(matchingColorTheme),
+      colorThemeId: matchingColorTheme.id
+    }
+  }
+
+  if (matchesRequiredTone({ colorTheme, requiredTone })) {
+    return {
+      colorTheme,
+      colorThemeId: undefined
+    }
+  }
+
+  const fallbackColorTheme = getColorThemeById(fallbackColorThemeId)
+
+  if (
+    fallbackColorTheme &&
+    matchesRequiredTone({ colorTheme: fallbackColorTheme, requiredTone })
+  ) {
+    return {
+      colorTheme: toGeneratedColorTheme(fallbackColorTheme),
+      colorThemeId: fallbackColorTheme.id
+    }
+  }
+
+  return {
+    colorTheme,
+    colorThemeId: undefined
+  }
+}
+
+function applyPresetToVisualPackage({
+  visualPackage,
+  preset,
+  backgroundImage
+}: {
+  visualPackage: MenuImportVisualPackage
+  preset: ThemePreset
+  backgroundImage: MenuImportVisualPackage["backgroundImage"]
+}) {
+  return {
+    ...visualPackage,
+    fontTheme: getNormalizedFontTheme({
+      fontTheme: visualPackage.fontTheme,
+      fallbackFontTheme: preset.fontTheme
+    }),
+    backgroundImage
+  }
+}
+
+function normalizeVisualPackage(
+  visualPackage: MenuImportVisualPackage
+): MenuImportVisualPackage {
+  const selectedImagePreset =
+    getImagePresetById(visualPackage.imagePresetId) ??
+    getImagePresetByBackgroundImage(visualPackage.backgroundImage)
+
+  if (selectedImagePreset?.bgImage) {
+    const normalizedColorTheme = getNormalizedColorTheme({
+      colorTheme: visualPackage.colorTheme,
+      colorThemeId: visualPackage.colorThemeId,
+      requiredTone: getPresetBackgroundTone(selectedImagePreset),
+      fallbackColorThemeId: selectedImagePreset.colorTheme
+    })
+
+    return {
+      ...applyPresetToVisualPackage({
+        visualPackage,
+        preset: selectedImagePreset,
+        backgroundImage: selectedImagePreset.bgImage
+      }),
+      ...normalizedColorTheme,
+      presetSource: "imagePreset",
+      imagePresetId: selectedImagePreset.id,
+      themePresetId: undefined
+    }
+  }
+
+  const selectedThemePreset = getThemePresetById(visualPackage.themePresetId)
+
+  if (selectedThemePreset) {
+    const normalizedColorTheme = getNormalizedColorTheme({
+      colorTheme: visualPackage.colorTheme,
+      colorThemeId: visualPackage.colorThemeId,
+      fallbackColorThemeId: selectedThemePreset.colorTheme
+    })
+
+    return {
+      ...applyPresetToVisualPackage({
+        visualPackage,
+        preset: selectedThemePreset,
+        backgroundImage: "none"
+      }),
+      ...normalizedColorTheme,
+      presetSource: "themePreset",
+      imagePresetId: undefined,
+      themePresetId: selectedThemePreset.id
+    }
+  }
+
+  const normalizedColorTheme = getNormalizedColorTheme({
+    colorTheme: visualPackage.colorTheme,
+    colorThemeId: visualPackage.colorThemeId
+  })
+
+  return {
+    ...visualPackage,
+    ...normalizedColorTheme,
+    presetSource: "custom",
+    fontTheme: getNormalizedFontTheme({ fontTheme: visualPackage.fontTheme })
+  }
+}
+
 export async function extractMenuItemsFromFile(input: MenuImportFileInput) {
   if (input.simulateResponse) {
     const result = await generateText({
@@ -338,7 +583,7 @@ export async function analyzeMenuVisualPackage(input: MenuImportFileInput) {
       prompt: "Analyze this menu visual style"
     })
 
-    return result.output
+    return normalizeVisualPackage(result.output)
   }
 
   if (!env.AI_GATEWAY_API_KEY) {
@@ -360,11 +605,15 @@ export async function analyzeMenuVisualPackage(input: MenuImportFileInput) {
 - menuName: a concise Spanish name for the generated draft menu
 - styleSummary: Spanish summary of the visual direction
 - motifs: reusable graphics, typography mood, textures, ingredient cues, shapes, section dividers, header/footer ideas, or patterns from the menu
-- fontTheme: one existing font theme name chosen exactly from the provided catalog
-- backgroundImage: one exact background image from the provided catalog, or "none" if no catalog image should be used
+- fontTheme: one existing font theme name chosen exactly from fontThemes[*].name by matching the source menu typography as closely as possible
+- presetSource: "imagePreset" when an image preset reasonably fits, "themePreset" when only a non-image preset fits, or "custom" only when no preset fits
+- imagePresetId: exact imagePresets[*].id when presetSource is "imagePreset"
+- themePresetId: exact themePresets[*].id when presetSource is "themePreset"
+- colorThemeId: exact colorThemes[*].id when an existing color theme is close to the colors seen in the source menu and still satisfies the selected image preset readability constraints; omit only when no existing theme fits and you create a custom palette
+- backgroundImage: imagePresets[*].bgImage when presetSource is "imagePreset"; otherwise "none"
 - categoryTextTransform: "uppercase" only when category headings should visually render in all caps; otherwise "none"
 - itemTextTransform: "uppercase" only when item names should visually render in all caps; otherwise "none"
-- colorTheme: a contrast-safe #RRGGBB palette for a digital menu with surfaceColor, brandColor, accentColor, textColor, mutedColor. accentColor must stay distinct from every headingBackgroundColor you generate
+- colorTheme: if colorThemeId is set, return that exact built-in colorThemes palette; otherwise return a custom contrast-safe #RRGGBB palette that closely matches the menu colors. accentColor must stay distinct from every headingBackgroundColor you generate
 - layoutGuidance: Spanish guidance for applying the style with editable editor properties, not generated images
 - categoryDesigns: category-specific design patterns that can be applied to category blocks. Each pattern should include categoryName plus any useful editable values: headingBackgroundColor, headingTextColor, headingShape, categoryTextTransform, itemTextColor, itemTextTransform, priceTextColor, descriptionTextColor, and designNotes.
 
@@ -372,12 +621,20 @@ Catalog guidance:
 ${visualCatalog}
 
 Selection rules:
-1) Review themePresets first and pick the closest currently available theme direction when one fits the brand/menu. Use that themePreset to guide fontTheme, color mood, and overall styling direction.
-2) Choose fontTheme exactly from themePresets[*].fontTheme or fontThemes[*].name.
-3) Always generate a custom colorTheme that feels unique to the brand/source menu. Never copy a built-in color theme exactly, but you may adapt the selected themePreset's direction.
-4) If a catalog image background strongly fits the imported brand/menu, return its exact bgImage as backgroundImage. Otherwise return "none". Never invent a new asset, filename, or URL.
-5) Keep all user-facing text fields in Spanish. Only exact catalog values such as fontTheme/backgroundImage should stay as their original IDs.
-6) The extracted menu data is normalized, so if the source menu uses all-caps as a visual treatment, preserve that look by setting categoryTextTransform and/or itemTextTransform to "uppercase" instead of relying on uppercase data.
+1) Evaluate imagePresets first. The goal is a visually appealing menu, so choose an image preset whenever cuisine, food type, ingredients, mood, colors, or layout direction are a reasonable match. Do not require an exact source photo match.
+2) Avoid imagePresets only when every available image would misrepresent the restaurant, clash strongly with the source brand, or make mobile text legibility worse.
+3) If using an image preset, return presetSource "imagePreset", its exact imagePresetId, and its exact bgImage as backgroundImage. Do not let the preset choose the palette automatically.
+4) Select colorThemeId independently from preset selection by matching the colors seen on the source menu to colorThemes. Focus on the overall palette, not just one accent color.
+5) When the selected image preset tags include "dark", the resulting color theme must also be dark: dark surfaceColor, light textColor, and strong foreground readability over the photo background.
+6) For dark-tag image presets, never return a light theme or any palette with dark text on a light surface, even if those colors appear in the source menu. Preserve the brand colors through accents and details while keeping the main reading surface dark.
+7) If a built-in color theme is close enough and compatible with the selected image preset tone, return its exact colorThemeId and that exact built-in palette in colorTheme, even if it differs from the preset's own referenced colorTheme.
+8) If no built-in color theme is close enough while also satisfying the selected image preset tone, omit colorThemeId and create a custom palette that preserves the source menu colors but keeps the required readable tone.
+9) Only if no image preset reasonably fits, evaluate themePresets and choose the closest non-image visual direction. Return presetSource "themePreset", exact themePresetId, and backgroundImage "none".
+10) Choose presetSource "custom" only when neither imagePresets nor themePresets fit. Custom colors are allowed independently of presetSource when no built-in color theme matches.
+11) Select fontTheme independently from preset selection by comparing the uploaded menu typography to fontThemes: serif, sans, condensed, handwritten/script, playful display, rustic, elegant, modern, bold, etc. The result should still feel like the customer's brand, not like an unrelated redesign.
+12) Use a preset's fontTheme only when it is also the closest typographic match to the source menu. If another fontThemes[*].name better resembles the source typography, return that fontTheme even when using an imagePreset or themePreset.
+13) Keep all user-facing text fields in Spanish. Exact catalog values such as fontTheme, imagePresetId, themePresetId, colorThemeId, and backgroundImage must stay as their original IDs.
+14) The extracted menu data is normalized, so if the source menu uses all-caps as a visual treatment, preserve that look by setting categoryTextTransform and/or itemTextTransform to "uppercase" instead of relying on uppercase data.
 
 Do not create an image prompt. The draft menu will be built from editable colors, an optional catalog background image, heading treatments, and typography mood. Do not use full category section background colors. Extract category-level design ideas from the source menu when visible, and also use the category semantics when helpful: for example, beverages can use a cooler title treatment, desserts can use a softer accent, and principal categories can use stronger title treatments.
 
@@ -389,6 +646,7 @@ Legibility rules (strict):
 5) If a sampled source color causes low contrast, adjust lightness/saturation to preserve style while keeping readability.
 6) Never use the same hex value for colorTheme.accentColor and any categoryDesigns.headingBackgroundColor.
 7) Avoid near-identical accentColor and headingBackgroundColor values; they must be visually distinct enough that accent elements and heading ribbons/chips do not clash.
+8) If the chosen image preset has a "dark" tag, the menu must render as light text on a dark reading surface. Do not return a light surface with dark text in that case.
 
 Keep every returned color contrast-safe for readable mobile menu text. Use only #RRGGBB colors. Use Spanish category names that match or closely correspond to the extracted menu sections.`
           }
@@ -397,5 +655,5 @@ Keep every returned color contrast-safe for readable mobile menu text. Use only 
     ]
   })
 
-  return result.output
+  return normalizeVisualPackage(result.output)
 }

@@ -5,9 +5,12 @@ import {
   type SupportedUploadMimeType
 } from "@/lib/types/media"
 import {
+  colorThemeIds,
   fontThemeNames,
   imagePresetBackgroundImages,
-  MENU_TEXT_TRANSFORMS
+  imagePresetIds,
+  MENU_TEXT_TRANSFORMS,
+  themePresetIds
 } from "@/lib/types/theme"
 
 export const menuImportReviewCorrectionSchema = z.object({
@@ -102,6 +105,17 @@ export const menuImportBackgroundImageSchema = z.union([
   z.enum(imagePresetBackgroundImages)
 ])
 
+export const menuImportVisualPresetSourceSchema = z.enum([
+  "imagePreset",
+  "themePreset",
+  "custom"
+])
+
+export const menuImportThemePresetIdSchema = z.enum(themePresetIds)
+
+export const menuImportImagePresetIdSchema = z.enum(imagePresetIds)
+export const menuImportColorThemeIdSchema = z.enum(colorThemeIds)
+
 export const menuImportTextTransformSchema = z.enum(MENU_TEXT_TRANSFORMS)
 
 export const menuImportCategoryHeadingShapeSchema = z.enum([
@@ -170,6 +184,22 @@ export const menuImportVisualPackageSchema = z.object({
   fontTheme: menuImportFontThemeSchema.describe(
     "Existing font theme name selected from the provided catalog"
   ),
+  presetSource: menuImportVisualPresetSourceSchema
+    .default("custom")
+    .describe(
+      "Preset family selected for the visual shell: imagePreset, themePreset, or custom"
+    ),
+  imagePresetId: menuImportImagePresetIdSchema
+    .optional()
+    .describe("Exact imagePresets[*].id when presetSource is imagePreset"),
+  themePresetId: menuImportThemePresetIdSchema
+    .optional()
+    .describe("Exact themePresets[*].id when presetSource is themePreset"),
+  colorThemeId: menuImportColorThemeIdSchema
+    .optional()
+    .describe(
+      "Exact colorThemes[*].id when an existing palette closely matches the menu colors"
+    ),
   backgroundImage: menuImportBackgroundImageSchema.describe(
     "Background image from the provided preset catalog, or 'none'"
   ),
@@ -179,7 +209,9 @@ export const menuImportVisualPackageSchema = z.object({
   itemTextTransform: menuImportTextTransformSchema
     .default("none")
     .describe("Overall item name casing style"),
-  colorTheme: menuImportGeneratedColorThemeSchema,
+  colorTheme: menuImportGeneratedColorThemeSchema.describe(
+    "Exact built-in palette when colorThemeId is selected, or a custom palette only when no built-in theme fits"
+  ),
   layoutGuidance: z
     .string()
     .min(1)
@@ -203,6 +235,9 @@ export type MenuImportGeneratedColorTheme = z.infer<
 export type MenuImportFontTheme = z.infer<typeof menuImportFontThemeSchema>
 export type MenuImportBackgroundImage = z.infer<
   typeof menuImportBackgroundImageSchema
+>
+export type MenuImportVisualPresetSource = z.infer<
+  typeof menuImportVisualPresetSourceSchema
 >
 export type MenuImportCategoryDesignPattern = z.infer<
   typeof menuImportCategoryDesignPatternSchema
