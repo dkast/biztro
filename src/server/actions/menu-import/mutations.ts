@@ -343,7 +343,8 @@ export const createMenuFromImport = authMemberActionClient
       }
 
       const menuId = crypto.randomUUID()
-      const themeId = crypto.randomUUID()
+      const generatedThemeId = crypto.randomUUID()
+      const menuColorThemeId = visualPackage.colorThemeId ?? generatedThemeId
 
       const defaultLocation = await getDefaultLocation(organizationId)
       const defaultCurrency = (defaultLocation?.currency ?? "MXN") as
@@ -351,19 +352,21 @@ export const createMenuFromImport = authMemberActionClient
         | "USD"
 
       const menu = await prisma.$transaction(async tx => {
-        await tx.theme.create({
-          data: {
-            id: themeId,
-            name: `${visualPackage.colorTheme.name} ${menuId.slice(0, 8)}`,
-            scope: ThemeScope.USER,
-            themeType: ThemeType.COLOR,
-            themeJSON: buildThemeJSON({
-              themeId,
-              colorTheme: visualPackage.colorTheme
-            }),
-            organizationId
-          }
-        })
+        if (!visualPackage.colorThemeId) {
+          await tx.theme.create({
+            data: {
+              id: generatedThemeId,
+              name: `${visualPackage.colorTheme.name} ${menuId.slice(0, 8)}`,
+              scope: ThemeScope.USER,
+              themeType: ThemeType.COLOR,
+              themeJSON: buildThemeJSON({
+                themeId: generatedThemeId,
+                colorTheme: visualPackage.colorTheme
+              }),
+              organizationId
+            }
+          })
+        }
 
         const importedItems = await createImportedItems({
           tx,
@@ -387,7 +390,7 @@ export const createMenuFromImport = authMemberActionClient
             status: "DRAFT",
             organizationId,
             fontTheme: selectedFontTheme.name,
-            colorTheme: themeId,
+            colorTheme: menuColorThemeId,
             serialData
           }
         })

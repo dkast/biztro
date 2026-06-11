@@ -601,7 +601,11 @@ export async function analyzeMenuVisualPackage(input: MenuImportFileInput) {
           getFileOrImageContent(input),
           {
             type: "text",
-            text: `Analyze this imported printed menu as a visual reference for a mobile-first editable digital menu draft. Return:
+            text: `Analyze this imported printed menu as a visual reference for a mobile-first editable digital menu draft.
+
+Overall goal: recreate a polished, mobile-first version of THIS restaurant's own menu. Stay as close as possible to the user's existing brand — especially the colors and typography seen in the source menu — while making the result visually appealing with a fitting background. The draft should feel like the user's own menu, upgraded, not a generic redesign.
+
+Return:
 - menuName: a concise Spanish name for the generated draft menu
 - styleSummary: Spanish summary of the visual direction
 - motifs: reusable graphics, typography mood, textures, ingredient cues, shapes, section dividers, header/footer ideas, or patterns from the menu
@@ -613,28 +617,35 @@ export async function analyzeMenuVisualPackage(input: MenuImportFileInput) {
 - backgroundImage: imagePresets[*].bgImage when presetSource is "imagePreset"; otherwise "none"
 - categoryTextTransform: "uppercase" only when category headings should visually render in all caps; otherwise "none"
 - itemTextTransform: "uppercase" only when item names should visually render in all caps; otherwise "none"
-- colorTheme: if colorThemeId is set, return that exact built-in colorThemes palette; otherwise return a custom contrast-safe #RRGGBB palette that closely matches the menu colors. accentColor must stay distinct from every headingBackgroundColor you generate
+- colorTheme: if colorThemeId is set, return that exact built-in colorThemes palette; otherwise return a custom contrast-safe #RRGGBB palette built from the actual brand colors observed in the source menu. accentColor must stay distinct from every headingBackgroundColor you generate
 - layoutGuidance: Spanish guidance for applying the style with editable editor properties, not generated images
 - categoryDesigns: category-specific design patterns that can be applied to category blocks. Each pattern should include categoryName plus any useful editable values: headingBackgroundColor, headingTextColor, headingShape, categoryTextTransform, itemTextColor, itemTextTransform, priceTextColor, descriptionTextColor, and designNotes.
 
 Catalog guidance:
 ${visualCatalog}
 
-Selection rules:
-1) Evaluate imagePresets first. The goal is a visually appealing menu, so choose an image preset whenever cuisine, food type, ingredients, mood, colors, or layout direction are a reasonable match. Do not require an exact source photo match.
+Selection rules (priority: stay faithful to the user's menu first, then make it appealing):
+
+Background (image preset):
+1) Evaluate imagePresets first. A fitting background makes the menu more appealing, so choose an image preset whenever cuisine, food type, ingredients, mood, colors, or layout direction are a reasonable match. Do not require an exact source photo match.
 2) Avoid imagePresets only when every available image would misrepresent the restaurant, clash strongly with the source brand, or make mobile text legibility worse.
-3) If using an image preset, return presetSource "imagePreset", its exact imagePresetId, and its exact bgImage as backgroundImage. Do not let the preset choose the palette automatically.
-4) Select colorThemeId independently from preset selection by matching the colors seen on the source menu to colorThemes. Focus on the overall palette, not just one accent color.
-5) When the selected image preset tags include "dark", the resulting color theme must also be dark: dark surfaceColor, light textColor, and strong foreground readability over the photo background.
-6) For dark-tag image presets, never return a light theme or any palette with dark text on a light surface, even if those colors appear in the source menu. Preserve the brand colors through accents and details while keeping the main reading surface dark.
-7) If a built-in color theme is close enough and compatible with the selected image preset tone, return its exact colorThemeId and that exact built-in palette in colorTheme, even if it differs from the preset's own referenced colorTheme.
-8) If no built-in color theme is close enough while also satisfying the selected image preset tone, omit colorThemeId and create a custom palette that preserves the source menu colors but keeps the required readable tone.
-9) Only if no image preset reasonably fits, evaluate themePresets and choose the closest non-image visual direction. Return presetSource "themePreset", exact themePresetId, and backgroundImage "none".
-10) Choose presetSource "custom" only when neither imagePresets nor themePresets fit. Custom colors are allowed independently of presetSource when no built-in color theme matches.
-11) Select fontTheme independently from preset selection by comparing the uploaded menu typography to fontThemes: serif, sans, condensed, handwritten/script, playful display, rustic, elegant, modern, bold, etc. The result should still feel like the customer's brand, not like an unrelated redesign.
-12) Use a preset's fontTheme only when it is also the closest typographic match to the source menu. If another fontThemes[*].name better resembles the source typography, return that fontTheme even when using an imagePreset or themePreset.
-13) Keep all user-facing text fields in Spanish. Exact catalog values such as fontTheme, imagePresetId, themePresetId, colorThemeId, and backgroundImage must stay as their original IDs.
-14) The extracted menu data is normalized, so if the source menu uses all-caps as a visual treatment, preserve that look by setting categoryTextTransform and/or itemTextTransform to "uppercase" instead of relying on uppercase data.
+3) If using an image preset, return presetSource "imagePreset", its exact imagePresetId, and its exact bgImage as backgroundImage. Do not let the preset dictate the palette or font automatically; choose those from the source menu.
+4) Only if no image preset reasonably fits, evaluate themePresets and choose the closest non-image visual direction. Return presetSource "themePreset", exact themePresetId, and backgroundImage "none".
+5) Choose presetSource "custom" only when neither imagePresets nor themePresets fit.
+
+Typography (match the brand):
+6) Identify the typographic character of the uploaded menu (serif, sans, condensed, handwritten/script, playful display, rustic, elegant, modern, bold, etc.) and choose the fontTheme from fontThemes[*].name that most closely resembles it. Typography is part of the brand, so prioritize this match over any preset's default font.
+7) Use a preset's fontTheme only when it is also the closest typographic match. If another fontThemes[*].name better resembles the source typography, return that fontTheme even when using an imagePreset or themePreset.
+
+Color (match the brand):
+8) First read the dominant brand colors of the uploaded menu (backgrounds, headings, accents, logo). The color result must stay as close as possible to those brand colors, not just one accent.
+9) Compare those brand colors against colorThemes. If a built-in theme's palette is close to the source menu's scheme, return its exact colorThemeId and that exact built-in palette in colorTheme. Prefer reusing a close built-in theme over inventing a new one.
+10) Only if no built-in theme is close enough, omit colorThemeId and create a custom #RRGGBB palette built directly from the observed brand colors.
+11) When the selected image preset tags include "dark", the color result must be dark-toned: dark surfaceColor with light textColor and strong foreground readability over the photo. Never pair a dark-tag image preset with a light surface or dark foreground text; carry the brand colors through accents instead. Apply this tone constraint to both built-in theme selection and custom palettes.
+
+General:
+12) Keep all user-facing text fields in Spanish. Exact catalog values such as fontTheme, imagePresetId, themePresetId, colorThemeId, and backgroundImage must stay as their original IDs.
+13) The extracted menu data is normalized, so if the source menu uses all-caps as a visual treatment, preserve that look by setting categoryTextTransform and/or itemTextTransform to "uppercase" instead of relying on uppercase data.
 
 Do not create an image prompt. The draft menu will be built from editable colors, an optional catalog background image, heading treatments, and typography mood. Do not use full category section background colors. Extract category-level design ideas from the source menu when visible, and also use the category semantics when helpful: for example, beverages can use a cooler title treatment, desserts can use a softer accent, and principal categories can use stronger title treatments.
 
