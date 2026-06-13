@@ -98,12 +98,10 @@ model Organization {
   themes        Theme[]
   mediaAssets   MediaAsset[]
 
-  slug        String?
+  slug        String?      @unique
   metadata    String?
   members     Member[]
   invitations Invitation[]
-
-  @@index([slug])
 }
 
 model Member {
