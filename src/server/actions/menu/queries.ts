@@ -123,20 +123,22 @@ export async function getMenuById(id: string) {
 export async function getActiveMenuByOrganizationSlug(slug: string) {
   "use cache"
   cacheTag(`subdomain-${slug}`)
-  const organization = await prisma.organization.findFirst({
-    where: {
-      slug,
-      OR: [
-        { status: SubscriptionStatus.ACTIVE },
-        { status: SubscriptionStatus.TRIALING },
-        { status: SubscriptionStatus.SPONSORED }
-      ]
-    },
+  const org = await prisma.organization.findUnique({
+    where: { slug },
     select: {
       id: true,
-      activeMenuId: true
+      activeMenuId: true,
+      status: true
     }
   })
+
+  const activeStatuses: string[] = [
+    SubscriptionStatus.ACTIVE,
+    SubscriptionStatus.TRIALING,
+    SubscriptionStatus.SPONSORED
+  ]
+  const organization =
+    org && activeStatuses.includes(org.status) ? org : null
 
   if (!organization) {
     return null

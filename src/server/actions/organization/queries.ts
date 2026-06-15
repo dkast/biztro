@@ -35,7 +35,7 @@ export async function getOrganization(id: string) {
  * @returns A promise that resolves to the organization object.
  */
 export async function getOrganizationBySlug(slug: string) {
-  const org = await prisma.organization.findFirst({
+  const org = await prisma.organization.findUnique({
     where: {
       slug
     }
