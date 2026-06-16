@@ -12,6 +12,7 @@ import {
   CircleAlert,
   FileText,
   Loader,
+  Lock,
   SparklesIcon,
   Trash2
 } from "lucide-react"
@@ -23,18 +24,19 @@ import { TextMorph } from "torph/react"
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
-import {
-  Banner,
-  BannerAction,
-  BannerClose,
-  BannerIcon,
-  BannerTitle
-} from "@/components/kibo-ui/banner"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
   Tooltip,
@@ -682,6 +684,11 @@ export default function MenuImportForm({
   const modKey = isMac ? "⌘" : "Ctrl"
   const step = items.length > 0 ? 3 : selectedFile ? 2 : 1
 
+  const isFullMenuMode = importMode === "full-menu"
+  const stepLabels: [string, string, string] = isFullMenuMode
+    ? ["Sube tu archivo", "La IA extrae y diseña", "Genera y abre el editor"]
+    : ["Sube tu archivo", "La IA extrae los productos", "Revisa y guarda"]
+
   return (
     <TooltipProvider>
       <div className="flex flex-col gap-6">
@@ -692,19 +699,19 @@ export default function MenuImportForm({
         >
           <ProcessStep
             number={1}
-            label="Sube tu archivo"
+            label={stepLabels[0]}
             active={step === 1}
             done={step > 1}
           />
           <ChevronRight className="text-muted-foreground size-4 shrink-0" />
           <ProcessStep
             number={2}
-            label="La IA extrae los productos"
+            label={stepLabels[1]}
             active={step === 2}
             done={step > 2}
           />
           <ChevronRight className="text-muted-foreground size-4 shrink-0" />
-          <ProcessStep number={3} label="Revisa y guarda" active={step === 3} />
+          <ProcessStep number={3} label={stepLabels[2]} active={step === 3} />
         </div>
 
         <div className="bg-background flex flex-col gap-3 rounded-lg border p-4">
@@ -729,9 +736,15 @@ export default function MenuImportForm({
               value="full-menu"
               aria-label="Crear menú completo Pro"
             >
+              {!isPro && <Lock className="size-3.5" />}
               Menú completo Pro
             </ToggleGroupItem>
           </ToggleGroup>
+          <p className="text-muted-foreground text-xs">
+            {isFullMenuMode
+              ? "Generamos un menú digital con estilo a partir de tu archivo y abrimos el editor para que lo publiques."
+              : "Los productos se agregan a tu catálogo para editarlos y usarlos en cualquier menú."}
+          </p>
         </div>
 
         {/* File Upload */}
@@ -769,20 +782,15 @@ export default function MenuImportForm({
                   <span
                     key={fmt}
                     className="bg-muted text-muted-foreground inline-flex
-                      items-center rounded-full px-2 py-0.5 text-[11px]
-                      font-medium"
+                      items-center rounded-md px-2 py-0.5 text-xs font-medium"
                   >
                     {fmt}
                   </span>
                 ))}
-                <span
-                  className="bg-muted text-muted-foreground inline-flex
-                    items-center rounded-full px-2 py-0.5 text-[11px]
-                    font-medium"
-                >
-                  máx. {MAX_PDF_FILE_SIZE_MB} MB
-                </span>
               </div>
+              <p className="text-muted-foreground mt-1.5 text-xs">
+                Tamaño máximo {MAX_PDF_FILE_SIZE_MB} MB
+              </p>
             </div>
             <input
               ref={fileInputRef}
@@ -816,27 +824,31 @@ export default function MenuImportForm({
                   <Label htmlFor="simulate-scenario" className="text-sm">
                     Escenario de simulación
                   </Label>
-                  <select
-                    id="simulate-scenario"
+                  <Select
                     value={simulateScenario}
-                    onChange={event =>
-                      setSimulateScenario(
-                        event.target.value as "default" | "variants"
-                      )
+                    onValueChange={value =>
+                      setSimulateScenario(value as "default" | "variants")
                     }
-                    className="border-input bg-background h-9 rounded-md border
-                      px-3 text-sm"
                     disabled={isParsing || isSaving}
                   >
-                    <option value="default">Menú simple</option>
-                    <option value="variants">
-                      Múltiples variantes por producto
-                    </option>
-                  </select>
+                    <SelectTrigger id="simulate-scenario" className="w-auto">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="default">Menú simple</SelectItem>
+                      <SelectItem value="variants">
+                        Múltiples variantes por producto
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
 
-              <Button onClick={handleParse} disabled={isParsing || isMutating}>
+              <Button
+                onClick={handleParse}
+                disabled={isParsing || isMutating}
+                variant={items.length > 0 ? "outline" : "default"}
+              >
                 {isParsing ? (
                   <Loader className="size-4 animate-spin" />
                 ) : (
@@ -861,37 +873,38 @@ export default function MenuImportForm({
           </Alert>
         )}
 
+        {/* Extraction Skeleton */}
+        {isParsing && items.length === 0 && (
+          <div className="mt-10 flex flex-col gap-5" aria-hidden="true">
+            <Skeleton className="h-5 w-72" />
+            <div className="flex flex-col gap-2 rounded-lg border p-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <Skeleton key={index} className="h-9 w-full" />
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Items Table */}
         {items.length > 0 && (
           <div className="mt-10 flex flex-col gap-5">
             {!isPro && groupPreview.groupedItems > appConfig.itemLimit && (
-              <Banner
-                inset
-                className="bg-linear-to-r/oklch from-indigo-500 to-pink-500
-                  text-white"
-              >
-                <BannerIcon
-                  icon={CircleAlert}
-                  className="border-white/20 bg-white/10 text-white"
-                />
-                <BannerTitle>
-                  Tienes {groupPreview.groupedItems} productos para importar,
-                  pero el plan básico permite hasta {appConfig.itemLimit}.
-                </BannerTitle>
-                <BannerAction
-                  asChild
-                  className="border-white/20 bg-white/10 text-white
-                    hover:bg-white/20 hover:text-white"
-                >
-                  <Link href="/dashboard/settings/billing" prefetch={false}>
-                    Actualizar a Pro
-                  </Link>
-                </BannerAction>
-                <BannerClose
-                  aria-label="Cerrar aviso"
-                  className="text-white hover:bg-white/20 hover:text-white"
-                />
-              </Banner>
+              <Alert variant="warning">
+                <CircleAlert className="size-4" />
+                <AlertTitle>Superaste el límite del plan básico</AlertTitle>
+                <AlertDescription className="flex flex-col gap-3">
+                  <span>
+                    Tienes {groupPreview.groupedItems} productos para importar,
+                    pero el plan básico permite hasta {appConfig.itemLimit}.
+                    Actualiza a Pro para guardarlos todos.
+                  </span>
+                  <Button asChild size="sm" className="self-start">
+                    <Link href="/dashboard/settings/billing" prefetch={false}>
+                      Actualizar a Pro
+                    </Link>
+                  </Button>
+                </AlertDescription>
+              </Alert>
             )}
             <div className="flex flex-row items-end-safe gap-2 px-3">
               <p className="text-sm font-medium">
@@ -954,7 +967,6 @@ export default function MenuImportForm({
                 </span>
               </div>
               <Button
-                variant="secondary"
                 onClick={
                   importMode === "full-menu" ? handleCreateFullMenu : handleSave
                 }
@@ -972,6 +984,12 @@ export default function MenuImportForm({
                 </TextMorph>
               </Button>
             </div>
+            {isFullMenuMode && (
+              <p className="text-muted-foreground px-2 text-right text-xs">
+                Al generar, abriremos el editor del menú para que ajustes el
+                diseño y lo publiques.
+              </p>
+            )}
           </div>
         )}
         <UpgradeDialog
