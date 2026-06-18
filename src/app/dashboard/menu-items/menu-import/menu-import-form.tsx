@@ -5,6 +5,7 @@ import toast from "react-hot-toast"
 import { type CellSelectOption } from "@/types/data-grid"
 import * as Sentry from "@sentry/nextjs"
 import type { ColumnDef } from "@tanstack/react-table"
+import { BorderBeam } from "border-beam"
 import {
   AlertCircle,
   Check,
@@ -16,6 +17,7 @@ import {
   SparklesIcon,
   Trash2
 } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -27,8 +29,16 @@ import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyb
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+  FieldTitle
+} from "@/components/ui/field"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Select,
   SelectContent,
@@ -37,7 +47,6 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
   Tooltip,
   TooltipContent,
@@ -685,6 +694,7 @@ export default function MenuImportForm({
   const step = items.length > 0 ? 3 : selectedFile ? 2 : 1
 
   const isFullMenuMode = importMode === "full-menu"
+  const hasImportedItems = items.length > 0
   const stepLabels: [string, string, string] = isFullMenuMode
     ? ["Sube tu archivo", "La IA extrae y diseña", "Genera y abre el editor"]
     : ["Sube tu archivo", "La IA extrae los productos", "Revisa y guarda"]
@@ -714,32 +724,42 @@ export default function MenuImportForm({
           <ProcessStep number={3} label={stepLabels[2]} active={step === 3} />
         </div>
 
-        <div className="bg-background flex flex-col gap-3 rounded-lg border p-4">
+        <div className="flex flex-col gap-3">
           <div>
             <p className="text-sm font-medium">Modo de importación</p>
-            <p className="text-muted-foreground text-xs">
-              Extrae productos para revisarlos o crea un menú digital completo
-              con estilo generado desde tu menú impreso.
-            </p>
           </div>
-          <ToggleGroup
-            type="single"
+          <RadioGroup
             value={importMode}
             onValueChange={handleImportModeChange}
-            className="justify-start"
-            variant="outline"
+            className="grid gap-2 sm:grid-cols-2"
           >
-            <ToggleGroupItem value="items" aria-label="Importar productos">
-              Solo productos
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="full-menu"
-              aria-label="Crear menú completo Pro"
-            >
-              {!isPro && <Lock className="size-3.5" />}
-              Menú completo Pro
-            </ToggleGroupItem>
-          </ToggleGroup>
+            <FieldLabel htmlFor="import-mode-items" className="h-full">
+              <Field orientation="horizontal" className="h-full items-start">
+                <FieldContent>
+                  <FieldTitle>Solo productos</FieldTitle>
+                  <FieldDescription>
+                    Extrae productos para revisarlos y guardarlos en tu
+                    catálogo.
+                  </FieldDescription>
+                </FieldContent>
+                <RadioGroupItem id="import-mode-items" value="items" />
+              </Field>
+            </FieldLabel>
+            <FieldLabel htmlFor="import-mode-full-menu" className="h-full">
+              <Field orientation="horizontal" className="h-full items-start">
+                <FieldContent>
+                  <FieldTitle className="flex items-center gap-1.5">
+                    {!isPro && <Lock className="size-3.5" />}
+                    Menú completo Pro
+                  </FieldTitle>
+                  <FieldDescription>
+                    Genera un menú digital completo con diseño y abre el editor.
+                  </FieldDescription>
+                </FieldContent>
+                <RadioGroupItem id="import-mode-full-menu" value="full-menu" />
+              </Field>
+            </FieldLabel>
+          </RadioGroup>
           <p className="text-muted-foreground text-xs">
             {isFullMenuMode
               ? "Generamos un menú digital con estilo a partir de tu archivo y abrimos el editor para que lo publiques."
@@ -749,57 +769,85 @@ export default function MenuImportForm({
 
         {/* File Upload */}
         <div className="flex w-full flex-col gap-3">
-          <div
-            className="group border-border hover:border-primary
-              hover:bg-primary/10 flex cursor-pointer flex-col items-center
-              justify-center gap-3 rounded-lg border-2 border-dashed p-8
-              transition-colors"
-            onClick={() => fileInputRef.current?.click()}
-            role="button"
-            tabIndex={0}
-            onKeyDown={event => {
-              if (event.key === "Enter" || event.code === "Space") {
-                event.preventDefault()
-                fileInputRef.current?.click()
-              }
-            }}
-          >
-            <FileText
-              className="text-muted-foreground group-hover:text-primary size-10
-                transition-colors"
-            />
-            <div className="text-center">
-              <p className="text-sm font-medium">
-                {selectedFile
-                  ? selectedFile.name
-                  : "Haz clic para seleccionar un archivo"}
-              </p>
-              <p className="text-muted-foreground mt-0.5 text-xs">
-                Funciona mejor con menús en texto claro y bien iluminados.
-              </p>
-              <div className="mt-2 flex flex-wrap justify-center gap-1.5">
-                {["PDF", "PNG", "JPG", "WEBP"].map(fmt => (
-                  <span
-                    key={fmt}
-                    className="bg-muted text-muted-foreground inline-flex
-                      items-center rounded-md px-2 py-0.5 text-xs font-medium"
-                  >
-                    {fmt}
-                  </span>
-                ))}
-              </div>
-              <p className="text-muted-foreground mt-1.5 text-xs">
-                Tamaño máximo {MAX_PDF_FILE_SIZE_MB} MB
-              </p>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept={FILE_INPUT_ACCEPT}
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </div>
+          <AnimatePresence initial={false} mode="wait">
+            {hasImportedItems && selectedFile ? (
+              <motion.div
+                key="file-compact"
+                initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="bg-muted/50 border-border inline-flex max-w-full
+                  items-center gap-2 rounded-md border px-3 py-2"
+              >
+                <FileText className="text-muted-foreground size-4 shrink-0" />
+                <p className="truncate text-sm font-medium">
+                  {selectedFile.name}
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="file-expanded"
+                initial={{ opacity: 0, y: 8, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.99 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <div
+                  className="group border-border hover:border-primary
+                    hover:bg-primary/10 flex cursor-pointer flex-col
+                    items-center justify-center gap-3 rounded-lg border-2
+                    border-dashed p-8 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={event => {
+                    if (event.key === "Enter" || event.code === "Space") {
+                      event.preventDefault()
+                      fileInputRef.current?.click()
+                    }
+                  }}
+                >
+                  <FileText
+                    className="text-muted-foreground group-hover:text-primary
+                      size-10 transition-colors"
+                  />
+                  <div className="text-center">
+                    <p className="text-sm font-medium">
+                      {selectedFile
+                        ? selectedFile.name
+                        : "Haz clic para seleccionar un archivo"}
+                    </p>
+                    <p className="text-muted-foreground mt-0.5 text-xs">
+                      Funciona mejor con menús en texto claro y bien iluminados.
+                    </p>
+                    <div className="mt-2 flex flex-wrap justify-center gap-1.5">
+                      {["PDF", "PNG", "JPG", "WEBP"].map(fmt => (
+                        <span
+                          key={fmt}
+                          className="bg-muted text-muted-foreground inline-flex
+                            items-center rounded-md px-2 py-0.5 text-xs
+                            font-medium"
+                        >
+                          {fmt}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-muted-foreground mt-1.5 text-xs">
+                      Tamaño máximo {MAX_PDF_FILE_SIZE_MB} MB
+                    </p>
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept={FILE_INPUT_ACCEPT}
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {!isPro && items.length === 0 && (
             <p className="text-muted-foreground text-center text-xs">
@@ -815,7 +863,7 @@ export default function MenuImportForm({
             </p>
           )}
 
-          {selectedFile && (
+          {selectedFile && !hasImportedItems && (
             <div
               className="mt-6 flex flex-col items-center justify-center gap-3"
             >
@@ -844,22 +892,24 @@ export default function MenuImportForm({
                 </div>
               )}
 
-              <Button
-                onClick={handleParse}
-                disabled={isParsing || isMutating}
-                variant={items.length > 0 ? "outline" : "default"}
-              >
-                {isParsing ? (
-                  <Loader className="size-4 animate-spin" />
-                ) : (
-                  <SparklesIcon className="size-4 fill-current" />
-                )}
-                {isParsing
-                  ? "Extrayendo productos..."
-                  : simulateResponse
-                    ? "Simular extracción"
-                    : "Extraer productos del archivo"}
-              </Button>
+              <BorderBeam active={isParsing}>
+                <Button
+                  onClick={handleParse}
+                  disabled={isParsing || isMutating}
+                  variant={items.length > 0 ? "outline" : "default"}
+                >
+                  {isParsing ? (
+                    <Loader className="size-4 animate-spin" />
+                  ) : (
+                    <SparklesIcon className="size-4 fill-current" />
+                  )}
+                  {isParsing
+                    ? "Extrayendo productos..."
+                    : simulateResponse
+                      ? "Simular extracción"
+                      : "Extraer productos del archivo"}
+                </Button>
+              </BorderBeam>
             </div>
           )}
         </div>
@@ -927,17 +977,16 @@ export default function MenuImportForm({
 
             {reviewSummary.needsReviewCount > 0 ||
             reviewSummary.correctedRowsCount > 0 ? (
-              <Alert variant="warning">
+              <Alert variant="information">
                 <CircleAlert className="size-4" />
                 <AlertTitle>Revisión recomendada</AlertTitle>
                 <AlertDescription>
                   {reviewSummary.needsReviewCount} fila
-                  {reviewSummary.needsReviewCount === 1 ? "" : "s"} necesita
-                  {reviewSummary.needsReviewCount === 1 ? "" : "n"} revisión
-                  humana. {reviewSummary.correctedRowsCount} fila
+                  {reviewSummary.needsReviewCount === 1 ? "" : "s"} se sugiere
+                  revisión. {reviewSummary.correctedRowsCount} fila
                   {reviewSummary.correctedRowsCount === 1 ? "" : "s"} incluye
                   {reviewSummary.correctedRowsCount === 1 ? "" : "n"}{" "}
-                  correcciones de OCR sugeridas por la IA.
+                  correcciones sugeridas por la IA.
                 </AlertDescription>
               </Alert>
             ) : null}
