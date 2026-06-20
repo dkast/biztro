@@ -72,7 +72,7 @@
     "@uppy/react": "^4.5.2",
     "@vercel/toolbar": "^0.2.6",
     "ai": "^6.0.208",
-    "better-auth": "1.6.9",
+    "better-auth": "1.6.11",
     "bloom-menu": "^0.1.0",
     "border-beam": "^1.2.0",
     "canvas-confetti": "^1.9.4",
