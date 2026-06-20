@@ -3,6 +3,7 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
+import { BorderBeam } from "border-beam"
 import { AlertCircle, FileSpreadsheet, FileText, Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
@@ -208,12 +209,7 @@ export default function MenuImportOptions({
           <p className="text-sm font-medium">Importando productos...</p>
         </div>
       )}
-      <div className="relative">
-        <div
-          className="animate-rotate-slow pointer-events-none absolute inset-0
-            rounded-lg bg-linear-to-r from-indigo-600 via-pink-600 to-orange-600
-            opacity-50 blur-xs"
-        />
+      <BorderBeam size="pulse-outside" colorVariant="colorful" strength={0.5}>
         <div
           className="bg-background relative rounded-2xl p-4 ring-1 ring-black/10
             dark:ring-white/15"
@@ -236,7 +232,7 @@ export default function MenuImportOptions({
             </Link>
           </Button>
         </div>
-      </div>
+      </BorderBeam>
 
       <div
         className="border-border/60 bg-background rounded-2xl border p-5

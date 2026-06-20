@@ -6,6 +6,8 @@ import CategorySettings from "@/components/menu-editor/blocks/category-settings"
 import { ItemView } from "@/components/menu-editor/blocks/item-block"
 import { useTranslation } from "@/components/menu-editor/translation-provider"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
+import { normalizeMenuLabelCasing } from "@/lib/menu-text"
+import type { MenuTextTransform } from "@/lib/types/theme"
 import { cn } from "@/lib/utils"
 
 // Helper to normalize color value (handles both hex string and legacy RgbaColor object)
@@ -39,12 +41,14 @@ export type CategoryBlockProps = {
   categoryFontWeight?: string
   categoryFontFamily?: string
   categoryTextAlign?: string
+  categoryTextTransform?: MenuTextTransform
   categoryHeadingBgColor?: string
   categoryHeadingShape?: CategoryHeadingShape
   itemFontSize?: number
   itemColor?: RgbaColor
   itemFontWeight?: string
   itemFontFamily?: string
+  itemTextTransform?: MenuTextTransform
   priceFontSize?: number
   priceColor?: RgbaColor
   priceFontWeight?: string
@@ -62,12 +66,14 @@ export default function CategoryBlock({
   categoryFontWeight,
   categoryFontFamily,
   categoryTextAlign,
+  categoryTextTransform,
   categoryHeadingBgColor,
   categoryHeadingShape = "none",
   itemFontSize,
   itemColor,
   itemFontWeight,
   itemFontFamily,
+  itemTextTransform,
   priceFontSize,
   priceColor,
   priceFontWeight,
@@ -86,15 +92,17 @@ export default function CategoryBlock({
     if (!data?.name) return
 
     setCustom((custom: { displayName?: string }) => {
-      custom.displayName = data.name
+      custom.displayName = normalizeMenuLabelCasing(data.name)
     })
   }, [data.name, setCustom])
   const { isEditing } = useEditor(state => ({
     isEditing: state.options.enabled
   }))
   const translation = useTranslation()
-  const displayCategoryName =
+  const displayCategoryName = normalizeMenuLabelCasing(
     translation?.getCategoryTranslation(data.id)?.name ?? data.name
+  )
+
   return (
     <div
       ref={ref => {
@@ -123,6 +131,8 @@ export default function CategoryBlock({
               color: `rgba(${Object.values(categoryColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
               fontWeight: categoryFontWeight,
               textAlign: categoryTextAlign as "right" | "left" | "center",
+              textTransform:
+                categoryTextTransform === "uppercase" ? "uppercase" : undefined,
               lineHeight: `${(categoryFontSize ?? 12) * 1.8}px`,
               "--heading-bg-color":
                 categoryHeadingShape === "none"
@@ -150,6 +160,7 @@ export default function CategoryBlock({
                   itemColor,
                   itemFontWeight,
                   itemFontFamily,
+                  itemTextTransform,
                   priceFontSize,
                   priceColor,
                   priceFontWeight,
@@ -177,12 +188,14 @@ CategoryBlock.craft = {
     categoryFontWeight: "700",
     categoryFontFamily: "Inter",
     categoryTextAlign: "center",
+    categoryTextTransform: "none",
     categoryHeadingBgColor: undefined,
     categoryHeadingShape: "none",
     itemFontSize: 16,
     itemColor: { r: 38, g: 50, b: 56, a: 1 },
     itemFontWeight: "500",
     itemFontFamily: "Inter",
+    itemTextTransform: "none",
     priceFontSize: 14,
     priceColor: { r: 38, g: 50, b: 56, a: 1 },
     priceFontWeight: "400",

@@ -1,7 +1,7 @@
 import { useEditor, useNode } from "@craftjs/core"
-import { Paintbrush } from "lucide-react"
+import { CaseSensitive, CaseUpper, Paintbrush } from "lucide-react"
 
-import { type CategoryBlockProps } from "@/components/menu-editor/blocks/category-block"
+import { type ItemBlockProps } from "@/components/menu-editor/blocks/item-block"
 import SideSection from "@/components/menu-editor/side-section"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -13,6 +13,7 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Tooltip,
   TooltipContent,
@@ -27,6 +28,7 @@ export default function ItemSettings() {
     backgroundMode,
     itemFontSize,
     itemFontWeight,
+    itemTextTransform,
     priceFontSize,
     priceFontWeight,
     showImage
@@ -39,6 +41,7 @@ export default function ItemSettings() {
     itemFontSize: node.data.props.itemFontSize,
     itemColor: node.data.props.itemColor,
     itemFontWeight: node.data.props.itemFontWeight,
+    itemTextTransform: node.data.props.itemTextTransform,
     priceFontSize: node.data.props.priceFontSize,
     priceColor: node.data.props.priceColor,
     priceFontWeight: node.data.props.priceFontWeight,
@@ -54,6 +57,7 @@ export default function ItemSettings() {
       backgroundMode,
       itemFontSize,
       itemFontWeight,
+      itemTextTransform: itemTextTransform ?? "none",
       priceFontSize,
       priceFontWeight,
       showImage
@@ -80,7 +84,7 @@ export default function ItemSettings() {
               value={backgroundMode}
               onValueChange={value =>
                 setProp(
-                  (props: CategoryBlockProps) =>
+                  (props: ItemBlockProps) =>
                     (props.backgroundMode = value as "none" | "custom")
                 )
               }
@@ -108,7 +112,7 @@ export default function ItemSettings() {
               value={itemFontSize.toString()}
               onValueChange={value =>
                 setProp(
-                  (props: CategoryBlockProps) =>
+                  (props: ItemBlockProps) =>
                     (props.itemFontSize = parseInt(value))
                 )
               }
@@ -135,7 +139,7 @@ export default function ItemSettings() {
               value={itemFontWeight}
               onValueChange={value =>
                 setProp(
-                  (props: CategoryBlockProps) => (props.itemFontWeight = value)
+                  (props: ItemBlockProps) => (props.itemFontWeight = value)
                 )
               }
             >
@@ -152,6 +156,33 @@ export default function ItemSettings() {
               </SelectContent>
             </Select>
           </dd>
+          <dt>
+            <Label size="xs">Capitaliza</Label>
+          </dt>
+          <dd className="col-span-2">
+            <Tabs
+              value={itemTextTransform ?? "none"}
+              onValueChange={value =>
+                setProp(
+                  (props: ItemBlockProps) =>
+                    (props.itemTextTransform =
+                      value as ItemBlockProps["itemTextTransform"])
+                )
+              }
+            >
+              <TabsList className="h-8 p-0.5">
+                <TabsTrigger value="none" aria-label="Capitalización normal">
+                  <CaseSensitive className="size-3.5" />
+                </TabsTrigger>
+                <TabsTrigger
+                  value="uppercase"
+                  aria-label="Capitalización en mayúsculas"
+                >
+                  <CaseUpper className="size-3.5" />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </dd>
         </div>
       </SideSection>
       <SideSection title="Precio">
@@ -164,7 +195,7 @@ export default function ItemSettings() {
               value={priceFontSize.toString()}
               onValueChange={value =>
                 setProp(
-                  (props: CategoryBlockProps) =>
+                  (props: ItemBlockProps) =>
                     (props.priceFontSize = parseInt(value))
                 )
               }
@@ -191,7 +222,7 @@ export default function ItemSettings() {
               value={priceFontWeight}
               onValueChange={value =>
                 setProp(
-                  (props: CategoryBlockProps) => (props.priceFontWeight = value)
+                  (props: ItemBlockProps) => (props.priceFontWeight = value)
                 )
               }
             >
@@ -221,7 +252,7 @@ export default function ItemSettings() {
               checked={showImage}
               onCheckedChange={checked => {
                 setProp(
-                  (props: Required<CategoryBlockProps>) =>
+                  (props: Required<ItemBlockProps>) =>
                     (props.showImage = checked)
                 )
               }}

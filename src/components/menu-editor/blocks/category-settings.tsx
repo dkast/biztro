@@ -1,7 +1,14 @@
 import { useEditor, useNode } from "@craftjs/core"
 import { Colorful, hexToHsva, Sketch } from "@uiw/react-color"
 import { useAtomValue } from "jotai"
-import { AlignCenter, AlignLeft, AlignRight, Paintbrush } from "lucide-react"
+import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  CaseSensitive,
+  CaseUpper,
+  Paintbrush
+} from "lucide-react"
 
 import {
   type CategoryBlockProps,
@@ -79,32 +86,133 @@ function getColorButtonStyle(
   return { backgroundColor: normalizedColor }
 }
 
+type ColorPickerControlProps = {
+  color: string | { r: number; g: number; b: number; a?: number } | undefined
+  fallbackColor: string
+  title: string
+  ariaLabel: string
+  clearLabel: string
+  colorPresets: { color: string; title: string }[]
+  isMobile: boolean
+  onChange: (color: string) => void
+  onClear: () => void
+}
+
+function ColorPickerControl({
+  color,
+  fallbackColor,
+  title,
+  ariaLabel,
+  clearLabel,
+  colorPresets,
+  isMobile,
+  onChange,
+  onClear
+}: ColorPickerControlProps) {
+  if (isMobile) {
+    return (
+      <DrawerNested>
+        <DrawerTrigger asChild>
+          <button
+            type="button"
+            className="h-8 w-12 rounded-sm border border-black/20
+              dark:border-white/20"
+            style={getColorButtonStyle(color)}
+            aria-label={ariaLabel}
+          />
+        </DrawerTrigger>
+        <DrawerContent className="px-4 pb-8">
+          <DrawerHeader>
+            <DrawerTitle>{title}</DrawerTitle>
+          </DrawerHeader>
+          <div className="space-y-4">
+            <div
+              className="flex items-center justify-center"
+              data-vaul-no-drag
+              onPointerDown={event => event.stopPropagation()}
+              onTouchStart={event => event.stopPropagation()}
+              onMouseDown={event => event.stopPropagation()}
+            >
+              <Colorful
+                disableAlpha
+                color={normalizeColor(color, fallbackColor)}
+                onChange={selectedColor => onChange(selectedColor.hex)}
+              />
+            </div>
+            <Button
+              variant="outline"
+              className="w-full py-2 text-sm"
+              onClick={onClear}
+            >
+              {clearLabel}
+            </Button>
+          </div>
+        </DrawerContent>
+      </DrawerNested>
+    )
+  }
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="h-6 w-10 rounded-sm border border-black/20
+            dark:border-white/20"
+          style={getColorButtonStyle(color)}
+          aria-label={ariaLabel}
+        />
+      </PopoverTrigger>
+      <PopoverContent className="w-[218px] p-0">
+        <div className="flex flex-col">
+          <Sketch
+            disableAlpha
+            presetColors={colorPresets}
+            color={hexToHsva(normalizeColor(color, fallbackColor))}
+            onChange={selectedColor => onChange(selectedColor.hex)}
+          />
+          <button
+            type="button"
+            className="w-full border-t border-black/10 py-2 text-sm
+              hover:bg-gray-50 dark:border-white/10 dark:hover:bg-gray-800"
+            onClick={onClear}
+          >
+            {clearLabel}
+          </button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}
+
 export default function CategorySettings() {
   const {
     id,
     actions: { setProp },
-    // backgroundMode,
     categoryFontSize,
     categoryFontWeight,
     categoryTextAlign,
+    categoryTextTransform,
     categoryHeadingBgColor,
     categoryHeadingShape,
     itemFontSize,
     itemFontWeight,
+    itemTextTransform,
     priceFontSize,
     priceFontWeight,
     showImage
   } = useNode(node => ({
-    // backgroundMode: node.data.props.backgroundMode,
     categoryFontSize: node.data.props.categoryFontSize,
     categoryColor: node.data.props.categoryColor,
     categoryFontWeight: node.data.props.categoryFontWeight,
     categoryTextAlign: node.data.props.categoryTextAlign,
+    categoryTextTransform: node.data.props.categoryTextTransform,
     categoryHeadingBgColor: node.data.props.categoryHeadingBgColor,
     categoryHeadingShape: node.data.props.categoryHeadingShape,
     itemFontSize: node.data.props.itemFontSize,
     itemColor: node.data.props.itemColor,
     itemFontWeight: node.data.props.itemFontWeight,
+    itemTextTransform: node.data.props.itemTextTransform,
     priceFontSize: node.data.props.priceFontSize,
     priceColor: node.data.props.priceColor,
     priceFontWeight: node.data.props.priceFontWeight,
@@ -120,10 +228,12 @@ export default function CategorySettings() {
       categoryFontSize,
       categoryFontWeight,
       categoryTextAlign,
+      categoryTextTransform: categoryTextTransform ?? "none",
       categoryHeadingBgColor,
       categoryHeadingShape,
       itemFontSize,
       itemFontWeight,
+      itemTextTransform: itemTextTransform ?? "none",
       priceFontSize,
       priceFontWeight,
       showImage
@@ -166,34 +276,6 @@ export default function CategorySettings() {
 
   return (
     <>
-      {/* <SideSection title="General">
-        <div className="grid grid-cols-3 items-center gap-2">
-          <dt>
-            <Label size="xs">Fondo</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={backgroundMode}
-              onValueChange={value =>
-                setProp(
-                  (props: CategoryBlockProps) =>
-                    (props.backgroundMode = value as "none" | "custom")
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Ninguno</SelectItem>
-                <SelectItem value="custom">Personalizado</SelectItem>
-              </SelectContent>
-            </Select>
-          </dd>
-        </div>
-      </SideSection> */}
       <SideSection title="Categoría">
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
@@ -276,108 +358,57 @@ export default function CategorySettings() {
             </Tabs>
           </dd>
           <dt>
+            <Label size="xs">Capitaliza</Label>
+          </dt>
+          <dd className="col-span-2">
+            <Tabs
+              value={categoryTextTransform ?? "none"}
+              onValueChange={value =>
+                setProp(
+                  (props: CategoryBlockProps) =>
+                    (props.categoryTextTransform =
+                      value as CategoryBlockProps["categoryTextTransform"])
+                )
+              }
+            >
+              <TabsList className="h-8 p-0.5">
+                <TabsTrigger value="none" aria-label="Capitalización normal">
+                  <CaseSensitive className="size-3.5" />
+                </TabsTrigger>
+                <TabsTrigger
+                  value="uppercase"
+                  aria-label="Capitalización en mayúsculas"
+                >
+                  <CaseUpper className="size-3.5" />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </dd>
+          <dt>
             <Label size="xs">Fondo título</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
-            {isMobile ? (
-              <DrawerNested>
-                <DrawerTrigger asChild>
-                  <button
-                    type="button"
-                    className="h-8 w-12 rounded-sm border border-black/20
-                      dark:border-white/20"
-                    style={getColorButtonStyle(categoryHeadingBgColor)}
-                    aria-label="Seleccionar color de fondo"
-                  />
-                </DrawerTrigger>
-                <DrawerContent className="px-4 pb-8">
-                  <DrawerHeader>
-                    <DrawerTitle>Color de fondo</DrawerTitle>
-                  </DrawerHeader>
-                  <div className="space-y-4">
-                    <div
-                      className="flex items-center justify-center"
-                      data-vaul-no-drag
-                      onPointerDown={e => e.stopPropagation()}
-                      onTouchStart={e => e.stopPropagation()}
-                      onMouseDown={e => e.stopPropagation()}
-                    >
-                      <Colorful
-                        disableAlpha
-                        color={normalizeColor(
-                          categoryHeadingBgColor,
-                          selectedTheme.surfaceColor
-                        )}
-                        onChange={color => {
-                          setProp(
-                            (props: CategoryBlockProps) =>
-                              (props.categoryHeadingBgColor = color.hex)
-                          )
-                        }}
-                      />
-                    </div>
-                    <Button
-                      variant="outline"
-                      className="w-full py-2 text-sm"
-                      onClick={() => {
-                        setProp(
-                          (props: CategoryBlockProps) =>
-                            (props.categoryHeadingBgColor = undefined)
-                        )
-                      }}
-                    >
-                      Sin color
-                    </Button>
-                  </div>
-                </DrawerContent>
-              </DrawerNested>
-            ) : (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className="h-6 w-10 rounded-sm border border-black/20
-                      dark:border-white/20"
-                    style={getColorButtonStyle(categoryHeadingBgColor)}
-                    aria-label="Seleccionar color de fondo"
-                  />
-                </PopoverTrigger>
-                <PopoverContent className="w-[218px] p-0">
-                  <div className="flex flex-col">
-                    <Sketch
-                      disableAlpha
-                      presetColors={colorPresets}
-                      color={hexToHsva(
-                        normalizeColor(
-                          categoryHeadingBgColor,
-                          selectedTheme.surfaceColor
-                        )
-                      )}
-                      onChange={color => {
-                        setProp(
-                          (props: CategoryBlockProps) =>
-                            (props.categoryHeadingBgColor = color.hex)
-                        )
-                      }}
-                    />
-                    <button
-                      type="button"
-                      className="w-full border-t border-black/10 py-2 text-sm
-                        hover:bg-gray-50 dark:border-white/10
-                        dark:hover:bg-gray-800"
-                      onClick={() => {
-                        setProp(
-                          (props: CategoryBlockProps) =>
-                            (props.categoryHeadingBgColor = undefined)
-                        )
-                      }}
-                    >
-                      Sin color
-                    </button>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            )}
+            <ColorPickerControl
+              color={categoryHeadingBgColor}
+              fallbackColor={selectedTheme.surfaceColor}
+              title="Color de fondo"
+              ariaLabel="Seleccionar color de fondo"
+              clearLabel="Sin color"
+              colorPresets={colorPresets}
+              isMobile={isMobile}
+              onChange={color =>
+                setProp(
+                  (props: CategoryBlockProps) =>
+                    (props.categoryHeadingBgColor = color)
+                )
+              }
+              onClear={() => {
+                setProp(
+                  (props: CategoryBlockProps) =>
+                    (props.categoryHeadingBgColor = undefined)
+                )
+              }}
+            />
           </dd>
           <dt>
             <Label size="xs">Forma título</Label>
@@ -466,6 +497,33 @@ export default function CategorySettings() {
                 <SelectItem value="700">Negrita</SelectItem>
               </SelectContent>
             </Select>
+          </dd>
+          <dt>
+            <Label size="xs">Capitaliza</Label>
+          </dt>
+          <dd className="col-span-2">
+            <Tabs
+              value={itemTextTransform ?? "none"}
+              onValueChange={value =>
+                setProp(
+                  (props: CategoryBlockProps) =>
+                    (props.itemTextTransform =
+                      value as CategoryBlockProps["itemTextTransform"])
+                )
+              }
+            >
+              <TabsList className="h-8 p-0.5">
+                <TabsTrigger value="none" aria-label="Capitalización normal">
+                  <CaseSensitive className="size-3.5" />
+                </TabsTrigger>
+                <TabsTrigger
+                  value="uppercase"
+                  aria-label="Capitalización en mayúsculas"
+                >
+                  <CaseUpper className="size-3.5" />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </dd>
         </div>
       </SideSection>

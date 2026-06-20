@@ -5,6 +5,7 @@ import toast from "react-hot-toast"
 import { type CellSelectOption } from "@/types/data-grid"
 import * as Sentry from "@sentry/nextjs"
 import type { ColumnDef } from "@tanstack/react-table"
+import { BorderBeam } from "border-beam"
 import {
   AlertCircle,
   Check,
@@ -12,9 +13,11 @@ import {
   CircleAlert,
   FileText,
   Loader,
+  Lock,
   SparklesIcon,
   Trash2
 } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -23,23 +26,40 @@ import { TextMorph } from "torph/react"
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
-import {
-  Banner,
-  BannerAction,
-  BannerClose,
-  BannerIcon,
-  BannerTitle
-} from "@/components/kibo-ui/banner"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+  FieldTitle
+} from "@/components/ui/field"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/ui/tooltip"
 // Simulation flag is provided by server; no local UI switch needed
 import {
   bulkCreateItems,
   parseMenuFile,
   type MenuImportItem
 } from "@/server/actions/item/mutations"
+import { createMenuFromImport } from "@/server/actions/menu-import/mutations"
 import { useDataGrid } from "@/hooks/use-data-grid"
 import { appConfig } from "@/app/config"
 import { SUPPORTED_UPLOAD_MIME_TYPES } from "@/lib/types/media"
@@ -47,6 +67,7 @@ import { MenuItemStatus } from "@/lib/types/menu-item"
 import { cn } from "@/lib/utils"
 
 type EditableItem = MenuImportItem & { _id: string }
+type ImportMode = "items" | "full-menu"
 
 function ProcessStep({
   number,
@@ -116,6 +137,33 @@ function generateId() {
   return Math.random().toString(36).slice(2)
 }
 
+function getReliabilityBadgeVariant(item: MenuImportItem) {
+  if (item.needsReview || item.reliabilityScore < 0.75) return "yellow"
+  if (item.reliabilityScore >= 0.9) return "green"
+
+  return "secondary"
+}
+
+function getReliabilityLabel(item: MenuImportItem) {
+  if (item.needsReview) return "Revisar"
+
+  return `${Math.round(item.reliabilityScore * 100)}%`
+}
+
+function toActionItems(items: EditableItem[]) {
+  return items
+    .filter(item => item.name.trim())
+    .map(item => ({
+      name: item.name,
+      variantName: item.variantName || undefined,
+      description: item.description || undefined,
+      price: item.price,
+      status: MenuItemStatus.ACTIVE,
+      category: item.category || undefined,
+      currency: item.currency ?? "MXN"
+    }))
+}
+
 export default function MenuImportForm({
   simulateEnabled = true,
   isPro = false,
@@ -136,7 +184,9 @@ export default function MenuImportForm({
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [selectedMimeType, setSelectedMimeType] =
     useState<SupportedUploadMimeType | null>(null)
+  const sourceFileBase64Ref = useRef<string | null>(null)
   const [parseError, setParseError] = useState<string | null>(null)
+  const [importMode, setImportMode] = useState<ImportMode>("items")
 
   const { execute: executeParse, reset } = useAction(parseMenuFile, {
     onSuccess: response => {
@@ -174,13 +224,19 @@ export default function MenuImportForm({
         resetBulkCreate()
         return
       }
-      toast.success(
-        `${response.data?.success?.length} productos importados correctamente`
-      )
+      const createdItems = response.data?.success
+      if (!createdItems?.length) {
+        toast.error("No se pudieron guardar los productos importados")
+        resetBulkCreate()
+        return
+      }
+
+      toast.success(`${createdItems.length} productos importados correctamente`)
       // Clear UI state: items grid and selected file
       setItems([])
       setSelectedFile(null)
       setSelectedMimeType(null)
+      sourceFileBase64Ref.current = null
       setParseError(null)
       if (fileInputRef.current) fileInputRef.current.value = ""
       resetBulkCreate()
@@ -192,6 +248,43 @@ export default function MenuImportForm({
       toast.error("Error al guardar los productos")
     }
   })
+  const {
+    execute: executeCreateMenuFromImport,
+    isPending: isCreatingMenu,
+    reset: resetCreateMenuFromImport
+  } = useAction(createMenuFromImport, {
+    onSuccess: response => {
+      if (response.data?.failure) {
+        toast.error(response.data.failure.reason)
+        resetCreateMenuFromImport()
+        return
+      }
+
+      const menuId = response.data?.success?.menu.id
+      if (!menuId) {
+        toast.error("No se pudo abrir el menú generado")
+        resetCreateMenuFromImport()
+        return
+      }
+
+      toast.success("Menú completo generado correctamente")
+      setItems([])
+      setSelectedFile(null)
+      setSelectedMimeType(null)
+      sourceFileBase64Ref.current = null
+      setParseError(null)
+      if (fileInputRef.current) fileInputRef.current.value = ""
+      resetCreateMenuFromImport()
+      router.push(`/menu-editor/${menuId}`)
+    },
+    onError: error => {
+      console.error(error)
+      Sentry.captureException(error, {
+        tags: { section: "menu-import-full-menu" }
+      })
+      toast.error("Error al generar el menú completo")
+    }
+  })
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -201,6 +294,7 @@ export default function MenuImportForm({
     if (!mimeType) {
       setSelectedFile(null)
       setSelectedMimeType(null)
+      sourceFileBase64Ref.current = null
       setItems([])
       setParseError("Formato no soportado. Usa PDF, PNG, JPG/JPEG o WEBP.")
       return
@@ -209,6 +303,7 @@ export default function MenuImportForm({
     if (file.size > MAX_PDF_FILE_SIZE_BYTES) {
       setSelectedFile(null)
       setSelectedMimeType(null)
+      sourceFileBase64Ref.current = null
       setItems([])
       setParseError(
         `El archivo es demasiado grande. El tamaño máximo permitido es ${MAX_PDF_FILE_SIZE_MB} MB.`
@@ -218,6 +313,7 @@ export default function MenuImportForm({
 
     setSelectedFile(file)
     setSelectedMimeType(mimeType)
+    sourceFileBase64Ref.current = null
     setParseError(null)
     setItems([])
   }
@@ -235,6 +331,7 @@ export default function MenuImportForm({
         setIsParsing(false)
         return
       }
+      sourceFileBase64Ref.current = base64
       executeParse({
         fileBase64: base64,
         mimeType: selectedMimeType,
@@ -301,7 +398,11 @@ export default function MenuImportForm({
         description: "",
         price: 0,
         category: "",
-        currency: "MXN"
+        currency: "MXN",
+        reliabilityScore: 1,
+        needsReview: false,
+        reviewReasons: [],
+        corrections: []
       }
     ])
 
@@ -310,6 +411,8 @@ export default function MenuImportForm({
       columnId: "name"
     }
   }, [items.length])
+
+  const isMutating = isSaving || isCreatingMenu
 
   const columns: ColumnDef<EditableItem>[] = useMemo(
     () => [
@@ -387,6 +490,65 @@ export default function MenuImportForm({
         }
       },
       {
+        id: "reliability",
+        accessorKey: "reliabilityScore",
+        header: () => "Revisión IA",
+        size: 180,
+        minSize: 160,
+        enableColumnFilter: false,
+        cell: ({ row }) => {
+          const item = row.original
+          const score = Math.round(item.reliabilityScore * 100)
+          const reviewReasons = item.reviewReasons.length
+            ? item.reviewReasons
+            : ["Extracción con confianza media"]
+
+          return (
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant={getReliabilityBadgeVariant(item)}
+                    className="cursor-help"
+                  >
+                    {getReliabilityLabel(item)}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-72">
+                  <div className="flex flex-col gap-2">
+                    <p className="font-medium">
+                      Confiabilidad estimada: {score}%
+                    </p>
+                    {item.needsReview || item.reliabilityScore < 0.75 ? (
+                      <ul className="list-disc pl-4">
+                        {reviewReasons.map(reason => (
+                          <li key={reason}>{reason}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>La IA no detectó señales claras de ambigüedad.</p>
+                    )}
+                    {item.corrections.length > 0 ? (
+                      <div className="flex flex-col gap-1">
+                        <p className="font-medium">Correcciones OCR</p>
+                        {item.corrections.map(correction => (
+                          <p key={`${correction.field}-${correction.original}`}>
+                            {correction.original} → {correction.corrected}
+                          </p>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+              {item.corrections.length > 0 ? (
+                <Badge variant="blue">Corregido</Badge>
+              ) : null}
+            </div>
+          )
+        }
+      },
+      {
         id: "actions",
         header: () => <span className="sr-only">Acciones</span>,
         size: 64,
@@ -399,7 +561,7 @@ export default function MenuImportForm({
             variant="ghost"
             size="icon"
             onClick={() => handleDeleteItem(row.original._id)}
-            disabled={isSaving}
+            disabled={isMutating}
             className="size-8"
             aria-label="Eliminar producto"
           >
@@ -408,7 +570,7 @@ export default function MenuImportForm({
         )
       }
     ],
-    [currencyOptions, handleDeleteItem, isSaving]
+    [currencyOptions, handleDeleteItem, isMutating]
   )
 
   const { table, ...dataGridProps } = useDataGrid({
@@ -419,7 +581,7 @@ export default function MenuImportForm({
     onRowsDelete: handleRowsDelete,
     getRowId: row => row._id,
     enableSearch: true,
-    readOnly: isSaving
+    readOnly: isMutating
   })
 
   const groupPreview = useMemo(() => {
@@ -448,9 +610,31 @@ export default function MenuImportForm({
       multiVariantItems
     }
   }, [items])
+  const reviewSummary = useMemo(() => {
+    const needsReview = items.filter(
+      item => item.needsReview || item.reliabilityScore < 0.75
+    )
+    const correctedRows = items.filter(item => item.corrections.length > 0)
+
+    return {
+      needsReviewCount: needsReview.length,
+      correctedRowsCount: correctedRows.length
+    }
+  }, [items])
+
+  const handleImportModeChange = (value: string) => {
+    if (!value) return
+
+    if (value === "full-menu" && !isPro) {
+      setShowUpgradeDialog(true)
+      return
+    }
+
+    setImportMode(value as ImportMode)
+  }
 
   const handleSave = () => {
-    const validItems = items.filter(item => item.name.trim())
+    const validItems = toActionItems(items)
     if (validItems.length === 0) {
       toast.error("Agrega al menos un producto con nombre")
       return
@@ -461,17 +645,36 @@ export default function MenuImportForm({
       return
     }
 
-    executeBulkCreate(
-      validItems.map(item => ({
-        name: item.name,
-        variantName: item.variantName || undefined,
-        description: item.description || undefined,
-        price: item.price,
-        status: MenuItemStatus.ACTIVE,
-        category: item.category || undefined,
-        currency: item.currency ?? "MXN"
-      }))
-    )
+    executeBulkCreate(validItems)
+  }
+
+  const handleCreateFullMenu = () => {
+    const validItems = toActionItems(items)
+    if (validItems.length === 0) {
+      toast.error("Agrega al menos un producto con nombre")
+      return
+    }
+
+    if (!isPro) {
+      setShowUpgradeDialog(true)
+      return
+    }
+
+    if (!sourceFileBase64Ref.current || !selectedMimeType) {
+      toast.error("Vuelve a procesar el archivo antes de generar el menú")
+      return
+    }
+
+    const menuName = selectedFile?.name.replace(/\.[^.]+$/, "")
+
+    executeCreateMenuFromImport({
+      fileBase64: sourceFileBase64Ref.current,
+      mimeType: selectedMimeType,
+      simulateResponse,
+      simulateScenario,
+      menuName,
+      items: validItems
+    })
   }
 
   const isMac =
@@ -480,254 +683,363 @@ export default function MenuImportForm({
       : false
 
   const modKey = isMac ? "⌘" : "Ctrl"
-
   const step = items.length > 0 ? 3 : selectedFile ? 2 : 1
 
+  const isFullMenuMode = importMode === "full-menu"
+  const hasImportedItems = items.length > 0
+  const stepLabels: [string, string, string] = isFullMenuMode
+    ? ["Sube tu archivo", "La IA extrae y diseña", "Genera y abre el editor"]
+    : ["Sube tu archivo", "La IA extrae los productos", "Revisa y guarda"]
+
   return (
-    <div className="flex flex-col gap-6">
-      {/* Process steps */}
-      <div
-        className="border-border bg-muted/40 flex flex-wrap items-center gap-x-3
-          gap-y-2 rounded-lg border px-4 py-3"
-      >
-        <ProcessStep
-          number={1}
-          label="Sube tu archivo"
-          active={step === 1}
-          done={step > 1}
-        />
-        <ChevronRight className="text-muted-foreground size-4 shrink-0" />
-        <ProcessStep
-          number={2}
-          label="La IA extrae los productos"
-          active={step === 2}
-          done={step > 2}
-        />
-        <ChevronRight className="text-muted-foreground size-4 shrink-0" />
-        <ProcessStep number={3} label="Revisa y guarda" active={step === 3} />
-      </div>
-
-      {/* File Upload */}
-      <div className="flex w-full flex-col gap-3">
+    <TooltipProvider>
+      <div className="flex flex-col gap-6">
+        {/* Process steps */}
         <div
-          className="group border-border hover:border-primary
-            hover:bg-primary/10 flex cursor-pointer flex-col items-center
-            justify-center gap-3 rounded-lg border-2 border-dashed p-8
-            transition-colors"
-          onClick={() => fileInputRef.current?.click()}
-          role="button"
-          tabIndex={0}
-          onKeyDown={event => {
-            if (event.key === "Enter" || event.code === "Space") {
-              event.preventDefault()
-              fileInputRef.current?.click()
-            }
-          }}
+          className="border-border bg-muted/40 flex flex-wrap items-center
+            gap-x-3 gap-y-2 rounded-lg border px-4 py-3"
         >
-          <FileText
-            className="text-muted-foreground group-hover:text-primary size-10
-              transition-colors"
+          <ProcessStep
+            number={1}
+            label={stepLabels[0]}
+            active={step === 1}
+            done={step > 1}
           />
-          <div className="text-center">
-            <p className="text-sm font-medium">
-              {selectedFile
-                ? selectedFile.name
-                : "Haz clic para seleccionar un archivo"}
-            </p>
-            <p className="text-muted-foreground mt-0.5 text-xs">
-              Funciona mejor con menús en texto claro y bien iluminados.
-            </p>
-            <div className="mt-2 flex flex-wrap justify-center gap-1.5">
-              {["PDF", "PNG", "JPG", "WEBP"].map(fmt => (
-                <span
-                  key={fmt}
-                  className="bg-muted text-muted-foreground inline-flex
-                    items-center rounded-full px-2 py-0.5 text-[11px]
-                    font-medium"
-                >
-                  {fmt}
-                </span>
-              ))}
-              <span
-                className="bg-muted text-muted-foreground inline-flex
-                  items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
-              >
-                máx. {MAX_PDF_FILE_SIZE_MB} MB
-              </span>
-            </div>
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept={FILE_INPUT_ACCEPT}
-            onChange={handleFileChange}
-            className="hidden"
+          <ChevronRight className="text-muted-foreground size-4 shrink-0" />
+          <ProcessStep
+            number={2}
+            label={stepLabels[1]}
+            active={step === 2}
+            done={step > 2}
           />
+          <ChevronRight className="text-muted-foreground size-4 shrink-0" />
+          <ProcessStep number={3} label={stepLabels[2]} active={step === 3} />
         </div>
 
-        {!isPro && items.length === 0 && (
-          <p className="text-muted-foreground text-center text-xs">
-            El plan básico incluye hasta {appConfig.itemLimit} productos.{" "}
-            <Link
-              href="/dashboard/settings/billing"
-              prefetch={false}
-              className="text-primary underline-offset-4 hover:underline"
-            >
-              Actualiza a Pro
-            </Link>{" "}
-            para importar sin límite.
+        <div className="flex flex-col gap-3">
+          <div>
+            <p className="text-sm font-medium">Modo de importación</p>
+          </div>
+          <RadioGroup
+            value={importMode}
+            onValueChange={handleImportModeChange}
+            className="grid gap-2 sm:grid-cols-2"
+          >
+            <FieldLabel htmlFor="import-mode-items" className="h-full">
+              <Field orientation="horizontal" className="h-full items-start">
+                <FieldContent>
+                  <FieldTitle>Solo productos</FieldTitle>
+                  <FieldDescription>
+                    Extrae productos para revisarlos y guardarlos en tu
+                    catálogo.
+                  </FieldDescription>
+                </FieldContent>
+                <RadioGroupItem id="import-mode-items" value="items" />
+              </Field>
+            </FieldLabel>
+            <FieldLabel htmlFor="import-mode-full-menu" className="h-full">
+              <Field orientation="horizontal" className="h-full items-start">
+                <FieldContent>
+                  <FieldTitle className="flex items-center gap-1.5">
+                    {!isPro && <Lock className="size-3.5" />}
+                    Menú completo Pro
+                  </FieldTitle>
+                  <FieldDescription>
+                    Genera un menú digital completo con diseño y abre el editor.
+                  </FieldDescription>
+                </FieldContent>
+                <RadioGroupItem id="import-mode-full-menu" value="full-menu" />
+              </Field>
+            </FieldLabel>
+          </RadioGroup>
+          <p className="text-muted-foreground text-xs">
+            {isFullMenuMode
+              ? "Generamos un menú digital con estilo a partir de tu archivo y abrimos el editor para que lo publiques."
+              : "Los productos se agregan a tu catálogo para editarlos y usarlos en cualquier menú."}
           </p>
-        )}
-
-        {selectedFile && (
-          <div className="mt-6 flex flex-col items-center justify-center gap-3">
-            {simulateEnabled && simulateResponse && (
-              <div className="flex items-center gap-3">
-                <Label htmlFor="simulate-scenario" className="text-sm">
-                  Escenario de simulación
-                </Label>
-                <select
-                  id="simulate-scenario"
-                  value={simulateScenario}
-                  onChange={event =>
-                    setSimulateScenario(
-                      event.target.value as "default" | "variants"
-                    )
-                  }
-                  className="border-input bg-background h-9 rounded-md border
-                    px-3 text-sm"
-                  disabled={isParsing || isSaving}
-                >
-                  <option value="default">Menú simple</option>
-                  <option value="variants">
-                    Múltiples variantes por producto
-                  </option>
-                </select>
-              </div>
-            )}
-
-            <>
-              <Button onClick={handleParse} disabled={isParsing || isSaving}>
-                {isParsing ? (
-                  <Loader className="size-4 animate-spin" />
-                ) : (
-                  <SparklesIcon className="size-4 fill-current" />
-                )}
-                {isParsing
-                  ? "Extrayendo productos..."
-                  : simulateResponse
-                    ? "Simular extracción"
-                    : "Extraer productos del archivo"}
-              </Button>
-              <UpgradeDialog
-                open={showUpgradeDialog}
-                onClose={() => setShowUpgradeDialog(false)}
-                title="Actualizar a Pro"
-                description="Actualiza tu plan a Pro para importar todos tus productos desde archivos PDF o imágenes usando IA ✨"
-              />
-            </>
-          </div>
-        )}
-      </div>
-
-      {/* Parse Error */}
-      {parseError && (
-        <Alert variant="destructive">
-          <AlertCircle className="size-4" />
-          <AlertTitle>Error al procesar el archivo</AlertTitle>
-          <AlertDescription>{parseError}</AlertDescription>
-        </Alert>
-      )}
-
-      {/* Items Table */}
-      {items.length > 0 && (
-        <div className="mt-10 flex flex-col gap-5">
-          {!isPro && groupPreview.groupedItems > appConfig.itemLimit && (
-            <Banner
-              inset
-              className="bg-linear-to-r/oklch from-indigo-500 to-pink-500
-                text-white"
-            >
-              <BannerIcon
-                icon={CircleAlert}
-                className="border-white/20 bg-white/10 text-white"
-              />
-              <BannerTitle>
-                Tienes {groupPreview.groupedItems} productos para importar, pero
-                el plan básico permite hasta {appConfig.itemLimit}.
-              </BannerTitle>
-              <BannerAction
-                asChild
-                className="border-white/20 bg-white/10 text-white
-                  hover:bg-white/20 hover:text-white"
-              >
-                <Link href="/dashboard/settings/billing" prefetch={false}>
-                  Actualizar a Pro
-                </Link>
-              </BannerAction>
-              <BannerClose
-                aria-label="Cerrar aviso"
-                className="text-white hover:bg-white/20 hover:text-white"
-              />
-            </Banner>
-          )}
-          <div className="flex flex-row items-end-safe gap-2 px-3">
-            <p className="text-sm font-medium">
-              {items.length} producto{items.length !== 1 ? "s" : ""} extraído
-              {items.length !== 1 ? "s" : ""}. Revisa y edita antes de guardar.
-            </p>
-            <p className="text-muted-foreground text-xs">
-              {groupPreview.totalRows} fila
-              {groupPreview.totalRows !== 1 ? "s" : ""} →{" "}
-              {groupPreview.groupedItems} producto
-              {groupPreview.groupedItems !== 1 ? "s" : ""} con{" "}
-              {groupPreview.totalRows} variante
-              {groupPreview.totalRows !== 1 ? "s" : ""}
-              {groupPreview.multiVariantItems > 0
-                ? ` (${groupPreview.multiVariantItems} con múltiples variantes)`
-                : ""}
-            </p>
-          </div>
-
-          <div className="rounded-lg border">
-            <DataGridKeyboardShortcuts enableSearch />
-            <DataGrid
-              table={table}
-              {...dataGridProps}
-              columns={columns}
-              height={400}
-              stretchColumns
-            />
-          </div>
-
-          <div className="flex justify-between">
-            <div className="px-2">
-              <span className="text-muted-foreground text-xs">
-                Presiona <Kbd>Enter</Kbd> para iniciar cambios en una celda,{" "}
-                <Kbd>Esc</Kbd> para cancelar la edición.
-                <br />
-                Presiona{" "}
-                <KbdGroup>
-                  <Kbd>{modKey}</Kbd> + <Kbd>/</Kbd>
-                </KbdGroup>{" "}
-                para mostrar la lista completa de comandos.
-              </span>
-            </div>
-            <Button
-              variant="secondary"
-              onClick={handleSave}
-              disabled={isSaving}
-            >
-              {isSaving && <Loader className="size-4 animate-spin" />}
-              <TextMorph>
-                {isSaving
-                  ? "Guardando..."
-                  : `Guardar ${items.length} productos`}
-              </TextMorph>
-            </Button>
-          </div>
         </div>
-      )}
-    </div>
+
+        {/* File Upload */}
+        <div className="flex w-full flex-col gap-3">
+          <AnimatePresence initial={false} mode="wait">
+            {hasImportedItems && selectedFile ? (
+              <motion.div
+                key="file-compact"
+                initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="bg-muted/50 border-border inline-flex max-w-full
+                  items-center gap-2 rounded-md border px-3 py-2"
+              >
+                <FileText className="text-muted-foreground size-4 shrink-0" />
+                <p className="truncate text-sm font-medium">
+                  {selectedFile.name}
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="file-expanded"
+                initial={{ opacity: 0, y: 8, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.99 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <div
+                  className="group border-border hover:border-primary
+                    hover:bg-primary/10 flex cursor-pointer flex-col
+                    items-center justify-center gap-3 rounded-lg border-2
+                    border-dashed p-8 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={event => {
+                    if (event.key === "Enter" || event.code === "Space") {
+                      event.preventDefault()
+                      fileInputRef.current?.click()
+                    }
+                  }}
+                >
+                  <FileText
+                    className="text-muted-foreground group-hover:text-primary
+                      size-10 transition-colors"
+                  />
+                  <div className="text-center">
+                    <p className="text-sm font-medium">
+                      {selectedFile
+                        ? selectedFile.name
+                        : "Haz clic para seleccionar un archivo"}
+                    </p>
+                    <p className="text-muted-foreground mt-0.5 text-xs">
+                      Funciona mejor con menús en texto claro y bien iluminados.
+                    </p>
+                    <div className="mt-2 flex flex-wrap justify-center gap-1.5">
+                      {["PDF", "PNG", "JPG", "WEBP"].map(fmt => (
+                        <span
+                          key={fmt}
+                          className="bg-muted text-muted-foreground inline-flex
+                            items-center rounded-md px-2 py-0.5 text-xs
+                            font-medium"
+                        >
+                          {fmt}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-muted-foreground mt-1.5 text-xs">
+                      Tamaño máximo {MAX_PDF_FILE_SIZE_MB} MB
+                    </p>
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept={FILE_INPUT_ACCEPT}
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {!isPro && items.length === 0 && (
+            <p className="text-muted-foreground text-center text-xs">
+              El plan básico incluye hasta {appConfig.itemLimit} productos.{" "}
+              <Link
+                href="/dashboard/settings/billing"
+                prefetch={false}
+                className="text-primary underline-offset-4 hover:underline"
+              >
+                Actualiza a Pro
+              </Link>{" "}
+              para importar sin límite.
+            </p>
+          )}
+
+          {selectedFile && !hasImportedItems && (
+            <div
+              className="mt-6 flex flex-col items-center justify-center gap-3"
+            >
+              {simulateEnabled && simulateResponse && (
+                <div className="flex items-center gap-3">
+                  <Label htmlFor="simulate-scenario" className="text-sm">
+                    Escenario de simulación
+                  </Label>
+                  <Select
+                    value={simulateScenario}
+                    onValueChange={value =>
+                      setSimulateScenario(value as "default" | "variants")
+                    }
+                    disabled={isParsing || isSaving}
+                  >
+                    <SelectTrigger id="simulate-scenario" className="w-auto">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="default">Menú simple</SelectItem>
+                      <SelectItem value="variants">
+                        Múltiples variantes por producto
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              <BorderBeam active={isParsing}>
+                <Button
+                  onClick={handleParse}
+                  disabled={isParsing || isMutating}
+                  variant={items.length > 0 ? "outline" : "default"}
+                >
+                  {isParsing ? (
+                    <Loader className="size-4 animate-spin" />
+                  ) : (
+                    <SparklesIcon className="size-4 fill-current" />
+                  )}
+                  {isParsing
+                    ? "Extrayendo productos..."
+                    : simulateResponse
+                      ? "Simular extracción"
+                      : "Extraer productos del archivo"}
+                </Button>
+              </BorderBeam>
+            </div>
+          )}
+        </div>
+
+        {/* Parse Error */}
+        {parseError && (
+          <Alert variant="destructive">
+            <AlertCircle className="size-4" />
+            <AlertTitle>Error al procesar el archivo</AlertTitle>
+            <AlertDescription>{parseError}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Extraction Skeleton */}
+        {isParsing && items.length === 0 && (
+          <div className="mt-10 flex flex-col gap-5" aria-hidden="true">
+            <Skeleton className="h-5 w-72" />
+            <div className="flex flex-col gap-2 rounded-lg border p-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <Skeleton key={index} className="h-9 w-full" />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Items Table */}
+        {items.length > 0 && (
+          <div className="mt-10 flex flex-col gap-5">
+            {!isPro && groupPreview.groupedItems > appConfig.itemLimit && (
+              <Alert variant="warning">
+                <CircleAlert className="size-4" />
+                <AlertTitle>Superaste el límite del plan básico</AlertTitle>
+                <AlertDescription className="flex flex-col gap-3">
+                  <span>
+                    Tienes {groupPreview.groupedItems} productos para importar,
+                    pero el plan básico permite hasta {appConfig.itemLimit}.
+                    Actualiza a Pro para guardarlos todos.
+                  </span>
+                  <Button asChild size="sm" className="self-start">
+                    <Link href="/dashboard/settings/billing" prefetch={false}>
+                      Actualizar a Pro
+                    </Link>
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
+            <div className="flex flex-row items-end-safe gap-2 px-3">
+              <p className="text-sm font-medium">
+                {items.length} producto{items.length !== 1 ? "s" : ""} extraído
+                {items.length !== 1 ? "s" : ""}. Revisa y edita antes de
+                guardar.
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {groupPreview.totalRows} fila
+                {groupPreview.totalRows !== 1 ? "s" : ""} →{" "}
+                {groupPreview.groupedItems} producto
+                {groupPreview.groupedItems !== 1 ? "s" : ""} con{" "}
+                {groupPreview.totalRows} variante
+                {groupPreview.totalRows !== 1 ? "s" : ""}
+                {groupPreview.multiVariantItems > 0
+                  ? ` (${groupPreview.multiVariantItems} con múltiples variantes)`
+                  : ""}
+              </p>
+            </div>
+
+            {reviewSummary.needsReviewCount > 0 ||
+            reviewSummary.correctedRowsCount > 0 ? (
+              <Alert variant="information">
+                <CircleAlert className="size-4" />
+                <AlertTitle>Revisión recomendada</AlertTitle>
+                <AlertDescription>
+                  {reviewSummary.needsReviewCount} fila
+                  {reviewSummary.needsReviewCount === 1 ? "" : "s"} se sugiere
+                  revisión. {reviewSummary.correctedRowsCount} fila
+                  {reviewSummary.correctedRowsCount === 1 ? "" : "s"} incluye
+                  {reviewSummary.correctedRowsCount === 1 ? "" : "n"}{" "}
+                  correcciones sugeridas por la IA.
+                </AlertDescription>
+              </Alert>
+            ) : null}
+
+            <div className="rounded-lg border">
+              <DataGridKeyboardShortcuts enableSearch />
+              <DataGrid
+                table={table}
+                {...dataGridProps}
+                columns={columns}
+                height={400}
+                stretchColumns
+              />
+            </div>
+
+            <div className="flex justify-between">
+              <div className="px-2">
+                <span className="text-muted-foreground text-xs">
+                  Presiona <Kbd>Enter</Kbd> para iniciar cambios en una celda,{" "}
+                  <Kbd>Esc</Kbd> para cancelar la edición.
+                  <br />
+                  Presiona{" "}
+                  <KbdGroup>
+                    <Kbd>{modKey}</Kbd> + <Kbd>/</Kbd>
+                  </KbdGroup>{" "}
+                  para mostrar la lista completa de comandos.
+                </span>
+              </div>
+              <Button
+                onClick={
+                  importMode === "full-menu" ? handleCreateFullMenu : handleSave
+                }
+                disabled={isMutating}
+              >
+                {isMutating && <Loader className="size-4 animate-spin" />}
+                <TextMorph>
+                  {isCreatingMenu
+                    ? "Generando menú completo..."
+                    : isSaving
+                      ? "Guardando..."
+                      : importMode === "full-menu"
+                        ? "Crear menú completo"
+                        : `Guardar ${items.length} productos`}
+                </TextMorph>
+              </Button>
+            </div>
+            {isFullMenuMode && (
+              <p className="text-muted-foreground px-2 text-right text-xs">
+                Al generar, abriremos el editor del menú para que ajustes el
+                diseño y lo publiques.
+              </p>
+            )}
+          </div>
+        )}
+        <UpgradeDialog
+          open={showUpgradeDialog}
+          onClose={() => setShowUpgradeDialog(false)}
+          title="Actualizar a Pro"
+          description="Actualiza tu plan a Pro para importar productos sin límite o crear un menú completo con IA ✨"
+        />
+      </div>
+    </TooltipProvider>
   )
 }

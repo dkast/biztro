@@ -12,6 +12,11 @@ import FontWrapper from "@/components/menu-editor/font-wrapper"
 import { useTranslation } from "@/components/menu-editor/translation-provider"
 import type { getMenuItemsWithoutCategory } from "@/server/actions/item/queries"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
+import {
+  normalizeMenuDescriptionText,
+  normalizeMenuLabelCasing
+} from "@/lib/menu-text"
+import type { MenuTextTransform } from "@/lib/types/theme"
 import { cn } from "@/lib/utils"
 
 export type ItemBlockProps = {
@@ -21,6 +26,7 @@ export type ItemBlockProps = {
   itemColor?: RgbaColor
   itemFontWeight?: string
   itemFontFamily?: string
+  itemTextTransform?: MenuTextTransform
   priceFontSize?: number
   priceColor?: RgbaColor
   priceFontWeight?: string
@@ -38,6 +44,7 @@ export default function ItemBlock({
   itemColor,
   itemFontWeight,
   itemFontFamily,
+  itemTextTransform,
   priceFontSize,
   priceColor,
   priceFontWeight,
@@ -55,7 +62,7 @@ export default function ItemBlock({
     if (!item?.name) return
 
     setCustom((custom: { displayName?: string }) => {
-      custom.displayName = item.name
+      custom.displayName = normalizeMenuLabelCasing(item.name)
     })
   }, [item?.name, setCustom])
 
@@ -81,6 +88,7 @@ export default function ItemBlock({
             itemColor,
             itemFontWeight,
             itemFontFamily,
+            itemTextTransform,
             priceFontSize,
             priceColor,
             priceFontWeight,
@@ -103,6 +111,7 @@ export function ItemView({
   itemColor,
   itemFontWeight,
   itemFontFamily,
+  itemTextTransform,
   priceFontSize,
   priceColor,
   priceFontWeight,
@@ -117,11 +126,13 @@ export function ItemView({
   const translation = useTranslation()
   const itemTranslation = translation?.getItemTranslation(item.id)
 
-  const displayName = itemTranslation?.name ?? item.name
+  const displayName = normalizeMenuLabelCasing(
+    itemTranslation?.name ?? item.name
+  )
   const displayDescription =
     itemTranslation?.description !== undefined
-      ? itemTranslation.description
-      : item.description
+      ? normalizeMenuDescriptionText(itemTranslation.description ?? "")
+      : normalizeMenuDescriptionText(item.description ?? "")
 
   return (
     <>
@@ -165,7 +176,11 @@ export function ItemView({
                     style={{
                       fontSize: `${itemFontSize}px`,
                       color: `rgba(${Object.values(itemColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
-                      fontWeight: itemFontWeight
+                      fontWeight: itemFontWeight,
+                      textTransform:
+                        itemTextTransform === "uppercase"
+                          ? "uppercase"
+                          : undefined
                     }}
                   >
                     {displayName}
@@ -200,8 +215,9 @@ export function ItemView({
                 const variantTranslation = translation?.getVariantTranslation(
                   variant.id
                 )
-                const displayVariantName =
+                const displayVariantName = normalizeMenuLabelCasing(
                   variantTranslation?.name ?? variant.name
+                )
                 return (
                   <div
                     key={variant.id}
@@ -297,6 +313,7 @@ ItemBlock.craft = {
     itemColor: { r: 38, g: 50, b: 56, a: 1 },
     itemFontWeight: "500",
     itemFontFamily: "Inter",
+    itemTextTransform: "none",
     priceFontSize: 14,
     priceColor: { r: 38, g: 50, b: 56, a: 1 },
     priceFontWeight: "400",

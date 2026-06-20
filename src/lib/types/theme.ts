@@ -5,6 +5,9 @@ export enum FrameSize {
 
 export const FONT_SIZES = [12, 14, 16, 18, 20, 24, 30, 36]
 
+export const MENU_TEXT_TRANSFORMS = ["none", "uppercase"] as const
+export type MenuTextTransform = (typeof MENU_TEXT_TRANSFORMS)[number]
+
 export const enum ThemeType {
   FONT = "FONT",
   COLOR = "COLOR"
@@ -1152,3 +1155,35 @@ export const imagePresets: ThemePreset[] = [
     tags: ["brunch", "coffee", "light"]
   }
 ]
+
+export const fontThemeNames = fontThemes.map(theme => theme.name) as [
+  string,
+  ...string[]
+]
+
+export const colorThemeIds = colorThemes.map(theme => theme.id) as [
+  string,
+  ...string[]
+]
+
+export const themePresetIds = themePresets.map(preset => preset.id) as [
+  string,
+  ...string[]
+]
+
+export const imagePresetIds = imagePresets.map(preset => preset.id) as [
+  string,
+  ...string[]
+]
+
+export const imagePresetBackgroundImages = Array.from(
+  new Set(
+    imagePresets
+      .map(preset => preset.bgImage)
+      .filter((bgImage): bgImage is string => Boolean(bgImage))
+  )
+) as [string, ...string[]]
+
+export function getFontThemeByName(name: string) {
+  return fontThemes.find(theme => theme.name === name)
+}
