@@ -86,7 +86,7 @@ function normalizeMenuLabelWord(word: string, wordIndex: number) {
   const lowercasedWord = word.toLocaleLowerCase(MENU_TEXT_LOCALE)
 
   if (
-    /^\p{Lu}{2,4}$/u.test(word) &&
+    /^\p{Lu}{2,3}$/u.test(word) &&
     !MENU_LOWERCASE_WORDS.has(lowercasedWord) &&
     !MENU_LOWERCASE_TOKENS.has(lowercasedWord) &&
     !MENU_UPPERCASE_TOKENS.has(lowercasedWord)
