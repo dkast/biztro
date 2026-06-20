@@ -163,7 +163,7 @@ function ColorPickerControl({
           aria-label={ariaLabel}
         />
       </PopoverTrigger>
-      <PopoverContent className="w-54.5 p-0">
+      <PopoverContent className="w-[218px] p-0">
         <div className="flex flex-col">
           <Sketch
             disableAlpha

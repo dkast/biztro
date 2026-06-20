@@ -68,12 +68,6 @@ import { cn } from "@/lib/utils"
 
 type EditableItem = MenuImportItem & { _id: string }
 type ImportMode = "items" | "full-menu"
-type StoredImportFile = {
-  fileBase64: string
-  mimeType: SupportedUploadMimeType
-  simulateResponse: boolean
-  simulateScenario: "default" | "variants"
-}
 
 function ProcessStep({
   number,
@@ -190,8 +184,7 @@ export default function MenuImportForm({
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [selectedMimeType, setSelectedMimeType] =
     useState<SupportedUploadMimeType | null>(null)
-  const [sourceFileInput, setSourceFileInput] =
-    useState<StoredImportFile | null>(null)
+  const sourceFileBase64Ref = useRef<string | null>(null)
   const [parseError, setParseError] = useState<string | null>(null)
   const [importMode, setImportMode] = useState<ImportMode>("items")
 
@@ -243,6 +236,7 @@ export default function MenuImportForm({
       setItems([])
       setSelectedFile(null)
       setSelectedMimeType(null)
+      sourceFileBase64Ref.current = null
       setParseError(null)
       if (fileInputRef.current) fileInputRef.current.value = ""
       resetBulkCreate()
@@ -277,7 +271,7 @@ export default function MenuImportForm({
       setItems([])
       setSelectedFile(null)
       setSelectedMimeType(null)
-      setSourceFileInput(null)
+      sourceFileBase64Ref.current = null
       setParseError(null)
       if (fileInputRef.current) fileInputRef.current.value = ""
       resetCreateMenuFromImport()
@@ -300,7 +294,7 @@ export default function MenuImportForm({
     if (!mimeType) {
       setSelectedFile(null)
       setSelectedMimeType(null)
-      setSourceFileInput(null)
+      sourceFileBase64Ref.current = null
       setItems([])
       setParseError("Formato no soportado. Usa PDF, PNG, JPG/JPEG o WEBP.")
       return
@@ -309,7 +303,7 @@ export default function MenuImportForm({
     if (file.size > MAX_PDF_FILE_SIZE_BYTES) {
       setSelectedFile(null)
       setSelectedMimeType(null)
-      setSourceFileInput(null)
+      sourceFileBase64Ref.current = null
       setItems([])
       setParseError(
         `El archivo es demasiado grande. El tamaño máximo permitido es ${MAX_PDF_FILE_SIZE_MB} MB.`
@@ -319,7 +313,7 @@ export default function MenuImportForm({
 
     setSelectedFile(file)
     setSelectedMimeType(mimeType)
-    setSourceFileInput(null)
+    sourceFileBase64Ref.current = null
     setParseError(null)
     setItems([])
   }
@@ -337,12 +331,7 @@ export default function MenuImportForm({
         setIsParsing(false)
         return
       }
-      setSourceFileInput({
-        fileBase64: base64,
-        mimeType: selectedMimeType,
-        simulateResponse,
-        simulateScenario
-      })
+      sourceFileBase64Ref.current = base64
       executeParse({
         fileBase64: base64,
         mimeType: selectedMimeType,
@@ -671,7 +660,7 @@ export default function MenuImportForm({
       return
     }
 
-    if (!sourceFileInput) {
+    if (!sourceFileBase64Ref.current || !selectedMimeType) {
       toast.error("Vuelve a procesar el archivo antes de generar el menú")
       return
     }
@@ -679,7 +668,10 @@ export default function MenuImportForm({
     const menuName = selectedFile?.name.replace(/\.[^.]+$/, "")
 
     executeCreateMenuFromImport({
-      ...sourceFileInput,
+      fileBase64: sourceFileBase64Ref.current,
+      mimeType: selectedMimeType,
+      simulateResponse,
+      simulateScenario,
       menuName,
       items: validItems
     })
