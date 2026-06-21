@@ -1,16 +1,15 @@
 "use client"
 
-import { useDeferredValue, useMemo, useState } from "react"
-import toast from "react-hot-toast"
 import {
-  Loader2,
-  Minus,
-  Plus,
-  Search,
-  ShoppingBag,
-  Trash2,
-  X
-} from "lucide-react"
+  useDeferredValue,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react"
+import toast from "react-hot-toast"
+import { Loader2, Minus, Plus, Search, ShoppingBag, Trash2 } from "lucide-react"
+import { AnimatePresence, motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -68,6 +67,7 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [orderType, setOrderType] = useState<SalesOrderType>("DINE_IN")
   const [cart, setCart] = useState<CartLine[]>([])
+  const [cartScrollSignal, setCartScrollSignal] = useState(0)
   const [selectedProduct, setSelectedProduct] =
     useState<SalesCatalogProduct | null>(null)
 
@@ -196,6 +196,8 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
         }
       ]
     })
+
+    setCartScrollSignal(signal => signal + 1)
   }
 
   const handleProductSelect = (product: SalesCatalogProduct) => {
@@ -253,43 +255,41 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
     <>
       <div
         className="grid gap-6
-          xl:grid-cols-[minmax(0,1.35fr)_minmax(360px,420px)]"
+          lg:grid-cols-[minmax(0,1.25fr)_minmax(260px,420px)]"
       >
         <section className="min-w-0 space-y-4">
-          <Card>
-            <CardContent className="flex flex-col gap-4 p-4">
-              <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
-                <div className="relative">
-                  <Search
-                    aria-hidden
-                    className="text-muted-foreground pointer-events-none
-                      absolute top-1/2 left-3 -translate-y-1/2"
-                  />
-                  <Input
-                    value={search}
-                    onChange={event => setSearch(event.target.value)}
-                    placeholder="Buscar producto"
-                    className="h-11 pl-10 text-base"
-                  />
-                </div>
-                <div
-                  className="flex items-center justify-between gap-3
-                    md:justify-end"
-                >
-                  <Badge variant="outline">
-                    {filteredProducts.length} productos
-                  </Badge>
-                  <Badge variant="secondary">{cart.length} líneas</Badge>
-                </div>
+          <div className="flex flex-col gap-4">
+            <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
+              <div className="relative">
+                <Search
+                  aria-hidden
+                  className="text-muted-foreground pointer-events-none absolute
+                    top-1/2 left-3 -translate-y-1/2"
+                />
+                <Input
+                  value={search}
+                  onChange={event => setSearch(event.target.value)}
+                  placeholder="Buscar producto"
+                  className="h-11 pl-10 text-base"
+                />
               </div>
+              <div
+                className="flex items-center justify-between gap-3
+                  md:justify-end"
+              >
+                <Badge variant="outline">
+                  {filteredProducts.length} productos
+                </Badge>
+                <Badge variant="secondary">{cart.length} líneas</Badge>
+              </div>
+            </div>
 
-              <CategoryFilter
-                options={categoryOptions}
-                value={selectedCategory}
-                onValueChange={setSelectedCategory}
-              />
-            </CardContent>
-          </Card>
+            <CategoryFilter
+              options={categoryOptions}
+              value={selectedCategory}
+              onValueChange={setSelectedCategory}
+            />
+          </div>
 
           <ProductGrid
             products={filteredProducts}
@@ -302,16 +302,9 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
             className="flex max-h-[calc(100vh-7rem)] flex-col overflow-hidden"
           >
             <CardHeader
-              className="flex flex-row items-start justify-between gap-4 pb-4"
+              className="flex flex-row items-center justify-between gap-4 pb-4"
             >
-              <div>
-                <CardTitle>Venta actual</CardTitle>
-                <p className="text-muted-foreground text-sm">
-                  {cart.length === 0
-                    ? "Lista para empezar"
-                    : `${cart.length} líneas · ${totalItems} artículos`}
-                </p>
-              </div>
+              <CardTitle className="mb-0 leading-loose">Venta actual</CardTitle>
               <Button
                 variant="ghost"
                 size="sm"
@@ -331,6 +324,7 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
               <SaleCart
                 cart={cart}
                 currency={currency}
+                scrollToBottomSignal={cartScrollSignal}
                 onDecrease={key => {
                   const line = cart.find(item => item.key === key)
                   if (!line) return
@@ -341,7 +335,6 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
                   if (!line) return
                   updateQuantity(key, line.quantity + 1)
                 }}
-                onRemove={key => updateQuantity(key, 0)}
               />
               <Separator />
               <SaleSummary
@@ -497,7 +490,7 @@ function ProductGrid({
     return (
       <Card>
         <CardContent className="p-6">
-          <Empty className="min-h-[36rem]">
+          <Empty className="min-h-144">
             <EmptyHeader>
               <EmptyMedia variant="icon">
                 <Search />
@@ -515,7 +508,7 @@ function ProductGrid({
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       {products.map(product => (
         <ProductCard key={product.id} product={product} onSelect={onSelect} />
       ))}
@@ -531,63 +524,59 @@ function ProductCard({
   onSelect: (product: SalesCatalogProduct) => void
 }) {
   return (
-    <button
-      type="button"
+    <Card
+      role="button"
+      tabIndex={0}
       onClick={() => onSelect(product)}
+      onKeyDown={event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault()
+          onSelect(product)
+        }
+      }}
       className={cn(
-        "group bg-card overflow-hidden rounded-2xl border text-left shadow-sm",
-        `transition-all hover:-translate-y-0.5 hover:shadow-md
+        "group cursor-pointer overflow-hidden text-left",
+        `hover:border-foreground/20 hover:bg-accent/40 transition-colors
         focus-visible:outline-none`,
         `focus-visible:ring-ring focus-visible:ring-2
         focus-visible:ring-offset-2`
       )}
     >
-      <div className="bg-muted relative aspect-[4/3] overflow-hidden">
+      <div className="bg-muted relative aspect-4/3 overflow-hidden">
         {product.image ? (
           <Image
             src={product.image}
             alt={product.name}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 33vw, 240px"
-            className="object-cover transition-transform duration-300
-              group-hover:scale-105"
+            sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 220px"
+            className="object-cover"
           />
         ) : (
           <div
-            className="from-muted via-background to-muted/40
-              text-muted-foreground flex h-full w-full items-center
-              justify-center bg-gradient-to-br"
+            className="text-muted-foreground flex h-full w-full items-center
+              justify-center"
           >
-            <ShoppingBag className="size-7" />
+            <ShoppingBag className="size-5" />
           </div>
         )}
-        <div className="absolute top-3 right-3">
-          <Badge variant="secondary" className="shadow-sm">
-            {product.priceLabel}
-          </Badge>
-        </div>
+        {product.variantCount > 1 && (
+          <div className="absolute top-2 right-2">
+            <Badge variant="secondary" className="shadow-sm">
+              {product.variantCount} opciones
+            </Badge>
+          </div>
+        )}
       </div>
 
-      <div className="flex items-start justify-between gap-3 p-4">
-        <div className="min-w-0 space-y-1">
-          <p className="truncate font-semibold">{product.name}</p>
-          <p className="text-muted-foreground line-clamp-2 text-sm">
-            {product.description ?? product.categoryName ?? "Producto activo"}
-          </p>
-          {product.variantCount > 1 && (
-            <Badge variant="outline" className="mt-1">
-              {product.variantCount} variantes
-            </Badge>
-          )}
-        </div>
-        <div
-          className="bg-primary text-primary-foreground flex size-10 shrink-0
-            items-center justify-center rounded-full"
-        >
-          <Plus />
-        </div>
-      </div>
-    </button>
+      <CardContent className="flex flex-col gap-1 p-2.5">
+        <p className="line-clamp-2 text-sm leading-snug font-semibold">
+          {product.name}
+        </p>
+        <p className="text-foreground text-sm font-medium tabular-nums">
+          {product.priceLabel}
+        </p>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -599,15 +588,15 @@ function OrderTypeSelector({
   onValueChange: (value: SalesOrderType) => void
 }) {
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-sm font-medium">Tipo de orden</p>
+    <div className="flex items-center justify-between gap-3">
+      <p className="shrink-0 text-sm font-medium">Tipo de orden</p>
       <ToggleGroup
         type="single"
         value={value}
         onValueChange={next => {
           if (next) onValueChange(next as SalesOrderType)
         }}
-        className="grid grid-cols-3 gap-2"
+        className="flex gap-1.5"
         variant="outline"
         size="sm"
       >
@@ -615,7 +604,7 @@ function OrderTypeSelector({
           <ToggleGroupItem
             key={option.value}
             value={option.value}
-            className="h-11 justify-center rounded-xl px-3"
+            className="h-8 rounded-lg px-3 text-xs"
           >
             {option.label}
           </ToggleGroupItem>
@@ -628,19 +617,58 @@ function OrderTypeSelector({
 function SaleCart({
   cart,
   currency,
+  scrollToBottomSignal,
   onIncrease,
-  onDecrease,
-  onRemove
+  onDecrease
 }: {
   cart: CartLine[]
   currency: "MXN" | "USD"
+  scrollToBottomSignal: number
   onIncrease: (key: string) => void
   onDecrease: (key: string) => void
-  onRemove: (key: string) => void
 }) {
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const scrollResetTimeoutRef = useRef<number | null>(null)
+
+  useLayoutEffect(() => {
+    const scrollContainer = scrollContainerRef.current
+    if (!scrollContainer) return
+
+    if (scrollContainer.scrollHeight <= scrollContainer.clientHeight) return
+
+    const scrollToBottom = () => {
+      scrollContainer.scrollTop = scrollContainer.scrollHeight
+    }
+
+    scrollToBottom()
+
+    if (scrollResetTimeoutRef.current !== null) {
+      window.clearTimeout(scrollResetTimeoutRef.current)
+    }
+
+    scrollResetTimeoutRef.current = window.setTimeout(scrollToBottom, 220)
+
+    return () => {
+      if (scrollResetTimeoutRef.current === null) return
+
+      window.clearTimeout(scrollResetTimeoutRef.current)
+      scrollResetTimeoutRef.current = null
+    }
+  }, [scrollToBottomSignal])
+
   if (cart.length === 0) {
     return (
-      <div className="min-h-64">
+      <motion.div
+        key="empty-cart"
+        initial={{ height: 0, opacity: 0 }}
+        animate={{ height: "auto", opacity: 1 }}
+        exit={{ height: 0, opacity: 0 }}
+        transition={{
+          height: { duration: 0.2 },
+          opacity: { duration: 0.12 }
+        }}
+        className="min-h-64 overflow-hidden"
+      >
         <Empty className="min-h-64 rounded-2xl border p-6">
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -652,73 +680,76 @@ function SaleCart({
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
-      </div>
+      </motion.div>
     )
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto pr-1">
-      {cart.map(item => (
-        <div
-          key={item.key}
-          className="bg-background rounded-2xl border p-4 shadow-sm"
-        >
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <p className="truncate font-medium">{item.productName}</p>
-              {item.variantName && (
-                <p className="text-muted-foreground truncate text-sm">
-                  {item.variantName}
+    <div
+      ref={scrollContainerRef}
+      className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto pr-1"
+    >
+      <AnimatePresence initial={false}>
+        {cart.map(item => (
+          <motion.div
+            key={item.key}
+            layout
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{
+              height: { duration: 0.18 },
+              opacity: { duration: 0.12 }
+            }}
+            className="shrink-0 overflow-hidden"
+          >
+            <div className="bg-background rounded-lg border p-3">
+              <div className="flex min-w-0 items-start justify-between gap-3">
+                <p className="truncate text-sm font-medium">
+                  {item.productName}
                 </p>
-              )}
-              <p className="text-muted-foreground mt-1 text-xs">
-                {formatPrice(item.unitPrice, currency)} c/u
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="font-semibold">
-                {formatPrice(item.lineTotal, currency)}
-              </p>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-1 h-8 px-2 text-xs"
-                onClick={() => onRemove(item.key)}
-              >
-                <X data-icon="inline-start" />
-                Quitar
-              </Button>
-            </div>
-          </div>
-
-          <div className="mt-4 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon-sm"
-                onClick={() => onDecrease(item.key)}
-                aria-label={`Disminuir ${item.productName}`}
-              >
-                <Minus data-icon="inline-start" />
-              </Button>
-              <div className="min-w-10 text-center text-lg font-medium">
-                {item.quantity}
+                {item.variantName && (
+                  <p
+                    className="text-muted-foreground truncate text-xs
+                      leading-loose"
+                  >
+                    {item.variantName}
+                  </p>
+                )}
               </div>
-              <Button
-                variant="outline"
-                size="icon-sm"
-                onClick={() => onIncrease(item.key)}
-                aria-label={`Aumentar ${item.productName}`}
-              >
-                <Plus data-icon="inline-start" />
-              </Button>
+
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    onClick={() => onDecrease(item.key)}
+                    aria-label={`Disminuir ${item.productName}`}
+                  >
+                    <Minus />
+                  </Button>
+                  <div
+                    className="w-8 text-center text-sm font-medium tabular-nums"
+                  >
+                    {item.quantity}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    onClick={() => onIncrease(item.key)}
+                    aria-label={`Aumentar ${item.productName}`}
+                  >
+                    <Plus />
+                  </Button>
+                </div>
+                <p className="text-sm font-semibold tabular-nums">
+                  {formatPrice(item.lineTotal, currency)}
+                </p>
+              </div>
             </div>
-            <p className="text-muted-foreground text-sm">
-              {formatPrice(item.lineTotal, currency)}
-            </p>
-          </div>
-        </div>
-      ))}
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   )
 }
@@ -741,18 +772,17 @@ function SaleSummary({
         <span>{formatPrice(subtotal, currency)}</span>
       </div>
       <div className="mt-2 flex items-center justify-between text-sm">
-        <span className="text-muted-foreground">Items</span>
+        <span className="text-muted-foreground">Productos</span>
         <span>{itemCount}</span>
       </div>
       <Separator className="my-4" />
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-muted-foreground text-sm">Total</p>
-          <p className="text-muted-foreground text-xs">
-            Sin impuestos, propinas ni descuentos
-          </p>
         </div>
-        <p className="text-3xl font-semibold">{formatPrice(total, currency)}</p>
+        <p className="text-3xl font-semibold">
+          <TextMorph>{formatPrice(total, currency)}</TextMorph>
+        </p>
       </div>
     </div>
   )
