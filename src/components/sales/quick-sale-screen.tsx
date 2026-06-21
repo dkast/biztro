@@ -25,7 +25,11 @@ import {
   EmptyMedia,
   EmptyTitle
 } from "@/components/ui/empty"
-import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput
+} from "@/components/ui/input-group"
 import { Separator } from "@/components/ui/separator"
 import {
   Sheet,
@@ -149,6 +153,11 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
     [cart]
   )
 
+  const cartProductIds = useMemo(
+    () => new Set(cart.map(item => item.menuItemId)),
+    [cart]
+  )
+
   const addProduct = (product: SalesCatalogProduct, variantId?: string) => {
     const selectedVariant = variantId
       ? product.variants.find(variant => variant.id === variantId)
@@ -260,27 +269,27 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
         <section className="min-w-0 space-y-4">
           <div className="flex flex-col gap-4">
             <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
-              <div className="relative">
-                <Search
-                  aria-hidden
-                  className="text-muted-foreground pointer-events-none absolute
-                    top-1/2 left-3 -translate-y-1/2"
-                />
-                <Input
+              <InputGroup className="h-11">
+                <InputGroupInput
                   value={search}
                   onChange={event => setSearch(event.target.value)}
                   placeholder="Buscar producto"
-                  className="h-11 pl-10 text-base"
+                  inputMode="search"
+                  enterKeyHint="search"
+                  className="h-11 text-base"
                 />
-              </div>
+                <InputGroupAddon>
+                  <Search aria-hidden className="text-muted-foreground" />
+                </InputGroupAddon>
+              </InputGroup>
               <div
                 className="flex items-center justify-between gap-3
                   md:justify-end"
               >
-                <Badge variant="outline">
+                <Badge variant="green">
                   {filteredProducts.length} productos
                 </Badge>
-                <Badge variant="secondary">{cart.length} líneas</Badge>
+                <Badge variant="blue">{cart.length} líneas</Badge>
               </div>
             </div>
 
@@ -293,6 +302,7 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
 
           <ProductGrid
             products={filteredProducts}
+            cartProductIds={cartProductIds}
             onSelect={handleProductSelect}
           />
         </section>
@@ -469,7 +479,10 @@ function CategoryFilter({
           <ToggleGroupItem
             key={option.value}
             value={option.value}
-            className="rounded-full px-4"
+            className="data-[state=on]:bg-primary
+              data-[state=on]:text-primary-foreground
+              dark:data-[state=on]:bg-primary/40 data-[state=on]:border-primary
+              rounded-full px-4"
           >
             {option.label}
           </ToggleGroupItem>
@@ -481,9 +494,11 @@ function CategoryFilter({
 
 function ProductGrid({
   products,
+  cartProductIds,
   onSelect
 }: {
   products: SalesCatalogProduct[]
+  cartProductIds: Set<string>
   onSelect: (product: SalesCatalogProduct) => void
 }) {
   if (products.length === 0) {
@@ -510,7 +525,12 @@ function ProductGrid({
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       {products.map(product => (
-        <ProductCard key={product.id} product={product} onSelect={onSelect} />
+        <ProductCard
+          key={product.id}
+          product={product}
+          isInCart={cartProductIds.has(product.id)}
+          onSelect={onSelect}
+        />
       ))}
     </div>
   )
@@ -518,65 +538,66 @@ function ProductGrid({
 
 function ProductCard({
   product,
+  isInCart,
   onSelect
 }: {
   product: SalesCatalogProduct
+  isInCart: boolean
   onSelect: (product: SalesCatalogProduct) => void
 }) {
   return (
-    <Card
-      role="button"
-      tabIndex={0}
+    <motion.button
+      type="button"
+      whileTap={{ scale: 0.98 }}
       onClick={() => onSelect(product)}
-      onKeyDown={event => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault()
-          onSelect(product)
-        }
-      }}
       className={cn(
-        "group cursor-pointer overflow-hidden text-left",
-        `hover:border-foreground/20 hover:bg-accent/40 transition-colors
-        focus-visible:outline-none`,
-        `focus-visible:ring-ring focus-visible:ring-2
-        focus-visible:ring-offset-2`
+        "group block w-full cursor-pointer text-left focus-visible:outline-none"
       )}
     >
-      <div className="bg-muted relative aspect-4/3 overflow-hidden">
-        {product.image ? (
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 220px"
-            className="object-cover"
-          />
-        ) : (
-          <div
-            className="text-muted-foreground flex h-full w-full items-center
-              justify-center"
-          >
-            <ShoppingBag className="size-5" />
-          </div>
+      <Card
+        className={cn(
+          "h-full overflow-hidden text-left transition-colors",
+          isInCart
+            ? "border-primary/60 bg-primary/5 shadow-sm"
+            : "hover:border-foreground/20 hover:bg-accent/40"
         )}
-        {product.variantCount > 1 && (
-          <div className="absolute top-2 right-2">
-            <Badge variant="secondary" className="shadow-sm">
-              {product.variantCount} opciones
-            </Badge>
-          </div>
-        )}
-      </div>
+      >
+        <div className="bg-muted relative aspect-3/2 overflow-hidden">
+          {product.image ? (
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 220px"
+              className="object-cover"
+            />
+          ) : (
+            <div
+              className="text-muted-foreground flex h-full w-full items-center
+                justify-center"
+            >
+              <ShoppingBag className="size-5" />
+            </div>
+          )}
+          {product.variantCount > 1 && (
+            <div className="absolute top-2 right-2">
+              <Badge variant="secondary" className="shadow-sm">
+                {product.variantCount} opciones
+              </Badge>
+            </div>
+          )}
+        </div>
 
-      <CardContent className="flex flex-col gap-1 p-2.5">
-        <p className="line-clamp-2 text-sm leading-snug font-semibold">
-          {product.name}
-        </p>
-        <p className="text-foreground text-sm font-medium tabular-nums">
-          {product.priceLabel}
-        </p>
-      </CardContent>
-    </Card>
+        <CardContent className="flex flex-col gap-1 p-2.5">
+          <p className="line-clamp-2 text-sm leading-snug font-semibold">
+            {product.name}
+          </p>
+          <p className="text-foreground text-sm font-medium tabular-nums">
+            {product.priceLabel}
+          </p>
+        </CardContent>
+      </Card>
+    </motion.button>
   )
 }
 
