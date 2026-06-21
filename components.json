@@ -22,6 +22,7 @@
     "@magicui": "https://magicui.design/r/{name}.json",
     "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json",
     "@diceui": "https://diceui.com/r/{name}.json",
-    "@ncdai": "https://chanhdai.com/r/{name}.json"
+    "@ncdai": "https://chanhdai.com/r/{name}.json",
+    "@shark": "https://shark.vini.one/r/{name}.json"
   }
 }

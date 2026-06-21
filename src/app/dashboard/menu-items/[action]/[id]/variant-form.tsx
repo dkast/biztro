@@ -8,7 +8,7 @@ import {
   type UseFormReturn
 } from "react-hook-form"
 import { Trash } from "lucide-react"
-import { z } from "zod/v4"
+import { type z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
@@ -22,7 +22,7 @@ import {
   TableRow
 } from "@/components/ui/table"
 import VariantDelete from "@/app/dashboard/menu-items/[action]/[id]/variant-delete"
-import { menuItemFormSchema } from "@/lib/types/menu-item"
+import { type menuItemFormSchema } from "@/lib/types/menu-item"
 
 type VariantFormValues = z.infer<typeof menuItemFormSchema>
 

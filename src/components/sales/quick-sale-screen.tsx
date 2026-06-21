@@ -8,7 +8,7 @@ import {
   useState
 } from "react"
 import toast from "react-hot-toast"
-import { Loader2, Minus, Plus, Search, ShoppingBag, Trash2 } from "lucide-react"
+import { Loader2, Search, ShoppingBag, Trash2 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
@@ -30,6 +30,13 @@ import {
   InputGroupAddon,
   InputGroupInput
 } from "@/components/ui/input-group"
+import {
+  NumberInput,
+  NumberInputDecrement,
+  NumberInputGroup,
+  NumberInputIncrement,
+  NumberInputInput
+} from "@/components/ui/number-input"
 import { Separator } from "@/components/ui/separator"
 import {
   Sheet,
@@ -52,6 +59,74 @@ import { cn } from "@/lib/utils"
 
 function roundMoney(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100
+}
+
+const productPlaceholderColors = [
+  "bg-amber-500 dark:bg-amber-400 text-amber-100",
+  "bg-blue-500 dark:bg-blue-400 text-blue-100",
+  "bg-cyan-500 dark:bg-cyan-400 text-cyan-100",
+  "bg-emerald-500 dark:bg-emerald-400 text-emerald-100",
+  "bg-fuchsia-500 dark:bg-fuchsia-400 text-fuchsia-100",
+  "bg-gray-500 dark:bg-gray-400 text-gray-100",
+  "bg-green-500 dark:bg-green-400 text-green-100",
+  "bg-indigo-500 dark:bg-indigo-400 text-indigo-100",
+  "bg-lime-500 dark:bg-lime-400 text-lime-100",
+  "bg-orange-500 dark:bg-orange-400 text-orange-100",
+  "bg-pink-500 dark:bg-pink-400 text-pink-100",
+  "bg-purple-500 dark:bg-purple-400 text-purple-100",
+  "bg-red-500 dark:bg-red-400 text-red-100",
+  "bg-rose-500 dark:bg-rose-400 text-rose-100",
+  "bg-sky-500 dark:bg-sky-400 text-sky-100",
+  "bg-teal-500 dark:bg-teal-400 text-teal-100",
+  "bg-violet-500 dark:bg-violet-400 text-violet-100",
+  "bg-yellow-500 dark:bg-yellow-400 text-yellow-100"
+]
+
+function getProductPlaceholderColor(name: string) {
+  const hash = name.split("").reduce((accumulator, char) => {
+    return accumulator + char.charCodeAt(0)
+  }, 0)
+
+  return productPlaceholderColors[hash % productPlaceholderColors.length]
+}
+
+const productAbbreviationStopWords = new Set([
+  "a",
+  "al",
+  "con",
+  "de",
+  "del",
+  "e",
+  "el",
+  "en",
+  "la",
+  "las",
+  "los",
+  "o",
+  "u",
+  "y"
+])
+
+function getProductAbbreviation(name: string) {
+  const words = name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter(word => !productAbbreviationStopWords.has(word.toLowerCase()))
+
+  const fallbackWords = name.trim().split(/\s+/).filter(Boolean)
+
+  if (words.length === 0) return "?"
+
+  if (words.length === 1) {
+    return (words[0] ?? fallbackWords[0] ?? "?").slice(0, 2).toUpperCase()
+  }
+
+  return words
+    .slice(0, 2)
+    .map(word => word[0])
+    .join("")
+    .toUpperCase()
 }
 
 type CartLine = SaleCartItemInput & {
@@ -335,16 +410,7 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
                 cart={cart}
                 currency={currency}
                 scrollToBottomSignal={cartScrollSignal}
-                onDecrease={key => {
-                  const line = cart.find(item => item.key === key)
-                  if (!line) return
-                  updateQuantity(key, line.quantity - 1)
-                }}
-                onIncrease={key => {
-                  const line = cart.find(item => item.key === key)
-                  if (!line) return
-                  updateQuantity(key, line.quantity + 1)
-                }}
+                onQuantityChange={updateQuantity}
               />
               <Separator />
               <SaleSummary
@@ -558,8 +624,8 @@ function ProductCard({
         className={cn(
           "h-full overflow-hidden text-left transition-colors",
           isInCart
-            ? "border-primary/60 bg-primary/5 shadow-sm"
-            : "hover:border-foreground/20 hover:bg-accent/40"
+            ? "inset-ring-primary/60 bg-primary/5 shadow-sm"
+            : "hover:inset-ring-foreground/20 hover:bg-accent/40"
         )}
       >
         <div className="bg-muted relative aspect-3/2 overflow-hidden">
@@ -573,15 +639,22 @@ function ProductCard({
             />
           ) : (
             <div
-              className="text-muted-foreground flex h-full w-full items-center
-                justify-center"
+              className={cn(
+                "flex h-full w-full items-center justify-center",
+                getProductPlaceholderColor(product.name)
+              )}
             >
-              <ShoppingBag className="size-5" />
+              <span className="text-lg font-semibold tracking-[0.2em]">
+                {getProductAbbreviation(product.name)}
+              </span>
             </div>
           )}
           {product.variantCount > 1 && (
             <div className="absolute top-2 right-2">
-              <Badge variant="secondary" className="shadow-sm">
+              <Badge
+                variant="outline"
+                className="text-white inset-ring-white/40"
+              >
                 {product.variantCount} opciones
               </Badge>
             </div>
@@ -639,14 +712,12 @@ function SaleCart({
   cart,
   currency,
   scrollToBottomSignal,
-  onIncrease,
-  onDecrease
+  onQuantityChange
 }: {
   cart: CartLine[]
   currency: "MXN" | "USD"
   scrollToBottomSignal: number
-  onIncrease: (key: string) => void
-  onDecrease: (key: string) => void
+  onQuantityChange: (key: string, nextQuantity: number) => void
 }) {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const scrollResetTimeoutRef = useRef<number | null>(null)
@@ -740,29 +811,33 @@ function SaleCart({
               </div>
 
               <div className="mt-2 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="outline"
-                    size="icon-sm"
-                    onClick={() => onDecrease(item.key)}
-                    aria-label={`Disminuir ${item.productName}`}
-                  >
-                    <Minus />
-                  </Button>
-                  <div
-                    className="w-8 text-center text-sm font-medium tabular-nums"
-                  >
-                    {item.quantity}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="icon-sm"
-                    onClick={() => onIncrease(item.key)}
-                    aria-label={`Aumentar ${item.productName}`}
-                  >
-                    <Plus />
-                  </Button>
-                </div>
+                <NumberInput
+                  size="md"
+                  defaultValue={String(item.quantity)}
+                  min={0}
+                  step={1}
+                  inputMode="numeric"
+                  onValueChange={details => {
+                    const nextQuantity = details.valueAsNumber
+
+                    if (!Number.isFinite(nextQuantity)) return
+
+                    onQuantityChange(item.key, nextQuantity)
+                  }}
+                  className="w-40 shrink-0"
+                >
+                  <NumberInputGroup>
+                    <NumberInputDecrement
+                      aria-label={`Disminuir ${item.productName}`}
+                    />
+                    <NumberInputInput
+                      aria-label={`Cantidad de ${item.productName}`}
+                    />
+                    <NumberInputIncrement
+                      aria-label={`Aumentar ${item.productName}`}
+                    />
+                  </NumberInputGroup>
+                </NumberInput>
                 <p className="text-sm font-semibold tabular-nums">
                   {formatPrice(item.lineTotal, currency)}
                 </p>
