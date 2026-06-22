@@ -624,7 +624,7 @@ function ProductCard({
         className={cn(
           "h-full overflow-hidden text-left transition-colors",
           isInCart
-            ? "inset-ring-primary/60 bg-primary/5 shadow-sm"
+            ? "inset-ring-primary/60 bg-primary/15 shadow-sm"
             : "hover:inset-ring-foreground/20 hover:bg-accent/40"
         )}
       >
@@ -813,7 +813,7 @@ function SaleCart({
               <div className="mt-2 flex items-center justify-between gap-3">
                 <NumberInput
                   size="md"
-                  defaultValue={String(item.quantity)}
+                  value={String(item.quantity)}
                   min={0}
                   step={1}
                   inputMode="numeric"

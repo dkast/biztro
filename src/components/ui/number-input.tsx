@@ -9,15 +9,19 @@ import { MinusIcon, PlusIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { FieldLabel } from "@/components/ui/field"
-import { Input, type InputProps } from "@/components/ui/input"
+import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 export const useNumberInput = useNumberInputContext
 
-interface NumberInputProps
-  extends
-    React.ComponentProps<typeof ArkNumberInput.Root>,
-    Pick<InputProps, "size"> {}
+type NumberInputSize = "sm" | "md" | "lg"
+
+interface NumberInputProps extends Omit<
+  React.ComponentProps<typeof ArkNumberInput.Root>,
+  "size"
+> {
+  size?: NumberInputSize
+}
 
 export const NumberInput = (props: NumberInputProps) => {
   const { size = "md", className, ...rest } = props
@@ -126,7 +130,7 @@ export const NumberInputIncrement = (
 }
 
 export const NumberInputInput = (props: React.ComponentProps<typeof Input>) => {
-  const { _size, className, ...rest } = props
+  const { className, ...rest } = props
 
   return (
     <ArkNumberInput.Input asChild data-slot="number-field-input" {...rest}>
