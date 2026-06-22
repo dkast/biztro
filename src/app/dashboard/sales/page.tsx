@@ -46,7 +46,7 @@ export default async function SalesPage(props: {
         <PageSubtitle.Icon icon={Banknote} />
         <PageSubtitle.Title>Ventas</PageSubtitle.Title>
         <PageSubtitle.Description>
-          Captura rápida y métricas de ventas
+          Resumen de ventas y actividad reciente
         </PageSubtitle.Description>
         <PageSubtitle.Actions className="w-full sm:mt-0 sm:w-auto sm:flex-none">
           <SalesDashboardPeriodFilter

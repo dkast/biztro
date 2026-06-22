@@ -90,8 +90,8 @@ const navigation: NavigationItem[] = [
     url: "/dashboard/sales",
     icon: Banknote,
     items: [
+      { title: "Ventas", url: "/dashboard/sales" },
       { title: "Punto de venta", url: "/dashboard/sales/new" },
-      { title: "Analítica", url: "/dashboard/sales" },
       { title: "Cierre diario", url: "/dashboard/sales/closing" }
     ]
   },

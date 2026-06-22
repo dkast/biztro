@@ -33,7 +33,8 @@ function SalesRevenueYAxis({ currency }: { currency: Currency }) {
       {ticks.map(tick => (
         <text
           key={tick}
-          className="fill-muted-foreground text-xs tabular-nums"
+          className="fill-muted-foreground hidden text-xs tabular-nums
+            md:inline"
           dominantBaseline="middle"
           textAnchor="end"
           x={-12}
@@ -78,6 +79,7 @@ export function SalesRevenueChart({
       data={chart}
       xDataKey="label"
       aspectRatio="4 / 1"
+      className="min-h-[18rem] sm:min-h-0"
       margin={{ top: 20, right: 24, bottom: 36, left: 72 }}
       revealSignature={period}
     >

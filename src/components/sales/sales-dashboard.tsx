@@ -1,4 +1,5 @@
 import { Fragment } from "react"
+import NumberFlow from "@number-flow/react"
 import { Banknote, ShoppingCart, TrendingUp, WalletCards } from "lucide-react"
 
 import { SalesRevenueChart } from "@/components/sales/sales-revenue-chart"
@@ -44,29 +45,71 @@ function formatDateTime(value: string) {
   }).format(new Date(value))
 }
 
+type SalesDashboardKpiItem = {
+  title: string
+  value: number
+  icon: typeof Banknote
+  format?: Intl.NumberFormatOptions
+  locales: string
+  suffix?: string
+}
+
 function getKpiItems(data: SalesDashboardData) {
+  const locales = data.currency === "MXN" ? "es-MX" : "en-US"
+
   return [
     {
       title: "Ingresos de hoy",
-      value: formatPrice(data.todayRevenue, data.currency),
-      icon: Banknote
+      value: data.todayRevenue,
+      icon: Banknote,
+      locales,
+      format: {
+        style: "currency",
+        currency: data.currency,
+        currencyDisplay: "symbol",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      },
+      suffix: ` ${data.currency}`
     },
     {
       title: "Órdenes de hoy",
-      value: data.todayOrders.toString(),
-      icon: ShoppingCart
+      value: data.todayOrders,
+      icon: ShoppingCart,
+      locales,
+      format: {
+        maximumFractionDigits: 0
+      }
     },
     {
       title: "Ingresos acumulados",
-      value: formatPrice(data.periodRevenue, data.currency),
-      icon: TrendingUp
+      value: data.periodRevenue,
+      icon: TrendingUp,
+      locales,
+      format: {
+        style: "currency",
+        currency: data.currency,
+        currencyDisplay: "symbol",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      },
+      suffix: ` ${data.currency}`
     },
     {
       title: "Ticket promedio",
-      value: formatPrice(data.periodAverageTicket, data.currency),
-      icon: WalletCards
+      value: data.periodAverageTicket,
+      icon: WalletCards,
+      locales,
+      format: {
+        style: "currency",
+        currency: data.currency,
+        currencyDisplay: "symbol",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      },
+      suffix: ` ${data.currency}`
     }
-  ]
+  ] satisfies SalesDashboardKpiItem[]
 }
 
 export function SalesDashboard({ data }: { data: SalesDashboardData }) {
@@ -92,12 +135,15 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
                 >
                   {item.title}
                 </ItemTitle>
-                <p
-                  className="text-foreground text-xl font-semibold tabular-nums
-                    sm:text-2xl"
-                >
-                  {item.value}
-                </p>
+                <NumberFlow
+                  aria-label={formatPrice(item.value, data.currency)}
+                  className="text-foreground text-xl leading-none font-semibold
+                    tabular-nums sm:text-2xl"
+                  value={item.value}
+                  locales={item.locales}
+                  format={item.format}
+                  suffix={item.suffix}
+                />
               </ItemContent>
               <ItemMedia variant="icon" className="rounded-xl">
                 <item.icon className="size-4" />
@@ -113,7 +159,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             sm:justify-between sm:gap-4"
         >
           <h2 className="text-base font-semibold text-balance">
-            Ventas a través del tiempo
+            Ventas por periodo
           </h2>
           <Badge variant="outline">
             {salesDashboardPeriodRangeLabels[data.period]}
@@ -132,10 +178,10 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
       <Separator className="bg-border/80" />
 
       <section
-        className="grid gap-y-6 xl:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)]
-          xl:items-start xl:gap-x-8 xl:gap-y-0"
+        className="grid gap-y-6 lg:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)]
+          lg:items-start lg:gap-x-8 lg:gap-y-0"
       >
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <div
             className="flex flex-col items-start gap-2 sm:flex-row
               sm:items-center sm:justify-between sm:gap-4"
@@ -152,62 +198,64 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
                 <EmptyMedia variant="icon">
                   <ShoppingCart />
                 </EmptyMedia>
-                <EmptyTitle>No hay ventas aún</EmptyTitle>
+                <EmptyTitle>Aún no hay ventas registradas</EmptyTitle>
                 <EmptyDescription>
-                  Cuando completes la primera venta, aparecerá aquí.
+                  Registra la primera venta para verla aquí.
                 </EmptyDescription>
               </EmptyHeader>
             </Empty>
           ) : (
-            <Table className="min-w-[34rem]">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Fecha</TableHead>
-                  <TableHead>Tipo de orden</TableHead>
-                  <TableHead className="text-right">Artículos</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.recentSales.map(sale => (
-                  <TableRow key={sale.id}>
-                    <TableCell className="font-medium">
-                      {formatDateTime(sale.createdAt)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          salesOrderTypeBadgeVariants[sale.orderType] as
-                            | "blue"
-                            | "indigo"
-                            | "yellow"
-                        }
-                      >
-                        {salesOrderTypeLabels[sale.orderType]}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {sale.items}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {formatPrice(sale.total, data.currency)}
-                    </TableCell>
+            <div className="w-full max-w-full overflow-x-auto pb-1">
+              <Table className="min-w-[34rem]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead>Canal de venta</TableHead>
+                    <TableHead className="text-right">Unidades</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {data.recentSales.map(sale => (
+                    <TableRow key={sale.id}>
+                      <TableCell className="font-medium">
+                        {formatDateTime(sale.createdAt)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            salesOrderTypeBadgeVariants[sale.orderType] as
+                              | "blue"
+                              | "indigo"
+                              | "yellow"
+                          }
+                        >
+                          {salesOrderTypeLabels[sale.orderType]}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {sale.items}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {formatPrice(sale.total, data.currency)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </div>
 
         <Separator className="bg-border/80 xl:h-full xl:w-px" />
 
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <div
             className="flex flex-col items-start gap-2 sm:flex-row
               sm:items-center sm:justify-between sm:gap-4"
           >
             <h2 className="text-base font-semibold text-balance">
-              Más vendidos
+              Productos más vendidos
             </h2>
             <Badge variant="outline">{data.bestSellers.length}</Badge>
           </div>
@@ -218,10 +266,9 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
                 <EmptyMedia variant="icon">
                   <Banknote />
                 </EmptyMedia>
-                <EmptyTitle>Sin ventas para analizar</EmptyTitle>
+                <EmptyTitle>Aún no hay productos vendidos</EmptyTitle>
                 <EmptyDescription>
-                  Tu ranking de productos aparecerá cuando haya ventas en el
-                  periodo seleccionado.
+                  Cuando haya ventas, aquí verás el ranking de productos.
                 </EmptyDescription>
               </EmptyHeader>
             </Empty>

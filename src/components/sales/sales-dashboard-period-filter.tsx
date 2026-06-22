@@ -23,7 +23,7 @@ const salesDashboardPeriodQueryState = parseAsStringEnum([
 export function SalesDashboardPeriodFilter({
   className,
   inline = false,
-  label = "Periodo acumulado"
+  label = "Rango de tiempo"
 }: {
   className?: string
   inline?: boolean
