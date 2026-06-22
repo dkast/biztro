@@ -1,6 +1,7 @@
 import { z } from "zod/v4"
 
 import type { Currency } from "@/lib/currency"
+import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
 
 export const salesOrderTypeValues = ["DINE_IN", "TAKEOUT", "DELIVERY"] as const
 
@@ -92,12 +93,21 @@ export type SalesRevenueByOrderType = {
   orders: number
 }
 
+export type SalesChartBucket = {
+  label: string
+  revenue: number
+  orders: number
+}
+
 export type SalesDashboardData = {
   currency: Currency
+  period: SalesDashboardPeriod
   todayRevenue: number
   todayOrders: number
-  monthRevenue: number
-  averageTicket: number
+  periodRevenue: number
+  periodOrders: number
+  periodAverageTicket: number
+  chart: SalesChartBucket[]
   bestSellers: SalesBestSeller[]
   recentSales: SalesRecentSale[]
 }

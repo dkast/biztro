@@ -1,13 +1,8 @@
+import { Fragment } from "react"
 import { Banknote, ShoppingCart, TrendingUp, WalletCards } from "lucide-react"
 
+import { SalesRevenueChart } from "@/components/sales/sales-revenue-chart"
 import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card"
 import {
   Empty,
   EmptyDescription,
@@ -15,6 +10,15 @@ import {
   EmptyMedia,
   EmptyTitle
 } from "@/components/ui/empty"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemGroup,
+  ItemMedia,
+  ItemSeparator,
+  ItemTitle
+} from "@/components/ui/item"
 import { Separator } from "@/components/ui/separator"
 import {
   Table,
@@ -25,11 +29,13 @@ import {
   TableRow
 } from "@/components/ui/table"
 import { formatPrice } from "@/lib/currency"
+import { salesDashboardPeriodRangeLabels } from "@/lib/sales-dashboard-period"
 import {
   salesOrderTypeBadgeVariants,
   salesOrderTypeLabels,
   type SalesDashboardData
 } from "@/lib/types/sales"
+import { cn } from "@/lib/utils"
 
 function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("es-MX", {
@@ -43,187 +49,214 @@ function getKpiItems(data: SalesDashboardData) {
     {
       title: "Ingresos de hoy",
       value: formatPrice(data.todayRevenue, data.currency),
-      description: "Ingresos de hoy",
       icon: Banknote
     },
     {
       title: "Órdenes de hoy",
       value: data.todayOrders.toString(),
-      description: "Órdenes completadas hoy",
       icon: ShoppingCart
     },
     {
-      title: "Ingresos del mes",
-      value: formatPrice(data.monthRevenue, data.currency),
-      description: "Ingresos del mes",
+      title: "Ingresos acumulados",
+      value: formatPrice(data.periodRevenue, data.currency),
       icon: TrendingUp
     },
     {
       title: "Ticket promedio",
-      value: formatPrice(data.averageTicket, data.currency),
-      description: "Promedio por venta hoy",
+      value: formatPrice(data.periodAverageTicket, data.currency),
       icon: WalletCards
     }
   ]
 }
 
 export function SalesDashboard({ data }: { data: SalesDashboardData }) {
+  const kpiItems = getKpiItems(data)
+
   return (
     <div className="flex flex-col gap-6 pb-6">
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {getKpiItems(data).map(item => (
-          <Card key={item.title} className="overflow-hidden">
-            <CardHeader
-              className="flex flex-row items-start justify-between gap-4 p-4"
+      <section className="border-border overflow-hidden rounded-lg border">
+        <ItemGroup className="grid grid-cols-2 md:grid-cols-4">
+          {kpiItems.map((item, index) => (
+            <Item
+              key={item.title}
+              className={cn(
+                "min-w-0 flex-nowrap rounded-none border-0 px-4 py-4 sm:px-5",
+                index < 2 && "border-border/80 border-b md:border-b-0",
+                index % 2 === 0 && "border-border/80 border-r md:border-r-0",
+                index < kpiItems.length - 1 && "md:border-border/80 md:border-r"
+              )}
             >
-              <div className="space-y-1">
-                <CardDescription>{item.title}</CardDescription>
-                <CardTitle className="text-2xl">{item.value}</CardTitle>
-              </div>
-              <div
-                className="bg-muted text-foreground flex size-10 items-center
-                  justify-center rounded-xl"
-              >
-                <item.icon />
-              </div>
-            </CardHeader>
-            <CardContent className="px-4 pt-0 pb-4">
-              <p className="text-muted-foreground text-xs">
-                {item.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+              <ItemContent className="min-w-0 gap-1">
+                <ItemTitle
+                  className="text-muted-foreground w-full text-sm font-medium"
+                >
+                  {item.title}
+                </ItemTitle>
+                <p
+                  className="text-foreground text-xl font-semibold tabular-nums
+                    sm:text-2xl"
+                >
+                  {item.value}
+                </p>
+              </ItemContent>
+              <ItemMedia variant="icon" className="rounded-xl">
+                <item.icon className="size-4" />
+              </ItemMedia>
+            </Item>
+          ))}
+        </ItemGroup>
       </section>
 
-      <section
-        className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]"
-      >
-        <Card className="overflow-hidden">
-          <CardHeader
-            className="flex flex-row items-center justify-between gap-4"
-          >
-            <div>
-              <CardTitle>Ventas recientes</CardTitle>
-              <CardDescription>Últimas 25 ventas completadas</CardDescription>
-            </div>
-            <Badge variant="outline">{data.recentSales.length}</Badge>
-          </CardHeader>
-          <CardContent className="p-0">
-            {data.recentSales.length === 0 ? (
-              <div className="p-6">
-                <Empty className="min-h-72 rounded-none border-0 p-0">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <ShoppingCart />
-                    </EmptyMedia>
-                    <EmptyTitle>No hay ventas aún</EmptyTitle>
-                    <EmptyDescription>
-                      Cuando completes la primera venta, aparecerá aquí.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Fecha</TableHead>
-                    <TableHead>Tipo de orden</TableHead>
-                    <TableHead className="text-right">Artículos</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.recentSales.map(sale => (
-                    <TableRow key={sale.id}>
-                      <TableCell className="font-medium">
-                        {formatDateTime(sale.createdAt)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            salesOrderTypeBadgeVariants[sale.orderType] as
-                              | "blue"
-                              | "indigo"
-                              | "yellow"
-                          }
-                        >
-                          {salesOrderTypeLabels[sale.orderType]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">{sale.items}</TableCell>
-                      <TableCell className="text-right">
-                        {formatPrice(sale.total, data.currency)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+      <section className="space-y-4 py-6 sm:space-y-5 sm:py-8">
+        <div
+          className="flex flex-col items-start gap-2 sm:flex-row sm:items-center
+            sm:justify-between sm:gap-4"
+        >
+          <h2 className="text-base font-semibold text-balance">
+            Ventas a través del tiempo
+          </h2>
+          <Badge variant="outline">
+            {salesDashboardPeriodRangeLabels[data.period]}
+          </Badge>
+        </div>
+        <Separator className="bg-border/80" />
+        <div className="px-1 pt-1">
+          <SalesRevenueChart
+            chart={data.chart}
+            currency={data.currency}
+            period={data.period}
+          />
+        </div>
+      </section>
 
-        <Card className="overflow-hidden">
-          <CardHeader>
-            <CardTitle>Más vendidos</CardTitle>
-            <CardDescription>
-              Top 10 productos por cantidad vendida
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-0 p-0">
-            {data.bestSellers.length === 0 ? (
-              <div className="p-6">
-                <Empty className="min-h-72 rounded-none border-0 p-0">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <Banknote />
-                    </EmptyMedia>
-                    <EmptyTitle>Sin ventas para analizar</EmptyTitle>
-                    <EmptyDescription>
-                      Tu ranking de productos aparecerá después de capturar
-                      algunas ventas.
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                {data.bestSellers.map((item, index) => (
-                  <div key={item.productName}>
-                    <div
-                      className="flex items-center justify-between gap-4 px-6
-                        py-4"
-                    >
-                      <div className="flex min-w-0 items-center gap-3">
-                        <Badge variant="secondary" className="shrink-0">
-                          #{index + 1}
-                        </Badge>
-                        <div className="min-w-0">
-                          <p className="truncate font-medium">
-                            {item.productName}
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            {item.quantity} vendidos
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">
-                          {formatPrice(item.revenue, data.currency)}
-                        </p>
-                        <p className="text-muted-foreground text-xs">
-                          {item.quantity} qty
-                        </p>
-                      </div>
-                    </div>
-                    {index < data.bestSellers.length - 1 && <Separator />}
-                  </div>
+      <Separator className="bg-border/80" />
+
+      <section
+        className="grid gap-y-6 xl:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)]
+          xl:items-start xl:gap-x-8 xl:gap-y-0"
+      >
+        <div className="space-y-4">
+          <div
+            className="flex flex-col items-start gap-2 sm:flex-row
+              sm:items-center sm:justify-between sm:gap-4"
+          >
+            <h2 className="text-base font-semibold text-balance">
+              Ventas recientes
+            </h2>
+            <Badge variant="outline">{data.recentSales.length}</Badge>
+          </div>
+          <Separator className="bg-border/80" />
+          {data.recentSales.length === 0 ? (
+            <Empty className="min-h-72 rounded-none border-0 p-0">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <ShoppingCart />
+                </EmptyMedia>
+                <EmptyTitle>No hay ventas aún</EmptyTitle>
+                <EmptyDescription>
+                  Cuando completes la primera venta, aparecerá aquí.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <Table className="min-w-[34rem]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Fecha</TableHead>
+                  <TableHead>Tipo de orden</TableHead>
+                  <TableHead className="text-right">Artículos</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.recentSales.map(sale => (
+                  <TableRow key={sale.id}>
+                    <TableCell className="font-medium">
+                      {formatDateTime(sale.createdAt)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          salesOrderTypeBadgeVariants[sale.orderType] as
+                            | "blue"
+                            | "indigo"
+                            | "yellow"
+                        }
+                      >
+                        {salesOrderTypeLabels[sale.orderType]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {sale.items}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {formatPrice(sale.total, data.currency)}
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </TableBody>
+            </Table>
+          )}
+        </div>
+
+        <Separator className="bg-border/80 xl:h-full xl:w-px" />
+
+        <div className="space-y-4">
+          <div
+            className="flex flex-col items-start gap-2 sm:flex-row
+              sm:items-center sm:justify-between sm:gap-4"
+          >
+            <h2 className="text-base font-semibold text-balance">
+              Más vendidos
+            </h2>
+            <Badge variant="outline">{data.bestSellers.length}</Badge>
+          </div>
+          <Separator className="bg-border/80" />
+          {data.bestSellers.length === 0 ? (
+            <Empty className="min-h-72 rounded-none border-0 p-0">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <Banknote />
+                </EmptyMedia>
+                <EmptyTitle>Sin ventas para analizar</EmptyTitle>
+                <EmptyDescription>
+                  Tu ranking de productos aparecerá cuando haya ventas en el
+                  periodo seleccionado.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <ItemGroup className="gap-0">
+              {data.bestSellers.map((item, index) => (
+                <Fragment key={item.productName}>
+                  <Item className="rounded-none px-0 py-4">
+                    <ItemMedia variant="icon" className="rounded-full">
+                      <span className="text-xs font-semibold tabular-nums">
+                        #{index + 1}
+                      </span>
+                    </ItemMedia>
+                    <ItemContent className="min-w-0 gap-1">
+                      <ItemTitle className="w-full truncate">
+                        {item.productName}
+                      </ItemTitle>
+                    </ItemContent>
+                    <ItemActions
+                      className="ml-auto flex flex-col items-end gap-1 pl-3"
+                    >
+                      <p className="font-medium tabular-nums">
+                        {formatPrice(item.revenue, data.currency)}
+                      </p>
+                      <p className="text-muted-foreground text-xs tabular-nums">
+                        {item.quantity} unidades
+                      </p>
+                    </ItemActions>
+                  </Item>
+                  {index < data.bestSellers.length - 1 && <ItemSeparator />}
+                </Fragment>
+              ))}
+            </ItemGroup>
+          )}
+        </div>
       </section>
     </div>
   )

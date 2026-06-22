@@ -1,52 +1,59 @@
-import { Banknote, Plus, ReceiptText } from "lucide-react"
+import { Banknote } from "lucide-react"
 import type { Metadata } from "next"
-import Link from "next/link"
 import { notFound } from "next/navigation"
+import { createLoader, parseAsStringEnum } from "nuqs/server"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { SalesDashboard } from "@/components/sales/sales-dashboard"
-import { Button } from "@/components/ui/button"
+import { SalesDashboardPeriodFilter } from "@/components/sales/sales-dashboard-period-filter"
 import { getSalesDashboardData } from "@/server/actions/sales/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
+import {
+  defaultSalesDashboardPeriod,
+  salesDashboardPeriodValues
+} from "@/lib/sales-dashboard-period"
 
 export const metadata: Metadata = {
   title: "Ventas"
 }
 
-export default async function SalesPage() {
-  const currentOrg = await getCurrentOrganization()
+const loadSalesDashboardSearchParams = createLoader({
+  period: parseAsStringEnum([...salesDashboardPeriodValues]).withDefault(
+    defaultSalesDashboardPeriod
+  )
+})
+
+export default async function SalesPage(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const [{ period }, currentOrg] = await Promise.all([
+    loadSalesDashboardSearchParams(props.searchParams),
+    getCurrentOrganization()
+  ])
 
   if (!currentOrg) {
     notFound()
   }
 
-  const data = await getSalesDashboardData(currentOrg.id)
+  const data = await getSalesDashboardData(currentOrg.id, period)
 
   return (
     <div
-      className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6"
+      className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-5 sm:gap-8
+        sm:px-6 sm:py-6"
     >
-      <PageSubtitle>
+      <PageSubtitle className="gap-3 pb-4 sm:items-end sm:gap-4 sm:pb-5">
         <PageSubtitle.Icon icon={Banknote} />
         <PageSubtitle.Title>Ventas</PageSubtitle.Title>
         <PageSubtitle.Description>
           Captura rápida y métricas de ventas
         </PageSubtitle.Description>
-        <PageSubtitle.Actions>
-          <div className="flex gap-2">
-            <Button asChild>
-              <Link href="/dashboard/sales/new" prefetch={false}>
-                <Plus data-icon="inline-start" />
-                Nueva venta
-              </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/dashboard/sales/closing" prefetch={false}>
-                <ReceiptText data-icon="inline-start" />
-                Cierre diario
-              </Link>
-            </Button>
-          </div>
+        <PageSubtitle.Actions className="w-full sm:mt-0 sm:w-auto sm:flex-none">
+          <SalesDashboardPeriodFilter
+            inline
+            label="Periodo"
+            className="w-full sm:w-auto"
+          />
         </PageSubtitle.Actions>
       </PageSubtitle>
 

@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from "next/cache"
 
 import { formatPriceRange, type Currency } from "@/lib/currency"
 import prisma from "@/lib/prisma"
+import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
 import {
   salesOrderTypeValues,
   type SalesBestSeller,
@@ -41,10 +42,125 @@ function startOfMonth(date = new Date()) {
   return next
 }
 
-function startOfNextMonth(date = new Date()) {
-  const next = startOfMonth(date)
-  next.setMonth(next.getMonth() + 1)
-  return next
+function startOfRollingPeriod(
+  period: SalesDashboardPeriod,
+  date = new Date()
+): Date {
+  const next = startOfDay(date)
+
+  switch (period) {
+    case "7d":
+      next.setDate(next.getDate() - 6)
+      return next
+    case "1m":
+      next.setMonth(next.getMonth() - 1)
+      return next
+    case "3m":
+      next.setMonth(next.getMonth() - 3)
+      return next
+    case "1y":
+      next.setFullYear(next.getFullYear() - 1)
+      return next
+  }
+}
+
+function getSalesChartBucketType(period: SalesDashboardPeriod) {
+  return period === "1y" ? "month" : "day"
+}
+
+const salesChartDayLabelFormatter = new Intl.DateTimeFormat("es-MX", {
+  day: "numeric",
+  month: "short"
+})
+
+const salesChartMonthLabelFormatter = new Intl.DateTimeFormat("es-MX", {
+  month: "short",
+  year: "2-digit"
+})
+
+function getDayBucketKey(date: Date) {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0")
+  ].join("-")
+}
+
+function getMonthBucketKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
+}
+
+function buildSalesChartBuckets({
+  rows,
+  startDate,
+  endDate,
+  period
+}: {
+  rows: Array<{ createdAt: Date; total: number }>
+  startDate: Date
+  endDate: Date
+  period: SalesDashboardPeriod
+}) {
+  const bucketType = getSalesChartBucketType(period)
+  const buckets = new Map<
+    string,
+    {
+      label: string
+      revenue: number
+      orders: number
+    }
+  >()
+
+  if (bucketType === "month") {
+    const cursor = startOfMonth(startDate)
+
+    while (cursor < endDate) {
+      const key = getMonthBucketKey(cursor)
+      buckets.set(key, {
+        label: salesChartMonthLabelFormatter.format(cursor),
+        revenue: 0,
+        orders: 0
+      })
+      cursor.setMonth(cursor.getMonth() + 1)
+    }
+
+    for (const row of rows) {
+      const key = getMonthBucketKey(row.createdAt)
+      const bucket = buckets.get(key)
+
+      if (!bucket) continue
+
+      bucket.revenue += row.total
+      bucket.orders += 1
+    }
+  } else {
+    const cursor = startOfDay(startDate)
+
+    while (cursor < endDate) {
+      const key = getDayBucketKey(cursor)
+      buckets.set(key, {
+        label: salesChartDayLabelFormatter.format(cursor),
+        revenue: 0,
+        orders: 0
+      })
+      cursor.setDate(cursor.getDate() + 1)
+    }
+
+    for (const row of rows) {
+      const key = getDayBucketKey(row.createdAt)
+      const bucket = buckets.get(key)
+
+      if (!bucket) continue
+
+      bucket.revenue += row.total
+      bucket.orders += 1
+    }
+  }
+
+  return [...buckets.values()].map(bucket => ({
+    ...bucket,
+    revenue: roundMoney(bucket.revenue)
+  }))
 }
 
 function mapCatalogProduct({
@@ -256,6 +372,29 @@ async function getRecentSales(
   }))
 }
 
+async function getSalesChartRows(
+  organizationId: string,
+  startDate: Date,
+  endDate: Date
+) {
+  return prisma.sale.findMany({
+    where: {
+      organizationId,
+      createdAt: {
+        gte: startDate,
+        lt: endDate
+      }
+    },
+    orderBy: {
+      createdAt: "asc"
+    },
+    select: {
+      createdAt: true,
+      total: true
+    }
+  })
+}
+
 async function getRevenueByOrderType(
   organizationId: string,
   startDate: Date,
@@ -417,7 +556,8 @@ export async function getSalesCatalog(
 }
 
 export async function getSalesDashboardData(
-  organizationId: string
+  organizationId: string,
+  period: SalesDashboardPeriod
 ): Promise<SalesDashboardData> {
   "use cache: private"
   cacheLife({ stale: 30 })
@@ -425,10 +565,13 @@ export async function getSalesDashboardData(
   if (!organizationId) {
     return {
       currency: "MXN",
+      period,
       todayRevenue: 0,
       todayOrders: 0,
-      monthRevenue: 0,
-      averageTicket: 0,
+      periodRevenue: 0,
+      periodOrders: 0,
+      periodAverageTicket: 0,
+      chart: [],
       bestSellers: [],
       recentSales: []
     }
@@ -439,27 +582,37 @@ export async function getSalesDashboardData(
   const now = new Date()
   const todayStart = startOfDay(now)
   const tomorrowStart = startOfNextDay(now)
-  const monthStart = startOfMonth(now)
-  const nextMonthStart = startOfNextMonth(now)
+  const periodStart = startOfRollingPeriod(period, now)
 
-  const [currency, todayTotals, monthTotals, bestSellers, recentSales] =
+  const [currency, todayTotals, periodSales, bestSellers, recentSales] =
     await Promise.all([
       getOrganizationCurrency(organizationId),
       getSalesTotals(organizationId, todayStart, tomorrowStart),
-      getSalesTotals(organizationId, monthStart, nextMonthStart),
-      getBestSellers(organizationId, monthStart, nextMonthStart),
+      getSalesChartRows(organizationId, periodStart, tomorrowStart),
+      getBestSellers(organizationId, periodStart, tomorrowStart),
       getRecentSales(organizationId)
     ])
 
+  const periodRevenue = roundMoney(
+    periodSales.reduce((sum, sale) => sum + sale.total, 0)
+  )
+  const periodOrders = periodSales.length
+
   return {
     currency,
+    period,
     todayRevenue: todayTotals.revenue,
     todayOrders: todayTotals.orders,
-    monthRevenue: monthTotals.revenue,
-    averageTicket:
-      todayTotals.orders > 0
-        ? roundMoney(todayTotals.revenue / todayTotals.orders)
-        : 0,
+    periodRevenue,
+    periodOrders,
+    periodAverageTicket:
+      periodOrders > 0 ? roundMoney(periodRevenue / periodOrders) : 0,
+    chart: buildSalesChartBuckets({
+      rows: periodSales,
+      startDate: periodStart,
+      endDate: tomorrowStart,
+      period
+    }),
     bestSellers,
     recentSales
   }

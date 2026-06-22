@@ -21,7 +21,7 @@ export default function DashboardError({
     <div className="flex min-h-[60vh] items-center justify-center px-6">
       <div className="flex max-w-lg flex-col items-center gap-4 text-center">
         <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-100">
-          Ocurrió un error en el dashboard
+          Ocurrió un error en la aplicación
         </h1>
         <p className="text-sm text-gray-500">
           Intenta nuevamente o vuelve al inicio. Si el problema persiste,
