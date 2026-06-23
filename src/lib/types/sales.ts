@@ -113,6 +113,7 @@ export type SalesDashboardData = {
 }
 
 export type SalesClosingData = {
+  selectedDateValue: string
   currency: Currency
   todayRevenue: number
   todayOrders: number

@@ -5,6 +5,7 @@ import Papa from "papaparse"
 
 import { Button } from "@/components/ui/button"
 import { salesOrderTypeLabels, type SalesClosingData } from "@/lib/types/sales"
+import { cn } from "@/lib/utils"
 
 type ClosingCsvRow = {
   section: string
@@ -20,7 +21,7 @@ function buildRows(data: SalesClosingData): ClosingCsvRow[] {
   const rows: ClosingCsvRow[] = [
     {
       section: "summary",
-      label: "Ingresos de hoy",
+      label: "Ingresos del día",
       orderType: "",
       quantity: "",
       orders: "",
@@ -29,7 +30,7 @@ function buildRows(data: SalesClosingData): ClosingCsvRow[] {
     },
     {
       section: "summary",
-      label: "Órdenes de hoy",
+      label: "Órdenes del día",
       orderType: "",
       quantity: "",
       orders: data.todayOrders,
@@ -59,22 +60,35 @@ function buildRows(data: SalesClosingData): ClosingCsvRow[] {
   return rows
 }
 
-function downloadCsv(rows: ClosingCsvRow[]) {
+function downloadCsv(rows: ClosingCsvRow[], fileDateValue: string) {
   const csv = Papa.unparse(rows)
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
   const url = URL.createObjectURL(blob)
   const link = document.createElement("a")
   link.href = url
-  link.download = `cierre-ventas-${new Date().toISOString().slice(0, 10)}.csv`
+  link.download = `cierre-ventas-${fileDateValue}.csv`
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
 }
 
-export function SalesClosingExportButton({ data }: { data: SalesClosingData }) {
+export function SalesClosingExportButton({
+  className,
+  data
+}: {
+  className?: string
+  data: SalesClosingData
+}) {
+  const fileDateValue = data.selectedDateValue
+
   return (
-    <Button variant="outline" onClick={() => downloadCsv(buildRows(data))}>
+    <Button
+      variant="outline"
+      size="sm"
+      className={cn("w-full sm:w-auto", className)}
+      onClick={() => downloadCsv(buildRows(data), fileDateValue)}
+    >
       <Download data-icon="inline-start" />
       Exportar CSV
     </Button>

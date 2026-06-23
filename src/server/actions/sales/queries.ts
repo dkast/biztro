@@ -4,6 +4,11 @@ import { cacheLife, cacheTag } from "next/cache"
 
 import { formatPriceRange, type Currency } from "@/lib/currency"
 import prisma from "@/lib/prisma"
+import {
+  formatSalesClosingDateValue,
+  getSalesClosingDateValue,
+  parseSalesClosingDateValue
+} from "@/lib/sales-closing-date"
 import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
 import {
   salesOrderTypeValues,
@@ -619,13 +624,19 @@ export async function getSalesDashboardData(
 }
 
 export async function getSalesClosingData(
-  organizationId: string
+  organizationId: string,
+  selectedDateValue = getSalesClosingDateValue()
 ): Promise<SalesClosingData> {
   "use cache: private"
   cacheLife({ stale: 30 })
 
+  const selectedDate =
+    parseSalesClosingDateValue(selectedDateValue) ?? new Date()
+  const normalizedSelectedDateValue = formatSalesClosingDateValue(selectedDate)
+
   if (!organizationId) {
     return {
+      selectedDateValue: normalizedSelectedDateValue,
       currency: "MXN",
       todayRevenue: 0,
       todayOrders: 0,
@@ -636,9 +647,8 @@ export async function getSalesClosingData(
 
   cacheTag(`sales-${organizationId}`)
 
-  const now = new Date()
-  const todayStart = startOfDay(now)
-  const tomorrowStart = startOfNextDay(now)
+  const todayStart = startOfDay(selectedDate)
+  const tomorrowStart = startOfNextDay(selectedDate)
 
   const [currency, todayTotals, bestSellers, revenueByOrderType] =
     await Promise.all([
@@ -649,6 +659,7 @@ export async function getSalesClosingData(
     ])
 
   return {
+    selectedDateValue: normalizedSelectedDateValue,
     currency,
     todayRevenue: todayTotals.revenue,
     todayOrders: todayTotals.orders,
