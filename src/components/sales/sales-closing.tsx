@@ -58,7 +58,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
 
   return (
     <div className="flex flex-col gap-6 pb-6">
-      <section className="border-border overflow-hidden rounded-lg border">
+      <section className="border-border mb-10 overflow-hidden rounded-lg border">
         <ItemGroup className="grid md:grid-cols-2">
           {getSummaryItems(data).map((item, index) => (
             <Item
@@ -90,7 +90,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
         </ItemGroup>
       </section>
 
-      <Separator className="bg-border/80" />
+      {/* <Separator className="bg-border/80" /> */}
 
       <section
         className="grid gap-y-6 lg:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)]
