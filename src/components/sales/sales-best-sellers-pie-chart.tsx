@@ -6,6 +6,15 @@ import NumberFlow from "@number-flow/react"
 import { PieChart } from "@/components/charts/pie-chart"
 import { pieCssVars } from "@/components/charts/pie-context"
 import { PieSlice } from "@/components/charts/pie-slice"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemTitle
+} from "@/components/ui/item"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { formatPrice, type Currency } from "@/lib/currency"
 import type { SalesBestSeller } from "@/lib/types/sales"
@@ -42,6 +51,12 @@ type BestSellerChartDatum = SalesBestSeller & {
   label: string
   value: number
   share: number
+}
+
+type BestSellerRankItem = SalesBestSeller & {
+  color: string
+  label: string
+  value: number
 }
 
 type SalesBestSellersPieChartProps = {
@@ -115,6 +130,22 @@ function formatShare(share: number) {
   }).format(share)
 }
 
+function compareBestSellerSegments(
+  a: BestSellerRankItem,
+  b: BestSellerRankItem,
+  metric: BestSellerMetric
+) {
+  if (metric === "quantity") {
+    if (b.quantity !== a.quantity) return b.quantity - a.quantity
+    if (b.revenue !== a.revenue) return b.revenue - a.revenue
+  } else {
+    if (b.revenue !== a.revenue) return b.revenue - a.revenue
+    if (b.quantity !== a.quantity) return b.quantity - a.quantity
+  }
+
+  return a.productName.localeCompare(b.productName)
+}
+
 export function SalesBestSellersPieChart({
   bestSellers,
   currency
@@ -125,27 +156,26 @@ export function SalesBestSellersPieChart({
   const locales = currency === "MXN" ? "es-MX" : "en-US"
 
   const chartState = useMemo(() => {
-    const segments = bestSellers.slice(0, 10).map((item, index) => ({
-      ...item,
-      color: bestSellerSegmentColors[index] ?? bestSellerSegmentColors[0],
-      label: item.productName,
-      value: metric === "quantity" ? item.quantity : item.revenue
-    }))
+    const rankedItems: BestSellerRankItem[] = bestSellers
+      .slice(0, 10)
+      .map((item, index) => ({
+        ...item,
+        color: bestSellerSegmentColors[index] ?? bestSellerSegmentColors[0],
+        label: item.productName,
+        value: metric === "quantity" ? item.quantity : item.revenue
+      }))
+    rankedItems.sort((a, b) => compareBestSellerSegments(a, b, metric))
 
-    const totalValue = segments.reduce((sum, item) => sum + item.value, 0)
-    const averageValue = segments.length > 0 ? totalValue / segments.length : 0
+    const totalValue = rankedItems.reduce((sum, item) => sum + item.value, 0)
+    const averageValue =
+      rankedItems.length > 0 ? totalValue / rankedItems.length : 0
 
-    const rankedSegments: BestSellerChartDatum[] = segments.map(item => ({
+    const rankedSegments: BestSellerChartDatum[] = rankedItems.map(item => ({
       ...item,
       share: totalValue > 0 ? item.value / totalValue : 0
     }))
 
-    const leadingSegment =
-      rankedSegments.length > 0
-        ? rankedSegments.reduce((leader, segment) =>
-            segment.value > leader.value ? segment : leader
-          )
-        : null
+    const leadingSegment = rankedSegments[0] ?? null
 
     return {
       averageValue,
@@ -174,39 +204,16 @@ export function SalesBestSellersPieChart({
       })}${metric === "quantity" ? " u." : ""}`
 
   return (
-    <div
-      className="border-border/70 from-background via-background to-muted/20
-        relative overflow-hidden rounded-[1.75rem] border bg-gradient-to-br p-4
-        sm:p-5"
-    >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-8 top-0 h-32
-          rounded-full
-          bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.18),transparent_65%)]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-0 -bottom-12 h-40 w-40
-          rounded-full
-          bg-[radial-gradient(circle,rgba(52,211,153,0.16),transparent_68%)]"
-      />
-
+    <div>
       <div className="relative flex flex-col gap-5">
         <div
           className="flex flex-col items-start gap-3 sm:flex-row sm:items-center
             sm:justify-between"
         >
           <div className="space-y-1">
-            <p
-              className="text-muted-foreground text-[0.7rem] font-medium
-                tracking-[0.24em] uppercase"
-            >
+            <p className="text-muted-foreground text-sm font-medium">
               Distribución top 10
             </p>
-            <h3 className="text-sm font-semibold text-balance">
-              Participación por producto
-            </h3>
           </div>
 
           <ToggleGroup
@@ -219,8 +226,8 @@ export function SalesBestSellersPieChart({
               }
             }}
             aria-label="Cambiar métrica del gráfico de productos más vendidos"
-            className="bg-muted/70 border-border/60 inline-flex gap-1 rounded-xl
-              border p-1"
+            className="bg-muted grid w-full grid-cols-2 gap-1 rounded-lg p-[3px]
+              sm:inline-flex sm:w-auto sm:flex-nowrap"
             variant="default"
             size="sm"
           >
@@ -240,12 +247,9 @@ export function SalesBestSellersPieChart({
           </ToggleGroup>
         </div>
 
-        <div
-          className="grid gap-5 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]
-            lg:items-center"
-        >
+        <div className="flex flex-col items-center gap-6">
           <div className="space-y-4">
-            <div className="relative mx-auto aspect-square w-full max-w-[18rem]">
+            <div className="relative mx-auto w-full max-w-78">
               <div
                 aria-hidden="true"
                 className="absolute inset-3 rounded-full opacity-45 blur-3xl"
@@ -257,9 +261,11 @@ export function SalesBestSellersPieChart({
               <PieChart
                 key={metric}
                 className="drop-shadow-[0_20px_50px_rgba(0,0,0,0.16)]"
+                startAngle={(-90 * Math.PI) / 180}
+                endAngle={(90 * Math.PI) / 180}
                 data={chartState.segments}
-                innerRadius={76}
-                cornerRadius={12}
+                innerRadius={106}
+                cornerRadius={2}
                 hoverOffset={12}
                 hoveredIndex={hoveredIndex}
                 onHoverChange={setHoveredIndex}
@@ -276,11 +282,8 @@ export function SalesBestSellersPieChart({
               </PieChart>
 
               <div
-                className="border-border/70 bg-background/85 absolute
-                  inset-[22%] flex flex-col items-center justify-center
-                  rounded-full border px-4 text-center
-                  shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_18px_50px_rgba(0,0,0,0.16)]
-                  backdrop-blur-sm"
+                className="absolute inset-[22%] flex flex-col items-center
+                  justify-center rounded-full px-4 text-center"
               >
                 <p
                   className="text-muted-foreground max-w-full truncate
@@ -319,7 +322,7 @@ export function SalesBestSellersPieChart({
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="-mt-20 flex flex-wrap justify-center gap-2">
               <span
                 className="border-border/70 bg-background/70 rounded-full border
                   px-3 py-1 text-xs font-medium"
@@ -339,7 +342,7 @@ export function SalesBestSellersPieChart({
             </div>
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-2">
+          <ItemGroup className="z-10 w-full gap-2">
             {chartState.segments.map((segment, index) => {
               const isActive = hoveredIndex === index
               const isMuted = hoveredIndex !== null && hoveredIndex !== index
@@ -349,61 +352,60 @@ export function SalesBestSellersPieChart({
                   : formatPrice(segment.revenue, currency)
 
               return (
-                <div
+                <Item
+                  variant="outline"
                   key={segment.productName}
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   className={cn(
-                    `flex items-start gap-3 rounded-2xl border px-3 py-2.5
-                    text-left transition`,
-                    index < 3
-                      ? `border-border/70 from-background via-background
-                        to-muted/30 bg-gradient-to-r`
-                      : "border-border/60 bg-background/65",
+                    "transition",
                     isActive &&
                       `border-foreground/15 bg-background
                       shadow-[0_18px_30px_rgba(0,0,0,0.08)]`,
                     isMuted && "opacity-55"
                   )}
                 >
-                  <span
-                    aria-hidden="true"
-                    className="mt-1.5 size-2.5 shrink-0 rounded-full"
-                    style={{ backgroundColor: segment.color }}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="truncate text-sm font-medium">
-                        {segment.productName}
-                      </p>
-                      <span
-                        className="text-muted-foreground text-[0.7rem]
-                          font-semibold tabular-nums"
-                      >
-                        #{index + 1}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm font-medium tabular-nums">
-                      {formatMetricValue({
-                        value: segment.value,
-                        metric,
-                        currency,
-                        locales
-                      })}
-                    </p>
-                    <div
+                  <ItemMedia>
+                    <span
+                      aria-hidden="true"
+                      className="mt-1.5 size-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: segment.color }}
+                    />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle className="truncate text-sm font-medium">
+                      {segment.productName}
+                    </ItemTitle>
+                    <ItemDescription
                       className="text-muted-foreground mt-1 flex items-center
                         gap-2 text-xs tabular-nums"
                     >
+                      <span className="text-foreground font-medium tabular-nums">
+                        {formatMetricValue({
+                          value: segment.value,
+                          metric,
+                          currency,
+                          locales
+                        })}
+                      </span>
+                      <span className="text-border">•</span>
                       <span>{secondaryValue}</span>
                       <span className="text-border">•</span>
                       <span>{formatShare(segment.share)}</span>
-                    </div>
-                  </div>
-                </div>
+                    </ItemDescription>
+                  </ItemContent>
+                  <ItemActions>
+                    <span
+                      className="text-muted-foreground text-[0.7rem]
+                        font-semibold tabular-nums"
+                    >
+                      #{index + 1}
+                    </span>
+                  </ItemActions>
+                </Item>
               )
             })}
-          </div>
+          </ItemGroup>
         </div>
       </div>
     </div>

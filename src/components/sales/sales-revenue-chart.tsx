@@ -79,13 +79,13 @@ export function SalesRevenueChart({
       data={chart}
       xDataKey="label"
       aspectRatio="4 / 1"
-      className="min-h-[18rem] sm:min-h-0"
+      className="min-h-72 sm:min-h-0"
       margin={{ top: 20, right: 24, bottom: 36, left: 72 }}
       revealSignature={period}
     >
       <SalesRevenueYAxis currency={currency} />
       <Grid horizontal numTicksRows={4} />
-      <Bar dataKey="revenue" fill={chartCssVars.linePrimary} lineCap="butt" />
+      <Bar dataKey="revenue" fill={chartCssVars.linePrimary} lineCap={2} />
       <BarXAxis
         maxLabels={period === "7d" ? 7 : 12}
         showAllLabels={period === "7d"}

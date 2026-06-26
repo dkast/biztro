@@ -1,4 +1,3 @@
-import { Fragment } from "react"
 import NumberFlow from "@number-flow/react"
 import { Banknote, ShoppingCart, TrendingUp, WalletCards } from "lucide-react"
 
@@ -14,11 +13,9 @@ import {
 } from "@/components/ui/empty"
 import {
   Item,
-  ItemActions,
   ItemContent,
   ItemGroup,
   ItemMedia,
-  ItemSeparator,
   ItemTitle
 } from "@/components/ui/item"
 import { Separator } from "@/components/ui/separator"
@@ -176,7 +173,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
         </div>
       </section>
 
-      <Separator className="bg-border/80" />
+      {/* <Separator className="bg-border/80" /> */}
 
       <section
         className="grid gap-y-6 lg:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)]
@@ -279,37 +276,6 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
                 bestSellers={data.bestSellers}
                 currency={data.currency}
               />
-              <ItemGroup className="gap-0">
-                {data.bestSellers.map((item, index) => (
-                  <Fragment key={item.productName}>
-                    <Item className="rounded-none px-0 py-4">
-                      <ItemMedia variant="icon" className="rounded-full">
-                        <span className="text-xs font-semibold tabular-nums">
-                          #{index + 1}
-                        </span>
-                      </ItemMedia>
-                      <ItemContent className="min-w-0 gap-1">
-                        <ItemTitle className="w-full truncate">
-                          {item.productName}
-                        </ItemTitle>
-                      </ItemContent>
-                      <ItemActions
-                        className="ml-auto flex flex-col items-end gap-1 pl-3"
-                      >
-                        <p className="font-medium tabular-nums">
-                          {formatPrice(item.revenue, data.currency)}
-                        </p>
-                        <p
-                          className="text-muted-foreground text-xs tabular-nums"
-                        >
-                          {item.quantity} unidades
-                        </p>
-                      </ItemActions>
-                    </Item>
-                    {index < data.bestSellers.length - 1 && <ItemSeparator />}
-                  </Fragment>
-                ))}
-              </ItemGroup>
             </div>
           )}
         </div>
