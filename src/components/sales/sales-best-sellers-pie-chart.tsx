@@ -211,9 +211,9 @@ export function SalesBestSellersPieChart({
             sm:justify-between"
         >
           <div className="space-y-1">
-            <p className="text-muted-foreground text-sm font-medium">
-              Distribución top 10
-            </p>
+            <h2 className="text-base font-semibold text-balance">
+              Productos más vendidos
+            </h2>
           </div>
 
           <ToggleGroup
@@ -358,7 +358,7 @@ export function SalesBestSellersPieChart({
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   className={cn(
-                    "transition",
+                    "px-3 py-2 transition",
                     isActive &&
                       `border-foreground/15 bg-background
                       shadow-[0_18px_30px_rgba(0,0,0,0.08)]`,

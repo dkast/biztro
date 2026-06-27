@@ -173,15 +173,15 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
         </div>
       </section>
 
-      {/* <Separator className="bg-border/80" /> */}
+      <Separator className="bg-border/80" />
 
       <section
         className="grid gap-y-6 lg:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)]
           lg:items-start lg:gap-x-8 lg:gap-y-0"
       >
-        <div className="min-w-0 space-y-4">
+        <div className="flex min-w-0 flex-col gap-5">
           <div
-            className="flex flex-col items-start gap-2 sm:flex-row
+            className="flex h-9.5 flex-col items-start gap-2 sm:flex-row
               sm:items-center sm:justify-between sm:gap-4"
           >
             <h2 className="text-base font-semibold text-balance">
@@ -189,7 +189,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             </h2>
             <Badge variant="outline">{data.recentSales.length}</Badge>
           </div>
-          <Separator className="bg-border/80" />
+          {/* <Separator className="bg-border/80" /> */}
           {data.recentSales.length === 0 ? (
             <Empty className="min-h-72 rounded-none border-0 p-0">
               <EmptyHeader>
@@ -203,7 +203,10 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
               </EmptyHeader>
             </Empty>
           ) : (
-            <div className="w-full max-w-full overflow-x-auto pb-1">
+            <div
+              className="border-border/80 w-full max-w-full overflow-x-auto
+                rounded-2xl border pb-1"
+            >
               <Table className="min-w-[34rem]">
                 <TableHeader>
                   <TableRow>
@@ -248,7 +251,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
         <Separator className="bg-border/80 xl:h-full xl:w-px" />
 
         <div className="min-w-0 space-y-4">
-          <div
+          {/* <div
             className="flex flex-col items-start gap-2 sm:flex-row
               sm:items-center sm:justify-between sm:gap-4"
           >
@@ -257,7 +260,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             </h2>
             <Badge variant="outline">{data.bestSellers.length}</Badge>
           </div>
-          <Separator className="bg-border/80" />
+          <Separator className="bg-border/80" /> */}
           {data.bestSellers.length === 0 ? (
             <Empty className="min-h-72 rounded-none border-0 p-0">
               <EmptyHeader>
