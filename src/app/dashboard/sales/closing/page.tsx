@@ -50,10 +50,7 @@ export default async function SalesClosingPage(props: {
         </PageSubtitle.Description>
         <PageSubtitle.Actions className="w-full sm:mt-0 sm:w-auto sm:flex-none">
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-            <SalesClosingDateFilter
-              inline
-              selectedDateValue={selectedDateValue}
-            />
+            <SalesClosingDateFilter selectedDateValue={selectedDateValue} />
             <SalesClosingExportButton
               data={data}
               className="w-full sm:w-auto"

@@ -21,12 +21,10 @@ import { cn } from "@/lib/utils"
 
 export function SalesClosingDateFilter({
   className,
-  inline = false,
   label = "Fecha",
   selectedDateValue
 }: {
   className?: string
-  inline?: boolean
   label?: string
   selectedDateValue: string
 }) {
@@ -63,12 +61,12 @@ export function SalesClosingDateFilter({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
+          size="sm"
           data-empty={!selectedDate}
           aria-label={label}
           className={cn(
             `data-[empty=true]:text-muted-foreground w-full justify-start
-            text-left font-normal`,
-            inline ? "sm:w-[280px]" : "w-[280px]",
+            text-left font-normal sm:w-[180px]`,
             className
           )}
         >
