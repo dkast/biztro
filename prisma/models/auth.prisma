@@ -95,6 +95,7 @@ model Organization {
   location      Location[]
   menus         Menu[]
   menuItems     MenuItem[]
+  sales         Sale[]
   themes        Theme[]
   mediaAssets   MediaAsset[]
 

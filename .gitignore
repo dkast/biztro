@@ -55,3 +55,6 @@ yarn-error.log*
 
 # prisma generated client
 generated
+
+# playwright
+.playwright-mcp
