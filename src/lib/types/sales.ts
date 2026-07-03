@@ -112,11 +112,32 @@ export type SalesDashboardData = {
   recentSales: SalesRecentSale[]
 }
 
+export type SalesClosingHourlyBucket = {
+  hour: number
+  label: string
+  todayOrders: number
+  todayRevenue: number
+  previousOrders: number
+  previousRevenue: number
+}
+
+export type SalesClosingComparison = {
+  revenue: number
+  orders: number
+  averageTicket: number
+}
+
 export type SalesClosingData = {
   selectedDateValue: string
+  previousDateValue: string
   currency: Currency
   todayRevenue: number
   todayOrders: number
+  todayAverageTicket: number
+  topProduct: SalesBestSeller | null
+  previous: SalesClosingComparison
   bestSellers: SalesBestSeller[]
   revenueByOrderType: SalesRevenueByOrderType[]
+  hourly: SalesClosingHourlyBucket[]
+  recentSales: SalesRecentSale[]
 }

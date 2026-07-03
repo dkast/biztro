@@ -17,6 +17,7 @@ import {
   type SalesCatalogData,
   type SalesCatalogProduct,
   type SalesClosingData,
+  type SalesClosingHourlyBucket,
   type SalesDashboardData,
   type SalesOrderType,
   type SalesRecentSale,
@@ -345,11 +346,15 @@ async function getBestSellers(
 }
 
 async function getRecentSales(
-  organizationId: string
+  organizationId: string,
+  range?: { startDate: Date; endDate: Date }
 ): Promise<SalesRecentSale[]> {
   const sales = await prisma.sale.findMany({
     where: {
-      organizationId
+      organizationId,
+      ...(range
+        ? { createdAt: { gte: range.startDate, lt: range.endDate } }
+        : {})
     },
     orderBy: {
       createdAt: "desc"
@@ -375,6 +380,89 @@ async function getRecentSales(
     total: roundMoney(sale.total),
     items: sale.items.reduce((count, item) => count + item.quantity, 0)
   }))
+}
+
+const salesClosingHourLabelFormatter = new Intl.DateTimeFormat("es-MX", {
+  hour: "numeric",
+  hour12: true
+})
+
+function getHourLabel(hour: number) {
+  return salesClosingHourLabelFormatter.format(new Date(2000, 0, 1, hour))
+}
+
+async function getHourlySalesBuckets(
+  organizationId: string,
+  selectedDayStart: Date,
+  previousDayStart: Date,
+  tomorrowStart: Date
+): Promise<SalesClosingHourlyBucket[]> {
+  const rows = await prisma.sale.findMany({
+    where: {
+      organizationId,
+      createdAt: {
+        gte: previousDayStart,
+        lt: tomorrowStart
+      }
+    },
+    select: {
+      createdAt: true,
+      total: true
+    }
+  })
+
+  const buckets = new Map<number, SalesClosingHourlyBucket>()
+
+  for (let hour = 0; hour < 24; hour++) {
+    buckets.set(hour, {
+      hour,
+      label: getHourLabel(hour),
+      todayOrders: 0,
+      todayRevenue: 0,
+      previousOrders: 0,
+      previousRevenue: 0
+    })
+  }
+
+  for (const row of rows) {
+    const bucket = buckets.get(row.createdAt.getHours())
+
+    if (!bucket) continue
+
+    if (row.createdAt >= selectedDayStart) {
+      bucket.todayOrders += 1
+      bucket.todayRevenue += row.total
+    } else {
+      bucket.previousOrders += 1
+      bucket.previousRevenue += row.total
+    }
+  }
+
+  const allBuckets = [...buckets.values()]
+  const activeHours = allBuckets
+    .filter(
+      bucket =>
+        bucket.todayOrders > 0 ||
+        bucket.previousOrders > 0 ||
+        bucket.todayRevenue > 0 ||
+        bucket.previousRevenue > 0
+    )
+    .map(bucket => bucket.hour)
+
+  if (activeHours.length === 0) {
+    return []
+  }
+
+  const minHour = Math.min(...activeHours)
+  const maxHour = Math.max(...activeHours)
+
+  return allBuckets
+    .filter(bucket => bucket.hour >= minHour && bucket.hour <= maxHour)
+    .map(bucket => ({
+      ...bucket,
+      todayRevenue: roundMoney(bucket.todayRevenue),
+      previousRevenue: roundMoney(bucket.previousRevenue)
+    }))
 }
 
 async function getSalesChartRows(
@@ -633,37 +721,84 @@ export async function getSalesClosingData(
   const selectedDate =
     parseSalesClosingDateValue(selectedDateValue) ?? new Date()
   const normalizedSelectedDateValue = formatSalesClosingDateValue(selectedDate)
+  const previousDate = new Date(selectedDate)
+  previousDate.setDate(previousDate.getDate() - 1)
+  const normalizedPreviousDateValue = formatSalesClosingDateValue(previousDate)
 
   if (!organizationId) {
     return {
       selectedDateValue: normalizedSelectedDateValue,
+      previousDateValue: normalizedPreviousDateValue,
       currency: "MXN",
       todayRevenue: 0,
       todayOrders: 0,
+      todayAverageTicket: 0,
+      topProduct: null,
+      previous: { revenue: 0, orders: 0, averageTicket: 0 },
       bestSellers: [],
-      revenueByOrderType: []
+      revenueByOrderType: [],
+      hourly: [],
+      recentSales: []
     }
   }
 
   cacheTag(`sales-${organizationId}`)
 
-  const todayStart = startOfDay(selectedDate)
+  const selectedDayStart = startOfDay(selectedDate)
   const tomorrowStart = startOfNextDay(selectedDate)
+  const previousDayStart = startOfDay(previousDate)
 
-  const [currency, todayTotals, bestSellers, revenueByOrderType] =
-    await Promise.all([
-      getOrganizationCurrency(organizationId),
-      getSalesTotals(organizationId, todayStart, tomorrowStart),
-      getBestSellers(organizationId, todayStart, tomorrowStart),
-      getRevenueByOrderType(organizationId, todayStart, tomorrowStart)
-    ])
+  const [
+    currency,
+    todayTotals,
+    previousTotals,
+    bestSellers,
+    revenueByOrderType,
+    hourly,
+    recentSales
+  ] = await Promise.all([
+    getOrganizationCurrency(organizationId),
+    getSalesTotals(organizationId, selectedDayStart, tomorrowStart),
+    getSalesTotals(organizationId, previousDayStart, selectedDayStart),
+    getBestSellers(organizationId, selectedDayStart, tomorrowStart),
+    getRevenueByOrderType(organizationId, selectedDayStart, tomorrowStart),
+    getHourlySalesBuckets(
+      organizationId,
+      selectedDayStart,
+      previousDayStart,
+      tomorrowStart
+    ),
+    getRecentSales(organizationId, {
+      startDate: selectedDayStart,
+      endDate: tomorrowStart
+    })
+  ])
+
+  const todayAverageTicket =
+    todayTotals.orders > 0
+      ? roundMoney(todayTotals.revenue / todayTotals.orders)
+      : 0
+  const previousAverageTicket =
+    previousTotals.orders > 0
+      ? roundMoney(previousTotals.revenue / previousTotals.orders)
+      : 0
 
   return {
     selectedDateValue: normalizedSelectedDateValue,
+    previousDateValue: normalizedPreviousDateValue,
     currency,
     todayRevenue: todayTotals.revenue,
     todayOrders: todayTotals.orders,
+    todayAverageTicket,
+    topProduct: bestSellers[0] ?? null,
+    previous: {
+      revenue: previousTotals.revenue,
+      orders: previousTotals.orders,
+      averageTicket: previousAverageTicket
+    },
     bestSellers,
-    revenueByOrderType
+    revenueByOrderType,
+    hourly,
+    recentSales
   }
 }
