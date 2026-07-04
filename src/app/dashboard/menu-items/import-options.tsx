@@ -354,7 +354,7 @@ export default function MenuImportOptions({
             dark:ring-white/15"
         >
           <div className="mb-3 flex items-start gap-3">
-            <FileText className="text-muted-foreground size-5" />
+            <FileText className="text-muted-foreground mt-1.5 size-4 shrink-0" />
             <div>
               <p className="font-medium">
                 Importar menú desde PDF o imagen con IA
@@ -378,7 +378,7 @@ export default function MenuImportOptions({
           shadow-sm"
       >
         <div className="mb-3 flex items-start gap-3">
-          <FileSpreadsheet className="text-muted-foreground size-5" />
+          <FileSpreadsheet className="text-muted-foreground size-4 shrink-0" />
           <div>
             <p className="font-medium">Importar desde CSV</p>
             <p className="text-muted-foreground text-sm text-pretty">
@@ -409,8 +409,8 @@ export default function MenuImportOptions({
               onChange={handleFileUpload}
               disabled={isPending}
               aria-busy={isPending}
-              className="border-border bg-background file:bg-primary
-                file:text-primary-foreground hover:file:bg-primary/90
+              className="border-border bg-background file:bg-secondary
+                file:text-secondary-foreground hover:file:bg-secondary/90
                 focus-visible:ring-ring block w-full cursor-pointer rounded-lg
                 border text-sm shadow-sm file:mr-4 file:cursor-pointer
                 file:rounded-md file:border-0 file:px-4 file:py-2 file:text-sm
