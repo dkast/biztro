@@ -81,6 +81,8 @@ export function SalesClosingDateFilter({
       <PopoverContent className="w-auto p-0" align="end">
         <Calendar
           mode="single"
+          captionLayout="dropdown"
+          className="rounded-lg"
           selected={selectedDate ?? undefined}
           defaultMonth={selectedDate ?? new Date()}
           disabled={date => date > new Date()}

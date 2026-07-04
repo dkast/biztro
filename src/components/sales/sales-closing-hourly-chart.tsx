@@ -89,7 +89,7 @@ export function SalesClosingHourlyChart({
         />
         <BarXAxis showAllLabels maxLabels={hourly.length} />
         <ChartTooltip
-          showDatePill={false}
+          showDatePill={true}
           showDots={false}
           content={({ point }) => {
             const label = String(point.label ?? "")

@@ -143,7 +143,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
                   suffix={item.suffix}
                 />
               </ItemContent>
-              <ItemMedia variant="icon" className="rounded-xl">
+              <ItemMedia variant="icon">
                 <item.icon className="size-4" />
               </ItemMedia>
             </Item>

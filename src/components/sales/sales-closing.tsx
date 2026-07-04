@@ -215,12 +215,12 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
                   </span>
                 )}
                 {item.kind === "text" && item.meta && !item.trend && (
-                  <p className="text-muted-foreground truncate text-xs">
+                  <p className="text-muted-foreground truncate pt-2 text-xs">
                     {item.meta}
                   </p>
                 )}
               </ItemContent>
-              <ItemMedia variant="icon" className="rounded-xl">
+              <ItemMedia variant="icon">
                 <item.icon className="size-4" />
               </ItemMedia>
             </Item>
