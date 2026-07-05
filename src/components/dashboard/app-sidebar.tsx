@@ -208,7 +208,13 @@ export default function AppSidebar({
                 </CardDescription>
               </CardHeader>
               <CardFooter className="px-3">
-                <Button size="xs" variant="default" className="w-full" asChild>
+                <Button
+                  size="xs"
+                  variant="default"
+                  className="w-full bg-linear-to-r/oklch from-sky-500
+                    to-indigo-500 text-white"
+                  asChild
+                >
                   <Link
                     href="/dashboard/settings/billing"
                     prefetch={false}

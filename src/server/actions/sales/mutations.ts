@@ -2,6 +2,7 @@
 
 import { updateTag } from "next/cache"
 
+import { isProMember } from "@/server/actions/user/queries"
 import { type Currency } from "@/lib/currency"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
@@ -15,6 +16,14 @@ export const completeSale = authMemberActionClient
   .inputSchema(completeSaleSchema)
   .action(async ({ parsedInput, ctx: { member } }) => {
     const organizationId = member.organizationId
+
+    if (!(await isProMember())) {
+      return {
+        failure: {
+          reason: "Registrar ventas requiere el plan Pro"
+        }
+      }
+    }
 
     if (!organizationId) {
       return {

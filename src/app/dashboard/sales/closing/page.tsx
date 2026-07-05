@@ -7,8 +7,12 @@ import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { SalesClosingReport } from "@/components/sales/sales-closing"
 import { SalesClosingDateFilter } from "@/components/sales/sales-closing-date-filter"
 import { SalesClosingExportButton } from "@/components/sales/sales-closing-export"
+import { SalesProBanner } from "@/components/sales/sales-pro-banner"
 import { getSalesClosingData } from "@/server/actions/sales/queries"
-import { getCurrentOrganization } from "@/server/actions/user/queries"
+import {
+  getCurrentOrganization,
+  isProMember
+} from "@/server/actions/user/queries"
 import {
   getSalesClosingDateValue,
   resolveSalesClosingDateValue
@@ -25,9 +29,10 @@ const loadSalesClosingSearchParams = createLoader({
 export default async function SalesClosingPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const [{ date }, currentOrg] = await Promise.all([
+  const [{ date }, currentOrg, isPro] = await Promise.all([
     loadSalesClosingSearchParams(props.searchParams),
-    getCurrentOrganization()
+    getCurrentOrganization(),
+    isProMember()
   ])
 
   if (!currentOrg) {
@@ -58,6 +63,8 @@ export default async function SalesClosingPage(props: {
           </div>
         </PageSubtitle.Actions>
       </PageSubtitle>
+
+      {!isPro && <SalesProBanner />}
 
       <SalesClosingReport data={data} />
     </div>

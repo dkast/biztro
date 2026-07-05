@@ -6,8 +6,12 @@ import { createLoader, parseAsStringEnum } from "nuqs/server"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { SalesDashboard } from "@/components/sales/sales-dashboard"
 import { SalesDashboardPeriodFilter } from "@/components/sales/sales-dashboard-period-filter"
+import { SalesProBanner } from "@/components/sales/sales-pro-banner"
 import { getSalesDashboardData } from "@/server/actions/sales/queries"
-import { getCurrentOrganization } from "@/server/actions/user/queries"
+import {
+  getCurrentOrganization,
+  isProMember
+} from "@/server/actions/user/queries"
 import {
   defaultSalesDashboardPeriod,
   salesDashboardPeriodValues
@@ -26,9 +30,10 @@ const loadSalesDashboardSearchParams = createLoader({
 export default async function SalesPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const [{ period }, currentOrg] = await Promise.all([
+  const [{ period }, currentOrg, isPro] = await Promise.all([
     loadSalesDashboardSearchParams(props.searchParams),
-    getCurrentOrganization()
+    getCurrentOrganization(),
+    isProMember()
   ])
 
   if (!currentOrg) {
@@ -56,6 +61,8 @@ export default async function SalesPage(props: {
           />
         </PageSubtitle.Actions>
       </PageSubtitle>
+
+      {!isPro && <SalesProBanner />}
 
       <SalesDashboard data={data} />
     </div>

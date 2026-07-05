@@ -15,6 +15,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
 
+import { useProGuard } from "@/components/dashboard/upgrade-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -139,7 +140,13 @@ type CartLine = SaleCartItemInput & {
   currency: "MXN" | "USD"
 }
 
-export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
+export function QuickSaleScreen({
+  catalog,
+  isPro
+}: {
+  catalog: SalesCatalogData
+  isPro: boolean
+}) {
   const router = useRouter()
   const [search, setSearch] = useState("")
   const deferredSearch = useDeferredValue(search)
@@ -149,6 +156,15 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
   const [cartScrollSignal, setCartScrollSignal] = useState(0)
   const [selectedProduct, setSelectedProduct] =
     useState<SalesCatalogProduct | null>(null)
+
+  const { guard: guardSaleCompletion, dialog: upgradeDialog } = useProGuard(
+    isPro,
+    {
+      title: "Actualiza a Pro",
+      description:
+        "El registro de ventas está disponible solo en el plan Pro. Actualiza para completar ventas desde el dashboard."
+    }
+  )
 
   const currency = cart[0]?.currency ?? catalog.products[0]?.currency ?? "MXN"
 
@@ -422,7 +438,7 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
               <Button
                 className="h-12 text-base font-semibold"
                 disabled={status === "executing" || cart.length === 0}
-                onClick={handleCompleteSale}
+                onClick={() => guardSaleCompletion(handleCompleteSale)}
               >
                 {status === "executing" ? (
                   <Loader2 data-icon="inline-start" />
@@ -515,6 +531,8 @@ export function QuickSaleScreen({ catalog }: { catalog: SalesCatalogData }) {
           )}
         </SheetContent>
       </Sheet>
+
+      {upgradeDialog}
     </>
   )
 }

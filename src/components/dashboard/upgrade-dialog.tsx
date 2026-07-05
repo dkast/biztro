@@ -33,8 +33,8 @@ export function UpgradeDialog({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className="bg-linear-to-t from-indigo-300 via-transparent to-transparent
-          dark:from-indigo-500"
+        className="bg-radial from-orange-100 to-transparent
+          dark:from-indigo-900"
       >
         <DialogHeader className="flex items-center gap-4 pb-6">
           <div
