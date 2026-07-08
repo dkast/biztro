@@ -15,29 +15,22 @@ export function SalesProBanner() {
   return (
     <Banner
       inset
-      className="bg-linear-to-r/oklch from-sky-500 to-indigo-500 text-white"
+      className="bg-background text-foreground border-border border"
     >
-      <BannerIcon
-        icon={Crown}
-        className="border-white/20 bg-white/10 text-white"
-      />
+      <BannerIcon icon={Crown} className="text-amber-500" />
       <BannerTitle>
-        El módulo de ventas requiere el plan Pro. Actualiza para registrar
-        ventas y seguir su rendimiento desde el dashboard.
+        Actualiza a Pro para acceder a todas las funciones de ventas.
       </BannerTitle>
-      <BannerAction
-        asChild
-        className="border-white/20 bg-white/10 text-white hover:bg-white/20
-          hover:text-white"
-      >
-        <Link href="/dashboard/settings/billing" prefetch={false}>
+      <BannerAction asChild>
+        <Link
+          href="/dashboard/settings/billing"
+          prefetch={false}
+          className="hover:text-foreground"
+        >
           Actualizar a Pro
         </Link>
       </BannerAction>
-      <BannerClose
-        aria-label="Cerrar aviso"
-        className="text-white hover:bg-white/20 hover:text-white"
-      />
+      <BannerClose aria-label="Cerrar aviso" />
     </Banner>
   )
 }
