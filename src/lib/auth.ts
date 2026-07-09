@@ -59,7 +59,6 @@ function extractEmailFromContext(ctx: Record<string, unknown> | undefined) {
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET
-const stripeBasicPriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC
 const stripeProMonthlyPriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY
 const stripeProYearlyPriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY
 
@@ -72,13 +71,11 @@ const stripeClient = stripeSecretKey
 const stripeBillingConfig =
   stripeClient &&
   stripeWebhookSecret &&
-  stripeBasicPriceId &&
   stripeProMonthlyPriceId &&
   stripeProYearlyPriceId
     ? {
         stripeClient,
         stripeWebhookSecret,
-        stripeBasicPriceId,
         stripeProMonthlyPriceId,
         stripeProYearlyPriceId
       }
@@ -277,7 +274,6 @@ export const auth = betterAuth({
               plans: [
                 {
                   name: "BASIC",
-                  priceId: stripeBillingConfig.stripeBasicPriceId,
                   limits: {
                     menus: appConfig.menuLimit,
                     products: appConfig.itemLimit

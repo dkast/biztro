@@ -16,6 +16,7 @@ import {
 import { BasicPlanView } from "@/app/dashboard/settings/billing/basic-plan-view"
 import { ProPlanView } from "@/app/dashboard/settings/billing/pro-plan-view"
 import RevalidateStatus from "@/app/dashboard/settings/billing/revalidate-status"
+import { isStripeBillingConfigured } from "@/lib/auth"
 import { MembershipRole } from "@/lib/types/organization"
 
 export const metadata: Metadata = {
@@ -30,6 +31,7 @@ export default async function BillingPage() {
     getItemCount(),
     getCurrentOrganization()
   ])
+  const billingEnabled = subsEnabled && isStripeBillingConfigured
 
   if (!currentOrg) {
     return notFound()
@@ -44,7 +46,7 @@ export default async function BillingPage() {
           Maneja tu plan de suscripción e historial de pagos
         </PageSubtitle.Description>
       </PageSubtitle>
-      {role === MembershipRole.OWNER && subsEnabled ? (
+      {role === MembershipRole.OWNER && billingEnabled ? (
         <div className="my-10">
           {isPro ? (
             <Suspense fallback={<Skeleton className="h-48" />}>
@@ -64,8 +66,9 @@ export default async function BillingPage() {
           <AlertCircle className="size-4" />
           <AlertTitle>Aviso</AlertTitle>
           <AlertDescription>
-            Solo los miembros propietarios de la organización pueden acceder a
-            esta página
+            {role === MembershipRole.OWNER && subsEnabled
+              ? "La facturación con Stripe no está configurada en este entorno, así que no se puede iniciar el checkout."
+              : "Solo los miembros propietarios de la organización pueden acceder a esta página"}
           </AlertDescription>
         </Alert>
       )}
