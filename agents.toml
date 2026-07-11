@@ -1,0 +1,25 @@
+version = 1
+# Managed skills are gitignored; collaborators must run 'dotagents install'.
+gitignore = true
+agents = ["vscode"]
+
+[trust]
+allow_all = true
+
+[[skills]]
+name = "dotagents"
+source = "getsentry/dotagents"
+
+[[skills]]
+name = "*"
+source = "getsentry/sentry-agent-skills"
+exclude = [
+  "sentry-cocoa-sdk",
+  "sentry-dotnet-sdk",
+  "sentry-go-sdk",
+  "sentry-python-sdk",
+  "sentry-react-native-sdk",
+  "sentry-react-sdk",
+  "sentry-ruby-sdk",
+  "sentry-svelte-sdk",
+]

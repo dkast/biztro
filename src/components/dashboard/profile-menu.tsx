@@ -1,0 +1,131 @@
+"use client"
+
+import { useSyncExternalStore } from "react"
+import { Globe, LogOut, SunMoon, User } from "lucide-react"
+import { useTheme } from "next-themes"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { authClient } from "@/lib/auth-client"
+import { getInitials } from "@/lib/utils"
+
+function ProfileMenuTrigger({ disabled = false }: { disabled?: boolean }) {
+  return (
+    <button
+      type="button"
+      className="focus:outline-hidden"
+      disabled={disabled}
+      aria-label="Tu Perfil"
+    >
+      <Avatar className="size-8">
+        <AvatarFallback>BT</AvatarFallback>
+      </Avatar>
+      <span className="sr-only">Tu Perfil</span>
+    </button>
+  )
+}
+
+export default function ProfileMenu() {
+  const { data: session } = authClient.useSession()
+  const user = session?.user
+  const { theme, setTheme } = useTheme()
+  const router = useRouter()
+
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
+
+  if (!isMounted) {
+    return <ProfileMenuTrigger disabled />
+  }
+
+  if (!user) return null
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className="focus:outline-hidden"
+          aria-label="Tu Perfil"
+        >
+          <Avatar className="size-8">
+            <AvatarImage src={user?.image ?? undefined} />
+            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+          </Avatar>
+          <span className="sr-only">Tu Perfil</span>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-52">
+        <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/profile" prefetch={false}>
+            <User className="mr-2 size-4" />
+            Perfil
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <SunMoon className="mr-2 size-4" />
+            <span>Tema</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                <DropdownMenuRadioItem value="system">
+                  Sistema
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="light">
+                  Claro
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="dark">
+                  Oscuro
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+        <DropdownMenuItem asChild>
+          <Link href="/" prefetch={false}>
+            <Globe className="mr-2 size-4" />
+            Inicio
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onSelect={() =>
+            authClient.signOut({
+              fetchOptions: {
+                onSuccess: () => {
+                  // Handle successful sign out
+                  router.push("/")
+                }
+              }
+            })
+          }
+        >
+          <LogOut className="mr-2 size-4" />
+          <span>Salir</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}

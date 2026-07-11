@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-25T18:07:00.000Z",
+  "title": "Design System: Biztro",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Service Indigo",
+        "canonical": "oklch(51.1% 0.262 276.966)",
+        "tonalRamp": [
+          "oklch(20% 0.10 277)",
+          "oklch(28% 0.16 277)",
+          "oklch(36% 0.21 277)",
+          "oklch(44% 0.25 277)",
+          "oklch(51.1% 0.262 276.966)",
+          "oklch(62% 0.21 277)",
+          "oklch(74% 0.15 277)",
+          "oklch(88% 0.08 277)"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(0.145 0 0)",
+        "tonalRamp": [
+          "oklch(0.145 0 0)",
+          "oklch(0.205 0 0)",
+          "oklch(0.27 0 0)",
+          "oklch(0.39 0 0)",
+          "oklch(0.556 0 0)",
+          "oklch(0.708 0 0)",
+          "oklch(0.85 0 0)",
+          "oklch(0.97 0 0)"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(0.985 0 0)",
+          "oklch(0.97 0 0)",
+          "oklch(0.94 0 0)",
+          "oklch(0.9 0 0)",
+          "oklch(0.85 0 0)",
+          "oklch(0.78 0 0)",
+          "oklch(0.7 0 0)",
+          "oklch(0.6 0 0)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "oklch(0.97 0 0)",
+        "tonalRamp": [
+          "oklch(0.99 0 0)",
+          "oklch(0.97 0 0)",
+          "oklch(0.94 0 0)",
+          "oklch(0.9 0 0)",
+          "oklch(0.85 0 0)",
+          "oklch(0.78 0 0)",
+          "oklch(0.708 0 0)",
+          "oklch(0.556 0 0)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "oklch(0.922 0 0)",
+        "tonalRamp": [
+          "oklch(0.985 0 0)",
+          "oklch(0.96 0 0)",
+          "oklch(0.922 0 0)",
+          "oklch(0.86 0 0)",
+          "oklch(0.78 0 0)",
+          "oklch(0.65 0 0)",
+          "oklch(0.5 0 0)",
+          "oklch(0.35 0 0)"
+        ]
+      },
+      "sidebar": {
+        "role": "neutral",
+        "displayName": "Sidebar Vellum",
+        "canonical": "oklch(0.985 0.002 247.839)",
+        "tonalRamp": [
+          "oklch(0.99 0.002 248)",
+          "oklch(0.96 0.003 248)",
+          "oklch(0.92 0.004 248)",
+          "oklch(0.86 0.005 248)",
+          "oklch(0.74 0.006 248)",
+          "oklch(0.6 0.007 248)",
+          "oklch(0.45 0.008 248)",
+          "oklch(0.3 0.008 248)"
+        ]
+      },
+      "status-success": {
+        "role": "tertiary",
+        "displayName": "Service Green",
+        "canonical": "oklch(0.696 0.17 162.48)"
+      },
+      "status-warning": {
+        "role": "tertiary",
+        "displayName": "Amber Caution",
+        "canonical": "oklch(0.828 0.189 84.429)"
+      },
+      "destructive": {
+        "role": "tertiary",
+        "displayName": "Pepper Red",
+        "canonical": "oklch(0.577 0.245 27.325)"
+      },
+      "status-info": {
+        "role": "tertiary",
+        "displayName": "Cool Blue",
+        "canonical": "oklch(0.6 0.118 184.704)"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (Be Vietnam Pro)",
+        "purpose": "Hero page titles, marketing headers."
+      },
+      "headline": {
+        "displayName": "Headline (Be Vietnam Pro)",
+        "purpose": "Panel and dialog titles inside the product."
+      },
+      "title": {
+        "displayName": "Title (Inter)",
+        "purpose": "Card titles, list section headers."
+      },
+      "body": {
+        "displayName": "Body (Inter)",
+        "purpose": "Default UI text. Long-form capped at 65-75ch."
+      },
+      "label": {
+        "displayName": "Label (Inter)",
+        "purpose": "Form labels, badges, table headers, meta lines."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-xs",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Inputs, selects, textareas, toggles. Whisper-thin shelf."
+      },
+      {
+        "name": "shadow-sm",
+        "value": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        "purpose": "Default cards, sidebar inset variant, active tabs."
+      },
+      {
+        "name": "shadow-md",
+        "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+        "purpose": "Popovers, hover cards, dropdowns, tooltips."
+      },
+      {
+        "name": "shadow-lg",
+        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "purpose": "Dialogs, sheets, command palette."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-quart",
+        "value": "cubic-bezier(0.25, 1, 0.5, 1)",
+        "purpose": "Default easing for state transitions."
+      },
+      {
+        "name": "ease-in-out-circ",
+        "value": "cubic-bezier(0.87, 0, 0.13, 1)",
+        "purpose": "Slide-up/slide-down accordion content (300ms)."
+      },
+      {
+        "name": "duration-fast",
+        "value": "200ms",
+        "purpose": "Color, opacity, shadow transitions."
+      },
+      {
+        "name": "duration-medium",
+        "value": "300ms",
+        "purpose": "Sheet/drawer close, accordion expand."
+      },
+      {
+        "name": "duration-slow",
+        "value": "500ms",
+        "purpose": "Sheet/drawer open."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "2xl", "value": "1400px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single committed action per screen. Service Indigo fill, rounded-lg, 40px tall.",
+      "html": "<button class=\"ds-btn-primary\">Save changes</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.5rem; padding: 0.5rem 1rem; background: oklch(51.1% 0.262 276.966); color: oklch(0.969 0.016 293.756); border: none; border-radius: 0.65rem; font-family: var(--font-inter, Inter, system-ui, sans-serif); font-size: 0.875rem; font-weight: 500; line-height: 1; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.10); cursor: pointer; transition: background 200ms cubic-bezier(0.25, 1, 0.5, 1), transform 100ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-primary:hover { background: oklch(51.1% 0.262 276.966 / 0.9); } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px oklch(1 0 0), 0 0 0 4px oklch(67.3% 0.182 276.935); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action. Transparent fill with inset stroke; hovers to Mist.",
+      "html": "<button class=\"ds-btn-outline\">Cancel</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.5rem; padding: 0.5rem 1rem; background: oklch(1 0 0); color: oklch(0.145 0 0); border: none; border-radius: 0.65rem; font-family: var(--font-inter, Inter, system-ui, sans-serif); font-size: 0.875rem; font-weight: 500; line-height: 1; box-shadow: inset 0 0 0 1px oklch(0.922 0 0); cursor: pointer; transition: background 200ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-outline:hover { background: oklch(0.97 0 0); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Toolbar/list-row action. No border at rest; hovers to Mist fill.",
+      "html": "<button class=\"ds-btn-ghost\">Edit</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.5rem; padding: 0.5rem 1rem; background: transparent; color: oklch(0.145 0 0); border: none; border-radius: 0.65rem; font-family: var(--font-inter, Inter, system-ui, sans-serif); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 200ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-ghost:hover { background: oklch(0.97 0 0); }"
+    },
+    {
+      "name": "Destructive Button",
+      "kind": "button",
+      "refersTo": "button-destructive",
+      "description": "Irreversible actions only. Pepper Red fill.",
+      "html": "<button class=\"ds-btn-destructive\">Delete menu</button>",
+      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.5rem; padding: 0.5rem 1rem; background: oklch(0.577 0.245 27.325); color: oklch(0.985 0 0); border: none; border-radius: 0.65rem; font-family: var(--font-inter, Inter, system-ui, sans-serif); font-size: 0.875rem; font-weight: 500; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.10); cursor: pointer; transition: background 200ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-destructive:hover { background: oklch(0.577 0.245 27.325 / 0.9); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Default field. 36px tall, hairline border, focus ring shifts to Service Indigo.",
+      "html": "<input class=\"ds-input\" placeholder=\"Search items\" />",
+      "css": ".ds-input { display: block; width: 100%; height: 2.25rem; padding: 0.25rem 0.75rem; background: transparent; color: oklch(0.145 0 0); border: 1px solid oklch(0.922 0 0); border-radius: calc(0.65rem - 2px); font-family: var(--font-inter, Inter, system-ui, sans-serif); font-size: 0.875rem; line-height: 1.25; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); outline: none; transition: color 200ms, box-shadow 200ms, border-color 200ms; } .ds-input::placeholder { color: oklch(0.556 0 0); } .ds-input:focus-visible { border-color: oklch(67.3% 0.182 276.935); box-shadow: 0 0 0 3px oklch(67.3% 0.182 276.935 / 0.5); } .ds-input[aria-invalid=\"true\"] { border-color: oklch(0.577 0.245 27.325); box-shadow: 0 0 0 3px oklch(0.577 0.245 27.325 / 0.2); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Default container. Hairline border + shadow-sm. Flat at rest.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">Lunch menu</div><div class=\"ds-card-desc\">Last updated 2 hours ago</div></div>",
+      "css": ".ds-card { background: oklch(1 0 0); color: oklch(0.145 0 0); border: 1px solid oklch(0.922 0 0); border-radius: 0.65rem; padding: 1.5rem; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); } .ds-card-title { font-family: var(--font-inter, Inter, system-ui, sans-serif); font-size: 1.25rem; font-weight: 600; line-height: 1; letter-spacing: -0.01em; margin-bottom: 0.375rem; } .ds-card-desc { font-family: var(--font-inter, Inter, system-ui, sans-serif); font-size: 0.875rem; line-height: 1.5; color: oklch(0.556 0 0); }"
+    },
+    {
+      "name": "Status Badge — Published",
+      "kind": "chip",
+      "refersTo": "badge-success",
+      "description": "Published state badge. Service Green tint with leading dot. Identical mapping product-wide.",
+      "html": "<span class=\"ds-badge-success\"><span class=\"ds-badge-dot\"></span>Published</span>",
+      "css": ".ds-badge-success { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.5rem; background: oklch(0.696 0.17 162.48 / 0.1); color: oklch(0.4 0.15 162.48); border-radius: calc(0.65rem - 2px); font-family: var(--font-inter, Inter, system-ui, sans-serif); font-size: 0.75rem; font-weight: 500; line-height: 1.25; box-shadow: inset 0 0 0 1px oklch(0.696 0.17 162.48 / 0.2); } .ds-badge-dot { width: 0.375rem; height: 0.375rem; border-radius: 9999px; background: oklch(0.696 0.17 162.48); }"
+    },
+    {
+      "name": "Status Badge — Draft",
+      "kind": "chip",
+      "refersTo": "badge-neutral",
+      "description": "Neutral draft state — most common badge in the system.",
+      "html": "<span class=\"ds-badge-neutral\">Draft</span>",
+      "css": ".ds-badge-neutral { display: inline-flex; align-items: center; padding: 0.25rem 0.5rem; background: oklch(0.97 0 0); color: oklch(0.4 0 0); border-radius: calc(0.65rem - 2px); font-family: var(--font-inter, Inter, system-ui, sans-serif); font-size: 0.75rem; font-weight: 500; line-height: 1.25; box-shadow: inset 0 0 0 1px oklch(0.6 0 0 / 0.15); }"
+    },
+    {
+      "name": "Sidebar Item",
+      "kind": "nav",
+      "refersTo": "sidebar-default",
+      "description": "Navigation item on Sidebar Vellum. Active state uses Service Indigo on Mist fill.",
+      "html": "<nav class=\"ds-sidebar\"><a class=\"ds-sidebar-item\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 12l2-2 7-7 7 7 2 2v9a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z\"/></svg>Dashboard</a><a class=\"ds-sidebar-item ds-sidebar-item-active\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z\"/><path d=\"M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z\"/></svg>Menus</a><a class=\"ds-sidebar-item\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z\"/></svg>Settings</a></nav>",
+      "css": ".ds-sidebar { display: flex; flex-direction: column; gap: 0.125rem; width: 16rem; padding: 0.75rem; background: oklch(0.985 0.002 247.839); border-right: 1px solid oklch(0.922 0 0); font-family: var(--font-inter, Inter, system-ui, sans-serif); } .ds-sidebar-item { display: inline-flex; align-items: center; gap: 0.625rem; padding: 0.5rem 0.625rem; color: oklch(43.9% 0 0); border-radius: calc(0.65rem - 2px); font-size: 0.875rem; font-weight: 500; text-decoration: none; transition: background 200ms, color 200ms; } .ds-sidebar-item:hover { background: oklch(0.922 0 0); color: oklch(0.145 0 0); } .ds-sidebar-item-active { background: oklch(0.922 0 0); color: oklch(51.1% 0.262 276.966); }"
+    },
+    {
+      "name": "Alert — Information",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Informational message with leading icon. Cool Blue palette.",
+      "html": "<div class=\"ds-alert-info\" role=\"alert\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"ds-alert-icon\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/></svg><div class=\"ds-alert-body\"><div class=\"ds-alert-title\">Menu has unpublished changes</div><div class=\"ds-alert-desc\">Customers will not see updates until you publish.</div></div></div>",
+      "css": ".ds-alert-info { position: relative; display: flex; align-items: flex-start; gap: 0.75rem; width: 100%; padding: 1rem; background: oklch(0.6 0.118 184.704 / 0.08); color: oklch(0.35 0.1 184.704); border: 1px solid oklch(0.6 0.118 184.704 / 0.5); border-radius: 0.65rem; font-family: var(--font-inter, Inter, system-ui, sans-serif); } .ds-alert-icon { flex-shrink: 0; color: oklch(0.6 0.118 184.704); margin-top: 0.125rem; } .ds-alert-title { font-size: 0.875rem; font-weight: 500; line-height: 1; letter-spacing: -0.005em; margin-bottom: 0.25rem; } .ds-alert-desc { font-size: 0.75rem; line-height: 1.5; color: oklch(0.45 0.1 184.704); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Mise en Place",
+    "overview": "Biztro is the digital counterpart to a kitchen's mise en place — every menu item, locale, price, and publish state in its right place, ready to act on the moment service starts. The interface earns trust by being calm, legible, and predictable. Operators come back to it many times per shift; nothing about the surface should compete with the task they're trying to finish. The system is restrained by default. Surfaces are flat off-white with subtle 1px borders doing the structural work that shadows would do in a flashier product. A single indigo primary is reserved for the one action we want operators to commit to on each screen. Status colors carry meaning, never decoration. This explicitly rejects the dashboard tropes the category trains for: no neon-on-black crypto aesthetic, no gradient hero metrics, no gamified achievement flourishes, no template-SaaS marketing decoration bolted onto admin screens.",
+    "keyCharacteristics": [
+      "Flat surfaces, hairline borders, sparing shadows",
+      "One indigo accent — used like seasoning, not paint",
+      "Semantic color reserved for status, not theming",
+      "Two-family typographic system (Be Vietnam Pro display, Inter UI)",
+      "Dual-theme (light default, dark supported) — both equally first-class"
+    ],
+    "rules": [
+      {
+        "name": "The One Voice Rule",
+        "body": "Service Indigo is the only chromatic accent on the operational surface. It covers ≤10% of any given screen. If two indigo elements compete for attention on the same screen, one of them is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The Status-Only Rule",
+        "body": "Greens, ambers, reds, blues, and violets exist to communicate state, not to theme. Never use them as decorative backgrounds, gradient stops, or hero accents.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tinted Neutral Rule",
+        "body": "Sidebar Vellum carries a 0.002 chroma cool tint. Every other neutral is true grayscale. Don't push tint into card surfaces or page backgrounds.",
+        "section": "colors"
+      },
+      {
+        "name": "The No-Gradient-Type Rule",
+        "body": "Type is solid color — Service Indigo, Ink, or Stone. Never background-clip:text with gradients. Emphasis comes from weight, size, or color shift, not from chrome.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tracking Floor Rule",
+        "body": "Body text and smaller stays at neutral tracking. Negative tracking is reserved for Display, Headline, and Title. Don't tighten body for polish; it costs legibility on long shifts.",
+        "section": "typography"
+      },
+      {
+        "name": "The Border-First Rule",
+        "body": "When in doubt, use a 1px border instead of a shadow. Shadows are reserved for elements that genuinely escape their plane.",
+        "section": "elevation"
+      },
+      {
+        "name": "The No-Glow Rule",
+        "body": "No colored glows, no gradient halos, no decorative drop shadows behind hero numbers. Focus rings are the only colored emission allowed.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use Service Indigo for the one primary action per screen.",
+      "Do use 1px border tokens to define every container edge.",
+      "Do map status (draft/pending/published/archived) to the same badge variants everywhere.",
+      "Do keep the focus ring at ring-2 ring-ring ring-offset-2 on all interactive elements.",
+      "Do respect prefers-reduced-motion — fall back to opacity-only transitions.",
+      "Do use semantic Alert variants for status messaging, never raw colored cards.",
+      "Do use the xs button-group treatment with shadow-xs for inline toolbars in editor surfaces.",
+      "Do keep body line length to 65–75ch in long-form content."
+    ],
+    "donts": [
+      "Don't ship a crypto-style neon dashboard.",
+      "Don't ship gamified flourishes — confetti is reserved for genuine first-time milestones, never routine actions.",
+      "Don't layer template-SaaS marketing decoration over admin screens.",
+      "Don't use border-left greater than 1px as a colored stripe to flag status.",
+      "Don't use background-clip:text with gradients on titles.",
+      "Don't use glassmorphism as a default style.",
+      "Don't mix shadow vocabulary mid-surface.",
+      "Don't raise hover-elevation on cards in the operational app.",
+      "Don't use #000 or #fff directly.",
+      "Don't introduce a new accent hue for delight or branding.",
+      "Don't use em dashes in UI copy.",
+      "Don't wrap simple content in Cards by reflex."
+    ]
+  }
+}

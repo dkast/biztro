@@ -1,0 +1,214 @@
+"use client"
+
+import { useState } from "react"
+import type { MenuItemGetPayload } from "@/generated/prisma-client/models/MenuItem"
+import { useEditor, useNode } from "@craftjs/core"
+import type { RgbaColor } from "@uiw/react-color"
+import Autoplay from "embla-carousel-autoplay"
+import { CircleAlert } from "lucide-react"
+
+import FeaturedSettings from "@/components/menu-editor/blocks/featured-settings"
+import { ItemDetail } from "@/components/menu-editor/blocks/item-detail"
+import FontWrapper from "@/components/menu-editor/font-wrapper"
+import { useTranslation } from "@/components/menu-editor/translation-provider"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselDots,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from "@/components/ui/carousel"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { cn } from "@/lib/utils"
+
+export type FeaturedBlockProps = {
+  items: MenuItemGetPayload<{
+    include: {
+      variants: true
+    }
+  }>[]
+  backgroundColor?: RgbaColor
+  itemFontFamily?: string
+  itemFontWeight?: string
+  descriptionFontFamily?: string
+  priceFontFamily?: string
+  priceFontWeight?: string
+  autoPlay?: boolean
+}
+
+export default function FeaturedBlock({
+  items,
+  backgroundColor,
+  itemFontFamily = "Inter",
+  itemFontWeight = "500",
+  descriptionFontFamily = "Inter",
+  priceFontFamily = "Inter",
+  priceFontWeight = "400",
+  autoPlay = true
+}: FeaturedBlockProps) {
+  const {
+    connectors: { connect }
+  } = useNode()
+  const { isEditing } = useEditor(state => ({
+    isEditing: state.options.enabled
+  }))
+
+  const [selectedItem, setSelectedItem] = useState<(typeof items)[0] | null>(
+    null
+  )
+
+  const isMobile = useIsMobile()
+  const translation = useTranslation()
+
+  if (!items?.length)
+    return (
+      <div
+        ref={ref => {
+          if (ref) {
+            connect(ref)
+          }
+        }}
+        className="flex items-center justify-center gap-2 text-gray-500"
+      >
+        <CircleAlert className="size-4" />
+        <span>No hay elementos recomendados</span>
+      </div>
+    )
+
+  return (
+    <>
+      <div
+        ref={ref => {
+          if (ref) {
+            connect(ref)
+          }
+        }}
+        className="@container/feat w-full p-2"
+      >
+        <Carousel
+          opts={{
+            align: "center",
+            loop: true
+          }}
+          plugins={[
+            Autoplay({
+              delay: 5000,
+              playOnInit: autoPlay && !isEditing
+            })
+          ]}
+          className="w-full"
+        >
+          <CarouselContent>
+            {items.map(item => (
+              <CarouselItem
+                key={item.id}
+                className="@md/feat:basis-1/2 @lg/feat:basis-1/3"
+              >
+                <div
+                  onClick={() => !isEditing && setSelectedItem(item)}
+                  onKeyDown={e => {
+                    if (e.key === "Enter" && !isEditing) {
+                      setSelectedItem(item)
+                      e.preventDefault()
+                    }
+                  }}
+                  className={cn("cursor-pointer", isEditing && "cursor-move")}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <div className="p-0">
+                    <div
+                      className="relative flex h-40 flex-col justify-end
+                        overflow-hidden rounded-lg border border-white/10"
+                    >
+                      {item.image ? (
+                        <div
+                          className="absolute inset-0 bg-cover bg-center"
+                          style={{ backgroundImage: `url(${item.image})` }}
+                        />
+                      ) : (
+                        <div
+                          className="absolute inset-0 bg-cover bg-center"
+                          style={{
+                            backgroundImage: "url('/bg/leaf.svg')",
+                            backgroundColor: `rgba(${Object.values(backgroundColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
+                          }}
+                        />
+                      )}
+                      <div
+                        className="relative z-50 bg-linear-to-t from-black/80
+                          to-transparent p-4"
+                      >
+                        <FontWrapper
+                          fontFamily={itemFontFamily}
+                          className="flex flex-row gap-3"
+                        >
+                          <h3 className="text-lg font-semibold text-white">
+                            {translation?.getItemTranslation(item.id)?.name ?? item.name}
+                          </h3>
+                        </FontWrapper>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {!isMobile && (
+            <>
+              <CarouselPrevious />
+              <CarouselNext />
+            </>
+          )}
+
+          {items.length > 1 && isMobile && (
+            <CarouselDots className="@md/feat:mt-4" />
+          )}
+        </Carousel>
+      </div>
+
+      {selectedItem && (
+        <ItemDetail
+          item={{
+            ...selectedItem,
+            name: translation?.getItemTranslation(selectedItem.id)?.name ?? selectedItem.name,
+            description:
+              translation?.getItemTranslation(selectedItem.id)?.description !== undefined
+                ? translation.getItemTranslation(selectedItem.id)?.description
+                : selectedItem.description,
+            variants: selectedItem.variants.map(v => ({
+              ...v,
+              name: translation?.getVariantTranslation(v.id)?.name ?? v.name
+            }))
+          }}
+          isOpen={!!selectedItem}
+          onClose={() => setSelectedItem(null)}
+          itemFontFamily={itemFontFamily}
+          itemFontWeight={itemFontWeight}
+          descriptionFontFamily={descriptionFontFamily}
+          priceFontFamily={priceFontFamily}
+          priceFontWeight={priceFontWeight}
+        />
+      )}
+    </>
+  )
+}
+
+FeaturedBlock.craft = {
+  displayName: "Recomendados",
+  props: {
+    autoPlay: true,
+    itemFontWeight: "500",
+    itemFontFamily: "Inter",
+    priceFontWeight: "400",
+    priceFontFamily: "Inter",
+    descriptionFontFamily: "Inter"
+  },
+  custom: {
+    iconKey: "featured"
+  },
+  related: {
+    settings: FeaturedSettings
+  }
+}

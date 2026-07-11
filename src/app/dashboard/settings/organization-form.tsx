@@ -1,0 +1,269 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { Controller, useForm } from "react-hook-form"
+import toast from "react-hot-toast"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useQueryClient } from "@tanstack/react-query"
+import { Loader } from "lucide-react"
+import { useAction } from "next-safe-action/hooks"
+import { useRouter } from "next/navigation"
+import { TextMorph } from "torph/react"
+import { type z } from "zod/v4"
+
+import { EmptyImageField } from "@/components/dashboard/empty-image-field"
+import { FileUploader } from "@/components/dashboard/file-uploader"
+import { ImageField } from "@/components/dashboard/image-field"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText
+} from "@/components/ui/input-group"
+import { Textarea } from "@/components/ui/textarea"
+import { updateOrg } from "@/server/actions/organization/mutations"
+import type { getCurrentOrganization } from "@/server/actions/user/queries"
+import { type Plan, type SubscriptionStatus } from "@/lib/types/billing"
+import { ImageType } from "@/lib/types/media"
+import { orgSchema } from "@/lib/types/organization"
+import { getInitials } from "@/lib/utils"
+
+export default function OrganizationForm({
+  data,
+  enabled
+}: {
+  data: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>
+  enabled: boolean
+}) {
+  const form = useForm<z.infer<typeof orgSchema>>({
+    resolver: zodResolver(orgSchema),
+    defaultValues: {
+      id: data.id,
+      name: data.name,
+      description: data.description ?? undefined,
+      slug: data.slug,
+      status: data.status as SubscriptionStatus,
+      plan: data.plan?.toUpperCase() as Plan
+    }
+  })
+
+  const router = useRouter()
+  const queryClient = useQueryClient()
+  const [isUploadDialogOpen, setUploadDialogOpen] = useState(false)
+
+  const { execute, status, reset } = useAction(updateOrg, {
+    onSuccess: ({ data }) => {
+      if (data?.success) {
+        toast.success("Información actualizada")
+        queryClient.invalidateQueries({
+          queryKey: ["workgroup", "current"]
+        })
+      } else if (data?.failure?.reason) {
+        toast.error(data.failure.reason)
+      }
+
+      reset()
+    },
+    onError: () => {
+      toast.error("No se pudo actualizar la información del negocio")
+    }
+  })
+
+  const onSubmit = (values: z.infer<typeof orgSchema>) => {
+    execute(values)
+  }
+
+  const handleLogoUploadSuccess = () => {
+    setUploadDialogOpen(false)
+    queryClient.invalidateQueries({
+      queryKey: ["workgroup", "current"]
+    })
+    router.refresh()
+  }
+
+  // Refresh form when data changes
+  useEffect(() => {
+    form.reset({
+      id: data.id,
+      name: data.name,
+      description: data.description ?? undefined,
+      slug: data.slug,
+      status: data.status as SubscriptionStatus,
+      plan: data.plan?.toUpperCase() as Plan
+    })
+  }, [data, form])
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldSet disabled={!enabled} className="mt-10">
+        <FieldGroup>
+          <div className="flex items-center gap-x-8">
+            <Avatar
+              className="h-24 w-24 rounded-xl ring-1 ring-black/10 ring-inset
+                dark:ring-white/15"
+            >
+              {data.logo && (
+                <AvatarImage src={data.logo} className="rounded-xl" />
+              )}
+              <AvatarFallback className="text-3xl">
+                {getInitials(data.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <Dialog
+                open={isUploadDialogOpen}
+                onOpenChange={setUploadDialogOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button type="button" variant="outline">
+                    Cambiar imágen
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-xl">
+                  <DialogHeader>
+                    <DialogTitle>Subir imágen</DialogTitle>
+                  </DialogHeader>
+                  <FileUploader
+                    organizationId={data.id}
+                    imageType={ImageType.LOGO}
+                    objectId={ImageType.LOGO}
+                    limitDimension={500}
+                    onUploadSuccess={handleLogoUploadSuccess}
+                  />
+                </DialogContent>
+              </Dialog>
+              <p className="text-muted-foreground mt-2 text-xs">
+                Se recomienda un tamaño de 500x500 en formato JPG o PNG.
+              </p>
+            </div>
+          </div>
+          <Controller
+            name="name"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Nombre del negocio</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Nombre del negocio"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            name="description"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
+                <Textarea
+                  {...field}
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Descripción"
+                />
+                <FieldDescription>
+                  Escribe una breve descripción de tu negocio
+                </FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            name="slug"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>Sitio web</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <InputGroupText>https://</InputGroupText>
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    {...field}
+                    id={field.name}
+                    aria-invalid={fieldState.invalid}
+                    placeholder="tu-sitio"
+                    className="pl-1!"
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupText>.biztro.co</InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+                <FieldDescription>
+                  Este es el nombre de tu sitio web. Cambiarlo puede afectar tu
+                  SEO
+                </FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <div className="space-y-2">
+            <FieldLabel>Imágen de portada</FieldLabel>
+            {data.banner ? (
+              <ImageField
+                src={data.banner}
+                organizationId={data.id}
+                imageType={ImageType.BANNER}
+                objectId={ImageType.BANNER}
+                onUploadSuccess={() => {
+                  router.refresh()
+                }}
+              />
+            ) : (
+              <EmptyImageField
+                organizationId={data.id}
+                imageType={ImageType.BANNER}
+                objectId={ImageType.BANNER}
+                onUploadSuccess={() => {
+                  router.refresh()
+                }}
+              />
+            )}
+            <FieldDescription>
+              La imágen de portada se mostrará en tu sitio web de manera
+              prominente. Se recomienda un tamaño de 1200x800 en formato JPG.
+            </FieldDescription>
+          </div>
+          <Field orientation="responsive">
+            <Button disabled={status === "executing"} type="submit">
+              {status === "executing" && (
+                <Loader className="mr-2 animate-spin" />
+              )}
+              <TextMorph>
+                {status === "executing" ? "Guardando..." : "Guardar"}
+              </TextMorph>
+            </Button>
+          </Field>
+        </FieldGroup>
+      </FieldSet>
+    </form>
+  )
+}

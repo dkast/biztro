@@ -1,0 +1,253 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma-client"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum Currency {
+  MXN
+  USD
+}
+
+enum MediaAssetType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+}
+
+enum MediaAssetScope {
+  MENU_ITEM_IMAGE
+  ORG_LOGO
+  ORG_BANNER
+  PROMO
+  OTHER
+}
+
+enum MediaUsageEntityType {
+  MENU_ITEM
+  ORGANIZATION
+  PROMO
+}
+
+// Non-auth domain models. Auth-related models moved to `auth.prisma`.
+
+model Location {
+  id              String         @id @default(cuid())
+  name            String         @default("Main")
+  description     String?
+  address         String
+  phone           String?
+  facebook        String?
+  instagram       String?
+  twitter         String?
+  tiktok          String?
+  whatsapp        String?
+  website         String?
+  // Services
+  serviceDelivery Boolean        @default(false)
+  serviceTakeout  Boolean        @default(false)
+  serviceDineIn   Boolean        @default(false)
+  // Delivery fee: 0 = free
+  deliveryFee     Float          @default(0)
+  // Default currency for this location
+  currency        Currency       @default(MXN)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  organizationId  String
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  openingHours    OpeningHours[]
+}
+
+model OpeningHours {
+  id         String   @id @default(cuid())
+  day        String
+  startTime  String?
+  endTime    String?
+  allDay     Boolean
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+}
+
+model Menu {
+  id                    String        @id @default(cuid())
+  name                  String
+  description           String?
+  status                String        @default("DRAFT")
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  organizationId        String
+  serialData            String?
+  publishedData         String?
+  publishedAt           DateTime?
+  fontTheme             String        @default("DEFAULT")
+  colorTheme            String        @default("DEFAULT")
+  publishedFontTheme    String?
+  publishedColorTheme   String?
+  organization          Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  activeForOrganization Organization? @relation("ActiveMenu")
+
+  @@index([organizationId, status, publishedAt])
+}
+
+model Theme {
+  id             String        @id @default(cuid())
+  name           String
+  scope          String        @default("CUSTOM")
+  themeType      String        @default("FONT")
+  themeJSON      String        @default("{}")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, name, scope])
+}
+
+model MenuItem {
+  id             String                  @id @default(cuid())
+  name           String
+  description    String?
+  image          String?
+  imageAssetId   String?
+  imageAsset     MediaAsset?             @relation("MenuItemImageAsset", fields: [imageAssetId], references: [id], onDelete: SetNull)
+  status         String                  @default("DRAFT")
+  featured       Boolean                 @default(false)
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  categoryId     String?
+  organizationId String
+  organization   Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category       Category?               @relation(fields: [categoryId], references: [id])
+  variants       Variant[]
+  allergens      String?
+  currency       Currency                @default(MXN)
+  translations   MenuItemTranslation[]
+
+  @@unique([organizationId, name])
+}
+
+model Category {
+  id             String                @id @default(cuid())
+  name           String
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  organizationId String
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  menuItems      MenuItem[]
+  translations   CategoryTranslation[]
+}
+
+model Variant {
+  id           String               @id @default(cuid())
+  name         String
+  description  String?
+  price        Float
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  menuItemId   String
+  menuItem     MenuItem             @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  translations VariantTranslation[]
+}
+
+model MenuItemTranslation {
+  id          String   @id @default(cuid())
+  locale      String
+  name        String
+  description String?
+  menuItemId  String
+  menuItem    MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([menuItemId, locale])
+  @@index([menuItemId])
+  @@index([locale])
+}
+
+model VariantTranslation {
+  id          String   @id @default(cuid())
+  locale      String
+  name        String
+  description String?
+  variantId   String
+  variant     Variant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([variantId, locale])
+  @@index([variantId])
+  @@index([locale])
+}
+
+model CategoryTranslation {
+  id         String   @id @default(cuid())
+  locale     String
+  name       String
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([categoryId, locale])
+  @@index([categoryId])
+  @@index([locale])
+}
+
+// Media asset management models for tracking R2 storage
+
+model MediaAsset {
+  id             String           @id @default(cuid())
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  storageKey     String           @unique
+  publicUrl      String?
+  type           MediaAssetType   @default(IMAGE)
+  scope          MediaAssetScope?
+  bytes          Int?
+  contentType    String?
+  width          Int?
+  height         Int?
+  deletedAt      DateTime?
+  unattachedAt   DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  usages         MediaUsage[]
+  menuItems      MenuItem[]       @relation("MenuItemImageAsset")
+  orgLogos       Organization[]   @relation("OrganizationLogoAsset")
+  orgBanners     Organization[]   @relation("OrganizationBannerAsset")
+
+  @@index([organizationId])
+  @@index([storageKey])
+}
+
+model MediaUsage {
+  id         String               @id @default(cuid())
+  assetId    String
+  asset      MediaAsset           @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  entityType MediaUsageEntityType
+  entityId   String
+  field      String?
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@unique([assetId, entityType, entityId, field])
+  @@index([entityType, entityId])
+}
+
+// Waitlist requests from the landing page. Drop in the future
+
+model Waitlist {
+  id      String  @id @default(cuid())
+  email   String  @unique
+  enabled Boolean @default(false)
+
+  @@index([email])
+}
+
+// Auth-related models live in `prisma/models/auth.prisma`.

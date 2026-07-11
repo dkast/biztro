@@ -1,0 +1,38 @@
+"use client"
+
+import { useRouter } from "next/navigation"
+
+import { DataTable } from "@/components/data-table/data-table"
+import type { getCategories, getMenuItems } from "@/server/actions/item/queries"
+import { useDataTable } from "@/hooks/use-data-table"
+import { columns } from "@/app/dashboard/menu-items/columns"
+import FilterToolbar from "@/app/dashboard/menu-items/filter-toolbar"
+import FloatingToolbar from "@/app/dashboard/menu-items/floating-toolbar"
+
+export default function ItemTable({
+  data,
+  categories
+}: {
+  data: Awaited<ReturnType<typeof getMenuItems>>
+  categories: Awaited<ReturnType<typeof getCategories>>
+}) {
+  const router = useRouter()
+  const { table, globalFilter, setGlobalFilter } = useDataTable({
+    data,
+    columns
+  })
+
+  return (
+    <DataTable
+      onRowClick={row => {
+        router.push(`/dashboard/menu-items/edit/${row.original?.id}`)
+      }}
+      columns={columns}
+      table={table}
+      globalFilter={globalFilter}
+      setGlobalFilter={setGlobalFilter}
+      toolbar={<FilterToolbar categories={categories} />}
+      floatinToolbar={<FloatingToolbar table={table} categories={categories} />}
+    />
+  )
+}

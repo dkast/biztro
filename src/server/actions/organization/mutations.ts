@@ -1,0 +1,485 @@
+"use server"
+
+import * as Sentry from "@sentry/nextjs"
+import { updateTag } from "next/cache"
+import { headers } from "next/headers"
+import { z } from "zod/v4"
+
+import { getOrganizationBySlug } from "@/server/actions/organization/queries"
+import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
+import { auth } from "@/lib/auth"
+import prisma from "@/lib/prisma"
+import { deleteOrganizationAssetsFromR2 } from "@/lib/r2"
+import { actionClient, authActionClient } from "@/lib/safe-actions"
+import { orgSchema } from "@/lib/types/organization"
+
+/**
+ * Bootstrap an organization by creating a new organization with the provided name, description, and subdomain.
+ *
+ * @param name - The name of the organization.
+ * @param description - The description of the organization.
+ * @param slug - The slug of the organization.
+ * @returns An object indicating the success or failure of the operation.
+ */
+export const bootstrapOrg = authActionClient
+  .inputSchema(orgSchema)
+  .action(
+    async ({ parsedInput: { name, description, slug }, ctx: { user } }) => {
+      try {
+        if (user?.id === undefined) {
+          return {
+            failure: {
+              reason: "No se pudo obtener el usuario actual"
+            }
+          }
+        }
+
+        // Verify if the slug is already taken
+        const existingOrg = await auth.api.checkOrganizationSlug({
+          body: { slug },
+          headers: await headers()
+        })
+
+        if (!existingOrg.status) {
+          return {
+            failure: {
+              reason: "El subdominio ya está en uso"
+            }
+          }
+        }
+
+        // Create the organization
+        const org = await auth.api.createOrganization({
+          body: {
+            name,
+            slug,
+            keepCurrentActiveOrganization: true,
+            userId: user.id,
+            description: description ?? "",
+            status: "ACTIVE",
+            plan: "BASIC",
+            banner: "",
+            updatedAt: new Date().toISOString()
+          },
+          headers: await headers()
+        })
+
+        if (!org) {
+          return {
+            failure: {
+              reason: "No se pudo crear la organización"
+            }
+          }
+        }
+
+        // Set the new organization as the active one
+        const data = await auth.api.setActiveOrganization({
+          body: { organizationId: org.id },
+          headers: await headers()
+        })
+
+        if (!data) {
+          return {
+            failure: {
+              reason: "No se pudo establecer la organización activa"
+            }
+          }
+        }
+
+        updateTag("organizations-list")
+        updateTag("organization-current")
+        updateTag("membership-current")
+        updateTag("membership-current-role")
+        updateTag("permissions-all")
+        updateTag("page-settings")
+        updateTag("page-settings-members")
+        if (org?.id) {
+          updateTag(`organization-${org.id}`)
+          updateTag(`organization-${org.id}-members`)
+          updateTag(`organization-${org.id}-subscription`)
+        }
+        updateTag(`subscription-current`)
+
+        return {
+          success: {
+            id: org.id,
+            name: org.name,
+            slug: org.slug,
+            description: org.description ?? description ?? null,
+            status: (org.status ?? "ACTIVE") as
+              | "ACTIVE"
+              | "TRIALING"
+              | "CANCELED"
+              | "INCOMPLETE"
+              | "INCOMPLETE_EXPIRED"
+              | "PAST_DUE"
+              | "UNPAID"
+              | "PAUSED"
+              | "SPONSORED",
+            plan: (org.plan ?? "BASIC") as "BASIC" | "PRO",
+            logo: org.logo ?? null,
+            banner: org.banner ?? null
+          }
+        }
+      } catch (error) {
+        let message
+        if (typeof error === "string") {
+          message = error
+        } else if (error instanceof Error) {
+          message = error.message
+          if (message.includes("slug")) {
+            message = "El subdominio ya está en uso"
+          }
+        }
+        console.error("Error bootstrapping organization:", error)
+        Sentry.captureException(error, {
+          tags: { section: "organization-mutations", operation: "bootstrap" },
+          extra: { slug, name }
+        })
+        return {
+          failure: {
+            reason: message
+          }
+        }
+      }
+    }
+  )
+
+/**
+ * Creates a new organization.
+ *
+ * @param name - The name of the organization.
+ * @param description - The description of the organization.
+ * @param slug - The slug of the organization.
+ * @returns An object indicating the success or failure of the operation.
+ */
+export const createOrg = authActionClient
+  .inputSchema(orgSchema)
+  .action(
+    async ({ parsedInput: { name, description, slug }, ctx: { user } }) => {
+      try {
+        if (user?.id === undefined) {
+          return {
+            failure: {
+              reason: "No se pudo obtener el usuario actual"
+            }
+          }
+        }
+        if (!slug) {
+          return {
+            failure: {
+              reason: "Subdominio es requerido"
+            }
+          }
+        }
+
+        // Verify if the slug is already taken via Better Auth
+        const existingOrg = await auth.api.checkOrganizationSlug({
+          body: { slug },
+          headers: await headers()
+        })
+
+        if (!existingOrg.status) {
+          return {
+            failure: {
+              reason: "El subdominio ya está en uso"
+            }
+          }
+        }
+
+        // Create organization through Better Auth server API
+        const org = await auth.api.createOrganization({
+          body: {
+            name,
+            slug,
+            keepCurrentActiveOrganization: true,
+            userId: user.id,
+            description: description ?? "",
+            status: "ACTIVE",
+            plan: "BASIC",
+            banner: "",
+            updatedAt: new Date().toISOString()
+          },
+          headers: await headers()
+        })
+
+        if (!org) {
+          return {
+            failure: {
+              reason: "No se pudo crear la organización"
+            }
+          }
+        }
+
+        updateTag("organizations-list")
+        if (org.id) {
+          updateTag(`organization-${org.id}`)
+          updateTag(`organization-${org.id}-members`)
+          updateTag(`organization-${org.id}-subscription`)
+        }
+
+        return { success: true }
+      } catch (error) {
+        let message
+        if (typeof error === "string") {
+          message = error
+        } else if (error instanceof Error) {
+          message = error.message
+        }
+        console.error("Error creating organization via Better Auth:", error)
+        Sentry.captureException(error, {
+          tags: { section: "organization-mutations", operation: "create" },
+          extra: { slug, name }
+        })
+        return {
+          failure: {
+            reason: message
+          }
+        }
+      }
+    }
+  )
+
+/**
+ * Updates an organization.
+ *
+ * @param id - The ID of the organization to update.
+ * @param name - The new name of the organization.
+ * @param description - The new description of the organization.
+ * @param slug - The new slug of the organization.
+ * @returns An object indicating the success or failure of the update operation.
+ */
+export const updateOrg = authActionClient
+  .inputSchema(orgSchema)
+  .action(async ({ parsedInput: { id, name, description, slug } }) => {
+    try {
+      if (!id) {
+        return {
+          failure: {
+            reason: "ID de organización es requerido"
+          }
+        }
+      }
+      // Verify if the slug is already taken using Better Auth server API
+      if (slug) {
+        let existingSlug: { status?: boolean } | null = null
+        try {
+          existingSlug = await auth.api.checkOrganizationSlug({
+            body: { slug },
+            headers: await headers()
+          })
+        } catch (err) {
+          // If the external API throws (for example, when slug is taken),
+          // don't return early — treat as 'not available' and verify ownership below.
+          console.warn("checkOrganizationSlug failed:", err)
+          Sentry.captureException(err, {
+            tags: { section: "organization-mutations", operation: "checkSlug" },
+            extra: { slug }
+          })
+          existingSlug = null
+        }
+
+        // checkOrganizationSlug returns status: true when available
+        if (!existingSlug?.status) {
+          // If slug appears taken or check failed, verify it's not taken by this same org
+          const maybeOrg = await getOrganizationBySlug(slug)
+
+          if (maybeOrg && maybeOrg.id !== id) {
+            throw new Error("El subdominio ya está en uso")
+          }
+        }
+      }
+
+      // Update organization using Better Auth server API
+      const org = await auth.api.updateOrganization({
+        body: {
+          data: {
+            name,
+            slug,
+            description: description ?? ""
+          },
+          organizationId: id as string
+        },
+        headers: await headers()
+      })
+
+      if (!org) {
+        return {
+          failure: {
+            reason: "No se pudo actualizar la organización"
+          }
+        }
+      }
+
+      updateTag("organizations-list")
+      updateTag("organization-current")
+      updateTag("page-settings")
+      updateTag("page-settings-members")
+      updateTag("subscription-current")
+      updateTag("permissions-all")
+      updateTag("membership-current")
+      updateTag("membership-current-role")
+      updateTag(`organization-${id}`)
+      updateTag(`organization-${id}-members`)
+      updateTag(`organization-${id}-subscription`)
+
+      return { success: true }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  })
+
+/**
+ * Join the waitlist with the provided email.
+ *
+ * @param {string} email - The email to join the waitlist with.
+ * @returns {Promise<{ success: { email: string } } | { failure: { reason: string } }>} - A promise that resolves to an object indicating the success or failure of joining the waitlist.
+ */
+export const joinWaitlist = actionClient
+  .inputSchema(
+    z.object({
+      email: z.email()
+    })
+  )
+  .action(async ({ parsedInput: { email } }) => {
+    try {
+      const waitlist = await prisma.waitlist.findUnique({
+        where: {
+          email: email
+        }
+      })
+
+      if (waitlist) {
+        throw new Error("Ya estás en la lista de espera")
+      }
+
+      await prisma.waitlist.create({
+        data: {
+          email: email
+        }
+      })
+
+      return {
+        success: {
+          email: email
+        }
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Error) {
+        message = error.message
+      } else {
+        message = "Unknown error"
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  })
+
+export const deleteOrganization = authActionClient
+  .inputSchema(
+    z.object({
+      id: z.string(),
+      confirmation: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { id, confirmation } }) => {
+    // Delete organization
+    try {
+      const normalizedConfirmation = confirmation?.trim().toUpperCase()
+
+      if (normalizedConfirmation !== "ELIMINAR") {
+        return {
+          failure: {
+            reason:
+              "Confirma escribiendo ELIMINAR antes de eliminar la organización"
+          }
+        }
+      }
+
+      const subscription = await getCurrentSubscription(id)
+      if (
+        subscription &&
+        (subscription.status === "active" || subscription.status === "trialing")
+      ) {
+        return {
+          failure: {
+            reason:
+              "No se puede eliminar una organización con una suscripción activa"
+          }
+        }
+      } else {
+        await deleteOrganizationAssetsFromR2(id)
+
+        // Delete organization through Better Auth server API and revalidate cache
+        const deleted = await auth.api.deleteOrganization({
+          body: { organizationId: id },
+          headers: await headers()
+        })
+
+        if (!deleted) {
+          return {
+            failure: {
+              reason: "No se pudo eliminar la organización"
+            }
+          }
+        }
+
+        updateTag("organizations-list")
+        updateTag("organization-current")
+        updateTag("membership-current")
+        updateTag("membership-current-role")
+        updateTag("permissions-all")
+        updateTag("subscription-current")
+        if (id) {
+          updateTag(`organization-${id}`)
+          updateTag(`organization-${id}-members`)
+          updateTag(`organization-${id}-subscription`)
+        }
+
+        // Attempt to sign out the current session via Better Auth API so the
+        // client session cookie is cleared after the organization is deleted.
+        try {
+          // Call signOut directly per docs. Best-effort: log and continue on error.
+          await auth.api.signOut({ headers: await headers() })
+        } catch (err) {
+          console.warn("Failed to sign out after organization deletion:", err)
+          Sentry.captureException(err, {
+            tags: { section: "organization-mutations", operation: "signOut" },
+            extra: { organizationId: id }
+          })
+        }
+
+        return {
+          success: true
+        }
+      }
+    } catch (error) {
+      let message
+      if (typeof error === "string") {
+        message = error
+      } else if (error instanceof Error) {
+        message = error.message
+      }
+      return {
+        failure: {
+          reason: message
+        }
+      }
+    }
+  })

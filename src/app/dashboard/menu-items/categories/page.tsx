@@ -1,0 +1,45 @@
+import { Tags } from "lucide-react"
+import { type Metadata } from "next"
+import { notFound } from "next/navigation"
+
+import PageSubtitle from "@/components/dashboard/page-subtitle"
+import { Button } from "@/components/ui/button"
+import { getCategories } from "@/server/actions/item/queries"
+import { getCurrentOrganization } from "@/server/actions/user/queries"
+import CategoryEdit from "@/app/dashboard/menu-items/categories/category-edit"
+import CategoryTable from "@/app/dashboard/menu-items/categories/category-table"
+import { ActionType } from "@/lib/types/category"
+
+export const metadata: Metadata = {
+  title: "Categorías"
+}
+
+export default async function CategoriesPage() {
+  const currentOrg = await getCurrentOrganization()
+
+  if (!currentOrg) {
+    notFound()
+  }
+
+  const data = await getCategories(currentOrg.id)
+
+  return (
+    <div className="mx-auto grow px-4 sm:px-6">
+      <PageSubtitle>
+        <PageSubtitle.Icon icon={Tags} />
+        <PageSubtitle.Title>Categorías</PageSubtitle.Title>
+        <PageSubtitle.Description>
+          Administra las categorías de tu menú
+        </PageSubtitle.Description>
+        <PageSubtitle.Actions>
+          <CategoryEdit action={ActionType.CREATE}>
+            <Button>Agregar categoría</Button>
+          </CategoryEdit>
+        </PageSubtitle.Actions>
+      </PageSubtitle>
+      <div className="mt-6">
+        <CategoryTable data={data} />
+      </div>
+    </div>
+  )
+}
