@@ -256,7 +256,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
             <h2 className="text-base font-semibold text-balance">
               Ingresos por tipo de orden
             </h2>
-            <Badge variant="outline">{data.revenueByOrderType.length}</Badge>
+            <Badge variant="secondary">{data.revenueByOrderType.length}</Badge>
           </div>
           <Separator className="bg-border/80" />
           <div className="w-full max-w-full overflow-x-auto pb-1">
@@ -308,7 +308,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
             <h2 className="text-base font-semibold text-balance">
               Productos más vendidos
             </h2>
-            <Badge variant="outline">{data.bestSellers.length}</Badge>
+            <Badge variant="secondary">{data.bestSellers.length}</Badge>
           </div>
           <Separator className="bg-border/80" />
           {data.bestSellers.length === 0 ? (
@@ -366,7 +366,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
           <h2 className="text-base font-semibold text-balance">
             Ventas recientes
           </h2>
-          <Badge variant="outline">{data.recentSales.length}</Badge>
+          <Badge variant="secondary">{data.recentSales.length}</Badge>
         </div>
         <Separator className="bg-border/80" />
         {data.recentSales.length === 0 ? (

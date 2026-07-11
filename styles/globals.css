@@ -77,11 +77,11 @@
 }
 
 @utility component-selected {
-  @apply outline outline-1 outline-indigo-500;
+  @apply outline-primary outline outline-1;
 }
 
 @utility component-hovered {
-  @apply outline outline-1 outline-indigo-500;
+  @apply outline-primary outline outline-1;
 }
 
 @utility no-scrollbar {

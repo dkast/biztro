@@ -159,7 +159,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
           <h2 className="text-base font-semibold text-balance">
             Ventas por periodo
           </h2>
-          <Badge variant="outline">
+          <Badge variant="secondary">
             {salesDashboardPeriodRangeLabels[data.period]}
           </Badge>
         </div>
@@ -187,7 +187,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             <h2 className="text-base font-semibold text-balance">
               Ventas recientes
             </h2>
-            <Badge variant="outline">{data.recentSales.length}</Badge>
+            <Badge variant="secondary">{data.recentSales.length}</Badge>
           </div>
           {/* <Separator className="bg-border/80" /> */}
           {data.recentSales.length === 0 ? (
@@ -251,16 +251,6 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
         <Separator className="bg-border/80 xl:h-full xl:w-px" />
 
         <div className="min-w-0 space-y-4">
-          {/* <div
-            className="flex flex-col items-start gap-2 sm:flex-row
-              sm:items-center sm:justify-between sm:gap-4"
-          >
-            <h2 className="text-base font-semibold text-balance">
-              Productos más vendidos
-            </h2>
-            <Badge variant="outline">{data.bestSellers.length}</Badge>
-          </div>
-          <Separator className="bg-border/80" /> */}
           {data.bestSellers.length === 0 ? (
             <Empty className="min-h-72 rounded-none border-0 p-0">
               <EmptyHeader>

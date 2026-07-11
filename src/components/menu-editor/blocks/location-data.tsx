@@ -165,15 +165,10 @@ export default function LocationData({
               key={day.day}
               className={cn(
                 "grid grid-cols-3 px-4 py-2 text-xs",
-                isToday && "bg-indigo-50 dark:bg-indigo-900/20"
+                isToday && "bg-primary/10"
               )}
             >
-              <span
-                className={cn(
-                  "font-medium",
-                  isToday && "text-indigo-700 dark:text-indigo-300"
-                )}
-              >
+              <span className={cn("font-medium", isToday && "text-primary")}>
                 {DAY_LABELS[day.day] ?? day.day}
               </span>
               <span
@@ -182,7 +177,7 @@ export default function LocationData({
                     ? "text-gray-600 dark:text-gray-400"
                     : "text-gray-400 dark:text-gray-600",
                   "col-span-2 tabular-nums",
-                  isToday && "text-indigo-700 dark:text-indigo-300"
+                  isToday && "dark:text-primary text-primary"
                 )}
               >
                 {day.allDay
