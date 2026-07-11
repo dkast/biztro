@@ -11,128 +11,27 @@ import { MenuStatus } from "@/lib/types/menu"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
 export async function getMenus(currentOrgId: string) {
-  // #region agent log
-  const callId = `menus-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-  const t0 = Date.now()
-  fetch("http://127.0.0.1:7457/ingest/125c2762-045b-4e76-9c23-28ba13a4640b", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Debug-Session-Id": "fe465b"
-    },
-    body: JSON.stringify({
-      sessionId: "fe465b",
-      runId: "post-fix-nocache",
-      hypothesisId: "M",
-      location: "menu/queries.ts:getMenus:entry",
-      message: "getMenus entry (no use cache)",
-      data: { callId, hasOrgId: Boolean(currentOrgId) },
-      timestamp: Date.now()
-    })
-  }).catch(() => {})
-  // #endregion
   if (!currentOrgId) {
     return { menus: [], activeMenuId: null }
   }
-  try {
-    // Avoid $transaction (P2028 under LibSQL HTTP). Sequential reads.
-    // "use cache" removed temporarily — it hung on findMany in Next 16.
-    // #region agent log
-    fetch("http://127.0.0.1:7457/ingest/125c2762-045b-4e76-9c23-28ba13a4640b", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Debug-Session-Id": "fe465b"
-      },
-      body: JSON.stringify({
-        sessionId: "fe465b",
-        runId: "post-fix-nocache",
-        hypothesisId: "M",
-        location: "menu/queries.ts:getMenus:beforeMenus",
-        message: "before menu.findMany",
-        data: { callId, ms: Date.now() - t0 },
-        timestamp: Date.now()
-      })
-    }).catch(() => {})
-    // #endregion
-    const menus = await prisma.menu.findMany({
-      where: {
-        organizationId: currentOrgId
-      },
-      orderBy: [{ publishedAt: "desc" }, { updatedAt: "desc" }]
-    })
-    // #region agent log
-    fetch("http://127.0.0.1:7457/ingest/125c2762-045b-4e76-9c23-28ba13a4640b", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Debug-Session-Id": "fe465b"
-      },
-      body: JSON.stringify({
-        sessionId: "fe465b",
-        runId: "post-fix-nocache",
-        hypothesisId: "M",
-        location: "menu/queries.ts:getMenus:afterMenus",
-        message: "after menu.findMany",
-        data: { callId, ms: Date.now() - t0, menuCount: menus.length },
-        timestamp: Date.now()
-      })
-    }).catch(() => {})
-    // #endregion
-    const organization = await prisma.organization.findUnique({
-      where: {
-        id: currentOrgId
-      },
-      select: {
-        activeMenuId: true
-      }
-    })
-    // #region agent log
-    fetch("http://127.0.0.1:7457/ingest/125c2762-045b-4e76-9c23-28ba13a4640b", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Debug-Session-Id": "fe465b"
-      },
-      body: JSON.stringify({
-        sessionId: "fe465b",
-        runId: "post-fix-nocache",
-        hypothesisId: "M",
-        location: "menu/queries.ts:getMenus:success",
-        message: "sequential reads succeeded",
-        data: { callId, ms: Date.now() - t0, menuCount: menus.length },
-        timestamp: Date.now()
-      })
-    }).catch(() => {})
-    // #endregion
-    return { menus, activeMenuId: organization?.activeMenuId ?? null }
-  } catch (error) {
-    // #region agent log
-    fetch("http://127.0.0.1:7457/ingest/125c2762-045b-4e76-9c23-28ba13a4640b", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Debug-Session-Id": "fe465b"
-      },
-      body: JSON.stringify({
-        sessionId: "fe465b",
-        runId: "post-fix-nocache",
-        hypothesisId: "M",
-        location: "menu/queries.ts:getMenus:error",
-        message: "getMenus failed",
-        data: {
-          callId,
-          ms: Date.now() - t0,
-          code: (error as { code?: string })?.code ?? null,
-          err:
-            error instanceof Error ? error.message.slice(0, 200) : String(error)
-        },
-        timestamp: Date.now()
-      })
-    }).catch(() => {})
-    // #endregion
-    throw error
-  }
+
+  // Avoid $transaction — LibSQL HTTP times out (P2028) under Next parallel load.
+  const menus = await prisma.menu.findMany({
+    where: {
+      organizationId: currentOrgId
+    },
+    orderBy: [{ publishedAt: "desc" }, { updatedAt: "desc" }]
+  })
+  const organization = await prisma.organization.findUnique({
+    where: {
+      id: currentOrgId
+    },
+    select: {
+      activeMenuId: true
+    }
+  })
+
+  return { menus, activeMenuId: organization?.activeMenuId ?? null }
 }
 
 export async function getMenuById(id: string) {
