@@ -1,6 +1,7 @@
 import { Fragment } from "react"
 import NumberFlow, { type Format } from "@number-flow/react"
 import {
+  Ban,
   Banknote,
   ShoppingCart,
   TrendingDown,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react"
 
 import { SalesClosingHourlyChart } from "@/components/sales/sales-closing-hourly-chart"
+import { SalesRecentSaleRow } from "@/components/sales/sales-recent-sale-row"
 import { Badge } from "@/components/ui/badge"
 import {
   Empty,
@@ -83,12 +85,6 @@ function getClosingTrend(
     : { label, tone: "text-muted-foreground", icon: TrendingDown }
 }
 
-function formatClosingTime(value: string) {
-  return new Intl.DateTimeFormat("es-MX", {
-    timeStyle: "short"
-  }).format(new Date(value))
-}
-
 type SalesClosingSummaryItem = {
   title: string
   icon: typeof Banknote
@@ -102,14 +98,26 @@ type SalesClosingSummaryItem = {
 function getSummaryItems(data: SalesClosingData): SalesClosingSummaryItem[] {
   return [
     {
-      title: "Ingresos del día",
+      title: "Ingresos completados",
       kind: "currency",
       value: data.todayRevenue,
       icon: Banknote,
       trend: getClosingTrend(data.todayRevenue, data.previous.revenue)
     },
     {
-      title: "Órdenes del día",
+      title: "Ventas anuladas",
+      kind: "count",
+      value: data.voidedSales,
+      icon: Ban
+    },
+    {
+      title: "Monto anulado",
+      kind: "currency",
+      value: data.voidedAmount,
+      icon: Ban
+    },
+    {
+      title: "Ventas completadas",
       kind: "count",
       value: data.todayOrders,
       icon: ShoppingCart,
@@ -157,16 +165,16 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
   return (
     <div className="flex flex-col gap-8 pb-6">
       <section className="border-border overflow-hidden rounded-lg border">
-        <ItemGroup className="grid grid-cols-2 md:grid-cols-4">
+        <ItemGroup className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
           {summaryItems.map((item, index) => (
             <Item
               key={item.title}
               className={cn(
                 "min-w-0 flex-nowrap rounded-none border-0 px-4 py-3 sm:px-5",
-                index < 2 && "border-border/80 border-b md:border-b-0",
-                index % 2 === 0 && "border-border/80 border-r md:border-r-0",
+                index % 2 === 0 && "border-border/80 border-r",
+                index < summaryItems.length - 2 && "border-border/80 border-b",
                 index < summaryItems.length - 1 &&
-                  "md:border-border/80 md:border-r"
+                  "xl:border-border/80 xl:border-r xl:border-b-0"
               )}
             >
               <ItemContent className="min-w-0 gap-1">
@@ -388,38 +396,25 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
               <TableHeader>
                 <TableRow>
                   <TableHead className="h-9 px-3">Hora</TableHead>
+                  <TableHead className="h-9 px-3">Estatus</TableHead>
                   <TableHead className="h-9 px-3">Canal de venta</TableHead>
                   <TableHead className="h-9 px-3 text-right">
                     Unidades
                   </TableHead>
                   <TableHead className="h-9 px-3 text-right">Total</TableHead>
+                  <TableHead className="h-9 px-3">
+                    <span className="sr-only">Detalle</span>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data.recentSales.map(sale => (
-                  <TableRow key={sale.id}>
-                    <TableCell className="px-3 py-2.5 font-medium tabular-nums">
-                      {formatClosingTime(sale.createdAt)}
-                    </TableCell>
-                    <TableCell className="px-3 py-2.5">
-                      <Badge
-                        variant={
-                          salesOrderTypeBadgeVariants[sale.orderType] as
-                            | "blue"
-                            | "indigo"
-                            | "yellow"
-                        }
-                      >
-                        {salesOrderTypeLabels[sale.orderType]}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                      {sale.items}
-                    </TableCell>
-                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                      {formatPrice(sale.total, data.currency)}
-                    </TableCell>
-                  </TableRow>
+                  <SalesRecentSaleRow
+                    key={sale.id}
+                    sale={sale}
+                    currency={data.currency}
+                    variant="closing"
+                  />
                 ))}
               </TableBody>
             </Table>

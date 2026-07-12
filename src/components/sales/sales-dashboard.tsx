@@ -2,6 +2,7 @@ import NumberFlow from "@number-flow/react"
 import { Banknote, ShoppingCart, TrendingUp, WalletCards } from "lucide-react"
 
 import { SalesBestSellersPieChart } from "@/components/sales/sales-best-sellers-pie-chart"
+import { SalesRecentSaleRow } from "@/components/sales/sales-recent-sale-row"
 import { SalesRevenueChart } from "@/components/sales/sales-revenue-chart"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -22,26 +23,14 @@ import { Separator } from "@/components/ui/separator"
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow
 } from "@/components/ui/table"
 import { formatPrice } from "@/lib/currency"
 import { salesDashboardPeriodRangeLabels } from "@/lib/sales-dashboard-period"
-import {
-  salesOrderTypeBadgeVariants,
-  salesOrderTypeLabels,
-  type SalesDashboardData
-} from "@/lib/types/sales"
+import { type SalesDashboardData } from "@/lib/types/sales"
 import { cn } from "@/lib/utils"
-
-function formatDateTime(value: string) {
-  return new Intl.DateTimeFormat("es-MX", {
-    dateStyle: "medium",
-    timeStyle: "short"
-  }).format(new Date(value))
-}
 
 type SalesDashboardKpiItem = {
   title: string
@@ -176,7 +165,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
       <Separator className="bg-border/80" />
 
       <section
-        className="grid gap-y-6 lg:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)]
+        className="grid gap-y-6 lg:grid-cols-[minmax(0,60fr)_1px_minmax(0,40fr)]
           lg:items-start lg:gap-x-8 lg:gap-y-0"
       >
         <div className="flex min-w-0 flex-col gap-5">
@@ -211,36 +200,23 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Fecha</TableHead>
+                    <TableHead>Estatus</TableHead>
                     <TableHead>Canal de venta</TableHead>
                     <TableHead className="text-right">Unidades</TableHead>
                     <TableHead className="text-right">Total</TableHead>
+                    <TableHead>
+                      <span className="sr-only">Detalle</span>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data.recentSales.map(sale => (
-                    <TableRow key={sale.id}>
-                      <TableCell className="font-medium">
-                        {formatDateTime(sale.createdAt)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            salesOrderTypeBadgeVariants[sale.orderType] as
-                              | "blue"
-                              | "indigo"
-                              | "yellow"
-                          }
-                        >
-                          {salesOrderTypeLabels[sale.orderType]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {sale.items}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {formatPrice(sale.total, data.currency)}
-                      </TableCell>
-                    </TableRow>
+                    <SalesRecentSaleRow
+                      key={sale.id}
+                      sale={sale}
+                      currency={data.currency}
+                      variant="dashboard"
+                    />
                   ))}
                 </TableBody>
               </Table>

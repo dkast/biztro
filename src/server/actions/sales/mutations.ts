@@ -6,7 +6,11 @@ import { isProMember } from "@/server/actions/user/queries"
 import { type Currency } from "@/lib/currency"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
-import { completeSaleSchema } from "@/lib/types/sales"
+import {
+  completeSaleSchema,
+  voidReasonLabels,
+  voidSaleSchema
+} from "@/lib/types/sales"
 
 function roundMoney(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100
@@ -168,10 +172,13 @@ export const completeSale = authMemberActionClient
       return await tx.sale.create({
         data: {
           organizationId,
+          status: "COMPLETED",
           orderType: parsedInput.orderType,
           currency: saleCurrency,
           subtotal,
           total,
+          completedAt: new Date(),
+          completedByUserId: member.user.id,
           items: {
             create: salesItems.map(item => ({
               menuItemId: item.menuItemId,
@@ -198,6 +205,57 @@ export const completeSale = authMemberActionClient
         orderType: sale.orderType,
         total: sale.total,
         itemCount
+      }
+    }
+  })
+
+export const voidSale = authMemberActionClient
+  .inputSchema(voidSaleSchema)
+  .action(async ({ parsedInput, ctx: { member } }) => {
+    const organizationId = member.organizationId
+
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: "No se pudo obtener la organización actual"
+        }
+      }
+    }
+
+    const voidReason =
+      parsedInput.reason === "OTHER"
+        ? parsedInput.reasonDetail!.trim()
+        : voidReasonLabels[parsedInput.reason]
+
+    const result = await prisma.sale.updateMany({
+      where: {
+        id: parsedInput.saleId,
+        organizationId,
+        status: "COMPLETED"
+      },
+      data: {
+        status: "VOID",
+        voidedAt: new Date(),
+        voidedByUserId: member.user.id,
+        voidReason
+      }
+    })
+
+    if (result.count !== 1) {
+      return {
+        failure: {
+          reason:
+            "La venta no existe, no pertenece a esta organización o ya fue anulada"
+        }
+      }
+    }
+
+    updateTag(`sales-${organizationId}`)
+    updateTag(`sale-${parsedInput.saleId}`)
+
+    return {
+      success: {
+        id: parsedInput.saleId
       }
     }
   })

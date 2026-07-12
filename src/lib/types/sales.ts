@@ -9,6 +9,37 @@ export const salesOrderTypeSchema = z.enum(salesOrderTypeValues)
 
 export type SalesOrderType = z.infer<typeof salesOrderTypeSchema>
 
+export const saleStatusValues = ["COMPLETED", "VOID"] as const
+
+export const saleStatusSchema = z.enum(saleStatusValues)
+
+export type SaleStatus = z.infer<typeof saleStatusSchema>
+
+export const saleStatusLabels = {
+  COMPLETED: "Completada",
+  VOID: "Anulada"
+} as const satisfies Record<SaleStatus, string>
+
+export const voidReasonValues = [
+  "WRONG_ITEMS",
+  "DUPLICATE_SALE",
+  "CUSTOMER_CANCELLED",
+  "TEST_SALE",
+  "OTHER"
+] as const
+
+export const voidReasonSchema = z.enum(voidReasonValues)
+
+export type VoidReason = z.infer<typeof voidReasonSchema>
+
+export const voidReasonLabels = {
+  WRONG_ITEMS: "Productos incorrectos",
+  DUPLICATE_SALE: "Venta duplicada",
+  CUSTOMER_CANCELLED: "Cliente canceló",
+  TEST_SALE: "Venta de prueba",
+  OTHER: "Otro"
+} as const satisfies Record<VoidReason, string>
+
 export const salesOrderTypeLabels = {
   DINE_IN: "Para aquí",
   TAKEOUT: "Para llevar",
@@ -37,8 +68,25 @@ export const completeSaleSchema = z.object({
   items: z.array(saleCartItemSchema).min(1, "Agrega al menos un producto")
 })
 
+export const voidSaleSchema = z
+  .object({
+    saleId: z.string().min(1),
+    reason: voidReasonSchema,
+    reasonDetail: z.string().trim().max(500).optional()
+  })
+  .superRefine(({ reason, reasonDetail }, ctx) => {
+    if (reason === "OTHER" && !reasonDetail) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["reasonDetail"],
+        message: "Describe el motivo de la anulación"
+      })
+    }
+  })
+
 export type SaleCartItemInput = z.infer<typeof saleCartItemSchema>
 export type CompleteSaleInput = z.infer<typeof completeSaleSchema>
+export type VoidSaleInput = z.infer<typeof voidSaleSchema>
 
 export type SalesCatalogVariant = {
   id: string
@@ -83,6 +131,7 @@ export type SalesRecentSale = {
   id: string
   createdAt: string
   orderType: SalesOrderType
+  status: SaleStatus
   items: number
   total: number
 }
@@ -134,10 +183,39 @@ export type SalesClosingData = {
   todayRevenue: number
   todayOrders: number
   todayAverageTicket: number
+  voidedSales: number
+  voidedAmount: number
   topProduct: SalesBestSeller | null
   previous: SalesClosingComparison
   bestSellers: SalesBestSeller[]
   revenueByOrderType: SalesRevenueByOrderType[]
   hourly: SalesClosingHourlyBucket[]
   recentSales: SalesRecentSale[]
+}
+
+export type SalesActor = {
+  id: string
+  name: string
+}
+
+export type SaleDetail = {
+  id: string
+  status: SaleStatus
+  orderType: SalesOrderType
+  currency: Currency
+  total: number
+  createdAt: string
+  completedAt: string | null
+  completedBy: SalesActor | null
+  voidedAt: string | null
+  voidedBy: SalesActor | null
+  voidReason: string | null
+  items: Array<{
+    id: string
+    productName: string
+    variantName: string | null
+    unitPrice: number
+    quantity: number
+    lineTotal: number
+  }>
 }

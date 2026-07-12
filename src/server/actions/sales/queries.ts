@@ -12,6 +12,7 @@ import {
 import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
 import {
   salesOrderTypeValues,
+  type SaleDetail,
   type SalesBestSeller,
   type SalesCatalogCategory,
   type SalesCatalogData,
@@ -46,6 +47,21 @@ function startOfMonth(date = new Date()) {
   next.setDate(1)
   next.setHours(0, 0, 0, 0)
   return next
+}
+
+function completedSalesWhere(
+  organizationId: string,
+  startDate: Date,
+  endDate: Date
+) {
+  return {
+    organizationId,
+    status: "COMPLETED" as const,
+    createdAt: {
+      gte: startDate,
+      lt: endDate
+    }
+  }
 }
 
 function startOfRollingPeriod(
@@ -261,11 +277,7 @@ async function getSalesTotals(
   const [totals, saleCount] = await Promise.all([
     prisma.sale.aggregate({
       where: {
-        organizationId,
-        createdAt: {
-          gte: startDate,
-          lt: endDate
-        }
+        ...completedSalesWhere(organizationId, startDate, endDate)
       },
       _sum: {
         total: true
@@ -273,11 +285,7 @@ async function getSalesTotals(
     }),
     prisma.sale.count({
       where: {
-        organizationId,
-        createdAt: {
-          gte: startDate,
-          lt: endDate
-        }
+        ...completedSalesWhere(organizationId, startDate, endDate)
       }
     })
   ])
@@ -285,6 +293,34 @@ async function getSalesTotals(
   return {
     revenue: roundMoney(totals._sum.total ?? 0),
     orders: saleCount
+  }
+}
+
+async function getVoidedSalesTotals(
+  organizationId: string,
+  startDate: Date,
+  endDate: Date
+) {
+  const totals = await prisma.sale.aggregate({
+    where: {
+      organizationId,
+      status: "VOID",
+      createdAt: {
+        gte: startDate,
+        lt: endDate
+      }
+    },
+    _sum: {
+      total: true
+    },
+    _count: {
+      id: true
+    }
+  })
+
+  return {
+    amount: roundMoney(totals._sum.total ?? 0),
+    sales: totals._count.id
   }
 }
 
@@ -296,11 +332,7 @@ async function getBestSellers(
   const rows = await prisma.saleItem.findMany({
     where: {
       sale: {
-        organizationId,
-        createdAt: {
-          gte: startDate,
-          lt: endDate
-        }
+        ...completedSalesWhere(organizationId, startDate, endDate)
       }
     },
     select: {
@@ -364,6 +396,7 @@ async function getRecentSales(
       id: true,
       createdAt: true,
       orderType: true,
+      status: true,
       total: true,
       items: {
         select: {
@@ -377,6 +410,7 @@ async function getRecentSales(
     id: sale.id,
     createdAt: sale.createdAt.toISOString(),
     orderType: sale.orderType as SalesOrderType,
+    status: sale.status,
     total: roundMoney(sale.total),
     items: sale.items.reduce((count, item) => count + item.quantity, 0)
   }))
@@ -399,11 +433,7 @@ async function getHourlySalesBuckets(
 ): Promise<SalesClosingHourlyBucket[]> {
   const rows = await prisma.sale.findMany({
     where: {
-      organizationId,
-      createdAt: {
-        gte: previousDayStart,
-        lt: tomorrowStart
-      }
+      ...completedSalesWhere(organizationId, previousDayStart, tomorrowStart)
     },
     select: {
       createdAt: true,
@@ -472,11 +502,7 @@ async function getSalesChartRows(
 ) {
   return prisma.sale.findMany({
     where: {
-      organizationId,
-      createdAt: {
-        gte: startDate,
-        lt: endDate
-      }
+      ...completedSalesWhere(organizationId, startDate, endDate)
     },
     orderBy: {
       createdAt: "asc"
@@ -496,11 +522,7 @@ async function getRevenueByOrderType(
   const rows = await prisma.sale.groupBy({
     by: ["orderType"],
     where: {
-      organizationId,
-      createdAt: {
-        gte: startDate,
-        lt: endDate
-      }
+      ...completedSalesWhere(organizationId, startDate, endDate)
     },
     _sum: {
       total: true
@@ -733,6 +755,8 @@ export async function getSalesClosingData(
       todayRevenue: 0,
       todayOrders: 0,
       todayAverageTicket: 0,
+      voidedSales: 0,
+      voidedAmount: 0,
       topProduct: null,
       previous: { revenue: 0, orders: 0, averageTicket: 0 },
       bestSellers: [],
@@ -751,6 +775,7 @@ export async function getSalesClosingData(
   const [
     currency,
     todayTotals,
+    voidedTotals,
     previousTotals,
     bestSellers,
     revenueByOrderType,
@@ -759,6 +784,7 @@ export async function getSalesClosingData(
   ] = await Promise.all([
     getOrganizationCurrency(organizationId),
     getSalesTotals(organizationId, selectedDayStart, tomorrowStart),
+    getVoidedSalesTotals(organizationId, selectedDayStart, tomorrowStart),
     getSalesTotals(organizationId, previousDayStart, selectedDayStart),
     getBestSellers(organizationId, selectedDayStart, tomorrowStart),
     getRevenueByOrderType(organizationId, selectedDayStart, tomorrowStart),
@@ -790,6 +816,8 @@ export async function getSalesClosingData(
     todayRevenue: todayTotals.revenue,
     todayOrders: todayTotals.orders,
     todayAverageTicket,
+    voidedSales: voidedTotals.sales,
+    voidedAmount: voidedTotals.amount,
     topProduct: bestSellers[0] ?? null,
     previous: {
       revenue: previousTotals.revenue,
@@ -800,5 +828,100 @@ export async function getSalesClosingData(
     revenueByOrderType,
     hourly,
     recentSales
+  }
+}
+
+export async function getSaleDetail(
+  organizationId: string,
+  saleId: string
+): Promise<SaleDetail | null> {
+  "use cache: private"
+  cacheLife({ stale: 30 })
+
+  if (!organizationId || !saleId) return null
+
+  cacheTag(`sales-${organizationId}`)
+  cacheTag(`sale-${saleId}`)
+
+  const sale = await prisma.sale.findFirst({
+    where: {
+      id: saleId,
+      organizationId
+    },
+    select: {
+      id: true,
+      status: true,
+      orderType: true,
+      currency: true,
+      total: true,
+      createdAt: true,
+      completedAt: true,
+      completedByUserId: true,
+      voidedAt: true,
+      voidedByUserId: true,
+      voidReason: true,
+      items: {
+        orderBy: {
+          createdAt: "asc"
+        },
+        select: {
+          id: true,
+          productName: true,
+          variantName: true,
+          unitPrice: true,
+          quantity: true,
+          lineTotal: true
+        }
+      }
+    }
+  })
+
+  if (!sale) return null
+
+  const actorIds = [sale.completedByUserId, sale.voidedByUserId].filter(
+    (id): id is string => Boolean(id)
+  )
+  const actors = actorIds.length
+    ? await prisma.user.findMany({
+        where: {
+          id: {
+            in: actorIds
+          }
+        },
+        select: {
+          id: true,
+          name: true
+        }
+      })
+    : []
+  const actorsById = new Map(actors.map(actor => [actor.id, actor]))
+
+  return {
+    id: sale.id,
+    status: sale.status,
+    orderType: sale.orderType as SalesOrderType,
+    currency: sale.currency,
+    total: roundMoney(sale.total),
+    createdAt: sale.createdAt.toISOString(),
+    completedAt: sale.completedAt?.toISOString() ?? null,
+    completedBy: sale.completedByUserId
+      ? (actorsById.get(sale.completedByUserId) ?? {
+          id: sale.completedByUserId,
+          name: "Actor no registrado"
+        })
+      : null,
+    voidedAt: sale.voidedAt?.toISOString() ?? null,
+    voidedBy: sale.voidedByUserId
+      ? (actorsById.get(sale.voidedByUserId) ?? {
+          id: sale.voidedByUserId,
+          name: "Actor no registrado"
+        })
+      : null,
+    voidReason: sale.voidReason,
+    items: sale.items.map(item => ({
+      ...item,
+      unitPrice: roundMoney(item.unitPrice),
+      lineTotal: roundMoney(item.lineTotal)
+    }))
   }
 }

@@ -19,6 +19,11 @@ enum OrderType {
   DELIVERY
 }
 
+enum SaleStatus {
+  COMPLETED
+  VOID
+}
+
 enum MediaAssetType {
   IMAGE
   VIDEO
@@ -208,18 +213,25 @@ model CategoryTranslation {
 }
 
 model Sale {
-  id             String      @id @default(cuid())
-  orderType      OrderType   @default(DINE_IN)
-  currency       Currency    @default(MXN)
-  subtotal       Float
-  total          Float
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  items          SaleItem[]
+  id                String      @id @default(cuid())
+  status            SaleStatus  @default(COMPLETED)
+  orderType         OrderType   @default(DINE_IN)
+  currency          Currency    @default(MXN)
+  subtotal          Float
+  total             Float
+  completedAt       DateTime?
+  completedByUserId String?
+  voidedAt          DateTime?
+  voidedByUserId    String?
+  voidReason        String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  organizationId    String
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  items             SaleItem[]
 
   @@index([organizationId, createdAt])
+  @@index([organizationId, status, createdAt])
   @@index([organizationId, orderType, createdAt])
 }
 

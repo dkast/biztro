@@ -4,7 +4,11 @@ import { Download } from "lucide-react"
 import Papa from "papaparse"
 
 import { Button } from "@/components/ui/button"
-import { salesOrderTypeLabels, type SalesClosingData } from "@/lib/types/sales"
+import {
+  salesOrderTypeLabels,
+  saleStatusLabels,
+  type SalesClosingData
+} from "@/lib/types/sales"
 import { cn } from "@/lib/utils"
 
 type ClosingCsvRow = {
@@ -20,6 +24,7 @@ type ClosingCsvRow = {
   previousOrders: number | ""
   previousRevenue: number | ""
   createdAt: string
+  status?: string
 }
 
 const closingCsvFields: (keyof ClosingCsvRow)[] = [
@@ -34,14 +39,15 @@ const closingCsvFields: (keyof ClosingCsvRow)[] = [
   "hour",
   "previousOrders",
   "previousRevenue",
-  "createdAt"
+  "createdAt",
+  "status"
 ]
 
 function buildRows(data: SalesClosingData): ClosingCsvRow[] {
   const rows: ClosingCsvRow[] = [
     {
       section: "summary",
-      label: "Ingresos del día",
+      label: "Ingresos completados",
       detail: "",
       orderType: "",
       quantity: "",
@@ -55,7 +61,7 @@ function buildRows(data: SalesClosingData): ClosingCsvRow[] {
     },
     {
       section: "summary",
-      label: "Órdenes del día",
+      label: "Ventas completadas",
       detail: "",
       orderType: "",
       quantity: "",
@@ -75,6 +81,34 @@ function buildRows(data: SalesClosingData): ClosingCsvRow[] {
       quantity: "",
       orders: "",
       revenue: data.todayAverageTicket,
+      currency: data.currency,
+      hour: "",
+      previousOrders: "",
+      previousRevenue: "",
+      createdAt: ""
+    },
+    {
+      section: "summary",
+      label: "Ventas anuladas",
+      detail: "",
+      orderType: "",
+      quantity: "",
+      orders: data.voidedSales,
+      revenue: "",
+      currency: data.currency,
+      hour: "",
+      previousOrders: "",
+      previousRevenue: "",
+      createdAt: ""
+    },
+    {
+      section: "summary",
+      label: "Monto anulado",
+      detail: "",
+      orderType: "",
+      quantity: "",
+      orders: "",
+      revenue: data.voidedAmount,
       currency: data.currency,
       hour: "",
       previousOrders: "",
@@ -191,7 +225,8 @@ function buildRows(data: SalesClosingData): ClosingCsvRow[] {
       hour: "",
       previousOrders: "",
       previousRevenue: "",
-      createdAt: sale.createdAt
+      createdAt: sale.createdAt,
+      status: saleStatusLabels[sale.status]
     }))
   ]
 
