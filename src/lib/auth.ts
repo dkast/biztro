@@ -62,6 +62,7 @@ const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export const auth = betterAuth({
   // Adjust trusted origins for your deployment
   trustedOrigins: [
+    process.env.BETTER_AUTH_URL ?? "",
     "https://biztro.co",
     "https://preview.biztro.co",
     ...(process.env.NEXT_PUBLIC_VERCEL_URL &&
