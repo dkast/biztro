@@ -1,14 +1,5 @@
-import { Fragment } from "react"
 import NumberFlow, { type Format } from "@number-flow/react"
-import {
-  Ban,
-  Banknote,
-  ShoppingCart,
-  TrendingDown,
-  TrendingUp,
-  Trophy,
-  WalletCards
-} from "lucide-react"
+import { ShoppingCart, TrendingDown, TrendingUp } from "lucide-react"
 
 import { SalesClosingHourlyChart } from "@/components/sales/sales-closing-hourly-chart"
 import { SalesRecentSaleRow } from "@/components/sales/sales-recent-sale-row"
@@ -26,10 +17,8 @@ import {
   ItemContent,
   ItemGroup,
   ItemMedia,
-  ItemSeparator,
   ItemTitle
 } from "@/components/ui/item"
-import { Separator } from "@/components/ui/separator"
 import {
   Table,
   TableBody,
@@ -87,7 +76,6 @@ function getClosingTrend(
 
 type SalesClosingSummaryItem = {
   title: string
-  icon: typeof Banknote
   trend?: ClosingTrend | null
 } & (
   | { kind: "currency"; value: number }
@@ -101,33 +89,28 @@ function getSummaryItems(data: SalesClosingData): SalesClosingSummaryItem[] {
       title: "Ingresos completados",
       kind: "currency",
       value: data.todayRevenue,
-      icon: Banknote,
       trend: getClosingTrend(data.todayRevenue, data.previous.revenue)
     },
     {
       title: "Ventas anuladas",
       kind: "count",
-      value: data.voidedSales,
-      icon: Ban
+      value: data.voidedSales
     },
     {
       title: "Monto anulado",
       kind: "currency",
-      value: data.voidedAmount,
-      icon: Ban
+      value: data.voidedAmount
     },
     {
       title: "Ventas completadas",
       kind: "count",
       value: data.todayOrders,
-      icon: ShoppingCart,
       trend: getClosingTrend(data.todayOrders, data.previous.orders)
     },
     {
       title: "Ticket promedio",
       kind: "currency",
       value: data.todayAverageTicket,
-      icon: WalletCards,
       trend: getClosingTrend(
         data.todayAverageTicket,
         data.previous.averageTicket
@@ -137,7 +120,6 @@ function getSummaryItems(data: SalesClosingData): SalesClosingSummaryItem[] {
       title: "Producto más vendido",
       kind: "text",
       value: data.topProduct?.productName ?? "Sin ventas",
-      icon: Trophy,
       meta: data.topProduct
         ? `${data.topProduct.quantity} unidades · ${formatPrice(
             data.topProduct.revenue,
@@ -163,23 +145,22 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
   }
 
   return (
-    <div className="flex flex-col gap-8 pb-6">
+    <div className="flex flex-col gap-10 pb-6 sm:gap-12">
       <section className="border-border overflow-hidden rounded-lg border">
-        <ItemGroup className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
-          {summaryItems.map((item, index) => (
+        <ItemGroup
+          className="bg-border grid grid-cols-2 gap-px md:grid-cols-3
+            xl:grid-cols-6"
+        >
+          {summaryItems.map(item => (
             <Item
               key={item.title}
-              className={cn(
-                "min-w-0 flex-nowrap rounded-none border-0 px-4 py-3 sm:px-5",
-                index % 2 === 0 && "border-border/80 border-r",
-                index < summaryItems.length - 2 && "border-border/80 border-b",
-                index < summaryItems.length - 1 &&
-                  "xl:border-border/80 xl:border-r xl:border-b-0"
-              )}
+              className="bg-background min-w-0 flex-nowrap items-start
+                rounded-none border-0 px-4 py-3 sm:px-5"
             >
-              <ItemContent className="min-w-0 gap-1">
+              <ItemContent className="min-w-0 gap-2">
                 <ItemTitle
-                  className="text-muted-foreground w-full text-sm font-medium"
+                  className="text-muted-foreground w-full text-sm leading-5
+                    font-medium"
                 >
                   {item.title}
                 </ItemTitle>
@@ -223,40 +204,27 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
                   </span>
                 )}
                 {item.kind === "text" && item.meta && !item.trend && (
-                  <p className="text-muted-foreground truncate pt-2 text-xs">
+                  <p className="text-muted-foreground truncate text-xs">
                     {item.meta}
                   </p>
                 )}
               </ItemContent>
-              <ItemMedia variant="icon">
-                <item.icon className="size-4" />
-              </ItemMedia>
             </Item>
           ))}
         </ItemGroup>
       </section>
 
-      <section className="space-y-3">
-        <div
-          className="flex flex-col items-start gap-2 sm:flex-row sm:items-center
-            sm:justify-between sm:gap-4"
-        >
-          <h2 className="text-base font-semibold text-balance">
-            Ventas por hora
-          </h2>
-        </div>
-        <Separator className="bg-border/80" />
+      <section className="space-y-4">
+        <h2 className="text-base font-semibold text-balance">
+          Ventas por hora
+        </h2>
         <SalesClosingHourlyChart
           hourly={data.hourly}
           currency={data.currency}
         />
       </section>
-
-      <section
-        className="grid gap-y-6 lg:grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)]
-          lg:items-start lg:gap-x-8 lg:gap-y-0"
-      >
-        <div className="min-w-0 space-y-3">
+      <section className="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-10">
+        <div className="min-w-0 space-y-4">
           <div
             className="flex flex-col items-start gap-2 sm:flex-row
               sm:items-center sm:justify-between sm:gap-4"
@@ -266,10 +234,9 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
             </h2>
             <Badge variant="secondary">{data.revenueByOrderType.length}</Badge>
           </div>
-          <Separator className="bg-border/80" />
-          <div className="w-full max-w-full overflow-x-auto pb-1">
+          <div className="border-border overflow-hidden rounded-lg border">
             <Table className="min-w-[22rem]">
-              <TableHeader>
+              <TableHeader className="bg-muted/40">
                 <TableRow>
                   <TableHead className="h-9 px-3">Tipo de orden</TableHead>
                   <TableHead className="h-9 px-3 text-right">Órdenes</TableHead>
@@ -306,9 +273,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
           </div>
         </div>
 
-        <Separator className="bg-border/80 lg:h-full lg:w-px" />
-
-        <div className="min-w-0 space-y-3">
+        <div className="min-w-0 space-y-4">
           <div
             className="flex flex-col items-start gap-2 sm:flex-row
               sm:items-center sm:justify-between sm:gap-4"
@@ -318,26 +283,30 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
             </h2>
             <Badge variant="secondary">{data.bestSellers.length}</Badge>
           </div>
-          <Separator className="bg-border/80" />
-          {data.bestSellers.length === 0 ? (
-            <Empty className="min-h-48 rounded-none border-0 p-0">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <ShoppingCart />
-                </EmptyMedia>
-                <EmptyTitle>Sin ventas para este día</EmptyTitle>
-                <EmptyDescription>
-                  No hay productos vendidos para el cierre de{" "}
-                  {selectedDateLabel}.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          ) : (
-            <ItemGroup className="gap-0">
-              {data.bestSellers.map((item, index) => (
-                <Fragment key={item.productName}>
-                  <Item className="rounded-none px-0 py-2.5">
-                    <ItemMedia variant="icon" className="rounded-full">
+          <div className="border-border overflow-hidden rounded-lg border">
+            {data.bestSellers.length === 0 ? (
+              <Empty className="min-h-48 rounded-none border-0 p-6">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <ShoppingCart />
+                  </EmptyMedia>
+                  <EmptyTitle>Sin ventas para este día</EmptyTitle>
+                  <EmptyDescription>
+                    No hay productos vendidos para el cierre de{" "}
+                    {selectedDateLabel}.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            ) : (
+              <ItemGroup className="gap-1 p-2">
+                {data.bestSellers.map((item, index) => (
+                  <Item
+                    key={item.productName}
+                    className="rounded-md px-3 py-2.5"
+                  >
+                    <ItemMedia
+                      className="text-muted-foreground w-6 justify-start"
+                    >
                       <span className="text-xs font-semibold tabular-nums">
                         #{index + 1}
                       </span>
@@ -358,15 +327,14 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
                       </p>
                     </ItemActions>
                   </Item>
-                  {index < data.bestSellers.length - 1 && <ItemSeparator />}
-                </Fragment>
-              ))}
-            </ItemGroup>
-          )}
+                ))}
+              </ItemGroup>
+            )}
+          </div>
         </div>
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <div
           className="flex flex-col items-start gap-2 sm:flex-row sm:items-center
             sm:justify-between sm:gap-4"
@@ -376,24 +344,23 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
           </h2>
           <Badge variant="secondary">{data.recentSales.length}</Badge>
         </div>
-        <Separator className="bg-border/80" />
-        {data.recentSales.length === 0 ? (
-          <Empty className="min-h-48 rounded-none border-0 p-0">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <ShoppingCart />
-              </EmptyMedia>
-              <EmptyTitle>Sin ventas registradas</EmptyTitle>
-              <EmptyDescription>
-                Aún no hay ventas registradas para el cierre de{" "}
-                {selectedDateLabel}.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        ) : (
-          <div className="w-full max-w-full overflow-x-auto pb-1">
+        <div className="border-border overflow-hidden rounded-lg border">
+          {data.recentSales.length === 0 ? (
+            <Empty className="min-h-48 rounded-none border-0 p-6">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <ShoppingCart />
+                </EmptyMedia>
+                <EmptyTitle>Sin ventas registradas</EmptyTitle>
+                <EmptyDescription>
+                  Aún no hay ventas registradas para el cierre de{" "}
+                  {selectedDateLabel}.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
             <Table className="min-w-[30rem]">
-              <TableHeader>
+              <TableHeader className="bg-muted/40">
                 <TableRow>
                   <TableHead className="h-9 px-3">Hora</TableHead>
                   <TableHead className="h-9 px-3">Estatus</TableHead>
@@ -418,8 +385,8 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
                 ))}
               </TableBody>
             </Table>
-          </div>
-        )}
+          )}
+        </div>
       </section>
     </div>
   )

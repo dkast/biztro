@@ -19,7 +19,6 @@ import {
   ItemMedia,
   ItemTitle
 } from "@/components/ui/item"
-import { Separator } from "@/components/ui/separator"
 import {
   Table,
   TableBody,
@@ -103,7 +102,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
   const kpiItems = getKpiItems(data)
 
   return (
-    <div className="flex flex-col gap-6 pb-6">
+    <div className="flex flex-col gap-8 pb-6 sm:gap-10">
       <section className="border-border overflow-hidden rounded-lg border">
         <ItemGroup className="grid grid-cols-2 md:grid-cols-4">
           {kpiItems.map((item, index) => (
@@ -140,7 +139,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
         </ItemGroup>
       </section>
 
-      <section className="space-y-4 py-6 sm:space-y-5 sm:py-8">
+      <section className="space-y-5 sm:space-y-6">
         <div
           className="flex flex-col items-start gap-2 sm:flex-row sm:items-center
             sm:justify-between sm:gap-4"
@@ -152,7 +151,6 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             {salesDashboardPeriodRangeLabels[data.period]}
           </Badge>
         </div>
-        <Separator className="bg-border/80" />
         <div className="px-1 pt-1">
           <SalesRevenueChart
             chart={data.chart}
@@ -162,11 +160,9 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
         </div>
       </section>
 
-      <Separator className="bg-border/80" />
-
       <section
-        className="grid gap-y-6 lg:grid-cols-[minmax(0,60fr)_1px_minmax(0,40fr)]
-          lg:items-start lg:gap-x-8 lg:gap-y-0"
+        className="grid gap-y-8 lg:grid-cols-[minmax(0,60fr)_minmax(0,40fr)]
+          lg:items-start lg:gap-x-12 lg:gap-y-0"
       >
         <div className="flex min-w-0 flex-col gap-5">
           <div
@@ -178,7 +174,6 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             </h2>
             <Badge variant="secondary">{data.recentSales.length}</Badge>
           </div>
-          {/* <Separator className="bg-border/80" /> */}
           {data.recentSales.length === 0 ? (
             <Empty className="min-h-72 rounded-none border-0 p-0">
               <EmptyHeader>
@@ -223,8 +218,6 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             </div>
           )}
         </div>
-
-        <Separator className="bg-border/80 xl:h-full xl:w-px" />
 
         <div className="min-w-0 space-y-4">
           {data.bestSellers.length === 0 ? (
