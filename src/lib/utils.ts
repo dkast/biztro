@@ -24,9 +24,11 @@ export function getInitials(name: string | undefined | null) {
 }
 
 export const getBaseUrl = () => {
+  if (process.env.BETTER_AUTH_URL)
+    return process.env.BETTER_AUTH_URL
   if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production")
     return "https://biztro.co"
-  if (process.env.NEXT_PUBLIC_VERCEL_ENV === "preview")
+  if (process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" && process.env.NEXT_PUBLIC_VERCEL_URL)
     return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
   return "http://localhost:3000"
 }

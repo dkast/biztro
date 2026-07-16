@@ -11,27 +11,25 @@ import { MenuStatus } from "@/lib/types/menu"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
 export async function getMenus(currentOrgId: string) {
-  "use cache"
-  cacheTag(`menus-${currentOrgId}`)
   if (!currentOrgId) {
     return { menus: [], activeMenuId: null }
   }
-  const [menus, organization] = await prisma.$transaction([
-    prisma.menu.findMany({
-      where: {
-        organizationId: currentOrgId
-      },
-      orderBy: [{ publishedAt: "desc" }, { updatedAt: "desc" }]
-    }),
-    prisma.organization.findUnique({
-      where: {
-        id: currentOrgId
-      },
-      select: {
-        activeMenuId: true
-      }
-    })
-  ])
+
+  // Avoid $transaction — LibSQL HTTP times out (P2028) under Next parallel load.
+  const menus = await prisma.menu.findMany({
+    where: {
+      organizationId: currentOrgId
+    },
+    orderBy: [{ publishedAt: "desc" }, { updatedAt: "desc" }]
+  })
+  const organization = await prisma.organization.findUnique({
+    where: {
+      id: currentOrgId
+    },
+    select: {
+      activeMenuId: true
+    }
+  })
 
   return { menus, activeMenuId: organization?.activeMenuId ?? null }
 }

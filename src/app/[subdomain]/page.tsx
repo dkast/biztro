@@ -23,12 +23,13 @@ import { extractMenuDataFromNodes } from "@/lib/sync-status"
 import { SubscriptionStatus } from "@/lib/types/billing"
 import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 
-// Add generateStaticParams to pre-render specific paths
+// Add generateStaticParams to pre-render specific paths. Used placeholder for empty organizations.
 export async function generateStaticParams() {
   const organizations = await getAllActiveOrganizations()
-  return organizations.map(({ slug }) => ({
-    subdomain: slug
-  }))
+  if (organizations.length === 0) {
+    return [{ subdomain: "_placeholder" }]
+  }
+  return organizations.map(({ slug }) => ({ subdomain: slug }))
 }
 
 async function getCachedOrganizationBySubdomain(subdomain: string) {

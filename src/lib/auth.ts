@@ -56,12 +56,13 @@ function extractEmailFromContext(ctx: Record<string, unknown> | undefined) {
 
 // skipcq: JS-0339
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-04-22.dahlia"
+  apiVersion: Stripe.API_VERSION
 })
 
 export const auth = betterAuth({
   // Adjust trusted origins for your deployment
   trustedOrigins: [
+    process.env.BETTER_AUTH_URL ?? "",
     "https://biztro.co",
     "https://preview.biztro.co",
     ...(process.env.NEXT_PUBLIC_VERCEL_URL &&
