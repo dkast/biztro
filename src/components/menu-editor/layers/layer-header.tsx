@@ -117,7 +117,7 @@ export default function LayerHeader() {
       ref={divRef}
       className={cn(
         selected
-          ? "bg-primary/10 rounded-sm text-white"
+          ? "bg-primary/10 rounded-sm text-foreground"
           : "bg-transparent text-gray-700 dark:text-gray-100",
         "flex flex-row items-center px-2 py-2"
       )}

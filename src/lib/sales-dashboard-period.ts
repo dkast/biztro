@@ -36,5 +36,5 @@ export const salesDashboardPeriodOptions = salesDashboardPeriodValues.map(
 export function isSalesDashboardPeriod(
   value: string
 ): value is SalesDashboardPeriod {
-  return value in salesDashboardPeriodLabels
+  return Object.prototype.hasOwnProperty.call(salesDashboardPeriodLabels, value)
 }
