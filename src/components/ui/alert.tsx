@@ -11,11 +11,11 @@ const alertVariants = cva(
         default:
           "bg-white text-gray-950 [&_div]:text-gray-600 dark:bg-gray-950 dark:text-gray-50",
         destructive:
-          "border-red-500/50 bg-red-50 text-red-800 [&_div]:text-red-700 dark:border-red-500 [&>svg]:text-red-500 dark:bg-red-400/10 dark:text-red-400 dark:border-red-900/50 dark:[&>svg]:text-red-600 dark:[&_div]:text-red-400",
+          "border-rose-500/50 bg-rose-50 text-rose-800 [&_div]:text-rose-700 dark:border-rose-500 [&>svg]:text-rose-500 dark:bg-rose-400/10 dark:text-rose-400 dark:border-rose-900/50 dark:[&>svg]:text-rose-600 dark:[&_div]:text-rose-400",
         information:
-          "border-blue-500/50 bg-blue-50 text-blue-800 [&_div]:text-blue-700 dark:border-blue-500 [&>svg]:text-blue-500 dark:bg-blue-400/10 dark:text-blue-400 dark:dark:border-blue-900/50 dark:[&>svg]:text-blue-600 dark:[&_div]:text-blue-400",
+          "border-sky-500/50 bg-sky-50 text-sky-800 [&_div]:text-sky-700 dark:border-sky-500 [&>svg]:text-sky-500 dark:bg-sky-400/10 dark:text-sky-400 dark:dark:border-sky-900/50 dark:[&>svg]:text-sky-600 dark:[&_div]:text-sky-400",
         success:
-          "border-green-500/50 bg-green-50 text-green-800 [&_div]:text-green-700 dark:border-green-500 [&>svg]:text-green-500 dark:bg-green-400/10 dark:text-green-400 dark:border-green-900/50 dark:[&>svg]:text-green-600 dark:[&_div]:text-green-400",
+          "border-emerald-500/50 bg-emerald-50 text-emerald-800 [&_div]:text-emerald-700 dark:border-emerald-500 [&>svg]:text-emerald-500 dark:bg-emerald-400/10 dark:text-emerald-400 dark:border-emerald-900/50 dark:[&>svg]:text-emerald-600 dark:[&_div]:text-emerald-400",
         warning:
           "border-amber-500/50 bg-amber-50 text-amber-800 [&_div]:text-amber-700 dark:border-amber-500 [&>svg]:text-amber-500 dark:bg-amber-400/10 dark:text-amber-400 dark:border-amber-500/50 dark:[&>svg]:text-amber-400 dark:[&_div]:text-amber-400"
       }

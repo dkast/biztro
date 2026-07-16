@@ -146,7 +146,10 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
 
   return (
     <div className="flex flex-col gap-10 pb-6 sm:gap-12">
-      <section className="border-border overflow-hidden rounded-lg border">
+      <section
+        className="inset-ring-border overflow-hidden rounded-lg border
+          shadow-sm/5 inset-ring"
+      >
         <ItemGroup
           className="bg-border grid grid-cols-2 gap-px md:grid-cols-3
             xl:grid-cols-6"

@@ -103,7 +103,10 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
 
   return (
     <div className="flex flex-col gap-8 pb-6 sm:gap-10">
-      <section className="border-border overflow-hidden rounded-lg border">
+      <section
+        className="inset-ring-border overflow-hidden rounded-lg shadow-sm/5
+          inset-ring"
+      >
         <ItemGroup className="grid grid-cols-2 md:grid-cols-4">
           {kpiItems.map((item, index) => (
             <Item

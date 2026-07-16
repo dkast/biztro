@@ -265,7 +265,7 @@ export function SalesBestSellersPieChart({
                 endAngle={(90 * Math.PI) / 180}
                 data={chartState.segments}
                 innerRadius={106}
-                cornerRadius={2}
+                cornerRadius={3}
                 hoverOffset={12}
                 hoveredIndex={hoveredIndex}
                 onHoverChange={setHoveredIndex}
@@ -331,7 +331,7 @@ export function SalesBestSellersPieChart({
               </span>
               {chartState.leadingSegment && (
                 <span
-                  className="rounded-full border border-emerald-400/20
+                  className="rounded-full border-[0.5px] border-emerald-400/20
                     bg-emerald-500/8 px-3 py-1 text-xs font-medium
                     text-emerald-700 dark:text-emerald-300"
                 >

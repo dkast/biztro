@@ -85,7 +85,7 @@ export function SalesClosingHourlyChart({
         <Bar
           dataKey="todayOrders"
           fill={chartCssVars.linePrimary}
-          lineCap={2}
+          lineCap={3}
         />
         <BarXAxis showAllLabels maxLabels={hourly.length} />
         <ChartTooltip

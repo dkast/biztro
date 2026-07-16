@@ -85,7 +85,7 @@ export function SalesRevenueChart({
     >
       <SalesRevenueYAxis currency={currency} />
       <Grid horizontal numTicksRows={4} />
-      <Bar dataKey="revenue" fill={chartCssVars.linePrimary} lineCap={2} />
+      <Bar dataKey="revenue" fill={chartCssVars.linePrimary} lineCap={3} />
       <BarXAxis
         maxLabels={period === "7d" ? 7 : 12}
         showAllLabels={period === "7d"}
