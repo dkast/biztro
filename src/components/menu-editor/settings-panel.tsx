@@ -20,10 +20,7 @@ export default function SettingsPanel() {
           className="flex flex-col items-center justify-center gap-2 px-5 py-12
             text-center"
         >
-          <div
-            className="rounded-full bg-indigo-100 p-2 text-indigo-600
-              dark:bg-indigo-900/70 dark:text-indigo-500"
-          >
+          <div className="text-primary bg-primary/10 rounded-full p-2">
             <Mouse className="size-6" />
           </div>
           <span className="text-sm text-gray-500 dark:text-gray-400">

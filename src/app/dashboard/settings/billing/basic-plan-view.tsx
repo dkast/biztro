@@ -66,18 +66,16 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
               value={itemCount * 10}
               showAnimation
               size="sm"
-              primary="oklch(51.1% 0.262 276.966)"
+              primary="oklch(68.5% 0.169 237.323)"
               secondary={theme.resolvedTheme === "dark" ? "#27272a" : "#cfcfcf"}
             />
           </div>
           <div className="flex flex-col justify-center gap-1">
-            <p
-              className="text-sm font-semibold text-gray-600 dark:text-gray-300"
-            >
+            <p className="text-foreground text-sm font-semibold">
               Has consumido {itemCount} de los {appConfig.itemLimit} productos
               disponibles en tu plan
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-muted-foreground text-xs">
               Actualiza tu plan para agregar más productos a tu menú y disfrutar
               de más beneficios.
             </p>
@@ -91,19 +89,19 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
               onValueChange={value =>
                 value && setBillingInterval(value as "monthly" | "yearly")
               }
-              className="w-full justify-center gap-0.5 rounded-lg border
-                border-gray-200 p-1 dark:border-gray-800"
+              className="border-border w-full justify-center gap-0.5 rounded-lg
+                border p-1"
             >
               <ToggleGroupItem
                 value="monthly"
-                className="w-1/2 text-sm data-[state=on]:bg-indigo-600
+                className="data-[state=on]:bg-primary w-1/2 text-sm
                   data-[state=on]:text-white"
               >
                 Mensual
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="yearly"
-                className="w-1/2 text-sm data-[state=on]:bg-indigo-600
+                className="data-[state=on]:bg-primary w-1/2 text-sm
                   data-[state=on]:text-white"
               >
                 Anual
@@ -122,7 +120,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
               key={tier.id}
               className={
                 tier.id === Plan.PRO
-                  ? "border-indigo-500 dark:border-indigo-500"
+                  ? "border-primary dark:border-primary"
                   : "hidden border-dashed sm:block"
               }
             >
@@ -138,7 +136,9 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
                         : `${new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(tier.priceYearly)} MXN/año`}
                     </div>
                   ) : (
-                    <div className="mt-1 text-sm text-gray-500">Gratis</div>
+                    <div className="text-muted-foreground mt-1 text-sm">
+                      Gratis
+                    </div>
                   )}
                 </div>
               </CardHeader>

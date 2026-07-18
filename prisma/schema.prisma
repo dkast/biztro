@@ -13,6 +13,17 @@ enum Currency {
   USD
 }
 
+enum OrderType {
+  DINE_IN
+  TAKEOUT
+  DELIVERY
+}
+
+enum SaleStatus {
+  COMPLETED
+  VOID
+}
+
 enum MediaAssetType {
   IMAGE
   VIDEO
@@ -128,6 +139,7 @@ model MenuItem {
   allergens      String?
   currency       Currency                @default(MXN)
   translations   MenuItemTranslation[]
+  saleItems      SaleItem[]
 
   @@unique([organizationId, name])
 }
@@ -153,6 +165,7 @@ model Variant {
   menuItemId   String
   menuItem     MenuItem             @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
   translations VariantTranslation[]
+  saleItems    SaleItem[]
 }
 
 model MenuItemTranslation {
@@ -197,6 +210,51 @@ model CategoryTranslation {
   @@unique([categoryId, locale])
   @@index([categoryId])
   @@index([locale])
+}
+
+model Sale {
+  id                String      @id @default(cuid())
+  status            SaleStatus  @default(COMPLETED)
+  orderType         OrderType   @default(DINE_IN)
+  currency          Currency    @default(MXN)
+  subtotal          Float
+  total             Float
+  completedAt       DateTime?
+  completedByUserId String?
+  voidedAt          DateTime?
+  voidedByUserId    String?
+  voidReason        String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  organizationId    String
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  items             SaleItem[]
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, status, createdAt])
+  @@index([organizationId, orderType, createdAt])
+}
+
+model SaleItem {
+  id          String    @id @default(cuid())
+  saleId      String
+  sale        Sale      @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  menuItemId  String?
+  menuItem    MenuItem? @relation(fields: [menuItemId], references: [id], onDelete: SetNull)
+  variantId   String?
+  variant     Variant?  @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  productName String
+  variantName String?
+  unitPrice   Float
+  quantity    Int
+  lineTotal   Float
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([saleId])
+  @@index([menuItemId])
+  @@index([variantId])
+  @@index([productName])
 }
 
 // Media asset management models for tracking R2 storage

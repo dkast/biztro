@@ -475,9 +475,8 @@ export default function MenuPublish({
                 className="flex flex-col items-center gap-2"
               >
                 <span
-                  className="rounded-full bg-indigo-50 p-2 text-indigo-700
-                    ring-1 ring-indigo-600/20 ring-inset dark:bg-indigo-900/70
-                    dark:text-indigo-500"
+                  className="bg-primary/10 text-primary ring-primary/20
+                    rounded-full p-2 ring-1 ring-inset"
                 >
                   <Globe className="size-6" />
                 </span>

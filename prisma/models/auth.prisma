@@ -95,6 +95,7 @@ model Organization {
   location      Location[]
   menus         Menu[]
   menuItems     MenuItem[]
+  sales         Sale[]
   themes        Theme[]
   mediaAssets   MediaAsset[]
 
@@ -139,5 +140,10 @@ model Subscription {
   trialStart           DateTime?
   trialEnd             DateTime?
   cancelAtPeriodEnd    Boolean?  @default(false)
+  cancelAt             DateTime?
+  canceledAt           DateTime?
+  endedAt              DateTime?
+  billingInterval      String?
+  stripeScheduleId     String?
   seats                Int?
 }

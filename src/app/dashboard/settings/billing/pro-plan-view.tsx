@@ -41,14 +41,11 @@ export async function ProPlanView() {
   }
 
   return (
-    <div className="rounded-xl bg-gray-100 dark:bg-gray-900/70">
+    <div className="rounded-xl bg-gray-200/50 dark:bg-gray-900/70">
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Plan</CardTitle>
-          <div
-            className="flex items-center gap-2 text-sm text-gray-500
-              dark:text-gray-400"
-          >
+          <div className="text-muted-foreground flex items-center gap-2 text-sm">
             <span>PRO</span>
             {(() => {
               switch (subscription.status) {
@@ -75,7 +72,7 @@ export async function ProPlanView() {
               }
             })()}
             {subscription.status === "trialing" && (
-              <span className="text-sm text-gray-500">
+              <span className="text-muted-foreground text-sm">
                 - Termina el{" "}
                 {subscription?.trialEnd
                   ? new Date(subscription.trialEnd).toLocaleDateString(
@@ -95,7 +92,7 @@ export async function ProPlanView() {
           {/* <Separator /> */}
           <div className="mt-2 flex flex-row justify-between gap-4">
             <div>
-              <div className="text-sm text-gray-500">Precio</div>
+              <div className="text-muted-foreground text-sm">Precio</div>
               <div className="text-base font-medium">
                 {(() => {
                   const tier = Tiers.find(
@@ -114,7 +111,9 @@ export async function ProPlanView() {
               </div>
             </div>
             <div>
-              <div className="text-sm text-gray-500">Periodo activo</div>
+              <div className="text-muted-foreground text-sm">
+                Periodo activo
+              </div>
               <div className="text-base font-medium">
                 {subscription?.periodStart
                   ? new Date(subscription.periodStart).toLocaleDateString(
@@ -130,7 +129,7 @@ export async function ProPlanView() {
             </div>
             {subscription?.cancelAtPeriodEnd ? (
               <div>
-                <div className="text-sm text-gray-500">Cancela el</div>
+                <div className="text-muted-foreground text-sm">Cancela el</div>
                 <div className="text-base font-medium">
                   {subscription?.periodEnd
                     ? new Date(subscription.periodEnd).toLocaleDateString(
@@ -146,7 +145,9 @@ export async function ProPlanView() {
               </div>
             ) : (
               <div>
-                <div className="text-sm text-gray-500">Próxima renovación</div>
+                <div className="text-muted-foreground text-sm">
+                  Próxima renovación
+                </div>
                 <div className="text-base font-medium">
                   {subscription?.periodEnd
                     ? new Date(subscription.periodEnd).toLocaleDateString(
@@ -186,17 +187,17 @@ export async function ProPlanView() {
         </CardContent>
         <Separator />
         <CardFooter className="items-center justify-between gap-1 py-4">
-          <p className="text-sm text-gray-500">
+          <p className="text-muted-foreground text-sm">
             Maneja tu suscripción en Stripe
           </p>
           <CustomerPortalButton referenceId={org.id} />
         </CardFooter>
       </Card>
-      <div className="w-full px-4 py-2 text-sm text-gray-400 dark:text-gray-600">
+      <div className="text-muted-foreground/70 w-full px-4 py-2 text-sm">
         ¿Tienes algún problema con tu suscripción? Envía un correo a{" "}
         <a
           href="mailto:contacto@biztro.co"
-          className="text-indigo-500 hover:underline"
+          className="text-primary hover:underline"
         >
           contacto@biztro.co
         </a>

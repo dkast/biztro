@@ -4,12 +4,18 @@ import * as Sentry from "@sentry/nextjs"
 import { updateTag } from "next/cache"
 import { headers } from "next/headers"
 
-import { auth } from "@/lib/auth"
+import { getStripeBillingApi } from "@/lib/auth"
 import { getBaseUrl } from "@/lib/utils"
 
 export const createStripePortal = async (referenceId: string) => {
   try {
-    const data = await auth.api.createBillingPortal({
+    const stripeBillingApi = getStripeBillingApi()
+
+    if (!stripeBillingApi) {
+      return null
+    }
+
+    const data = await stripeBillingApi.createBillingPortal({
       body: {
         referenceId,
         returnUrl: `${getBaseUrl()}/dashboard/settings/billing`

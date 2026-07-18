@@ -15,10 +15,10 @@ import { bulkCreateItems } from "@/server/actions/item/mutations"
 import { MenuItemStatus, type BulkMenuItem } from "@/lib/types/menu-item"
 
 type CSVRow = {
-  nombre: string
+  nombre?: string
   variante?: string
   descripcion?: string
-  precio: string
+  precio?: string
   categoria?: string
   moneda?: string
 }
@@ -26,6 +26,130 @@ type CSVRow = {
 type ImportError = {
   row: number
   errors: string[]
+}
+
+type CanonicalHeader = keyof CSVRow
+
+const HEADER_ALIASES: Record<CanonicalHeader, string[]> = {
+  nombre: ["nombre", "name", "producto", "product", "productname", "item"],
+  variante: ["variante", "variant", "variantname", "size"],
+  descripcion: ["descripcion", "description", "desc", "detalle", "detalles"],
+  precio: ["precio", "price", "unitprice", "pricevalue", "unitpricevalue"],
+  categoria: ["categoria", "category", "group", "section", "family"],
+  moneda: ["moneda", "currency", "currencycode", "curr"]
+}
+
+function normalizeHeaderValue(header: string) {
+  return header
+    .trim()
+    .replace(/^\uFEFF/, "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "")
+}
+
+function normalizeHeader(header: string) {
+  const normalized = normalizeHeaderValue(header)
+
+  for (const [canonical, aliases] of Object.entries(HEADER_ALIASES)) {
+    if (aliases.some(alias => normalizeHeaderValue(alias) === normalized)) {
+      return canonical
+    }
+  }
+
+  return normalized
+}
+
+function parsePriceValue(value: string | undefined) {
+  if (!value) {
+    return undefined
+  }
+
+  const normalized = value.trim().replace(/\s/g, "")
+  if (!normalized) {
+    return undefined
+  }
+
+  const numericValue = normalized.replace(/[^\d,.-]/g, "")
+  if (!numericValue) {
+    return undefined
+  }
+
+  const hasComma = numericValue.includes(",")
+  const hasDot = numericValue.includes(".")
+
+  if (hasComma && hasDot) {
+    const lastComma = numericValue.lastIndexOf(",")
+    const lastDot = numericValue.lastIndexOf(".")
+    const decimalSeparator = lastComma > lastDot ? "," : "."
+    const sanitized = numericValue.replace(/[,.]/g, char =>
+      char === decimalSeparator ? "." : ""
+    )
+    return Number.parseFloat(sanitized)
+  }
+
+  if (hasComma) {
+    return Number.parseFloat(numericValue.replace(",", "."))
+  }
+
+  return Number.parseFloat(numericValue)
+}
+
+function detectDelimiter(text: string) {
+  const sample = text.slice(0, 5000)
+  const counts = [",", ";", "\t"].map(delimiter => ({
+    delimiter,
+    count: (sample.match(new RegExp(`\\${delimiter}`, "g")) ?? []).length
+  }))
+
+  return (
+    counts.sort((left, right) => right.count - left.count)[0]?.delimiter ?? ","
+  )
+}
+
+function parseCsvRows(text: string) {
+  const delimiter = detectDelimiter(text)
+  const results = Papa.parse<Record<string, string | undefined>>(text, {
+    header: true,
+    skipEmptyLines: true,
+    delimiter,
+    transformHeader: header => normalizeHeader(header),
+    dynamicTyping: false
+  })
+
+  if (results.errors.length > 0) {
+    const firstError = results.errors[0]
+    return {
+      error: firstError?.message
+        ? `No pudimos procesar el archivo CSV: ${firstError.message}`
+        : "No pudimos procesar el archivo CSV"
+    }
+  }
+
+  const fields = results.meta.fields ?? []
+  const hasRequiredColumns =
+    fields.includes("nombre") && fields.includes("precio")
+
+  if (!hasRequiredColumns) {
+    return {
+      error:
+        "El archivo debe incluir columnas de nombre y precio. Usa la plantilla descargable para garantizar el formato correcto."
+    }
+  }
+
+  const rows = (results.data as Array<Record<string, string | undefined>>).map(
+    row => ({
+      nombre: row.nombre?.trim(),
+      variante: row.variante?.trim(),
+      descripcion: row.descripcion?.trim(),
+      precio: row.precio?.trim(),
+      categoria: row.categoria?.trim(),
+      moneda: row.moneda?.trim()
+    })
+  )
+
+  return { rows }
 }
 
 function downloadCsvFile(rows: CSVRow[], fileName: string) {
@@ -74,8 +198,8 @@ function validateRow(row: CSVRow): string[] {
   if (!row.precio) {
     errors.push("El precio es requerido")
   } else {
-    const price = parseFloat(row.precio)
-    if (isNaN(price) || price < 0) {
+    const price = parsePriceValue(row.precio)
+    if (typeof price !== "number" || Number.isNaN(price) || price < 0) {
       errors.push("El precio debe ser un número positivo")
     }
   }
@@ -123,7 +247,9 @@ export default function MenuImportOptions({
     }
   })
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0]
 
     if (!file) {
@@ -132,69 +258,82 @@ export default function MenuImportOptions({
 
     setErrors([])
 
-    Papa.parse<CSVRow>(file, {
-      header: true,
-      skipEmptyLines: true,
-      encoding: "utf-8",
-      complete: results => {
-        if (results.data.length === 0) {
-          setErrors([{ row: 0, errors: ["El archivo está vacío"] }])
-          return
-        }
+    try {
+      const text = await file.text()
+      const parsed = parseCsvRows(text)
 
-        if (results.data.length > 200) {
-          setErrors([
-            {
-              row: 0,
-              errors: ["No puedes importar más de 200 productos a la vez"]
-            }
-          ])
-          return
-        }
+      if ("error" in parsed && parsed.error) {
+        setErrors([{ row: 0, errors: [parsed.error] }])
+        event.target.value = ""
+        return
+      }
 
-        const foundErrors: ImportError[] = []
-        const validItems: BulkMenuItem[] = []
+      const rows = parsed.rows ?? []
 
-        results.data.forEach((row, index) => {
-          const rowErrors = validateRow(row)
+      if (rows.length === 0) {
+        setErrors([{ row: 0, errors: ["El archivo está vacío"] }])
+        event.target.value = ""
+        return
+      }
 
-          if (rowErrors.length > 0) {
-            foundErrors.push({
-              row: index + 1,
-              errors: rowErrors
-            })
-            return
-          }
-
-          const currency = (row.moneda ?? "MXN").trim().toUpperCase()
-
-          validItems.push({
-            name: row.nombre,
-            variantName: row.variante?.trim() || undefined,
-            description: row.descripcion,
-            price: parseFloat(row.precio),
-            status: MenuItemStatus.ACTIVE,
-            category: row.categoria,
-            currency: currency === "USD" ? "USD" : "MXN"
-          })
-        })
-
-        if (foundErrors.length > 0) {
-          setErrors(foundErrors)
-          return
-        }
-
-        execute(validItems)
-      },
-      error: error => {
+      if (rows.length > 200) {
         setErrors([
           {
             row: 0,
-            errors: [`No pudimos procesar el archivo CSV: ${error.message}`]
+            errors: ["No puedes importar más de 200 productos a la vez"]
           }
         ])
+        event.target.value = ""
+        return
       }
-    })
+
+      const foundErrors: ImportError[] = []
+      const validItems: BulkMenuItem[] = []
+
+      rows.forEach((row, index) => {
+        const rowErrors = validateRow(row)
+
+        if (rowErrors.length > 0) {
+          foundErrors.push({
+            row: index + 1,
+            errors: rowErrors
+          })
+          return
+        }
+
+        const price = parsePriceValue(row.precio)
+        const currency = (row.moneda ?? "MXN").trim().toUpperCase()
+
+        validItems.push({
+          name: row.nombre ?? "",
+          variantName: row.variante?.trim() || undefined,
+          description: row.descripcion,
+          price: typeof price === "number" ? price : 0,
+          status: MenuItemStatus.ACTIVE,
+          category: row.categoria,
+          currency: currency === "USD" ? "USD" : "MXN"
+        })
+      })
+
+      if (foundErrors.length > 0) {
+        setErrors(foundErrors)
+        event.target.value = ""
+        return
+      }
+
+      execute(validItems)
+    } catch (error) {
+      setErrors([
+        {
+          row: 0,
+          errors: [
+            `No pudimos procesar el archivo CSV: ${error instanceof Error ? error.message : "Error desconocido"}`
+          ]
+        }
+      ])
+    } finally {
+      event.target.value = ""
+    }
   }
 
   return (
@@ -215,7 +354,7 @@ export default function MenuImportOptions({
             dark:ring-white/15"
         >
           <div className="mb-3 flex items-start gap-3">
-            <FileText className="text-muted-foreground size-5" />
+            <FileText className="text-muted-foreground mt-1.5 size-4 shrink-0" />
             <div>
               <p className="font-medium">
                 Importar menú desde PDF o imagen con IA
@@ -239,7 +378,7 @@ export default function MenuImportOptions({
           shadow-sm"
       >
         <div className="mb-3 flex items-start gap-3">
-          <FileSpreadsheet className="text-muted-foreground size-5" />
+          <FileSpreadsheet className="text-muted-foreground size-4 shrink-0" />
           <div>
             <p className="font-medium">Importar desde CSV</p>
             <p className="text-muted-foreground text-sm text-pretty">
@@ -270,8 +409,8 @@ export default function MenuImportOptions({
               onChange={handleFileUpload}
               disabled={isPending}
               aria-busy={isPending}
-              className="border-border bg-background file:bg-primary
-                file:text-primary-foreground hover:file:bg-primary/90
+              className="border-border bg-background file:bg-secondary
+                file:text-secondary-foreground hover:file:bg-secondary/90
                 focus-visible:ring-ring block w-full cursor-pointer rounded-lg
                 border text-sm shadow-sm file:mr-4 file:cursor-pointer
                 file:rounded-md file:border-0 file:px-4 file:py-2 file:text-sm

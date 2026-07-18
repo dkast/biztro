@@ -5,7 +5,7 @@ import * as Sentry from "@sentry/nextjs"
 import { cacheLife, cacheTag } from "next/cache"
 import { headers } from "next/headers"
 
-import { auth } from "@/lib/auth"
+import { auth, getStripeBillingApi } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { SubscriptionStatus } from "@/lib/types/billing"
 import { getCacheBustedImageUrl } from "@/lib/utils"
@@ -199,10 +199,33 @@ export async function isProMember() {
 
   cacheTag(`organization-${org.id}-subscription`)
 
-  const subscriptions = await auth.api.listActiveSubscriptions({
-    query: { referenceId: org?.id },
-    headers: await headers()
-  })
+  const hasStoredProAccess =
+    org.status === SubscriptionStatus.SPONSORED ||
+    (org.plan?.toUpperCase() === "PRO" &&
+      (org.status === SubscriptionStatus.ACTIVE ||
+        org.status === SubscriptionStatus.TRIALING))
+
+  const stripeBillingApi = getStripeBillingApi()
+
+  if (!stripeBillingApi) {
+    return hasStoredProAccess
+  }
+
+  let subscriptions
+
+  try {
+    subscriptions = await stripeBillingApi.listActiveSubscriptions({
+      query: { referenceId: org.id },
+      headers: await headers()
+    })
+  } catch (error) {
+    console.error("Failed to list active subscriptions", error)
+    Sentry.captureException(error, {
+      tags: { section: "user-queries", operation: "listActiveSubscriptions" },
+      extra: { organizationId: org.id }
+    })
+    return hasStoredProAccess
+  }
 
   const activeSubscription = subscriptions.find(
     sub => sub.status === "active" || sub.status === "trialing"

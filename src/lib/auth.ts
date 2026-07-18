@@ -1,4 +1,7 @@
-import { stripe } from "@better-auth/stripe"
+import {
+  stripe,
+  type Subscription as StripeSubscription
+} from "@better-auth/stripe"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { createAuthMiddleware } from "better-auth/api"
 import { betterAuth } from "better-auth/minimal"
@@ -54,10 +57,31 @@ function extractEmailFromContext(ctx: Record<string, unknown> | undefined) {
   return found ? String(found).trim().toLowerCase() : null
 }
 
-// skipcq: JS-0339
-const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-04-22.dahlia"
-})
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+const stripeProMonthlyPriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY
+const stripeProYearlyPriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY
+
+const stripeClient = stripeSecretKey
+  ? new Stripe(stripeSecretKey, {
+      apiVersion: "2026-04-22.dahlia"
+    })
+  : null
+
+const stripeBillingConfig =
+  stripeClient &&
+  stripeWebhookSecret &&
+  stripeProMonthlyPriceId &&
+  stripeProYearlyPriceId
+    ? {
+        stripeClient,
+        stripeWebhookSecret,
+        stripeProMonthlyPriceId,
+        stripeProYearlyPriceId
+      }
+    : null
+
+export const isStripeBillingConfigured = stripeBillingConfig !== null
 
 export const auth = betterAuth({
   // Adjust trusted origins for your deployment
@@ -236,57 +260,94 @@ export const auth = betterAuth({
         })
       }
     }),
-    // Stripe billing integration via Better Auth plugin (server-side)
-    stripe({
-      // Pass an initialized Stripe client (recommended by the plugin docs)
-      stripeClient,
-      // Webhook signing secret for verifying Stripe webhook payloads
-      // skipcq: JS-0339
-      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
-      // Create a Stripe customer automatically when users sign up
-      createCustomerOnSignUp: true,
-      subscription: {
-        enabled: true,
-        plans: [
-          {
-            name: "BASIC",
-            // skipcq: JS-0339
-            priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC!,
-            limits: {
-              menus: appConfig.menuLimit,
-              products: appConfig.itemLimit
-            }
-          },
-          {
-            name: "PRO",
-            // skipcq: JS-0339
-            priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY!,
-            // skipcq: JS-0339
-            annualDiscountPriceId:
-              process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY!,
-            limits: {
-              menus: 100,
-              products: 1000
-            },
-            freeTrial: {
-              days: 30
-            }
-          }
-        ],
-        authorizeReference: async ({ user, referenceId }) => {
-          // Ensure the user is authorized to manage the organization
-          const member = await prisma.member.findFirst({
-            where: {
-              userId: user.id,
-              organizationId: referenceId
+    ...(stripeBillingConfig
+      ? [
+          stripe({
+            // Pass an initialized Stripe client (recommended by the plugin docs)
+            stripeClient: stripeBillingConfig.stripeClient,
+            // Webhook signing secret for verifying Stripe webhook payloads
+            stripeWebhookSecret: stripeBillingConfig.stripeWebhookSecret,
+            // Create a Stripe customer automatically when users sign up
+            createCustomerOnSignUp: true,
+            subscription: {
+              enabled: true,
+              plans: [
+                {
+                  name: "BASIC",
+                  limits: {
+                    menus: appConfig.menuLimit,
+                    products: appConfig.itemLimit
+                  }
+                },
+                {
+                  name: "PRO",
+                  priceId: stripeBillingConfig.stripeProMonthlyPriceId,
+                  annualDiscountPriceId:
+                    stripeBillingConfig.stripeProYearlyPriceId,
+                  limits: {
+                    menus: 100,
+                    products: 1000
+                  },
+                  freeTrial: {
+                    days: 30
+                  }
+                }
+              ],
+              authorizeReference: async ({ user, referenceId }) => {
+                // Ensure the user is authorized to manage the organization
+                const member = await prisma.member.findFirst({
+                  where: {
+                    userId: user.id,
+                    organizationId: referenceId
+                  }
+                })
+
+                return member?.role === "owner" || member?.role === "admin"
+              }
             }
           })
-
-          return member?.role === "owner" || member?.role === "admin"
-        }
-      }
-    })
+        ]
+      : [])
   ]
 })
+
+type StripeBillingPortalResponse = {
+  url: string
+}
+
+type StripeBillingApi = {
+  listActiveSubscriptions: (options: {
+    query: { referenceId: string }
+    headers: HeadersInit
+  }) => Promise<StripeSubscription[]>
+  createBillingPortal: (options: {
+    body: { referenceId: string; returnUrl: string }
+    headers: HeadersInit
+  }) => Promise<StripeBillingPortalResponse>
+}
+
+export function getStripeBillingApi(): StripeBillingApi | null {
+  if (!isStripeBillingConfigured) {
+    return null
+  }
+
+  const api = auth.api as Record<string, unknown>
+  const listActiveSubscriptions = api.listActiveSubscriptions
+  const createBillingPortal = api.createBillingPortal
+
+  if (
+    typeof listActiveSubscriptions !== "function" ||
+    typeof createBillingPortal !== "function"
+  ) {
+    return null
+  }
+
+  return {
+    listActiveSubscriptions:
+      listActiveSubscriptions as StripeBillingApi["listActiveSubscriptions"],
+    createBillingPortal:
+      createBillingPortal as StripeBillingApi["createBillingPortal"]
+  }
+}
 
 export type AuthMember = typeof auth.$Infer.Member

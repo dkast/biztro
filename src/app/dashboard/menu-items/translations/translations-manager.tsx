@@ -4,7 +4,7 @@ import { useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import {
-  CircleFadingArrowUp,
+  Crown,
   Languages,
   Loader,
   PlusCircle,
@@ -327,11 +327,10 @@ export default function TranslationsManager({
       {!isPro && availableToAdd.length > 0 && (
         <Banner
           inset
-          className="bg-linear-to-r/oklch from-indigo-500 to-pink-500
-            text-white"
+          className="bg-linear-to-r/oklch from-sky-500 to-indigo-500 text-white"
         >
           <BannerIcon
-            icon={CircleFadingArrowUp}
+            icon={Crown}
             className="border-white/20 bg-white/10 text-white"
           />
           <BannerTitle>

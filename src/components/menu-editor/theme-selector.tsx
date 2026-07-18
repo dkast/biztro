@@ -436,11 +436,8 @@ export default function ThemeSelector({
           renderItem={theme => (
             <label
               key={theme.name}
-              className="cursor-pointer
-                [&:has([data-state=checked])>div]:border-indigo-400
-                [&:has([data-state=checked])>div]:bg-indigo-50
-                dark:[&:has([data-state=checked])>div]:border-indigo-700
-                dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
+              className="[&:has([data-state=checked])>div]:border-primary
+                [&:has([data-state=checked])>div]:bg-primary/10 cursor-pointer"
             >
               <RadioGroupItem value={theme.name} className="sr-only" />
               <div
@@ -492,11 +489,8 @@ export default function ThemeSelector({
           renderItem={theme => (
             <label
               key={theme.id}
-              className="cursor-pointer
-                [&:has([data-state=checked])>div]:border-indigo-400
-                [&:has([data-state=checked])>div]:bg-indigo-50
-                dark:[&:has([data-state=checked])>div]:border-indigo-700
-                dark:[&:has([data-state=checked])>div]:bg-indigo-900/30"
+              className="[&:has([data-state=checked])>div]:border-primary
+                [&:has([data-state=checked])>div]:bg-primary/10 cursor-pointer"
             >
               <RadioGroupItem value={theme.id} className="sr-only" />
               <div

@@ -1,9 +1,5 @@
-import Spinner from "@/components/ui/spinner"
+import { CategoriesLoadingSkeleton } from "@/components/dashboard/dashboard-loading-skeletons"
 
 export default function Loading() {
-  return (
-    <div className="flex grow items-center justify-center">
-      <Spinner />
-    </div>
-  )
+  return <CategoriesLoadingSkeleton />
 }

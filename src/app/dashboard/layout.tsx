@@ -39,8 +39,8 @@ export default async function Layout({
           </Suspense>
         </Sidebar>
         <main
-          className="dark:bg-background relative flex min-w-0 grow flex-col
-            overscroll-contain bg-gray-50"
+          className="bg-background relative flex min-w-0 grow flex-col
+            overscroll-contain"
         >
           <Header showLogo={false} className="sticky top-0 z-50 w-full">
             <div className="flex w-full items-center gap-6 sm:gap-4">

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import Link from "next/link"
-import { usePathname, useSelectedLayoutSegment } from "next/navigation"
+import { usePathname } from "next/navigation"
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -24,7 +24,16 @@ export default function SecondaryNav({
   ...props
 }: SidebarNavProps) {
   const pathname = usePathname()
-  const segment = useSelectedLayoutSegment()
+  const activePath = items.reduce<string | null>((currentPath, item) => {
+    const path = `/${item.href}`
+    const matchesPath = pathname === path || pathname?.startsWith(`${path}/`)
+
+    if (!matchesPath || (currentPath && currentPath.length >= path.length)) {
+      return currentPath
+    }
+
+    return path
+  }, null)
 
   return (
     <div className="max-w-[100vw]">
@@ -33,12 +42,7 @@ export default function SecondaryNav({
           <ul className="flex gap-x-8 px-4 sm:px-6">
             {items.map(item => {
               const path = `/${item.href}`
-              let isActive = false
-              if (!segment) {
-                isActive = pathname?.includes(item.href) ?? false
-              } else {
-                isActive = item.href.includes(segment)
-              }
+              const isActive = path === activePath
 
               return (
                 <li key={item.href} className="flex-none">

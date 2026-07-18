@@ -13,6 +13,7 @@ import * as Sentry from "@sentry/nextjs"
 import { type feedbackIntegration } from "@sentry/nextjs"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
+  Banknote,
   ChevronRight,
   ChevronsUpDown,
   Crown,
@@ -84,6 +85,16 @@ type NavigationItem = {
 
 const navigation: NavigationItem[] = [
   { title: "Menús", url: "/dashboard", icon: LayoutTemplate },
+  {
+    title: "Ventas",
+    url: "/dashboard/sales",
+    icon: Banknote,
+    items: [
+      { title: "Ventas", url: "/dashboard/sales" },
+      { title: "Punto de venta", url: "/dashboard/sales/new" },
+      { title: "Cierre diario", url: "/dashboard/sales/closing" }
+    ]
+  },
   {
     title: "Catálogo",
     url: "/dashboard/menu-items",
@@ -197,7 +208,13 @@ export default function AppSidebar({
                 </CardDescription>
               </CardHeader>
               <CardFooter className="px-3">
-                <Button size="xs" variant="default" className="w-full" asChild>
+                <Button
+                  size="xs"
+                  variant="default"
+                  className="w-full bg-linear-to-r/oklch from-sky-500
+                    to-indigo-500 text-white"
+                  asChild
+                >
                   <Link
                     href="/dashboard/settings/billing"
                     prefetch={false}
