@@ -9,6 +9,7 @@
     "postinstall": "prisma generate",
     "lint": "eslint .",
     "start": "next start",
+    "test": "vitest run",
     "format": "prettier \"src/**/*.{ts,tsx,js,jsx,css,json}\" --write --config prettier.config.mjs",
     "lint:fix": "eslint --fix \"src/**/*.{ts,tsx,js,jsx}\"",
     "typecheck": "tsc --project ./tsconfig.json",
@@ -188,7 +189,8 @@
     "prisma": "7.8.0",
     "shadcn": "^4.11.0",
     "tailwindcss": "^4.3.1",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": "eslint --cache --fix",
@@ -200,6 +202,6 @@
     "@types/react-dom": "19.2.3"
   },
   "patchedDependencies": {
-    "next@16.2.6": "patches/next@16.2.6.patch"
+    "next@16.2.9": "patches/next@16.2.9.patch"
   }
 }

@@ -7,12 +7,16 @@ import { z } from "zod/v4"
 
 import { getMenuCount } from "@/server/actions/menu/queries"
 import {
+  MISSING_ORGANIZATION_REASON,
+  NOT_FOUND_OR_UNAUTHORIZED_REASON
+} from "@/server/actions/tenant-guards"
+import {
   getCurrentOrganization,
   isProMember
 } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
-import { authActionClient } from "@/lib/safe-actions"
+import { authActionClient, authMemberActionClient } from "@/lib/safe-actions"
 import { BasicPlanLimits } from "@/lib/types/billing"
 import { menuSchema, MenuStatus } from "@/lib/types/menu"
 
@@ -94,21 +98,43 @@ export const createMenu = authActionClient
  * @param name - The new name for the menu.
  * @returns An object with the updated menu name, or a failure object with a reason if an error occurs.
  */
-export const updateMenuName = authActionClient
+export const updateMenuName = authMemberActionClient
   .inputSchema(
     z.object({
       id: z.string(),
       name: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, name } }) => {
+  .action(async ({ parsedInput: { id, name }, ctx: { member } }) => {
+    const organizationId = member.organizationId
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: MISSING_ORGANIZATION_REASON
+        }
+      }
+    }
+
     try {
+      const existingMenu = await prisma.menu.findFirst({
+        where: { id, organizationId },
+        select: { id: true }
+      })
+
+      if (!existingMenu) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
+
       const menu = await prisma.menu.update({
         where: { id },
         data: { name }
       })
 
-      updateTag(`menus-${menu.organizationId}`)
+      updateTag(`menus-${organizationId}`)
       return {
         name: menu.name
       }
@@ -144,7 +170,7 @@ export const updateMenuName = authActionClient
  * @param serialData - The serial data of the menu.
  * @returns An object with the updated menu if successful, or an object with the failure reason if unsuccessful.
  */
-export const updateMenuStatus = authActionClient
+export const updateMenuStatus = authMemberActionClient
   .inputSchema(
     z.object({
       id: z.string(),
@@ -156,10 +182,27 @@ export const updateMenuStatus = authActionClient
   )
   .action(
     async ({
-      parsedInput: { id, status, fontTheme, colorTheme, serialData }
+      parsedInput: { id, status, fontTheme, colorTheme, serialData },
+      ctx: { member }
     }) => {
+      const organizationId = member.organizationId
+      if (!organizationId) {
+        return {
+          failure: {
+            reason: MISSING_ORGANIZATION_REASON
+          }
+        }
+      }
+
       try {
         const menu = await prisma.$transaction(async tx => {
+          const existingMenu = await tx.menu.findFirst({
+            where: { id, organizationId },
+            select: { id: true }
+          })
+
+          if (!existingMenu) return null
+
           const updated = await tx.menu.update({
             where: { id },
             data:
@@ -225,9 +268,17 @@ export const updateMenuStatus = authActionClient
           return updated
         })
 
+        if (!menu) {
+          return {
+            failure: {
+              reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+            }
+          }
+        }
+
         updateTag(`subdomain-${menu.organization.slug}`)
         updateTag(`menu-${menu.id}`)
-        updateTag(`menus-${menu.organizationId}`)
+        updateTag(`menus-${organizationId}`)
         return {
           success: menu
         }
@@ -358,7 +409,7 @@ export const setActiveMenu = authActionClient
  * @param serialData - The serial data of the menu.
  * @returns An object with the updated menu if successful, or an object with the failure reason if unsuccessful.
  */
-export const updateMenuSerialData = authActionClient
+export const updateMenuSerialData = authMemberActionClient
   .inputSchema(
     z.object({
       id: z.string(),
@@ -368,8 +419,33 @@ export const updateMenuSerialData = authActionClient
     })
   )
   .action(
-    async ({ parsedInput: { id, fontTheme, colorTheme, serialData } }) => {
+    async ({
+      parsedInput: { id, fontTheme, colorTheme, serialData },
+      ctx: { member }
+    }) => {
+      const organizationId = member.organizationId
+      if (!organizationId) {
+        return {
+          failure: {
+            reason: MISSING_ORGANIZATION_REASON
+          }
+        }
+      }
+
       try {
+        const existingMenu = await prisma.menu.findFirst({
+          where: { id, organizationId },
+          select: { id: true }
+        })
+
+        if (!existingMenu) {
+          return {
+            failure: {
+              reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+            }
+          }
+        }
+
         const menu = await prisma.menu.update({
           where: { id },
           data: { fontTheme, colorTheme, serialData }
@@ -397,16 +473,25 @@ export const updateMenuSerialData = authActionClient
     }
   )
 
-export const revertMenuToPublished = authActionClient
+export const revertMenuToPublished = authMemberActionClient
   .inputSchema(
     z.object({
       id: z.string()
     })
   )
-  .action(async ({ parsedInput: { id } }) => {
+  .action(async ({ parsedInput: { id }, ctx: { member } }) => {
+    const organizationId = member.organizationId
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: MISSING_ORGANIZATION_REASON
+        }
+      }
+    }
+
     try {
-      const menu = await prisma.menu.findUnique({
-        where: { id },
+      const menu = await prisma.menu.findFirst({
+        where: { id, organizationId },
         select: {
           publishedData: true,
           publishedFontTheme: true,
@@ -475,14 +560,23 @@ export const revertMenuToPublished = authActionClient
  * @param organizationId - The ID of the organization that the menu belongs to.
  * @returns An object indicating the success or failure of the deletion operation.
  */
-export const deleteMenu = authActionClient
+export const deleteMenu = authMemberActionClient
   .inputSchema(
     z.object({
       id: z.string(),
-      organizationId: z.string()
+      organizationId: z.string().optional()
     })
   )
-  .action(async ({ parsedInput: { id, organizationId } }) => {
+  .action(async ({ parsedInput: { id }, ctx: { member } }) => {
+    const organizationId = member.organizationId
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: MISSING_ORGANIZATION_REASON
+        }
+      }
+    }
+
     try {
       const organization = await prisma.organization.findUnique({
         where: { id: organizationId },
@@ -498,8 +592,21 @@ export const deleteMenu = authActionClient
         }
       }
 
+      const menu = await prisma.menu.findFirst({
+        where: { id, organizationId },
+        select: { id: true }
+      })
+
+      if (!menu) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
+
       await prisma.menu.delete({
-        where: { id, organizationId }
+        where: { id }
       })
 
       updateTag(`menus-${organizationId}`)
@@ -533,13 +640,22 @@ export const deleteMenu = authActionClient
  * @param id - The ID of the menu to duplicate.
  * @returns An object with the duplicated menu if successful, or an object with the failure reason if unsuccessful.
  */
-export const duplicateMenu = authActionClient
+export const duplicateMenu = authMemberActionClient
   .inputSchema(
     z.object({
       id: z.string()
     })
   )
-  .action(async ({ parsedInput: { id } }) => {
+  .action(async ({ parsedInput: { id }, ctx: { member } }) => {
+    const organizationId = member.organizationId
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: MISSING_ORGANIZATION_REASON
+        }
+      }
+    }
+
     const proMember = await isProMember()
     const menuCount = await getMenuCount()
 
@@ -554,8 +670,8 @@ export const duplicateMenu = authActionClient
     }
 
     try {
-      const sourceMenu = await prisma.menu.findUnique({
-        where: { id }
+      const sourceMenu = await prisma.menu.findFirst({
+        where: { id, organizationId }
       })
 
       if (!sourceMenu) {
@@ -571,14 +687,14 @@ export const duplicateMenu = authActionClient
           name: `${sourceMenu.name} (copia)`,
           description: sourceMenu.description,
           status: "DRAFT",
-          organizationId: sourceMenu.organizationId,
+          organizationId,
           fontTheme: sourceMenu.fontTheme,
           colorTheme: sourceMenu.colorTheme,
           serialData: sourceMenu.serialData
         }
       })
 
-      updateTag(`menus-${sourceMenu.organizationId}`)
+      updateTag(`menus-${organizationId}`)
       return {
         success: duplicatedMenu
       }
@@ -608,7 +724,7 @@ export const duplicateMenu = authActionClient
  * @param organizationId - The ID of the organization (optional).
  * @returns An object with the success property set to the created color theme if successful, or an object with the failure property containing the reason for failure.
  */
-export const createColorTheme = authActionClient
+export const createColorTheme = authMemberActionClient
   .inputSchema(
     z.object({
       id: z.string(),
@@ -621,8 +737,26 @@ export const createColorTheme = authActionClient
   )
   .action(
     async ({
-      parsedInput: { id, name, scope, themeType, themeJSON, organizationId }
+      parsedInput: { id, name, scope, themeType, themeJSON },
+      ctx: { member }
     }) => {
+      const organizationId = member.organizationId
+      if (!organizationId) {
+        return {
+          failure: {
+            reason: MISSING_ORGANIZATION_REASON
+          }
+        }
+      }
+
+      if (scope === "GLOBAL") {
+        return {
+          failure: {
+            reason: "No puedes crear temas globales desde esta acción"
+          }
+        }
+      }
+
       try {
         const colorTheme = await prisma.theme.create({
           data: {
@@ -666,7 +800,7 @@ export const createColorTheme = authActionClient
  * @param themeJSON - The JSON representation of the color theme.
  * @returns An object with the updated color theme if successful, or an object with the failure reason if an error occurs.
  */
-export const updateColorTheme = authActionClient
+export const updateColorTheme = authMemberActionClient
   .inputSchema(
     z.object({
       id: z.string(),
@@ -674,8 +808,30 @@ export const updateColorTheme = authActionClient
       themeJSON: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, name, themeJSON } }) => {
+  .action(async ({ parsedInput: { id, name, themeJSON }, ctx: { member } }) => {
+    const organizationId = member.organizationId
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: MISSING_ORGANIZATION_REASON
+        }
+      }
+    }
+
     try {
+      const existingTheme = await prisma.theme.findFirst({
+        where: { id, organizationId },
+        select: { id: true }
+      })
+
+      if (!existingTheme) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
+
       const colorTheme = await prisma.theme.update({
         where: { id },
         data: { name, themeJSON }
@@ -709,20 +865,38 @@ export const updateColorTheme = authActionClient
  * @param {string} id - The ID of the color theme to delete.
  * @returns {Promise<{ success: boolean } | { failure: { reason: string } }>} - A promise that resolves to an object indicating the success or failure of the deletion operation.
  */
-export const deleteColorTheme = authActionClient
+export const deleteColorTheme = authMemberActionClient
   .inputSchema(
     z.object({
       id: z.string()
     })
   )
-  .action(async ({ parsedInput: { id } }) => {
-    const { getCurrentMembership } =
-      await import("@/server/actions/user/queries")
-    const membership = await getCurrentMembership()
-    const currentOrg = membership?.organizationId
+  .action(async ({ parsedInput: { id }, ctx: { member } }) => {
+    const organizationId = member.organizationId
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: MISSING_ORGANIZATION_REASON
+        }
+      }
+    }
+
     try {
+      const existingTheme = await prisma.theme.findFirst({
+        where: { id, organizationId },
+        select: { id: true }
+      })
+
+      if (!existingTheme) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
+
       await prisma.theme.delete({
-        where: { id, organizationId: currentOrg }
+        where: { id }
       })
 
       return {

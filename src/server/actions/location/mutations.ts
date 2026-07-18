@@ -1,9 +1,14 @@
 "use server"
 
 import { updateTag } from "next/cache"
+import { z } from "zod/v4"
 
+import {
+  MISSING_ORGANIZATION_REASON,
+  NOT_FOUND_OR_UNAUTHORIZED_REASON
+} from "@/server/actions/tenant-guards"
 import prisma from "@/lib/prisma"
-import { authActionClient, authMemberActionClient } from "@/lib/safe-actions"
+import { authMemberActionClient } from "@/lib/safe-actions"
 import { hoursSchema, locationSchema } from "@/lib/types/location"
 
 /**
@@ -135,6 +140,35 @@ export const updateLocation = authMemberActionClient
     }) => {
       try {
         const organizationId = member.organizationId
+        if (!organizationId) {
+          return {
+            failure: {
+              reason: MISSING_ORGANIZATION_REASON
+            }
+          }
+        }
+
+        if (!id) {
+          return {
+            failure: {
+              reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+            }
+          }
+        }
+
+        const existingLocation = await prisma.location.findFirst({
+          where: { id, organizationId },
+          select: { id: true }
+        })
+
+        if (!existingLocation) {
+          return {
+            failure: {
+              reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+            }
+          }
+        }
+
         const location = await prisma.location.update({
           where: {
             id
@@ -181,10 +215,36 @@ export const updateLocation = authMemberActionClient
  * @param id - The ID of the location to delete.
  * @returns A promise that resolves to an object with a `success` property if the deletion is successful, or a `failure` property with a `reason` if an error occurs.
  */
-export const deleteLocation = authActionClient
-  .inputSchema(locationSchema)
-  .action(async ({ parsedInput: { id } }) => {
+export const deleteLocation = authMemberActionClient
+  .inputSchema(
+    z.object({
+      id: z.string()
+    })
+  )
+  .action(async ({ parsedInput: { id }, ctx: { member } }) => {
+    const organizationId = member.organizationId
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: MISSING_ORGANIZATION_REASON
+        }
+      }
+    }
+
     try {
+      const location = await prisma.location.findFirst({
+        where: { id, organizationId },
+        select: { id: true }
+      })
+
+      if (!location) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
+
       await prisma.location.delete({
         where: {
           id
@@ -242,20 +302,35 @@ export const updateHours = authMemberActionClient
     }
 
     try {
-      await prisma.openingHours.deleteMany({
-        where: {
-          locationId
-        }
+      const location = await prisma.location.findFirst({
+        where: { id: locationId, organizationId },
+        select: { id: true }
       })
 
-      const hours = await prisma.openingHours.createMany({
-        data: items.map(item => ({
-          locationId: locationId,
-          day: item.day,
-          startTime: item.startTime,
-          endTime: item.endTime,
-          allDay: item.allDay
-        }))
+      if (!location) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
+
+      const hours = await prisma.$transaction(async tx => {
+        await tx.openingHours.deleteMany({
+          where: {
+            locationId
+          }
+        })
+
+        return tx.openingHours.createMany({
+          data: items.map(item => ({
+            locationId,
+            day: item.day,
+            startTime: item.startTime,
+            endTime: item.endTime,
+            allDay: item.allDay
+          }))
+        })
       })
 
       updateTag(`locations-${organizationId}`)

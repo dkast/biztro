@@ -6,6 +6,7 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import { CACHE_TAGS } from "@/server/actions/media/constants"
 import { isProMember } from "@/server/actions/user/queries"
+import { imageUploadRequestSchema } from "@/app/api/file/upload-request"
 import { appConfig } from "@/app/config"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
@@ -28,6 +29,16 @@ const R2 = new S3Client({
 })
 
 export async function POST(req: NextRequest) {
+  const corsHeaders = {}
+
+  const parsedBody = imageUploadRequestSchema.safeParse(await req.json())
+  if (!parsedBody.success) {
+    return new NextResponse("Invalid upload request", {
+      status: 400,
+      headers: corsHeaders
+    })
+  }
+
   const {
     organizationId: requestedOrganizationId,
     imageType,
@@ -36,11 +47,7 @@ export async function POST(req: NextRequest) {
     width: requestedWidth,
     height: requestedHeight,
     bytes: requestedBytes
-  } = await req.json()
-
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*"
-  }
+  } = parsedBody.data
 
   const requestHeaders = await headers()
   const activeMember = await auth.api.getActiveMember({
@@ -97,10 +104,23 @@ export async function POST(req: NextRequest) {
       entityId = organizationId
       field = "banner"
       break
-    case ImageType.MENUITEM:
+    case ImageType.MENUITEM: {
       if (!objectId) {
         return new NextResponse("Menu item id is required", {
           status: 400,
+          headers: corsHeaders
+        })
+      }
+      const menuItem = await prisma.menuItem.findFirst({
+        where: {
+          id: objectId,
+          organizationId
+        },
+        select: { id: true }
+      })
+      if (!menuItem) {
+        return new NextResponse("Invalid menu item", {
+          status: 403,
           headers: corsHeaders
         })
       }
@@ -110,6 +130,7 @@ export async function POST(req: NextRequest) {
       entityId = objectId
       field = "image"
       break
+    }
     case ImageType.MENU_BACKGROUND: {
       if (!objectId) {
         return new NextResponse("Menu id is required", {
@@ -118,7 +139,20 @@ export async function POST(req: NextRequest) {
         })
       }
 
-      // Removed DB lookup: use the active member's organizationId for validation
+      const menu = await prisma.menu.findFirst({
+        where: {
+          id: objectId,
+          organizationId
+        },
+        select: { id: true }
+      })
+      if (!menu) {
+        return new NextResponse("Invalid menu", {
+          status: 403,
+          headers: corsHeaders
+        })
+      }
+
       storageKey = `orgs/${organizationId}/menus/${objectId}/background`
       assetScope = MediaAssetScope.OTHER
       entityType = MediaUsageEntityType.ORGANIZATION
@@ -179,7 +213,7 @@ export async function POST(req: NextRequest) {
     new PutObjectCommand({
       Bucket: env.R2_BUCKET_NAME,
       Key: storageKey,
-      ContentType: contentType as string
+      ContentType: contentType
     }),
     { expiresIn: 3600 }
   )
@@ -194,13 +228,13 @@ export async function POST(req: NextRequest) {
         storageKey,
         type: MediaAssetType.IMAGE,
         scope: assetScope,
-        contentType: contentType as string,
+        contentType,
         width,
         height,
         bytes
       },
       update: {
-        contentType: contentType as string,
+        contentType,
         width,
         height,
         bytes,
@@ -245,7 +279,7 @@ export async function POST(req: NextRequest) {
         break
       case ImageType.MENUITEM:
         await tx.menuItem.update({
-          where: { id: objectId as string },
+          where: { id: objectId },
           data: { image: storageKey, imageAssetId: asset.id }
         })
         break

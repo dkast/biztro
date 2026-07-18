@@ -10,6 +10,11 @@ import { getItemCount } from "@/server/actions/item/queries"
 import { extractMenuItemsFromFile } from "@/server/actions/menu-import/ai"
 import { createImportNameAllocator } from "@/server/actions/menu-import/item-names"
 import { executeMenuSyncWithPreference } from "@/server/actions/menu/sync"
+import {
+  hasCompleteTenantSelection,
+  MISSING_ORGANIZATION_REASON,
+  NOT_FOUND_OR_UNAUTHORIZED_REASON
+} from "@/server/actions/tenant-guards"
 import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
@@ -170,6 +175,24 @@ export const createItem = authMemberActionClient
       }
 
       try {
+        if (categoryId) {
+          const category = await prisma.category.findFirst({
+            where: {
+              id: categoryId,
+              organizationId: currentOrgId
+            },
+            select: { id: true }
+          })
+
+          if (!category) {
+            return {
+              failure: {
+                reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+              }
+            }
+          }
+        }
+
         // Resolve default currency from the organization's default location if not provided
         const defaultLocation = await prisma.location.findFirst({
           where: { organizationId: currentOrgId }
@@ -506,7 +529,6 @@ export const updateItem = authMemberActionClient
         description,
         status,
         categoryId,
-        organizationId,
         variants,
         featured,
         allergens,
@@ -514,9 +536,82 @@ export const updateItem = authMemberActionClient
         translations,
         updatePublishedMenus,
         rememberPublishedChoice
-      }
+      },
+      ctx: { member }
     }) => {
+      const organizationId = member.organizationId
+      if (!organizationId) {
+        return {
+          failure: {
+            reason: MISSING_ORGANIZATION_REASON
+          }
+        }
+      }
+
+      if (!id) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
+
       try {
+        const existingItem = await prisma.menuItem.findFirst({
+          where: { id, organizationId },
+          select: { id: true }
+        })
+
+        if (!existingItem) {
+          return {
+            failure: {
+              reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+            }
+          }
+        }
+
+        if (categoryId) {
+          const category = await prisma.category.findFirst({
+            where: { id: categoryId, organizationId },
+            select: { id: true }
+          })
+
+          if (!category) {
+            return {
+              failure: {
+                reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+              }
+            }
+          }
+        }
+
+        const existingVariantIds = variants
+          .map(variant => variant.id)
+          .filter((variantId): variantId is string => Boolean(variantId))
+
+        if (existingVariantIds.length > 0) {
+          const scopedVariants = await prisma.variant.findMany({
+            where: {
+              id: { in: existingVariantIds },
+              menuItemId: id
+            },
+            select: { id: true }
+          })
+
+          if (
+            !hasCompleteTenantSelection(
+              existingVariantIds,
+              scopedVariants.map(variant => variant.id)
+            )
+          ) {
+            return {
+              failure: {
+                reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+              }
+            }
+          }
+        }
+
         const item = await prisma.menuItem.update({
           where: { id },
           data: {
@@ -609,7 +704,7 @@ export const updateItem = authMemberActionClient
         updateTag(`translations-${organizationId}`)
 
         const sync = await executeMenuSyncWithPreference({
-          organizationId: organizationId ?? "",
+          organizationId,
           updatePublishedMenus,
           rememberPublishedChoice
         })
@@ -682,9 +777,72 @@ export const bulkUpdateItems = authMemberActionClient
       const failed: Array<{ id: string; reason: string }> = []
 
       try {
+        const requestedIds = items.map(item => item.id)
+        const scopedItems = await prisma.menuItem.findMany({
+          where: {
+            id: { in: requestedIds },
+            organizationId: currentOrgId
+          },
+          select: { id: true }
+        })
+        const scopedItemIds = new Set(scopedItems.map(item => item.id))
+
         for (const item of items) {
           const itemId = item.id
+          if (!scopedItemIds.has(itemId)) {
+            failed.push({
+              id: itemId,
+              reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+            })
+            continue
+          }
+
           try {
+            if (item.categoryId) {
+              const category = await prisma.category.findFirst({
+                where: {
+                  id: item.categoryId,
+                  organizationId: currentOrgId
+                },
+                select: { id: true }
+              })
+
+              if (!category) {
+                failed.push({
+                  id: itemId,
+                  reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+                })
+                continue
+              }
+            }
+
+            const existingVariantIds = item.variants
+              .map(variant => variant.id)
+              .filter((variantId): variantId is string => Boolean(variantId))
+
+            if (existingVariantIds.length > 0) {
+              const scopedVariants = await prisma.variant.findMany({
+                where: {
+                  id: { in: existingVariantIds },
+                  menuItemId: itemId
+                },
+                select: { id: true }
+              })
+
+              if (
+                !hasCompleteTenantSelection(
+                  existingVariantIds,
+                  scopedVariants.map(variant => variant.id)
+                )
+              ) {
+                failed.push({
+                  id: itemId,
+                  reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+                })
+                continue
+              }
+            }
+
             await prisma.menuItem.update({
               where: { id: itemId },
               data: {
@@ -782,15 +940,32 @@ export const deleteItem = authMemberActionClient
   .inputSchema(
     z.object({
       id: z.string(),
-      organizationId: z.string()
+      organizationId: z.string().optional()
     })
   )
-  .action(async ({ parsedInput: { id, organizationId } }) => {
+  .action(async ({ parsedInput: { id }, ctx: { member } }) => {
+    const organizationId = member.organizationId
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: MISSING_ORGANIZATION_REASON
+        }
+      }
+    }
+
     try {
       // Delete the image from the storage if exists
-      const item = await prisma.menuItem.findUnique({
-        where: { id }
+      const item = await prisma.menuItem.findFirst({
+        where: { id, organizationId }
       })
+
+      if (!item) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
 
       if (item?.image) {
         // Delete the image from the storage
@@ -895,15 +1070,40 @@ export const updateCategory = authMemberActionClient
   .inputSchema(categorySchema)
   .action(
     async ({
-      parsedInput: {
-        id,
-        name,
-        organizationId,
-        updatePublishedMenus,
-        rememberPublishedChoice
-      }
+      parsedInput: { id, name, updatePublishedMenus, rememberPublishedChoice },
+      ctx: { member }
     }) => {
+      const organizationId = member.organizationId
+      if (!organizationId) {
+        return {
+          failure: {
+            reason: MISSING_ORGANIZATION_REASON
+          }
+        }
+      }
+
+      if (!id) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
+
       try {
+        const existingCategory = await prisma.category.findFirst({
+          where: { id, organizationId },
+          select: { id: true }
+        })
+
+        if (!existingCategory) {
+          return {
+            failure: {
+              reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+            }
+          }
+        }
+
         const category = await prisma.category.update({
           where: { id },
           data: {
@@ -915,7 +1115,7 @@ export const updateCategory = authMemberActionClient
         updateTag(`menu-items-${organizationId}`)
 
         const sync = await executeMenuSyncWithPreference({
-          organizationId: organizationId ?? "",
+          organizationId,
           updatePublishedMenus,
           rememberPublishedChoice
         })
@@ -964,15 +1164,36 @@ export const deleteCategory = authMemberActionClient
   .inputSchema(
     z.object({
       id: z.string(),
-      organizationId: z.string()
+      organizationId: z.string().optional()
     })
   )
-  .action(async ({ parsedInput: { id, organizationId } }) => {
-    // const currentOrgId = member.organizationId
+  .action(async ({ parsedInput: { id }, ctx: { member } }) => {
+    const organizationId = member.organizationId
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: MISSING_ORGANIZATION_REASON
+        }
+      }
+    }
+
     try {
+      const category = await prisma.category.findFirst({
+        where: { id, organizationId },
+        select: { id: true }
+      })
+
+      if (!category) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
+
       // Check if the category is being used by any item
       const items = await prisma.menuItem.findMany({
-        where: { categoryId: id }
+        where: { categoryId: id, organizationId }
       })
 
       if (items.length > 0) {
@@ -1022,47 +1243,71 @@ export const deleteCategory = authMemberActionClient
  */
 export const createVariant = authMemberActionClient
   .inputSchema(variantSchema)
-  .action(async ({ parsedInput: { name, price, menuItemId } }) => {
-    if (!menuItemId) {
-      return {
-        failure: {
-          reason: "No se pudo obtener el producto asociado"
+  .action(
+    async ({ parsedInput: { name, price, menuItemId }, ctx: { member } }) => {
+      const organizationId = member.organizationId
+      if (!organizationId) {
+        return {
+          failure: {
+            reason: MISSING_ORGANIZATION_REASON
+          }
         }
       }
-    }
 
-    try {
-      const variant = await prisma.variant.create({
-        data: {
-          name,
-          price,
-          menuItemId
+      if (!menuItemId) {
+        return {
+          failure: {
+            reason: "No se pudo obtener el producto asociado"
+          }
         }
-      })
+      }
 
-      updateTag(`menu-item-${menuItemId}`)
-      return { success: variant }
-    } catch (error) {
-      let message
-      if (typeof error === "string") {
-        message = error
-      } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        console.error(error)
-        Sentry.captureException(error, {
-          tags: { section: "item-mutations", operation: "createVariant" },
-          extra: { menuItemId, errorCode: error.code }
+      try {
+        const item = await prisma.menuItem.findFirst({
+          where: { id: menuItemId, organizationId },
+          select: { id: true }
         })
-        message = error.message
-      } else if (error instanceof Error) {
-        message = error.message
-      }
-      return {
-        failure: {
-          reason: message
+
+        if (!item) {
+          return {
+            failure: {
+              reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+            }
+          }
+        }
+
+        const variant = await prisma.variant.create({
+          data: {
+            name,
+            price,
+            menuItemId
+          }
+        })
+
+        updateTag(`menu-item-${menuItemId}`)
+        return { success: variant }
+      } catch (error) {
+        let message
+        if (typeof error === "string") {
+          message = error
+        } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          console.error(error)
+          Sentry.captureException(error, {
+            tags: { section: "item-mutations", operation: "createVariant" },
+            extra: { menuItemId, errorCode: error.code }
+          })
+          message = error.message
+        } else if (error instanceof Error) {
+          message = error.message
+        }
+        return {
+          failure: {
+            reason: message
+          }
         }
       }
     }
-  })
+  )
 
 /**
  * Deletes a variant.
@@ -1078,8 +1323,36 @@ export const deleteVariant = authMemberActionClient
       menuItemId: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, menuItemId } }) => {
+  .action(async ({ parsedInput: { id, menuItemId }, ctx: { member } }) => {
+    const organizationId = member.organizationId
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: MISSING_ORGANIZATION_REASON
+        }
+      }
+    }
+
     try {
+      const variant = await prisma.variant.findFirst({
+        where: {
+          id,
+          menuItem: {
+            id: menuItemId,
+            organizationId
+          }
+        },
+        select: { id: true }
+      })
+
+      if (!variant) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
+
       await prisma.variant.delete({
         where: { id }
       })
@@ -1116,7 +1389,7 @@ export const bulkUpdateCategory = authMemberActionClient
     z.object({
       ids: z.array(z.string()),
       categoryId: z.string(),
-      organizationId: z.string(),
+      organizationId: z.string().optional(),
       updatePublishedMenus: z.boolean().optional(),
       rememberPublishedChoice: z.boolean().optional()
     })
@@ -1126,18 +1399,64 @@ export const bulkUpdateCategory = authMemberActionClient
       parsedInput: {
         ids,
         categoryId,
-        organizationId,
         updatePublishedMenus,
         rememberPublishedChoice
-      }
+      },
+      ctx: { member }
     }) => {
+      const organizationId = member.organizationId
+      if (!organizationId) {
+        return {
+          failure: {
+            reason: MISSING_ORGANIZATION_REASON
+          }
+        }
+      }
+
       try {
+        if (categoryId) {
+          const category = await prisma.category.findFirst({
+            where: { id: categoryId, organizationId },
+            select: { id: true }
+          })
+
+          if (!category) {
+            return {
+              failure: {
+                reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+              }
+            }
+          }
+        }
+
+        const scopedItems = await prisma.menuItem.findMany({
+          where: {
+            id: { in: ids },
+            organizationId
+          },
+          select: { id: true }
+        })
+
+        if (
+          !hasCompleteTenantSelection(
+            ids,
+            scopedItems.map(item => item.id)
+          )
+        ) {
+          return {
+            failure: {
+              reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+            }
+          }
+        }
+
         await prisma.menuItem.updateMany({
           where: {
-            id: { in: ids }
+            id: { in: ids },
+            organizationId
           },
           data: {
-            categoryId
+            categoryId: categoryId === "" ? null : categoryId
           }
         })
 
@@ -1176,15 +1495,37 @@ export const bulkDeleteItems = authMemberActionClient
   .inputSchema(
     z.object({
       ids: z.array(z.string()),
-      organizationId: z.string()
+      organizationId: z.string().optional()
     })
   )
-  .action(async ({ parsedInput: { ids, organizationId } }) => {
+  .action(async ({ parsedInput: { ids }, ctx: { member } }) => {
+    const organizationId = member.organizationId
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: MISSING_ORGANIZATION_REASON
+        }
+      }
+    }
+
     try {
       // First get all items to delete their images
       const items = await prisma.menuItem.findMany({
-        where: { id: { in: ids } }
+        where: { id: { in: ids }, organizationId }
       })
+
+      if (
+        !hasCompleteTenantSelection(
+          ids,
+          items.map(item => item.id)
+        )
+      ) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
 
       // Delete images from storage if they exist
       await Promise.all(
@@ -1203,7 +1544,8 @@ export const bulkDeleteItems = authMemberActionClient
       // Delete all items
       await prisma.menuItem.deleteMany({
         where: {
-          id: { in: ids }
+          id: { in: ids },
+          organizationId
         }
       })
 
@@ -1231,7 +1573,7 @@ export const bulkToggleFeature = authMemberActionClient
     z.object({
       ids: z.array(z.string()),
       featured: z.boolean(),
-      organizationId: z.string(),
+      organizationId: z.string().optional(),
       updatePublishedMenus: z.boolean().optional(),
       rememberPublishedChoice: z.boolean().optional()
     })
@@ -1241,15 +1583,46 @@ export const bulkToggleFeature = authMemberActionClient
       parsedInput: {
         ids,
         featured,
-        organizationId,
         updatePublishedMenus,
         rememberPublishedChoice
-      }
+      },
+      ctx: { member }
     }) => {
+      const organizationId = member.organizationId
+      if (!organizationId) {
+        return {
+          failure: {
+            reason: MISSING_ORGANIZATION_REASON
+          }
+        }
+      }
+
       try {
+        const scopedItems = await prisma.menuItem.findMany({
+          where: {
+            id: { in: ids },
+            organizationId
+          },
+          select: { id: true }
+        })
+
+        if (
+          !hasCompleteTenantSelection(
+            ids,
+            scopedItems.map(item => item.id)
+          )
+        ) {
+          return {
+            failure: {
+              reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+            }
+          }
+        }
+
         await prisma.menuItem.updateMany({
           where: {
-            id: { in: ids }
+            id: { in: ids },
+            organizationId
           },
           data: {
             featured
