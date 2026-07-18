@@ -1,99 +1,169 @@
 ## Biztro
 
 > [!NOTE]
-> This is a WORK IN PROGRESS.
+> This project is in beta and under active development.
 
 [![DeepSource](https://deepsource.io/gh/dkast/biztro.svg/?label=active+issues&show_trend=true&token=ka1uwQTdoJTIVeRZl6gI7ERb)](https://deepsource.io/gh/dkast/biztro/?ref=repository-badge)
 
-Biztro is a mobile-first, server-first Next.js application for creating, editing and publishing digital menus.
-It uses a modern TypeScript + React stack with Prisma for persistence and Tailwind for styling.
+Biztro is a mobile-first, server-first Next.js application for restaurants that
+need to build, publish, translate and operate digital menus. It combines a visual
+menu editor, QR/public menu publishing, AI-assisted imports, multilingual menu
+content, media management, subscriptions and a lightweight sales module.
+
+## Product capabilities
+
+- **Digital menu builder** — create menu items, categories, variants, prices,
+  images, allergens and one active public menu per organization.
+- **Visual menu editor** — compose and preview mobile-first public menus with
+  editable font and color themes.
+- **AI menu import** — upload a PDF or image menu, extract products with
+  confidence/review metadata, edit the generated rows, then save products or
+  generate a complete draft menu with AI-selected design settings.
+- **CSV import/export** — import products with Spanish or English column aliases
+  and export catalog rows by product variant.
+- **AI translations** — translate active menu items, variants and categories to
+  supported locales: English, French, German, Portuguese, Italian, Japanese and
+  Chinese.
+- **Sales module** — register quick sales from the active catalog, support
+  dine-in/takeout/delivery order types, void sales with reasons, inspect sale
+  details, view revenue dashboards, best sellers and recent activity, and export
+  daily closing reports to CSV.
+- **Organization operations** — manage locations, opening hours, services,
+  member settings, billing and Cloudflare R2-backed media assets.
+- **Public publishing** — serve public menus from organization slugs/subdomains
+  with host-based routing support.
 
 ## Core stack
 
-- Next.js (App Router) + TypeScript
-- React 19 (server components preferred)
-- Tailwind CSS + tailwindcss-animate
-- Shadcn UI + Radix UI primitives
-- Prisma (LibSQL adapter) — Turso used for local/dev
-- Authentication: Better-auth
-- Server actions: next-safe-action
-- Forms & validation: React Hook Form + Zod
-- Data caching: @tanstack/react-query
-- Analytics & monitoring: PostHog + Sentry
-- File uploads: Uppy (S3 / R2 adapters)
-- Payments: Stripe
+- Next.js 16 App Router + TypeScript
+- React 19 with React Server Components preferred
+- Tailwind CSS 4 + Shadcn UI + Radix UI primitives
+- Prisma 7 with the LibSQL adapter; Turso for local/dev database access
+- Better Auth for authentication and organization membership
+- next-safe-action for server mutations
+- Zod for schemas and validation
+- nuqs for URL query state
+- TanStack Query/Table/Virtual for client data workflows
+- Vercel AI SDK through AI Gateway for AI extraction, visual analysis and
+  translations
+- Cloudflare R2/S3-compatible storage for uploads
+- Stripe + better-auth Stripe plugin for subscriptions
+- PostHog, Sentry and next-axiom for analytics, monitoring and logging
 
 ## Useful files
 
 - `package.json` — scripts and dependency list
 - `src/env.mjs` — environment schema and required variables
+- `src/app/config.ts` — product limits and defaults
+- `src/flags.ts` — feature flags, including simulated PDF AI imports
 - `prisma.config.ts` — Prisma adapter config
-- `prisma/schema.prisma` — database schema
-- `docs/deployment/subdomain-routing.md` — Cloudflare + Vercel host-based subdomain deployment guide
-- `AGENTS.md` — repo conventions and agent rules
-- `src/app/config.ts` — application limits and defaults
+- `prisma/schema.prisma` — application data model, including sales and
+  translations
+- `prisma/models/auth.prisma` — Better Auth data model
+- `docs/deployment/subdomain-routing.md` — Cloudflare + Vercel host-based
+  subdomain deployment guide
+- `AGENTS.md` — contributor and agent conventions
 
-## Quick start / configuration
+## Quick start
 
-Follow these steps to configure and run the project locally.
+Use Bun for local development unless you are intentionally testing another
+runtime.
 
 1. Install dependencies
 
-```pwsh
-npm install
+```sh
+bun install
 ```
 
-2. Generate Prisma client
+2. Configure environment variables
 
-Lifecycle scripts run `prisma generate` automatically, but you can run it manually:
+Create a `.env` file at the project root, or export variables in your shell.
+Required variables are validated in `src/env.mjs`.
 
-```pwsh
-npm run predev
+Common local requirements:
+
+- Turso/LibSQL: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`
+- Better Auth/Google OAuth: `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`,
+  `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`
+- Cloudflare R2: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_KEY_ID`,
+  `R2_BUCKET_NAME`, `R2_CUSTOM_DOMAIN`
+- Email: `RESEND_API_KEY`
+- Stripe: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+  `NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY`,
+  `NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY`
+- Analytics: `NEXT_PUBLIC_POSTHOG_KEY`; optional `POSTHOG_HOST` and
+  `POSTHOG_API_KEY`
+- AI features: optional `AI_GATEWAY_API_KEY`; required for real AI imports and
+  translations when not using simulation
+
+3. Generate Prisma client
+
+Lifecycle scripts run `prisma generate` automatically, but you can run it
+manually when needed:
+
+```sh
+bun run predev
 # or
-npx prisma generate
+bunx prisma generate
 ```
 
-3. Configure environment variables
+4. Start the local database
 
-- Create a `.env` file at the project root (or set env vars in your shell). The required variables are validated in `src/env.mjs`.
-- Important variables include Turso/LibSQL URL and keys, R2 credentials, Stripe keys, Better-auth keys, and analytics/Sentry keys.
-
-4. Start a local dev database
-
-```pwsh
-npm run db:dev
+```sh
+bun run db:dev
 ```
 
-This starts a local Turso development database using `local.db`.
+This starts a local Turso development database backed by `local.db`.
 
-5. Start the dev server
+5. Start the development server
 
-```pwsh
-npm run dev
+```sh
+bun run dev
 ```
 
-6. Common scripts
+## Common scripts
 
-- `npm run dev` — start dev server
-- `npm run build` — production build
-- `npm run start` — start production server
-- `npm run prisma:migrate` — apply Prisma migrations (deploy)
-- `npm run db:dev` — start local Turso dev DB
-- `npm run email` — run email dev tooling
-- `npm run build:content` — build Contentlayer content
-- `npm run stripe:listen` — forward Stripe webhooks to local server
+- `bun run dev` — start the Next.js dev server
+- `bun run build` — build for production
+- `bun run start` — start the production server
+- `bun run lint` — run ESLint
+- `bun run lint:fix` — run ESLint fixes
+- `bun run typecheck` — run TypeScript type checking
+- `bun run format` — format source files with Prettier
+- `bun run prisma:migrate` — apply deployed Prisma migrations
+- `bun run db:dev` — start the local Turso database
+- `bun run email` — run React Email dev tooling
+- `bun run build:content` — build Contentlayer content
+- `bun run stripe:listen` — forward Stripe webhooks to the local auth webhook
 
-## Conventions & notes
+## Feature flags
 
-- Prefer React Server Components and minimize `use client` scopes.
+- `FLAGS_ENABLE_SUBSCRIPTIONS=1` enables subscription-related UI and flows.
+- `FLAGS_SIMULATE_PDF_AI=1` uses AI SDK mock responses for menu import during
+  development/testing. The flag defaults to simulated imports when unset.
+
+When simulated imports are disabled, AI menu import, full-menu visual generation
+and menu translations require `AI_GATEWAY_API_KEY`.
+
+## Conventions and notes
+
+- Prefer React Server Components and keep `use client` scopes small.
+- Use `next-safe-action` for server mutations and call `reset()` in client action
+  handlers after success or handled errors.
 - Use React Hook Form + Zod for forms and validation.
-- URL search state is managed with `nuqs` (see `src/app/providers.tsx`).
-- Auth is implemented with `better-auth`; middleware lives in `src/proxy.ts`.
-- Prisma uses the LibSQL adapter configured in `prisma.config.ts` and migrations live under `prisma/migrations`.
+- Manage URL search state with `nuqs`.
+- Keep authentication and route protection centralized in `src/proxy.ts`.
+- Treat `src/env.mjs` as the source of truth for environment variables.
+- Gate Pro-only creation/generation flows on the server. Client plan state is UX
+  only.
+- Prisma migrations live under `prisma/migrations`; run `bunx prisma generate`
+  after schema changes.
 
 ## Deployment notes
 
-- Host-based public menu URLs (`https://slug.biztro.co`) are documented in `docs/deployment/subdomain-routing.md`.
-- The current production approach uses Cloudflare wildcard DNS + TLS and a Cloudflare Worker proxying to Vercel.
+- Host-based public menu URLs such as `https://slug.biztro.co` are documented in
+  `docs/deployment/subdomain-routing.md`.
+- The current production approach uses Cloudflare wildcard DNS + TLS and a
+  Cloudflare Worker proxying to Vercel.
 
-For contributor guidance and agent rules see `AGENTS.md`.
+For detailed contributor guidance and repository guardrails, see `AGENTS.md`.
