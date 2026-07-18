@@ -60,7 +60,7 @@ export function SalesRevenueChart({
 
   if (!hasSales) {
     return (
-      <Empty className="min-h-72 rounded-none border-0 p-0">
+      <Empty className="min-h-72 rounded-none border-0 p-6 md:p-10">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <BarChart3 />

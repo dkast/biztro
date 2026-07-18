@@ -100,9 +100,10 @@ function getKpiItems(data: SalesDashboardData) {
 
 export function SalesDashboard({ data }: { data: SalesDashboardData }) {
   const kpiItems = getKpiItems(data)
+  const hasPeriodSales = data.chart.some(bucket => bucket.revenue > 0)
 
   return (
-    <div className="flex flex-col gap-8 pb-6 sm:gap-10">
+    <div className="flex flex-col gap-8 pb-12 sm:gap-10 sm:pb-14">
       <section
         className="inset-ring-border overflow-hidden rounded-lg shadow-sm/5
           inset-ring"
@@ -142,7 +143,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
         </ItemGroup>
       </section>
 
-      <section className="space-y-5 sm:space-y-6">
+      <section className="flex flex-col gap-5 sm:gap-6">
         <div
           className="flex flex-col items-start gap-2 sm:flex-row sm:items-center
             sm:justify-between sm:gap-4"
@@ -154,7 +155,12 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             {salesDashboardPeriodRangeLabels[data.period]}
           </Badge>
         </div>
-        <div className="px-1 pt-1">
+        <div
+          className={cn(
+            "rounded-lg",
+            hasPeriodSales ? "px-1 pt-1" : "overflow-hidden"
+          )}
+        >
           <SalesRevenueChart
             chart={data.chart}
             currency={data.currency}
@@ -165,11 +171,11 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
 
       <section
         className="grid gap-y-8 lg:grid-cols-[minmax(0,60fr)_minmax(0,40fr)]
-          lg:items-start lg:gap-x-12 lg:gap-y-0"
+          lg:items-stretch lg:gap-x-10 lg:gap-y-0"
       >
-        <div className="flex min-w-0 flex-col gap-5">
+        <div className="flex min-w-0 flex-col gap-4">
           <div
-            className="flex h-9.5 flex-col items-start gap-2 sm:flex-row
+            className="flex min-h-9.5 flex-col items-start gap-2 sm:flex-row
               sm:items-center sm:justify-between sm:gap-4"
           >
             <h2 className="text-base font-semibold text-balance">
@@ -178,17 +184,24 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             <Badge variant="secondary">{data.recentSales.length}</Badge>
           </div>
           {data.recentSales.length === 0 ? (
-            <Empty className="min-h-72 rounded-none border-0 p-0">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <ShoppingCart />
-                </EmptyMedia>
-                <EmptyTitle>Aún no hay ventas registradas</EmptyTitle>
-                <EmptyDescription>
-                  Registra la primera venta para verla aquí.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
+            <div
+              className="border-border flex flex-1 overflow-hidden rounded-lg
+                border"
+            >
+              <Empty
+                className="min-h-72 flex-1 rounded-none border-0 p-6 md:p-10"
+              >
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <ShoppingCart />
+                  </EmptyMedia>
+                  <EmptyTitle>Aún no hay ventas registradas</EmptyTitle>
+                  <EmptyDescription>
+                    Registra la primera venta para verla aquí.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            </div>
           ) : (
             <div
               className="border-border/80 w-full max-w-full overflow-x-auto
@@ -222,21 +235,39 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
           )}
         </div>
 
-        <div className="min-w-0 space-y-4">
+        <div className="flex min-w-0 flex-col gap-4">
           {data.bestSellers.length === 0 ? (
-            <Empty className="min-h-72 rounded-none border-0 p-0">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <Banknote />
-                </EmptyMedia>
-                <EmptyTitle>Aún no hay productos vendidos</EmptyTitle>
-                <EmptyDescription>
-                  Cuando haya ventas, aquí verás el ranking de productos.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
+            <>
+              <div
+                className="flex min-h-9.5 flex-col items-start gap-2 sm:flex-row
+                  sm:items-center sm:justify-between sm:gap-4"
+              >
+                <h2 className="text-base font-semibold text-balance">
+                  Productos más vendidos
+                </h2>
+                <Badge variant="secondary">0</Badge>
+              </div>
+              <div
+                className="border-border flex flex-1 overflow-hidden rounded-lg
+                  border"
+              >
+                <Empty
+                  className="min-h-72 flex-1 rounded-none border-0 p-6 md:p-10"
+                >
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Banknote />
+                    </EmptyMedia>
+                    <EmptyTitle>Aún no hay productos vendidos</EmptyTitle>
+                    <EmptyDescription>
+                      Cuando haya ventas, aquí verás el ranking de productos.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              </div>
+            </>
           ) : (
-            <div className="space-y-4">
+            <div className="flex flex-col gap-4">
               <SalesBestSellersPieChart
                 bestSellers={data.bestSellers}
                 currency={data.currency}
