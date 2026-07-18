@@ -82,7 +82,7 @@
     "@visx/scale": "4.0.1-alpha.0",
     "@visx/shape": "4.0.1-alpha.0",
     "ai": "^6.0.208",
-    "better-auth": "1.6.9",
+    "better-auth": "1.6.13",
     "bloom-menu": "^0.1.0",
     "border-beam": "^1.2.0",
     "canvas-confetti": "^1.9.4",
