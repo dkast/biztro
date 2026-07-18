@@ -49,6 +49,12 @@ function startOfMonth(date = new Date()) {
   return next
 }
 
+function startOfNextMonth(date = new Date()) {
+  const next = startOfMonth(date)
+  next.setMonth(next.getMonth() + 1)
+  return next
+}
+
 function completedSalesWhere(
   organizationId: string,
   startDate: Date,
@@ -134,16 +140,17 @@ function buildSalesChartBuckets({
   >()
 
   if (bucketType === "month") {
-    const cursor = startOfMonth(startDate)
-
-    while (cursor < endDate) {
+    for (
+      let cursor = startOfMonth(startDate);
+      cursor < endDate;
+      cursor = startOfNextMonth(cursor)
+    ) {
       const key = getMonthBucketKey(cursor)
       buckets.set(key, {
         label: salesChartMonthLabelFormatter.format(cursor),
         revenue: 0,
         orders: 0
       })
-      cursor.setMonth(cursor.getMonth() + 1)
     }
 
     for (const row of rows) {
@@ -156,16 +163,17 @@ function buildSalesChartBuckets({
       bucket.orders += 1
     }
   } else {
-    const cursor = startOfDay(startDate)
-
-    while (cursor < endDate) {
+    for (
+      let cursor = startOfDay(startDate);
+      cursor < endDate;
+      cursor = startOfNextDay(cursor)
+    ) {
       const key = getDayBucketKey(cursor)
       buckets.set(key, {
         label: salesChartDayLabelFormatter.format(cursor),
         revenue: 0,
         orders: 0
       })
-      cursor.setDate(cursor.getDate() + 1)
     }
 
     for (const row of rows) {
@@ -495,11 +503,11 @@ async function getHourlySalesBuckets(
     }))
 }
 
-async function getSalesChartRows(
+function getSalesChartRows(
   organizationId: string,
   startDate: Date,
   endDate: Date
-) {
+): Promise<Array<{ createdAt: Date; total: number }>> {
   return prisma.sale.findMany({
     where: {
       ...completedSalesWhere(organizationId, startDate, endDate)
