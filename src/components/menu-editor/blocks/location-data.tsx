@@ -6,8 +6,8 @@ import {
   HandPlatter,
   InfoIcon,
   Motorbike,
-  Phone,
-  ShoppingBag
+  PaperBag,
+  Phone
 } from "lucide-react"
 
 import { useTranslation } from "@/components/menu-editor/translation-provider"
@@ -219,7 +219,7 @@ export default function LocationData({
         {location.serviceTakeout && (
           <Item size="sm" variant="outline">
             <ItemMedia variant="icon">
-              <ShoppingBag />
+              <PaperBag />
             </ItemMedia>
             <ItemContent>
               <ItemTitle>{t("takeout")}</ItemTitle>

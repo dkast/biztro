@@ -1,12 +1,20 @@
 diff --git a/dist/server/lib/router-utils/setup-dev-bundler.js b/dist/server/lib/router-utils/setup-dev-bundler.js
-index 2924899412660e0dfefe1bcecf6213f2e19a5c07..63f71fe7aae426907281380437968801e9b89647 100644
+index 2924899412660e0dfefe1bcecf6213f2e19a5c07..9fd6aa8eefb8ed48cd0215d84903ec5da42517c1 100644
 --- a/dist/server/lib/router-utils/setup-dev-bundler.js
 +++ b/dist/server/lib/router-utils/setup-dev-bundler.js
-@@ -705,6 +705,7 @@ async function startWatcher(opts) {
+@@ -43,6 +43,7 @@ const _normalizepathsep = require("../../../shared/lib/page-path/normalize-path-
+ const _createclientrouterfilter = require("../../../lib/create-client-router-filter");
+ const _absolutepathtopage = require("../../../shared/lib/page-path/absolute-path-to-page");
+ const _generateinterceptionroutesrewrites = require("../../../lib/generate-interception-routes-rewrites");
++const _isinterceptionrouterewrite = require("../../../lib/is-interception-route-rewrite");
+ const _constants = require("../../../shared/lib/constants");
+ const _middlewareroutematcher = require("../../../shared/lib/router/utils/middleware-route-matcher");
+ const _utils1 = require("../../../build/utils");
+@@ -705,6 +706,7 @@ async function startWatcher(opts) {
              serverFields.hasAppNotFound = hasRootAppNotFound;
              opts.fsChecker.middlewareMatcher = ((_serverFields_middleware = serverFields.middleware) == null ? void 0 : _serverFields_middleware.matchers) ? (0, _middlewareroutematcher.getMiddlewareRouteMatcher)((_serverFields_middleware1 = serverFields.middleware) == null ? void 0 : _serverFields_middleware1.matchers) : undefined;
              const interceptionRoutes = (0, _generateinterceptionroutesrewrites.generateInterceptionRoutesRewrites)(Object.keys(appPaths), opts.nextConfig.basePath).map((item)=>(0, _filesystem.buildCustomRoute)('before_files_rewrite', item, opts.nextConfig.basePath, opts.nextConfig.experimental.caseSensitiveRoutes));
-+                opts.fsChecker.rewrites.beforeFiles = opts.fsChecker.rewrites.beforeFiles.filter((route)=>!(0, _generateinterceptionroutesrewrites.isInterceptionRouteRewrite)(route));
++            opts.fsChecker.rewrites.beforeFiles = opts.fsChecker.rewrites.beforeFiles.filter((route)=>!(0, _isinterceptionrouterewrite.isInterceptionRouteRewrite)(route));
              opts.fsChecker.rewrites.beforeFiles.push(...interceptionRoutes);
              const exportPathMap = typeof nextConfig.exportPathMap === 'function' && await (nextConfig.exportPathMap == null ? void 0 : nextConfig.exportPathMap.call(nextConfig, {}, {
                  dev: true,

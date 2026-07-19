@@ -1260,7 +1260,6 @@ export default function ItemForm({
                       <div className="h-full min-h-64">
                         {item?.image ? (
                           <ImageField
-                            className="h-full"
                             src={item.image}
                             organizationId={item.organizationId}
                             imageType={ImageType.MENUITEM}

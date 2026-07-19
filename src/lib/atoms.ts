@@ -18,4 +18,6 @@ export const onboardingCardsCollapsedAtom = atomWithStorage(
   false
 )
 
+export const isSoundMutedAtom = atomWithStorage("biztro:sounds-muted", false)
+
 export const colorListAtom = atom<ColorTheme[]>([])
