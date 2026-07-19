@@ -70,8 +70,16 @@ function getClosingTrend(
   const label = `${closingTrendPercentFormatter.format(change)} vs. ayer`
 
   return change > 0
-    ? { label, tone: "text-green-600 dark:text-green-400", icon: TrendingUp }
-    : { label, tone: "text-muted-foreground", icon: TrendingDown }
+    ? {
+        label,
+        tone: "text-emerald-600 dark:text-emerald-400",
+        icon: TrendingUp
+      }
+    : {
+        label,
+        tone: "text-orange-600 dark:text-orange-400",
+        icon: TrendingDown
+      }
 }
 
 type SalesClosingSummaryItem = {
@@ -91,16 +99,16 @@ function getSummaryItems(data: SalesClosingData): SalesClosingSummaryItem[] {
       value: data.todayRevenue,
       trend: getClosingTrend(data.todayRevenue, data.previous.revenue)
     },
-    {
-      title: "Ventas anuladas",
-      kind: "count",
-      value: data.voidedSales
-    },
-    {
-      title: "Monto anulado",
-      kind: "currency",
-      value: data.voidedAmount
-    },
+    // {
+    //   title: "Ventas anuladas",
+    //   kind: "count",
+    //   value: data.voidedSales
+    // },
+    // {
+    //   title: "Monto anulado",
+    //   kind: "currency",
+    //   value: data.voidedAmount
+    // },
     {
       title: "Ventas completadas",
       kind: "count",
@@ -151,8 +159,8 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
           shadow-sm/5 inset-ring"
       >
         <ItemGroup
-          className="bg-border grid grid-cols-2 gap-px md:grid-cols-3
-            xl:grid-cols-6"
+          className="bg-border grid grid-cols-2 gap-px md:grid-cols-2
+            xl:grid-cols-4"
         >
           {summaryItems.map(item => (
             <Item

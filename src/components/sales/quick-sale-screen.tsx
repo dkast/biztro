@@ -2,13 +2,22 @@
 
 import {
   useDeferredValue,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
   useState
 } from "react"
 import toast from "react-hot-toast"
-import { Loader2, Search, ShoppingBag, Trash2 } from "lucide-react"
+import { bind, play, setEnabled } from "cuelume"
+import {
+  Loader2,
+  Search,
+  ShoppingBag,
+  Trash2,
+  Volume2,
+  VolumeX
+} from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
@@ -46,6 +55,7 @@ import {
   SheetHeader,
   SheetTitle
 } from "@/components/ui/sheet"
+import { Swap, SwapOff, SwapOn } from "@/components/ui/swap"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { completeSale } from "@/server/actions/sales/mutations"
 import { formatPrice } from "@/lib/currency"
@@ -140,6 +150,8 @@ type CartLine = SaleCartItemInput & {
   currency: "MXN" | "USD"
 }
 
+const soundMutedStorageKey = "biztro:sounds-muted"
+
 export function QuickSaleScreen({
   catalog,
   isPro
@@ -156,6 +168,21 @@ export function QuickSaleScreen({
   const [cartScrollSignal, setCartScrollSignal] = useState(0)
   const [selectedProduct, setSelectedProduct] =
     useState<SalesCatalogProduct | null>(null)
+  const [isSoundMuted, setIsSoundMuted] = useState(false)
+
+  useEffect(() => {
+    const isMuted = window.localStorage.getItem(soundMutedStorageKey) === "true"
+
+    setIsSoundMuted(isMuted)
+    setEnabled(!isMuted)
+    bind()
+  }, [])
+
+  const handleSoundMuteChange = (isMuted: boolean) => {
+    setIsSoundMuted(isMuted)
+    setEnabled(!isMuted)
+    window.localStorage.setItem(soundMutedStorageKey, String(isMuted))
+  }
 
   const { guard: guardSaleCompletion, dialog: upgradeDialog } = useProGuard(
     isPro,
@@ -171,12 +198,14 @@ export function QuickSaleScreen({
   const { execute, status, reset } = useAction(completeSale, {
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
+        play("error")
         toast.error(data.failure.reason)
         reset()
         return
       }
 
       if (data?.success) {
+        play("success")
         toast.success(
           `Venta completada · ${formatPrice(data.success.total, currency)}`
         )
@@ -191,6 +220,7 @@ export function QuickSaleScreen({
       reset()
     },
     onError: () => {
+      play("error")
       toast.error("No se pudo completar la venta")
       reset()
     }
@@ -255,6 +285,7 @@ export function QuickSaleScreen({
       : product.variants[0]
 
     if (!selectedVariant) {
+      play("error")
       toast.error("Selecciona una variante")
       return
     }
@@ -302,6 +333,7 @@ export function QuickSaleScreen({
 
   const handleProductSelect = (product: SalesCatalogProduct) => {
     if (product.variantCount === 0) {
+      play("error")
       toast.error("Este producto no tiene variantes disponibles")
       return
     }
@@ -332,10 +364,12 @@ export function QuickSaleScreen({
 
   const handleCompleteSale = () => {
     if (cart.length === 0) {
+      play("error")
       toast.error("Agrega al menos un producto")
       return
     }
 
+    play("loading")
     execute({
       orderType,
       items: cart.map(item => ({
@@ -406,15 +440,44 @@ export function QuickSaleScreen({
               className="flex flex-row items-center justify-between gap-4 pb-4"
             >
               <CardTitle className="mb-0 leading-loose">Venta actual</CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearCart}
-                disabled={cart.length === 0}
-              >
-                <Trash2 data-icon="inline-start" />
-                Limpiar
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearCart}
+                  disabled={cart.length === 0}
+                  data-cuelume-press
+                  // data-cuelume-release
+                >
+                  <Trash2 data-icon="inline-start" />
+                  Limpiar
+                </Button>
+                <Swap
+                  asChild
+                  swapped={isSoundMuted}
+                  onSwappedChange={handleSoundMuteChange}
+                  animation="scale"
+                >
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label={
+                      isSoundMuted ? "Activar sonidos" : "Silenciar sonidos"
+                    }
+                    title={
+                      isSoundMuted ? "Activar sonidos" : "Silenciar sonidos"
+                    }
+                  >
+                    <SwapOn>
+                      <VolumeX />
+                    </SwapOn>
+                    <SwapOff>
+                      <Volume2 />
+                    </SwapOff>
+                  </Button>
+                </Swap>
+              </div>
             </CardHeader>
             <CardContent className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
               <OrderTypeSelector
@@ -439,6 +502,8 @@ export function QuickSaleScreen({
                 className="h-12 text-base font-semibold"
                 disabled={status === "executing" || cart.length === 0}
                 onClick={() => guardSaleCompletion(handleCompleteSale)}
+                data-cuelume-press
+                // data-cuelume-release
               >
                 {status === "executing" ? (
                   <Loader2 data-icon="inline-start" />
@@ -506,6 +571,8 @@ export function QuickSaleScreen({
                       addProduct(selectedProduct, variant.id)
                       setSelectedProduct(null)
                     }}
+                    data-cuelume-press
+                    // data-cuelume-release
                   >
                     <span className="flex min-w-0 flex-col items-start gap-1">
                       <span className="truncate font-medium">
@@ -563,6 +630,7 @@ function CategoryFilter({
           <ToggleGroupItem
             key={option.value}
             value={option.value}
+            data-cuelume-toggle
             className="data-[state=on]:bg-primary
               data-[state=on]:text-primary-foreground
               dark:data-[state=on]:bg-primary/40 data-[state=on]:border-primary
@@ -634,6 +702,8 @@ function ProductCard({
       type="button"
       whileTap={{ scale: 0.98 }}
       onClick={() => onSelect(product)}
+      data-cuelume-press
+      // data-cuelume-release
       className={cn(
         "group block w-full cursor-pointer text-left focus-visible:outline-none"
       )}
@@ -672,7 +742,7 @@ function ProductCard({
               <Badge
                 variant="outline"
                 className="bg-black/10 text-white inset-ring-white/40
-                  backdrop-blur-sm text-shadow-xs"
+                  backdrop-blur-md text-shadow-xs"
               >
                 {product.variantCount} opciones
               </Badge>
@@ -717,6 +787,7 @@ function OrderTypeSelector({
           <ToggleGroupItem
             key={option.value}
             value={option.value}
+            data-cuelume-toggle
             className="h-8 rounded-lg px-3 text-xs"
           >
             {option.label}
@@ -848,12 +919,16 @@ function SaleCart({
                   <NumberInputGroup>
                     <NumberInputDecrement
                       aria-label={`Disminuir ${item.productName}`}
+                      data-cuelume-press
+                      // data-cuelume-release
                     />
                     <NumberInputInput
                       aria-label={`Cantidad de ${item.productName}`}
                     />
                     <NumberInputIncrement
                       aria-label={`Aumentar ${item.productName}`}
+                      data-cuelume-press
+                      // data-cuelume-release
                     />
                   </NumberInputGroup>
                 </NumberInput>
