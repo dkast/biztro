@@ -501,7 +501,15 @@ export const revertMenuToPublished = authMemberActionClient
         }
       })
 
-      if (!menu?.publishedData) {
+      if (!menu) {
+        return {
+          failure: {
+            reason: NOT_FOUND_OR_UNAUTHORIZED_REASON
+          }
+        }
+      }
+
+      if (!menu.publishedData) {
         return {
           failure: {
             reason: "No hay una versión publicada para revertir."

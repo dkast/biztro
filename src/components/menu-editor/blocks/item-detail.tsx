@@ -72,8 +72,7 @@ export function ItemDetail({
           width={300}
           height={300}
           alt={item.name}
-          className="aspect-square h-76 w-full rounded-lg object-cover
-            shadow-sm"
+          className="aspect-square w-full rounded-lg object-cover shadow-sm"
           unoptimized
         />
       ) : (
