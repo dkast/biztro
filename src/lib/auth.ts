@@ -64,7 +64,7 @@ const stripeProYearlyPriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY
 
 const stripeClient = stripeSecretKey
   ? new Stripe(stripeSecretKey, {
-      apiVersion: "2026-04-22.dahlia"
+      apiVersion: "2026-06-24.dahlia"
     })
   : null
 
@@ -116,8 +116,7 @@ export const auth = betterAuth({
           // Normalise the payload into `data` and `ctx` objects.
           const data = (payload.data ?? payload) as Record<string, unknown>
           const ctx = (payload.ctx ?? payload.context ?? payload.request) as
-            | Record<string, unknown>
-            | undefined
+            Record<string, unknown> | undefined
 
           const emailFromData = data?.email as unknown
           const email =

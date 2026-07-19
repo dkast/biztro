@@ -69,10 +69,11 @@ export function ItemDetail({
       {item.image ? (
         <Image
           src={item.image}
-          width={400}
+          width={300}
           height={300}
           alt={item.name}
-          className="h-48 w-full rounded-lg object-cover shadow-sm"
+          className="aspect-square h-76 w-full rounded-lg object-cover
+            shadow-sm"
           unoptimized
         />
       ) : (
