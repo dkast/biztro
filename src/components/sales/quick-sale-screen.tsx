@@ -671,7 +671,8 @@ function ProductCard({
             <div className="absolute top-2 right-2">
               <Badge
                 variant="outline"
-                className="text-white inset-ring-white/40"
+                className="bg-black/10 text-white inset-ring-white/40
+                  backdrop-blur-sm text-shadow-xs"
               >
                 {product.variantCount} opciones
               </Badge>

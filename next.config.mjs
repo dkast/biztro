@@ -30,6 +30,12 @@ const config = {
       },
       {
         protocol: "https",
+        hostname: "static.biztro.co",
+        port: "",
+        pathname: "/*/**"
+      },
+      {
+        protocol: "https",
         hostname: "images.unsplash.com",
         port: ""
       },
