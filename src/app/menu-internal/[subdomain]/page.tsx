@@ -16,8 +16,8 @@ import {
   getAllActiveOrganizations,
   getOrganizationBySlug
 } from "@/server/actions/organization/queries"
-import PublicMenuTracker from "@/app/[subdomain]/public-menu-tracker"
-import ResolveEditor from "@/app/[subdomain]/resolve-editor"
+import PublicMenuTracker from "@/app/menu-internal/[subdomain]/public-menu-tracker"
+import ResolveEditor from "@/app/menu-internal/[subdomain]/resolve-editor"
 import { normalizePublicMenuItems } from "@/lib/menu-search"
 import { extractMenuDataFromNodes } from "@/lib/sync-status"
 import { SubscriptionStatus } from "@/lib/types/billing"

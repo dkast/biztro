@@ -2,6 +2,9 @@ import { getSessionCookie } from "better-auth/cookies"
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
+const MENU_INTERNAL_PATH = "/menu-internal"
+const MENU_REWRITE_HEADER = "x-biztro-menu-rewrite"
+
 const RESERVED_SUBDOMAINS = new Set([
   "preview",
   "www",
@@ -11,6 +14,10 @@ const RESERVED_SUBDOMAINS = new Set([
   "pm-bounces",
   "send"
 ])
+
+function isPublicFilePath(pathname: string) {
+  return pathname.includes(".")
+}
 
 function getSubdomainFromHost(hostname: string) {
   if (hostname === "biztro.co" || hostname === "localhost") return null
@@ -38,27 +45,46 @@ export function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const subdomain = getSubdomainFromHost(request.nextUrl.hostname)
-  if (!subdomain) return NextResponse.next()
-
   if (
-    pathname === `/${subdomain}` ||
-    pathname.startsWith(`/${subdomain}/`) ||
-    pathname.startsWith("/_next")
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/ingest") ||
+    pathname.startsWith("/monitoring") ||
+    pathname.startsWith("/.well-known") ||
+    isPublicFilePath(pathname)
   ) {
     return NextResponse.next()
   }
 
+  if (
+    pathname === MENU_INTERNAL_PATH ||
+    pathname.startsWith(`${MENU_INTERNAL_PATH}/`)
+  ) {
+    if (request.headers.get(MENU_REWRITE_HEADER) !== "1") {
+      return new NextResponse(null, { status: 404 })
+    }
+
+    return NextResponse.next()
+  }
+
+  const subdomain = getSubdomainFromHost(request.nextUrl.hostname)
+  if (!subdomain) return NextResponse.next()
+
   const rewriteUrl = request.nextUrl.clone()
   rewriteUrl.pathname =
-    pathname === "/" ? `/${subdomain}` : `/${subdomain}${pathname}`
+    pathname === "/"
+      ? `${MENU_INTERNAL_PATH}/${subdomain}`
+      : `${MENU_INTERNAL_PATH}/${subdomain}${pathname}`
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set(MENU_REWRITE_HEADER, "1")
 
-  return NextResponse.rewrite(rewriteUrl)
+  return NextResponse.rewrite(rewriteUrl, {
+    request: {
+      headers: requestHeaders
+    }
+  })
 }
 
-// Update matcher to the routes you want to protect
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|ingest|monitoring).*)"
-  ]
+  matcher: ["/((?!api|_next/static|_next/image|.*\\..*|ingest|monitoring).*)"]
 }

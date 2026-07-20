@@ -39,11 +39,11 @@ export const getPublishedMenuUrl = (subdomain: string) => {
     const url = new URL(baseUrl)
     const isBiztroHost =
       url.hostname === "biztro.co" || url.hostname.endsWith(".biztro.co")
-    if (!isBiztroHost) return `${baseUrl}/${subdomain}`
+    if (!isBiztroHost) return `${baseUrl}/menu-internal/${subdomain}`
 
     return `${url.protocol}//${subdomain}.biztro.co`
   } catch {
-    return `${baseUrl}/${subdomain}`
+    return `${baseUrl}/menu-internal/${subdomain}`
   }
 }
 
