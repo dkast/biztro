@@ -1,7 +1,7 @@
 "use client"
 
 import { useSyncExternalStore } from "react"
-import { Globe, LogOut, SunMoon, User } from "lucide-react"
+import { Globe, LogOut, ShieldUser, SunMoon, User } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -43,6 +43,7 @@ function ProfileMenuTrigger({ disabled = false }: { disabled?: boolean }) {
 export default function ProfileMenu() {
   const { data: session } = authClient.useSession()
   const user = session?.user
+  const role = session?.user?.role
   const { theme, setTheme } = useTheme()
   const router = useRouter()
 
@@ -109,6 +110,17 @@ export default function ProfileMenu() {
             Inicio
           </Link>
         </DropdownMenuItem>
+        {role === "superuser" && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/internal" prefetch={false}>
+                <ShieldUser className="mr-2 size-4" />
+                Admin
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={() =>

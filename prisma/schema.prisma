@@ -308,4 +308,26 @@ model Waitlist {
   @@index([email])
 }
 
+// Internal admin audit log – records privileged operations performed by
+// admin / superuser accounts for compliance and traceability purposes.
+model InternalAdminAuditLog {
+  id             String   @id @default(cuid())
+  // The admin user who performed the action
+  actorId        String
+  // Target user affected by the action (optional, e.g. role change, ban)
+  targetUserId   String?
+  // Short machine-readable action key, e.g. "user.ban", "user.set-role"
+  action         String
+  // Arbitrary JSON payload with before/after snapshots or extra context
+  payload        String?
+  // IP address of the request, if available
+  ipAddress      String?
+  createdAt      DateTime @default(now())
+
+  @@index([actorId])
+  @@index([targetUserId])
+  @@index([action])
+  @@index([createdAt])
+}
+
 // Auth-related models live in `prisma/models/auth.prisma`.

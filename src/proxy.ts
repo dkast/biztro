@@ -30,7 +30,7 @@ function getSubdomainFromHost(hostname: string) {
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  if (pathname.startsWith("/dashboard")) {
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/internal")) {
     const sessionCookie = getSessionCookie(request)
     if (!sessionCookie) {
       return NextResponse.redirect(new URL("/login", request.url))
