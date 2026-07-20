@@ -35,6 +35,21 @@ These files are part of the host-based routing support:
 - `src/components/menu-editor/menu-publish.tsx`
   - Uses the published subdomain URL for links, copy actions, and QR generation.
 
+## Local and Preview Testing
+
+Tenant subdomains are only used in production. The publish workflow uses a
+path-based public URL in every other environment, which follows the same
+application rewrite as the production hostname:
+
+- Local: `http://localhost:3000/menu/<slug>`
+- Preview, including `preview.biztro.co`:
+  `https://<preview-host>/menu/<slug>`
+
+For example, use `https://preview.biztro.co/menu/my-menu` to exercise the
+published page after publishing in staging. Do not use
+`/menu-internal/<slug>` directly; that path is intentionally limited to
+proxy-generated rewrites.
+
 ## Cloudflare DNS Configuration
 
 Create or update the wildcard DNS record:

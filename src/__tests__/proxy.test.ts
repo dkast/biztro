@@ -15,6 +15,14 @@ describe("proxy", () => {
     )
   })
 
+  it("rewrites a path-based menu URL for local and preview testing", () => {
+    const response = proxy(request("https://preview.biztro.co/menu/my-menu"))
+
+    expect(response.headers.get("x-middleware-rewrite")).toBe(
+      "https://preview.biztro.co/menu-internal/my-menu"
+    )
+  })
+
   it("does not rewrite public files or apex probe requests", () => {
     expect(
       proxy(request("https://my-menu.biztro.co/robots.txt")).headers.get(

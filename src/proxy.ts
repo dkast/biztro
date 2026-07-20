@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
 const MENU_INTERNAL_PATH = "/menu-internal"
+const MENU_PUBLIC_PATH = "/menu"
 const MENU_REWRITE_HEADER = "x-biztro-menu-rewrite"
 
 const RESERVED_SUBDOMAINS = new Set([
@@ -54,6 +55,23 @@ export function proxy(request: NextRequest) {
     isPublicFilePath(pathname)
   ) {
     return NextResponse.next()
+  }
+
+  if (pathname.startsWith(`${MENU_PUBLIC_PATH}/`)) {
+    const subdomain = pathname.slice(`${MENU_PUBLIC_PATH}/`.length)
+
+    if (subdomain && !subdomain.includes("/")) {
+      const rewriteUrl = request.nextUrl.clone()
+      rewriteUrl.pathname = `${MENU_INTERNAL_PATH}/${subdomain}`
+      const requestHeaders = new Headers(request.headers)
+      requestHeaders.set(MENU_REWRITE_HEADER, "1")
+
+      return NextResponse.rewrite(rewriteUrl, {
+        request: {
+          headers: requestHeaders
+        }
+      })
+    }
   }
 
   if (
