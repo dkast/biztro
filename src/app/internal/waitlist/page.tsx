@@ -51,6 +51,12 @@ export default async function WaitlistPage(props: {
 
   const totalPages = Math.ceil(result.total / LIMIT)
   const currentPage = Math.floor(offset / LIMIT) + 1
+  const pageHref = (nextOffset: number) => {
+    const params = new URLSearchParams({ offset: String(nextOffset) })
+    if (search) params.set("search", search)
+    if (enabled !== null) params.set("enabled", String(enabled))
+    return `/internal/waitlist?${params.toString()}`
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -155,20 +161,12 @@ export default async function WaitlistPage(props: {
           <div className="flex gap-2">
             {currentPage > 1 && (
               <Button variant="outline" size="sm" asChild>
-                <a
-                  href={`/internal/waitlist?search=${encodeURIComponent(search)}&offset=${Math.max(0, offset - LIMIT)}`}
-                >
-                  Anterior
-                </a>
+                <a href={pageHref(Math.max(0, offset - LIMIT))}>Anterior</a>
               </Button>
             )}
             {currentPage < totalPages && (
               <Button variant="outline" size="sm" asChild>
-                <a
-                  href={`/internal/waitlist?search=${encodeURIComponent(search)}&offset=${offset + LIMIT}`}
-                >
-                  Siguiente
-                </a>
+                <a href={pageHref(offset + LIMIT)}>Siguiente</a>
               </Button>
             )}
           </div>
