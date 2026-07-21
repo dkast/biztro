@@ -244,7 +244,7 @@ export default async function OrganizationsPage(props: {
             {currentPage > 1 && (
               <Button variant="outline" size="sm" asChild>
                 <a
-                  href={`/internal/organizations?search=${search}&plan=${plan}&status=${status}&offset=${Math.max(0, offset - LIMIT)}`}
+                  href={`/internal/organizations?search=${encodeURIComponent(search)}&plan=${encodeURIComponent(plan)}&status=${encodeURIComponent(status)}&offset=${Math.max(0, offset - LIMIT)}`}
                 >
                   Anterior
                 </a>
@@ -253,7 +253,7 @@ export default async function OrganizationsPage(props: {
             {currentPage < totalPages && (
               <Button variant="outline" size="sm" asChild>
                 <a
-                  href={`/internal/organizations?search=${search}&plan=${plan}&status=${status}&offset=${offset + LIMIT}`}
+                  href={`/internal/organizations?search=${encodeURIComponent(search)}&plan=${encodeURIComponent(plan)}&status=${encodeURIComponent(status)}&offset=${offset + LIMIT}`}
                 >
                   Siguiente
                 </a>

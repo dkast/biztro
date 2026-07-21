@@ -4,7 +4,6 @@ import { NextResponse } from "next/server"
 
 const MENU_INTERNAL_PATH = "/menu-internal"
 const MENU_PUBLIC_PATH = "/menu"
-const MENU_REWRITE_HEADER = "x-biztro-menu-rewrite"
 
 const RESERVED_SUBDOMAINS = new Set([
   "preview",
@@ -63,14 +62,7 @@ export function proxy(request: NextRequest) {
     if (subdomain && !subdomain.includes("/")) {
       const rewriteUrl = request.nextUrl.clone()
       rewriteUrl.pathname = `${MENU_INTERNAL_PATH}/${subdomain}`
-      const requestHeaders = new Headers(request.headers)
-      requestHeaders.set(MENU_REWRITE_HEADER, "1")
-
-      return NextResponse.rewrite(rewriteUrl, {
-        request: {
-          headers: requestHeaders
-        }
-      })
+      return NextResponse.rewrite(rewriteUrl)
     }
   }
 
@@ -78,11 +70,7 @@ export function proxy(request: NextRequest) {
     pathname === MENU_INTERNAL_PATH ||
     pathname.startsWith(`${MENU_INTERNAL_PATH}/`)
   ) {
-    if (request.headers.get(MENU_REWRITE_HEADER) !== "1") {
-      return new NextResponse(null, { status: 404 })
-    }
-
-    return NextResponse.next()
+    return new NextResponse(null, { status: 404 })
   }
 
   const subdomain = getSubdomainFromHost(request.nextUrl.hostname)
@@ -93,14 +81,7 @@ export function proxy(request: NextRequest) {
     pathname === "/"
       ? `${MENU_INTERNAL_PATH}/${subdomain}`
       : `${MENU_INTERNAL_PATH}/${subdomain}${pathname}`
-  const requestHeaders = new Headers(request.headers)
-  requestHeaders.set(MENU_REWRITE_HEADER, "1")
-
-  return NextResponse.rewrite(rewriteUrl, {
-    request: {
-      headers: requestHeaders
-    }
-  })
+  return NextResponse.rewrite(rewriteUrl)
 }
 
 export const config = {

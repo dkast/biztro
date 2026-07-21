@@ -15,8 +15,8 @@ import {
 } from "./guards"
 
 // ---------------------------------------------------------------------------
-// Audit logging is part of each privileged mutation; fail closed if it cannot
-// be persisted so successful responses never hide an incomplete audit trail.
+// Audit logging is part of each privileged mutation. If logging fails, the
+// action reports failure and the error is captured in Sentry.
 // ---------------------------------------------------------------------------
 
 async function writeAuditLog(data: {
@@ -95,8 +95,7 @@ export const setOrganizationSponsored = internalAdminActionClient
         payload: {
           orgId,
           before: { plan: org.plan, status: org.status },
-          after: { plan: Plan.PRO, status: SubscriptionStatus.SPONSORED },
-          ...(subscription != null ? { stripe: subscription } : {})
+          after: { plan: Plan.PRO, status: SubscriptionStatus.SPONSORED }
         },
         ipAddress
       })

@@ -42,13 +42,13 @@ describe("proxy", () => {
     expect(response.status).toBe(404)
   })
 
-  it("allows an internally rewritten menu request to continue", () => {
+  it("rejects spoofed access to the internal menu route", () => {
     const response = proxy(
       request("https://my-menu.biztro.co/menu-internal/my-menu", {
         "x-biztro-menu-rewrite": "1"
       })
     )
 
-    expect(response.headers.get("x-middleware-rewrite")).toBeNull()
+    expect(response.status).toBe(404)
   })
 })

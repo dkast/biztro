@@ -156,7 +156,7 @@ export default async function WaitlistPage(props: {
             {currentPage > 1 && (
               <Button variant="outline" size="sm" asChild>
                 <a
-                  href={`/internal/waitlist?search=${search}&offset=${Math.max(0, offset - LIMIT)}`}
+                  href={`/internal/waitlist?search=${encodeURIComponent(search)}&offset=${Math.max(0, offset - LIMIT)}`}
                 >
                   Anterior
                 </a>
@@ -165,7 +165,7 @@ export default async function WaitlistPage(props: {
             {currentPage < totalPages && (
               <Button variant="outline" size="sm" asChild>
                 <a
-                  href={`/internal/waitlist?search=${search}&offset=${offset + LIMIT}`}
+                  href={`/internal/waitlist?search=${encodeURIComponent(search)}&offset=${offset + LIMIT}`}
                 >
                   Siguiente
                 </a>

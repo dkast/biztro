@@ -207,7 +207,7 @@ export default async function UsersPage(props: {
             {currentPage > 1 && (
               <Button variant="outline" size="sm" asChild>
                 <a
-                  href={`/internal/users?search=${search}&role=${role}&offset=${Math.max(0, offset - LIMIT)}`}
+                  href={`/internal/users?search=${encodeURIComponent(search)}&role=${encodeURIComponent(role)}&offset=${Math.max(0, offset - LIMIT)}`}
                 >
                   Anterior
                 </a>
@@ -216,7 +216,7 @@ export default async function UsersPage(props: {
             {currentPage < totalPages && (
               <Button variant="outline" size="sm" asChild>
                 <a
-                  href={`/internal/users?search=${search}&role=${role}&offset=${offset + LIMIT}`}
+                  href={`/internal/users?search=${encodeURIComponent(search)}&role=${encodeURIComponent(role)}&offset=${offset + LIMIT}`}
                 >
                   Siguiente
                 </a>

@@ -21,6 +21,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { hasAdminRole } from "@/lib/auth-admin-access"
 import { authClient } from "@/lib/auth-client"
 import { getInitials } from "@/lib/utils"
 
@@ -110,7 +111,7 @@ export default function ProfileMenu() {
             Inicio
           </Link>
         </DropdownMenuItem>
-        {role === "superuser" && (
+        {hasAdminRole(role) && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

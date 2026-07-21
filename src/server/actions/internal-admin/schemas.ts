@@ -6,7 +6,7 @@ export const setOrgEntitlementSchema = z.object({
 
 export const banUserSchema = z.object({
   userId: z.string().min(1),
-  banReason: z.string().max(500).optional(),
+  reason: z.string().max(500).optional(),
   /** Duration in seconds; omit for a permanent ban. */
   banExpiresIn: z.number().int().positive().optional()
 })
@@ -21,7 +21,7 @@ export const setUserRoleSchema = z.object({
 })
 
 export const waitlistEntrySchema = z.object({
-  email: z.email()
+  email: z.email().transform(email => email.trim().toLowerCase())
 })
 
 export const impersonateUserSchema = z.object({
