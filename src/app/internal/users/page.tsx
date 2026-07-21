@@ -10,6 +10,14 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import {
   listInternalUsers,
   type InternalUser
 } from "@/server/actions/internal-admin/queries"
@@ -23,6 +31,7 @@ const loadParams = createLoader({
 })
 
 const LIMIT = 20
+const ALL_FILTERS_VALUE = "all"
 
 const ROLE_LABELS: Record<string, string> = {
   user: "Usuario",
@@ -33,7 +42,7 @@ const ROLE_LABELS: Record<string, string> = {
 function RoleBadge({ role }: { role: string | null }) {
   if (!role || role === "user") return null
   return (
-    <Badge variant={role === "superuser" ? "default" : "secondary"}>
+    <Badge variant={role === "superuser" ? "violet" : "blue"}>
       {ROLE_LABELS[role] ?? role}
     </Badge>
   )
@@ -42,7 +51,14 @@ function RoleBadge({ role }: { role: string | null }) {
 export default async function UsersPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const { search, role, banned, offset } = await loadParams(props.searchParams)
+  const {
+    search,
+    role: roleFilter,
+    banned: bannedFilter,
+    offset
+  } = await loadParams(props.searchParams)
+  const role = roleFilter === ALL_FILTERS_VALUE ? "" : roleFilter
+  const banned = bannedFilter === null ? null : bannedFilter
   const result = await listInternalUsers({
     search: search || undefined,
     role: role || undefined,
@@ -73,29 +89,40 @@ export default async function UsersPage(props: {
           defaultValue={search}
           className="w-64"
         />
-        <select
-          name="role"
-          defaultValue={role}
-          className="border-input bg-background h-9 rounded-md border px-3
-            text-sm"
-        >
-          <option value="">Todos los roles</option>
-          <option value="user">Usuario</option>
-          <option value="admin">Admin</option>
-          <option value="superuser">Superadmin</option>
-        </select>
-        <select
+        <Select name="role" defaultValue={role || ALL_FILTERS_VALUE}>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Todos los roles" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={ALL_FILTERS_VALUE}>Todos los roles</SelectItem>
+              <SelectItem value="user">Usuario</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="superuser">Superadmin</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <Select
           name="banned"
           defaultValue={
-            banned === true ? "true" : banned === false ? "false" : ""
+            banned === true
+              ? "true"
+              : banned === false
+                ? "false"
+                : ALL_FILTERS_VALUE
           }
-          className="border-input bg-background h-9 rounded-md border px-3
-            text-sm"
         >
-          <option value="">Todos</option>
-          <option value="false">Activos</option>
-          <option value="true">Baneados</option>
-        </select>
+          <SelectTrigger className="w-32">
+            <SelectValue placeholder="Todos" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={ALL_FILTERS_VALUE}>Todos</SelectItem>
+              <SelectItem value="false">Activos</SelectItem>
+              <SelectItem value="true">Baneados</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <Button type="submit" size="sm">
           Filtrar
         </Button>
@@ -152,7 +179,7 @@ export default async function UsersPage(props: {
                   {user.banned ? (
                     <Badge variant="destructive">Baneado</Badge>
                   ) : (
-                    <Badge variant="outline">Activo</Badge>
+                    <Badge variant="green">Activo</Badge>
                   )}
                 </td>
                 <td className="text-muted-foreground px-4 py-3">

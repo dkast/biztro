@@ -1,7 +1,7 @@
 "use client"
 
 import { useSyncExternalStore } from "react"
-import { Globe, LogOut, ShieldUser, SunMoon, User } from "lucide-react"
+import { Globe, LogOut, ShieldCogCorner, SunMoon, User } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -115,7 +115,7 @@ export default function ProfileMenu() {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/internal" prefetch={false}>
-                <ShieldUser className="mr-2 size-4" />
+                <ShieldCogCorner className="mr-2 size-4" />
                 Admin
               </Link>
             </DropdownMenuItem>

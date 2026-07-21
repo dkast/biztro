@@ -49,7 +49,7 @@ async function writeAuditLog(data: {
 // Organization entitlement mutations
 // ---------------------------------------------------------------------------
 
-async function getActiveStripeSubscription(organizationId: string) {
+function getActiveStripeSubscription(organizationId: string) {
   return prisma.subscription.findFirst({
     where: {
       referenceId: organizationId,

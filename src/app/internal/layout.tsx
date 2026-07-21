@@ -1,12 +1,17 @@
+import { ArrowLeft, ShieldCogCorner } from "lucide-react"
 import Link from "next/link"
 
+import { PageSubtitle } from "@/components/dashboard/page-subtitle"
+import SecondaryNav, {
+  type SecondaryNavItem
+} from "@/components/dashboard/secondary-nav"
 import { requireInternalAdmin } from "@/server/actions/internal-admin/guards"
 
 const navigation = [
-  { href: "/internal/organizations", label: "Organizaciones" },
-  { href: "/internal/users", label: "Usuarios" },
-  { href: "/internal/waitlist", label: "Lista de espera" }
-]
+  { href: "internal/organizations", title: "Organizaciones" },
+  { href: "internal/users", title: "Usuarios" },
+  { href: "internal/waitlist", title: "Lista de espera" }
+] satisfies SecondaryNavItem[]
 
 export default async function InternalLayout({
   children
@@ -17,42 +22,25 @@ export default async function InternalLayout({
 
   return (
     <div className="bg-background min-h-dvh">
-      <header className="border-border border-b">
-        <div
-          className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6
-            lg:px-8"
-        >
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p
-                className="text-muted-foreground text-xs font-semibold
-                  tracking-widest uppercase"
-              >
-                Biztro interno
-              </p>
-              <h1 className="text-xl font-semibold">Panel de administración</h1>
-            </div>
-            <Link
-              href="/dashboard"
-              className="text-muted-foreground hover:text-foreground text-sm"
-              prefetch={false}
-            >
-              Volver a la aplicación
-            </Link>
-          </div>
-          <nav className="flex flex-wrap gap-2" aria-label="Administración">
-            {navigation.map(item => (
+      <header>
+        <div className="mx-auto flex flex-col gap-4 pt-5">
+          <PageSubtitle className="items-center px-0 sm:px-6">
+            <PageSubtitle.Icon icon={ShieldCogCorner} />
+            <PageSubtitle.Title>Panel de administración</PageSubtitle.Title>
+            <PageSubtitle.Description>Biztro interno</PageSubtitle.Description>
+            <PageSubtitle.Actions>
               <Link
-                key={item.href}
-                href={item.href}
+                href="/dashboard"
+                className="text-muted-foreground hover:text-foreground flex
+                  items-center gap-1 text-sm"
                 prefetch={false}
-                className="bg-muted hover:bg-accent rounded-md px-3 py-2 text-sm
-                  font-medium"
               >
-                {item.label}
+                <ArrowLeft className="mr-2 size-4" />
+                Volver a la aplicación
               </Link>
-            ))}
-          </nav>
+            </PageSubtitle.Actions>
+          </PageSubtitle>
+          <SecondaryNav items={navigation} aria-label="Administración" />
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">

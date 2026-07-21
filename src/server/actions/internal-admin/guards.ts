@@ -80,7 +80,7 @@ export async function getInternalAdminSession(): Promise<AdminGuardSession> {
  * Require the current session to belong to an internal admin (role: admin or
  * superuser). Rejects impersonated sessions. Redirects on failure.
  */
-export async function requireInternalAdmin(): Promise<AdminGuardSession> {
+export function requireInternalAdmin(): Promise<AdminGuardSession> {
   return getInternalAdminSession()
 }
 

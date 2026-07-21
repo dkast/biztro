@@ -5,6 +5,14 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import {
   listInternalOrganizations,
   type InternalOrg
 } from "@/server/actions/internal-admin/queries"
@@ -18,6 +26,7 @@ const loadParams = createLoader({
 })
 
 const LIMIT = 20
+const ALL_FILTERS_VALUE = "all"
 
 const PLAN_LABELS: Record<string, string> = {
   BASIC: "Básico",
@@ -36,16 +45,20 @@ const STATUS_LABELS: Record<string, string> = {
 function StatusBadge({ status }: { status: string }) {
   const variant =
     status === "SPONSORED"
-      ? "default"
-      : status === "ACTIVE" || status === "TRIALING"
-        ? "secondary"
-        : "outline"
+      ? "indigo"
+      : status === "ACTIVE"
+        ? "green"
+        : status === "TRIALING" || status === "PAST_DUE"
+          ? "yellow"
+          : status === "CANCELED"
+            ? "destructive"
+            : "default"
   return <Badge variant={variant}>{STATUS_LABELS[status] ?? status}</Badge>
 }
 
 function PlanBadge({ plan }: { plan: string }) {
   return (
-    <Badge variant={plan === "PRO" ? "default" : "outline"}>
+    <Badge variant={plan === "PRO" ? "blue" : "default"}>
       {PLAN_LABELS[plan] ?? plan}
     </Badge>
   )
@@ -63,7 +76,15 @@ function EntitlementBadge({
   } as const
 
   return (
-    <Badge variant={entitlement === "BASIC" ? "outline" : "default"}>
+    <Badge
+      variant={
+        entitlement === "PAID_PRO"
+          ? "blue"
+          : entitlement === "SPONSORED"
+            ? "indigo"
+            : "default"
+      }
+    >
       {labels[entitlement]}
     </Badge>
   )
@@ -72,7 +93,14 @@ function EntitlementBadge({
 export default async function OrganizationsPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const { search, plan, status, offset } = await loadParams(props.searchParams)
+  const {
+    search,
+    plan: planFilter,
+    status: statusFilter,
+    offset
+  } = await loadParams(props.searchParams)
+  const plan = planFilter === ALL_FILTERS_VALUE ? "" : planFilter
+  const status = statusFilter === ALL_FILTERS_VALUE ? "" : statusFilter
   const result = await listInternalOrganizations({
     search: search || undefined,
     plan: plan || undefined,
@@ -103,30 +131,38 @@ export default async function OrganizationsPage(props: {
           defaultValue={search}
           className="w-64"
         />
-        <select
-          name="plan"
-          defaultValue={plan}
-          className="border-input bg-background h-9 rounded-md border px-3
-            text-sm"
-        >
-          <option value="">Todos los planes</option>
-          <option value="BASIC">Básico</option>
-          <option value="PRO">Pro</option>
-        </select>
-        <select
-          name="status"
-          defaultValue={status}
-          className="border-input bg-background h-9 rounded-md border px-3
-            text-sm"
-        >
-          <option value="">Todos los estados</option>
-          <option value="ACTIVE">Activo</option>
-          <option value="TRIALING">Prueba</option>
-          <option value="SPONSORED">Patrocinado</option>
-          <option value="CANCELED">Cancelado</option>
-          <option value="PAST_DUE">Vencido</option>
-          <option value="PAUSED">Pausado</option>
-        </select>
+        <Select name="plan" defaultValue={plan || ALL_FILTERS_VALUE}>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="Todos los planes" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={ALL_FILTERS_VALUE}>
+                Todos los planes
+              </SelectItem>
+              <SelectItem value="BASIC">Básico</SelectItem>
+              <SelectItem value="PRO">Pro</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <Select name="status" defaultValue={status || ALL_FILTERS_VALUE}>
+          <SelectTrigger className="w-44">
+            <SelectValue placeholder="Todos los estados" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={ALL_FILTERS_VALUE}>
+                Todos los estados
+              </SelectItem>
+              <SelectItem value="ACTIVE">Activo</SelectItem>
+              <SelectItem value="TRIALING">Prueba</SelectItem>
+              <SelectItem value="SPONSORED">Patrocinado</SelectItem>
+              <SelectItem value="CANCELED">Cancelado</SelectItem>
+              <SelectItem value="PAST_DUE">Vencido</SelectItem>
+              <SelectItem value="PAUSED">Pausado</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <Button type="submit" size="sm">
           Filtrar
         </Button>

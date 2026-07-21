@@ -10,6 +10,14 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import {
   listWaitlistEntries,
   type InternalWaitlistEntry
 } from "@/server/actions/internal-admin/queries"
@@ -23,11 +31,17 @@ const loadParams = createLoader({
 })
 
 const LIMIT = 20
+const ALL_FILTERS_VALUE = "all"
 
 export default async function WaitlistPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const { search, enabled, offset } = await loadParams(props.searchParams)
+  const {
+    search,
+    enabled: enabledFilter,
+    offset
+  } = await loadParams(props.searchParams)
+  const enabled = enabledFilter === null ? null : enabledFilter
   const result = await listWaitlistEntries({
     search: search || undefined,
     enabled: enabled ?? undefined,
@@ -58,18 +72,27 @@ export default async function WaitlistPage(props: {
           defaultValue={search}
           className="w-64"
         />
-        <select
+        <Select
           name="enabled"
           defaultValue={
-            enabled === true ? "true" : enabled === false ? "false" : ""
+            enabled === true
+              ? "true"
+              : enabled === false
+                ? "false"
+                : ALL_FILTERS_VALUE
           }
-          className="border-input bg-background h-9 rounded-md border px-3
-            text-sm"
         >
-          <option value="">Todos</option>
-          <option value="true">Habilitados</option>
-          <option value="false">Pendientes</option>
-        </select>
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Todos" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value={ALL_FILTERS_VALUE}>Todos</SelectItem>
+              <SelectItem value="true">Habilitados</SelectItem>
+              <SelectItem value="false">Pendientes</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <Button type="submit" size="sm">
           Filtrar
         </Button>
@@ -109,9 +132,9 @@ export default async function WaitlistPage(props: {
                 <td className="px-4 py-3 font-medium">{entry.email}</td>
                 <td className="px-4 py-3">
                   {entry.enabled ? (
-                    <Badge variant="default">Habilitado</Badge>
+                    <Badge variant="green">Habilitado</Badge>
                   ) : (
-                    <Badge variant="outline">Pendiente</Badge>
+                    <Badge variant="yellow">Pendiente</Badge>
                   )}
                 </td>
                 <td className="px-4 py-3 text-right">
