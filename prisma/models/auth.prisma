@@ -36,6 +36,7 @@ model Session {
   userAgent String?
 
   activeOrganizationId String?
+  impersonatedBy       String?
 
   @@index([userId])
 }
@@ -53,6 +54,11 @@ model User {
   updatedAt        DateTime
   members          Member[]
   invitations      Invitation[]
+  // Admin plugin fields
+  role             String?      @default("user")
+  banned           Boolean?     @default(false)
+  banReason        String?
+  banExpires       DateTime?
 }
 
 model VerificationToken {

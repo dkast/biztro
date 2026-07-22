@@ -9,7 +9,7 @@ import CssStyles from "@/components/menu-editor/css-styles"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { useIsMobile } from "@/hooks/use-mobile"
 import useScrollDirection from "@/hooks/use-scroll-direction"
-import ResolveEditor from "@/app/[subdomain]/resolve-editor"
+import ResolveEditor from "@/app/menu-internal/[subdomain]/resolve-editor"
 import { cn } from "@/lib/utils"
 
 type PreviewMode = "inline" | "iframe"

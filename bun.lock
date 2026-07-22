@@ -177,6 +177,9 @@
       },
     },
   },
+  "patchedDependencies": {
+    "next@16.2.10": "patches/next@16.2.10.patch",
+  },
   "overrides": {
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",

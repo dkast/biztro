@@ -1,7 +1,7 @@
 "use client"
 
 import { useSyncExternalStore } from "react"
-import { Globe, LogOut, SunMoon, User } from "lucide-react"
+import { Globe, LogOut, ShieldCogCorner, SunMoon, User } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -21,6 +21,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { hasAdminRole } from "@/lib/auth-admin-access"
 import { authClient } from "@/lib/auth-client"
 import { getInitials } from "@/lib/utils"
 
@@ -43,6 +44,7 @@ function ProfileMenuTrigger({ disabled = false }: { disabled?: boolean }) {
 export default function ProfileMenu() {
   const { data: session } = authClient.useSession()
   const user = session?.user
+  const role = session?.user?.role
   const { theme, setTheme } = useTheme()
   const router = useRouter()
 
@@ -109,6 +111,17 @@ export default function ProfileMenu() {
             Inicio
           </Link>
         </DropdownMenuItem>
+        {hasAdminRole(role) && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/internal" prefetch={false}>
+                <ShieldCogCorner className="mr-2 size-4" />
+                Admin
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={() =>

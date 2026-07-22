@@ -2,6 +2,9 @@ import { getSessionCookie } from "better-auth/cookies"
 import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 
+const MENU_INTERNAL_PATH = "/menu-internal"
+const MENU_PUBLIC_PATH = "/menu"
+
 const RESERVED_SUBDOMAINS = new Set([
   "preview",
   "www",
@@ -11,6 +14,10 @@ const RESERVED_SUBDOMAINS = new Set([
   "pm-bounces",
   "send"
 ])
+
+function isPublicFilePath(pathname: string) {
+  return pathname.includes(".")
+}
 
 function getSubdomainFromHost(hostname: string) {
   if (hostname === "biztro.co" || hostname === "localhost") return null
@@ -30,7 +37,7 @@ function getSubdomainFromHost(hostname: string) {
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  if (pathname.startsWith("/dashboard")) {
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/internal")) {
     const sessionCookie = getSessionCookie(request)
     if (!sessionCookie) {
       return NextResponse.redirect(new URL("/login", request.url))
@@ -38,27 +45,45 @@ export function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const subdomain = getSubdomainFromHost(request.nextUrl.hostname)
-  if (!subdomain) return NextResponse.next()
-
   if (
-    pathname === `/${subdomain}` ||
-    pathname.startsWith(`/${subdomain}/`) ||
-    pathname.startsWith("/_next")
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/ingest") ||
+    pathname.startsWith("/monitoring") ||
+    pathname.startsWith("/.well-known") ||
+    isPublicFilePath(pathname)
   ) {
     return NextResponse.next()
   }
 
+  if (pathname.startsWith(`${MENU_PUBLIC_PATH}/`)) {
+    const subdomain = pathname.slice(`${MENU_PUBLIC_PATH}/`.length)
+
+    if (subdomain && !subdomain.includes("/")) {
+      const rewriteUrl = request.nextUrl.clone()
+      rewriteUrl.pathname = `${MENU_INTERNAL_PATH}/${subdomain}`
+      return NextResponse.rewrite(rewriteUrl)
+    }
+  }
+
+  if (
+    pathname === MENU_INTERNAL_PATH ||
+    pathname.startsWith(`${MENU_INTERNAL_PATH}/`)
+  ) {
+    return new NextResponse(null, { status: 404 })
+  }
+
+  const subdomain = getSubdomainFromHost(request.nextUrl.hostname)
+  if (!subdomain) return NextResponse.next()
+
   const rewriteUrl = request.nextUrl.clone()
   rewriteUrl.pathname =
-    pathname === "/" ? `/${subdomain}` : `/${subdomain}${pathname}`
-
+    pathname === "/"
+      ? `${MENU_INTERNAL_PATH}/${subdomain}`
+      : `${MENU_INTERNAL_PATH}/${subdomain}${pathname}`
   return NextResponse.rewrite(rewriteUrl)
 }
 
-// Update matcher to the routes you want to protect
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|ingest|monitoring).*)"
-  ]
+  matcher: ["/((?!api|_next/static|_next/image|.*\\..*|ingest|monitoring).*)"]
 }

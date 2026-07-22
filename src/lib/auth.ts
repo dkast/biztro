@@ -8,7 +8,7 @@ import { betterAuth } from "better-auth/minimal"
 // Note: we intentionally avoid a global `before` middleware and instead use
 // database hooks on user creation. We import createAuthMiddleware for specific use cases as needed.
 import { nextCookies } from "better-auth/next-js"
-import { organization } from "better-auth/plugins"
+import { admin, organization } from "better-auth/plugins"
 import Stripe from "stripe"
 
 import {
@@ -16,6 +16,7 @@ import {
   isWaitlistEnabled
 } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
+import { ac, roles } from "@/lib/auth-admin-access"
 import prisma from "@/lib/prisma"
 import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
 
@@ -218,6 +219,13 @@ export const auth = betterAuth({
   },
   plugins: [
     nextCookies(),
+    admin({
+      defaultRole: "user",
+      adminRoles: ["admin", "superuser"],
+      impersonationSessionDuration: 60 * 60, // 1 hour
+      ac,
+      roles
+    }),
     organization({
       schema: {
         organization: {
