@@ -40,11 +40,7 @@ export function EditorSettingRow({
       )}
     >
       <div className="flex min-w-0 items-center">
-        <Label
-          size="sm"
-          htmlFor={htmlFor}
-          className="text-muted-foreground truncate"
-        >
+        <Label htmlFor={htmlFor} className="text-muted-foreground truncate">
           {label}
         </Label>
         {hint}
