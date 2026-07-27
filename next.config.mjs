@@ -13,6 +13,7 @@ await import("./src/env.mjs")
 /** @type {import("next").NextConfig} */
 const config = {
   cacheComponents: true,
+  partialPrefetching: true,
   reactStrictMode: true,
   experimental: {
     turbopackFileSystemCacheForBuild: true,

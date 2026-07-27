@@ -357,10 +357,12 @@ export default function MenuImportOptions({
           <div className="mb-3 flex items-start gap-3">
             <FileText className="text-muted-foreground mt-1.5 size-4 shrink-0" />
             <div>
-              <p className="flex items-center justify-between gap-2 font-medium">
+              <div
+                className="flex items-center justify-between gap-2 font-medium"
+              >
                 <span>Importar menú desde PDF o imagen con IA</span>
                 <Badge variant="blue">Recomendado</Badge>
-              </p>
+              </div>
               <p className="text-muted-foreground text-sm text-pretty">
                 Usa la importación con IA para extraer productos desde una
                 carta, PDF o imagen de menú.
