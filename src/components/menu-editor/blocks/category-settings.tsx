@@ -1,19 +1,23 @@
 import { useEditor, useNode } from "@craftjs/core"
 import { Colorful, hexToHsva, Sketch } from "@uiw/react-color"
 import { useAtomValue } from "jotai"
-import {
-  AlignCenter,
-  AlignLeft,
-  AlignRight,
-  CaseSensitive,
-  CaseUpper,
-  Paintbrush
-} from "lucide-react"
+import { Paintbrush } from "lucide-react"
 
 import {
   type CategoryBlockProps,
   type CategoryHeadingShape
 } from "@/components/menu-editor/blocks/category-block"
+import {
+  EditorSettingRow,
+  EditorSettingSegmented,
+  EditorSettingSelect
+} from "@/components/menu-editor/settings/editor-setting-row"
+import { FontSizeSlider } from "@/components/menu-editor/settings/font-size-slider"
+import {
+  FONT_WEIGHT_OPTIONS,
+  TEXT_ALIGN_OPTIONS,
+  TEXT_TRANSFORM_OPTIONS
+} from "@/components/menu-editor/settings/settings-options"
 import SideSection from "@/components/menu-editor/side-section"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,21 +27,13 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from "@/components/ui/drawer"
-import { Label } from "@/components/ui/label"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
+import { SelectItem } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Tooltip,
   TooltipContent,
@@ -45,7 +41,6 @@ import {
 } from "@/components/ui/tooltip"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorListAtom, colorThemeAtom } from "@/lib/atoms"
-import { FONT_SIZES } from "@/lib/types/theme"
 
 // Helper to normalize color value (handles both hex string and legacy RgbaColor object)
 function normalizeColor(
@@ -277,336 +272,186 @@ export default function CategorySettings() {
   return (
     <>
       <SideSection title="Categoría">
-        <div className="grid grid-cols-3 items-center gap-2">
-          <dt>
-            <Label size="xs">Tamaño</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={categoryFontSize.toString()}
-              onValueChange={value =>
-                setProp(
-                  (props: CategoryBlockProps) =>
-                    (props.categoryFontSize = parseInt(value))
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                {FONT_SIZES.map(size => (
-                  <SelectItem key={size} value={size.toString()}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </dd>
-          <dt>
-            <Label size="xs">Estilo</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={categoryFontWeight}
-              onValueChange={value =>
-                setProp(
-                  (props: CategoryBlockProps) =>
-                    (props.categoryFontWeight = value)
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
-              </SelectContent>
-            </Select>
-          </dd>
-          <dt>
-            <Label size="xs">Alineación</Label>
-          </dt>
-          <dd className="col-span-2">
-            <Tabs
-              value={categoryTextAlign}
-              onValueChange={value =>
-                setProp(
-                  (props: CategoryBlockProps) =>
-                    (props.categoryTextAlign = value)
-                )
-              }
-            >
-              <TabsList className="h-8 p-0.5">
-                <TabsTrigger value="left">
-                  <AlignLeft className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger value="center">
-                  <AlignCenter className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger value="right">
-                  <AlignRight className="size-3.5" />
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </dd>
-          <dt>
-            <Label size="xs">Capitaliza</Label>
-          </dt>
-          <dd className="col-span-2">
-            <Tabs
-              value={categoryTextTransform ?? "none"}
-              onValueChange={value =>
-                setProp(
-                  (props: CategoryBlockProps) =>
-                    (props.categoryTextTransform =
-                      value as CategoryBlockProps["categoryTextTransform"])
-                )
-              }
-            >
-              <TabsList className="h-8 p-0.5">
-                <TabsTrigger value="none" aria-label="Capitalización normal">
-                  <CaseSensitive className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger
-                  value="uppercase"
-                  aria-label="Capitalización en mayúsculas"
-                >
-                  <CaseUpper className="size-3.5" />
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </dd>
-          <dt>
-            <Label size="xs">Fondo título</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <ColorPickerControl
-              color={categoryHeadingBgColor}
-              fallbackColor={selectedTheme.surfaceColor}
-              title="Color de fondo"
-              ariaLabel="Seleccionar color de fondo"
-              clearLabel="Sin color"
-              colorPresets={colorPresets}
-              isMobile={isMobile}
-              onChange={color =>
-                setProp(
-                  (props: CategoryBlockProps) =>
-                    (props.categoryHeadingBgColor = color)
-                )
-              }
-              onClear={() => {
-                setProp(
-                  (props: CategoryBlockProps) =>
-                    (props.categoryHeadingBgColor = undefined)
-                )
-              }}
-            />
-          </dd>
-          <dt>
-            <Label size="xs">Forma título</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={categoryHeadingShape ?? "none"}
-              onValueChange={value =>
-                setProp(
-                  (props: CategoryBlockProps) =>
-                    (props.categoryHeadingShape = value as CategoryHeadingShape)
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Ninguna</SelectItem>
-                <SelectItem value="rectangle">Rectángulo</SelectItem>
-                <SelectItem value="rounded">Redondeado</SelectItem>
-                <SelectItem value="pill">Cápsula</SelectItem>
-                <SelectItem value="slanted">Corte diagonal</SelectItem>
-                <SelectItem value="parallelogram">Banda inclinada</SelectItem>
-                <SelectItem value="chevron">Flecha</SelectItem>
-                <SelectItem value="tab">Pestaña</SelectItem>
-                <SelectItem value="scooped">Marco</SelectItem>
-                <SelectItem value="ribbon">Listón</SelectItem>
-              </SelectContent>
-            </Select>
-          </dd>
-        </div>
+        <FontSizeSlider
+          value={categoryFontSize}
+          onValueChange={size =>
+            setProp(
+              (props: CategoryBlockProps) => (props.categoryFontSize = size)
+            )
+          }
+        />
+        <EditorSettingRow label="Estilo">
+          <EditorSettingSelect
+            ariaLabel="Estilo de la categoría"
+            value={categoryFontWeight}
+            onValueChange={value =>
+              setProp(
+                (props: CategoryBlockProps) =>
+                  (props.categoryFontWeight = value)
+              )
+            }
+          >
+            {FONT_WEIGHT_OPTIONS.map(option => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </EditorSettingSelect>
+        </EditorSettingRow>
+        <EditorSettingRow label="Alineación">
+          <EditorSettingSegmented
+            value={categoryTextAlign}
+            options={TEXT_ALIGN_OPTIONS}
+            onValueChange={value =>
+              setProp(
+                (props: CategoryBlockProps) => (props.categoryTextAlign = value)
+              )
+            }
+          />
+        </EditorSettingRow>
+        <EditorSettingRow label="Capitaliza">
+          <EditorSettingSegmented
+            value={categoryTextTransform ?? "none"}
+            options={TEXT_TRANSFORM_OPTIONS}
+            onValueChange={value =>
+              setProp(
+                (props: CategoryBlockProps) =>
+                  (props.categoryTextTransform =
+                    value as CategoryBlockProps["categoryTextTransform"])
+              )
+            }
+          />
+        </EditorSettingRow>
+        <EditorSettingRow label="Fondo título">
+          <ColorPickerControl
+            color={categoryHeadingBgColor}
+            fallbackColor={selectedTheme.surfaceColor}
+            title="Color de fondo"
+            ariaLabel="Seleccionar color de fondo"
+            clearLabel="Sin color"
+            colorPresets={colorPresets}
+            isMobile={isMobile}
+            onChange={color =>
+              setProp(
+                (props: CategoryBlockProps) =>
+                  (props.categoryHeadingBgColor = color)
+              )
+            }
+            onClear={() => {
+              setProp(
+                (props: CategoryBlockProps) =>
+                  (props.categoryHeadingBgColor = undefined)
+              )
+            }}
+          />
+        </EditorSettingRow>
+        <EditorSettingRow label="Forma título">
+          <EditorSettingSelect
+            ariaLabel="Forma del título"
+            value={categoryHeadingShape ?? "none"}
+            onValueChange={value =>
+              setProp(
+                (props: CategoryBlockProps) =>
+                  (props.categoryHeadingShape = value as CategoryHeadingShape)
+              )
+            }
+          >
+            <SelectItem value="none">Ninguna</SelectItem>
+            <SelectItem value="rectangle">Rectángulo</SelectItem>
+            <SelectItem value="rounded">Redondeado</SelectItem>
+            <SelectItem value="pill">Cápsula</SelectItem>
+            <SelectItem value="slanted">Corte diagonal</SelectItem>
+            <SelectItem value="parallelogram">Banda inclinada</SelectItem>
+            <SelectItem value="chevron">Flecha</SelectItem>
+            <SelectItem value="tab">Pestaña</SelectItem>
+            <SelectItem value="scooped">Marco</SelectItem>
+            <SelectItem value="ribbon">Listón</SelectItem>
+          </EditorSettingSelect>
+        </EditorSettingRow>
       </SideSection>
       <SideSection title="Producto">
-        <div className="grid grid-cols-3 items-center gap-2">
-          <dt>
-            <Label size="xs">Tamaño</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={itemFontSize.toString()}
-              onValueChange={value =>
-                setProp(
-                  (props: CategoryBlockProps) =>
-                    (props.itemFontSize = parseInt(value))
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                {FONT_SIZES.map(size => (
-                  <SelectItem key={size} value={size.toString()}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </dd>
-          <dt>
-            <Label size="xs">Estilo</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={itemFontWeight}
-              onValueChange={value =>
-                setProp(
-                  (props: CategoryBlockProps) => (props.itemFontWeight = value)
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
-              </SelectContent>
-            </Select>
-          </dd>
-          <dt>
-            <Label size="xs">Capitaliza</Label>
-          </dt>
-          <dd className="col-span-2">
-            <Tabs
-              value={itemTextTransform ?? "none"}
-              onValueChange={value =>
-                setProp(
-                  (props: CategoryBlockProps) =>
-                    (props.itemTextTransform =
-                      value as CategoryBlockProps["itemTextTransform"])
-                )
-              }
-            >
-              <TabsList className="h-8 p-0.5">
-                <TabsTrigger value="none" aria-label="Capitalización normal">
-                  <CaseSensitive className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger
-                  value="uppercase"
-                  aria-label="Capitalización en mayúsculas"
-                >
-                  <CaseUpper className="size-3.5" />
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </dd>
-        </div>
+        <FontSizeSlider
+          value={itemFontSize}
+          onValueChange={size =>
+            setProp((props: CategoryBlockProps) => (props.itemFontSize = size))
+          }
+        />
+        <EditorSettingRow label="Estilo">
+          <EditorSettingSelect
+            ariaLabel="Estilo del producto"
+            value={itemFontWeight}
+            onValueChange={value =>
+              setProp(
+                (props: CategoryBlockProps) => (props.itemFontWeight = value)
+              )
+            }
+          >
+            {FONT_WEIGHT_OPTIONS.map(option => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </EditorSettingSelect>
+        </EditorSettingRow>
+        <EditorSettingRow label="Capitaliza">
+          <EditorSettingSegmented
+            value={itemTextTransform ?? "none"}
+            options={TEXT_TRANSFORM_OPTIONS}
+            onValueChange={value =>
+              setProp(
+                (props: CategoryBlockProps) =>
+                  (props.itemTextTransform =
+                    value as CategoryBlockProps["itemTextTransform"])
+              )
+            }
+          />
+        </EditorSettingRow>
       </SideSection>
       <SideSection title="Precio">
-        <div className="grid grid-cols-3 items-center gap-2">
-          <dt>
-            <Label size="xs">Tamaño</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={priceFontSize.toString()}
-              onValueChange={value =>
-                setProp(
-                  (props: CategoryBlockProps) =>
-                    (props.priceFontSize = parseInt(value))
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                {FONT_SIZES.map(size => (
-                  <SelectItem key={size} value={size.toString()}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </dd>
-          <dt>
-            <Label size="xs">Estilo</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={priceFontWeight}
-              onValueChange={value =>
-                setProp(
-                  (props: CategoryBlockProps) => (props.priceFontWeight = value)
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
-              </SelectContent>
-            </Select>
-          </dd>
-        </div>
+        <FontSizeSlider
+          value={priceFontSize}
+          onValueChange={size =>
+            setProp((props: CategoryBlockProps) => (props.priceFontSize = size))
+          }
+        />
+        <EditorSettingRow label="Estilo">
+          <EditorSettingSelect
+            ariaLabel="Estilo del precio"
+            value={priceFontWeight}
+            onValueChange={value =>
+              setProp(
+                (props: CategoryBlockProps) => (props.priceFontWeight = value)
+              )
+            }
+          >
+            {FONT_WEIGHT_OPTIONS.map(option => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </EditorSettingSelect>
+        </EditorSettingRow>
       </SideSection>
       <SideSection title="Imágen Producto">
-        <div className="grid grid-cols-3 items-center gap-y-2">
-          <dt>
-            <Label size="xs">Mostrar</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Switch
-              className="sm:scale-75"
-              checked={showImage}
-              onCheckedChange={checked => {
-                setProp(
-                  (props: Required<CategoryBlockProps>) =>
-                    (props.showImage = checked)
-                )
-              }}
-            />
-          </dd>
-        </div>
+        <EditorSettingRow label="Mostrar">
+          <Switch
+            className="sm:scale-75"
+            aria-label="Mostrar imágen del producto"
+            checked={showImage}
+            onCheckedChange={checked => {
+              setProp(
+                (props: Required<CategoryBlockProps>) =>
+                  (props.showImage = checked)
+              )
+            }}
+          />
+        </EditorSettingRow>
       </SideSection>
       <div className="px-4 py-3">
         <Tooltip delayDuration={100}>
           <TooltipTrigger asChild>
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               className="w-full gap-1.5 text-xs"
               onClick={applyToAll}

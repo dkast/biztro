@@ -1,25 +1,26 @@
 import { useEditor, useNode } from "@craftjs/core"
-import { CaseSensitive, CaseUpper, Paintbrush } from "lucide-react"
+import { Paintbrush } from "lucide-react"
 
 import { type ItemBlockProps } from "@/components/menu-editor/blocks/item-block"
+import {
+  EditorSettingRow,
+  EditorSettingSegmented,
+  EditorSettingSelect
+} from "@/components/menu-editor/settings/editor-setting-row"
+import { FontSizeSlider } from "@/components/menu-editor/settings/font-size-slider"
+import {
+  FONT_WEIGHT_OPTIONS,
+  TEXT_TRANSFORM_OPTIONS
+} from "@/components/menu-editor/settings/settings-options"
 import SideSection from "@/components/menu-editor/side-section"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
+import { SelectItem } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { FONT_SIZES } from "@/lib/types/theme"
 
 export default function ItemSettings() {
   const {
@@ -75,196 +76,102 @@ export default function ItemSettings() {
   return (
     <>
       <SideSection title="General">
-        <div className="grid grid-cols-3 items-center gap-2">
-          <dt>
-            <Label size="xs">Fondo</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={backgroundMode}
-              onValueChange={value =>
-                setProp(
-                  (props: ItemBlockProps) =>
-                    (props.backgroundMode = value as "none" | "custom")
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Ninguno</SelectItem>
-                <SelectItem value="custom">Personalizado</SelectItem>
-              </SelectContent>
-            </Select>
-          </dd>
-        </div>
+        <EditorSettingRow label="Fondo">
+          <EditorSettingSelect
+            ariaLabel="Fondo del producto"
+            value={backgroundMode}
+            onValueChange={value =>
+              setProp(
+                (props: ItemBlockProps) =>
+                  (props.backgroundMode = value as "none" | "custom")
+              )
+            }
+          >
+            <SelectItem value="none">Ninguno</SelectItem>
+            <SelectItem value="custom">Personalizado</SelectItem>
+          </EditorSettingSelect>
+        </EditorSettingRow>
       </SideSection>
       <SideSection title="Producto">
-        <div className="grid grid-cols-3 items-center gap-2">
-          <dt>
-            <Label size="xs">Tamaño</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={itemFontSize.toString()}
-              onValueChange={value =>
-                setProp(
-                  (props: ItemBlockProps) =>
-                    (props.itemFontSize = parseInt(value))
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                {FONT_SIZES.map(size => (
-                  <SelectItem key={size} value={size.toString()}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </dd>
-          <dt>
-            <Label size="xs">Estilo</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={itemFontWeight}
-              onValueChange={value =>
-                setProp(
-                  (props: ItemBlockProps) => (props.itemFontWeight = value)
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
-              </SelectContent>
-            </Select>
-          </dd>
-          <dt>
-            <Label size="xs">Capitaliza</Label>
-          </dt>
-          <dd className="col-span-2">
-            <Tabs
-              value={itemTextTransform ?? "none"}
-              onValueChange={value =>
-                setProp(
-                  (props: ItemBlockProps) =>
-                    (props.itemTextTransform =
-                      value as ItemBlockProps["itemTextTransform"])
-                )
-              }
-            >
-              <TabsList className="h-8 p-0.5">
-                <TabsTrigger value="none" aria-label="Capitalización normal">
-                  <CaseSensitive className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger
-                  value="uppercase"
-                  aria-label="Capitalización en mayúsculas"
-                >
-                  <CaseUpper className="size-3.5" />
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </dd>
-        </div>
+        <FontSizeSlider
+          value={itemFontSize}
+          onValueChange={size =>
+            setProp((props: ItemBlockProps) => (props.itemFontSize = size))
+          }
+        />
+        <EditorSettingRow label="Estilo">
+          <EditorSettingSelect
+            ariaLabel="Estilo del producto"
+            value={itemFontWeight}
+            onValueChange={value =>
+              setProp((props: ItemBlockProps) => (props.itemFontWeight = value))
+            }
+          >
+            {FONT_WEIGHT_OPTIONS.map(option => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </EditorSettingSelect>
+        </EditorSettingRow>
+        <EditorSettingRow label="Capitaliza">
+          <EditorSettingSegmented
+            value={itemTextTransform ?? "none"}
+            options={TEXT_TRANSFORM_OPTIONS}
+            onValueChange={value =>
+              setProp(
+                (props: ItemBlockProps) =>
+                  (props.itemTextTransform =
+                    value as ItemBlockProps["itemTextTransform"])
+              )
+            }
+          />
+        </EditorSettingRow>
       </SideSection>
       <SideSection title="Precio">
-        <div className="grid grid-cols-3 items-center gap-2">
-          <dt>
-            <Label size="xs">Tamaño</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={priceFontSize.toString()}
-              onValueChange={value =>
-                setProp(
-                  (props: ItemBlockProps) =>
-                    (props.priceFontSize = parseInt(value))
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                {FONT_SIZES.map(size => (
-                  <SelectItem key={size} value={size.toString()}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </dd>
-          <dt>
-            <Label size="xs">Estilo</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={priceFontWeight}
-              onValueChange={value =>
-                setProp(
-                  (props: ItemBlockProps) => (props.priceFontWeight = value)
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
-              </SelectContent>
-            </Select>
-          </dd>
-        </div>
+        <FontSizeSlider
+          value={priceFontSize}
+          onValueChange={size =>
+            setProp((props: ItemBlockProps) => (props.priceFontSize = size))
+          }
+        />
+        <EditorSettingRow label="Estilo">
+          <EditorSettingSelect
+            ariaLabel="Estilo del precio"
+            value={priceFontWeight}
+            onValueChange={value =>
+              setProp(
+                (props: ItemBlockProps) => (props.priceFontWeight = value)
+              )
+            }
+          >
+            {FONT_WEIGHT_OPTIONS.map(option => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </EditorSettingSelect>
+        </EditorSettingRow>
       </SideSection>
       <SideSection title="Imágen Producto">
-        <div className="grid grid-cols-3 items-center gap-y-2">
-          <dt>
-            <Label size="xs">Mostrar</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Switch
-              className="sm:scale-75"
-              checked={showImage}
-              onCheckedChange={checked => {
-                setProp(
-                  (props: Required<ItemBlockProps>) =>
-                    (props.showImage = checked)
-                )
-              }}
-            />
-          </dd>
-        </div>
+        <EditorSettingRow label="Mostrar">
+          <Switch
+            className="sm:scale-75"
+            aria-label="Mostrar imágen del producto"
+            checked={showImage}
+            onCheckedChange={checked => {
+              setProp(
+                (props: Required<ItemBlockProps>) => (props.showImage = checked)
+              )
+            }}
+          />
+        </EditorSettingRow>
       </SideSection>
       <div className="px-4 py-3">
         <Tooltip delayDuration={100}>
           <TooltipTrigger asChild>
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               className="w-full gap-1.5 text-xs"
               onClick={applyToAll}

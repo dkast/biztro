@@ -70,8 +70,7 @@ export default function LayerHeader() {
       ? state.nodes[id]?.data.custom.displayName
       : state.nodes[id]?.data.displayName
     const iconKey = state.nodes[id]?.data.custom.iconKey as
-      | MenuBlockIconKey
-      | undefined
+      MenuBlockIconKey | undefined
 
     return {
       hidden: state.nodes[id]?.data.hidden,
@@ -117,9 +116,9 @@ export default function LayerHeader() {
       ref={divRef}
       className={cn(
         selected
-          ? "bg-primary/10 rounded-sm text-foreground"
-          : "bg-transparent text-gray-700 dark:text-gray-100",
-        "flex flex-row items-center px-2 py-2"
+          ? "bg-primary/10 text-primary rounded-sm"
+          : "text-muted-foreground bg-transparent",
+        "flex flex-row items-center px-2 py-2 font-medium"
       )}
     >
       <button

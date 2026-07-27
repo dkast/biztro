@@ -1,8 +1,8 @@
 import { useNode } from "@craftjs/core"
 
 import type { HeaderBlockProps } from "@/components/menu-editor/blocks/header-block"
+import { EditorSettingRow } from "@/components/menu-editor/settings/editor-setting-row"
 import SideSection from "@/components/menu-editor/side-section"
-import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 
 export default function HeaderSettings() {
@@ -22,72 +22,60 @@ export default function HeaderSettings() {
   return (
     <>
       <SideSection title="Imágenes">
-        <div className="grid grid-cols-2 items-center gap-y-2">
-          <dt>
-            <Label size="xs">Logo</Label>
-          </dt>
-          <dd className="flex items-center">
-            <Switch
-              className="sm:scale-75"
-              checked={showLogo}
-              onCheckedChange={checked => {
-                setProp(
-                  (props: Required<HeaderBlockProps>) =>
-                    (props.showLogo = checked)
-                )
-              }}
-            />
-          </dd>
-          <dt>
-            <Label size="xs">Portada</Label>
-          </dt>
-          <dd className="flex items-center">
-            <Switch
-              className="sm:scale-75"
-              checked={showBanner}
-              onCheckedChange={checked => {
-                setProp(
-                  (props: Required<HeaderBlockProps>) =>
-                    (props.showBanner = checked)
-                )
-              }}
-            />
-          </dd>
-        </div>
+        <EditorSettingRow label="Logo">
+          <Switch
+            className="sm:scale-75"
+            aria-label="Mostrar logo"
+            checked={showLogo}
+            onCheckedChange={checked => {
+              setProp(
+                (props: Required<HeaderBlockProps>) =>
+                  (props.showLogo = checked)
+              )
+            }}
+          />
+        </EditorSettingRow>
+        <EditorSettingRow label="Portada">
+          <Switch
+            className="sm:scale-75"
+            aria-label="Mostrar portada"
+            checked={showBanner}
+            onCheckedChange={checked => {
+              setProp(
+                (props: Required<HeaderBlockProps>) =>
+                  (props.showBanner = checked)
+              )
+            }}
+          />
+        </EditorSettingRow>
       </SideSection>
       <SideSection title="Negocio">
-        <div className="grid grid-cols-2 items-center gap-y-2">
-          <dt>
-            <Label size="xs">Datos del negocio</Label>
-          </dt>
-          <dd className="flex items-center">
-            <Switch
-              className="sm:scale-75"
-              checked={showAddress}
-              onCheckedChange={checked => {
-                setProp(
-                  (props: Required<HeaderBlockProps>) =>
-                    (props.showAddress = checked)
-                )
-              }}
-            />
-          </dd>
-          <dt>
-            <Label size="xs">Redes sociales</Label>
-          </dt>
-          <dd className="flex items-center">
-            <Switch
-              className="sm:scale-75"
-              checked={showSocialMedia}
-              onCheckedChange={checked => {
-                setProp(
-                  (props: Required<HeaderBlockProps>) =>
-                    (props.showSocialMedia = checked)
-                )
-              }}
-            />
-          </dd>
-        </div>
+        <EditorSettingRow label="Datos del negocio">
+          <Switch
+            className="sm:scale-75"
+            aria-label="Mostrar datos del negocio"
+            checked={showAddress}
+            onCheckedChange={checked => {
+              setProp(
+                (props: Required<HeaderBlockProps>) =>
+                  (props.showAddress = checked)
+              )
+            }}
+          />
+        </EditorSettingRow>
+        <EditorSettingRow label="Redes sociales">
+          <Switch
+            className="sm:scale-75"
+            aria-label="Mostrar redes sociales"
+            checked={showSocialMedia}
+            onCheckedChange={checked => {
+              setProp(
+                (props: Required<HeaderBlockProps>) =>
+                  (props.showSocialMedia = checked)
+              )
+            }}
+          />
+        </EditorSettingRow>
       </SideSection>
     </>
   )
