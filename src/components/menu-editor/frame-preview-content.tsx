@@ -54,6 +54,8 @@ export function FramePreviewContent({
   location,
   updateFrameHeight
 }: FramePreviewContentProps) {
+  const frameKey = json ?? "default-menu"
+
   // Disable sticky header in the editor preview so it scrolls with content
   // instead of pinning to the top of the iframe's own viewport.
   useEffect(() => {
@@ -92,9 +94,11 @@ export function FramePreviewContent({
     }
   }, [frameDocument, frameDocRef, updateFrameHeight])
 
+  if (!frameDocument) return null
+
   return (
     <CssStyles frameDocument={frameDocument}>
-      <Frame data={json}>
+      <Frame key={frameKey} data={json}>
         <Element is={ContainerBlock} canvas>
           <HeaderBlock
             organization={organization}

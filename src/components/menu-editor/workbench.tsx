@@ -300,7 +300,7 @@ export default function Workbench({
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [activePanel, setActivePanel] = useState<PanelType | null>(null)
-  const [shouldRenderFrame, setShouldRenderFrame] = useState(true)
+  const [shouldRenderFrame, setShouldRenderFrame] = useState(false)
   const [iframeHeight, setIframeHeight] = useState(0)
   const [isDataGridView, setIsDataGridView] = useState(false)
   // Key to force ScrollArea re-render after ResizablePanel establishes dimensions

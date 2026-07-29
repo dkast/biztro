@@ -210,6 +210,26 @@ export default function CssStyles({
 
     cloneStylesheets()
     syncFontClasses()
+
+    const observer = new MutationObserver(mutations => {
+      if (mutations.some(mutation => mutation.target === document.head)) {
+        cloneStylesheets()
+      }
+
+      if (
+        mutations.some(mutation => mutation.target === document.documentElement)
+      ) {
+        syncFontClasses()
+      }
+    })
+
+    observer.observe(document.head, { childList: true })
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"]
+    })
+
+    return () => observer.disconnect()
   }, [frameDocument, fontThemeId])
 
   return <>{children}</>
