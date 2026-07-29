@@ -349,10 +349,10 @@ export default function MenuImportOptions({
           <p className="text-sm font-medium">Importando productos...</p>
         </div>
       )}
-      <BorderBeam size="pulse-outside" colorVariant="ocean" strength={0.7}>
+      <BorderBeam size="pulse-inner" colorVariant="colorful" strength={0.3}>
         <div
-          className="bg-background relative rounded-2xl p-4 ring-1 ring-black/10
-            dark:ring-white/15"
+          className="bg-background relative rounded-2xl border p-4 ring-1
+            ring-black/10 dark:ring-white/15"
         >
           <div className="mb-3 flex items-start gap-3">
             <FileText className="text-muted-foreground mt-1.5 size-4 shrink-0" />
