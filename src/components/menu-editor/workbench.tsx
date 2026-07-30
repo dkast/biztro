@@ -101,6 +101,7 @@ const editorResolver = {
 const PreviewFrame = memo(function PreviewFrame({
   frameDocRef,
   json,
+  frameKey,
   organization,
   location,
   updateFrameHeight
@@ -113,6 +114,7 @@ const PreviewFrame = memo(function PreviewFrame({
             frameDocument={frameDocument}
             frameDocRef={frameDocRef}
             json={json}
+            frameKey={frameKey}
             organization={organization}
             location={location}
             updateFrameHeight={updateFrameHeight}
@@ -389,6 +391,26 @@ export default function Workbench({
     setPersistedMenu(menu)
   }, [menu])
 
+  // The Craft <Frame> rebuilds its node tree whenever its key changes, which
+  // also clears the current selection. Saving revalidates the `menu-<id>` tag,
+  // so our own serialData comes back through props on every autosave. Re-seed
+  // the frame only for data that did not originate from this editor.
+  const selfPersistedSerialDataRef = useRef<string | null>(null)
+  const seededSerialDataRef = useRef<string | null | undefined>(
+    menu?.serialData
+  )
+  const [frameSeed, setFrameSeed] = useState(0)
+
+  useEffect(() => {
+    const serialData = menu?.serialData
+    if (serialData === seededSerialDataRef.current) return
+
+    seededSerialDataRef.current = serialData
+    if (serialData === selfPersistedSerialDataRef.current) return
+
+    setFrameSeed(seed => seed + 1)
+  }, [menu?.serialData])
+
   useEffect(() => {
     if (isDataGridView) {
       leftPanelRef.current?.collapse()
@@ -404,6 +426,10 @@ export default function Workbench({
 
   const handlePersistedMenuUpdate = useCallback(
     (patch: Partial<MenuRecord>) => {
+      if (patch.serialData) {
+        selfPersistedSerialDataRef.current = patch.serialData
+      }
+
       setPersistedMenu(previousMenu => {
         if (!previousMenu) {
           return previousMenu
@@ -991,6 +1017,7 @@ export default function Workbench({
                       <PreviewFrame
                         frameDocRef={frameDocRef}
                         json={json}
+                        frameKey={`frame-${frameSeed}`}
                         organization={organization}
                         location={location}
                         updateFrameHeight={updateFrameHeight}

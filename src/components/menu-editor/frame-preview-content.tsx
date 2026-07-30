@@ -13,6 +13,7 @@ export interface FramePreviewContentProps {
   frameDocument: Document | null | undefined
   frameDocRef: RefObject<Document | null>
   json?: string
+  frameKey: string
   organization: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>
   location: Awaited<ReturnType<typeof getDefaultLocation>> | null
   updateFrameHeight: () => void
@@ -50,11 +51,11 @@ export function FramePreviewContent({
   frameDocument,
   frameDocRef,
   json,
+  frameKey,
   organization,
   location,
   updateFrameHeight
 }: FramePreviewContentProps) {
-  const frameKey = json ?? "default-menu"
   const animationFrameRef = useRef<number | null>(null)
 
   const scheduleFrameHeightUpdate = useCallback(() => {

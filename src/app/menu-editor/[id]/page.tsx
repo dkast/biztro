@@ -7,6 +7,7 @@ import {
 import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
+import { connection } from "next/server"
 
 import Workbench from "@/components/menu-editor/workbench"
 import {
@@ -38,6 +39,8 @@ export async function generateMetadata(props: {
 export default async function MenuEditorPage(props: {
   params: Promise<{ id: string }>
 }) {
+  await connection()
+
   const params = await props.params
   const queryClient = new QueryClient()
 
