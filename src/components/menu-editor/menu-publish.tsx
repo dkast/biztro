@@ -105,9 +105,7 @@ export default function MenuPublish({
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
   soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
 }) {
-  const { store, query, actions, nodes } = useEditor((state, query) => ({
-    nodes: query.getSerializedNodes()
-  }))
+  const { store, query, actions } = useEditor()
 
   const fontTheme = useAtomValue(fontThemeAtom)
   const colorTheme = useAtomValue(colorThemeAtom)
@@ -146,10 +144,6 @@ export default function MenuPublish({
       reset()
     }
   })
-
-  useEffect(() => {
-    // console.dir(store.history.timeline)
-  }, [store.history.timeline, query, nodes])
 
   // Verify if the menu theme has changed
   const { clearUnsavedChanges } = useSetUnsavedChanges()

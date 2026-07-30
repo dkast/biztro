@@ -2,6 +2,7 @@
 
 import {
   Activity,
+  memo,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -37,7 +38,10 @@ import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import { BottomBar } from "@/components/menu-editor/bottom-bar"
 import FloatingBar from "@/components/menu-editor/floating-bar"
-import { FramePreviewContent } from "@/components/menu-editor/frame-preview-content"
+import {
+  FramePreviewContent,
+  type FramePreviewContentProps
+} from "@/components/menu-editor/frame-preview-content"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
 import {
   MenuItemsDataGrid,
@@ -82,6 +86,42 @@ export enum PanelType {
   LAYERS = "layers",
   THEME = "theme"
 }
+
+const editorResolver = {
+  ContainerBlock,
+  HeaderBlock,
+  HeadingElement,
+  TextElement,
+  CategoryBlock,
+  ItemBlock,
+  NavigatorBlock,
+  FeaturedBlock
+}
+
+const PreviewFrame = memo(function PreviewFrame({
+  frameDocRef,
+  json,
+  organization,
+  location,
+  updateFrameHeight
+}: Omit<FramePreviewContentProps, "frameDocument">) {
+  return (
+    <IFrame className="grow" style={{ height: "100%", width: "100%" }}>
+      <FrameContextConsumer>
+        {({ document: frameDocument }) => (
+          <FramePreviewContent
+            frameDocument={frameDocument}
+            frameDocRef={frameDocRef}
+            json={json}
+            organization={organization}
+            location={location}
+            updateFrameHeight={updateFrameHeight}
+          />
+        )}
+      </FrameContextConsumer>
+    </IFrame>
+  )
+})
 
 type ItemsState = {
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
@@ -631,10 +671,6 @@ export default function Workbench({
     })
   }, [frameDocRef, getFrameContentHeight])
 
-  const handleNodesChange = useCallback(() => {
-    updateFrameHeight()
-  }, [updateFrameHeight])
-
   // Use useLayoutEffect so cleanup runs immediately when Activity hides this component
   useLayoutEffect(() => {
     setShouldRenderFrame(true)
@@ -749,19 +785,7 @@ export default function Workbench({
     <div className="absolute inset-0">
       {isMobile ? (
         <div className={cn("bg-background flex h-full flex-col")}>
-          <Editor
-            resolver={{
-              ContainerBlock,
-              HeaderBlock,
-              HeadingElement,
-              TextElement,
-              CategoryBlock,
-              ItemBlock,
-              NavigatorBlock,
-              FeaturedBlock
-            }}
-            onRender={RenderNode}
-          >
+          <Editor resolver={editorResolver} onRender={RenderNode}>
             <Header
               className="editor-topbar dark:bg-sidebar relative bg-gray-50 py-4"
             >
@@ -817,20 +841,7 @@ export default function Workbench({
           </Editor>
         </div>
       ) : (
-        <Editor
-          resolver={{
-            ContainerBlock,
-            HeaderBlock,
-            HeadingElement,
-            TextElement,
-            CategoryBlock,
-            ItemBlock,
-            NavigatorBlock,
-            FeaturedBlock
-          }}
-          onRender={RenderNode}
-          onNodesChange={handleNodesChange}
-        >
+        <Editor resolver={editorResolver} onRender={RenderNode}>
           <Header className="dark:bg-sidebar fixed inset-x-0 top-0 bg-gray-50">
             <div className="mx-10 grid grow grid-cols-3 items-center">
               <div className="flex items-center gap-1">
@@ -977,26 +988,13 @@ export default function Workbench({
                     }}
                   >
                     {shouldRenderFrame ? (
-                      <IFrame
-                        className="grow"
-                        key={`frame-${menu.id}`}
-                        style={{ height: "100%", width: "100%" }}
-                      >
-                        <FrameContextConsumer>
-                          {({ document: frameDocument }) => {
-                            return (
-                              <FramePreviewContent
-                                frameDocument={frameDocument}
-                                frameDocRef={frameDocRef}
-                                json={json}
-                                organization={organization}
-                                location={location}
-                                updateFrameHeight={updateFrameHeight}
-                              />
-                            )
-                          }}
-                        </FrameContextConsumer>
-                      </IFrame>
+                      <PreviewFrame
+                        frameDocRef={frameDocRef}
+                        json={json}
+                        organization={organization}
+                        location={location}
+                        updateFrameHeight={updateFrameHeight}
+                      />
                     ) : (
                       <div
                         className="text-muted-foreground flex grow items-center

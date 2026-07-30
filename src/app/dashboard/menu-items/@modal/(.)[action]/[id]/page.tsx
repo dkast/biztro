@@ -1,5 +1,6 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
+import { connection } from "next/server"
 
 import Panel from "@/components/dashboard/page-panel"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -18,6 +19,8 @@ export async function generateMetadata(props: {
 export default async function ItemPage(props: {
   params: Promise<{ action: string; id: string }>
 }) {
+  await connection()
+
   const params = await props.params
 
   return (

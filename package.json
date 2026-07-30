@@ -203,6 +203,6 @@
     "@types/react-dom": "19.2.3"
   },
   "patchedDependencies": {
-    "next@16.2.10": "patches/next@16.2.10.patch"
+    "next@16.3.0-preview.9": "patches/next@16.3.0-preview.9.patch"
   }
 }

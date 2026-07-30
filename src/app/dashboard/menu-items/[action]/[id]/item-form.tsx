@@ -332,8 +332,7 @@ export default function ItemForm({
     SupportedLocaleCode | ""
   >(() => {
     const itemLocale = item?.translations?.[0]?.locale as
-      | SupportedLocaleCode
-      | undefined
+      SupportedLocaleCode | undefined
     const variantLocale = item?.variants?.flatMap(
       variant => variant.translations ?? []
     )[0]?.locale as SupportedLocaleCode | undefined
@@ -897,8 +896,7 @@ export default function ItemForm({
         ? data.translations?.[selectedTranslationIndex]
         : undefined
     let selectedTranslationPayload:
-      | z.infer<typeof menuItemTranslationSchema>
-      | undefined
+      z.infer<typeof menuItemTranslationSchema> | undefined
     const selectedVariantTranslationPayloads = [] as Array<{
       variantIndex: number
       translation: z.infer<typeof variantTranslationSchema>
@@ -1096,8 +1094,8 @@ export default function ItemForm({
       >
         <div className="@container/item-main min-w-0 space-y-6">
           <h1
-            className="font-display px-1 text-xl font-semibold tracking-tight
-              text-balance @min-[40rem]/item-main:text-2xl"
+            className="px-1 text-xl font-semibold tracking-tight text-balance
+              @min-[40rem]/item-main:text-2xl"
           >
             {title}
           </h1>
