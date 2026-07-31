@@ -19,6 +19,17 @@ function isPublicFilePath(pathname: string) {
   return pathname.includes(".")
 }
 
+function isMenuOpenGraphImagePath(pathname: string) {
+  const segments = pathname.split("/")
+
+  return (
+    segments.length === 4 &&
+    segments[1] === "menu-internal" &&
+    Boolean(segments[2]) &&
+    segments[3] === "opengraph-image"
+  )
+}
+
 function getSubdomainFromHost(hostname: string) {
   if (hostname === "biztro.co" || hostname === "localhost") return null
 
@@ -70,6 +81,10 @@ export function proxy(request: NextRequest) {
     pathname === MENU_INTERNAL_PATH ||
     pathname.startsWith(`${MENU_INTERNAL_PATH}/`)
   ) {
+    if (isMenuOpenGraphImagePath(pathname)) {
+      return NextResponse.next()
+    }
+
     return new NextResponse(null, { status: 404 })
   }
 
