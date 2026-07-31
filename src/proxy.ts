@@ -19,6 +19,36 @@ function isPublicFilePath(pathname: string) {
   return pathname.includes(".")
 }
 
+// Tenant traffic reaches the app through a Cloudflare Worker that proxies
+// `<slug>.biztro.co` to the Vercel origin, so the `Host` header (and therefore
+// `nextUrl.hostname`) is the origin host. The worker forwards the visitor host
+// in `x-original-host` / `x-forwarded-host`.
+function getRequestHostname(request: NextRequest) {
+  const forwardedHost =
+    request.headers.get("x-original-host") ??
+    request.headers.get("x-forwarded-host")
+
+  const hostname = forwardedHost?.split(",")[0]?.trim()
+  if (!hostname) return request.nextUrl.hostname
+
+  return hostname.split(":")[0]!.toLowerCase()
+}
+
+function isValidSlug(slug: string) {
+  return /^[a-z0-9-]+$/.test(slug) && !RESERVED_SUBDOMAINS.has(slug)
+}
+
+function getTenantSlug(request: NextRequest) {
+  const fromHost = getSubdomainFromHost(getRequestHostname(request))
+  if (fromHost) return fromHost
+
+  // Fallback for proxies that overwrite the forwarded host headers.
+  const tenantSlug = request.headers.get("x-tenant-slug")?.trim().toLowerCase()
+  if (tenantSlug && isValidSlug(tenantSlug)) return tenantSlug
+
+  return null
+}
+
 function getSubdomainFromHost(hostname: string) {
   if (hostname === "biztro.co" || hostname === "localhost") return null
 
@@ -34,9 +64,9 @@ function getSubdomainFromHost(hostname: string) {
   return null
 }
 
-// Requests to `<slug>.biztro.co` reach the app with the slug already prepended
-// to the pathname (legacy edge rewrite from the old `app/[subdomain]` route).
-// Strip it so every branch below sees the path the visitor actually requested.
+// The Cloudflare Worker prefixes tenant requests with `/<slug>` before proxying
+// them to the origin. Strip it so every branch below sees the path the visitor
+// actually requested (also a no-op when the prefix is not present).
 function stripSubdomainPathPrefix(pathname: string, subdomain: string | null) {
   if (!subdomain) return pathname
 
@@ -48,7 +78,7 @@ function stripSubdomainPathPrefix(pathname: string, subdomain: string | null) {
 }
 
 export function proxy(request: NextRequest) {
-  const subdomain = getSubdomainFromHost(request.nextUrl.hostname)
+  const subdomain = getTenantSlug(request)
   const pathname = stripSubdomainPathPrefix(request.nextUrl.pathname, subdomain)
 
   if (pathname.startsWith("/dashboard") || pathname.startsWith("/internal")) {

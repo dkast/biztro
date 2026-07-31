@@ -15,6 +15,42 @@ describe("proxy", () => {
     )
   })
 
+  it("rewrites worker-proxied tenant traffic using the forwarded host", () => {
+    const response = proxy(
+      request("https://biztro.vercel.app/my-menu", {
+        "x-original-host": "my-menu.biztro.co",
+        "x-forwarded-host": "my-menu.biztro.co",
+        "x-tenant-slug": "my-menu"
+      })
+    )
+
+    expect(response.headers.get("x-middleware-rewrite")).toBe(
+      "https://biztro.vercel.app/menu-internal/my-menu"
+    )
+  })
+
+  it("falls back to the tenant slug header when no forwarded host is present", () => {
+    const response = proxy(
+      request("https://biztro.vercel.app/my-menu", {
+        "x-tenant-slug": "my-menu"
+      })
+    )
+
+    expect(response.headers.get("x-middleware-rewrite")).toBe(
+      "https://biztro.vercel.app/menu-internal/my-menu"
+    )
+  })
+
+  it("does not treat the origin host as a tenant", () => {
+    const response = proxy(
+      request("https://biztro.vercel.app/", {
+        "x-forwarded-host": "biztro.co"
+      })
+    )
+
+    expect(response.headers.get("x-middleware-rewrite")).toBeNull()
+  })
+
   it("rewrites a subdomain request whose path is already prefixed with the slug", () => {
     const response = proxy(request("https://my-menu.biztro.co/my-menu"))
 
