@@ -34,8 +34,22 @@ function getSubdomainFromHost(hostname: string) {
   return null
 }
 
+// Requests to `<slug>.biztro.co` reach the app with the slug already prepended
+// to the pathname (legacy edge rewrite from the old `app/[subdomain]` route).
+// Strip it so every branch below sees the path the visitor actually requested.
+function stripSubdomainPathPrefix(pathname: string, subdomain: string | null) {
+  if (!subdomain) return pathname
+
+  const prefix = `/${subdomain}`
+  if (pathname === prefix) return "/"
+  if (pathname.startsWith(`${prefix}/`)) return pathname.slice(prefix.length)
+
+  return pathname
+}
+
 export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const subdomain = getSubdomainFromHost(request.nextUrl.hostname)
+  const pathname = stripSubdomainPathPrefix(request.nextUrl.pathname, subdomain)
 
   if (pathname.startsWith("/dashboard") || pathname.startsWith("/internal")) {
     const sessionCookie = getSessionCookie(request)
@@ -57,11 +71,11 @@ export function proxy(request: NextRequest) {
   }
 
   if (pathname.startsWith(`${MENU_PUBLIC_PATH}/`)) {
-    const subdomain = pathname.slice(`${MENU_PUBLIC_PATH}/`.length)
+    const menuSlug = pathname.slice(`${MENU_PUBLIC_PATH}/`.length)
 
-    if (subdomain && !subdomain.includes("/")) {
+    if (menuSlug && !menuSlug.includes("/")) {
       const rewriteUrl = request.nextUrl.clone()
-      rewriteUrl.pathname = `${MENU_INTERNAL_PATH}/${subdomain}`
+      rewriteUrl.pathname = `${MENU_INTERNAL_PATH}/${menuSlug}`
       return NextResponse.rewrite(rewriteUrl)
     }
   }
@@ -73,7 +87,6 @@ export function proxy(request: NextRequest) {
     return new NextResponse(null, { status: 404 })
   }
 
-  const subdomain = getSubdomainFromHost(request.nextUrl.hostname)
   if (!subdomain) return NextResponse.next()
 
   const rewriteUrl = request.nextUrl.clone()

@@ -15,6 +15,25 @@ describe("proxy", () => {
     )
   })
 
+  it("rewrites a subdomain request whose path is already prefixed with the slug", () => {
+    const response = proxy(request("https://my-menu.biztro.co/my-menu"))
+
+    expect(response.headers.get("x-middleware-rewrite")).toBe(
+      "https://my-menu.biztro.co/menu-internal/my-menu"
+    )
+  })
+
+  it("strips the slug prefix before evaluating protected routes", () => {
+    const response = proxy(
+      request("https://my-menu.biztro.co/my-menu/dashboard")
+    )
+
+    expect(response.status).toBe(307)
+    expect(response.headers.get("location")).toBe(
+      "https://my-menu.biztro.co/login"
+    )
+  })
+
   it("rewrites a path-based menu URL for local and preview testing", () => {
     const response = proxy(request("https://preview.biztro.co/menu/my-menu"))
 
