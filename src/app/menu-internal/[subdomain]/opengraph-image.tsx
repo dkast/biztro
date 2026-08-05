@@ -6,7 +6,6 @@ import { ImageResponse } from "next/og"
 
 import { getOrganizationBySlug } from "@/server/actions/organization/queries"
 
-export const runtime = "nodejs"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
