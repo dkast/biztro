@@ -19,6 +19,17 @@ function isPublicFilePath(pathname: string) {
   return pathname.includes(".")
 }
 
+function isMenuOpenGraphImagePath(pathname: string) {
+  const segments = pathname.split("/")
+
+  return (
+    segments.length === 4 &&
+    segments[1] === "menu-internal" &&
+    Boolean(segments[2]) &&
+    segments[3] === "opengraph-image"
+  )
+}
+
 // Tenant traffic reaches the app through a Cloudflare Worker that proxies
 // `<slug>.biztro.co` to the Vercel origin, so the `Host` header (and therefore
 // `nextUrl.hostname`) is the origin host. The worker forwards the visitor host
@@ -114,6 +125,10 @@ export function proxy(request: NextRequest) {
     pathname === MENU_INTERNAL_PATH ||
     pathname.startsWith(`${MENU_INTERNAL_PATH}/`)
   ) {
+    if (isMenuOpenGraphImagePath(pathname)) {
+      return NextResponse.next()
+    }
+
     return new NextResponse(null, { status: 404 })
   }
 
