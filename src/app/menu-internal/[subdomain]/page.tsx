@@ -23,6 +23,8 @@ import { extractMenuDataFromNodes } from "@/lib/sync-status"
 import { SubscriptionStatus } from "@/lib/types/billing"
 import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 
+export const instant = false
+
 // Add generateStaticParams to pre-render specific paths
 export async function generateStaticParams() {
   const organizations = await getAllActiveOrganizations()

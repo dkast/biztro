@@ -46,9 +46,9 @@ export default function DefaultLayer({
     <div
       ref={divRef}
       className={cn(
-        hovered ? "bg-gray-100 dark:bg-gray-800/70" : "bg-transparent",
+        hovered ? "bg-muted" : "bg-transparent",
         hasChildCanvases && expanded ? "pb-1" : "pb-0",
-        "editor-layers mx-2 mt-2 block rounded-sm"
+        "editor-layers mx-2 mt-2 block rounded-lg"
       )}
     >
       <LayerHeader />

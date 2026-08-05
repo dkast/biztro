@@ -430,9 +430,8 @@ function ToolboxElement({
   return (
     <div
       className="group hover:bg-primary/10 hover:text-primary
-        hover:dark:bg-primary/10 flex cursor-move items-center justify-between
-        gap-2 rounded-sm bg-gray-200/35 p-4 sm:p-2 sm:text-sm
-        dark:bg-gray-800/60"
+        text-muted-foreground hover:dark:bg-primary/10 bg-muted flex cursor-move
+        items-center justify-between gap-2 rounded-lg p-4 sm:p-2 sm:text-sm"
     >
       <div className="flex items-center gap-2">
         <Icon
@@ -441,7 +440,7 @@ function ToolboxElement({
             classNameIcon
           )}
         />
-        <span>{title}</span>
+        <span className="leading-none font-medium">{title}</span>
       </div>
       {addButton}
     </div>

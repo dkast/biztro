@@ -97,6 +97,14 @@ describe("proxy", () => {
     expect(response.status).toBe(404)
   })
 
+  it("allows the internal Open Graph image route", () => {
+    const response = proxy(
+      request("https://biztro.co/menu-internal/my-menu/opengraph-image")
+    )
+
+    expect(response.status).toBe(200)
+  })
+
   it("rejects spoofed access to the internal menu route", () => {
     const response = proxy(
       request("https://my-menu.biztro.co/menu-internal/my-menu", {

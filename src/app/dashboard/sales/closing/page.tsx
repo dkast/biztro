@@ -1,6 +1,7 @@
 import { ReceiptText } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { connection } from "next/server"
 import { createLoader, parseAsString } from "nuqs/server"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -13,22 +14,21 @@ import {
   getCurrentOrganization,
   isProMember
 } from "@/server/actions/user/queries"
-import {
-  getSalesClosingDateValue,
-  resolveSalesClosingDateValue
-} from "@/lib/sales-closing-date"
+import { resolveSalesClosingDateValue } from "@/lib/sales-closing-date"
 
 export const metadata: Metadata = {
   title: "Cierre diario"
 }
 
 const loadSalesClosingSearchParams = createLoader({
-  date: parseAsString.withDefault(getSalesClosingDateValue())
+  date: parseAsString
 })
 
 export default async function SalesClosingPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  await connection()
+
   const [{ date }, currentOrg, isPro] = await Promise.all([
     loadSalesClosingSearchParams(props.searchParams),
     getCurrentOrganization(),

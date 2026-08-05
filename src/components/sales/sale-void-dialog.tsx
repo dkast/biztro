@@ -93,7 +93,7 @@ export function SaleVoidDialog({ saleId }: { saleId: string }) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">
+        <Button variant="outline" size="sm" className="h-8 gap-2">
           <Ban data-icon="inline-start" />
           Anular venta
         </Button>

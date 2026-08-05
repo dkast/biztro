@@ -2,6 +2,7 @@
 
 import {
   Activity,
+  memo,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -16,7 +17,7 @@ import { Editor, Element, Frame } from "@craftjs/core"
 import { Layers } from "@craftjs/layers"
 import * as Sentry from "@sentry/nextjs"
 import { useAtom, useSetAtom } from "jotai"
-import { ChevronLeft, DatabaseIcon } from "lucide-react"
+import { ChevronLeft, DatabaseZap } from "lucide-react"
 import lz from "lzutf8"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
@@ -37,7 +38,10 @@ import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import { BottomBar } from "@/components/menu-editor/bottom-bar"
 import FloatingBar from "@/components/menu-editor/floating-bar"
-import { FramePreviewContent } from "@/components/menu-editor/frame-preview-content"
+import {
+  FramePreviewContent,
+  type FramePreviewContentProps
+} from "@/components/menu-editor/frame-preview-content"
 import DefaultLayer from "@/components/menu-editor/layers/default-layer"
 import {
   MenuItemsDataGrid,
@@ -82,6 +86,44 @@ export enum PanelType {
   LAYERS = "layers",
   THEME = "theme"
 }
+
+const editorResolver = {
+  ContainerBlock,
+  HeaderBlock,
+  HeadingElement,
+  TextElement,
+  CategoryBlock,
+  ItemBlock,
+  NavigatorBlock,
+  FeaturedBlock
+}
+
+const PreviewFrame = memo(function PreviewFrame({
+  frameDocRef,
+  json,
+  frameKey,
+  organization,
+  location,
+  updateFrameHeight
+}: Omit<FramePreviewContentProps, "frameDocument">) {
+  return (
+    <IFrame className="grow" style={{ height: "100%", width: "100%" }}>
+      <FrameContextConsumer>
+        {({ document: frameDocument }) => (
+          <FramePreviewContent
+            frameDocument={frameDocument}
+            frameDocRef={frameDocRef}
+            json={json}
+            frameKey={frameKey}
+            organization={organization}
+            location={location}
+            updateFrameHeight={updateFrameHeight}
+          />
+        )}
+      </FrameContextConsumer>
+    </IFrame>
+  )
+})
 
 type ItemsState = {
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
@@ -300,7 +342,7 @@ export default function Workbench({
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [activePanel, setActivePanel] = useState<PanelType | null>(null)
-  const [shouldRenderFrame, setShouldRenderFrame] = useState(true)
+  const [shouldRenderFrame, setShouldRenderFrame] = useState(false)
   const [iframeHeight, setIframeHeight] = useState(0)
   const [isDataGridView, setIsDataGridView] = useState(false)
   // Key to force ScrollArea re-render after ResizablePanel establishes dimensions
@@ -349,6 +391,26 @@ export default function Workbench({
     setPersistedMenu(menu)
   }, [menu])
 
+  // The Craft <Frame> rebuilds its node tree whenever its key changes, which
+  // also clears the current selection. Saving revalidates the `menu-<id>` tag,
+  // so our own serialData comes back through props on every autosave. Re-seed
+  // the frame only for data that did not originate from this editor.
+  const selfPersistedSerialDataRef = useRef<string | null>(null)
+  const seededSerialDataRef = useRef<string | null | undefined>(
+    menu?.serialData
+  )
+  const [frameSeed, setFrameSeed] = useState(0)
+
+  useEffect(() => {
+    const serialData = menu?.serialData
+    if (serialData === seededSerialDataRef.current) return
+
+    seededSerialDataRef.current = serialData
+    if (serialData === selfPersistedSerialDataRef.current) return
+
+    setFrameSeed(seed => seed + 1)
+  }, [menu?.serialData])
+
   useEffect(() => {
     if (isDataGridView) {
       leftPanelRef.current?.collapse()
@@ -364,6 +426,10 @@ export default function Workbench({
 
   const handlePersistedMenuUpdate = useCallback(
     (patch: Partial<MenuRecord>) => {
+      if (patch.serialData) {
+        selfPersistedSerialDataRef.current = patch.serialData
+      }
+
       setPersistedMenu(previousMenu => {
         if (!previousMenu) {
           return previousMenu
@@ -631,10 +697,6 @@ export default function Workbench({
     })
   }, [frameDocRef, getFrameContentHeight])
 
-  const handleNodesChange = useCallback(() => {
-    updateFrameHeight()
-  }, [updateFrameHeight])
-
   // Use useLayoutEffect so cleanup runs immediately when Activity hides this component
   useLayoutEffect(() => {
     setShouldRenderFrame(true)
@@ -749,19 +811,7 @@ export default function Workbench({
     <div className="absolute inset-0">
       {isMobile ? (
         <div className={cn("bg-background flex h-full flex-col")}>
-          <Editor
-            resolver={{
-              ContainerBlock,
-              HeaderBlock,
-              HeadingElement,
-              TextElement,
-              CategoryBlock,
-              ItemBlock,
-              NavigatorBlock,
-              FeaturedBlock
-            }}
-            onRender={RenderNode}
-          >
+          <Editor resolver={editorResolver} onRender={RenderNode}>
             <Header
               className="editor-topbar dark:bg-sidebar relative bg-gray-50 py-4"
             >
@@ -817,20 +867,7 @@ export default function Workbench({
           </Editor>
         </div>
       ) : (
-        <Editor
-          resolver={{
-            ContainerBlock,
-            HeaderBlock,
-            HeadingElement,
-            TextElement,
-            CategoryBlock,
-            ItemBlock,
-            NavigatorBlock,
-            FeaturedBlock
-          }}
-          onRender={RenderNode}
-          onNodesChange={handleNodesChange}
-        >
+        <Editor resolver={editorResolver} onRender={RenderNode}>
           <Header className="dark:bg-sidebar fixed inset-x-0 top-0 bg-gray-50">
             <div className="mx-10 grid grow grid-cols-3 items-center">
               <div className="flex items-center gap-1">
@@ -855,7 +892,7 @@ export default function Workbench({
                       onPressedChange={handleDataGridToggle}
                       aria-label="Toggle data grid view"
                     >
-                      <DatabaseIcon className="size-4" />
+                      <DatabaseZap className="size-4" />
                     </Toggle>
                   </div>
                 </TooltipHelper>
@@ -977,26 +1014,14 @@ export default function Workbench({
                     }}
                   >
                     {shouldRenderFrame ? (
-                      <IFrame
-                        className="grow"
-                        key={`frame-${menu.id}`}
-                        style={{ height: "100%", width: "100%" }}
-                      >
-                        <FrameContextConsumer>
-                          {({ document: frameDocument }) => {
-                            return (
-                              <FramePreviewContent
-                                frameDocument={frameDocument}
-                                frameDocRef={frameDocRef}
-                                json={json}
-                                organization={organization}
-                                location={location}
-                                updateFrameHeight={updateFrameHeight}
-                              />
-                            )
-                          }}
-                        </FrameContextConsumer>
-                      </IFrame>
+                      <PreviewFrame
+                        frameDocRef={frameDocRef}
+                        json={json}
+                        frameKey={`frame-${frameSeed}`}
+                        organization={organization}
+                        location={location}
+                        updateFrameHeight={updateFrameHeight}
+                      />
                     ) : (
                       <div
                         className="text-muted-foreground flex grow items-center

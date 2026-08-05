@@ -17,7 +17,7 @@ export function SaleDetailSheet({ sale }: { sale: SaleDetail }) {
 
   return (
     <Sheet
-      defaultOpen
+      open
       onOpenChange={open => {
         if (!open) router.back()
       }}

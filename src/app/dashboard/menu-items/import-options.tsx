@@ -10,6 +10,7 @@ import Link from "next/link"
 import Papa from "papaparse"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { bulkCreateItems } from "@/server/actions/item/mutations"
 import { MenuItemStatus, type BulkMenuItem } from "@/lib/types/menu-item"
@@ -348,17 +349,20 @@ export default function MenuImportOptions({
           <p className="text-sm font-medium">Importando productos...</p>
         </div>
       )}
-      <BorderBeam size="pulse-outside" colorVariant="colorful" strength={0.5}>
+      <BorderBeam size="pulse-inner" colorVariant="colorful" strength={0.3}>
         <div
-          className="bg-background relative rounded-2xl p-4 ring-1 ring-black/10
-            dark:ring-white/15"
+          className="bg-background relative rounded-2xl border p-4 ring-1
+            ring-black/10 dark:ring-white/15"
         >
           <div className="mb-3 flex items-start gap-3">
             <FileText className="text-muted-foreground mt-1.5 size-4 shrink-0" />
             <div>
-              <p className="font-medium">
-                Importar menú desde PDF o imagen con IA
-              </p>
+              <div
+                className="flex items-center justify-between gap-2 font-medium"
+              >
+                <span>Importar menú desde PDF o imagen con IA</span>
+                <Badge variant="blue">Recomendado</Badge>
+              </div>
               <p className="text-muted-foreground text-sm text-pretty">
                 Usa la importación con IA para extraer productos desde una
                 carta, PDF o imagen de menú.

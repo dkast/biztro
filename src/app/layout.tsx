@@ -7,7 +7,6 @@ import { Be_Vietnam_Pro, Inter } from "next/font/google"
 import "../../styles/globals.css"
 import "../../styles/gradient-blur.css"
 
-import { ImpersonationBanner } from "@/components/internal-admin/impersonation-banner"
 import Spinner from "@/components/ui/spinner"
 // import { AxiomWebVitals } from "next-axiom"
 
@@ -76,7 +75,6 @@ export default function RootLayout({
         >
           <Providers>
             <div className="flex min-h-dvh flex-col overscroll-auto">
-              <ImpersonationBanner />
               {children}
               {shouldInjectToolbar && <VercelToolbar />}
               {shouldInjectToolbar && <Agentation />}

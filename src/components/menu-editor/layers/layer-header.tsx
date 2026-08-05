@@ -56,35 +56,39 @@ export default function LayerHeader() {
   const {
     hidden,
     actions,
+    query,
     selected,
     topLevel,
-    nodes,
     parent,
     displayName,
     iconKey
   } = useEditor((state, query) => {
     const selected = query.getEvent("selected").first() === id
-    const nodes = query.node(ROOT_NODE).descendants()
     const parent = state.nodes[id]?.data.parent
     const displayName = state.nodes[id]?.data.custom.displayName
       ? state.nodes[id]?.data.custom.displayName
       : state.nodes[id]?.data.displayName
     const iconKey = state.nodes[id]?.data.custom.iconKey as
-      | MenuBlockIconKey
-      | undefined
+      MenuBlockIconKey | undefined
 
     return {
       hidden: state.nodes[id]?.data.hidden,
       selected,
       topLevel: query.node(id).isTopLevelCanvas(),
-      nodes,
       parent,
       displayName,
       iconKey
     }
   })
 
-  const currentIndex = nodes.findIndex((node: string) => node === id)
+  // Resolved on demand: collecting the descendants array would hand back a new
+  // array on every editor change and re-render every layer row.
+  const moveBy = (offset: number) => {
+    const siblings = query.node(ROOT_NODE).descendants()
+    const currentIndex = siblings.findIndex((node: string) => node === id)
+    if (currentIndex < 0) return
+    actions.move(id, parent ?? ROOT_NODE, currentIndex + offset)
+  }
 
   const divRef = useRef<HTMLDivElement>(null)
 
@@ -117,9 +121,9 @@ export default function LayerHeader() {
       ref={divRef}
       className={cn(
         selected
-          ? "bg-primary/10 rounded-sm text-foreground"
-          : "bg-transparent text-gray-700 dark:text-gray-100",
-        "flex flex-row items-center px-2 py-2"
+          ? "bg-primary/10 text-primary rounded-sm"
+          : "text-muted-foreground bg-transparent",
+        "flex flex-row items-center px-2 py-2 font-medium"
       )}
     >
       <button
@@ -152,10 +156,7 @@ export default function LayerHeader() {
           {id !== ROOT_NODE && (
             <button
               className="cursor-pointer active:scale-90"
-              onClick={() => {
-                const newIndex = currentIndex - 1
-                actions.move(id, parent ?? ROOT_NODE, newIndex)
-              }}
+              onClick={() => moveBy(-1)}
             >
               <ArrowUp className="size-4" />
             </button>
@@ -163,10 +164,7 @@ export default function LayerHeader() {
           {id !== ROOT_NODE && (
             <button
               className="cursor-pointer active:scale-90"
-              onClick={() => {
-                const newIndex = currentIndex + 2
-                actions.move(id, parent ?? ROOT_NODE, newIndex)
-              }}
+              onClick={() => moveBy(2)}
             >
               <ArrowDown className="size-4" />
             </button>

@@ -112,9 +112,17 @@ Use `bun run <script>` unless the user requests otherwise.
 - Prefer reusing `useProGuard()` and `UpgradeDialog` for Pro upgrade CTAs instead of inventing one-off gating state in feature screens.
 - If data already exists because it was created while the org had Pro access, keep editing that existing data available unless product requirements explicitly say downgrade should lock it.
 
+### Parallel and intercepting modal routes
+
+- Every `@modal` parallel route must include `default.tsx`, `page.tsx`, and a `[...catchAll]/page.tsx` that return `null`. `page.tsx` is required to clear the slot when soft-navigating back to the slot's root; `default.tsx` alone only handles unmatched slots during a full load.
+- Route-driven Radix dialogs and sheets must use controlled visibility (for example, `<Sheet open ...>`) instead of `defaultOpen`. Next.js can preserve inactive route trees, including their closed local state, so an uncontrolled modal may open only on the first navigation.
+- Close intercepted modals with `router.back()` from `onOpenChange`; do not push the parent URL.
+- Use `src/app/dashboard/menu-items/@modal` and `src/app/dashboard/sales/@modal` as reference implementations. If a Next.js upgrade reintroduces duplicate interception rewrites in development, update the version-specific `patches/next@*.patch` rather than removing that required workaround.
+
 ## Practical repo guardrails
 
 - Prefer React Server Components; see Key Conventions for `use client` rules.
+- When a Server Component's data chain reads the current time (for example, through date-sensitive queries), call `await connection()` from `next/server` in each full-page and intercepting-route entry component before that work. This avoids Next.js blocking prerendering on `Date.now()` or `new Date()` without moving the dynamic boundary inside a shared parallel-route subtree.
 - Use `src/env.mjs` as the source of truth for required env vars.
 - Auth rules/route protection live in `src/proxy.ts`; consult it before changing auth behavior.
 - Types are domain-scoped under `src/lib/types/*`; add new shared types to the domain module that owns the primary entity. If a type is shared across more than one domain, place it in `src/lib/types/shared`.

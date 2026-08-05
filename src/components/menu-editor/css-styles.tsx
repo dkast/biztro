@@ -1,16 +1,34 @@
 "use client"
 
-import React, { useLayoutEffect } from "react"
-import { useAtom } from "jotai"
-
-import { fontThemeAtom } from "@/lib/atoms"
+import React, { useLayoutEffect, useRef } from "react"
 
 const COPIED_ATTR = "data-biztro-cloned"
+const HEADING_SHAPE_STYLE_ID = "heading-shapes"
 
 function cloneAndMark(node: Element, target: Document) {
   const clone = node.cloneNode(true) as HTMLElement
   clone.setAttribute(COPIED_ATTR, "true")
   target.head.append(clone)
+  return clone
+}
+
+// Styles are collected before links so the clones keep the host cascade order.
+function collectHostStyleNodes() {
+  const sources: Element[] = []
+
+  document.head.querySelectorAll("style").forEach(style => {
+    if (style.id === "colors") return
+    sources.push(style)
+  })
+
+  document.head
+    .querySelectorAll('link[as="style"], link[rel="stylesheet"]')
+    .forEach(link => {
+      if (link.id === "colors") return
+      sources.push(link)
+    })
+
+  return sources
 }
 
 // Heading shape CSS utilities - injected directly into iframe
@@ -162,34 +180,40 @@ export default function CssStyles({
   children: React.ReactNode
   frameDocument?: Document | null
 }) {
-  const [fontThemeId] = useAtom(fontThemeAtom)
+  const clonedStylesRef = useRef(new Map<Element, HTMLElement>())
 
   useLayoutEffect(() => {
     if (!frameDocument || typeof document === "undefined") return
 
-    const cloneStylesheets = () => {
-      frameDocument.head
-        .querySelectorAll(`[${COPIED_ATTR}]`)
-        .forEach(node => node.remove())
+    const clonedStyles = clonedStylesRef.current
 
-      document.head.querySelectorAll("style").forEach(style => {
-        if (style.id === "colors") return
-        cloneAndMark(style, frameDocument)
+    // Sync incrementally instead of re-cloning everything. Radix popovers and
+    // selects add and remove a scroll-lock <style> on the host head each time
+    // they open, and dropping every clone would leave the preview unstyled for
+    // a frame, which reads as a flash and forces a full reflow.
+    const syncStylesheets = () => {
+      const sources = collectHostStyleNodes()
+      const sourceSet = new Set(sources)
+
+      clonedStyles.forEach((clone, source) => {
+        if (sourceSet.has(source)) return
+        clone.remove()
+        clonedStyles.delete(source)
       })
 
-      document.head
-        .querySelectorAll('link[as="style"], link[rel="stylesheet"]')
-        .forEach(link => {
-          if (link.id === "colors") return
-          cloneAndMark(link, frameDocument)
-        })
+      for (const source of sources) {
+        if (clonedStyles.has(source)) continue
+        clonedStyles.set(source, cloneAndMark(source, frameDocument))
+      }
 
       // Inject heading shape styles directly into iframe
-      const headingShapeStyle = frameDocument.createElement("style")
-      headingShapeStyle.setAttribute(COPIED_ATTR, "true")
-      headingShapeStyle.setAttribute("id", "heading-shapes")
-      headingShapeStyle.textContent = HEADING_SHAPE_STYLES
-      frameDocument.head.append(headingShapeStyle)
+      if (!frameDocument.getElementById(HEADING_SHAPE_STYLE_ID)) {
+        const headingShapeStyle = frameDocument.createElement("style")
+        headingShapeStyle.setAttribute(COPIED_ATTR, "true")
+        headingShapeStyle.setAttribute("id", HEADING_SHAPE_STYLE_ID)
+        headingShapeStyle.textContent = HEADING_SHAPE_STYLES
+        frameDocument.head.append(headingShapeStyle)
+      }
     }
 
     const syncFontClasses = () => {
@@ -208,9 +232,33 @@ export default function CssStyles({
       hostClasses.forEach(cls => frameRoot.classList.add(cls))
     }
 
-    cloneStylesheets()
+    syncStylesheets()
     syncFontClasses()
-  }, [frameDocument, fontThemeId])
+
+    const observer = new MutationObserver(mutations => {
+      if (mutations.some(mutation => mutation.target === document.head)) {
+        syncStylesheets()
+      }
+
+      if (
+        mutations.some(mutation => mutation.target === document.documentElement)
+      ) {
+        syncFontClasses()
+      }
+    })
+
+    observer.observe(document.head, { childList: true })
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"]
+    })
+
+    return () => {
+      observer.disconnect()
+      clonedStyles.forEach(clone => clone.remove())
+      clonedStyles.clear()
+    }
+  }, [frameDocument])
 
   return <>{children}</>
 }

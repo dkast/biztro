@@ -1,8 +1,7 @@
 diff --git a/dist/server/lib/router-utils/setup-dev-bundler.js b/dist/server/lib/router-utils/setup-dev-bundler.js
-index 2924899412660e0dfefe1bcecf6213f2e19a5c07..9fd6aa8eefb8ed48cd0215d84903ec5da42517c1 100644
 --- a/dist/server/lib/router-utils/setup-dev-bundler.js
 +++ b/dist/server/lib/router-utils/setup-dev-bundler.js
-@@ -43,6 +43,7 @@ const _normalizepathsep = require("../../../shared/lib/page-path/normalize-path-
+@@ -43,6 +43,7 @@
  const _createclientrouterfilter = require("../../../lib/create-client-router-filter");
  const _absolutepathtopage = require("../../../shared/lib/page-path/absolute-path-to-page");
  const _generateinterceptionroutesrewrites = require("../../../lib/generate-interception-routes-rewrites");
@@ -10,8 +9,7 @@ index 2924899412660e0dfefe1bcecf6213f2e19a5c07..9fd6aa8eefb8ed48cd0215d84903ec5d
  const _constants = require("../../../shared/lib/constants");
  const _middlewareroutematcher = require("../../../shared/lib/router/utils/middleware-route-matcher");
  const _utils1 = require("../../../build/utils");
-@@ -705,6 +706,7 @@ async function startWatcher(opts) {
-             serverFields.hasAppNotFound = hasRootAppNotFound;
+@@ -709,5 +710,6 @@
              opts.fsChecker.middlewareMatcher = ((_serverFields_middleware = serverFields.middleware) == null ? void 0 : _serverFields_middleware.matchers) ? (0, _middlewareroutematcher.getMiddlewareRouteMatcher)((_serverFields_middleware1 = serverFields.middleware) == null ? void 0 : _serverFields_middleware1.matchers) : undefined;
              const interceptionRoutes = (0, _generateinterceptionroutesrewrites.generateInterceptionRoutesRewrites)(Object.keys(appPaths), opts.nextConfig.basePath).map((item)=>(0, _filesystem.buildCustomRoute)('before_files_rewrite', item, opts.nextConfig.basePath, opts.nextConfig.experimental.caseSensitiveRoutes));
 +            opts.fsChecker.rewrites.beforeFiles = opts.fsChecker.rewrites.beforeFiles.filter((route)=>!(0, _isinterceptionrouterewrite.isInterceptionRouteRewrite)(route));

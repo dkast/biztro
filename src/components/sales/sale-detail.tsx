@@ -44,8 +44,7 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
         @3xl/sale-detail:gap-6"
     >
       <div
-        className="flex flex-col justify-between gap-4 sm:flex-row
-          sm:items-start"
+        className="flex flex-col items-center justify-between gap-4 sm:flex-row"
       >
         <div className="flex flex-col gap-2">
           <p className="text-base font-semibold tracking-tight">
@@ -56,9 +55,7 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
             <Badge
               variant={
                 salesOrderTypeBadgeVariants[sale.orderType] as
-                  | "blue"
-                  | "indigo"
-                  | "yellow"
+                  "blue" | "indigo" | "yellow"
               }
             >
               {salesOrderTypeLabels[sale.orderType]}
@@ -83,7 +80,7 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
               {sale.items.map((item, index) => (
                 <div key={item.id}>
                   <Item className="rounded-none px-0 py-3">
-                    <ItemMedia variant="icon">
+                    <ItemMedia variant="icon" className="ml-2">
                       <span className="text-sm font-semibold tabular-nums">
                         {item.quantity}x
                       </span>
@@ -97,7 +94,7 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
                         </p>
                       )}
                     </ItemContent>
-                    <ItemActions className="font-medium tabular-nums">
+                    <ItemActions className="mr-3 font-medium tabular-nums">
                       {formatPrice(item.lineTotal, sale.currency)}
                     </ItemActions>
                   </Item>
@@ -105,27 +102,19 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
                 </div>
               ))}
             </ItemGroup>
-          </CardContent>
-        </Card>
-
-        <div className="flex flex-col gap-5 @3xl/sale-detail:gap-6">
-          <Card className="bg-background">
-            <CardHeader
-              className="gap-0 space-y-0 px-5 py-4 @3xl/sale-detail:p-6"
-            >
-              <CardTitle className="text-base">Totales</CardTitle>
-            </CardHeader>
-            <CardContent
-              className="flex items-center justify-between px-5 pb-5 text-base
-                font-semibold @3xl/sale-detail:p-6 @3xl/sale-detail:pt-0"
+            <div
+              className="bg-muted mt-2 flex items-center justify-between
+                rounded-lg px-3 py-2 text-base font-semibold"
             >
               <span>Total</span>
               <span className="tabular-nums">
                 {formatPrice(sale.total, sale.currency)}
               </span>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
+        <div>
           <Card className="bg-background">
             <CardHeader
               className="gap-0 space-y-0 px-5 py-4 @3xl/sale-detail:p-6"

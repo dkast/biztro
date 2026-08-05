@@ -5,7 +5,12 @@ import toast from "react-hot-toast"
 import { AlertTriangle, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-import { Button } from "@/components/ui/button"
+import {
+  Banner,
+  BannerAction,
+  BannerIcon,
+  BannerTitle
+} from "@/components/kibo-ui/banner"
 import { authClient } from "@/lib/auth-client"
 
 export function ImpersonationBanner() {
@@ -32,29 +37,23 @@ export function ImpersonationBanner() {
   }
 
   return (
-    <div
-      className="bg-amber-100 text-amber-950 dark:bg-amber-950
-        dark:text-amber-50"
+    <Banner
+      className="impersonate-banner sticky inset-x-0 top-0 bg-orange-400
+        dark:bg-orange-600"
     >
-      <div
-        className="mx-auto flex max-w-7xl items-center justify-between gap-4
-          px-4 py-2 text-sm sm:px-6 lg:px-8"
+      <BannerIcon icon={AlertTriangle} className="shrink-0" />
+      <BannerTitle>
+        Estás usando la aplicación como {session.user.name}.
+      </BannerTitle>
+      <BannerAction
+        type="button"
+        size="xs"
+        disabled={isStopping}
+        onClick={stopImpersonating}
       >
-        <p className="flex items-center gap-2">
-          <AlertTriangle className="size-4 shrink-0" />
-          Estás usando la aplicación como {session.user.name}.
-        </p>
-        <Button
-          type="button"
-          variant="outline"
-          size="xs"
-          disabled={isStopping}
-          onClick={stopImpersonating}
-        >
-          {isStopping && <Loader2 className="animate-spin" />}
-          Detener
-        </Button>
-      </div>
-    </div>
+        {isStopping && <Loader2 className="animate-spin" />}
+        Detener
+      </BannerAction>
+    </Banner>
   )
 }

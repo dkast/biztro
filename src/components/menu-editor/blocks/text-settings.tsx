@@ -1,24 +1,25 @@
 import { useEditor, useNode } from "@craftjs/core"
-import { AlignCenter, AlignLeft, AlignRight, Paintbrush } from "lucide-react"
+import { Paintbrush } from "lucide-react"
 
 import { type TextElementProps } from "@/components/menu-editor/blocks/text-element"
+import {
+  EditorSettingRow,
+  EditorSettingSegmented,
+  EditorSettingSelect
+} from "@/components/menu-editor/settings/editor-setting-row"
+import { FontSizeSlider } from "@/components/menu-editor/settings/font-size-slider"
+import {
+  FONT_WEIGHT_OPTIONS,
+  TEXT_ALIGN_OPTIONS
+} from "@/components/menu-editor/settings/settings-options"
 import SideSection from "@/components/menu-editor/side-section"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SelectItem } from "@/components/ui/select"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger
 } from "@/components/ui/tooltip"
-import { FONT_SIZES } from "@/lib/types/theme"
 
 export default function TextSettings() {
   const {
@@ -54,88 +55,42 @@ export default function TextSettings() {
   return (
     <>
       <SideSection title="Texto">
-        <div className="grid grid-cols-3 items-center gap-2">
-          <dt>
-            <Label size="xs">Tamaño</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={fontSize.toString()}
-              onValueChange={value =>
-                setProp(
-                  (props: TextElementProps) =>
-                    (props.fontSize = parseInt(value))
-                )
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                {FONT_SIZES.map(size => (
-                  <SelectItem key={size} value={size.toString()}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </dd>
-          <dt>
-            <Label size="xs">Estilo</Label>
-          </dt>
-          <dd className="col-span-2 flex items-center">
-            <Select
-              value={fontWeight}
-              onValueChange={value =>
-                setProp((props: TextElementProps) => (props.fontWeight = value))
-              }
-            >
-              <SelectTrigger
-                className="focus:ring-transparent sm:h-7! sm:text-xs"
-              >
-                <SelectValue placeholder="Selecciona" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
-              </SelectContent>
-            </Select>
-          </dd>
-          <dt>
-            <Label size="xs">Alineación</Label>
-          </dt>
-          <dd className="col-span-2">
-            <Tabs
-              value={textAlign}
-              onValueChange={value =>
-                setProp((props: TextElementProps) => (props.textAlign = value))
-              }
-              // className="text-center"
-            >
-              <TabsList className="h-8 p-0.5">
-                <TabsTrigger value="left">
-                  <AlignLeft className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger value="center">
-                  <AlignCenter className="size-3.5" />
-                </TabsTrigger>
-                <TabsTrigger value="right">
-                  <AlignRight className="size-3.5" />
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </dd>
-        </div>
+        <FontSizeSlider
+          value={fontSize}
+          onValueChange={size =>
+            setProp((props: TextElementProps) => (props.fontSize = size))
+          }
+        />
+        <EditorSettingRow label="Estilo">
+          <EditorSettingSelect
+            ariaLabel="Estilo de texto"
+            value={fontWeight}
+            onValueChange={value =>
+              setProp((props: TextElementProps) => (props.fontWeight = value))
+            }
+          >
+            {FONT_WEIGHT_OPTIONS.map(option => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </EditorSettingSelect>
+        </EditorSettingRow>
+        <EditorSettingRow label="Alineación">
+          <EditorSettingSegmented
+            value={textAlign}
+            options={TEXT_ALIGN_OPTIONS}
+            onValueChange={value =>
+              setProp((props: TextElementProps) => (props.textAlign = value))
+            }
+          />
+        </EditorSettingRow>
       </SideSection>
       <div className="px-4 py-3">
         <Tooltip delayDuration={100}>
           <TooltipTrigger asChild>
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               className="w-full gap-1.5 text-xs"
               onClick={applyToAll}

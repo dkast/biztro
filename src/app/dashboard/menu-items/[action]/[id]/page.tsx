@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { connection } from "next/server"
 
 import { ItemFormContent } from "@/app/dashboard/menu-items/[action]/[id]/item-form-content"
 
@@ -15,6 +16,8 @@ export async function generateMetadata(props: {
 export default async function ItemPage(props: {
   params: Promise<{ action: string; id: string }>
 }) {
+  await connection()
+
   const params = await props.params
 
   return (

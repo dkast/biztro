@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, type RefObject } from "react"
+import { useCallback, useEffect, useRef, type RefObject } from "react"
 import { Element, Frame } from "@craftjs/core"
 
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
@@ -13,6 +13,7 @@ export interface FramePreviewContentProps {
   frameDocument: Document | null | undefined
   frameDocRef: RefObject<Document | null>
   json?: string
+  frameKey: string
   organization: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>
   location: Awaited<ReturnType<typeof getDefaultLocation>> | null
   updateFrameHeight: () => void
@@ -50,10 +51,22 @@ export function FramePreviewContent({
   frameDocument,
   frameDocRef,
   json,
+  frameKey,
   organization,
   location,
   updateFrameHeight
 }: FramePreviewContentProps) {
+  const animationFrameRef = useRef<number | null>(null)
+
+  const scheduleFrameHeightUpdate = useCallback(() => {
+    if (animationFrameRef.current !== null) return
+
+    animationFrameRef.current = requestAnimationFrame(() => {
+      animationFrameRef.current = null
+      updateFrameHeight()
+    })
+  }, [updateFrameHeight])
+
   // Disable sticky header in the editor preview so it scrolls with content
   // instead of pinning to the top of the iframe's own viewport.
   useEffect(() => {
@@ -74,7 +87,7 @@ export function FramePreviewContent({
     frameDocRef.current = frameDocument ?? null
     if (!frameDocument) return
 
-    updateFrameHeight()
+    scheduleFrameHeightUpdate()
     const win = frameDocument.defaultView
     const target = frameDocument.body ?? frameDocument.documentElement
     if (!target) return
@@ -83,18 +96,24 @@ export function FramePreviewContent({
     if (!ResizeObserverClass) return
 
     const resizeObserver = new ResizeObserverClass(() => {
-      updateFrameHeight()
+      scheduleFrameHeightUpdate()
     })
     resizeObserver.observe(target)
     return () => {
       resizeObserver.disconnect()
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current)
+        animationFrameRef.current = null
+      }
       pauseFrameMedia(frameDocument)
     }
-  }, [frameDocument, frameDocRef, updateFrameHeight])
+  }, [frameDocument, frameDocRef, scheduleFrameHeightUpdate])
+
+  if (!frameDocument) return null
 
   return (
     <CssStyles frameDocument={frameDocument}>
-      <Frame data={json}>
+      <Frame key={frameKey} data={json}>
         <Element is={ContainerBlock} canvas>
           <HeaderBlock
             organization={organization}

@@ -420,7 +420,7 @@ function SalesClosingLoadingSkeleton() {
         actionCount={2}
         titleWidth="w-36"
       />
-      <MetricGridSkeleton count={6} />
+      <MetricGridSkeleton count={4} />
       <section className="flex flex-col gap-4">
         <Skeleton className="h-5 w-32" />
         <ChartSkeleton />

@@ -27,9 +27,8 @@ import { elementPropsAtom } from "@/lib/atoms"
 
 export const RenderNode = ({ render }: { render: ReactNode }) => {
   const { id } = useNode()
-  const { actions, query, isActive, nodes } = useEditor((_state, query) => ({
-    isActive: query.getEvent("selected").contains(id),
-    nodes: query.node(ROOT_NODE).descendants()
+  const { actions, query, isActive } = useEditor((_state, query) => ({
+    isActive: query.getEvent("selected").contains(id)
   }))
 
   const {
@@ -55,13 +54,7 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
 
   const [propsCopy, setPropsCopy] = useAtom(elementPropsAtom)
   const [, setScrollPosition] = useState(0) // Track scroll timestamps for re-render
-  const [index, setIndex] = useState<number>(-1) // Added state for index
   const [showDeleteDialog, setShowDeleteDialog] = useState(false) // New state for alert dialog
-
-  useEffect(() => {
-    if (!isActive) return
-    setIndex(nodes.findIndex((node: string) => node === id))
-  }, [isActive, nodes, id, index])
 
   useEffect(() => {
     if (dom) {
@@ -128,6 +121,13 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
     }
   }, [dom])
 
+  const moveBy = (offset: number) => {
+    const siblings = query.node(ROOT_NODE).descendants()
+    const currentIndex = siblings.findIndex((node: string) => node === id)
+    if (currentIndex < 0) return
+    actions.move(id, parent ?? ROOT_NODE, currentIndex + offset)
+  }
+
   const onPasteProps = (clonedProps: unknown) => {
     actions.setProp(id, props => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -141,6 +141,9 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
     setPropsCopy(propsCopy)
   }
 
+  // getBoundingClientRect() forces layout, so only measure when the toolbar renders.
+  const position = isActive ? getPos() : null
+
   return (
     <>
       {isActive
@@ -151,8 +154,8 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
                   bg-gray-800 p-4 text-xs text-white shadow-sm sm:-mt-7 sm:h-6
                   sm:gap-3 sm:p-2 dark:bg-gray-900"
                 style={{
-                  left: isMobile ? "auto" : getPos().left,
-                  top: getPos().top,
+                  left: isMobile ? "auto" : position?.left,
+                  top: position?.top,
                   right: isMobile ? 10 : "auto"
                 }}
               >
@@ -172,10 +175,7 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
                 {id !== ROOT_NODE && (
                   <button
                     className="cursor-pointer active:scale-90"
-                    onClick={() => {
-                      const newIndex = index - 1
-                      actions.move(id, parent ?? ROOT_NODE, newIndex)
-                    }}
+                    onClick={() => moveBy(-1)}
                   >
                     <ArrowUp className="size-5 sm:size-3.5" />
                   </button>
@@ -183,10 +183,7 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
                 {id !== ROOT_NODE && (
                   <button
                     className="cursor-pointer active:scale-90"
-                    onClick={() => {
-                      const newIndex = index + 2
-                      actions.move(id, parent ?? ROOT_NODE, newIndex)
-                    }}
+                    onClick={() => moveBy(2)}
                   >
                     <ArrowDown className="size-5 sm:size-3.5" />
                   </button>

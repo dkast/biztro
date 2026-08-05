@@ -5,6 +5,7 @@ import AppSidebar, {
   SkeletonWorkgroup
 } from "@/components/dashboard/app-sidebar"
 import Header from "@/components/dashboard/header"
+import { ImpersonationBanner } from "@/components/internal-admin/impersonation-banner"
 import { ThemeSwitcher } from "@/components/theme-switcher/theme-switcher"
 import {
   Sidebar,
@@ -42,6 +43,7 @@ export default async function Layout({
           className="bg-background relative flex min-w-0 grow flex-col
             overscroll-contain"
         >
+          <ImpersonationBanner />
           <Header showLogo={false} className="sticky top-0 z-50 w-full">
             <div className="flex w-full items-center gap-6 sm:gap-4">
               <SidebarTrigger

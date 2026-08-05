@@ -2,8 +2,8 @@ import { useNode } from "@craftjs/core"
 
 import InfoHelper from "@/components/dashboard/info-helper"
 import type { FeaturedBlockProps } from "@/components/menu-editor/blocks/featured-block"
+import { EditorSettingRow } from "@/components/menu-editor/settings/editor-setting-row"
 import SideSection from "@/components/menu-editor/side-section"
-import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 
 export default function FeaturedSettings() {
@@ -16,24 +16,24 @@ export default function FeaturedSettings() {
 
   return (
     <SideSection title="General">
-      <div className="grid grid-cols-3 items-center gap-y-2">
-        <dt className="col-span-2 flex items-start">
-          <Label size="xs">Auto play</Label>
+      <EditorSettingRow
+        label="Auto play"
+        hint={
           <InfoHelper>
             Activa la auto reproducción para que los elementos destacados
             cambien automáticamente hasta que el usuario interactúe con ellos.
           </InfoHelper>
-        </dt>
-        <dd className="flex items-center">
-          <Switch
-            className="sm:scale-75"
-            checked={autoPlay}
-            onCheckedChange={checked => {
-              setProp((props: FeaturedBlockProps) => (props.autoPlay = checked))
-            }}
-          />
-        </dd>
-      </div>
+        }
+      >
+        <Switch
+          className="sm:scale-75"
+          aria-label="Auto play"
+          checked={autoPlay}
+          onCheckedChange={checked => {
+            setProp((props: FeaturedBlockProps) => (props.autoPlay = checked))
+          }}
+        />
+      </EditorSettingRow>
     </SideSection>
   )
 }

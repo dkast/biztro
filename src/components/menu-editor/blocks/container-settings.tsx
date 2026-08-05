@@ -8,6 +8,7 @@ import { useParams } from "next/navigation"
 import { FileUploader } from "@/components/dashboard/file-uploader"
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { type ContainerBlockProps } from "@/components/menu-editor/blocks/container-block"
+import { EditorSettingRow } from "@/components/menu-editor/settings/editor-setting-row"
 import SideSection from "@/components/menu-editor/side-section"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,7 +26,6 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from "@/components/ui/drawer"
-import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { getUploadedBackgrounds } from "@/server/actions/media/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -217,9 +217,9 @@ export default function ContainerSettings() {
 
     return (
       <Button
-        variant="outline"
-        className="w-full justify-start text-left"
+        variant="ghost"
         size="sm"
+        className="hover:bg-background/60 dark:hover:bg-background/40 h-7 px-2 text-xs font-medium"
       >
         {label}
       </Button>
@@ -228,48 +228,43 @@ export default function ContainerSettings() {
 
   return (
     <SideSection title="Sitio">
-      <div className="grid grid-cols-3 items-center gap-2">
-        <dt>
-          <Label size="xs">Fondo</Label>
-        </dt>
-        <dd className="col-span-2">
-          {isMobile ? (
-            <Drawer open={open} onOpenChange={setOpen}>
-              <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
-              <DrawerContent className="max-h-[90vh]">
-                <DrawerHeader className="px-6 py-4">
-                  <DrawerTitle>Seleccionar fondo</DrawerTitle>
-                </DrawerHeader>
-                <div className="custom-scrollbar overflow-y-auto px-6 pb-6">
-                  <BackgroundSelector
-                    onClose={() => setOpen(false)}
-                    uploadedBackgrounds={uploadedBackgrounds}
-                  />
-                </div>
-              </DrawerContent>
-            </Drawer>
-          ) : (
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-              <DialogContent className="max-h-[90vh] sm:max-w-[625px]">
-                <DialogHeader>
-                  <DialogTitle>Seleccionar fondo</DialogTitle>
-                </DialogHeader>
-                <div
-                  className="no-scrollbar max-h-[calc(90vh-8rem)]
-                    overflow-y-auto px-6 pb-6"
-                >
-                  <BackgroundSelector
-                    onClose={() => setOpen(false)}
-                    uploadedBackgrounds={uploadedBackgrounds}
-                  />
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
-        </dd>
-      </div>
-      <div className="col-span-3">
+      <EditorSettingRow label="Fondo">
+        {isMobile ? (
+          <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
+            <DrawerContent className="max-h-[90vh]">
+              <DrawerHeader className="px-6 py-4">
+                <DrawerTitle>Seleccionar fondo</DrawerTitle>
+              </DrawerHeader>
+              <div className="custom-scrollbar overflow-y-auto px-6 pb-6">
+                <BackgroundSelector
+                  onClose={() => setOpen(false)}
+                  uploadedBackgrounds={uploadedBackgrounds}
+                />
+              </div>
+            </DrawerContent>
+          </Drawer>
+        ) : (
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>{triggerButton}</DialogTrigger>
+            <DialogContent className="max-h-[90vh] sm:max-w-[625px]">
+              <DialogHeader>
+                <DialogTitle>Seleccionar fondo</DialogTitle>
+              </DialogHeader>
+              <div
+                className="no-scrollbar max-h-[calc(90vh-8rem)] overflow-y-auto
+                  px-6 pb-6"
+              >
+                <BackgroundSelector
+                  onClose={() => setOpen(false)}
+                  uploadedBackgrounds={uploadedBackgrounds}
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+      </EditorSettingRow>
+      <div>
         <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
           <DialogTrigger asChild>
             <Button variant="secondary" size="sm" className="w-full">
