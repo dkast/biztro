@@ -65,7 +65,7 @@ const stripeProYearlyPriceId = process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY
 
 const stripeClient = stripeSecretKey
   ? new Stripe(stripeSecretKey, {
-      apiVersion: "2026-06-24.dahlia"
+      apiVersion: "2026-07-29.dahlia"
     })
   : null
 

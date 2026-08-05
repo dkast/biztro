@@ -15,8 +15,10 @@ const config = {
   cacheComponents: true,
   partialPrefetching: true,
   reactStrictMode: true,
+  reactCompiler: true,
   experimental: {
     turbopackFileSystemCacheForBuild: true,
+    turbopackRustReactCompiler: true,
     serverActions: {
       bodySizeLimit: "10mb"
     }
