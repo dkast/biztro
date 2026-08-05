@@ -50,7 +50,7 @@ export default function FloatingBar() {
     const nodeId = values.next()
     if (selectedNodeId && nodeId.value) {
       const node = query.node(nodeId.value).get()
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // oxlint-disable-next-line no-unused-vars
       const { data, text, ...props } = node.data.props
       setPropsCopy(props)
     }

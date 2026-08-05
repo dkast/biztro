@@ -82,7 +82,7 @@ export default function NewOrgForm({
 
   useEffect(() => {
     form.setValue("slug", slugify(slug))
-  }, [slug]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [slug]) // oxlint-disable-line react/exhaustive-deps
 
   const { execute, status, reset } = useAction(bootstrapOrg, {
     onSuccess: async ({ data }) => {

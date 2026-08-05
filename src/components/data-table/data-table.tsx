@@ -64,7 +64,7 @@ export function DataTable<TData, TValue>({
         }
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react/exhaustive-deps
   }, [isMobile])
 
   return (

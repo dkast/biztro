@@ -32,7 +32,7 @@ export default function RevalidateStatus() {
       mounted = false
     }
     // We intentionally only want to run this once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react/exhaustive-deps
   }, [])
 
   if (!isRunning) return null
