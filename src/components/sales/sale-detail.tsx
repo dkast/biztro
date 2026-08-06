@@ -1,5 +1,6 @@
 import { Ban, CalendarClock, UserRound } from "lucide-react"
 
+import { PaymentVoidDialog } from "@/components/payments/payment-void-dialog"
 import { SaleVoidDialog } from "@/components/sales/sale-void-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +14,7 @@ import {
   ItemTitle
 } from "@/components/ui/item"
 import { formatPrice } from "@/lib/currency"
+import { paymentMethodLabels, paymentStatusLabels } from "@/lib/types/payments"
 import {
   salesOrderTypeBadgeVariants,
   salesOrderTypeLabels,
@@ -37,6 +39,22 @@ function SaleStatusBadge({ status }: { status: SaleDetail["status"] }) {
   )
 }
 
+function SalePaymentStatusBadge({
+  status
+}: {
+  status: SaleDetail["paymentStatus"]
+}) {
+  return (
+    <Badge
+      variant={
+        status === "PAID" ? "green" : status === "PARTIAL" ? "yellow" : "blue"
+      }
+    >
+      {paymentStatusLabels[status]}
+    </Badge>
+  )
+}
+
 export function SaleDetailView({ sale }: { sale: SaleDetail }) {
   return (
     <div
@@ -52,6 +70,7 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <SaleStatusBadge status={sale.status} />
+            <SalePaymentStatusBadge status={sale.paymentStatus} />
             <Badge
               variant={
                 salesOrderTypeBadgeVariants[sale.orderType] as
@@ -111,6 +130,26 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
                 {formatPrice(sale.total, sale.currency)}
               </span>
             </div>
+            <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+              <div className="bg-muted rounded-lg p-3">
+                <p className="text-muted-foreground">Pagado</p>
+                <p className="mt-1 font-semibold tabular-nums">
+                  {formatPrice(sale.paidMinor / 100, sale.currency)}
+                </p>
+              </div>
+              <div className="bg-muted rounded-lg p-3">
+                <p className="text-muted-foreground">Pendiente</p>
+                <p className="mt-1 font-semibold tabular-nums">
+                  {formatPrice(sale.balanceMinor / 100, sale.currency)}
+                </p>
+              </div>
+            </div>
+            {sale.customer && (
+              <p className="text-muted-foreground mt-3 text-sm">
+                Cliente:{" "}
+                <span className="text-foreground">{sale.customer.name}</span>
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -171,6 +210,70 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
                         : "Anulada automáticamente"}
                       {sale.voidedAt && ` · ${formatDateTime(sale.voidedAt)}`}
                     </p>
+                  </div>
+                </div>
+              )}
+              {sale.payments.length > 0 && (
+                <div className="border-border border-t pt-4">
+                  <p className="mb-3 font-medium">Pagos</p>
+                  <div className="flex flex-col gap-3">
+                    {sale.payments.map(payment => (
+                      <div key={payment.id} className="flex flex-col gap-2">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="font-medium">
+                              {payment.method === "LEGACY"
+                                ? "Pago histórico"
+                                : paymentMethodLabels[payment.method]}
+                            </p>
+                            <p className="text-muted-foreground">
+                              {formatDateTime(payment.createdAt)}
+                              {payment.createdBy &&
+                                ` · ${payment.createdBy.name}`}
+                            </p>
+                          </div>
+                          <span className="font-medium tabular-nums">
+                            {formatPrice(
+                              payment.allocatedMinor / 100,
+                              sale.currency
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge
+                            variant={
+                              payment.status === "ACTIVE"
+                                ? "green"
+                                : "destructive"
+                            }
+                          >
+                            {payment.status === "ACTIVE" ? "Activo" : "Anulado"}
+                          </Badge>
+                          {payment.allocationCount > 1 && (
+                            <Badge variant="secondary">
+                              Aplicado a {payment.allocationCount} ventas
+                            </Badge>
+                          )}
+                          {payment.status === "ACTIVE" &&
+                            sale.status === "COMPLETED" && (
+                              <PaymentVoidDialog
+                                paymentId={payment.id}
+                                allocationCount={payment.allocationCount}
+                              />
+                            )}
+                        </div>
+                        {payment.reference && (
+                          <p className="text-muted-foreground">
+                            Referencia: {payment.reference}
+                          </p>
+                        )}
+                        {payment.status === "VOID" && payment.voidReason && (
+                          <p className="text-muted-foreground">
+                            Anulado: {payment.voidReason}
+                          </p>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

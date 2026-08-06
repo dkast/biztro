@@ -10,21 +10,14 @@ import {
 } from "react"
 import toast from "react-hot-toast"
 import { bind, play, setEnabled } from "cuelume"
-import {
-  Loader2,
-  Search,
-  ShoppingBag,
-  Trash2,
-  Volume2,
-  VolumeX
-} from "lucide-react"
+import { Search, ShoppingBag, Trash2, Volume2, VolumeX } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
-import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
 
 import { useProGuard } from "@/components/dashboard/upgrade-dialog"
+import { SaleCheckoutDialog } from "@/components/sales/sale-checkout-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -57,8 +50,8 @@ import {
 } from "@/components/ui/sheet"
 import { Swap, SwapOff, SwapOn } from "@/components/ui/swap"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { completeSale } from "@/server/actions/sales/mutations"
 import { formatPrice } from "@/lib/currency"
+import type { CustomerOption } from "@/lib/types/customers"
 import {
   salesOrderTypeOptions,
   type SaleCartItemInput,
@@ -154,10 +147,12 @@ const soundMutedStorageKey = "biztro:sounds-muted"
 
 export function QuickSaleScreen({
   catalog,
-  isPro
+  isPro,
+  customers
 }: {
   catalog: SalesCatalogData
   isPro: boolean
+  customers: CustomerOption[]
 }) {
   const router = useRouter()
   const [search, setSearch] = useState("")
@@ -169,6 +164,7 @@ export function QuickSaleScreen({
   const [selectedProduct, setSelectedProduct] =
     useState<SalesCatalogProduct | null>(null)
   const [isSoundMuted, setIsSoundMuted] = useState(false)
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
   useEffect(() => {
     const isMuted = window.localStorage.getItem(soundMutedStorageKey) === "true"
@@ -194,37 +190,6 @@ export function QuickSaleScreen({
   )
 
   const currency = cart[0]?.currency ?? catalog.products[0]?.currency ?? "MXN"
-
-  const { execute, status, reset } = useAction(completeSale, {
-    onSuccess: ({ data }) => {
-      if (data?.failure?.reason) {
-        play("error")
-        toast.error(data.failure.reason)
-        reset()
-        return
-      }
-
-      if (data?.success) {
-        play("success")
-        toast.success(
-          `Venta completada · ${formatPrice(data.success.total, currency)}`
-        )
-      }
-
-      setCart([])
-      setSearch("")
-      setSelectedCategory("all")
-      setOrderType("DINE_IN")
-      setSelectedProduct(null)
-      router.refresh()
-      reset()
-    },
-    onError: () => {
-      play("error")
-      toast.error("No se pudo completar la venta")
-      reset()
-    }
-  })
 
   const categoryOptions = useMemo(
     () => [
@@ -362,22 +327,24 @@ export function QuickSaleScreen({
     )
   }
 
-  const handleCompleteSale = () => {
+  const handleCheckout = () => {
     if (cart.length === 0) {
       play("error")
       toast.error("Agrega al menos un producto")
       return
     }
 
-    play("loading")
-    execute({
-      orderType,
-      items: cart.map(item => ({
-        menuItemId: item.menuItemId,
-        variantId: item.variantId,
-        quantity: item.quantity
-      }))
-    })
+    setIsCheckoutOpen(true)
+  }
+
+  const handleCheckoutCompleted = () => {
+    play("success")
+    setCart([])
+    setSearch("")
+    setSelectedCategory("all")
+    setOrderType("DINE_IN")
+    setSelectedProduct(null)
+    router.refresh()
   }
 
   const clearCart = () => {
@@ -500,21 +467,13 @@ export function QuickSaleScreen({
               />
               <Button
                 className="h-12 text-base font-semibold"
-                disabled={status === "executing" || cart.length === 0}
-                onClick={() => guardSaleCompletion(handleCompleteSale)}
+                disabled={cart.length === 0}
+                onClick={() => guardSaleCompletion(handleCheckout)}
                 data-cuelume-press
                 // data-cuelume-release
               >
-                {status === "executing" ? (
-                  <Loader2 data-icon="inline-start" />
-                ) : (
-                  <ShoppingBag data-icon="inline-start" />
-                )}
-                <TextMorph>
-                  {status === "executing"
-                    ? "Completando..."
-                    : "Completar venta"}
-                </TextMorph>
+                <ShoppingBag data-icon="inline-start" />
+                <TextMorph>Completar venta</TextMorph>
               </Button>
             </CardContent>
           </Card>
@@ -598,6 +557,21 @@ export function QuickSaleScreen({
           )}
         </SheetContent>
       </Sheet>
+
+      <SaleCheckoutDialog
+        open={isCheckoutOpen}
+        onOpenChange={setIsCheckoutOpen}
+        orderType={orderType}
+        items={cart.map(item => ({
+          menuItemId: item.menuItemId,
+          variantId: item.variantId,
+          quantity: item.quantity
+        }))}
+        total={subtotal}
+        currency={currency}
+        customers={customers}
+        onCompleted={handleCheckoutCompleted}
+      />
 
       {upgradeDialog}
     </>

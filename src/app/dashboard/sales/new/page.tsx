@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 
 import { QuickSaleScreen } from "@/components/sales/quick-sale-screen"
 import { SalesProBanner } from "@/components/sales/sales-pro-banner"
+import { getCustomerOptions } from "@/server/actions/customers/queries"
 import { getSalesCatalog } from "@/server/actions/sales/queries"
 import {
   getCurrentOrganization,
@@ -23,14 +24,17 @@ export default async function NewSalePage() {
     notFound()
   }
 
-  const catalog = await getSalesCatalog(currentOrg.id)
+  const [catalog, customers] = await Promise.all([
+    getSalesCatalog(currentOrg.id),
+    getCustomerOptions(currentOrg.id)
+  ])
 
   return (
     <div
       className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6"
     >
       {!isPro && <SalesProBanner />}
-      <QuickSaleScreen catalog={catalog} isPro={isPro} />
+      <QuickSaleScreen catalog={catalog} isPro={isPro} customers={customers} />
     </div>
   )
 }

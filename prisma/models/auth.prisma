@@ -102,6 +102,8 @@ model Organization {
   menus         Menu[]
   menuItems     MenuItem[]
   sales         Sale[]
+  customers     Customer[]
+  payments      Payment[]
   themes        Theme[]
   mediaAssets   MediaAsset[]
 

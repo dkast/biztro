@@ -2,6 +2,12 @@ import { z } from "zod/v4"
 
 import type { Currency } from "@/lib/currency"
 import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
+import {
+  paymentAmountSchema,
+  type PaymentInput,
+  type PaymentStatus,
+  type SalePaymentHistoryItem
+} from "@/lib/types/payments"
 
 export const salesOrderTypeValues = ["DINE_IN", "TAKEOUT", "DELIVERY"] as const
 
@@ -65,7 +71,17 @@ export const saleCartItemSchema = z.object({
 
 export const completeSaleSchema = z.object({
   orderType: salesOrderTypeSchema.default("DINE_IN"),
-  items: z.array(saleCartItemSchema).min(1, "Agrega al menos un producto")
+  items: z.array(saleCartItemSchema).min(1, "Agrega al menos un producto"),
+  customerId: z.string().min(1).optional(),
+  payments: z.array(
+    z.object({
+      method: z.enum(["CASH", "CARD", "TRANSFER", "CODI", "VOUCHER"]),
+      amount: paymentAmountSchema,
+      reference: z.string().trim().max(120).optional(),
+      notes: z.string().trim().max(500).optional()
+    })
+  ),
+  acceptsCredit: z.boolean().default(false)
 })
 
 export const voidSaleSchema = z
@@ -159,6 +175,12 @@ export type SalesDashboardData = {
   chart: SalesChartBucket[]
   bestSellers: SalesBestSeller[]
   recentSales: SalesRecentSale[]
+  receivables: Array<{
+    currency: Currency
+    balanceMinor: number
+    openSales: number
+    customers: number
+  }>
 }
 
 export type SalesClosingHourlyBucket = {
@@ -204,6 +226,10 @@ export type SaleDetail = {
   orderType: SalesOrderType
   currency: Currency
   total: number
+  paidMinor: number
+  balanceMinor: number
+  paymentStatus: PaymentStatus
+  customer: SalesActor | null
   createdAt: string
   completedAt: string | null
   completedBy: SalesActor | null
@@ -218,4 +244,7 @@ export type SaleDetail = {
     quantity: number
     lineTotal: number
   }>
+  payments: SalePaymentHistoryItem[]
 }
+
+export type CheckoutPaymentInput = PaymentInput

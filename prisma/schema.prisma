@@ -24,6 +24,20 @@ enum SaleStatus {
   VOID
 }
 
+enum PaymentMethod {
+  CASH
+  CARD
+  TRANSFER
+  CODI
+  VOUCHER
+  LEGACY
+}
+
+enum PaymentStatus {
+  ACTIVE
+  VOID
+}
+
 enum MediaAssetType {
   IMAGE
   VIDEO
@@ -228,11 +242,70 @@ model Sale {
   updatedAt         DateTime    @updatedAt
   organizationId    String
   organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customerId        String?
+  customer          Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
   items             SaleItem[]
+  paymentAllocations PaymentAllocation[]
 
   @@index([organizationId, createdAt])
   @@index([organizationId, status, createdAt])
   @@index([organizationId, orderType, createdAt])
+  @@index([organizationId, customerId, status, createdAt])
+}
+
+model Customer {
+  id             String    @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  phone          String?
+  email          String?
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  sales          Sale[]
+  payments       Payment[]
+
+  @@index([organizationId, name])
+  @@index([organizationId, phone])
+}
+
+model Payment {
+  id              String              @id @default(cuid())
+  organizationId  String
+  organization    Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customerId      String?
+  customer        Customer?           @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  currency        Currency
+  amountMinor     Int
+  method          PaymentMethod
+  status          PaymentStatus       @default(ACTIVE)
+  reference       String?
+  notes           String?
+  createdAt       DateTime            @default(now())
+  createdByUserId String?
+  voidedAt        DateTime?
+  voidedByUserId  String?
+  voidReason      String?
+  allocations     PaymentAllocation[]
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, customerId, currency, status, createdAt])
+  @@index([organizationId, status, createdAt])
+}
+
+model PaymentAllocation {
+  id          String   @id @default(cuid())
+  paymentId   String
+  payment     Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  saleId      String
+  sale        Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  amountMinor Int
+  createdAt   DateTime @default(now())
+
+  @@unique([paymentId, saleId])
+  @@index([saleId])
+  @@index([paymentId])
 }
 
 model SaleItem {
