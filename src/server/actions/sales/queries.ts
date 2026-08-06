@@ -3,6 +3,11 @@
 import { cacheLife, cacheTag } from "next/cache"
 
 import { formatPriceRange, type Currency } from "@/lib/currency"
+import {
+  calculateBalanceMinor,
+  currencyToMinorUnits,
+  getPaymentStatus
+} from "@/lib/payments"
 import prisma from "@/lib/prisma"
 import {
   formatSalesClosingDateValue,
@@ -10,6 +15,7 @@ import {
   parseSalesClosingDateValue
 } from "@/lib/sales-closing-date"
 import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
+import type { SalePaymentHistoryItem } from "@/lib/types/payments"
 import {
   salesOrderTypeValues,
   type SaleDetail,
@@ -68,6 +74,66 @@ function completedSalesWhere(
       lt: endDate
     }
   }
+}
+
+async function getReceivablesDashboardSummary(organizationId: string) {
+  const sales = await prisma.sale.findMany({
+    where: {
+      organizationId,
+      status: "COMPLETED",
+      customerId: { not: null }
+    },
+    select: {
+      customerId: true,
+      currency: true,
+      total: true,
+      paymentAllocations: {
+        select: {
+          amountMinor: true,
+          payment: { select: { status: true } }
+        }
+      }
+    }
+  })
+
+  const byCurrency = new Map<
+    Currency,
+    { balanceMinor: number; openSales: number; customerIds: Set<string> }
+  >()
+
+  for (const sale of sales) {
+    const paidMinor = sale.paymentAllocations.reduce(
+      (total, allocation) =>
+        allocation.payment.status === "ACTIVE"
+          ? total + allocation.amountMinor
+          : total,
+      0
+    )
+    const balanceMinor = calculateBalanceMinor(
+      currencyToMinorUnits(sale.total),
+      paidMinor
+    )
+    if (balanceMinor === 0 || !sale.customerId) continue
+
+    const summary = byCurrency.get(sale.currency) ?? {
+      balanceMinor: 0,
+      openSales: 0,
+      customerIds: new Set<string>()
+    }
+    summary.balanceMinor += balanceMinor
+    summary.openSales += 1
+    summary.customerIds.add(sale.customerId)
+    byCurrency.set(sale.currency, summary)
+  }
+
+  return [...byCurrency.entries()]
+    .map(([currency, summary]) => ({
+      currency,
+      balanceMinor: summary.balanceMinor,
+      openSales: summary.openSales,
+      customers: summary.customerIds.size
+    }))
+    .sort((a, b) => a.currency.localeCompare(b.currency))
 }
 
 function startOfRollingPeriod(
@@ -696,7 +762,8 @@ export async function getSalesDashboardData(
       periodAverageTicket: 0,
       chart: [],
       bestSellers: [],
-      recentSales: []
+      recentSales: [],
+      receivables: []
     }
   }
 
@@ -707,14 +774,21 @@ export async function getSalesDashboardData(
   const tomorrowStart = startOfNextDay(now)
   const periodStart = startOfRollingPeriod(period, now)
 
-  const [currency, todayTotals, periodSales, bestSellers, recentSales] =
-    await Promise.all([
-      getOrganizationCurrency(organizationId),
-      getSalesTotals(organizationId, todayStart, tomorrowStart),
-      getSalesChartRows(organizationId, periodStart, tomorrowStart),
-      getBestSellers(organizationId, periodStart, tomorrowStart),
-      getRecentSales(organizationId)
-    ])
+  const [
+    currency,
+    todayTotals,
+    periodSales,
+    bestSellers,
+    recentSales,
+    receivables
+  ] = await Promise.all([
+    getOrganizationCurrency(organizationId),
+    getSalesTotals(organizationId, todayStart, tomorrowStart),
+    getSalesChartRows(organizationId, periodStart, tomorrowStart),
+    getBestSellers(organizationId, periodStart, tomorrowStart),
+    getRecentSales(organizationId),
+    getReceivablesDashboardSummary(organizationId)
+  ])
 
   const periodRevenue = roundMoney(
     periodSales.reduce((sum, sale) => sum + sale.total, 0)
@@ -737,7 +811,8 @@ export async function getSalesDashboardData(
       period
     }),
     bestSellers,
-    recentSales
+    recentSales,
+    receivables
   }
 }
 
@@ -862,6 +937,12 @@ export async function getSaleDetail(
       orderType: true,
       currency: true,
       total: true,
+      customer: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
       createdAt: true,
       completedAt: true,
       completedByUserId: true,
@@ -880,15 +961,43 @@ export async function getSaleDetail(
           quantity: true,
           lineTotal: true
         }
+      },
+      paymentAllocations: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          amountMinor: true,
+          payment: {
+            select: {
+              id: true,
+              createdAt: true,
+              createdByUserId: true,
+              currency: true,
+              amountMinor: true,
+              method: true,
+              status: true,
+              reference: true,
+              notes: true,
+              voidedAt: true,
+              voidedByUserId: true,
+              voidReason: true,
+              allocations: { select: { id: true } }
+            }
+          }
+        }
       }
     }
   })
 
   if (!sale) return null
 
-  const actorIds = [sale.completedByUserId, sale.voidedByUserId].filter(
-    (id): id is string => Boolean(id)
-  )
+  const actorIds = [
+    sale.completedByUserId,
+    sale.voidedByUserId,
+    ...sale.paymentAllocations.flatMap(allocation => [
+      allocation.payment.createdByUserId,
+      allocation.payment.voidedByUserId
+    ])
+  ].filter((id): id is string => Boolean(id))
   const actors = actorIds.length
     ? await prisma.user.findMany({
         where: {
@@ -903,6 +1012,36 @@ export async function getSaleDetail(
       })
     : []
   const actorsById = new Map(actors.map(actor => [actor.id, actor]))
+  const totalMinor = currencyToMinorUnits(sale.total)
+  const paidMinor = sale.paymentAllocations.reduce(
+    (total, allocation) =>
+      allocation.payment.status === "ACTIVE"
+        ? total + allocation.amountMinor
+        : total,
+    0
+  )
+  const balanceMinor = calculateBalanceMinor(totalMinor, paidMinor)
+  const payments: SalePaymentHistoryItem[] = sale.paymentAllocations.map(
+    allocation => ({
+      id: allocation.payment.id,
+      createdAt: allocation.payment.createdAt.toISOString(),
+      method: allocation.payment.method,
+      amountMinor: allocation.payment.amountMinor,
+      allocatedMinor: allocation.amountMinor,
+      reference: allocation.payment.reference,
+      notes: allocation.payment.notes,
+      status: allocation.payment.status,
+      createdBy: allocation.payment.createdByUserId
+        ? (actorsById.get(allocation.payment.createdByUserId) ?? {
+            id: allocation.payment.createdByUserId,
+            name: "Actor no registrado"
+          })
+        : null,
+      voidedAt: allocation.payment.voidedAt?.toISOString() ?? null,
+      voidReason: allocation.payment.voidReason,
+      allocationCount: allocation.payment.allocations.length
+    })
+  )
 
   return {
     id: sale.id,
@@ -910,6 +1049,10 @@ export async function getSaleDetail(
     orderType: sale.orderType as SalesOrderType,
     currency: sale.currency,
     total: roundMoney(sale.total),
+    paidMinor,
+    balanceMinor,
+    paymentStatus: getPaymentStatus(totalMinor, paidMinor),
+    customer: sale.customer,
     createdAt: sale.createdAt.toISOString(),
     completedAt: sale.completedAt?.toISOString() ?? null,
     completedBy: sale.completedByUserId
@@ -930,6 +1073,7 @@ export async function getSaleDetail(
       ...item,
       unitPrice: roundMoney(item.unitPrice),
       lineTotal: roundMoney(item.lineTotal)
-    }))
+    })),
+    payments
   }
 }

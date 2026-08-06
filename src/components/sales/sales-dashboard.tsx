@@ -1,10 +1,18 @@
 import NumberFlow from "@number-flow/react"
-import { Banknote, ShoppingCart, TrendingUp, WalletCards } from "lucide-react"
+import {
+  ArrowRight,
+  Banknote,
+  ShoppingCart,
+  TrendingUp,
+  WalletCards
+} from "lucide-react"
+import Link from "next/link"
 
 import { SalesBestSellersPieChart } from "@/components/sales/sales-best-sellers-pie-chart"
 import { SalesRecentSaleRow } from "@/components/sales/sales-recent-sale-row"
 import { SalesRevenueChart } from "@/components/sales/sales-revenue-chart"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Empty,
   EmptyDescription,
@@ -141,6 +149,51 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             </Item>
           ))}
         </ItemGroup>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-base font-semibold">Cartera</h2>
+            <p className="text-muted-foreground text-sm">
+              Saldos pendientes por cobrar
+            </p>
+          </div>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/dashboard/sales/receivables">
+              Ver cartera
+              <ArrowRight data-icon="inline-end" />
+            </Link>
+          </Button>
+        </div>
+        {data.receivables.length === 0 ? (
+          <div
+            className="border-border text-muted-foreground rounded-lg border p-5
+              text-sm"
+          >
+            No hay saldos pendientes.
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {data.receivables.map(summary => (
+              <div
+                key={summary.currency}
+                className="border-border rounded-lg border p-5"
+              >
+                <p className="text-muted-foreground text-sm">
+                  Saldo pendiente · {summary.currency}
+                </p>
+                <p className="mt-2 text-2xl font-semibold tabular-nums">
+                  {formatPrice(summary.balanceMinor / 100, summary.currency)}
+                </p>
+                <p className="text-muted-foreground mt-1 text-sm">
+                  {summary.customers} clientes · {summary.openSales} ventas
+                  abiertas
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="flex flex-col gap-5 sm:gap-6">
