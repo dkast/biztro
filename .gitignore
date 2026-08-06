@@ -44,8 +44,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-# ESLint cache
-.eslintcache
+# Oxlint cache
+.oxlintcache
 
 # Sentry Config File
 .env.sentry-build-plugin
