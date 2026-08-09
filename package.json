@@ -187,8 +187,8 @@
     "vitest": "^4.1.10"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": "oxlint --fix",
-    "*.{ts,tsx,js,jsx,css,json,md,mdx}": "prettier --write"
+    "src/**/*.{ts,tsx,js,jsx}": "oxlint --fix",
+    "src/**/*.{ts,tsx,js,jsx,css,json,md,mdx}": "prettier --write"
   },
   "overrides": {
     "import-in-the-middle": "1.13.1",
