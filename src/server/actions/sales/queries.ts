@@ -550,7 +550,8 @@ async function getBestSellers(
   organizationId: string,
   startDate: Date,
   endDate: Date,
-  currency: Currency
+  currency: Currency,
+  limit = 10
 ): Promise<SalesBestSeller[]> {
   const rows = await prisma.saleItem.findMany({
     where: {
@@ -592,7 +593,7 @@ async function getBestSellers(
       if (b.revenue !== a.revenue) return b.revenue - a.revenue
       return a.productName.localeCompare(b.productName)
     })
-    .slice(0, 10)
+    .slice(0, limit)
     .map(product => ({
       productName: product.productName,
       quantity: product.quantity,
@@ -603,7 +604,8 @@ async function getBestSellers(
 async function getRecentSales(
   organizationId: string,
   currency: Currency,
-  range?: { startDate: Date; endDate: Date }
+  range?: { startDate: Date; endDate: Date },
+  limit = 25
 ): Promise<SalesRecentSale[]> {
   const sales = await prisma.sale.findMany({
     where: {
@@ -616,7 +618,7 @@ async function getRecentSales(
     orderBy: {
       createdAt: "desc"
     },
-    take: 25,
+    take: limit,
     select: {
       id: true,
       createdAt: true,
@@ -1053,8 +1055,8 @@ export async function getSalesDashboardData(
       tomorrowStart,
       currency
     ),
-    getBestSellers(organizationId, periodStart, tomorrowStart, currency),
-    getRecentSales(organizationId, currency),
+    getBestSellers(organizationId, periodStart, tomorrowStart, currency, 5),
+    getRecentSales(organizationId, currency, undefined, 5),
     getReceivablesDashboardSummary(organizationId)
   ])
 

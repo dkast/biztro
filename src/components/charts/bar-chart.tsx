@@ -4,6 +4,7 @@ import {
   memo,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -18,6 +19,7 @@ import type { Transition } from "motion/react"
 import { cn } from "@/lib/utils"
 import { DEFAULT_ANIMATION_EASING } from "./animation"
 import type { BarProps } from "./bar"
+import { resolveBarDomain } from "./bar-chart-domain"
 import {
   forEachChartChild,
   isChartClipPassthrough,
@@ -189,6 +191,7 @@ const ChartCore = memo(function ChartCore({
   onPhaseChange,
   status
 }: ChartInnerProps) {
+  const plotClipId = `bar-chart-clip-${useId().replaceAll(":", "")}`
   const { tooltipData, setTooltipData, scheduleTooltip, clearTooltip } =
     useScheduledTooltip<TooltipData>()
   const [isLoaded, setIsLoaded] = useState(false)
@@ -245,34 +248,12 @@ const ChartCore = memo(function ChartCore({
 
   // Compute max value considering stacking
   const maxValue = useMemo(() => {
-    if (stacked) {
-      // For stacked bars, sum all values at each data point
-      let max = 0
-      for (const d of data) {
-        let sum = 0
-        for (const line of lines) {
-          const value = d[line.dataKey]
-          if (typeof value === "number") {
-            sum += value
-          }
-        }
-        if (sum > max) {
-          max = sum
-        }
-      }
-      return max || 100
-    }
-    // For grouped bars, find max single value
-    let max = 0
-    for (const line of lines) {
-      for (const d of data) {
-        const value = d[line.dataKey]
-        if (typeof value === "number" && value > max) {
-          max = value
-        }
-      }
-    }
-    return max || 100
+    const [, domainMax] = resolveBarDomain(
+      data,
+      lines.map(line => line.dataKey),
+      stacked
+    )
+    return domainMax / 1.1
   }, [data, lines, stacked])
 
   // Value scale (linear) - for the value axis
@@ -293,20 +274,9 @@ const ChartCore = memo(function ChartCore({
       lines,
       data,
       innerHeight,
-      resolveDomain: dataKeys => {
-        let max = 0
-        for (const d of data) {
-          for (const key of dataKeys) {
-            const value = d[key]
-            if (typeof value === "number" && value > max) {
-              max = value
-            }
-          }
-        }
-        return [0, (max || 100) * 1.1]
-      }
+      resolveDomain: dataKeys => resolveBarDomain(data, dataKeys, stacked)
     })
-  }, [data, innerHeight, isHorizontal, lines, valueScale])
+  }, [data, innerHeight, isHorizontal, lines, stacked, valueScale])
 
   const primaryYScale = getPrimaryYScale(yScales, valueScale)
 
@@ -602,8 +572,12 @@ const ChartCore = memo(function ChartCore({
         height={height}
         width={width}
       >
-        {/* Gradient and pattern definitions */}
-        {defsChildren.length > 0 && <defs>{defsChildren}</defs>}
+        <defs>
+          <clipPath id={plotClipId}>
+            <rect height={innerHeight} width={innerWidth} x={0} y={0} />
+          </clipPath>
+          {defsChildren}
+        </defs>
 
         <rect fill="transparent" height={height} width={width} x={0} y={0} />
 
@@ -624,19 +598,21 @@ const ChartCore = memo(function ChartCore({
           />
 
           {renderKeyedChartLayers(clipExcludedChildren)}
-          {renderKeyedChartLayers(underlayChildren)}
-          {status === "loading" ? (
-            <BarLoadingSkeleton
-              barCount={data.length || FALLBACK_LOADING_BARS}
-              innerHeight={innerHeight}
-              innerWidth={innerWidth}
-            />
-          ) : (
-            renderKeyedChartLayers(preOverlayChildren)
-          )}
+          <g clipPath={`url(#${plotClipId})`}>
+            {renderKeyedChartLayers(underlayChildren)}
+            {status === "loading" ? (
+              <BarLoadingSkeleton
+                barCount={data.length || FALLBACK_LOADING_BARS}
+                innerHeight={innerHeight}
+                innerWidth={innerWidth}
+              />
+            ) : (
+              renderKeyedChartLayers(preOverlayChildren)
+            )}
 
-          {/* Markers rendered last so they're on top for interaction */}
-          {renderKeyedChartLayers(postOverlayChildren)}
+            {/* Markers rendered last so they're on top for interaction */}
+            {renderKeyedChartLayers(postOverlayChildren)}
+          </g>
         </g>
       </svg>
     </ChartProvider>

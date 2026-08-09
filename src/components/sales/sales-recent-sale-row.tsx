@@ -32,7 +32,8 @@ export function SalesRecentSaleRow({
 }) {
   const router = useRouter()
   const detailHref = `/dashboard/sales/order/${sale.id}`
-  const cellClassName = variant === "closing" ? "px-3 py-2.5" : undefined
+  const cellClassName =
+    variant === "closing" ? "px-3 py-2.5" : "px-2 py-3 sm:p-4"
 
   const openSale = () => router.push(detailHref)
 
@@ -51,33 +52,43 @@ export function SalesRecentSaleRow({
         }
       }}
     >
-      <TableCell className={`${cellClassName ?? ""} font-medium tabular-nums`}>
+      <TableCell className={`${cellClassName} font-medium tabular-nums`}>
         {formatDateTime(sale.createdAt, variant)}
       </TableCell>
-      <TableCell className={cellClassName}>
+      <TableCell
+        className={`${cellClassName} ${
+          variant === "dashboard" ? "hidden sm:table-cell" : ""
+        }`}
+      >
         <Badge variant={sale.status === "VOID" ? "destructive" : "green"}>
           {saleStatusLabels[sale.status]}
         </Badge>
       </TableCell>
-      <TableCell className={cellClassName}>
+      <TableCell
+        className={`${cellClassName} ${
+          variant === "dashboard" ? "hidden md:table-cell" : ""
+        }`}
+      >
         <Badge
           variant={
             salesOrderTypeBadgeVariants[sale.orderType] as
-              | "blue"
-              | "indigo"
-              | "yellow"
+              "blue" | "indigo" | "yellow"
           }
         >
           {salesOrderTypeLabels[sale.orderType]}
         </Badge>
       </TableCell>
-      <TableCell className={`${cellClassName ?? ""} text-right tabular-nums`}>
+      <TableCell
+        className={`${cellClassName} text-right tabular-nums ${
+          variant === "dashboard" ? "hidden sm:table-cell" : ""
+        }`}
+      >
         {sale.items}
       </TableCell>
-      <TableCell className={`${cellClassName ?? ""} text-right tabular-nums`}>
+      <TableCell className={`${cellClassName} text-right tabular-nums`}>
         {formatPrice(sale.total, currency)}
       </TableCell>
-      <TableCell className={`${cellClassName ?? ""} w-10 text-right`}>
+      <TableCell className={`${cellClassName} w-10 text-right`}>
         <ChevronRight
           aria-hidden
           className="text-muted-foreground group-hover:text-foreground"

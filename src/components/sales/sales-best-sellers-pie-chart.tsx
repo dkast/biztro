@@ -44,6 +44,8 @@ const bestSellerSegmentColors = [
   `color-mix(in oklab, ${pieCssVars.slice5} 76%, ${pieCssVars.background})`
 ] as const
 
+const BEST_SELLER_LIMIT = 5
+
 type BestSellerMetric = (typeof bestSellerMetricOptions)[number]["value"]
 
 type BestSellerChartDatum = SalesBestSeller & {
@@ -157,7 +159,7 @@ export function SalesBestSellersPieChart({
 
   const chartState = useMemo(() => {
     const rankedItems: BestSellerRankItem[] = bestSellers
-      .slice(0, 10)
+      .slice(0, BEST_SELLER_LIMIT)
       .map((item, index) => ({
         ...item,
         color: bestSellerSegmentColors[index] ?? bestSellerSegmentColors[0],
@@ -226,7 +228,7 @@ export function SalesBestSellersPieChart({
               }
             }}
             aria-label="Cambiar métrica del gráfico de productos más vendidos"
-            className="bg-muted grid w-full grid-cols-2 gap-1 rounded-lg p-[3px]
+            className="bg-muted grid w-full grid-cols-2 gap-1 rounded-lg p-0.75
               sm:inline-flex sm:w-auto sm:flex-nowrap"
             variant="default"
             size="sm"
@@ -250,17 +252,8 @@ export function SalesBestSellersPieChart({
         <div className="flex flex-col items-center gap-6">
           <div className="space-y-4">
             <div className="relative mx-auto w-full max-w-78">
-              <div
-                aria-hidden="true"
-                className="absolute inset-3 rounded-full opacity-45 blur-3xl"
-                style={{
-                  background:
-                    "radial-gradient(circle, color-mix(in oklab, var(--chart-1) 38%, transparent), transparent 68%)"
-                }}
-              />
               <PieChart
                 key={metric}
-                className="drop-shadow-[0_20px_50px_rgba(0,0,0,0.16)]"
                 startAngle={(-90 * Math.PI) / 180}
                 endAngle={(90 * Math.PI) / 180}
                 data={chartState.segments}
@@ -286,8 +279,8 @@ export function SalesBestSellersPieChart({
                   justify-center rounded-full px-4 text-center"
               >
                 <p
-                  className="text-muted-foreground max-w-full truncate
-                    text-[0.7rem] font-medium tracking-wide"
+                  className="text-muted-foreground max-w-full truncate text-xs
+                    font-medium tracking-wide"
                 >
                   {centerTitle}
                 </p>
@@ -327,7 +320,7 @@ export function SalesBestSellersPieChart({
                 className="border-border/70 bg-background/70 rounded-full border
                   px-3 py-1 text-xs font-medium"
               >
-                Basado en los 10 productos del ranking
+                Top {chartState.segments.length} del periodo
               </span>
               {chartState.leadingSegment && (
                 <span
@@ -396,8 +389,8 @@ export function SalesBestSellersPieChart({
                   </ItemContent>
                   <ItemActions>
                     <span
-                      className="text-muted-foreground text-[0.7rem]
-                        font-semibold tabular-nums"
+                      className="text-muted-foreground text-xs font-semibold
+                        tabular-nums"
                     >
                       #{index + 1}
                     </span>

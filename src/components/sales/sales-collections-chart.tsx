@@ -84,11 +84,11 @@ export function SalesCollectionsChart({
   currency: Currency
   period: SalesDashboardPeriod
 }) {
-  const hasCollections = chart.some(bucket =>
-    collectionSeries.some(series => bucket[series.key] > 0)
+  const activeSeries = collectionSeries.filter(series =>
+    chart.some(bucket => bucket[series.key] > 0)
   )
 
-  if (!hasCollections) {
+  if (activeSeries.length === 0) {
     return (
       <Empty className="min-h-72 rounded-none border-0 p-6 md:p-10">
         <EmptyHeader>
@@ -118,7 +118,7 @@ export function SalesCollectionsChart({
       >
         <CollectionsYAxis currency={currency} />
         <Grid horizontal numTicksRows={4} />
-        {collectionSeries.map(series => (
+        {activeSeries.map(series => (
           <Bar
             key={series.key}
             dataKey={series.key}
@@ -134,7 +134,7 @@ export function SalesCollectionsChart({
           showDatePill={true}
           showDots={false}
           content={({ point }) => {
-            const total = collectionSeries.reduce(
+            const total = activeSeries.reduce(
               (sum, series) => sum + getCollectionValue(point, series.key),
               0
             )
@@ -146,7 +146,7 @@ export function SalesCollectionsChart({
                   <span className="text-foreground font-medium">
                     Total: {formatPrice(total, currency)}
                   </span>
-                  {collectionSeries.map(series => {
+                  {activeSeries.map(series => {
                     const amount = getCollectionValue(point, series.key)
                     if (amount <= 0) return null
 
@@ -163,7 +163,7 @@ export function SalesCollectionsChart({
         />
       </BarChart>
       <div className="flex flex-wrap gap-x-4 gap-y-2 px-1 text-xs">
-        {collectionSeries.map(series => (
+        {activeSeries.map(series => (
           <span
             key={series.key}
             className="text-muted-foreground inline-flex items-center gap-1.5"

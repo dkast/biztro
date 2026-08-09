@@ -323,20 +323,48 @@ function SalesOverviewLoadingSkeleton() {
         className="gap-3 pb-4 sm:items-end sm:gap-4 sm:pb-5"
         actionCount={1}
       />
-      <MetricGridSkeleton />
-      <section className="flex flex-col gap-5 py-6 sm:gap-6 sm:py-8">
-        <div
-          className="flex flex-col items-start gap-2 sm:flex-row sm:items-center
-            sm:justify-between"
-        >
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-5 w-56" />
-            <Skeleton className="h-4 w-28" />
-          </div>
-          <Skeleton className="h-6 w-24 rounded-md" />
+      <div
+        className="flex flex-col gap-2 sm:flex-row sm:items-end
+          sm:justify-between"
+      >
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-4 w-24" />
         </div>
-        <ChartSkeleton />
-      </section>
+        <Skeleton className="h-4 w-44" />
+      </div>
+      <MetricGridSkeleton />
+      {Array.from({ length: 2 }).map((_, index) => (
+        <section key={index} className="flex flex-col gap-5 sm:gap-6">
+          <div
+            className="flex flex-col items-start gap-2 sm:flex-row
+              sm:items-center sm:justify-between"
+          >
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-5 w-56" />
+              {index === 1 && <Skeleton className="h-4 w-64" />}
+            </div>
+            <Skeleton className="h-6 w-24 rounded-md" />
+          </div>
+          <ChartSkeleton />
+        </section>
+      ))}
+      <div
+        className="flex flex-col gap-4 border-y py-5 sm:flex-row sm:items-center
+          sm:justify-between"
+      >
+        <div className="flex items-center gap-3">
+          <Skeleton className="size-8 rounded-lg" />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-4 w-44" />
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-6 w-28" />
+          <Skeleton className="h-9 w-28 rounded-lg" />
+        </div>
+      </div>
       <section
         className="grid gap-y-8 lg:grid-cols-[minmax(0,60fr)_minmax(0,40fr)]
           lg:gap-x-12"
