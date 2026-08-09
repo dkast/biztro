@@ -7,6 +7,7 @@ import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { CustomerReceivablesDetailView } from "@/components/receivables/customer-receivables-detail"
 import { Button } from "@/components/ui/button"
 import { getCustomerReceivablesDetail } from "@/server/actions/customers/queries"
+import { getPaymentFeatureState } from "@/server/actions/payments/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 
 export const metadata: Metadata = {
@@ -22,8 +23,12 @@ export default async function CustomerReceivablesPage(props: {
   ])
   if (!organization) notFound()
 
-  const detail = await getCustomerReceivablesDetail(organization.id, customerId)
+  const [detail, paymentFeatureState] = await Promise.all([
+    getCustomerReceivablesDetail(organization.id, customerId),
+    getPaymentFeatureState(organization.id)
+  ])
   if (!detail) notFound()
+  if (!paymentFeatureState?.hasCreditHistory) notFound()
 
   return (
     <div
@@ -45,7 +50,10 @@ export default async function CustomerReceivablesPage(props: {
           </Button>
         </PageSubtitle.Actions>
       </PageSubtitle>
-      <CustomerReceivablesDetailView detail={detail} />
+      <CustomerReceivablesDetailView
+        detail={detail}
+        acceptedMethods={paymentFeatureState.acceptedMethods}
+      />
     </div>
   )
 }

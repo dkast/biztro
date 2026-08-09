@@ -2,6 +2,8 @@ import NumberFlow from "@number-flow/react"
 import {
   ArrowRight,
   Banknote,
+  CircleDollarSign,
+  Percent,
   ShoppingCart,
   TrendingUp,
   WalletCards
@@ -9,6 +11,7 @@ import {
 import Link from "next/link"
 
 import { SalesBestSellersPieChart } from "@/components/sales/sales-best-sellers-pie-chart"
+import { SalesCollectionsChart } from "@/components/sales/sales-collections-chart"
 import { SalesRecentSaleRow } from "@/components/sales/sales-recent-sale-row"
 import { SalesRevenueChart } from "@/components/sales/sales-revenue-chart"
 import { Badge } from "@/components/ui/badge"
@@ -50,57 +53,52 @@ type SalesDashboardKpiItem = {
 
 function getKpiItems(data: SalesDashboardData) {
   const locales = data.currency === "MXN" ? "es-MX" : "en-US"
+  const currencyFormat = {
+    style: "currency",
+    currency: data.currency,
+    currencyDisplay: "symbol",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  } satisfies Intl.NumberFormatOptions
 
   return [
     {
-      title: "Ingresos de hoy",
-      value: data.todayRevenue,
+      title: "Ventas del periodo",
+      value: data.periodSales,
       icon: Banknote,
       locales,
-      format: {
-        style: "currency",
-        currency: data.currency,
-        currencyDisplay: "symbol",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-      },
+      format: currencyFormat,
       suffix: ` ${data.currency}`
     },
     {
-      title: "Órdenes de hoy",
-      value: data.todayOrders,
-      icon: ShoppingCart,
+      title: "Cobrado del periodo",
+      value: data.periodCollected,
+      icon: WalletCards,
       locales,
-      format: {
-        maximumFractionDigits: 0
-      }
+      format: currencyFormat,
+      suffix: ` ${data.currency}`
     },
     {
-      title: "Ingresos acumulados",
-      value: data.periodRevenue,
+      title: "Ventas de hoy",
+      value: data.todaySales,
       icon: TrendingUp,
       locales,
-      format: {
-        style: "currency",
-        currency: data.currency,
-        currencyDisplay: "symbol",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-      },
+      format: currencyFormat,
       suffix: ` ${data.currency}`
+    },
+    {
+      title: "Órdenes del periodo",
+      value: data.periodOrders,
+      icon: ShoppingCart,
+      locales,
+      format: { maximumFractionDigits: 0 }
     },
     {
       title: "Ticket promedio",
       value: data.periodAverageTicket,
-      icon: WalletCards,
+      icon: CircleDollarSign,
       locales,
-      format: {
-        style: "currency",
-        currency: data.currency,
-        currencyDisplay: "symbol",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-      },
+      format: currencyFormat,
       suffix: ` ${data.currency}`
     }
   ] satisfies SalesDashboardKpiItem[]
@@ -108,7 +106,15 @@ function getKpiItems(data: SalesDashboardData) {
 
 export function SalesDashboard({ data }: { data: SalesDashboardData }) {
   const kpiItems = getKpiItems(data)
-  const hasPeriodSales = data.chart.some(bucket => bucket.revenue > 0)
+  const hasPeriodSales = data.chart.some(bucket => bucket.sales > 0)
+  const creditPercentage =
+    data.periodSales > 0
+      ? (data.periodCreditGenerated / data.periodSales) * 100
+      : 0
+  const hasReceivableActivity =
+    data.hasCreditHistory ||
+    data.periodCreditGenerated > 0 ||
+    data.periodReceivableCollection > 0
 
   return (
     <div className="flex flex-col gap-8 pb-12 sm:gap-10 sm:pb-14">
@@ -151,50 +157,177 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
         </ItemGroup>
       </section>
 
-      <section className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-base font-semibold">Cartera</h2>
-            <p className="text-muted-foreground text-sm">
-              Saldos pendientes por cobrar
-            </p>
+      {hasReceivableActivity && (
+        <section className="flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-base font-semibold">Crédito y cartera</h2>
+              <p className="text-muted-foreground text-sm">
+                Lo vendido a crédito no es lo mismo que lo cobrado
+              </p>
+            </div>
+            {data.hasCreditHistory && (
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/dashboard/sales/receivables">
+                  Ver cartera
+                  <ArrowRight data-icon="inline-end" />
+                </Link>
+              </Button>
+            )}
           </div>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/dashboard/sales/receivables">
-              Ver cartera
-              <ArrowRight data-icon="inline-end" />
-            </Link>
-          </Button>
-        </div>
-        {data.receivables.length === 0 ? (
-          <div
-            className="border-border text-muted-foreground rounded-lg border p-5
-              text-sm"
+          <ItemGroup
+            className="grid grid-cols-2 overflow-hidden rounded-lg
+              sm:grid-cols-4"
           >
-            No hay saldos pendientes.
+            <Item className="min-w-0 rounded-none border-0 px-4 py-4 sm:px-5">
+              <ItemContent className="min-w-0 gap-1">
+                <ItemTitle className="text-muted-foreground text-sm">
+                  Crédito generado
+                </ItemTitle>
+                <NumberFlow
+                  aria-label={formatPrice(
+                    data.periodCreditGenerated,
+                    data.currency
+                  )}
+                  className="text-xl font-semibold tabular-nums"
+                  value={data.periodCreditGenerated}
+                  locales={data.currency === "MXN" ? "es-MX" : "en-US"}
+                  format={{
+                    style: "currency",
+                    currency: data.currency,
+                    currencyDisplay: "symbol",
+                    maximumFractionDigits: 2
+                  }}
+                  suffix={` ${data.currency}`}
+                />
+              </ItemContent>
+              <ItemMedia variant="icon">
+                <Banknote className="size-4" />
+              </ItemMedia>
+            </Item>
+            <Item
+              className="min-w-0 rounded-none border-0 border-l px-4 py-4
+                sm:px-5"
+            >
+              <ItemContent className="min-w-0 gap-1">
+                <ItemTitle className="text-muted-foreground text-sm">
+                  Porcentaje de crédito
+                </ItemTitle>
+                <NumberFlow
+                  aria-label={`${creditPercentage.toFixed(1)}%`}
+                  className="text-xl font-semibold tabular-nums"
+                  value={creditPercentage}
+                  locales="es-MX"
+                  format={{
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 1
+                  }}
+                  suffix="%"
+                />
+              </ItemContent>
+              <ItemMedia variant="icon">
+                <Percent className="size-4" />
+              </ItemMedia>
+            </Item>
+            <Item
+              className="min-w-0 rounded-none border-0 border-t px-4 py-4
+                sm:border-t-0 sm:border-l sm:px-5"
+            >
+              <ItemContent className="min-w-0 gap-1">
+                <ItemTitle className="text-muted-foreground text-sm">
+                  Cobros de cartera
+                </ItemTitle>
+                <NumberFlow
+                  aria-label={formatPrice(
+                    data.periodReceivableCollection,
+                    data.currency
+                  )}
+                  className="text-xl font-semibold tabular-nums"
+                  value={data.periodReceivableCollection}
+                  locales={data.currency === "MXN" ? "es-MX" : "en-US"}
+                  format={{
+                    style: "currency",
+                    currency: data.currency,
+                    currencyDisplay: "symbol",
+                    maximumFractionDigits: 2
+                  }}
+                  suffix={` ${data.currency}`}
+                />
+              </ItemContent>
+              <ItemMedia variant="icon">
+                <WalletCards className="size-4" />
+              </ItemMedia>
+            </Item>
+            <Item
+              className="min-w-0 rounded-none border-0 border-t border-l px-4
+                py-4 sm:border-t-0 sm:px-5"
+            >
+              <ItemContent className="min-w-0 gap-1">
+                <ItemTitle className="text-muted-foreground text-sm">
+                  Saldos abiertos
+                </ItemTitle>
+                <p className="text-xl font-semibold tabular-nums">
+                  {data.receivables.reduce(
+                    (total, summary) => total + summary.openSales,
+                    0
+                  )}
+                </p>
+                <p className="text-muted-foreground text-xs">
+                  {data.receivables.reduce(
+                    (total, summary) => total + summary.customers,
+                    0
+                  )}{" "}
+                  clientes con saldo
+                </p>
+              </ItemContent>
+              <ItemMedia variant="icon">
+                <CircleDollarSign className="size-4" />
+              </ItemMedia>
+            </Item>
+          </ItemGroup>
+        </section>
+      )}
+
+      {data.hasCreditHistory && (
+        <section className="flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-base font-semibold">Cartera</h2>
+              <p className="text-muted-foreground text-sm">
+                Saldos pendientes por cobrar
+              </p>
+            </div>
           </div>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {data.receivables.map(summary => (
-              <div
-                key={summary.currency}
-                className="border-border rounded-lg border p-5"
-              >
-                <p className="text-muted-foreground text-sm">
-                  Saldo pendiente · {summary.currency}
-                </p>
-                <p className="mt-2 text-2xl font-semibold tabular-nums">
-                  {formatPrice(summary.balanceMinor / 100, summary.currency)}
-                </p>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  {summary.customers} clientes · {summary.openSales} ventas
-                  abiertas
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+          {data.receivables.length === 0 ? (
+            <div
+              className="border-border text-muted-foreground rounded-lg border
+                p-5 text-sm"
+            >
+              No hay saldos pendientes.
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {data.receivables.map(summary => (
+                <div
+                  key={summary.currency}
+                  className="border-border rounded-lg border p-5"
+                >
+                  <p className="text-muted-foreground text-sm">
+                    Saldo pendiente · {summary.currency}
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold tabular-nums">
+                    {formatPrice(summary.balanceMinor / 100, summary.currency)}
+                  </p>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    {summary.customers} clientes · {summary.openSales} ventas
+                    abiertas
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       <section className="flex flex-col gap-5 sm:gap-6">
         <div
@@ -202,7 +335,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             sm:justify-between sm:gap-4"
         >
           <h2 className="text-base font-semibold text-balance">
-            Ventas por periodo
+            Ventas: pagado vs. crédito
           </h2>
           <Badge variant="secondary">
             {salesDashboardPeriodRangeLabels[data.period]}
@@ -220,6 +353,43 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             period={data.period}
           />
         </div>
+      </section>
+
+      <section className="flex flex-col gap-5 sm:gap-6">
+        <div
+          className="flex flex-col items-start gap-2 sm:flex-row sm:items-center
+            sm:justify-between sm:gap-4"
+        >
+          <div>
+            <h2 className="text-base font-semibold text-balance">
+              Cobros por método
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              Dinero recibido, incluidos los abonos de cartera
+            </p>
+          </div>
+          <Badge variant="secondary">
+            {salesDashboardPeriodRangeLabels[data.period]}
+          </Badge>
+        </div>
+        <SalesCollectionsChart
+          chart={data.collectionChart}
+          currency={data.currency}
+          period={data.period}
+        />
+        <p className="text-muted-foreground text-sm">
+          Cobros de ventas:{" "}
+          <span className="text-foreground font-medium tabular-nums">
+            {formatPrice(
+              data.periodCollected - data.periodReceivableCollection,
+              data.currency
+            )}
+          </span>{" "}
+          · Abonos de cartera:{" "}
+          <span className="text-foreground font-medium tabular-nums">
+            {formatPrice(data.periodReceivableCollection, data.currency)}
+          </span>
+        </p>
       </section>
 
       <section

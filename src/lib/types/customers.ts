@@ -1,5 +1,7 @@
 import { z } from "zod/v4"
 
+import type { PaymentOrigin } from "@/lib/types/payments"
+
 export const customerNameSchema = z
   .string()
   .trim()
@@ -61,6 +63,7 @@ export type CustomerPaymentHistory = {
   currency: "MXN" | "USD"
   amountMinor: number
   method: "CASH" | "CARD" | "TRANSFER" | "CODI" | "VOUCHER" | "LEGACY"
+  origin: PaymentOrigin
   status: "ACTIVE" | "VOID"
   reference: string | null
   notes: string | null

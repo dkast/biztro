@@ -14,6 +14,45 @@ export const paymentMethodSchema = z.enum(paymentMethodValues)
 
 export type PaymentMethod = z.infer<typeof paymentMethodSchema>
 
+export const paymentMethodSettingKeys = {
+  CASH: "acceptsCash",
+  CARD: "acceptsCard",
+  TRANSFER: "acceptsTransfer",
+  CODI: "acceptsCodi",
+  VOUCHER: "acceptsVoucher"
+} as const satisfies Record<PaymentMethod, string>
+
+export type OrganizationPaymentSettings = {
+  acceptsCash: boolean
+  acceptsCard: boolean
+  acceptsTransfer: boolean
+  acceptsCodi: boolean
+  acceptsVoucher: boolean
+  creditEnabled: boolean
+}
+
+export type OrganizationPaymentMethodSettings = Pick<
+  OrganizationPaymentSettings,
+  | "acceptsCash"
+  | "acceptsCard"
+  | "acceptsTransfer"
+  | "acceptsCodi"
+  | "acceptsVoucher"
+>
+
+export function isPaymentMethodAccepted(
+  settings: OrganizationPaymentMethodSettings,
+  method: PaymentMethod
+) {
+  return settings[paymentMethodSettingKeys[method]]
+}
+
+export const paymentOriginValues = ["SALE", "RECEIVABLE"] as const
+
+export const paymentOriginSchema = z.enum(paymentOriginValues)
+
+export type PaymentOrigin = z.infer<typeof paymentOriginSchema>
+
 export const paymentMethodLabels = {
   CASH: "Efectivo",
   CARD: "Tarjeta",
@@ -81,6 +120,7 @@ export type SalePaymentHistoryItem = {
   id: string
   createdAt: string
   method: PaymentMethod | "LEGACY"
+  origin: PaymentOrigin
   amountMinor: number
   allocatedMinor: number
   reference: string | null

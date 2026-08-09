@@ -38,6 +38,11 @@ enum PaymentStatus {
   VOID
 }
 
+enum PaymentOrigin {
+  SALE
+  RECEIVABLE
+}
+
 enum MediaAssetType {
   IMAGE
   VIDEO
@@ -135,23 +140,23 @@ model Theme {
 }
 
 model MenuItem {
-  id             String                  @id @default(cuid())
+  id             String                @id @default(cuid())
   name           String
   description    String?
   image          String?
   imageAssetId   String?
-  imageAsset     MediaAsset?             @relation("MenuItemImageAsset", fields: [imageAssetId], references: [id], onDelete: SetNull)
-  status         String                  @default("DRAFT")
-  featured       Boolean                 @default(false)
-  createdAt      DateTime                @default(now())
-  updatedAt      DateTime                @updatedAt
+  imageAsset     MediaAsset?           @relation("MenuItemImageAsset", fields: [imageAssetId], references: [id], onDelete: SetNull)
+  status         String                @default("DRAFT")
+  featured       Boolean               @default(false)
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
   categoryId     String?
   organizationId String
-  organization   Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  category       Category?               @relation(fields: [categoryId], references: [id])
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category       Category?             @relation(fields: [categoryId], references: [id])
   variants       Variant[]
   allergens      String?
-  currency       Currency                @default(MXN)
+  currency       Currency              @default(MXN)
   translations   MenuItemTranslation[]
   saleItems      SaleItem[]
 
@@ -227,24 +232,24 @@ model CategoryTranslation {
 }
 
 model Sale {
-  id                String      @id @default(cuid())
-  status            SaleStatus  @default(COMPLETED)
-  orderType         OrderType   @default(DINE_IN)
-  currency          Currency    @default(MXN)
-  subtotal          Float
-  total             Float
-  completedAt       DateTime?
-  completedByUserId String?
-  voidedAt          DateTime?
-  voidedByUserId    String?
-  voidReason        String?
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  organizationId    String
-  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  customerId        String?
-  customer          Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  items             SaleItem[]
+  id                 String              @id @default(cuid())
+  status             SaleStatus          @default(COMPLETED)
+  orderType          OrderType           @default(DINE_IN)
+  currency           Currency            @default(MXN)
+  subtotal           Float
+  total              Float
+  completedAt        DateTime?
+  completedByUserId  String?
+  voidedAt           DateTime?
+  voidedByUserId     String?
+  voidReason         String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  organizationId     String
+  organization       Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customerId         String?
+  customer           Customer?           @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items              SaleItem[]
   paymentAllocations PaymentAllocation[]
 
   @@index([organizationId, createdAt])
@@ -254,15 +259,15 @@ model Sale {
 }
 
 model Customer {
-  id             String    @id @default(cuid())
+  id             String       @id @default(cuid())
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   name           String
   phone          String?
   email          String?
   notes          String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
   sales          Sale[]
   payments       Payment[]
 
@@ -279,6 +284,7 @@ model Payment {
   currency        Currency
   amountMinor     Int
   method          PaymentMethod
+  origin          PaymentOrigin       @default(SALE)
   status          PaymentStatus       @default(ACTIVE)
   reference       String?
   notes           String?
@@ -292,6 +298,7 @@ model Payment {
   @@index([organizationId, createdAt])
   @@index([organizationId, customerId, currency, status, createdAt])
   @@index([organizationId, status, createdAt])
+  @@index([organizationId, origin, status, createdAt])
 }
 
 model PaymentAllocation {
@@ -384,18 +391,18 @@ model Waitlist {
 // Internal admin audit log – records privileged operations performed by
 // admin / superuser accounts for compliance and traceability purposes.
 model InternalAdminAuditLog {
-  id             String   @id @default(cuid())
+  id           String   @id @default(cuid())
   // The admin user who performed the action
-  actorId        String
+  actorId      String
   // Target user affected by the action (optional, e.g. role change, ban)
-  targetUserId   String?
+  targetUserId String?
   // Short machine-readable action key, e.g. "user.ban", "user.set-role"
-  action         String
+  action       String
   // Arbitrary JSON payload with before/after snapshots or extra context
-  payload        String?
+  payload      String?
   // IP address of the request, if available
-  ipAddress      String?
-  createdAt      DateTime @default(now())
+  ipAddress    String?
+  createdAt    DateTime @default(now())
 
   @@index([actorId])
   @@index([targetUserId])

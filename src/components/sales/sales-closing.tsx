@@ -2,6 +2,7 @@ import NumberFlow, { type Format } from "@number-flow/react"
 import { ShoppingCart, TrendingDown, TrendingUp } from "lucide-react"
 
 import { SalesClosingHourlyChart } from "@/components/sales/sales-closing-hourly-chart"
+import { SalesCollectionsChart } from "@/components/sales/sales-collections-chart"
 import { SalesRecentSaleRow } from "@/components/sales/sales-recent-sale-row"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -29,6 +30,7 @@ import {
 } from "@/components/ui/table"
 import { formatPrice } from "@/lib/currency"
 import { formatSalesClosingDateLongLabel } from "@/lib/sales-closing-date"
+import { paymentMethodLabels } from "@/lib/types/payments"
 import {
   salesOrderTypeBadgeVariants,
   salesOrderTypeLabels,
@@ -92,23 +94,19 @@ type SalesClosingSummaryItem = {
 )
 
 function getSummaryItems(data: SalesClosingData): SalesClosingSummaryItem[] {
-  return [
+  const items: SalesClosingSummaryItem[] = [
     {
-      title: "Ingresos completados",
+      title: "Ventas del día",
       kind: "currency",
-      value: data.todayRevenue,
-      trend: getClosingTrend(data.todayRevenue, data.previous.revenue)
+      value: data.todaySales,
+      trend: getClosingTrend(data.todaySales, data.previous.sales)
     },
-    // {
-    //   title: "Ventas anuladas",
-    //   kind: "count",
-    //   value: data.voidedSales
-    // },
-    // {
-    //   title: "Monto anulado",
-    //   kind: "currency",
-    //   value: data.voidedAmount
-    // },
+    {
+      title: "Cobrado del día",
+      kind: "currency",
+      value: data.todayCollected,
+      trend: getClosingTrend(data.todayCollected, data.previous.collected)
+    },
     {
       title: "Ventas completadas",
       kind: "count",
@@ -136,6 +134,48 @@ function getSummaryItems(data: SalesClosingData): SalesClosingSummaryItem[] {
         : undefined
     }
   ]
+
+  const hasCreditActivity =
+    data.todayCreditGenerated > 0 ||
+    data.todayReceivableCollection > 0 ||
+    data.collectionBreakdown.some(row => row.origin === "RECEIVABLE")
+
+  if (!hasCreditActivity) return items
+
+  return [
+    ...items.slice(0, 2),
+    {
+      title: "Pagado al vender",
+      kind: "currency",
+      value: data.todayPaidAtSale,
+      trend: getClosingTrend(data.todayPaidAtSale, data.previous.paidAtSale)
+    },
+    {
+      title: "Crédito generado",
+      kind: "currency",
+      value: data.todayCreditGenerated,
+      trend: getClosingTrend(
+        data.todayCreditGenerated,
+        data.previous.creditGenerated
+      )
+    },
+    {
+      title: "Abonos de cartera",
+      kind: "currency",
+      value: data.todayReceivableCollection,
+      trend: getClosingTrend(
+        data.todayReceivableCollection,
+        data.previous.receivableCollection
+      )
+    },
+    ...items.slice(2)
+  ]
+}
+
+function getPaymentMethodLabel(method: string) {
+  return method === "LEGACY"
+    ? "Pago histórico"
+    : paymentMethodLabels[method as keyof typeof paymentMethodLabels]
 }
 
 export function SalesClosingReport({ data }: { data: SalesClosingData }) {
@@ -225,6 +265,81 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
         </ItemGroup>
       </section>
 
+      <section className="space-y-5">
+        <div
+          className="flex flex-col items-start gap-2 sm:flex-row sm:items-end
+            sm:justify-between sm:gap-4"
+        >
+          <div>
+            <h2 className="text-base font-semibold text-balance">
+              Cobros del día
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              Dinero recibido por método y origen
+            </p>
+          </div>
+          <p className="text-lg font-semibold tabular-nums">
+            {formatPrice(data.todayCollected, data.currency)}
+          </p>
+        </div>
+        <SalesCollectionsChart
+          chart={data.collectionChart}
+          currency={data.currency}
+          period="7d"
+        />
+        <div className="border-border overflow-hidden rounded-lg border">
+          <Table className="min-w-[34rem]">
+            <TableHeader className="bg-muted/40">
+              <TableRow>
+                <TableHead className="h-9 px-3">Método</TableHead>
+                <TableHead className="h-9 px-3">Origen</TableHead>
+                <TableHead className="h-9 px-3 text-right">Pagos</TableHead>
+                <TableHead className="h-9 px-3 text-right">Monto</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.collectionBreakdown.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={4}
+                    className="text-muted-foreground px-3 py-6 text-center"
+                  >
+                    No hubo cobros en esta fecha.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                data.collectionBreakdown.map(row => (
+                  <TableRow key={`${row.method}-${row.origin}`}>
+                    <TableCell className="px-3 py-2.5">
+                      {getPaymentMethodLabel(row.method)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground px-3 py-2.5">
+                      {row.origin === "RECEIVABLE"
+                        ? "Abono de cartera"
+                        : "Cobro de venta"}
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                      {row.payments}
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                      {formatPrice(row.amount, data.currency)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+              <TableRow className="bg-muted/30 font-medium">
+                <TableCell className="px-3 py-2.5" colSpan={3}>
+                  Total cobrado
+                </TableCell>
+                <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                  {formatPrice(data.todayCollected, data.currency)}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      </section>
+
       <section className="space-y-4">
         <h2 className="text-base font-semibold text-balance">
           Ventas por hora
@@ -241,7 +356,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
               sm:items-center sm:justify-between sm:gap-4"
           >
             <h2 className="text-base font-semibold text-balance">
-              Ingresos por tipo de orden
+              Ventas por tipo de orden
             </h2>
             <Badge variant="secondary">{data.revenueByOrderType.length}</Badge>
           </div>
@@ -251,9 +366,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
                 <TableRow>
                   <TableHead className="h-9 px-3">Tipo de orden</TableHead>
                   <TableHead className="h-9 px-3 text-right">Órdenes</TableHead>
-                  <TableHead className="h-9 px-3 text-right">
-                    Ingresos
-                  </TableHead>
+                  <TableHead className="h-9 px-3 text-right">Ventas</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -263,9 +376,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
                       <Badge
                         variant={
                           salesOrderTypeBadgeVariants[item.orderType] as
-                            | "blue"
-                            | "indigo"
-                            | "yellow"
+                            "blue" | "indigo" | "yellow"
                         }
                       >
                         {salesOrderTypeLabels[item.orderType]}

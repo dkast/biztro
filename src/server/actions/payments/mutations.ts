@@ -13,6 +13,7 @@ import {
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
 import {
+  isPaymentMethodAccepted,
   registerCustomerPaymentSchema,
   voidPaymentSchema
 } from "@/lib/types/payments"
@@ -50,6 +51,26 @@ export const registerCustomerPayment = authMemberActionClient
     const amountMinor = decimalToMinorUnits(parsedInput.amount)
 
     const result = await prisma.$transaction(async tx => {
+      const organization = await tx.organization.findUnique({
+        where: { id: organizationId },
+        select: {
+          acceptsCash: true,
+          acceptsCard: true,
+          acceptsTransfer: true,
+          acceptsCodi: true,
+          acceptsVoucher: true
+        }
+      })
+
+      if (!organization)
+        return { failure: "Organización no encontrada" as const }
+
+      if (!isPaymentMethodAccepted(organization, parsedInput.method)) {
+        return {
+          failure: "El método de pago no está habilitado" as const
+        }
+      }
+
       const customer = await tx.customer.findFirst({
         where: {
           id: parsedInput.customerId,
@@ -114,6 +135,7 @@ export const registerCustomerPayment = authMemberActionClient
           currency: parsedInput.currency,
           amountMinor,
           method: parsedInput.method,
+          origin: "RECEIVABLE",
           reference: parsedInput.reference || null,
           notes: parsedInput.notes || null,
           createdByUserId: member.user.id,

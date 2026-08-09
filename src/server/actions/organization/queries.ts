@@ -1,7 +1,10 @@
 "use server"
 
+import { cacheLife, cacheTag } from "next/cache"
+
 import prisma from "@/lib/prisma"
 import { SubscriptionStatus } from "@/lib/types/billing"
+import type { OrganizationPaymentSettings } from "@/lib/types/payments"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
 /**
@@ -26,6 +29,29 @@ export async function getOrganization(id: string) {
   }
 
   return org
+}
+
+export async function getOrganizationPaymentSettings(
+  organizationId: string
+): Promise<OrganizationPaymentSettings | null> {
+  "use cache: private"
+  cacheLife({ stale: 60 })
+
+  if (!organizationId) return null
+
+  cacheTag(`payment-settings-${organizationId}`)
+
+  return prisma.organization.findUnique({
+    where: { id: organizationId },
+    select: {
+      acceptsCash: true,
+      acceptsCard: true,
+      acceptsTransfer: true,
+      acceptsCodi: true,
+      acceptsVoucher: true,
+      creditEnabled: true
+    }
+  })
 }
 
 /**

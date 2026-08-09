@@ -104,10 +104,10 @@ const quickPaymentOptions: QuickPaymentOption[] = [
   }
 ]
 
-function newDraftPayment(): DraftPayment {
+function newDraftPayment(method: PaymentMethod): DraftPayment {
   return {
     id: crypto.randomUUID(),
-    method: "CASH",
+    method,
     amount: ""
   }
 }
@@ -133,6 +133,8 @@ export function SaleCheckoutDialog({
   total,
   currency,
   customers,
+  acceptedMethods,
+  creditEnabled,
   onCompleted
 }: {
   open: boolean
@@ -142,12 +144,17 @@ export function SaleCheckoutDialog({
   total: number
   currency: Currency
   customers: CustomerOption[]
+  acceptedMethods: PaymentMethod[]
+  creditEnabled: boolean
   onCompleted: () => void
 }) {
+  const defaultPaymentMethod = acceptedMethods[0] ?? "CASH"
   const [activeIndex, setActiveIndex] = useState(0)
   const [advancedMode, setAdvancedMode] =
     useState<AdvancedCheckoutMode>("split")
-  const [payments, setPayments] = useState<DraftPayment[]>([newDraftPayment()])
+  const [payments, setPayments] = useState<DraftPayment[]>([
+    newDraftPayment(defaultPaymentMethod)
+  ])
   const [customerOptions, setCustomerOptions] = useState(customers)
   const [customerId, setCustomerId] = useState("")
   const [acceptsCredit, setAcceptsCredit] = useState(false)
@@ -163,12 +170,12 @@ export function SaleCheckoutDialog({
 
     setActiveIndex(0)
     setAdvancedMode("split")
-    setPayments([newDraftPayment()])
+    setPayments([newDraftPayment(defaultPaymentMethod)])
     setCustomerId("")
     setAcceptsCredit(false)
     setQuickMethod(null)
     setError(null)
-  }, [open])
+  }, [defaultPaymentMethod, open])
 
   const totalMinor = Math.round(total * 100)
   const paidMinor = useMemo(
@@ -195,7 +202,7 @@ export function SaleCheckoutDialog({
   const resetCheckout = () => {
     setActiveIndex(0)
     setAdvancedMode("split")
-    setPayments([newDraftPayment()])
+    setPayments([newDraftPayment(defaultPaymentMethod)])
     setCustomerId("")
     setAcceptsCredit(false)
     setQuickMethod(null)
@@ -258,7 +265,9 @@ export function SaleCheckoutDialog({
 
   const openAdvancedCheckout = (mode: AdvancedCheckoutMode) => {
     setAdvancedMode(mode)
-    setPayments(mode === "credit" ? [] : [newDraftPayment()])
+    setPayments(
+      mode === "credit" ? [] : [newDraftPayment(defaultPaymentMethod)]
+    )
     setCustomerId("")
     setAcceptsCredit(false)
     setError(null)
@@ -284,6 +293,11 @@ export function SaleCheckoutDialog({
 
     if (hasInvalidAmount) {
       setError("Corrige los montos de pago")
+      return
+    }
+
+    if (hasCredit && !creditEnabled) {
+      setError("La venta debe quedar liquidada con los métodos aceptados")
       return
     }
 
@@ -357,45 +371,50 @@ export function SaleCheckoutDialog({
           </div>
 
           <div className="grid grid-cols-2 gap-3 p-5 sm:grid-cols-3 sm:p-6">
-            {quickPaymentOptions.map(option => (
-              <QuickPaymentButton
-                key={option.method}
-                option={option}
-                total={total}
-                currency={currency}
-                isPending={isPending}
-                isSelected={quickMethod === option.method}
-                onClick={() => handleQuickPayment(option.method)}
-              />
-            ))}
-
-            <DialogStackNext asChild>
-              <button
-                type="button"
-                className={cn(
-                  `border-border hover:bg-accent focus-visible:ring-ring group
-                  flex min-h-28 flex-col items-start justify-between rounded-lg
-                  border p-4 text-left transition-colors focus-visible:ring-2
-                  focus-visible:ring-offset-2 focus-visible:outline-none
-                  disabled:pointer-events-none disabled:opacity-50`,
-                  "bg-muted/30"
-                )}
-                disabled={isPending || total === 0}
-                onClick={() => openAdvancedCheckout("credit")}
-              >
-                <WalletCards
-                  aria-hidden
-                  className="text-muted-foreground group-hover:text-foreground
-                    size-5 transition-colors"
+            {quickPaymentOptions
+              .filter(option => acceptedMethods.includes(option.method))
+              .map(option => (
+                <QuickPaymentButton
+                  key={option.method}
+                  option={option}
+                  total={total}
+                  currency={currency}
+                  isPending={isPending}
+                  isSelected={quickMethod === option.method}
+                  onClick={() => handleQuickPayment(option.method)}
                 />
-                <span>
-                  <span className="block text-sm font-semibold">Crédito</span>
-                  <span className="text-muted-foreground mt-0.5 block text-xs">
-                    Enviar todo a cartera
+              ))}
+
+            {creditEnabled && (
+              <DialogStackNext asChild>
+                <button
+                  type="button"
+                  className={cn(
+                    `border-border hover:bg-accent focus-visible:ring-ring group
+                    flex min-h-28 flex-col items-start justify-between
+                    rounded-lg border p-4 text-left transition-colors
+                    focus-visible:ring-2 focus-visible:ring-offset-2
+                    focus-visible:outline-none disabled:pointer-events-none
+                    disabled:opacity-50`,
+                    "bg-muted/30"
+                  )}
+                  disabled={isPending || total === 0}
+                  onClick={() => openAdvancedCheckout("credit")}
+                >
+                  <WalletCards
+                    aria-hidden
+                    className="text-muted-foreground group-hover:text-foreground
+                      size-5 transition-colors"
+                  />
+                  <span>
+                    <span className="block text-sm font-semibold">Crédito</span>
+                    <span className="text-muted-foreground mt-0.5 block text-xs">
+                      Enviar todo a cartera
+                    </span>
                   </span>
-                </span>
-              </button>
-            </DialogStackNext>
+                </button>
+              </DialogStackNext>
+            )}
 
             <DialogStackNext asChild>
               <button
@@ -479,7 +498,10 @@ export function SaleCheckoutDialog({
                     variant="outline"
                     size="sm"
                     onClick={() =>
-                      setPayments(current => [...current, newDraftPayment()])
+                      setPayments(current => [
+                        ...current,
+                        newDraftPayment(defaultPaymentMethod)
+                      ])
                     }
                   >
                     <Plus data-icon="inline-start" />
@@ -503,11 +525,13 @@ export function SaleCheckoutDialog({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {paymentMethodValues.map(method => (
-                            <SelectItem key={method} value={method}>
-                              {paymentMethodLabels[method]}
-                            </SelectItem>
-                          ))}
+                          {paymentMethodValues
+                            .filter(method => acceptedMethods.includes(method))
+                            .map(method => (
+                              <SelectItem key={method} value={method}>
+                                {paymentMethodLabels[method]}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                       <Input
@@ -545,7 +569,7 @@ export function SaleCheckoutDialog({
               </>
             )}
 
-            {hasCredit && (
+            {hasCredit && creditEnabled && (
               <div className="border-border space-y-4 rounded-lg border p-4">
                 <div className="flex items-start gap-3">
                   <WalletCards className="text-muted-foreground mt-0.5 size-4" />
@@ -603,6 +627,11 @@ export function SaleCheckoutDialog({
                 Los pagos no pueden superar el total de la venta.
               </FieldError>
             )}
+            {hasCredit && !creditEnabled && (
+              <FieldError>
+                Esta venta debe quedar liquidada con los métodos aceptados.
+              </FieldError>
+            )}
             {error && activeIndex === 1 && <FieldError>{error}</FieldError>}
           </FieldGroup>
 
@@ -616,7 +645,12 @@ export function SaleCheckoutDialog({
             <Button
               type="button"
               onClick={handleAdvancedSubmit}
-              disabled={isPending || exceedsTotal || hasInvalidAmount}
+              disabled={
+                isPending ||
+                exceedsTotal ||
+                hasInvalidAmount ||
+                (hasCredit && !creditEnabled)
+              }
             >
               {isPending ? (
                 <LoaderCircle

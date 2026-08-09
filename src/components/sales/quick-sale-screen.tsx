@@ -52,6 +52,7 @@ import { Swap, SwapOff, SwapOn } from "@/components/ui/swap"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { formatPrice } from "@/lib/currency"
 import type { CustomerOption } from "@/lib/types/customers"
+import type { PaymentMethod } from "@/lib/types/payments"
 import {
   salesOrderTypeOptions,
   type SaleCartItemInput,
@@ -148,11 +149,15 @@ const soundMutedStorageKey = "biztro:sounds-muted"
 export function QuickSaleScreen({
   catalog,
   isPro,
-  customers
+  customers,
+  acceptedMethods,
+  creditEnabled
 }: {
   catalog: SalesCatalogData
   isPro: boolean
   customers: CustomerOption[]
+  acceptedMethods: PaymentMethod[]
+  creditEnabled: boolean
 }) {
   const router = useRouter()
   const [search, setSearch] = useState("")
@@ -570,6 +575,8 @@ export function QuickSaleScreen({
         total={subtotal}
         currency={currency}
         customers={customers}
+        acceptedMethods={acceptedMethods}
+        creditEnabled={creditEnabled}
         onCompleted={handleCheckoutCompleted}
       />
 

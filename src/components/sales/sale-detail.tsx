@@ -222,10 +222,19 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
                         <div className="flex items-start justify-between gap-3">
                           <div>
                             <p className="font-medium">
-                              {payment.method === "LEGACY"
-                                ? "Pago histórico"
-                                : paymentMethodLabels[payment.method]}
+                              {payment.origin === "RECEIVABLE"
+                                ? "Abono de cartera"
+                                : payment.method === "LEGACY"
+                                  ? "Pago histórico"
+                                  : paymentMethodLabels[payment.method]}
                             </p>
+                            {payment.origin === "RECEIVABLE" && (
+                              <p className="text-muted-foreground">
+                                {payment.method === "LEGACY"
+                                  ? "Pago histórico"
+                                  : paymentMethodLabels[payment.method]}
+                              </p>
+                            )}
                             <p className="text-muted-foreground">
                               {formatDateTime(payment.createdAt)}
                               {payment.createdBy &&

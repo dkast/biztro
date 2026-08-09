@@ -97,15 +97,20 @@ export function SalesClosingHourlyChart({
               typeof point.todayOrders === "number" ? point.todayOrders : 0
             const todayRevenue =
               typeof point.todayRevenue === "number" ? point.todayRevenue : 0
+            const todayCollected =
+              typeof point.todayCollected === "number"
+                ? point.todayCollected
+                : 0
 
             return (
               <div className="rounded-md px-3 py-2 text-sm shadow-sm">
                 <div className="font-medium">{label}</div>
-                <div className="mt-1 flex flex-col gap-1 text-white/50">
+                <div className="text-muted-foreground mt-1 flex flex-col gap-1">
                   <span>
                     Hoy: {todayOrders} ventas ·{" "}
                     {formatPrice(todayRevenue, currency)}
                   </span>
+                  <span>Cobrado: {formatPrice(todayCollected, currency)}</span>
                 </div>
               </div>
             )

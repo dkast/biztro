@@ -1,4 +1,4 @@
-import { CreditCard, MapPin, Settings, Users } from "lucide-react"
+import { CreditCard, MapPin, Settings, Users, WalletCards } from "lucide-react"
 
 import { DashboardSecondaryNav } from "@/components/dashboard/dashboard-secondary-nav"
 import type { SecondaryNavItem } from "@/components/dashboard/secondary-nav"
@@ -13,6 +13,11 @@ const SecondaryNavItems = [
     title: "Sucursal",
     href: "dashboard/settings/locations",
     icon: <MapPin className="size-4 shrink-0" />
+  },
+  {
+    title: "Pagos",
+    href: "dashboard/settings/payments",
+    icon: <WalletCards className="size-4 shrink-0" />
   },
   {
     title: "Miembros",

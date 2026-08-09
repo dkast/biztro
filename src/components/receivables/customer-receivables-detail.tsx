@@ -62,9 +62,11 @@ function formatDate(value: string) {
 }
 
 export function CustomerReceivablesDetailView({
-  detail
+  detail,
+  acceptedMethods
 }: {
   detail: CustomerReceivablesDetail
+  acceptedMethods: PaymentMethod[]
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -102,7 +104,12 @@ export function CustomerReceivablesDetailView({
               Los abonos se aplican primero a las ventas más antiguas.
             </p>
           </div>
-          <RegisterPaymentDialog detail={detail} />
+          {detail.openSales.length > 0 && (
+            <RegisterPaymentDialog
+              detail={detail}
+              acceptedMethods={acceptedMethods}
+            />
+          )}
         </div>
         <div className="border-border overflow-x-auto rounded-lg border">
           <Table className="min-w-[36rem]">
@@ -116,25 +123,36 @@ export function CustomerReceivablesDetailView({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {detail.openSales.map(sale => (
-                <TableRow key={sale.id}>
-                  <TableCell className="font-medium">
-                    #{sale.id.slice(-8).toUpperCase()}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(sale.createdAt)}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {formatPrice(sale.totalMinor / 100, sale.currency)}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {formatPrice(sale.paidMinor / 100, sale.currency)}
-                  </TableCell>
-                  <TableCell className="text-right font-medium tabular-nums">
-                    {formatPrice(sale.balanceMinor / 100, sale.currency)}
+              {detail.openSales.length > 0 ? (
+                detail.openSales.map(sale => (
+                  <TableRow key={sale.id}>
+                    <TableCell className="font-medium">
+                      #{sale.id.slice(-8).toUpperCase()}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(sale.createdAt)}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {formatPrice(sale.totalMinor / 100, sale.currency)}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {formatPrice(sale.paidMinor / 100, sale.currency)}
+                    </TableCell>
+                    <TableCell className="text-right font-medium tabular-nums">
+                      {formatPrice(sale.balanceMinor / 100, sale.currency)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-muted-foreground h-20 text-center"
+                  >
+                    No hay saldo pendiente.
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </div>
@@ -168,9 +186,20 @@ export function CustomerReceivablesDetailView({
                     {formatDate(payment.createdAt)}
                   </TableCell>
                   <TableCell>
-                    {payment.method === "LEGACY"
-                      ? "Pago histórico"
-                      : paymentMethodLabels[payment.method]}
+                    <span className="font-medium">
+                      {payment.origin === "RECEIVABLE"
+                        ? "Abono de cartera"
+                        : payment.method === "LEGACY"
+                          ? "Pago histórico"
+                          : paymentMethodLabels[payment.method]}
+                    </span>
+                    {payment.origin === "RECEIVABLE" && (
+                      <span className="text-muted-foreground block text-xs">
+                        {payment.method === "LEGACY"
+                          ? "Pago histórico"
+                          : paymentMethodLabels[payment.method]}
+                      </span>
+                    )}
                     {payment.allocationCount > 1 && (
                       <span className="text-muted-foreground block text-xs">
                         {payment.allocationCount} ventas
@@ -343,9 +372,11 @@ function CustomerEditDialog({
 }
 
 function RegisterPaymentDialog({
-  detail
+  detail,
+  acceptedMethods
 }: {
   detail: CustomerReceivablesDetail
+  acceptedMethods: PaymentMethod[]
 }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
@@ -353,7 +384,9 @@ function RegisterPaymentDialog({
     detail.summaries[0]?.currency ?? "MXN"
   )
   const [amount, setAmount] = useState("")
-  const [method, setMethod] = useState<PaymentMethod>("CASH")
+  const [method, setMethod] = useState<PaymentMethod>(
+    acceptedMethods[0] ?? "CASH"
+  )
   const [reference, setReference] = useState("")
   const [notes, setNotes] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -462,11 +495,13 @@ function RegisterPaymentDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {paymentMethodValues.map(value => (
-                  <SelectItem key={value} value={value}>
-                    {paymentMethodLabels[value]}
-                  </SelectItem>
-                ))}
+                {paymentMethodValues
+                  .filter(value => acceptedMethods.includes(value))
+                  .map(value => (
+                    <SelectItem key={value} value={value}>
+                      {paymentMethodLabels[value]}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </Field>

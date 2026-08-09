@@ -5,6 +5,7 @@ import { notFound } from "next/navigation"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { ReceivablesList } from "@/components/receivables/receivables-list"
 import { getReceivableCustomers } from "@/server/actions/customers/queries"
+import { getPaymentFeatureState } from "@/server/actions/payments/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 
 export const metadata: Metadata = {
@@ -15,7 +16,12 @@ export default async function ReceivablesPage() {
   const organization = await getCurrentOrganization()
   if (!organization) notFound()
 
-  const customers = await getReceivableCustomers(organization.id)
+  const [customers, paymentFeatureState] = await Promise.all([
+    getReceivableCustomers(organization.id),
+    getPaymentFeatureState(organization.id)
+  ])
+
+  if (!paymentFeatureState?.hasCreditHistory) notFound()
 
   return (
     <div

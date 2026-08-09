@@ -7,6 +7,7 @@ import { type Currency } from "@/lib/currency"
 import { currencyToMinorUnits, decimalToMinorUnits } from "@/lib/payments"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
+import { isPaymentMethodAccepted } from "@/lib/types/payments"
 import {
   completeSaleSchema,
   voidReasonLabels,
@@ -200,7 +201,40 @@ export const completeSale = authMemberActionClient
       }
     }
 
-    const sale = await prisma.$transaction(async tx => {
+    const saleResult = await prisma.$transaction(async tx => {
+      const organization = await tx.organization.findUnique({
+        where: { id: organizationId },
+        select: {
+          acceptsCash: true,
+          acceptsCard: true,
+          acceptsTransfer: true,
+          acceptsCodi: true,
+          acceptsVoucher: true,
+          creditEnabled: true
+        }
+      })
+
+      if (!organization) {
+        return { failure: "No se pudo obtener la organización actual" as const }
+      }
+
+      const disabledPayment = parsedInput.payments.find(
+        payment => !isPaymentMethodAccepted(organization, payment.method)
+      )
+
+      if (disabledPayment) {
+        return {
+          failure: "Uno o más métodos de pago no están habilitados" as const
+        }
+      }
+
+      if (balanceMinor > 0 && !organization.creditEnabled) {
+        return {
+          failure:
+            "El crédito no está habilitado para esta organización" as const
+        }
+      }
+
       if (parsedInput.customerId) {
         const customer = await tx.customer.findFirst({
           where: {
@@ -211,7 +245,10 @@ export const completeSale = authMemberActionClient
         })
 
         if (!customer) {
-          return null
+          return {
+            failure:
+              "El cliente seleccionado no pertenece a esta organización" as const
+          }
         }
       }
 
@@ -252,6 +289,7 @@ export const completeSale = authMemberActionClient
               currency: saleCurrency,
               amountMinor: decimalToMinorUnits(payment.amount),
               method: payment.method,
+              origin: "SALE",
               reference: payment.reference || null,
               notes: payment.notes || null,
               createdByUserId: member.user.id,
@@ -266,13 +304,13 @@ export const completeSale = authMemberActionClient
         }
       }
 
-      return createdSale
+      return { success: createdSale }
     })
 
-    if (!sale) {
+    if ("failure" in saleResult) {
       return {
         failure: {
-          reason: "El cliente seleccionado no pertenece a esta organización"
+          reason: saleResult.failure
         }
       }
     }
@@ -284,9 +322,9 @@ export const completeSale = authMemberActionClient
 
     return {
       success: {
-        id: sale.id,
-        orderType: sale.orderType,
-        total: sale.total,
+        id: saleResult.success.id,
+        orderType: saleResult.success.orderType,
+        total: saleResult.success.total,
         itemCount
       }
     }

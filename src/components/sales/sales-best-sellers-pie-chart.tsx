@@ -27,7 +27,7 @@ const bestSellerMetricOptions = [
   },
   {
     value: "revenue",
-    label: "Ingresos"
+    label: "Monto vendido"
   }
 ] as const
 
@@ -185,7 +185,7 @@ export function SalesBestSellersPieChart({
     }
   }, [bestSellers, metric])
 
-  const activeMetricLabel = metric === "quantity" ? "Unidades" : "Ingresos"
+  const activeMetricLabel = metric === "quantity" ? "Unidades" : "Monto vendido"
   const activeSegment =
     hoveredIndex === null ? null : (chartState.segments[hoveredIndex] ?? null)
   const centerValue = activeSegment?.value ?? chartState.totalValue

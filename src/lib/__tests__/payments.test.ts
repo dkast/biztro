@@ -7,6 +7,10 @@ import {
   decimalToMinorUnits,
   getPaymentStatus
 } from "../payments"
+import {
+  isPaymentMethodAccepted,
+  type OrganizationPaymentSettings
+} from "../types/payments"
 
 describe("decimalToMinorUnits", () => {
   it("converts valid decimal currency inputs", () => {
@@ -39,6 +43,22 @@ describe("payment calculations", () => {
     expect(getPaymentStatus(1000, 1200)).toBe("PAID")
     expect(calculateBalanceMinor(1000, 400)).toBe(600)
     expect(calculateBalanceMinor(1000, 1200)).toBe(0)
+  })
+})
+
+describe("payment policy", () => {
+  const settings: OrganizationPaymentSettings = {
+    acceptsCash: true,
+    acceptsCard: true,
+    acceptsTransfer: true,
+    acceptsCodi: false,
+    acceptsVoucher: false,
+    creditEnabled: false
+  }
+
+  it("accepts only enabled payment methods", () => {
+    expect(isPaymentMethodAccepted(settings, "CASH")).toBe(true)
+    expect(isPaymentMethodAccepted(settings, "CODI")).toBe(false)
   })
 })
 

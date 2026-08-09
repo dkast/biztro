@@ -8,10 +8,18 @@ import { z } from "zod/v4"
 import { getOrganizationBySlug } from "@/server/actions/organization/queries"
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import { auth } from "@/lib/auth"
+import { calculateBalanceMinor, currencyToMinorUnits } from "@/lib/payments"
 import prisma from "@/lib/prisma"
 import { deleteOrganizationAssetsFromR2 } from "@/lib/r2"
-import { actionClient, authActionClient } from "@/lib/safe-actions"
-import { orgSchema } from "@/lib/types/organization"
+import {
+  actionClient,
+  authActionClient,
+  authMemberActionClient
+} from "@/lib/safe-actions"
+import {
+  organizationPaymentSettingsSchema,
+  orgSchema
+} from "@/lib/types/organization"
 
 /**
  * Bootstrap an organization by creating a new organization with the provided name, description, and subdomain.
@@ -337,6 +345,102 @@ export const updateOrg = authActionClient
         }
       }
     }
+  })
+
+export const saveOrganizationPaymentSettings = authMemberActionClient
+  .inputSchema(organizationPaymentSettingsSchema)
+  .action(async ({ parsedInput, ctx: { member } }) => {
+    const organizationId = member.organizationId
+
+    if (!organizationId) {
+      return {
+        failure: {
+          reason: "No se pudo obtener la organización actual"
+        }
+      }
+    }
+
+    if (member.role !== "owner") {
+      return {
+        failure: {
+          reason:
+            "Solo el propietario puede actualizar la configuración de pagos"
+        }
+      }
+    }
+
+    const result = await prisma.$transaction(async tx => {
+      const organization = await tx.organization.findUnique({
+        where: { id: organizationId },
+        select: { id: true }
+      })
+
+      if (!organization) {
+        return { failure: "No se pudo obtener la organización actual" as const }
+      }
+
+      if (!parsedInput.creditEnabled) {
+        const sales = await tx.sale.findMany({
+          where: {
+            organizationId,
+            status: "COMPLETED"
+          },
+          select: {
+            total: true,
+            paymentAllocations: {
+              select: {
+                amountMinor: true,
+                payment: {
+                  select: { status: true }
+                }
+              }
+            }
+          }
+        })
+
+        const hasOutstandingBalance = sales.some(sale => {
+          const paidMinor = sale.paymentAllocations.reduce(
+            (total, allocation) =>
+              allocation.payment.status === "ACTIVE"
+                ? total + allocation.amountMinor
+                : total,
+            0
+          )
+
+          return (
+            calculateBalanceMinor(currencyToMinorUnits(sale.total), paidMinor) >
+            0
+          )
+        })
+
+        if (hasOutstandingBalance) {
+          return {
+            failure:
+              "No puedes deshabilitar el crédito mientras existan saldos pendientes" as const
+          }
+        }
+      }
+
+      await tx.organization.update({
+        where: { id: organizationId },
+        data: parsedInput
+      })
+
+      return { success: true as const }
+    })
+
+    if ("failure" in result) {
+      return { failure: { reason: result.failure } }
+    }
+
+    updateTag(`organization-${organizationId}`)
+    updateTag("organization-current")
+    updateTag("page-settings")
+    updateTag(`payment-settings-${organizationId}`)
+    updateTag(`sales-${organizationId}`)
+    updateTag(`receivables-${organizationId}`)
+
+    return { success: true }
   })
 
 /**
