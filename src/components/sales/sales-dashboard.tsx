@@ -308,7 +308,7 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
                   <TableRow>
                     <TableHead className="px-2 sm:px-4">Fecha</TableHead>
                     <TableHead className="hidden sm:table-cell">
-                      Estatus
+                      Estado de pago
                     </TableHead>
                     <TableHead className="hidden md:table-cell">
                       Canal de venta

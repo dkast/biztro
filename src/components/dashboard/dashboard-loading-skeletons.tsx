@@ -253,7 +253,7 @@ function TranslationsLoadingSkeleton() {
 
 function SettingsGeneralLoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
+    <div className="mx-auto max-w-2xl grow px-4 sm:px-6 md:px-0">
       <div className="flex items-center justify-between gap-4">
         <PageSubtitleSkeleton titleWidth="w-44" />
         <Skeleton className="h-6 w-20 rounded-md" />
@@ -265,7 +265,7 @@ function SettingsGeneralLoadingSkeleton() {
 
 function SettingsLocationsLoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
+    <div className="mx-auto max-w-2xl grow px-4 sm:px-6 md:px-0">
       <PageSubtitleSkeleton />
       <DashboardFormSkeleton className="mt-8" fieldCount={5} />
       <Skeleton className="my-8 h-px w-full" />
@@ -286,7 +286,7 @@ function SettingsMembersLoadingSkeleton() {
 
 function SettingsBillingLoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
+    <div className="mx-auto max-w-2xl grow px-4 sm:px-6 md:px-0">
       <PageSubtitleSkeleton titleWidth="w-48" />
       <div className="my-10 flex flex-col gap-6">
         <Skeleton className="h-48 rounded-lg" />

@@ -625,6 +625,16 @@ async function getRecentSales(
       orderType: true,
       status: true,
       total: true,
+      paymentAllocations: {
+        select: {
+          amountMinor: true,
+          payment: {
+            select: {
+              status: true
+            }
+          }
+        }
+      },
       items: {
         select: {
           quantity: true
@@ -633,14 +643,26 @@ async function getRecentSales(
     }
   })
 
-  return sales.map(sale => ({
-    id: sale.id,
-    createdAt: sale.createdAt.toISOString(),
-    orderType: sale.orderType as SalesOrderType,
-    status: sale.status,
-    total: roundMoney(sale.total),
-    items: sale.items.reduce((count, item) => count + item.quantity, 0)
-  }))
+  return sales.map(sale => {
+    const totalMinor = currencyToMinorUnits(sale.total)
+    const paidMinor = sale.paymentAllocations.reduce(
+      (total, allocation) =>
+        allocation.payment.status === "ACTIVE"
+          ? total + allocation.amountMinor
+          : total,
+      0
+    )
+
+    return {
+      id: sale.id,
+      createdAt: sale.createdAt.toISOString(),
+      orderType: sale.orderType as SalesOrderType,
+      status: sale.status,
+      paymentStatus: getPaymentStatus(totalMinor, paidMinor),
+      total: roundMoney(sale.total),
+      items: sale.items.reduce((count, item) => count + item.quantity, 0)
+    }
+  })
 }
 
 const salesClosingHourLabelFormatter = new Intl.DateTimeFormat("es-MX", {

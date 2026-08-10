@@ -1,8 +1,8 @@
 import NumberFlow, { type Format } from "@number-flow/react"
 import { ShoppingCart, TrendingDown, TrendingUp } from "lucide-react"
 
+import { SalesClosingCollectionsPieChart } from "@/components/sales/sales-closing-collections-pie-chart"
 import { SalesClosingHourlyChart } from "@/components/sales/sales-closing-hourly-chart"
-import { SalesCollectionsChart } from "@/components/sales/sales-collections-chart"
 import { SalesRecentSaleRow } from "@/components/sales/sales-recent-sale-row"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -183,6 +183,14 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
     formatSalesClosingDateLongLabel(data.selectedDateValue) ||
     "la fecha seleccionada"
   const summaryItems = getSummaryItems(data)
+  const collectionContext = [
+    data.todayReceivableCollection > 0 &&
+      "Cobrado del día incluye abonos de cartera.",
+    data.todayCreditGenerated > 0 &&
+      "Crédito generado son ventas pendientes de cobro."
+  ]
+    .filter(Boolean)
+    .join(" ")
   const currencyLocale = data.currency === "MXN" ? "es-MX" : "en-US"
   const currencyFormat: Format = {
     style: "currency",
@@ -263,91 +271,105 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
             </Item>
           ))}
         </ItemGroup>
+        {collectionContext && (
+          <p className="text-muted-foreground text-sm">{collectionContext}</p>
+        )}
       </section>
 
-      <section className="space-y-5">
+      <section className="space-y-8">
         <div
-          className="flex flex-col items-start gap-2 sm:flex-row sm:items-end
-            sm:justify-between sm:gap-4"
+          className="grid gap-8 lg:grid-cols-[13rem_minmax(0,1fr)]
+            lg:items-start lg:gap-10"
         >
-          <div>
+          <section className="min-w-0 space-y-5">
+            <div>
+              <h2 className="text-base font-semibold text-balance">
+                Métodos de cobro
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                Distribución del dinero recibido
+              </p>
+            </div>
+            <SalesClosingCollectionsPieChart
+              chart={data.collectionChart}
+              currency={data.currency}
+            />
+          </section>
+
+          <section className="min-w-0 space-y-4">
             <h2 className="text-base font-semibold text-balance">
-              Cobros del día
+              Ventas por hora
             </h2>
+            <SalesClosingHourlyChart
+              hourly={data.hourly}
+              currency={data.currency}
+            />
+          </section>
+        </div>
+
+        <section className="min-w-0 space-y-3">
+          <div>
+            <h3 className="text-sm font-semibold text-balance">
+              Desglose para conciliación
+            </h3>
             <p className="text-muted-foreground text-sm">
-              Dinero recibido por método y origen
+              Cobros por método y origen
             </p>
           </div>
-          <p className="text-lg font-semibold tabular-nums">
-            {formatPrice(data.todayCollected, data.currency)}
-          </p>
-        </div>
-        <SalesCollectionsChart
-          chart={data.collectionChart}
-          currency={data.currency}
-          period="7d"
-        />
-        <div className="border-border overflow-hidden rounded-lg border">
-          <Table className="min-w-[34rem]">
-            <TableHeader className="bg-muted/40">
-              <TableRow>
-                <TableHead className="h-9 px-3">Método</TableHead>
-                <TableHead className="h-9 px-3">Origen</TableHead>
-                <TableHead className="h-9 px-3 text-right">Pagos</TableHead>
-                <TableHead className="h-9 px-3 text-right">Monto</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.collectionBreakdown.length === 0 ? (
+          <div className="border-border overflow-hidden rounded-lg border">
+            <Table className="min-w-136">
+              <TableHeader className="bg-muted/40">
                 <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    className="text-muted-foreground px-3 py-6 text-center"
-                  >
-                    No hubo cobros en esta fecha.
-                  </TableCell>
+                  <TableHead className="h-9 px-3">Método</TableHead>
+                  <TableHead className="h-9 px-3">Origen</TableHead>
+                  <TableHead className="h-9 px-3 text-right">Pagos</TableHead>
+                  <TableHead className="h-9 px-3 text-right">Monto</TableHead>
                 </TableRow>
-              ) : (
-                data.collectionBreakdown.map(row => (
-                  <TableRow key={`${row.method}-${row.origin}`}>
-                    <TableCell className="px-3 py-2.5">
-                      {getPaymentMethodLabel(row.method)}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground px-3 py-2.5">
-                      {row.origin === "RECEIVABLE"
-                        ? "Abono de cartera"
-                        : "Cobro de venta"}
-                    </TableCell>
-                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                      {row.payments}
-                    </TableCell>
-                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                      {formatPrice(row.amount, data.currency)}
+              </TableHeader>
+              <TableBody>
+                {data.collectionBreakdown.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={4}
+                      className="text-muted-foreground px-3 py-6 text-center"
+                    >
+                      No hubo cobros en esta fecha.
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-              <TableRow className="bg-muted/30 font-medium">
-                <TableCell className="px-3 py-2.5" colSpan={3}>
-                  Total cobrado
-                </TableCell>
-                <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                  {formatPrice(data.todayCollected, data.currency)}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-base font-semibold text-balance">
-          Ventas por hora
-        </h2>
-        <SalesClosingHourlyChart
-          hourly={data.hourly}
-          currency={data.currency}
-        />
+                ) : (
+                  data.collectionBreakdown.map(row => (
+                    <TableRow key={`${row.method}-${row.origin}`}>
+                      <TableCell className="px-3 py-2.5">
+                        {getPaymentMethodLabel(row.method)}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground px-3 py-2.5">
+                        {row.origin === "RECEIVABLE"
+                          ? "Abono de cartera"
+                          : "Cobro de venta"}
+                      </TableCell>
+                      <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                        {row.payments}
+                      </TableCell>
+                      <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                        {formatPrice(row.amount, data.currency)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+                {data.collectionBreakdown.length > 0 && (
+                  <TableRow className="bg-muted/30 font-medium">
+                    <TableCell className="px-3 py-2.5" colSpan={3}>
+                      Total cobrado
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                      {formatPrice(data.todayCollected, data.currency)}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </section>
       </section>
       <section className="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-10">
         <div className="min-w-0 space-y-4">
@@ -361,7 +383,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
             <Badge variant="secondary">{data.revenueByOrderType.length}</Badge>
           </div>
           <div className="border-border overflow-hidden rounded-lg border">
-            <Table className="min-w-[22rem]">
+            <Table className="min-w-88">
               <TableHeader className="bg-muted/40">
                 <TableRow>
                   <TableHead className="h-9 px-3">Tipo de orden</TableHead>
@@ -481,7 +503,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
               </EmptyHeader>
             </Empty>
           ) : (
-            <Table className="min-w-[30rem]">
+            <Table className="min-w-120">
               <TableHeader className="bg-muted/40">
                 <TableRow>
                   <TableHead className="h-9 px-3">Hora</TableHead>

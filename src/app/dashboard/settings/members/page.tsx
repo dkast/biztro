@@ -57,7 +57,7 @@ export default async function MembersPage() {
   )
 
   return (
-    <div className="mx-auto grow px-4 sm:px-6">
+    <div className="mx-auto grow px-4 sm:px-6 md:px-0">
       <PageSubtitle>
         <PageSubtitle.Icon icon={Users} />
         <PageSubtitle.Title>Miembros</PageSubtitle.Title>

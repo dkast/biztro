@@ -84,15 +84,21 @@ export function SalesRevenueChart({
         margin={{ top: 20, right: 24, bottom: 36, left: 72 }}
         revealSignature={period}
         stacked
-        stackGap={1}
+        stackGap={2}
       >
         <SalesRevenueYAxis currency={currency} />
         <Grid horizontal numTicksRows={4} />
-        <Bar dataKey="paidAtSale" fill={chartCssVars.linePrimary} lineCap={3} />
+        <Bar
+          dataKey="paidAtSale"
+          fill={chartCssVars.linePrimary}
+          lineCap={3}
+          stackGap={2}
+        />
         <Bar
           dataKey="creditGenerated"
           fill={chartCssVars.lineSecondary}
           lineCap={3}
+          stackGap={2}
         />
         <BarXAxis
           maxLabels={period === "7d" ? 7 : 12}
@@ -116,16 +122,16 @@ export function SalesRevenueChart({
               <div className="rounded-md px-3 py-2 text-sm shadow-sm">
                 <div className="font-medium">{label}</div>
                 <div className="mt-1 flex flex-col gap-1">
-                  <span className="text-foreground font-medium">
+                  <span className="font-medium">
                     Ventas: {formatPrice(sales, currency)}
                   </span>
-                  <span className="text-muted-foreground">
+                  <span className="text-gray-400">
                     Pagado al vender: {formatPrice(paidAtSale, currency)}
                   </span>
-                  <span className="text-muted-foreground">
+                  <span className="text-gray-400">
                     Crédito generado: {formatPrice(creditGenerated, currency)}
                   </span>
-                  <span className="text-muted-foreground">{orders} ventas</span>
+                  <span className="text-gray-400">{orders} ventas</span>
                 </div>
               </div>
             )

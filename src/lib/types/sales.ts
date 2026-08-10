@@ -151,6 +151,7 @@ export type SalesRecentSale = {
   createdAt: string
   orderType: SalesOrderType
   status: SaleStatus
+  paymentStatus: PaymentStatus
   items: number
   total: number
 }

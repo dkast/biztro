@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { formatPrice, type Currency } from "@/lib/currency"
+import { paymentStatusLabels } from "@/lib/types/payments"
 import {
   salesOrderTypeBadgeVariants,
   salesOrderTypeLabels,
@@ -19,6 +20,22 @@ function formatDateTime(value: string, variant: "dashboard" | "closing") {
       ? { dateStyle: "medium" as const, timeStyle: "short" as const }
       : { timeStyle: "short" as const })
   }).format(new Date(value))
+}
+
+function PaymentStatusBadge({
+  status
+}: {
+  status: SalesRecentSale["paymentStatus"]
+}) {
+  return (
+    <Badge
+      variant={
+        status === "PAID" ? "green" : status === "PARTIAL" ? "yellow" : "blue"
+      }
+    >
+      {paymentStatusLabels[status]}
+    </Badge>
+  )
 }
 
 export function SalesRecentSaleRow({
@@ -60,9 +77,13 @@ export function SalesRecentSaleRow({
           variant === "dashboard" ? "hidden sm:table-cell" : ""
         }`}
       >
-        <Badge variant={sale.status === "VOID" ? "destructive" : "green"}>
-          {saleStatusLabels[sale.status]}
-        </Badge>
+        {variant === "dashboard" ? (
+          <PaymentStatusBadge status={sale.paymentStatus} />
+        ) : (
+          <Badge variant={sale.status === "VOID" ? "destructive" : "green"}>
+            {saleStatusLabels[sale.status]}
+          </Badge>
+        )}
       </TableCell>
       <TableCell
         className={`${cellClassName} ${

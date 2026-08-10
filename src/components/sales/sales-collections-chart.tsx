@@ -114,7 +114,7 @@ export function SalesCollectionsChart({
         margin={{ top: 20, right: 24, bottom: 36, left: 72 }}
         revealSignature={period}
         stacked
-        stackGap={1}
+        stackGap={2}
       >
         <CollectionsYAxis currency={currency} />
         <Grid horizontal numTicksRows={4} />
@@ -124,6 +124,7 @@ export function SalesCollectionsChart({
             dataKey={series.key}
             fill={series.fill}
             lineCap={3}
+            stackGap={2}
           />
         ))}
         <BarXAxis
