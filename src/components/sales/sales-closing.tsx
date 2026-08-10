@@ -272,7 +272,9 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
           ))}
         </ItemGroup>
         {collectionContext && (
-          <p className="text-muted-foreground text-sm">{collectionContext}</p>
+          <div className="border-border border-t px-4 py-3 sm:px-5">
+            <p className="text-muted-foreground text-sm">{collectionContext}</p>
+          </div>
         )}
       </section>
 
