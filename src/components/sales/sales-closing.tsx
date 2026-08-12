@@ -208,13 +208,21 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
       >
         <ItemGroup
           className="bg-border grid grid-cols-2 gap-px md:grid-cols-2
-            xl:grid-cols-4"
+            xl:grid-cols-5"
         >
-          {summaryItems.map(item => (
+          {summaryItems.map((item, index) => (
             <Item
               key={item.title}
-              className="bg-background min-w-0 flex-nowrap items-start
-                rounded-none border-0 px-4 py-3 sm:px-5"
+              className={cn(
+                `bg-background min-w-0 flex-nowrap items-start rounded-none
+                border-0 px-4 py-3 sm:px-5`,
+                index === summaryItems.length - 1 &&
+                  summaryItems.length === 5 &&
+                  "col-span-2 md:col-span-2 xl:col-span-1",
+                index === summaryItems.length - 1 &&
+                  summaryItems.length === 8 &&
+                  "md:col-span-2 xl:col-span-3"
+              )}
             >
               <ItemContent className="min-w-0 gap-2">
                 <ItemTitle
@@ -278,148 +286,36 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
         )}
       </section>
 
-      <section className="space-y-8">
-        <div
-          className="grid gap-8 lg:grid-cols-[13rem_minmax(0,1fr)]
-            lg:items-start lg:gap-10"
-        >
-          <section className="min-w-0 space-y-5">
-            <div>
-              <h2 className="text-base font-semibold text-balance">
-                Métodos de cobro
-              </h2>
-              <p className="text-muted-foreground text-sm">
-                Distribución del dinero recibido
-              </p>
-            </div>
-            <SalesClosingCollectionsPieChart
-              chart={data.collectionChart}
-              currency={data.currency}
-            />
-          </section>
+      <section
+        className="grid w-full min-w-0 gap-8 xl:grid-cols-6 xl:items-start
+          xl:gap-10"
+      >
+        <section className="min-w-0 space-y-4 xl:col-span-4">
+          <h2 className="text-base font-semibold text-balance">
+            Ventas por hora
+          </h2>
+          <SalesClosingHourlyChart
+            hourly={data.hourly}
+            currency={data.currency}
+          />
+        </section>
 
-          <section className="min-w-0 space-y-4">
-            <h2 className="text-base font-semibold text-balance">
-              Ventas por hora
-            </h2>
-            <SalesClosingHourlyChart
-              hourly={data.hourly}
-              currency={data.currency}
-            />
-          </section>
-        </div>
-
-        <section className="min-w-0 space-y-3">
+        <section className="min-w-0 space-y-5 xl:col-span-2">
           <div>
-            <h3 className="text-sm font-semibold text-balance">
-              Desglose para conciliación
-            </h3>
+            <h2 className="text-base font-semibold text-balance">
+              Métodos de cobro
+            </h2>
             <p className="text-muted-foreground text-sm">
-              Cobros por método y origen
+              Distribución del dinero recibido
             </p>
           </div>
-          <div className="border-border overflow-hidden rounded-lg border">
-            <Table className="min-w-136">
-              <TableHeader className="bg-muted/40">
-                <TableRow>
-                  <TableHead className="h-9 px-3">Método</TableHead>
-                  <TableHead className="h-9 px-3">Origen</TableHead>
-                  <TableHead className="h-9 px-3 text-right">Pagos</TableHead>
-                  <TableHead className="h-9 px-3 text-right">Monto</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.collectionBreakdown.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={4}
-                      className="text-muted-foreground px-3 py-6 text-center"
-                    >
-                      No hubo cobros en esta fecha.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  data.collectionBreakdown.map(row => (
-                    <TableRow key={`${row.method}-${row.origin}`}>
-                      <TableCell className="px-3 py-2.5">
-                        {getPaymentMethodLabel(row.method)}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground px-3 py-2.5">
-                        {row.origin === "RECEIVABLE"
-                          ? "Abono de cartera"
-                          : "Cobro de venta"}
-                      </TableCell>
-                      <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                        {row.payments}
-                      </TableCell>
-                      <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                        {formatPrice(row.amount, data.currency)}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-                {data.collectionBreakdown.length > 0 && (
-                  <TableRow className="bg-muted/30 font-medium">
-                    <TableCell className="px-3 py-2.5" colSpan={3}>
-                      Total cobrado
-                    </TableCell>
-                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                      {formatPrice(data.todayCollected, data.currency)}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          <SalesClosingCollectionsPieChart
+            chart={data.collectionChart}
+            currency={data.currency}
+          />
         </section>
-      </section>
-      <section className="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-10">
-        <div className="min-w-0 space-y-4">
-          <div
-            className="flex flex-col items-start gap-2 sm:flex-row
-              sm:items-center sm:justify-between sm:gap-4"
-          >
-            <h2 className="text-base font-semibold text-balance">
-              Ventas por tipo de orden
-            </h2>
-            <Badge variant="secondary">{data.revenueByOrderType.length}</Badge>
-          </div>
-          <div className="border-border overflow-hidden rounded-lg border">
-            <Table className="min-w-88">
-              <TableHeader className="bg-muted/40">
-                <TableRow>
-                  <TableHead className="h-9 px-3">Tipo de orden</TableHead>
-                  <TableHead className="h-9 px-3 text-right">Órdenes</TableHead>
-                  <TableHead className="h-9 px-3 text-right">Ventas</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.revenueByOrderType.map(item => (
-                  <TableRow key={item.orderType}>
-                    <TableCell className="px-3 py-2.5">
-                      <Badge
-                        variant={
-                          salesOrderTypeBadgeVariants[item.orderType] as
-                            "blue" | "indigo" | "yellow"
-                        }
-                      >
-                        {salesOrderTypeLabels[item.orderType]}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                      {item.orders}
-                    </TableCell>
-                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
-                      {formatPrice(item.revenue, data.currency)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
 
-        <div className="min-w-0 space-y-4">
+        <div className="order-5 min-w-0 space-y-4 xl:col-span-3">
           <div
             className="flex flex-col items-start gap-2 sm:flex-row
               sm:items-center sm:justify-between sm:gap-4"
@@ -478,61 +374,170 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
             )}
           </div>
         </div>
-      </section>
 
-      <section className="space-y-4">
-        <div
-          className="flex flex-col items-start gap-2 sm:flex-row sm:items-center
-            sm:justify-between sm:gap-4"
-        >
-          <h2 className="text-base font-semibold text-balance">
-            Ventas recientes
-          </h2>
-          <Badge variant="secondary">{data.recentSales.length}</Badge>
-        </div>
-        <div className="border-border overflow-hidden rounded-lg border">
-          {data.recentSales.length === 0 ? (
-            <Empty className="min-h-48 rounded-none border-0 p-6">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <ShoppingCart />
-                </EmptyMedia>
-                <EmptyTitle>Sin ventas registradas</EmptyTitle>
-                <EmptyDescription>
-                  Aún no hay ventas registradas para el cierre de{" "}
-                  {selectedDateLabel}.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          ) : (
-            <Table className="min-w-120">
+        <div className="order-2 min-w-0 space-y-4 xl:col-span-3">
+          <div
+            className="flex flex-col items-start gap-2 sm:flex-row
+              sm:items-center sm:justify-between sm:gap-4"
+          >
+            <h2 className="text-base font-semibold text-balance">
+              Ventas por tipo de orden
+            </h2>
+            <Badge variant="secondary">{data.revenueByOrderType.length}</Badge>
+          </div>
+          <div className="border-border overflow-hidden rounded-lg border">
+            <Table className="min-w-88">
               <TableHeader className="bg-muted/40">
                 <TableRow>
-                  <TableHead className="h-9 px-3">Hora</TableHead>
-                  <TableHead className="h-9 px-3">Estatus</TableHead>
-                  <TableHead className="h-9 px-3">Canal de venta</TableHead>
-                  <TableHead className="h-9 px-3 text-right">
-                    Unidades
-                  </TableHead>
-                  <TableHead className="h-9 px-3 text-right">Total</TableHead>
-                  <TableHead className="h-9 px-3">
-                    <span className="sr-only">Detalle</span>
-                  </TableHead>
+                  <TableHead className="h-9 px-3">Tipo de orden</TableHead>
+                  <TableHead className="h-9 px-3 text-right">Órdenes</TableHead>
+                  <TableHead className="h-9 px-3 text-right">Ventas</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.recentSales.map(sale => (
-                  <SalesRecentSaleRow
-                    key={sale.id}
-                    sale={sale}
-                    currency={data.currency}
-                    variant="closing"
-                  />
+                {data.revenueByOrderType.map(item => (
+                  <TableRow key={item.orderType}>
+                    <TableCell className="px-3 py-2.5">
+                      <Badge
+                        variant={
+                          salesOrderTypeBadgeVariants[item.orderType] as
+                            "blue" | "indigo" | "yellow"
+                        }
+                      >
+                        {salesOrderTypeLabels[item.orderType]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                      {item.orders}
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                      {formatPrice(item.revenue, data.currency)}
+                    </TableCell>
+                  </TableRow>
                 ))}
               </TableBody>
             </Table>
-          )}
+          </div>
         </div>
+
+        <section className="order-3 min-w-0 space-y-3 xl:col-span-3">
+          <div>
+            <h2 className="text-sm font-semibold text-balance">
+              Desglose para conciliación
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              Cobros por método y origen
+            </p>
+          </div>
+          <div className="border-border overflow-hidden rounded-lg border">
+            <Table className="min-w-120">
+              <TableHeader className="bg-muted/40">
+                <TableRow>
+                  <TableHead className="h-9 px-3">Método</TableHead>
+                  <TableHead className="h-9 px-3">Origen</TableHead>
+                  <TableHead className="h-9 px-3 text-right">Pagos</TableHead>
+                  <TableHead className="h-9 px-3 text-right">Monto</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.collectionBreakdown.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={4}
+                      className="text-muted-foreground px-3 py-6 text-center"
+                    >
+                      No hubo cobros en esta fecha.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  data.collectionBreakdown.map(row => (
+                    <TableRow key={`${row.method}-${row.origin}`}>
+                      <TableCell className="px-3 py-2.5">
+                        {getPaymentMethodLabel(row.method)}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground px-3 py-2.5">
+                        {row.origin === "RECEIVABLE"
+                          ? "Abono de cartera"
+                          : "Cobro de venta"}
+                      </TableCell>
+                      <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                        {row.payments}
+                      </TableCell>
+                      <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                        {formatPrice(row.amount, data.currency)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+                {data.collectionBreakdown.length > 0 && (
+                  <TableRow className="bg-muted/30 font-medium">
+                    <TableCell className="px-3 py-2.5" colSpan={3}>
+                      Total cobrado
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                      {formatPrice(data.todayCollected, data.currency)}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </section>
+
+        <section className="order-4 min-w-0 space-y-4 xl:col-span-3">
+          <div
+            className="flex flex-col items-start gap-2 sm:flex-row
+              sm:items-center sm:justify-between sm:gap-4"
+          >
+            <h2 className="text-base font-semibold text-balance">
+              Ventas recientes
+            </h2>
+            <Badge variant="secondary">{data.recentSales.length}</Badge>
+          </div>
+          <div className="border-border overflow-hidden rounded-lg border">
+            {data.recentSales.length === 0 ? (
+              <Empty className="min-h-48 rounded-none border-0 p-6">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <ShoppingCart />
+                  </EmptyMedia>
+                  <EmptyTitle>Sin ventas registradas</EmptyTitle>
+                  <EmptyDescription>
+                    Aún no hay ventas registradas para el cierre de{" "}
+                    {selectedDateLabel}.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            ) : (
+              <Table className="min-w-120">
+                <TableHeader className="bg-muted/40">
+                  <TableRow>
+                    <TableHead className="h-9 px-3">Hora</TableHead>
+                    <TableHead className="h-9 px-3">Estatus</TableHead>
+                    <TableHead className="h-9 px-3">Canal de venta</TableHead>
+                    <TableHead className="h-9 px-3 text-right">
+                      Unidades
+                    </TableHead>
+                    <TableHead className="h-9 px-3 text-right">Total</TableHead>
+                    <TableHead className="h-9 px-3">
+                      <span className="sr-only">Detalle</span>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.recentSales.map(sale => (
+                    <SalesRecentSaleRow
+                      key={sale.id}
+                      sale={sale}
+                      currency={data.currency}
+                      variant="closing"
+                    />
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
+        </section>
       </section>
     </div>
   )
