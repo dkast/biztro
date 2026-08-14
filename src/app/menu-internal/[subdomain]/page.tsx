@@ -61,7 +61,14 @@ export async function generateMetadata(
         : (await parent).description
     return {
       title: org.name,
-      description
+      description,
+      viewport: {
+        width: "device-width",
+        initialScale: 1,
+        maximumScale: 1,
+        viewportFit: "cover",
+        userScalable: false
+      }
     }
   } else {
     return {
@@ -153,7 +160,12 @@ export default async function SitePage(props: {
 
   return (
     <>
-      <style>{`body { background-color: ${rgbaToHex(backgroundColor)} }`}</style>
+      <style>{`
+        html,
+        body {
+          background-color: ${rgbaToHex(backgroundColor)};
+        }
+      `}</style>
       <Suspense fallback={null}>
         <PublicMenuTracker
           organizationId={siteMenu.organizationId}
@@ -169,7 +181,7 @@ export default async function SitePage(props: {
           style={{
             backgroundColor: `${rgbaToHex(backgroundColor)}`
           }}
-          className="relative flex min-h-screen flex-col"
+          className="relative flex min-h-dvh flex-col"
         >
           <PublicMenuProvider items={searchableItems}>
             <div className="flex grow">
