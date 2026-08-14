@@ -75,7 +75,7 @@ export function ReceivablesList({
       </div>
       <div className="border-border overflow-x-auto rounded-lg border">
         <Table className="min-w-[42rem]">
-          <TableHeader>
+          <TableHeader className="bg-muted/40">
             <TableRow>
               <TableHead>Cliente</TableHead>
               <TableHead>Saldo pendiente</TableHead>

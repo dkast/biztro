@@ -202,89 +202,93 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
 
   return (
     <div className="flex flex-col gap-10 pb-6 sm:gap-12">
-      <section
-        className="inset-ring-border overflow-hidden rounded-lg border
-          shadow-sm/5 inset-ring"
-      >
-        <ItemGroup
-          className="bg-border grid grid-cols-2 gap-px md:grid-cols-2
-            xl:grid-cols-5"
+      <div className="rounded-xl bg-gray-200/50 dark:bg-gray-900/70">
+        <section
+          className="inset-ring-border overflow-hidden rounded-lg border
+            shadow-sm/5 inset-ring"
         >
-          {summaryItems.map((item, index) => (
-            <Item
-              key={item.title}
-              className={cn(
-                `bg-background min-w-0 flex-nowrap items-start rounded-none
-                border-0 px-4 py-3 sm:px-5`,
-                index === summaryItems.length - 1 &&
-                  summaryItems.length === 5 &&
-                  "col-span-2 md:col-span-2 xl:col-span-1",
-                index === summaryItems.length - 1 &&
-                  summaryItems.length === 8 &&
-                  "md:col-span-2 xl:col-span-3"
-              )}
-            >
-              <ItemContent className="min-w-0 gap-2">
-                <ItemTitle
-                  className="text-muted-foreground w-full text-sm leading-5
-                    font-medium"
-                >
-                  {item.title}
-                </ItemTitle>
-                {item.kind === "text" ? (
-                  <p
-                    className="text-foreground truncate text-lg leading-none
-                      font-semibold sm:text-xl"
+          <ItemGroup
+            className="bg-border grid grid-cols-2 gap-px md:grid-cols-2
+              xl:grid-cols-5"
+          >
+            {summaryItems.map((item, index) => (
+              <Item
+                key={item.title}
+                className={cn(
+                  `bg-background min-w-0 flex-nowrap items-start rounded-none
+                  border-0 px-4 py-3 sm:px-5`,
+                  index === summaryItems.length - 1 &&
+                    summaryItems.length === 5 &&
+                    "col-span-2 md:col-span-2 xl:col-span-1",
+                  index === summaryItems.length - 1 &&
+                    summaryItems.length === 8 &&
+                    "md:col-span-2 xl:col-span-3"
+                )}
+              >
+                <ItemContent className="min-w-0 gap-2">
+                  <ItemTitle
+                    className="text-muted-foreground w-full text-sm leading-5
+                      font-medium"
                   >
-                    {item.value}
-                  </p>
-                ) : (
-                  <NumberFlow
-                    aria-label={
-                      item.kind === "currency"
-                        ? formatPrice(item.value, data.currency)
-                        : item.value.toString()
-                    }
-                    className="text-foreground text-lg leading-none
-                      font-semibold tabular-nums sm:text-xl"
-                    value={item.value}
-                    locales={
-                      item.kind === "currency" ? currencyLocale : "es-MX"
-                    }
-                    format={
-                      item.kind === "currency" ? currencyFormat : undefined
-                    }
-                    suffix={
-                      item.kind === "currency" ? ` ${data.currency}` : undefined
-                    }
-                  />
-                )}
-                {item.trend && (
-                  <span
-                    className={cn(
-                      "flex w-fit items-center gap-1 text-xs font-medium",
-                      item.trend.tone
-                    )}
-                  >
-                    <item.trend.icon className="size-3" />
-                    {item.trend.label}
-                  </span>
-                )}
-                {item.kind === "text" && item.meta && !item.trend && (
-                  <p className="text-muted-foreground truncate text-xs">
-                    {item.meta}
-                  </p>
-                )}
-              </ItemContent>
-            </Item>
-          ))}
-        </ItemGroup>
+                    {item.title}
+                  </ItemTitle>
+                  {item.kind === "text" ? (
+                    <p
+                      className="text-foreground truncate text-lg leading-none
+                        font-semibold sm:text-xl"
+                    >
+                      {item.value}
+                    </p>
+                  ) : (
+                    <NumberFlow
+                      aria-label={
+                        item.kind === "currency"
+                          ? formatPrice(item.value, data.currency)
+                          : item.value.toString()
+                      }
+                      className="text-foreground text-lg leading-none
+                        font-semibold tabular-nums sm:text-xl"
+                      value={item.value}
+                      locales={
+                        item.kind === "currency" ? currencyLocale : "es-MX"
+                      }
+                      format={
+                        item.kind === "currency" ? currencyFormat : undefined
+                      }
+                      suffix={
+                        item.kind === "currency"
+                          ? ` ${data.currency}`
+                          : undefined
+                      }
+                    />
+                  )}
+                  {item.trend && (
+                    <span
+                      className={cn(
+                        "flex w-fit items-center gap-1 text-xs font-medium",
+                        item.trend.tone
+                      )}
+                    >
+                      <item.trend.icon className="size-3" />
+                      {item.trend.label}
+                    </span>
+                  )}
+                  {item.kind === "text" && item.meta && !item.trend && (
+                    <p className="text-muted-foreground truncate text-xs">
+                      {item.meta}
+                    </p>
+                  )}
+                </ItemContent>
+              </Item>
+            ))}
+          </ItemGroup>
+        </section>
         {collectionContext && (
-          <div className="border-border border-t px-4 py-3 sm:px-5">
+          <div className="text-muted-foreground/70 w-full px-4 py-2 text-sm">
             <p className="text-muted-foreground text-sm">{collectionContext}</p>
           </div>
         )}
-      </section>
+      </div>
 
       <section
         className="grid w-full min-w-0 gap-8 xl:grid-cols-6 xl:items-start
@@ -387,7 +391,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
           </div>
           <div className="border-border overflow-hidden rounded-lg border">
             <Table className="min-w-88">
-              <TableHeader className="bg-muted/40">
+              <TableHeader>
                 <TableRow>
                   <TableHead className="h-9 px-3">Tipo de orden</TableHead>
                   <TableHead className="h-9 px-3 text-right">Órdenes</TableHead>
@@ -431,7 +435,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
           </div>
           <div className="border-border overflow-hidden rounded-lg border">
             <Table className="min-w-120">
-              <TableHeader className="bg-muted/40">
+              <TableHeader>
                 <TableRow>
                   <TableHead className="h-9 px-3">Método</TableHead>
                   <TableHead className="h-9 px-3">Origen</TableHead>
@@ -510,7 +514,7 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
               </Empty>
             ) : (
               <Table className="min-w-120">
-                <TableHeader className="bg-muted/40">
+                <TableHeader>
                   <TableRow>
                     <TableHead className="h-9 px-3">Hora</TableHead>
                     <TableHead className="h-9 px-3">Estatus</TableHead>
