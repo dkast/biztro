@@ -18,10 +18,10 @@ import {
 import { formatPrice, type Currency } from "@/lib/currency"
 import type { SalesClosingHourlyBucket } from "@/lib/types/sales"
 
-function SalesClosingHourlyYAxis() {
+function SalesClosingHourlyYAxis({ currency }: { currency: Currency }) {
   const yScale = useYScale()
-
   const ticks = yScale.ticks?.(3) ?? []
+  const [rangeStart = 0, rangeEnd = 0] = yScale.range?.() ?? []
 
   if (ticks.length === 0) {
     return null
@@ -29,22 +29,30 @@ function SalesClosingHourlyYAxis() {
 
   return (
     <g aria-hidden="true" pointerEvents="none">
+      <text
+        className="fill-muted-foreground text-[10px] font-medium"
+        textAnchor="middle"
+        transform={`translate(-58 ${(rangeStart + rangeEnd) / 2}) rotate(-90)`}
+      >
+        Monto
+      </text>
       {ticks.map(tick => (
         <text
           key={tick}
-          className="fill-muted-foreground hidden text-xs tabular-nums
-            md:inline"
+          className="fill-muted-foreground text-[10px] tabular-nums sm:text-xs"
           dominantBaseline="middle"
           textAnchor="end"
           x={-12}
           y={yScale(tick) ?? 0}
         >
-          {tick}
+          {formatPrice(tick, currency)}
         </text>
       ))}
     </g>
   )
 }
+
+SalesClosingHourlyYAxis.displayName = "YAxis"
 
 export function SalesClosingHourlyChart({
   hourly,
@@ -77,13 +85,14 @@ export function SalesClosingHourlyChart({
         data={hourly}
         xDataKey="label"
         aspectRatio="5 / 1"
+        mobileAspectRatio="4 / 3"
         className="min-h-40 sm:min-h-0"
-        margin={{ top: 16, right: 12, bottom: 28, left: 32 }}
+        margin={{ top: 16, right: 12, bottom: 28, left: 72 }}
       >
-        <SalesClosingHourlyYAxis />
+        <SalesClosingHourlyYAxis currency={currency} />
         <Grid horizontal numTicksRows={3} />
         <Bar
-          dataKey="todayOrders"
+          dataKey="todayRevenue"
           fill={chartCssVars.linePrimary}
           lineCap={3}
         />

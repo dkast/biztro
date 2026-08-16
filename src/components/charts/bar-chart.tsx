@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type ReactElement,
   type ReactNode
 } from "react"
@@ -76,6 +77,8 @@ export interface BarChartProps {
   revealSignature?: string
   /** Aspect ratio as "width / height". Default: "2 / 1" */
   aspectRatio?: string
+  /** Aspect ratio below the `sm` breakpoint. Defaults to `aspectRatio`. */
+  mobileAspectRatio?: string
   /** Additional class name for the container */
   className?: string
   /** Gap between bar groups as a fraction of band width (0-1). Default: 0.2 */
@@ -628,6 +631,7 @@ export function BarChart({
   enterTransition,
   revealSignature,
   aspectRatio = "2 / 1",
+  mobileAspectRatio,
   className = "",
   barGap = 0.2,
   barWidth,
@@ -640,12 +644,20 @@ export function BarChart({
 }: BarChartProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const margin = { ...DEFAULT_MARGIN, ...marginProp }
+  const chartStyles = {
+    "--chart-aspect-ratio": mobileAspectRatio ?? aspectRatio,
+    "--chart-desktop-aspect-ratio": aspectRatio
+  } as CSSProperties
 
   return (
     <div
-      className={cn("relative w-full overflow-visible", className)}
+      className={cn(
+        `relative aspect-(--chart-aspect-ratio) w-full overflow-visible
+        sm:aspect-(--chart-desktop-aspect-ratio)`,
+        className
+      )}
       ref={containerRef}
-      style={{ aspectRatio }}
+      style={chartStyles}
     >
       <ParentSize debounceTime={10}>
         {({ width, height }) => (

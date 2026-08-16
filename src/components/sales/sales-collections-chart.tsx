@@ -46,16 +46,23 @@ type CollectionSeriesKey = (typeof collectionSeries)[number]["key"]
 function CollectionsYAxis({ currency }: { currency: Currency }) {
   const yScale = useYScale()
   const ticks = yScale.ticks?.(4) ?? []
+  const [rangeStart = 0, rangeEnd = 0] = yScale.range?.() ?? []
 
   if (ticks.length === 0) return null
 
   return (
     <g aria-hidden="true" pointerEvents="none">
+      <text
+        className="fill-muted-foreground text-[10px] font-medium"
+        textAnchor="middle"
+        transform={`translate(-58 ${(rangeStart + rangeEnd) / 2}) rotate(-90)`}
+      >
+        Monto
+      </text>
       {ticks.map(tick => (
         <text
           key={tick}
-          className="fill-muted-foreground hidden text-xs tabular-nums
-            md:inline"
+          className="fill-muted-foreground text-[10px] tabular-nums sm:text-xs"
           dominantBaseline="middle"
           textAnchor="end"
           x={-12}
@@ -67,6 +74,8 @@ function CollectionsYAxis({ currency }: { currency: Currency }) {
     </g>
   )
 }
+
+CollectionsYAxis.displayName = "YAxis"
 
 function getCollectionValue(
   point: Record<string, unknown>,
@@ -110,6 +119,7 @@ export function SalesCollectionsChart({
         data={chart}
         xDataKey="label"
         aspectRatio="4 / 1"
+        mobileAspectRatio="4 / 3"
         className="min-h-72 sm:min-h-0"
         margin={{ top: 20, right: 24, bottom: 36, left: 72 }}
         revealSignature={period}
