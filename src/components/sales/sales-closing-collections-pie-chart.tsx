@@ -106,7 +106,7 @@ export function SalesClosingCollectionsPieChart({
     : `${chartState.segments.length} métodos de cobro`
 
   return (
-    <div className="flex justify-center sm:justify-start">
+    <div className="flex justify-center">
       <div className="relative w-full max-w-52">
         <PieChart
           data={chartState.segments}
