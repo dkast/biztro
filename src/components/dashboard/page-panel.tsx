@@ -40,13 +40,17 @@ export default function Panel({
   return (
     <>
       {isMobile ? (
-        <Drawer open onOpenChange={handleOpenChange} modal>
+        <Drawer
+          open
+          onOpenChange={handleOpenChange}
+          modal
+          disablePointerDismissal
+        >
           <DrawerContent
             className={cn(
               className,
               "h-[96%] gap-y-2 shadow-sm focus:outline-hidden"
             )}
-            onInteractOutside={event => event.preventDefault()}
           >
             <DrawerTitle>{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>

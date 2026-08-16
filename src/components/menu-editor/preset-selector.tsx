@@ -410,7 +410,7 @@ export default function PresetSelector({
   if (isMobile) {
     return (
       <DrawerNested open={open} onOpenChange={setOpen}>
-        <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
+        <DrawerTrigger render={triggerButton} />
         <DrawerContent className="px-4 pb-8">
           <DrawerHeader>
             <DrawerTitle>Temas predefinidos</DrawerTitle>

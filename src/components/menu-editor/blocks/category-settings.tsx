@@ -107,15 +107,17 @@ function ColorPickerControl({
   if (isMobile) {
     return (
       <DrawerNested>
-        <DrawerTrigger asChild>
-          <button
-            type="button"
-            className="h-8 w-12 rounded-sm border border-black/20
-              dark:border-white/20"
-            style={getColorButtonStyle(color)}
-            aria-label={ariaLabel}
-          />
-        </DrawerTrigger>
+        <DrawerTrigger
+          render={
+            <button
+              type="button"
+              className="h-8 w-12 rounded-sm border border-black/20
+                dark:border-white/20"
+              style={getColorButtonStyle(color)}
+              aria-label={ariaLabel}
+            />
+          }
+        />
         <DrawerContent className="px-4 pb-8">
           <DrawerHeader>
             <DrawerTitle>{title}</DrawerTitle>
@@ -123,7 +125,7 @@ function ColorPickerControl({
           <div className="space-y-4">
             <div
               className="flex items-center justify-center"
-              data-vaul-no-drag
+              data-base-ui-swipe-ignore
               onPointerDown={event => event.stopPropagation()}
               onTouchStart={event => event.stopPropagation()}
               onMouseDown={event => event.stopPropagation()}

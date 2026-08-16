@@ -73,7 +73,7 @@ function ThemedSelector<T>({
 
   return isMobile ? (
     <DrawerNested>
-      <DrawerTrigger asChild>{triggerContent}</DrawerTrigger>
+      <DrawerTrigger render={triggerContent} />
       <DrawerContent className="px-4 pb-8">
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
