@@ -52,7 +52,7 @@ export function SalesRecentSaleRow({
   const cellClassName =
     variant === "closing" ? "px-3 py-2.5" : "px-2 py-3 sm:p-4"
 
-  const openSale = () => router.push(detailHref)
+  const openSale = () => router.push(detailHref, { scroll: false })
 
   return (
     <TableRow
