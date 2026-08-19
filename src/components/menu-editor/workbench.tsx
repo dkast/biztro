@@ -57,7 +57,6 @@ import SyncStatusBanner from "@/components/menu-editor/sync-status-banner"
 import ThemeSelector from "@/components/menu-editor/theme-selector"
 import ToolboxPanel from "@/components/menu-editor/toolbox-panel"
 import { Button } from "@/components/ui/button"
-import { DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -760,50 +759,39 @@ export default function Workbench({
   const getPanelContent = () => {
     switch (activePanel) {
       case PanelType.THEME:
-        return (
-          <>
-            <DrawerHeader>
-              <DrawerTitle>Temas</DrawerTitle>
-            </DrawerHeader>
-            <ThemeSelector menu={menu} />
-          </>
-        )
+        return <ThemeSelector menu={menu} />
       case PanelType.SETTINGS:
-        return (
-          <>
-            <DrawerHeader>
-              <DrawerTitle>Ajustes</DrawerTitle>
-            </DrawerHeader>
-            <SettingsPanel />
-          </>
-        )
+        return <SettingsPanel />
       case PanelType.TOOLBOX:
         return (
-          <>
-            <DrawerHeader>
-              <DrawerTitle>Elementos</DrawerTitle>
-            </DrawerHeader>
-            <ToolboxPanel
-              organization={organization}
-              location={location}
-              categories={effectiveItemsState.categories}
-              soloItems={effectiveItemsState.soloItems}
-              featuredItems={effectiveItemsState.featuredItems}
-              isPro={organization.plan?.toUpperCase() === "PRO"}
-            />
-          </>
+          <ToolboxPanel
+            organization={organization}
+            location={location}
+            categories={effectiveItemsState.categories}
+            soloItems={effectiveItemsState.soloItems}
+            featuredItems={effectiveItemsState.featuredItems}
+            isPro={organization.plan?.toUpperCase() === "PRO"}
+          />
         )
       case PanelType.LAYERS:
-        return (
-          <>
-            <DrawerHeader>
-              <DrawerTitle>Secciones</DrawerTitle>
-            </DrawerHeader>
-            <Layers renderLayer={DefaultLayer} />
-          </>
-        )
+        return <Layers renderLayer={DefaultLayer} />
       default:
         return null
+    }
+  }
+
+  const getPanelTitle = () => {
+    switch (activePanel) {
+      case PanelType.THEME:
+        return "Temas"
+      case PanelType.SETTINGS:
+        return "Ajustes"
+      case PanelType.TOOLBOX:
+        return "Elementos"
+      case PanelType.LAYERS:
+        return "Secciones"
+      default:
+        return ""
     }
   }
 
@@ -860,6 +848,7 @@ export default function Workbench({
                 setActivePanel={setActivePanel}
                 setIsOpen={setIsOpen}
                 isOpen={isOpen}
+                panelTitle={getPanelTitle()}
                 getPanelContent={getPanelContent}
               />
               <MenuTourMobile />

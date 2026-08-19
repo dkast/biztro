@@ -2,13 +2,19 @@ import { LayoutList, Settings2, SquarePlus, SwatchBook } from "lucide-react"
 
 import { PanelType } from "@/components/menu-editor/workbench"
 import { Button } from "@/components/ui/button"
-import { Drawer, DrawerContent } from "@/components/ui/drawer"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle
+} from "@/components/ui/drawer"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface BottomBarProps {
   setActivePanel: (panel: PanelType) => void
   setIsOpen: (open: boolean) => void
   isOpen: boolean
+  panelTitle: string
   getPanelContent: () => React.ReactNode
 }
 
@@ -16,6 +22,7 @@ export function BottomBar({
   setActivePanel,
   setIsOpen,
   isOpen,
+  panelTitle,
   getPanelContent
 }: BottomBarProps) {
   return (
@@ -91,8 +98,14 @@ export function BottomBar({
         </div>
       </div>
       <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerContent>
-          <ScrollArea className="h-[80vh]" data-base-ui-swipe-ignore>
+        <DrawerContent
+          className="flex h-[calc(100%-1rem)] flex-col gap-0 overflow-hidden
+            p-0"
+        >
+          <DrawerHeader className="shrink-0 border-b px-5 py-4">
+            <DrawerTitle>{panelTitle}</DrawerTitle>
+          </DrawerHeader>
+          <ScrollArea className="min-h-0 flex-1">
             {getPanelContent()}
           </ScrollArea>
         </DrawerContent>
