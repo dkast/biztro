@@ -41,7 +41,7 @@ export async function getOrganizationPaymentSettings(
 
   cacheTag(`payment-settings-${organizationId}`)
 
-  return prisma.organization.findUnique({
+  return await prisma.organization.findUnique({
     where: { id: organizationId },
     select: {
       acceptsCash: true,
