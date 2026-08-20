@@ -34,4 +34,9 @@ describe("selectBarXAxisLabels", () => {
     expect(selected.at(0)).toEqual(labels.at(0))
     expect(selected.at(-1)).toEqual(labels.at(-1))
   })
+
+  it("handles zero and one label limits without dividing by zero", () => {
+    expect(selectBarXAxisLabels(labels, 1032, 0)).toEqual([])
+    expect(selectBarXAxisLabels(labels, 1032, 1)).toEqual([labels[0]])
+  })
 })

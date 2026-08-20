@@ -11,7 +11,9 @@ export function selectBarXAxisLabels(
   plotWidth: number,
   maxLabels: number
 ): BarXAxisLabelItem[] {
-  if (labels.length <= 2) return labels
+  const safeMaxLabels = Math.max(0, maxLabels)
+
+  if (labels.length <= 2) return labels.slice(0, safeMaxLabels)
 
   const widestLabel = labels.reduce(
     (max, item) => Math.max(max, item.label.length),
@@ -22,7 +24,9 @@ export function selectBarXAxisLabels(
     2,
     Math.floor(plotWidth / (labelWidth + MINIMUM_LABEL_GAP))
   )
-  const labelLimit = Math.min(labels.length, maxLabels, widthLimit)
+  const labelLimit = Math.min(labels.length, safeMaxLabels, widthLimit)
+
+  if (labelLimit <= 1) return labels.slice(0, labelLimit)
 
   if (labelLimit >= labels.length) return labels
 

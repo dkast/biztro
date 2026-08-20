@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import lz from "lzutf8"
-import { type Metadata, type ResolvingMetadata } from "next"
+import { type Metadata, type ResolvingMetadata, type Viewport } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
@@ -24,6 +24,12 @@ import { SubscriptionStatus } from "@/lib/types/billing"
 import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 
 export const instant = false
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover"
+}
 
 // Add generateStaticParams to pre-render specific paths
 export async function generateStaticParams() {
@@ -61,14 +67,7 @@ export async function generateMetadata(
         : (await parent).description
     return {
       title: org.name,
-      description,
-      viewport: {
-        width: "device-width",
-        initialScale: 1,
-        maximumScale: 1,
-        viewportFit: "cover",
-        userScalable: false
-      }
+      description
     }
   } else {
     return {
