@@ -106,7 +106,7 @@ export function SalesClosingHourlyChart({
             return (
               <div className="rounded-md px-3 py-2 text-sm shadow-sm">
                 <div className="font-medium">{label}</div>
-                <div className="text-muted-foreground mt-1 flex flex-col gap-1">
+                <div className="mt-1 flex flex-col gap-1 text-gray-400">
                   <span>
                     Hoy: {todayOrders} ventas ·{" "}
                     {formatPrice(todayRevenue, currency)}

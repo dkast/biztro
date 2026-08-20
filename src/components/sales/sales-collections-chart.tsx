@@ -145,7 +145,7 @@ export function SalesCollectionsChart({
               <div className="rounded-md px-3 py-2 text-sm shadow-sm">
                 <div className="font-medium">{String(point.label ?? "")}</div>
                 <div className="mt-1 flex flex-col gap-1">
-                  <span className="text-foreground font-medium">
+                  <span className="font-medium">
                     Total: {formatPrice(total, currency)}
                   </span>
                   {activeSeries.map(series => {
@@ -153,7 +153,7 @@ export function SalesCollectionsChart({
                     if (amount <= 0) return null
 
                     return (
-                      <span key={series.key} className="text-muted-foreground">
+                      <span key={series.key} className="text-gray-400">
                         {series.label}: {formatPrice(amount, currency)}
                       </span>
                     )
