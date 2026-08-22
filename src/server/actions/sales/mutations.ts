@@ -311,18 +311,52 @@ export const voidSale = authMemberActionClient
         : voidReasonLabels[parsedInput.reason]
 
     const result = await prisma.$transaction(async tx => {
-      const activePaymentCount = await tx.paymentAllocation.count({
+      const activePayments = await tx.payment.findMany({
         where: {
-          saleId: parsedInput.saleId,
-          payment: {
-            organizationId,
-            status: "ACTIVE"
+          organizationId,
+          status: "ACTIVE",
+          allocations: {
+            some: {
+              saleId: parsedInput.saleId
+            }
+          }
+        },
+        select: {
+          id: true,
+          allocations: {
+            select: {
+              saleId: true
+            }
           }
         }
       })
 
-      if (activePaymentCount > 0) {
+      const hasSharedActivePayments = activePayments.some(payment =>
+        payment.allocations.some(
+          allocation => allocation.saleId !== parsedInput.saleId
+        )
+      )
+
+      if (hasSharedActivePayments) {
         return { blocked: true, count: 0 }
+      }
+
+      if (activePayments.length > 0) {
+        await tx.payment.updateMany({
+          where: {
+            id: {
+              in: activePayments.map(payment => payment.id)
+            },
+            organizationId,
+            status: "ACTIVE"
+          },
+          data: {
+            status: "VOID",
+            voidedAt: new Date(),
+            voidedByUserId: member.user.id,
+            voidReason
+          }
+        })
       }
 
       const update = await tx.sale.updateMany({
@@ -346,7 +380,7 @@ export const voidSale = authMemberActionClient
       return {
         failure: {
           reason:
-            "Anula primero los pagos activos de esta venta antes de anularla"
+            "Anula primero los pagos activos compartidos con otras ventas antes de anularla"
         }
       }
     }

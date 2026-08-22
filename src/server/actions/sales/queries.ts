@@ -768,6 +768,7 @@ export async function getSalesDashboardData(
   }
 
   cacheTag(`sales-${organizationId}`)
+  cacheTag(`receivables-${organizationId}`)
 
   const now = new Date()
   const todayStart = startOfDay(now)
