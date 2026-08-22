@@ -38,7 +38,7 @@ export default async function BillingPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
+    <div className="mx-auto max-w-2xl grow px-4 sm:px-6 md:px-0">
       <PageSubtitle>
         <PageSubtitle.Icon icon={CreditCard} />
         <PageSubtitle.Title>Planes de suscripción</PageSubtitle.Title>

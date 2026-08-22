@@ -42,7 +42,7 @@ Copilot also reads `.github/copilot-instructions.md`, which should stay short an
 Use `bun run <script>` unless the user requests otherwise.
 
 - `dev` — Start dev server (Next.js Turbopack).
-- `lint` / `lint:fix` — ESLint.
+- `lint` / `lint:fix` — Oxlint.
 - `typecheck` — TypeScript typecheck.
 - `format` — Prettier.
 - `db:dev` — Local Turso DB (`local.db`).

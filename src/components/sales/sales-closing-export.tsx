@@ -4,6 +4,7 @@ import { Download } from "lucide-react"
 import Papa from "papaparse"
 
 import { Button } from "@/components/ui/button"
+import { paymentMethodLabels } from "@/lib/types/payments"
 import {
   salesOrderTypeLabels,
   saleStatusLabels,
@@ -25,6 +26,9 @@ type ClosingCsvRow = {
   previousRevenue: number | ""
   createdAt: string
   status?: string
+  method?: string
+  origin?: string
+  amount?: number | ""
 }
 
 const closingCsvFields: (keyof ClosingCsvRow)[] = [
@@ -40,19 +44,84 @@ const closingCsvFields: (keyof ClosingCsvRow)[] = [
   "previousOrders",
   "previousRevenue",
   "createdAt",
-  "status"
+  "status",
+  "method",
+  "origin",
+  "amount"
 ]
+
+function getPaymentMethodLabel(method: string) {
+  return method === "LEGACY"
+    ? "Pago histórico"
+    : paymentMethodLabels[method as keyof typeof paymentMethodLabels]
+}
 
 function buildRows(data: SalesClosingData): ClosingCsvRow[] {
   const rows: ClosingCsvRow[] = [
     {
       section: "summary",
-      label: "Ingresos completados",
+      label: "Ventas del día",
       detail: "",
       orderType: "",
       quantity: "",
       orders: "",
       revenue: data.todayRevenue,
+      currency: data.currency,
+      hour: "",
+      previousOrders: "",
+      previousRevenue: "",
+      createdAt: ""
+    },
+    {
+      section: "summary",
+      label: "Cobrado del día",
+      detail: "",
+      orderType: "",
+      quantity: "",
+      orders: "",
+      revenue: data.todayCollected,
+      currency: data.currency,
+      hour: "",
+      previousOrders: "",
+      previousRevenue: "",
+      createdAt: ""
+    },
+    {
+      section: "summary",
+      label: "Pagado al vender",
+      detail: "",
+      orderType: "",
+      quantity: "",
+      orders: "",
+      revenue: data.todayPaidAtSale,
+      currency: data.currency,
+      hour: "",
+      previousOrders: "",
+      previousRevenue: "",
+      createdAt: ""
+    },
+    {
+      section: "summary",
+      label: "Crédito generado",
+      detail: "",
+      orderType: "",
+      quantity: "",
+      orders: "",
+      revenue: data.todayCreditGenerated,
+      currency: data.currency,
+      hour: "",
+      previousOrders: "",
+      previousRevenue: "",
+      createdAt: ""
+    },
+    {
+      section: "summary",
+      label: "Abonos de cartera",
+      detail: "",
+      orderType: "",
+      quantity: "",
+      orders: "",
+      revenue: data.todayReceivableCollection,
       currency: data.currency,
       hour: "",
       previousOrders: "",
@@ -131,7 +200,7 @@ function buildRows(data: SalesClosingData): ClosingCsvRow[] {
     },
     {
       section: "previous_day",
-      label: "Ingresos del día anterior",
+      label: "Ventas del día anterior",
       detail: data.previousDateValue,
       orderType: "",
       quantity: "",
@@ -212,6 +281,24 @@ function buildRows(data: SalesClosingData): ClosingCsvRow[] {
       previousOrders: "",
       previousRevenue: "",
       createdAt: ""
+    })),
+    ...data.collectionBreakdown.map<ClosingCsvRow>(item => ({
+      section: "collections",
+      label: getPaymentMethodLabel(item.method),
+      detail:
+        item.origin === "RECEIVABLE" ? "Abono de cartera" : "Cobro de venta",
+      orderType: "",
+      quantity: "",
+      orders: item.payments,
+      revenue: item.amount,
+      currency: data.currency,
+      hour: "",
+      previousOrders: "",
+      previousRevenue: "",
+      createdAt: "",
+      method: item.method,
+      origin: item.origin,
+      amount: item.amount
     })),
     ...data.recentSales.map<ClosingCsvRow>(sale => ({
       section: "recent_sales",

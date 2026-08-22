@@ -62,9 +62,8 @@ export interface CellUpdate {
 }
 
 declare module "@tanstack/react-table" {
-  // biome-ignore lint/correctness/noUnusedVariables: TData and TValue are used in the ColumnMeta interface
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
+    valueFormatter?: (value: TValue, row: TData) => string
     // skipcq: JS-0356
     label?: string
     cell?: CellOpts
@@ -250,12 +249,7 @@ export type DateFilterOperator =
   | "isNotEmpty"
 
 export type SelectFilterOperator =
-  | "is"
-  | "isNot"
-  | "isAnyOf"
-  | "isNoneOf"
-  | "isEmpty"
-  | "isNotEmpty"
+  "is" | "isNot" | "isAnyOf" | "isNoneOf" | "isEmpty" | "isNotEmpty"
 
 export type BooleanFilterOperator = "isTrue" | "isFalse"
 

@@ -103,7 +103,7 @@ export function SaleVoidDialog({ saleId }: { saleId: string }) {
           <AlertDialogTitle>¿Anular esta venta?</AlertDialogTitle>
           <AlertDialogDescription>
             La venta y sus productos se conservarán para auditoría, pero dejará
-            de contar en los ingresos y métricas.
+            de contar en las ventas y métricas.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <FieldGroup>

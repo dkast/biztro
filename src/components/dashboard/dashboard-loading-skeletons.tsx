@@ -253,7 +253,7 @@ function TranslationsLoadingSkeleton() {
 
 function SettingsGeneralLoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
+    <div className="mx-auto max-w-2xl grow px-4 sm:px-6 md:px-0">
       <div className="flex items-center justify-between gap-4">
         <PageSubtitleSkeleton titleWidth="w-44" />
         <Skeleton className="h-6 w-20 rounded-md" />
@@ -265,7 +265,7 @@ function SettingsGeneralLoadingSkeleton() {
 
 function SettingsLocationsLoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
+    <div className="mx-auto max-w-2xl grow px-4 sm:px-6 md:px-0">
       <PageSubtitleSkeleton />
       <DashboardFormSkeleton className="mt-8" fieldCount={5} />
       <Skeleton className="my-8 h-px w-full" />
@@ -286,7 +286,7 @@ function SettingsMembersLoadingSkeleton() {
 
 function SettingsBillingLoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
+    <div className="mx-auto max-w-2xl grow px-4 sm:px-6 md:px-0">
       <PageSubtitleSkeleton titleWidth="w-48" />
       <div className="my-10 flex flex-col gap-6">
         <Skeleton className="h-48 rounded-lg" />
@@ -323,20 +323,48 @@ function SalesOverviewLoadingSkeleton() {
         className="gap-3 pb-4 sm:items-end sm:gap-4 sm:pb-5"
         actionCount={1}
       />
-      <MetricGridSkeleton />
-      <section className="flex flex-col gap-5 py-6 sm:gap-6 sm:py-8">
-        <div
-          className="flex flex-col items-start gap-2 sm:flex-row sm:items-center
-            sm:justify-between"
-        >
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-5 w-56" />
-            <Skeleton className="h-4 w-28" />
-          </div>
-          <Skeleton className="h-6 w-24 rounded-md" />
+      <div
+        className="flex flex-col gap-2 sm:flex-row sm:items-end
+          sm:justify-between"
+      >
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-4 w-24" />
         </div>
-        <ChartSkeleton />
-      </section>
+        <Skeleton className="h-4 w-44" />
+      </div>
+      <MetricGridSkeleton />
+      {Array.from({ length: 2 }).map((_, index) => (
+        <section key={index} className="flex flex-col gap-5 sm:gap-6">
+          <div
+            className="flex flex-col items-start gap-2 sm:flex-row
+              sm:items-center sm:justify-between"
+          >
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-5 w-56" />
+              {index === 1 && <Skeleton className="h-4 w-64" />}
+            </div>
+            <Skeleton className="h-6 w-24 rounded-md" />
+          </div>
+          <ChartSkeleton />
+        </section>
+      ))}
+      <div
+        className="flex flex-col gap-4 border-y py-5 sm:flex-row sm:items-center
+          sm:justify-between"
+      >
+        <div className="flex items-center gap-3">
+          <Skeleton className="size-8 rounded-lg" />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-4 w-44" />
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-6 w-28" />
+          <Skeleton className="h-9 w-28 rounded-lg" />
+        </div>
+      </div>
       <section
         className="grid gap-y-8 lg:grid-cols-[minmax(0,60fr)_minmax(0,40fr)]
           lg:gap-x-12"

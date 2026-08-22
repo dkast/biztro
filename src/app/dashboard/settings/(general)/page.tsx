@@ -64,7 +64,7 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
+    <div className="mx-auto max-w-2xl grow px-4 sm:px-6 md:px-0">
       <div className="flex items-center justify-between">
         <PageSubtitle>
           <PageSubtitle.Icon icon={Store} />

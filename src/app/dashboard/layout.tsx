@@ -12,6 +12,7 @@ import {
   SidebarProvider,
   SidebarTrigger
 } from "@/components/ui/sidebar"
+import { getPaymentFeatureState } from "@/server/actions/payments/queries"
 import {
   getCurrentOrganization,
   hasOrganizations
@@ -31,12 +32,19 @@ export default async function Layout({
     redirect("/new-org")
   }
 
+  const paymentFeatureState = organization
+    ? getPaymentFeatureState(organization.id)
+    : Promise.resolve(null)
+
   return (
     <div className="flex grow flex-col overscroll-contain">
       <SidebarProvider>
         <Sidebar>
           <Suspense fallback={<SkeletonWorkgroup />}>
-            <AppSidebar promiseOrganization={Promise.resolve(organization)} />
+            <AppSidebar
+              promiseOrganization={Promise.resolve(organization)}
+              promisePaymentFeatureState={paymentFeatureState}
+            />
           </Suspense>
         </Sidebar>
         <main

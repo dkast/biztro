@@ -282,7 +282,7 @@ export function ColorThemeEditor({
             <div className="px-4 pb-4">
               <div
                 className="mb-4 flex items-center justify-center"
-                data-vaul-no-drag
+                data-base-ui-swipe-ignore
                 onPointerDown={e => e.stopPropagation()}
                 onTouchStart={e => e.stopPropagation()}
                 onMouseDown={e => e.stopPropagation()}

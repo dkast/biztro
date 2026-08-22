@@ -5,6 +5,7 @@ import { createPortal } from "react-dom"
 import { motion } from "motion/react"
 
 import { cn } from "@/lib/utils"
+import { selectBarXAxisLabels } from "./bar-x-axis-labels"
 import { useChart, useChartStable } from "./chart-context"
 
 export interface BarXAxisProps {
@@ -95,8 +96,15 @@ const BarXAxisInner = memo(function BarXAxisInner({
   maxLabels = 12,
   container
 }: BarXAxisProps & { container: HTMLDivElement }) {
-  const { margin, tooltipData, barScale, bandWidth, barXAccessor, data } =
-    useChart()
+  const {
+    margin,
+    tooltipData,
+    barScale,
+    bandWidth,
+    barXAccessor,
+    data,
+    innerWidth
+  } = useChart()
 
   // Generate labels for each bar
   const labelsToShow = useMemo(() => {
@@ -112,22 +120,20 @@ const BarXAxisInner = memo(function BarXAxisInner({
       return { label, x }
     })
 
-    // If showAllLabels is true or we have fewer than maxLabels, show all
-    if (showAllLabels || allLabels.length <= maxLabels) {
-      return allLabels
-    }
-
-    // Otherwise, skip some labels to avoid crowding
-    const step = Math.ceil(allLabels.length / maxLabels)
-    return allLabels.filter((_, i) => i % step === 0)
+    return selectBarXAxisLabels(
+      allLabels,
+      innerWidth,
+      showAllLabels ? allLabels.length : maxLabels
+    )
   }, [
     barScale,
     bandWidth,
     barXAccessor,
     data,
+    innerWidth,
     margin.left,
-    showAllLabels,
-    maxLabels
+    maxLabels,
+    showAllLabels
   ])
 
   const isHovering = tooltipData !== null

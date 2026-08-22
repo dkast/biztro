@@ -130,13 +130,13 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
 
   const onPasteProps = (clonedProps: unknown) => {
     actions.setProp(id, props => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // oxlint-disable-next-line no-unused-vars
       props = Object.assign(props, clonedProps) // skipcq: JS-0356
     })
   }
 
   const onCopyProps = (props: Record<string, unknown>) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line no-unused-vars
     const { data, text, ...propsCopy } = props // skipcq: JS-0356
     setPropsCopy(propsCopy)
   }

@@ -40,7 +40,7 @@ export default function CategoryEdit({
   category,
   action
 }: {
-  children?: React.ReactNode
+  children?: React.ReactElement
   category?: z.infer<typeof categorySchema>
   action: ActionType
 }) {
@@ -50,7 +50,7 @@ export default function CategoryEdit({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger asChild>{children}</DrawerTrigger>
+        {children && <DrawerTrigger render={children} />}
         <DrawerContent>
           <DrawerHeader className="text-left">
             <DrawerTitle>Categoría</DrawerTitle>

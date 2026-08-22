@@ -46,3 +46,28 @@ export const enum MembershipRole {
   MEMBER = "member",
   OWNER = "owner"
 }
+
+export const organizationPaymentSettingsSchema = z
+  .object({
+    acceptsCash: z.boolean(),
+    acceptsCard: z.boolean(),
+    acceptsTransfer: z.boolean(),
+    acceptsCodi: z.boolean(),
+    acceptsVoucher: z.boolean(),
+    creditEnabled: z.boolean()
+  })
+  .refine(
+    settings =>
+      settings.acceptsCash ||
+      settings.acceptsCard ||
+      settings.acceptsTransfer ||
+      settings.acceptsCodi ||
+      settings.acceptsVoucher,
+    {
+      message: "Selecciona al menos un método de pago"
+    }
+  )
+
+export type OrganizationPaymentSettingsInput = z.infer<
+  typeof organizationPaymentSettingsSchema
+>

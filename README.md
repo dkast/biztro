@@ -126,8 +126,8 @@ bun run dev
 - `bun run dev` — start the Next.js dev server
 - `bun run build` — build for production
 - `bun run start` — start the production server
-- `bun run lint` — run ESLint
-- `bun run lint:fix` — run ESLint fixes
+- `bun run lint` — run Oxlint
+- `bun run lint:fix` — run Oxlint fixes
 - `bun run typecheck` — run TypeScript type checking
 - `bun run format` — format source files with Prettier
 - `bun run prisma:migrate` — apply deployed Prisma migrations

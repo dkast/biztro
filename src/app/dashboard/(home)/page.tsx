@@ -68,7 +68,7 @@ export default async function DashboardPage() {
       />
       <div
         className="z-10 mx-auto grid grow auto-rows-min justify-center gap-10
-          px-4 py-10 sm:grid-cols-300 sm:px-6 sm:py-12"
+          px-4 py-10 sm:px-6 sm:py-12 md:grid-cols-300"
       >
         <div className="col-span-full">
           <Suspense fallback={<OnboardingSkeleton />}>

@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import lz from "lzutf8"
-import { type Metadata, type ResolvingMetadata } from "next"
+import { type Metadata, type ResolvingMetadata, type Viewport } from "next"
 import { cacheLife, cacheTag } from "next/cache"
 import Image from "next/image"
 import Link from "next/link"
@@ -24,6 +24,12 @@ import { SubscriptionStatus } from "@/lib/types/billing"
 import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 
 export const instant = false
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover"
+}
 
 // Add generateStaticParams to pre-render specific paths
 export async function generateStaticParams() {
@@ -153,7 +159,12 @@ export default async function SitePage(props: {
 
   return (
     <>
-      <style>{`body { background-color: ${rgbaToHex(backgroundColor)} }`}</style>
+      <style>{`
+        html,
+        body {
+          background-color: ${rgbaToHex(backgroundColor)};
+        }
+      `}</style>
       <Suspense fallback={null}>
         <PublicMenuTracker
           organizationId={siteMenu.organizationId}
@@ -169,7 +180,7 @@ export default async function SitePage(props: {
           style={{
             backgroundColor: `${rgbaToHex(backgroundColor)}`
           }}
-          className="relative flex min-h-screen flex-col"
+          className="relative flex min-h-dvh flex-col"
         >
           <PublicMenuProvider items={searchableItems}>
             <div className="flex grow">

@@ -18,9 +18,8 @@ import {
 import { formatPrice, type Currency } from "@/lib/currency"
 import type { SalesClosingHourlyBucket } from "@/lib/types/sales"
 
-function SalesClosingHourlyYAxis() {
+function SalesClosingHourlyYAxis({ currency }: { currency: Currency }) {
   const yScale = useYScale()
-
   const ticks = yScale.ticks?.(3) ?? []
 
   if (ticks.length === 0) {
@@ -32,19 +31,20 @@ function SalesClosingHourlyYAxis() {
       {ticks.map(tick => (
         <text
           key={tick}
-          className="fill-muted-foreground hidden text-xs tabular-nums
-            md:inline"
+          className="fill-muted-foreground text-[10px] tabular-nums sm:text-xs"
           dominantBaseline="middle"
           textAnchor="end"
           x={-12}
           y={yScale(tick) ?? 0}
         >
-          {tick}
+          {formatPrice(tick, currency)}
         </text>
       ))}
     </g>
   )
 }
+
+SalesClosingHourlyYAxis.displayName = "YAxis"
 
 export function SalesClosingHourlyChart({
   hourly,
@@ -77,13 +77,14 @@ export function SalesClosingHourlyChart({
         data={hourly}
         xDataKey="label"
         aspectRatio="5 / 1"
+        mobileAspectRatio="4 / 3"
         className="min-h-40 sm:min-h-0"
-        margin={{ top: 16, right: 12, bottom: 28, left: 32 }}
+        margin={{ top: 16, right: 12, bottom: 28, left: 72 }}
       >
-        <SalesClosingHourlyYAxis />
+        <SalesClosingHourlyYAxis currency={currency} />
         <Grid horizontal numTicksRows={3} />
         <Bar
-          dataKey="todayOrders"
+          dataKey="todayRevenue"
           fill={chartCssVars.linePrimary}
           lineCap={3}
         />
@@ -97,15 +98,20 @@ export function SalesClosingHourlyChart({
               typeof point.todayOrders === "number" ? point.todayOrders : 0
             const todayRevenue =
               typeof point.todayRevenue === "number" ? point.todayRevenue : 0
+            const todayCollected =
+              typeof point.todayCollected === "number"
+                ? point.todayCollected
+                : 0
 
             return (
               <div className="rounded-md px-3 py-2 text-sm shadow-sm">
                 <div className="font-medium">{label}</div>
-                <div className="mt-1 flex flex-col gap-1 text-white/50">
+                <div className="mt-1 flex flex-col gap-1 text-gray-400">
                   <span>
                     Hoy: {todayOrders} ventas ·{" "}
                     {formatPrice(todayRevenue, currency)}
                   </span>
+                  <span>Cobrado: {formatPrice(todayCollected, currency)}</span>
                 </div>
               </div>
             )

@@ -3,6 +3,11 @@
 import { cacheLife, cacheTag } from "next/cache"
 
 import { formatPriceRange, type Currency } from "@/lib/currency"
+import {
+  calculateBalanceMinor,
+  currencyToMinorUnits,
+  getPaymentStatus
+} from "@/lib/payments"
 import prisma from "@/lib/prisma"
 import {
   formatSalesClosingDateValue,
@@ -11,14 +16,28 @@ import {
 } from "@/lib/sales-closing-date"
 import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
 import {
+  getCollectionBreakdown,
+  getFinancialMetrics,
+  minorToMoney,
+  type CollectionPaymentRow,
+  type FinancialSaleRow
+} from "@/lib/sales-reporting"
+import type {
+  PaymentMethod,
+  SalePaymentHistoryItem
+} from "@/lib/types/payments"
+import { paymentMethodValues } from "@/lib/types/payments"
+import {
   salesOrderTypeValues,
   type SaleDetail,
   type SalesBestSeller,
   type SalesCatalogCategory,
   type SalesCatalogData,
   type SalesCatalogProduct,
+  type SalesChartBucket,
   type SalesClosingData,
   type SalesClosingHourlyBucket,
+  type SalesCollectionChartBucket,
   type SalesDashboardData,
   type SalesOrderType,
   type SalesRecentSale,
@@ -28,6 +47,92 @@ import { getCacheBustedImageUrl } from "@/lib/utils"
 
 function roundMoney(value: number) {
   return Math.round((value + Number.EPSILON) * 100) / 100
+}
+
+const collectionChartMethods = [
+  ...paymentMethodValues,
+  "LEGACY"
+] as const satisfies readonly (PaymentMethod | "LEGACY")[]
+
+function createCollectionChartBucket(
+  label: string
+): SalesCollectionChartBucket {
+  return {
+    label,
+    CASH: 0,
+    CARD: 0,
+    TRANSFER: 0,
+    CODI: 0,
+    VOUCHER: 0,
+    LEGACY: 0
+  }
+}
+
+function buildCollectionChartBuckets({
+  payments,
+  startDate,
+  endDate,
+  period
+}: {
+  payments: readonly CollectionPaymentRow[]
+  startDate: Date
+  endDate: Date
+  period: SalesDashboardPeriod
+}): SalesCollectionChartBucket[] {
+  const buckets = new Map<string, SalesCollectionChartBucket>()
+  const bucketType = getSalesChartBucketType(period)
+
+  if (bucketType === "month") {
+    for (
+      let cursor = startOfMonth(startDate);
+      cursor < endDate;
+      cursor = startOfNextMonth(cursor)
+    ) {
+      const key = getMonthBucketKey(cursor)
+      buckets.set(
+        key,
+        createCollectionChartBucket(
+          salesChartMonthLabelFormatter.format(cursor)
+        )
+      )
+    }
+
+    for (const payment of payments) {
+      if (payment.status === "VOID") continue
+
+      const bucket = buckets.get(getMonthBucketKey(payment.createdAt))
+      if (!bucket) continue
+      bucket[payment.method] += payment.amountMinor
+    }
+  } else {
+    for (
+      let cursor = startOfDay(startDate);
+      cursor < endDate;
+      cursor = startOfNextDay(cursor)
+    ) {
+      const key = getDayBucketKey(cursor)
+      buckets.set(
+        key,
+        createCollectionChartBucket(salesChartDayLabelFormatter.format(cursor))
+      )
+    }
+
+    for (const payment of payments) {
+      if (payment.status === "VOID") continue
+
+      const bucket = buckets.get(getDayBucketKey(payment.createdAt))
+      if (!bucket) continue
+      bucket[payment.method] += payment.amountMinor
+    }
+  }
+
+  return [...buckets.values()].map(bucket => {
+    const result = { ...bucket }
+    for (const method of collectionChartMethods) {
+      result[method] = minorToMoney(bucket[method])
+    }
+    return result
+  })
 }
 
 function startOfDay(date = new Date()) {
@@ -58,15 +163,93 @@ function startOfNextMonth(date = new Date()) {
 function completedSalesWhere(
   organizationId: string,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  currency: Currency
 ) {
   return {
     organizationId,
     status: "COMPLETED" as const,
+    currency,
     createdAt: {
       gte: startDate,
       lt: endDate
     }
+  }
+}
+
+async function getReceivablesDashboardSummary(organizationId: string) {
+  const sales = await prisma.sale.findMany({
+    where: {
+      organizationId,
+      status: "COMPLETED",
+      customerId: { not: null }
+    },
+    select: {
+      customerId: true,
+      currency: true,
+      total: true,
+      paymentAllocations: {
+        select: {
+          amountMinor: true,
+          payment: { select: { status: true, origin: true } }
+        }
+      }
+    }
+  })
+
+  let hasCreditHistory = false
+  const byCurrency = new Map<
+    Currency,
+    { balanceMinor: number; openSales: number; customerIds: Set<string> }
+  >()
+
+  for (const sale of sales) {
+    const salePaidMinor = sale.paymentAllocations.reduce(
+      (total, allocation) =>
+        allocation.payment.status === "ACTIVE" &&
+        allocation.payment.origin === "SALE"
+          ? total + allocation.amountMinor
+          : total,
+      0
+    )
+    if (currencyToMinorUnits(sale.total) > salePaidMinor) {
+      hasCreditHistory = true
+    }
+
+    const paidMinor = sale.paymentAllocations.reduce(
+      (total, allocation) =>
+        allocation.payment.status === "ACTIVE"
+          ? total + allocation.amountMinor
+          : total,
+      0
+    )
+    const balanceMinor = calculateBalanceMinor(
+      currencyToMinorUnits(sale.total),
+      paidMinor
+    )
+    if (balanceMinor === 0 || !sale.customerId) continue
+
+    const summary = byCurrency.get(sale.currency) ?? {
+      balanceMinor: 0,
+      openSales: 0,
+      customerIds: new Set<string>()
+    }
+    summary.balanceMinor += balanceMinor
+    summary.openSales += 1
+    summary.customerIds.add(sale.customerId)
+    byCurrency.set(sale.currency, summary)
+  }
+
+  return {
+    receivables: [...byCurrency.entries()]
+      .map(([currency, summary]) => ({
+        currency,
+        balanceMinor: summary.balanceMinor,
+        openSales: summary.openSales,
+        customers: summary.customerIds.size
+      }))
+      .sort((a, b) => a.currency.localeCompare(b.currency)),
+    hasCreditHistory
   }
 }
 
@@ -119,25 +302,20 @@ function getMonthBucketKey(date: Date) {
 }
 
 function buildSalesChartBuckets({
-  rows,
+  sales,
+  payments,
   startDate,
   endDate,
   period
 }: {
-  rows: Array<{ createdAt: Date; total: number }>
+  sales: readonly FinancialSaleRow[]
+  payments: readonly CollectionPaymentRow[]
   startDate: Date
   endDate: Date
   period: SalesDashboardPeriod
 }) {
   const bucketType = getSalesChartBucketType(period)
-  const buckets = new Map<
-    string,
-    {
-      label: string
-      revenue: number
-      orders: number
-    }
-  >()
+  const buckets = new Map<string, SalesChartBucket>()
 
   if (bucketType === "month") {
     for (
@@ -149,18 +327,46 @@ function buildSalesChartBuckets({
       buckets.set(key, {
         label: salesChartMonthLabelFormatter.format(cursor),
         revenue: 0,
-        orders: 0
+        orders: 0,
+        sales: 0,
+        collected: 0,
+        paidAtSale: 0,
+        creditGenerated: 0,
+        receivableCollection: 0
       })
     }
 
-    for (const row of rows) {
-      const key = getMonthBucketKey(row.createdAt)
+    for (const sale of sales) {
+      const key = getMonthBucketKey(sale.createdAt)
       const bucket = buckets.get(key)
 
       if (!bucket) continue
 
-      bucket.revenue += row.total
+      const totalMinor = currencyToMinorUnits(sale.total)
+      const salePaidMinor = sale.paymentAllocations.reduce(
+        (total, allocation) =>
+          allocation.payment.status === "ACTIVE" &&
+          allocation.payment.origin === "SALE"
+            ? total + allocation.amountMinor
+            : total,
+        0
+      )
+
+      bucket.sales += totalMinor
+      bucket.revenue += totalMinor
       bucket.orders += 1
+      bucket.paidAtSale += Math.min(totalMinor, salePaidMinor)
+      bucket.creditGenerated += Math.max(0, totalMinor - salePaidMinor)
+    }
+
+    for (const payment of payments) {
+      const bucket = buckets.get(getMonthBucketKey(payment.createdAt))
+      if (!bucket) continue
+
+      bucket.collected += payment.amountMinor
+      if (payment.origin === "RECEIVABLE") {
+        bucket.receivableCollection += payment.amountMinor
+      }
     }
   } else {
     for (
@@ -172,24 +378,57 @@ function buildSalesChartBuckets({
       buckets.set(key, {
         label: salesChartDayLabelFormatter.format(cursor),
         revenue: 0,
-        orders: 0
+        orders: 0,
+        sales: 0,
+        collected: 0,
+        paidAtSale: 0,
+        creditGenerated: 0,
+        receivableCollection: 0
       })
     }
 
-    for (const row of rows) {
-      const key = getDayBucketKey(row.createdAt)
+    for (const sale of sales) {
+      const key = getDayBucketKey(sale.createdAt)
       const bucket = buckets.get(key)
 
       if (!bucket) continue
 
-      bucket.revenue += row.total
+      const totalMinor = currencyToMinorUnits(sale.total)
+      const salePaidMinor = sale.paymentAllocations.reduce(
+        (total, allocation) =>
+          allocation.payment.status === "ACTIVE" &&
+          allocation.payment.origin === "SALE"
+            ? total + allocation.amountMinor
+            : total,
+        0
+      )
+
+      bucket.sales += totalMinor
+      bucket.revenue += totalMinor
       bucket.orders += 1
+      bucket.paidAtSale += Math.min(totalMinor, salePaidMinor)
+      bucket.creditGenerated += Math.max(0, totalMinor - salePaidMinor)
+    }
+
+    for (const payment of payments) {
+      const bucket = buckets.get(getDayBucketKey(payment.createdAt))
+      if (!bucket) continue
+
+      bucket.collected += payment.amountMinor
+      if (payment.origin === "RECEIVABLE") {
+        bucket.receivableCollection += payment.amountMinor
+      }
     }
   }
 
   return [...buckets.values()].map(bucket => ({
     ...bucket,
-    revenue: roundMoney(bucket.revenue)
+    revenue: minorToMoney(bucket.revenue),
+    sales: minorToMoney(bucket.sales),
+    collected: minorToMoney(bucket.collected),
+    paidAtSale: minorToMoney(bucket.paidAtSale),
+    creditGenerated: minorToMoney(bucket.creditGenerated),
+    receivableCollection: minorToMoney(bucket.receivableCollection)
   }))
 }
 
@@ -277,42 +516,17 @@ async function getOrganizationCurrency(
   return defaultLocation?.currency ?? "MXN"
 }
 
-async function getSalesTotals(
-  organizationId: string,
-  startDate: Date,
-  endDate: Date
-) {
-  const [totals, saleCount] = await Promise.all([
-    prisma.sale.aggregate({
-      where: {
-        ...completedSalesWhere(organizationId, startDate, endDate)
-      },
-      _sum: {
-        total: true
-      }
-    }),
-    prisma.sale.count({
-      where: {
-        ...completedSalesWhere(organizationId, startDate, endDate)
-      }
-    })
-  ])
-
-  return {
-    revenue: roundMoney(totals._sum.total ?? 0),
-    orders: saleCount
-  }
-}
-
 async function getVoidedSalesTotals(
   organizationId: string,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  currency: Currency
 ) {
   const totals = await prisma.sale.aggregate({
     where: {
       organizationId,
       status: "VOID",
+      currency,
       createdAt: {
         gte: startDate,
         lt: endDate
@@ -335,12 +549,14 @@ async function getVoidedSalesTotals(
 async function getBestSellers(
   organizationId: string,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  currency: Currency,
+  limit = 10
 ): Promise<SalesBestSeller[]> {
   const rows = await prisma.saleItem.findMany({
     where: {
       sale: {
-        ...completedSalesWhere(organizationId, startDate, endDate)
+        ...completedSalesWhere(organizationId, startDate, endDate, currency)
       }
     },
     select: {
@@ -377,7 +593,7 @@ async function getBestSellers(
       if (b.revenue !== a.revenue) return b.revenue - a.revenue
       return a.productName.localeCompare(b.productName)
     })
-    .slice(0, 10)
+    .slice(0, limit)
     .map(product => ({
       productName: product.productName,
       quantity: product.quantity,
@@ -387,11 +603,14 @@ async function getBestSellers(
 
 async function getRecentSales(
   organizationId: string,
-  range?: { startDate: Date; endDate: Date }
+  currency: Currency,
+  range?: { startDate: Date; endDate: Date },
+  limit = 25
 ): Promise<SalesRecentSale[]> {
   const sales = await prisma.sale.findMany({
     where: {
       organizationId,
+      currency,
       ...(range
         ? { createdAt: { gte: range.startDate, lt: range.endDate } }
         : {})
@@ -399,13 +618,23 @@ async function getRecentSales(
     orderBy: {
       createdAt: "desc"
     },
-    take: 25,
+    take: limit,
     select: {
       id: true,
       createdAt: true,
       orderType: true,
       status: true,
       total: true,
+      paymentAllocations: {
+        select: {
+          amountMinor: true,
+          payment: {
+            select: {
+              status: true
+            }
+          }
+        }
+      },
       items: {
         select: {
           quantity: true
@@ -414,14 +643,26 @@ async function getRecentSales(
     }
   })
 
-  return sales.map(sale => ({
-    id: sale.id,
-    createdAt: sale.createdAt.toISOString(),
-    orderType: sale.orderType as SalesOrderType,
-    status: sale.status,
-    total: roundMoney(sale.total),
-    items: sale.items.reduce((count, item) => count + item.quantity, 0)
-  }))
+  return sales.map(sale => {
+    const totalMinor = currencyToMinorUnits(sale.total)
+    const paidMinor = sale.paymentAllocations.reduce(
+      (total, allocation) =>
+        allocation.payment.status === "ACTIVE"
+          ? total + allocation.amountMinor
+          : total,
+      0
+    )
+
+    return {
+      id: sale.id,
+      createdAt: sale.createdAt.toISOString(),
+      orderType: sale.orderType as SalesOrderType,
+      status: sale.status,
+      paymentStatus: getPaymentStatus(totalMinor, paidMinor),
+      total: roundMoney(sale.total),
+      items: sale.items.reduce((count, item) => count + item.quantity, 0)
+    }
+  })
 }
 
 const salesClosingHourLabelFormatter = new Intl.DateTimeFormat("es-MX", {
@@ -433,22 +674,11 @@ function getHourLabel(hour: number) {
   return salesClosingHourLabelFormatter.format(new Date(2000, 0, 1, hour))
 }
 
-async function getHourlySalesBuckets(
-  organizationId: string,
-  selectedDayStart: Date,
-  previousDayStart: Date,
-  tomorrowStart: Date
-): Promise<SalesClosingHourlyBucket[]> {
-  const rows = await prisma.sale.findMany({
-    where: {
-      ...completedSalesWhere(organizationId, previousDayStart, tomorrowStart)
-    },
-    select: {
-      createdAt: true,
-      total: true
-    }
-  })
-
+function getHourlySalesBuckets(
+  sales: readonly FinancialSaleRow[],
+  payments: readonly CollectionPaymentRow[],
+  selectedDayStart: Date
+): SalesClosingHourlyBucket[] {
   const buckets = new Map<number, SalesClosingHourlyBucket>()
 
   for (let hour = 0; hour < 24; hour++) {
@@ -457,22 +687,69 @@ async function getHourlySalesBuckets(
       label: getHourLabel(hour),
       todayOrders: 0,
       todayRevenue: 0,
+      todaySales: 0,
+      todayCollected: 0,
+      todayPaidAtSale: 0,
+      todayCreditGenerated: 0,
+      todayReceivableCollection: 0,
       previousOrders: 0,
-      previousRevenue: 0
+      previousRevenue: 0,
+      previousSales: 0,
+      previousCollected: 0,
+      previousPaidAtSale: 0,
+      previousCreditGenerated: 0,
+      previousReceivableCollection: 0
     })
   }
 
-  for (const row of rows) {
-    const bucket = buckets.get(row.createdAt.getHours())
+  for (const sale of sales) {
+    const bucket = buckets.get(sale.createdAt.getHours())
 
     if (!bucket) continue
 
-    if (row.createdAt >= selectedDayStart) {
+    const totalMinor = currencyToMinorUnits(sale.total)
+    const salePaidMinor = sale.paymentAllocations.reduce(
+      (total, allocation) =>
+        allocation.payment.status === "ACTIVE" &&
+        allocation.payment.origin === "SALE"
+          ? total + allocation.amountMinor
+          : total,
+      0
+    )
+    const creditGeneratedMinor = Math.max(0, totalMinor - salePaidMinor)
+
+    if (sale.createdAt >= selectedDayStart) {
       bucket.todayOrders += 1
-      bucket.todayRevenue += row.total
+      bucket.todayRevenue += totalMinor
+      bucket.todaySales += totalMinor
+      bucket.todayPaidAtSale += Math.min(totalMinor, salePaidMinor)
+      bucket.todayCreditGenerated += creditGeneratedMinor
     } else {
       bucket.previousOrders += 1
-      bucket.previousRevenue += row.total
+      bucket.previousRevenue += totalMinor
+      bucket.previousSales += totalMinor
+      bucket.previousPaidAtSale += Math.min(totalMinor, salePaidMinor)
+      bucket.previousCreditGenerated += creditGeneratedMinor
+    }
+  }
+
+  for (const payment of payments) {
+    if (payment.status === "VOID") continue
+
+    const bucket = buckets.get(payment.createdAt.getHours())
+
+    if (!bucket) continue
+
+    if (payment.createdAt >= selectedDayStart) {
+      bucket.todayCollected += payment.amountMinor
+      if (payment.origin === "RECEIVABLE") {
+        bucket.todayReceivableCollection += payment.amountMinor
+      }
+    } else {
+      bucket.previousCollected += payment.amountMinor
+      if (payment.origin === "RECEIVABLE") {
+        bucket.previousReceivableCollection += payment.amountMinor
+      }
     }
   }
 
@@ -483,7 +760,9 @@ async function getHourlySalesBuckets(
         bucket.todayOrders > 0 ||
         bucket.previousOrders > 0 ||
         bucket.todayRevenue > 0 ||
-        bucket.previousRevenue > 0
+        bucket.previousRevenue > 0 ||
+        bucket.todayCollected > 0 ||
+        bucket.previousCollected > 0
     )
     .map(bucket => bucket.hour)
 
@@ -498,26 +777,79 @@ async function getHourlySalesBuckets(
     .filter(bucket => bucket.hour >= minHour && bucket.hour <= maxHour)
     .map(bucket => ({
       ...bucket,
-      todayRevenue: roundMoney(bucket.todayRevenue),
-      previousRevenue: roundMoney(bucket.previousRevenue)
+      todayRevenue: minorToMoney(bucket.todayRevenue),
+      todaySales: minorToMoney(bucket.todaySales),
+      todayCollected: minorToMoney(bucket.todayCollected),
+      todayPaidAtSale: minorToMoney(bucket.todayPaidAtSale),
+      todayCreditGenerated: minorToMoney(bucket.todayCreditGenerated),
+      todayReceivableCollection: minorToMoney(bucket.todayReceivableCollection),
+      previousRevenue: minorToMoney(bucket.previousRevenue),
+      previousSales: minorToMoney(bucket.previousSales),
+      previousCollected: minorToMoney(bucket.previousCollected),
+      previousPaidAtSale: minorToMoney(bucket.previousPaidAtSale),
+      previousCreditGenerated: minorToMoney(bucket.previousCreditGenerated),
+      previousReceivableCollection: minorToMoney(
+        bucket.previousReceivableCollection
+      )
     }))
 }
 
 function getSalesChartRows(
   organizationId: string,
   startDate: Date,
-  endDate: Date
-): Promise<Array<{ createdAt: Date; total: number }>> {
+  endDate: Date,
+  currency: Currency
+): Promise<FinancialSaleRow[]> {
   return prisma.sale.findMany({
     where: {
-      ...completedSalesWhere(organizationId, startDate, endDate)
+      ...completedSalesWhere(organizationId, startDate, endDate, currency)
     },
     orderBy: {
       createdAt: "asc"
     },
     select: {
       createdAt: true,
-      total: true
+      total: true,
+      paymentAllocations: {
+        select: {
+          amountMinor: true,
+          payment: {
+            select: {
+              status: true,
+              origin: true
+            }
+          }
+        }
+      }
+    }
+  })
+}
+
+function getCollectionPaymentRows(
+  organizationId: string,
+  startDate: Date,
+  endDate: Date,
+  currency: Currency
+): Promise<CollectionPaymentRow[]> {
+  return prisma.payment.findMany({
+    where: {
+      organizationId,
+      currency,
+      status: "ACTIVE",
+      createdAt: {
+        gte: startDate,
+        lt: endDate
+      }
+    },
+    orderBy: {
+      createdAt: "asc"
+    },
+    select: {
+      createdAt: true,
+      amountMinor: true,
+      method: true,
+      origin: true,
+      status: true
     }
   })
 }
@@ -525,12 +857,13 @@ function getSalesChartRows(
 async function getRevenueByOrderType(
   organizationId: string,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  currency: Currency
 ): Promise<SalesRevenueByOrderType[]> {
   const rows = await prisma.sale.groupBy({
     by: ["orderType"],
     where: {
-      ...completedSalesWhere(organizationId, startDate, endDate)
+      ...completedSalesWhere(organizationId, startDate, endDate, currency)
     },
     _sum: {
       total: true
@@ -694,50 +1027,112 @@ export async function getSalesDashboardData(
       periodRevenue: 0,
       periodOrders: 0,
       periodAverageTicket: 0,
+      todaySales: 0,
+      todayCollected: 0,
+      todayPaidAtSale: 0,
+      todayCreditGenerated: 0,
+      todayReceivableCollection: 0,
+      periodSales: 0,
+      periodCollected: 0,
+      periodPaidAtSale: 0,
+      periodCreditGenerated: 0,
+      periodReceivableCollection: 0,
+      collectionBreakdown: [],
+      collectionChart: [],
+      hasCreditHistory: false,
       chart: [],
       bestSellers: [],
-      recentSales: []
+      recentSales: [],
+      receivables: []
     }
   }
 
   cacheTag(`sales-${organizationId}`)
+  cacheTag(`receivables-${organizationId}`)
 
   const now = new Date()
   const todayStart = startOfDay(now)
   const tomorrowStart = startOfNextDay(now)
   const periodStart = startOfRollingPeriod(period, now)
 
-  const [currency, todayTotals, periodSales, bestSellers, recentSales] =
-    await Promise.all([
-      getOrganizationCurrency(organizationId),
-      getSalesTotals(organizationId, todayStart, tomorrowStart),
-      getSalesChartRows(organizationId, periodStart, tomorrowStart),
-      getBestSellers(organizationId, periodStart, tomorrowStart),
-      getRecentSales(organizationId)
-    ])
+  const currency = await getOrganizationCurrency(organizationId)
+  const [
+    periodSales,
+    todayPayments,
+    periodPayments,
+    bestSellers,
+    recentSales,
+    receivablesSummary
+  ] = await Promise.all([
+    getSalesChartRows(organizationId, periodStart, tomorrowStart, currency),
+    getCollectionPaymentRows(
+      organizationId,
+      todayStart,
+      tomorrowStart,
+      currency
+    ),
+    getCollectionPaymentRows(
+      organizationId,
+      periodStart,
+      tomorrowStart,
+      currency
+    ),
+    getBestSellers(organizationId, periodStart, tomorrowStart, currency, 5),
+    getRecentSales(organizationId, currency, undefined, 5),
+    getReceivablesDashboardSummary(organizationId)
+  ])
 
-  const periodRevenue = roundMoney(
-    periodSales.reduce((sum, sale) => sum + sale.total, 0)
+  const todaySalesRows = periodSales.filter(
+    sale => sale.createdAt >= todayStart && sale.createdAt < tomorrowStart
   )
+  const todayMetrics = getFinancialMetrics({
+    sales: todaySalesRows,
+    payments: todayPayments
+  })
+  const periodMetrics = getFinancialMetrics({
+    sales: periodSales,
+    payments: periodPayments
+  })
+  const periodRevenue = periodMetrics.sales
   const periodOrders = periodSales.length
 
   return {
     currency,
     period,
-    todayRevenue: todayTotals.revenue,
-    todayOrders: todayTotals.orders,
+    todayRevenue: todayMetrics.sales,
+    todayOrders: todaySalesRows.length,
     periodRevenue,
     periodOrders,
     periodAverageTicket:
       periodOrders > 0 ? roundMoney(periodRevenue / periodOrders) : 0,
+    todaySales: todayMetrics.sales,
+    todayCollected: todayMetrics.collected,
+    todayPaidAtSale: todayMetrics.paidAtSale,
+    todayCreditGenerated: todayMetrics.creditGenerated,
+    todayReceivableCollection: todayMetrics.receivableCollection,
+    periodSales: periodMetrics.sales,
+    periodCollected: periodMetrics.collected,
+    periodPaidAtSale: periodMetrics.paidAtSale,
+    periodCreditGenerated: periodMetrics.creditGenerated,
+    periodReceivableCollection: periodMetrics.receivableCollection,
+    collectionBreakdown: getCollectionBreakdown(periodPayments),
+    collectionChart: buildCollectionChartBuckets({
+      payments: periodPayments,
+      startDate: periodStart,
+      endDate: tomorrowStart,
+      period
+    }),
+    hasCreditHistory: receivablesSummary.hasCreditHistory,
     chart: buildSalesChartBuckets({
-      rows: periodSales,
+      sales: periodSales,
+      payments: periodPayments,
       startDate: periodStart,
       endDate: tomorrowStart,
       period
     }),
     bestSellers,
-    recentSales
+    recentSales,
+    receivables: receivablesSummary.receivables
   }
 }
 
@@ -763,10 +1158,27 @@ export async function getSalesClosingData(
       todayRevenue: 0,
       todayOrders: 0,
       todayAverageTicket: 0,
+      todaySales: 0,
+      todayCollected: 0,
+      todayPaidAtSale: 0,
+      todayCreditGenerated: 0,
+      todayReceivableCollection: 0,
+      collectionBreakdown: [],
+      collectionChart: [],
+      hasCreditHistory: false,
       voidedSales: 0,
       voidedAmount: 0,
       topProduct: null,
-      previous: { revenue: 0, orders: 0, averageTicket: 0 },
+      previous: {
+        revenue: 0,
+        orders: 0,
+        averageTicket: 0,
+        sales: 0,
+        collected: 0,
+        paidAtSale: 0,
+        creditGenerated: 0,
+        receivableCollection: 0
+      },
       bestSellers: [],
       revenueByOrderType: [],
       hourly: [],
@@ -780,57 +1192,116 @@ export async function getSalesClosingData(
   const tomorrowStart = startOfNextDay(selectedDate)
   const previousDayStart = startOfDay(previousDate)
 
+  const currency = await getOrganizationCurrency(organizationId)
   const [
-    currency,
-    todayTotals,
     voidedTotals,
-    previousTotals,
+    todaySalesRows,
+    previousSalesRows,
+    todayPayments,
+    previousPayments,
     bestSellers,
     revenueByOrderType,
-    hourly,
-    recentSales
+    recentSales,
+    receivablesSummary
   ] = await Promise.all([
-    getOrganizationCurrency(organizationId),
-    getSalesTotals(organizationId, selectedDayStart, tomorrowStart),
-    getVoidedSalesTotals(organizationId, selectedDayStart, tomorrowStart),
-    getSalesTotals(organizationId, previousDayStart, selectedDayStart),
-    getBestSellers(organizationId, selectedDayStart, tomorrowStart),
-    getRevenueByOrderType(organizationId, selectedDayStart, tomorrowStart),
-    getHourlySalesBuckets(
+    getVoidedSalesTotals(
       organizationId,
       selectedDayStart,
-      previousDayStart,
-      tomorrowStart
+      tomorrowStart,
+      currency
     ),
-    getRecentSales(organizationId, {
+    getSalesChartRows(
+      organizationId,
+      selectedDayStart,
+      tomorrowStart,
+      currency
+    ),
+    getSalesChartRows(
+      organizationId,
+      previousDayStart,
+      selectedDayStart,
+      currency
+    ),
+    getCollectionPaymentRows(
+      organizationId,
+      selectedDayStart,
+      tomorrowStart,
+      currency
+    ),
+    getCollectionPaymentRows(
+      organizationId,
+      previousDayStart,
+      selectedDayStart,
+      currency
+    ),
+    getBestSellers(organizationId, selectedDayStart, tomorrowStart, currency),
+    getRevenueByOrderType(
+      organizationId,
+      selectedDayStart,
+      tomorrowStart,
+      currency
+    ),
+    getRecentSales(organizationId, currency, {
       startDate: selectedDayStart,
       endDate: tomorrowStart
-    })
+    }),
+    getReceivablesDashboardSummary(organizationId)
   ])
 
+  const todayMetrics = getFinancialMetrics({
+    sales: todaySalesRows,
+    payments: todayPayments
+  })
+  const previousMetrics = getFinancialMetrics({
+    sales: previousSalesRows,
+    payments: previousPayments
+  })
+  const hourly = getHourlySalesBuckets(
+    [...todaySalesRows, ...previousSalesRows],
+    [...todayPayments, ...previousPayments],
+    selectedDayStart
+  )
   const todayAverageTicket =
-    todayTotals.orders > 0
-      ? roundMoney(todayTotals.revenue / todayTotals.orders)
+    todaySalesRows.length > 0
+      ? roundMoney(todayMetrics.sales / todaySalesRows.length)
       : 0
   const previousAverageTicket =
-    previousTotals.orders > 0
-      ? roundMoney(previousTotals.revenue / previousTotals.orders)
+    previousSalesRows.length > 0
+      ? roundMoney(previousMetrics.sales / previousSalesRows.length)
       : 0
 
   return {
     selectedDateValue: normalizedSelectedDateValue,
     previousDateValue: normalizedPreviousDateValue,
     currency,
-    todayRevenue: todayTotals.revenue,
-    todayOrders: todayTotals.orders,
+    todayRevenue: todayMetrics.sales,
+    todayOrders: todaySalesRows.length,
     todayAverageTicket,
+    todaySales: todayMetrics.sales,
+    todayCollected: todayMetrics.collected,
+    todayPaidAtSale: todayMetrics.paidAtSale,
+    todayCreditGenerated: todayMetrics.creditGenerated,
+    todayReceivableCollection: todayMetrics.receivableCollection,
+    collectionBreakdown: getCollectionBreakdown(todayPayments),
+    collectionChart: buildCollectionChartBuckets({
+      payments: todayPayments,
+      startDate: selectedDayStart,
+      endDate: tomorrowStart,
+      period: "7d"
+    }),
+    hasCreditHistory: receivablesSummary.hasCreditHistory,
     voidedSales: voidedTotals.sales,
     voidedAmount: voidedTotals.amount,
     topProduct: bestSellers[0] ?? null,
     previous: {
-      revenue: previousTotals.revenue,
-      orders: previousTotals.orders,
-      averageTicket: previousAverageTicket
+      revenue: previousMetrics.sales,
+      orders: previousSalesRows.length,
+      averageTicket: previousAverageTicket,
+      sales: previousMetrics.sales,
+      collected: previousMetrics.collected,
+      paidAtSale: previousMetrics.paidAtSale,
+      creditGenerated: previousMetrics.creditGenerated,
+      receivableCollection: previousMetrics.receivableCollection
     },
     bestSellers,
     revenueByOrderType,
@@ -862,6 +1333,12 @@ export async function getSaleDetail(
       orderType: true,
       currency: true,
       total: true,
+      customer: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
       createdAt: true,
       completedAt: true,
       completedByUserId: true,
@@ -880,15 +1357,44 @@ export async function getSaleDetail(
           quantity: true,
           lineTotal: true
         }
+      },
+      paymentAllocations: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          amountMinor: true,
+          payment: {
+            select: {
+              id: true,
+              createdAt: true,
+              createdByUserId: true,
+              currency: true,
+              amountMinor: true,
+              method: true,
+              origin: true,
+              status: true,
+              reference: true,
+              notes: true,
+              voidedAt: true,
+              voidedByUserId: true,
+              voidReason: true,
+              allocations: { select: { id: true } }
+            }
+          }
+        }
       }
     }
   })
 
   if (!sale) return null
 
-  const actorIds = [sale.completedByUserId, sale.voidedByUserId].filter(
-    (id): id is string => Boolean(id)
-  )
+  const actorIds = [
+    sale.completedByUserId,
+    sale.voidedByUserId,
+    ...sale.paymentAllocations.flatMap(allocation => [
+      allocation.payment.createdByUserId,
+      allocation.payment.voidedByUserId
+    ])
+  ].filter((id): id is string => Boolean(id))
   const actors = actorIds.length
     ? await prisma.user.findMany({
         where: {
@@ -903,6 +1409,37 @@ export async function getSaleDetail(
       })
     : []
   const actorsById = new Map(actors.map(actor => [actor.id, actor]))
+  const totalMinor = currencyToMinorUnits(sale.total)
+  const paidMinor = sale.paymentAllocations.reduce(
+    (total, allocation) =>
+      allocation.payment.status === "ACTIVE"
+        ? total + allocation.amountMinor
+        : total,
+    0
+  )
+  const balanceMinor = calculateBalanceMinor(totalMinor, paidMinor)
+  const payments: SalePaymentHistoryItem[] = sale.paymentAllocations.map(
+    allocation => ({
+      id: allocation.payment.id,
+      createdAt: allocation.payment.createdAt.toISOString(),
+      method: allocation.payment.method,
+      origin: allocation.payment.origin,
+      amountMinor: allocation.payment.amountMinor,
+      allocatedMinor: allocation.amountMinor,
+      reference: allocation.payment.reference,
+      notes: allocation.payment.notes,
+      status: allocation.payment.status,
+      createdBy: allocation.payment.createdByUserId
+        ? (actorsById.get(allocation.payment.createdByUserId) ?? {
+            id: allocation.payment.createdByUserId,
+            name: "Actor no registrado"
+          })
+        : null,
+      voidedAt: allocation.payment.voidedAt?.toISOString() ?? null,
+      voidReason: allocation.payment.voidReason,
+      allocationCount: allocation.payment.allocations.length
+    })
+  )
 
   return {
     id: sale.id,
@@ -910,6 +1447,10 @@ export async function getSaleDetail(
     orderType: sale.orderType as SalesOrderType,
     currency: sale.currency,
     total: roundMoney(sale.total),
+    paidMinor,
+    balanceMinor,
+    paymentStatus: getPaymentStatus(totalMinor, paidMinor),
+    customer: sale.customer,
     createdAt: sale.createdAt.toISOString(),
     completedAt: sale.completedAt?.toISOString() ?? null,
     completedBy: sale.completedByUserId
@@ -930,6 +1471,7 @@ export async function getSaleDetail(
       ...item,
       unitPrice: roundMoney(item.unitPrice),
       lineTotal: roundMoney(item.lineTotal)
-    }))
+    })),
+    payments
   }
 }

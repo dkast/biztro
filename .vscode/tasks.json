@@ -2,9 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "eslint",
-      "problemMatcher": ["$eslint-stylish"],
-      "label": "eslint: lint whole folder"
+      "type": "shell",
+      "command": "bun run lint",
+      "label": "oxlint: lint whole folder"
     }
   ]
 }

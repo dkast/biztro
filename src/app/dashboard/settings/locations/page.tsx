@@ -23,7 +23,7 @@ export default async function LocationPage() {
   const data = await getDefaultLocation(currentOrg.id)
 
   return (
-    <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
+    <div className="mx-auto max-w-2xl grow px-4 sm:px-6 md:px-0">
       <PageSubtitle>
         <PageSubtitle.Icon icon={MapPin} />
         <PageSubtitle.Title>Sucursal</PageSubtitle.Title>

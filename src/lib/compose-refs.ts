@@ -56,7 +56,7 @@ function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
  */
 function useComposedRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
   // We use useMemo instead of useCallback to avoid dependency array issues with rest params
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- refs changes should trigger recomputation
+  // oxlint-disable-next-line react/exhaustive-deps -- refs changes should trigger recomputation
   return React.useMemo(() => composeRefs(...refs), refs)
 }
 

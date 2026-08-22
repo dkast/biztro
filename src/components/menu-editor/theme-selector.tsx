@@ -73,7 +73,7 @@ function ThemedSelector<T>({
 
   return isMobile ? (
     <DrawerNested>
-      <DrawerTrigger asChild>{triggerContent}</DrawerTrigger>
+      <DrawerTrigger render={triggerContent} />
       <DrawerContent className="px-4 pb-8">
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
@@ -211,7 +211,7 @@ export default function ThemeSelector({
         }
       }
     }
-  }, [fontThemeId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [fontThemeId]) // oxlint-disable-line react/exhaustive-deps
 
   const updateColorTheme = (colorThemeId: string) => {
     const selectedTheme = colorThemes.find(theme => theme.id === colorThemeId)
@@ -303,7 +303,7 @@ export default function ThemeSelector({
 
   useEffect(() => {
     updateColorTheme(colorThemeId)
-  }, [colorThemeId, colorThemes]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [colorThemeId, colorThemes]) // oxlint-disable-line react/exhaustive-deps
 
   // Update the menu theme
   const {
@@ -548,7 +548,6 @@ export default function ThemeSelector({
                       const index = colorThemes.findIndex(
                         t => t.id === theme.id
                       )
-                      // eslint-disable-next-line react-hooks/immutability
                       colorThemes[index] = theme
                       // Manually update the theme
                       setColorThemeId(colorThemeId)

@@ -231,7 +231,7 @@ export default function ContainerSettings() {
       <EditorSettingRow label="Fondo">
         {isMobile ? (
           <Drawer open={open} onOpenChange={setOpen}>
-            <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
+            <DrawerTrigger render={triggerButton} />
             <DrawerContent className="max-h-[90vh]">
               <DrawerHeader className="px-6 py-4">
                 <DrawerTitle>Seleccionar fondo</DrawerTitle>

@@ -70,6 +70,7 @@ import {
   useSidebar
 } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
+import type { getPaymentFeatureState } from "@/server/actions/payments/queries"
 import { switchOrganization } from "@/server/actions/user/mutations"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import { authClient } from "@/lib/auth-client"
@@ -92,7 +93,8 @@ const navigation: NavigationItem[] = [
     items: [
       { title: "Ventas", url: "/dashboard/sales" },
       { title: "Punto de venta", url: "/dashboard/sales/new" },
-      { title: "Cierre diario", url: "/dashboard/sales/closing" }
+      { title: "Cierre diario", url: "/dashboard/sales/closing" },
+      { title: "Cartera", url: "/dashboard/sales/receivables" }
     ]
   },
   {
@@ -113,6 +115,7 @@ const navigation: NavigationItem[] = [
     items: [
       { title: "General", url: "/dashboard/settings" },
       { title: "Sucursal", url: "/dashboard/settings/locations" },
+      { title: "Pagos", url: "/dashboard/settings/payments" },
       { title: "Miembros", url: "/dashboard/settings/members" },
       { title: "Suscripción", url: "/dashboard/settings/billing" }
     ]
@@ -120,12 +123,27 @@ const navigation: NavigationItem[] = [
 ]
 
 export default function AppSidebar({
-  promiseOrganization
+  promiseOrganization,
+  promisePaymentFeatureState
 }: {
   promiseOrganization: ReturnType<typeof getCurrentOrganization>
+  promisePaymentFeatureState: ReturnType<typeof getPaymentFeatureState>
 }) {
   const currentOrg = use(promiseOrganization)
+  const paymentFeatureState = use(promisePaymentFeatureState)
   const { isMobile, setOpenMobile } = useSidebar()
+  const visibleNavigation = navigation.map(item => {
+    if (item.title !== "Ventas" || !item.items) return item
+
+    return {
+      ...item,
+      items: item.items.filter(
+        subItem =>
+          subItem.title !== "Cartera" ||
+          Boolean(paymentFeatureState?.hasCreditHistory)
+      )
+    }
+  })
 
   const closeMobileSidebar = () => {
     if (isMobile) setOpenMobile(false)
@@ -138,7 +156,7 @@ export default function AppSidebar({
         <SidebarGroup>
           <SidebarContent>
             <SidebarMenu>
-              {navigation.map(item => (
+              {visibleNavigation.map(item => (
                 <Fragment key={item.title}>
                   {item.items ? (
                     <Collapsible

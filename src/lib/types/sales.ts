@@ -2,6 +2,15 @@ import { z } from "zod/v4"
 
 import type { Currency } from "@/lib/currency"
 import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
+import {
+  paymentAmountSchema,
+  paymentMethodSchema,
+  type PaymentInput,
+  type PaymentMethod,
+  type PaymentOrigin,
+  type PaymentStatus,
+  type SalePaymentHistoryItem
+} from "@/lib/types/payments"
 
 export const salesOrderTypeValues = ["DINE_IN", "TAKEOUT", "DELIVERY"] as const
 
@@ -65,7 +74,17 @@ export const saleCartItemSchema = z.object({
 
 export const completeSaleSchema = z.object({
   orderType: salesOrderTypeSchema.default("DINE_IN"),
-  items: z.array(saleCartItemSchema).min(1, "Agrega al menos un producto")
+  items: z.array(saleCartItemSchema).min(1, "Agrega al menos un producto"),
+  customerId: z.string().min(1).optional(),
+  payments: z.array(
+    z.object({
+      method: paymentMethodSchema,
+      amount: paymentAmountSchema,
+      reference: z.string().trim().max(120).optional(),
+      notes: z.string().trim().max(500).optional()
+    })
+  ),
+  acceptsCredit: z.boolean().default(false)
 })
 
 export const voidSaleSchema = z
@@ -132,6 +151,7 @@ export type SalesRecentSale = {
   createdAt: string
   orderType: SalesOrderType
   status: SaleStatus
+  paymentStatus: PaymentStatus
   items: number
   total: number
 }
@@ -146,6 +166,31 @@ export type SalesChartBucket = {
   label: string
   revenue: number
   orders: number
+  sales: number
+  collected: number
+  paidAtSale: number
+  creditGenerated: number
+  receivableCollection: number
+}
+
+export type SalesCollectionBreakdown = {
+  method: PaymentMethod | "LEGACY"
+  origin: PaymentOrigin
+  amount: number
+  amountMinor: number
+  payments: number
+}
+
+export type SalesCollectionChartBucket = {
+  label: string
+} & Record<PaymentMethod | "LEGACY", number>
+
+export type SalesFinancialMetrics = {
+  sales: number
+  collected: number
+  paidAtSale: number
+  creditGenerated: number
+  receivableCollection: number
 }
 
 export type SalesDashboardData = {
@@ -156,9 +201,28 @@ export type SalesDashboardData = {
   periodRevenue: number
   periodOrders: number
   periodAverageTicket: number
+  todaySales: number
+  todayCollected: number
+  todayPaidAtSale: number
+  todayCreditGenerated: number
+  todayReceivableCollection: number
+  periodSales: number
+  periodCollected: number
+  periodPaidAtSale: number
+  periodCreditGenerated: number
+  periodReceivableCollection: number
+  collectionBreakdown: SalesCollectionBreakdown[]
+  collectionChart: SalesCollectionChartBucket[]
+  hasCreditHistory: boolean
   chart: SalesChartBucket[]
   bestSellers: SalesBestSeller[]
   recentSales: SalesRecentSale[]
+  receivables: Array<{
+    currency: Currency
+    balanceMinor: number
+    openSales: number
+    customers: number
+  }>
 }
 
 export type SalesClosingHourlyBucket = {
@@ -166,14 +230,29 @@ export type SalesClosingHourlyBucket = {
   label: string
   todayOrders: number
   todayRevenue: number
+  todaySales: number
+  todayCollected: number
+  todayPaidAtSale: number
+  todayCreditGenerated: number
+  todayReceivableCollection: number
   previousOrders: number
   previousRevenue: number
+  previousSales: number
+  previousCollected: number
+  previousPaidAtSale: number
+  previousCreditGenerated: number
+  previousReceivableCollection: number
 }
 
 export type SalesClosingComparison = {
   revenue: number
   orders: number
   averageTicket: number
+  sales: number
+  collected: number
+  paidAtSale: number
+  creditGenerated: number
+  receivableCollection: number
 }
 
 export type SalesClosingData = {
@@ -183,6 +262,14 @@ export type SalesClosingData = {
   todayRevenue: number
   todayOrders: number
   todayAverageTicket: number
+  todaySales: number
+  todayCollected: number
+  todayPaidAtSale: number
+  todayCreditGenerated: number
+  todayReceivableCollection: number
+  collectionBreakdown: SalesCollectionBreakdown[]
+  collectionChart: SalesCollectionChartBucket[]
+  hasCreditHistory: boolean
   voidedSales: number
   voidedAmount: number
   topProduct: SalesBestSeller | null
@@ -204,6 +291,10 @@ export type SaleDetail = {
   orderType: SalesOrderType
   currency: Currency
   total: number
+  paidMinor: number
+  balanceMinor: number
+  paymentStatus: PaymentStatus
+  customer: SalesActor | null
   createdAt: string
   completedAt: string | null
   completedBy: SalesActor | null
@@ -218,4 +309,7 @@ export type SaleDetail = {
     quantity: number
     lineTotal: number
   }>
+  payments: SalePaymentHistoryItem[]
 }
+
+export type CheckoutPaymentInput = PaymentInput

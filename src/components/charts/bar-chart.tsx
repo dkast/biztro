@@ -4,9 +4,11 @@ import {
   memo,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type ReactElement,
   type ReactNode
 } from "react"
@@ -18,6 +20,7 @@ import type { Transition } from "motion/react"
 import { cn } from "@/lib/utils"
 import { DEFAULT_ANIMATION_EASING } from "./animation"
 import type { BarProps } from "./bar"
+import { resolveBarDomain } from "./bar-chart-domain"
 import {
   forEachChartChild,
   isChartClipPassthrough,
@@ -74,6 +77,8 @@ export interface BarChartProps {
   revealSignature?: string
   /** Aspect ratio as "width / height". Default: "2 / 1" */
   aspectRatio?: string
+  /** Aspect ratio below the `sm` breakpoint. Defaults to `aspectRatio`. */
+  mobileAspectRatio?: string
   /** Additional class name for the container */
   className?: string
   /** Gap between bar groups as a fraction of band width (0-1). Default: 0.2 */
@@ -189,6 +194,7 @@ const ChartCore = memo(function ChartCore({
   onPhaseChange,
   status
 }: ChartInnerProps) {
+  const plotClipId = `bar-chart-clip-${useId().replaceAll(":", "")}`
   const { tooltipData, setTooltipData, scheduleTooltip, clearTooltip } =
     useScheduledTooltip<TooltipData>()
   const [isLoaded, setIsLoaded] = useState(false)
@@ -245,34 +251,12 @@ const ChartCore = memo(function ChartCore({
 
   // Compute max value considering stacking
   const maxValue = useMemo(() => {
-    if (stacked) {
-      // For stacked bars, sum all values at each data point
-      let max = 0
-      for (const d of data) {
-        let sum = 0
-        for (const line of lines) {
-          const value = d[line.dataKey]
-          if (typeof value === "number") {
-            sum += value
-          }
-        }
-        if (sum > max) {
-          max = sum
-        }
-      }
-      return max || 100
-    }
-    // For grouped bars, find max single value
-    let max = 0
-    for (const line of lines) {
-      for (const d of data) {
-        const value = d[line.dataKey]
-        if (typeof value === "number" && value > max) {
-          max = value
-        }
-      }
-    }
-    return max || 100
+    const [, domainMax] = resolveBarDomain(
+      data,
+      lines.map(line => line.dataKey),
+      stacked
+    )
+    return domainMax / 1.1
   }, [data, lines, stacked])
 
   // Value scale (linear) - for the value axis
@@ -293,20 +277,9 @@ const ChartCore = memo(function ChartCore({
       lines,
       data,
       innerHeight,
-      resolveDomain: dataKeys => {
-        let max = 0
-        for (const d of data) {
-          for (const key of dataKeys) {
-            const value = d[key]
-            if (typeof value === "number" && value > max) {
-              max = value
-            }
-          }
-        }
-        return [0, (max || 100) * 1.1]
-      }
+      resolveDomain: dataKeys => resolveBarDomain(data, dataKeys, stacked)
     })
-  }, [data, innerHeight, isHorizontal, lines, valueScale])
+  }, [data, innerHeight, isHorizontal, lines, stacked, valueScale])
 
   const primaryYScale = getPrimaryYScale(yScales, valueScale)
 
@@ -602,8 +575,12 @@ const ChartCore = memo(function ChartCore({
         height={height}
         width={width}
       >
-        {/* Gradient and pattern definitions */}
-        {defsChildren.length > 0 && <defs>{defsChildren}</defs>}
+        <defs>
+          <clipPath id={plotClipId}>
+            <rect height={innerHeight} width={innerWidth} x={0} y={0} />
+          </clipPath>
+          {defsChildren}
+        </defs>
 
         <rect fill="transparent" height={height} width={width} x={0} y={0} />
 
@@ -624,19 +601,21 @@ const ChartCore = memo(function ChartCore({
           />
 
           {renderKeyedChartLayers(clipExcludedChildren)}
-          {renderKeyedChartLayers(underlayChildren)}
-          {status === "loading" ? (
-            <BarLoadingSkeleton
-              barCount={data.length || FALLBACK_LOADING_BARS}
-              innerHeight={innerHeight}
-              innerWidth={innerWidth}
-            />
-          ) : (
-            renderKeyedChartLayers(preOverlayChildren)
-          )}
+          <g clipPath={`url(#${plotClipId})`}>
+            {renderKeyedChartLayers(underlayChildren)}
+            {status === "loading" ? (
+              <BarLoadingSkeleton
+                barCount={data.length || FALLBACK_LOADING_BARS}
+                innerHeight={innerHeight}
+                innerWidth={innerWidth}
+              />
+            ) : (
+              renderKeyedChartLayers(preOverlayChildren)
+            )}
 
-          {/* Markers rendered last so they're on top for interaction */}
-          {renderKeyedChartLayers(postOverlayChildren)}
+            {/* Markers rendered last so they're on top for interaction */}
+            {renderKeyedChartLayers(postOverlayChildren)}
+          </g>
         </g>
       </svg>
     </ChartProvider>
@@ -652,6 +631,7 @@ export function BarChart({
   enterTransition,
   revealSignature,
   aspectRatio = "2 / 1",
+  mobileAspectRatio,
   className = "",
   barGap = 0.2,
   barWidth,
@@ -664,12 +644,20 @@ export function BarChart({
 }: BarChartProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const margin = { ...DEFAULT_MARGIN, ...marginProp }
+  const chartStyles = {
+    "--chart-aspect-ratio": mobileAspectRatio ?? aspectRatio,
+    "--chart-desktop-aspect-ratio": aspectRatio
+  } as CSSProperties
 
   return (
     <div
-      className={cn("relative w-full overflow-visible", className)}
+      className={cn(
+        `relative aspect-(--chart-aspect-ratio) w-full overflow-visible
+        sm:aspect-(--chart-desktop-aspect-ratio)`,
+        className
+      )}
       ref={containerRef}
-      style={{ aspectRatio }}
+      style={chartStyles}
     >
       <ParentSize debounceTime={10}>
         {({ width, height }) => (

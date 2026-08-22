@@ -1,6 +1,7 @@
 import { Banknote } from "lucide-react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { connection } from "next/server"
 import { createLoader, parseAsStringEnum } from "nuqs/server"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -30,6 +31,8 @@ const loadSalesDashboardSearchParams = createLoader({
 export default async function SalesPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  await connection()
+
   const [{ period }, currentOrg, isPro] = await Promise.all([
     loadSalesDashboardSearchParams(props.searchParams),
     getCurrentOrganization(),

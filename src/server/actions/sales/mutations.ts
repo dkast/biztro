@@ -4,8 +4,10 @@ import { updateTag } from "next/cache"
 
 import { isProMember } from "@/server/actions/user/queries"
 import { type Currency } from "@/lib/currency"
+import { currencyToMinorUnits, decimalToMinorUnits } from "@/lib/payments"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
+import { isPaymentMethodAccepted } from "@/lib/types/payments"
 import {
   completeSaleSchema,
   voidReasonLabels,
@@ -166,10 +168,91 @@ export const completeSale = authMemberActionClient
       salesItems.reduce((sum, item) => sum + item.lineTotal, 0)
     )
     const total = subtotal
+    const totalMinor = currencyToMinorUnits(total)
     const itemCount = salesItems.reduce((sum, item) => sum + item.quantity, 0)
+    const paymentsMinor = parsedInput.payments.reduce(
+      (sum, payment) => sum + decimalToMinorUnits(payment.amount),
+      0
+    )
 
-    const sale = await prisma.$transaction(async tx => {
-      return await tx.sale.create({
+    if (paymentsMinor > totalMinor) {
+      return {
+        failure: {
+          reason: "Los pagos no pueden superar el total de la venta"
+        }
+      }
+    }
+
+    const balanceMinor = totalMinor - paymentsMinor
+
+    if (balanceMinor > 0 && !parsedInput.customerId) {
+      return {
+        failure: {
+          reason: "Selecciona un cliente para registrar saldo a crédito"
+        }
+      }
+    }
+
+    if (balanceMinor > 0 && !parsedInput.acceptsCredit) {
+      return {
+        failure: {
+          reason: "Confirma el saldo a crédito antes de completar la venta"
+        }
+      }
+    }
+
+    const saleResult = await prisma.$transaction(async tx => {
+      const organization = await tx.organization.findUnique({
+        where: { id: organizationId },
+        select: {
+          acceptsCash: true,
+          acceptsCard: true,
+          acceptsTransfer: true,
+          acceptsCodi: true,
+          acceptsVoucher: true,
+          creditEnabled: true
+        }
+      })
+
+      if (!organization) {
+        return { failure: "No se pudo obtener la organización actual" as const }
+      }
+
+      const disabledPayment = parsedInput.payments.find(
+        payment => !isPaymentMethodAccepted(organization, payment.method)
+      )
+
+      if (disabledPayment) {
+        return {
+          failure: "Uno o más métodos de pago no están habilitados" as const
+        }
+      }
+
+      if (balanceMinor > 0 && !organization.creditEnabled) {
+        return {
+          failure:
+            "El crédito no está habilitado para esta organización" as const
+        }
+      }
+
+      if (parsedInput.customerId) {
+        const customer = await tx.customer.findFirst({
+          where: {
+            id: parsedInput.customerId,
+            organizationId
+          },
+          select: { id: true }
+        })
+
+        if (!customer) {
+          return {
+            failure:
+              "El cliente seleccionado no pertenece a esta organización" as const
+          }
+        }
+      }
+
+      const createdSale = await tx.sale.create({
         data: {
           organizationId,
           status: "COMPLETED",
@@ -177,6 +260,7 @@ export const completeSale = authMemberActionClient
           currency: saleCurrency,
           subtotal,
           total,
+          customerId: parsedInput.customerId,
           completedAt: new Date(),
           completedByUserId: member.user.id,
           items: {
@@ -195,15 +279,52 @@ export const completeSale = authMemberActionClient
           items: true
         }
       })
+
+      if (parsedInput.payments.length > 0) {
+        for (const payment of parsedInput.payments) {
+          await tx.payment.create({
+            data: {
+              organizationId,
+              customerId: parsedInput.customerId,
+              currency: saleCurrency,
+              amountMinor: decimalToMinorUnits(payment.amount),
+              method: payment.method,
+              origin: "SALE",
+              reference: payment.reference || null,
+              notes: payment.notes || null,
+              createdByUserId: member.user.id,
+              allocations: {
+                create: {
+                  saleId: createdSale.id,
+                  amountMinor: decimalToMinorUnits(payment.amount)
+                }
+              }
+            }
+          })
+        }
+      }
+
+      return { success: createdSale }
     })
 
+    if ("failure" in saleResult) {
+      return {
+        failure: {
+          reason: saleResult.failure
+        }
+      }
+    }
+
     updateTag(`sales-${organizationId}`)
+    updateTag(`receivables-${organizationId}`)
+    updateTag(`customers-${organizationId}`)
+    if (parsedInput.customerId) updateTag(`customer-${parsedInput.customerId}`)
 
     return {
       success: {
-        id: sale.id,
-        orderType: sale.orderType,
-        total: sale.total,
+        id: saleResult.success.id,
+        orderType: saleResult.success.orderType,
+        total: saleResult.success.total,
         itemCount
       }
     }
@@ -227,19 +348,80 @@ export const voidSale = authMemberActionClient
         ? parsedInput.reasonDetail!.trim()
         : voidReasonLabels[parsedInput.reason]
 
-    const result = await prisma.sale.updateMany({
-      where: {
-        id: parsedInput.saleId,
-        organizationId,
-        status: "COMPLETED"
-      },
-      data: {
-        status: "VOID",
-        voidedAt: new Date(),
-        voidedByUserId: member.user.id,
-        voidReason
+    const result = await prisma.$transaction(async tx => {
+      const activePayments = await tx.payment.findMany({
+        where: {
+          organizationId,
+          status: "ACTIVE",
+          allocations: {
+            some: {
+              saleId: parsedInput.saleId
+            }
+          }
+        },
+        select: {
+          id: true,
+          allocations: {
+            select: {
+              saleId: true
+            }
+          }
+        }
+      })
+
+      const hasSharedActivePayments = activePayments.some(payment =>
+        payment.allocations.some(
+          allocation => allocation.saleId !== parsedInput.saleId
+        )
+      )
+
+      if (hasSharedActivePayments) {
+        return { blocked: true, count: 0 }
       }
+
+      if (activePayments.length > 0) {
+        await tx.payment.updateMany({
+          where: {
+            id: {
+              in: activePayments.map(payment => payment.id)
+            },
+            organizationId,
+            status: "ACTIVE"
+          },
+          data: {
+            status: "VOID",
+            voidedAt: new Date(),
+            voidedByUserId: member.user.id,
+            voidReason
+          }
+        })
+      }
+
+      const update = await tx.sale.updateMany({
+        where: {
+          id: parsedInput.saleId,
+          organizationId,
+          status: "COMPLETED"
+        },
+        data: {
+          status: "VOID",
+          voidedAt: new Date(),
+          voidedByUserId: member.user.id,
+          voidReason
+        }
+      })
+
+      return { blocked: false, count: update.count }
     })
+
+    if (result.blocked) {
+      return {
+        failure: {
+          reason:
+            "Anula primero los pagos activos compartidos con otras ventas antes de anularla"
+        }
+      }
+    }
 
     if (result.count !== 1) {
       return {
@@ -252,6 +434,7 @@ export const voidSale = authMemberActionClient
 
     updateTag(`sales-${organizationId}`)
     updateTag(`sale-${parsedInput.saleId}`)
+    updateTag(`receivables-${organizationId}`)
 
     return {
       success: {
