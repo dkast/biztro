@@ -97,6 +97,7 @@
     "date-fns": "^4.4.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
+    "engine.io": "6.6.7",
     "extract-colors": "^4.2.1",
     "flags": "^4.3.0",
     "funky-shadow": "^0.1.0",
