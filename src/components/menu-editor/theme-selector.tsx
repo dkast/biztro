@@ -79,7 +79,7 @@ function ThemedSelector<T>({
           <DrawerTitle>{title}</DrawerTitle>
         </DrawerHeader>
         <ScrollArea
-          className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y
+          className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade
             h-100"
         >
           <div className="flex flex-col gap-2">
@@ -100,7 +100,7 @@ function ThemedSelector<T>({
       <PopoverContent className="max-w-[250px]">
         <Label className="mb-4 block">{title}</Label>
         <ScrollArea
-          className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y
+          className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade
             h-100"
         >
           <div className="flex h-max flex-col gap-2">

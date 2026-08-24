@@ -363,8 +363,15 @@ export function QuickSaleScreen({
         className="grid gap-6
           lg:grid-cols-[minmax(0,1.25fr)_minmax(260px,420px)]"
       >
-        <section className="min-w-0 space-y-4">
-          <div className="flex flex-col gap-4">
+        <section
+          className="min-w-0 space-y-4 lg:flex lg:max-h-[calc(100svh-7rem)]
+            lg:flex-col lg:gap-4 lg:space-y-0"
+        >
+          <div
+            className="bg-background before:bg-background sticky top-20 z-40
+              flex flex-col gap-4 before:pointer-events-none before:absolute
+              before:inset-x-0 before:-top-4 before:h-4"
+          >
             <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
               <InputGroup className="h-11">
                 <InputGroupInput
@@ -397,14 +404,20 @@ export function QuickSaleScreen({
             />
           </div>
 
-          <ProductGrid
-            products={filteredProducts}
-            cartProductIds={cartProductIds}
-            onSelect={handleProductSelect}
-          />
+          <div
+            key={`${selectedCategory}:${deferredSearch}`}
+            className="no-scrollbar lg:scroll-fade lg:scroll-fade-6 lg:min-h-0
+              lg:flex-1 lg:overflow-y-auto"
+          >
+            <ProductGrid
+              products={filteredProducts}
+              cartProductIds={cartProductIds}
+              onSelect={handleProductSelect}
+            />
+          </div>
         </section>
 
-        <aside className="h-fit xl:sticky xl:top-24">
+        <aside className="h-fit lg:sticky lg:top-24">
           <Card
             className="flex max-h-[calc(100vh-7rem)] flex-col overflow-hidden"
           >
@@ -850,7 +863,8 @@ function SaleCart({
   return (
     <div
       ref={scrollContainerRef}
-      className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto pr-1"
+      className="scroll-fade scroll-fade-6 flex min-h-0 flex-1 flex-col gap-2
+        overflow-auto pr-1"
     >
       <AnimatePresence initial={false}>
         {cart.map(item => (
