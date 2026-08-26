@@ -377,8 +377,8 @@ export function QuickSaleScreen({
         >
           <div
             className="bg-background before:bg-background sticky top-20 z-40
-              flex flex-col gap-4 before:pointer-events-none before:absolute
-              before:inset-x-0 before:-top-4 before:h-4"
+              -mx-1 flex flex-col gap-4 px-1 pb-1 before:pointer-events-none
+              before:absolute before:inset-x-0 before:-top-4 before:h-4 sm:pb-0"
           >
             <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
               <InputGroup className="h-11">
@@ -880,7 +880,7 @@ function MobileSaleCart({
           </span>
           <span className="flex shrink-0 items-center gap-2">
             <span className="text-base font-semibold tabular-nums">
-              {formatPrice(subtotal, currency)}
+              <TextMorph>{formatPrice(subtotal, currency)}</TextMorph>
             </span>
             <ChevronUp className="size-4 opacity-70" aria-hidden />
           </span>
