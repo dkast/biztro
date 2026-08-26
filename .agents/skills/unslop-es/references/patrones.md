@@ -313,13 +313,22 @@ En español la raya tiene usos legítimos que en inglés no existen:
 Regla adaptada: máximo 1 raya por párrafo en prosa no narrativa. Dos o más en un párrafo =
 flag duro. Uso dramático antes de revelación ("Y entonces—lo vio.") = flag duro.
 
-### Dos puntos de revelación
+### Dos puntos
+
+Los dos puntos son legítimos en español para enumeraciones tras cláusula completa,
+presentaciones de lista, horarios y citas. El tell no es el signo sino la densidad:
+la IA lo usa como muletilla estructural para empalmar cualquier dos ideas.
 
 | Patrón | Severidad |
 |--------|-----------|
-| "La clave es:" / "La respuesta es:" antes de revelación | hard |
-| "El resultado:" / "La conclusión:" | hard |
-| Múltiples dos puntos por párrafo | soft |
+| Dos puntos antes de revelación dramática: "La clave es:" / "El resultado:" | hard |
+| Dos puntos tras cláusula incompleta ("Esto es útil si:") | hard (además es error gramatical) |
+| Más de uno por párrafo | soft |
+| Densidad documental alta (>1 cada ~120 palabras, excluyendo intros de enumeración legítimas) | soft |
+
+**Arreglo de densidad**: convierte a oraciones separadas ("X. Y.") o funde con el
+verbo ("antes de publicar: agregar fotos..." > "puedes agregar fotos... antes de
+publicar"). Conserva los que introducen enumeraciones reales tras cláusula completa.
 
 ### Exclamaciones
 

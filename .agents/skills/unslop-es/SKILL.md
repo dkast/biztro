@@ -75,6 +75,8 @@ los hallazgos por familia con severidad (`hard`/`soft`) y cita exacta. Verifica 
 a nivel documento:
 
 - Ritmo uniforme: oraciones todas de longitud parecida; ráfagas de párrafos de una línea.
+- Puntuación estructural acumulada: dos puntos como muletilla de empalme (>1 cada ~120
+  palabras, salvo enumeraciones legítimas), rayas y exclamaciones repetidas.
 - Aperturas conectivas repetidas: párrafos que empiezan sistemáticamente con
   "Además," / "Por otro lado," / "En este sentido," / "Asimismo,".
 - Estructura plantilla: historia → significancia → desafíos → perspectivas de futuro;
