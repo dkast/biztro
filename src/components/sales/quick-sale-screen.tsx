@@ -173,7 +173,7 @@ export function QuickSaleScreen({
   const [search, setSearch] = useState("")
   const deferredSearch = useDeferredValue(search)
   const isMobile = useIsMobile()
-  const scrollDirection = useScrollDirection()
+  const scrollDirection = useScrollDirection(8, true)
   const shouldReduceMotion = useReducedMotion()
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false)
   const [isSearchFocused, setIsSearchFocused] = useState(false)
