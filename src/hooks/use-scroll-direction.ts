@@ -30,8 +30,12 @@ export default function useScrollDirection(threshold = 5): ScrollDirection {
         const diff = y - lastY.current
 
         if (Math.abs(diff) < threshold) {
-          setDirection("idle")
-        } else if (diff > 0) {
+          ticking.current = false
+          rafId = null
+          return
+        }
+
+        if (diff > 0) {
           setDirection("down")
         } else {
           setDirection("up")

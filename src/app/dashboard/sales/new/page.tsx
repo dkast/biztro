@@ -42,6 +42,7 @@ export default async function NewSalePage() {
     >
       {!isPro && <SalesProBanner />}
       <QuickSaleScreen
+        key={currentOrg.id}
         catalog={catalog}
         isPro={isPro}
         customers={customers}

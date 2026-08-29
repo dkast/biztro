@@ -18,7 +18,7 @@ import {
   Volume2,
   VolumeX
 } from "lucide-react"
-import { AnimatePresence, motion } from "motion/react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
@@ -58,6 +58,8 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Swap, SwapOff, SwapOn } from "@/components/ui/swap"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { useIsMobile } from "@/hooks/use-mobile"
+import useScrollDirection from "@/hooks/use-scroll-direction"
 import { formatPrice } from "@/lib/currency"
 import type { CustomerOption } from "@/lib/types/customers"
 import type { PaymentMethod } from "@/lib/types/payments"
@@ -170,6 +172,11 @@ export function QuickSaleScreen({
   const router = useRouter()
   const [search, setSearch] = useState("")
   const deferredSearch = useDeferredValue(search)
+  const isMobile = useIsMobile()
+  const scrollDirection = useScrollDirection()
+  const shouldReduceMotion = useReducedMotion()
+  const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false)
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [orderType, setOrderType] = useState<SalesOrderType>("DINE_IN")
   const [cart, setCart] = useState<CartLine[]>([])
@@ -186,6 +193,18 @@ export function QuickSaleScreen({
     setEnabled(!isMuted)
     bind()
   }, [])
+
+  useEffect(() => {
+    if (scrollDirection === "up") {
+      setIsMobileSearchVisible(true)
+    } else if (
+      scrollDirection === "down" &&
+      !isSearchFocused &&
+      search.length === 0
+    ) {
+      setIsMobileSearchVisible(false)
+    }
+  }, [isSearchFocused, scrollDirection, search.length])
 
   const handleSoundMuteChange = (isMuted: boolean) => {
     setIsSoundMuted(isMuted)
@@ -365,6 +384,10 @@ export function QuickSaleScreen({
     setSelectedProduct(null)
   }
 
+  const isSearchVisible =
+    isMobileSearchVisible || isSearchFocused || search.length > 0
+  const shouldShowSearch = !isMobile || isSearchVisible
+
   return (
     <>
       <div
@@ -372,28 +395,58 @@ export function QuickSaleScreen({
           lg:grid-cols-[minmax(0,1.25fr)_minmax(260px,420px)]"
       >
         <section
-          className="min-w-0 space-y-4 lg:flex lg:max-h-[calc(100svh-7rem)]
-            lg:flex-col lg:gap-4 lg:space-y-0"
+          className="min-w-0 space-y-4 [overflow-anchor:none] lg:flex
+            lg:max-h-[calc(100svh-7rem)] lg:flex-col lg:gap-4 lg:space-y-0"
         >
           <div
             className="bg-background before:bg-background sticky top-20 z-40
               -mx-1 flex flex-col gap-4 px-1 pb-1 before:pointer-events-none
               before:absolute before:inset-x-0 before:-top-4 before:h-4 sm:pb-0"
           >
-            <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
-              <InputGroup className="h-11">
-                <InputGroupInput
-                  value={search}
-                  onChange={event => setSearch(event.target.value)}
-                  placeholder="Buscar producto"
-                  inputMode="search"
-                  enterKeyHint="search"
-                  className="h-11 text-base"
-                />
-                <InputGroupAddon>
-                  <Search aria-hidden className="text-muted-foreground" />
-                </InputGroupAddon>
-              </InputGroup>
+            <div
+              className="grid gap-0 md:grid-cols-[minmax(0,1fr)_auto] md:gap-4"
+            >
+              <motion.div
+                initial={false}
+                animate={{
+                  height: shouldShowSearch ? "auto" : 0,
+                  marginBottom: isMobile && shouldShowSearch ? 16 : 0,
+                  opacity: shouldShowSearch ? 1 : 0,
+                  y: shouldShowSearch ? 0 : -8
+                }}
+                transition={
+                  shouldReduceMotion
+                    ? { duration: 0 }
+                    : {
+                        height: { duration: 0.22, ease: [0.16, 1, 0.3, 1] },
+                        marginBottom: {
+                          duration: 0.22,
+                          ease: [0.16, 1, 0.3, 1]
+                        },
+                        opacity: { duration: 0.14, ease: "easeOut" },
+                        y: { duration: 0.18, ease: "easeOut" }
+                      }
+                }
+                aria-hidden={!shouldShowSearch}
+                inert={!shouldShowSearch ? true : undefined}
+                className="overflow-hidden"
+              >
+                <InputGroup className="h-11">
+                  <InputGroupInput
+                    value={search}
+                    onChange={event => setSearch(event.target.value)}
+                    onFocus={() => setIsSearchFocused(true)}
+                    onBlur={() => setIsSearchFocused(false)}
+                    placeholder="Buscar producto"
+                    inputMode="search"
+                    enterKeyHint="search"
+                    className="h-11 text-base"
+                  />
+                  <InputGroupAddon>
+                    <Search aria-hidden className="text-muted-foreground" />
+                  </InputGroupAddon>
+                </InputGroup>
+              </motion.div>
               <div
                 className="flex items-center justify-between gap-3
                   md:justify-end"
@@ -676,7 +729,7 @@ function ProductGrid({
     return (
       <Card>
         <CardContent className="p-6">
-          <Empty className="min-h-144">
+          <Empty className="min-h-120">
             <EmptyHeader>
               <EmptyMedia variant="icon">
                 <Search />
@@ -735,7 +788,10 @@ function ProductCard({
             : "hover:inset-ring-foreground/20 hover:bg-accent/40"
         )}
       >
-        <div className="bg-muted relative aspect-3/2 overflow-hidden">
+        <div
+          className="bg-muted relative aspect-video overflow-hidden
+            sm:aspect-3/2"
+        >
           {product.image ? (
             <Image
               src={product.image}
@@ -773,7 +829,10 @@ function ProductCard({
           <p className="line-clamp-2 text-sm leading-snug font-semibold">
             {product.name}
           </p>
-          <p className="text-foreground text-sm font-medium tabular-nums">
+          <p
+            className="text-foreground hidden text-sm font-medium tabular-nums
+              sm:block"
+          >
             {product.priceLabel}
           </p>
         </CardContent>
