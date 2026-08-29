@@ -10,8 +10,15 @@ import {
 } from "react"
 import toast from "react-hot-toast"
 import { bind, play, setEnabled } from "cuelume"
-import { Search, ShoppingBag, Trash2, Volume2, VolumeX } from "lucide-react"
-import { AnimatePresence, motion } from "motion/react"
+import {
+  ChevronUp,
+  Search,
+  ShoppingBag,
+  Trash2,
+  Volume2,
+  VolumeX
+} from "lucide-react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
@@ -21,6 +28,14 @@ import { SaleCheckoutDialog } from "@/components/sales/sale-checkout-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle
+} from "@/components/ui/drawer"
 import {
   Empty,
   EmptyDescription,
@@ -41,15 +56,10 @@ import {
   NumberInputInput
 } from "@/components/ui/number-input"
 import { Separator } from "@/components/ui/separator"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle
-} from "@/components/ui/sheet"
 import { Swap, SwapOff, SwapOn } from "@/components/ui/swap"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { useIsMobile } from "@/hooks/use-mobile"
+import useScrollDirection from "@/hooks/use-scroll-direction"
 import { formatPrice } from "@/lib/currency"
 import type { CustomerOption } from "@/lib/types/customers"
 import type { PaymentMethod } from "@/lib/types/payments"
@@ -162,6 +172,11 @@ export function QuickSaleScreen({
   const router = useRouter()
   const [search, setSearch] = useState("")
   const deferredSearch = useDeferredValue(search)
+  const isMobile = useIsMobile()
+  const scrollDirection = useScrollDirection(8, true)
+  const shouldReduceMotion = useReducedMotion()
+  const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false)
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [orderType, setOrderType] = useState<SalesOrderType>("DINE_IN")
   const [cart, setCart] = useState<CartLine[]>([])
@@ -178,6 +193,18 @@ export function QuickSaleScreen({
     setEnabled(!isMuted)
     bind()
   }, [])
+
+  useEffect(() => {
+    if (scrollDirection === "up") {
+      setIsMobileSearchVisible(true)
+    } else if (
+      scrollDirection === "down" &&
+      !isSearchFocused &&
+      search.length === 0
+    ) {
+      setIsMobileSearchVisible(false)
+    }
+  }, [isSearchFocused, scrollDirection, search.length])
 
   const handleSoundMuteChange = (isMuted: boolean) => {
     setIsSoundMuted(isMuted)
@@ -357,28 +384,69 @@ export function QuickSaleScreen({
     setSelectedProduct(null)
   }
 
+  const isSearchVisible =
+    isMobileSearchVisible || isSearchFocused || search.length > 0
+  const shouldShowSearch = !isMobile || isSearchVisible
+
   return (
     <>
       <div
-        className="grid gap-6
+        className="grid gap-6 pb-24 md:pb-0
           lg:grid-cols-[minmax(0,1.25fr)_minmax(260px,420px)]"
       >
-        <section className="min-w-0 space-y-4">
-          <div className="flex flex-col gap-4">
-            <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto]">
-              <InputGroup className="h-11">
-                <InputGroupInput
-                  value={search}
-                  onChange={event => setSearch(event.target.value)}
-                  placeholder="Buscar producto"
-                  inputMode="search"
-                  enterKeyHint="search"
-                  className="h-11 text-base"
-                />
-                <InputGroupAddon>
-                  <Search aria-hidden className="text-muted-foreground" />
-                </InputGroupAddon>
-              </InputGroup>
+        <section
+          className="min-w-0 space-y-4 [overflow-anchor:none] lg:flex
+            lg:max-h-[calc(100svh-7rem)] lg:flex-col lg:gap-4 lg:space-y-0"
+        >
+          <div
+            className="bg-background before:bg-background sticky top-20 z-40
+              -mx-1 flex flex-col gap-4 px-1 pb-1 before:pointer-events-none
+              before:absolute before:inset-x-0 before:-top-4 before:h-4 sm:pb-0"
+          >
+            <div
+              className="grid gap-0 md:grid-cols-[minmax(0,1fr)_auto] md:gap-4"
+            >
+              <motion.div
+                initial={false}
+                animate={{
+                  height: shouldShowSearch ? "auto" : 0,
+                  marginBottom: isMobile && shouldShowSearch ? 16 : 0,
+                  opacity: shouldShowSearch ? 1 : 0,
+                  y: shouldShowSearch ? 0 : -8
+                }}
+                transition={
+                  shouldReduceMotion
+                    ? { duration: 0 }
+                    : {
+                        height: { duration: 0.22, ease: [0.16, 1, 0.3, 1] },
+                        marginBottom: {
+                          duration: 0.22,
+                          ease: [0.16, 1, 0.3, 1]
+                        },
+                        opacity: { duration: 0.14, ease: "easeOut" },
+                        y: { duration: 0.18, ease: "easeOut" }
+                      }
+                }
+                aria-hidden={!shouldShowSearch}
+                inert={!shouldShowSearch ? true : undefined}
+                className="overflow-hidden"
+              >
+                <InputGroup className="h-11">
+                  <InputGroupInput
+                    value={search}
+                    onChange={event => setSearch(event.target.value)}
+                    onFocus={() => setIsSearchFocused(true)}
+                    onBlur={() => setIsSearchFocused(false)}
+                    placeholder="Buscar producto"
+                    inputMode="search"
+                    enterKeyHint="search"
+                    className="h-11 text-base"
+                  />
+                  <InputGroupAddon>
+                    <Search aria-hidden className="text-muted-foreground" />
+                  </InputGroupAddon>
+                </InputGroup>
+              </motion.div>
               <div
                 className="flex items-center justify-between gap-3
                   md:justify-end"
@@ -397,14 +465,20 @@ export function QuickSaleScreen({
             />
           </div>
 
-          <ProductGrid
-            products={filteredProducts}
-            cartProductIds={cartProductIds}
-            onSelect={handleProductSelect}
-          />
+          <div
+            key={`${selectedCategory}:${deferredSearch}`}
+            className="no-scrollbar lg:scroll-fade lg:scroll-fade-6 lg:min-h-0
+              lg:flex-1 lg:overflow-y-auto"
+          >
+            <ProductGrid
+              products={filteredProducts}
+              cartProductIds={cartProductIds}
+              onSelect={handleProductSelect}
+            />
+          </div>
         </section>
 
-        <aside className="h-fit xl:sticky xl:top-24">
+        <aside className="hidden h-fit md:block lg:sticky lg:top-24">
           <Card
             className="flex max-h-[calc(100vh-7rem)] flex-col overflow-hidden"
           >
@@ -485,28 +559,45 @@ export function QuickSaleScreen({
         </aside>
       </div>
 
-      <Sheet
+      <MobileSaleCart
+        cart={cart}
+        currency={currency}
+        subtotal={subtotal}
+        totalItems={totalItems}
+        orderType={orderType}
+        scrollToBottomSignal={cartScrollSignal}
+        isSoundMuted={isSoundMuted}
+        onOrderTypeChange={setOrderType}
+        onQuantityChange={updateQuantity}
+        onClear={clearCart}
+        onSoundMuteChange={handleSoundMuteChange}
+        onCheckout={() => guardSaleCompletion(handleCheckout)}
+      />
+
+      <Drawer
         open={Boolean(selectedProduct)}
         onOpenChange={open => {
           if (!open) setSelectedProduct(null)
         }}
       >
-        <SheetContent
-          side="bottom"
-          className="mx-auto max-h-[82vh] w-full max-w-2xl overflow-auto
-            rounded-t-3xl border-t p-6"
+        <DrawerContent
+          className="mx-auto max-h-[82dvh] max-w-2xl overflow-hidden p-0"
         >
-          <SheetHeader className="text-left">
-            <SheetTitle className="text-2xl">
+          <DrawerHeader className="shrink-0 border-b px-5 pt-2 pb-4 text-left">
+            <DrawerTitle className="text-2xl">
               {selectedProduct?.name}
-            </SheetTitle>
-            <SheetDescription>
+            </DrawerTitle>
+            <DrawerDescription>
               Elige una variante para agregarla a la venta
-            </SheetDescription>
-          </SheetHeader>
+            </DrawerDescription>
+          </DrawerHeader>
 
           {selectedProduct && (
-            <div className="mt-6 flex flex-col gap-4">
+            <div
+              className="scroll-fade scroll-fade-6 flex min-h-0 flex-1 flex-col
+                gap-4 overflow-y-auto px-5 pt-4
+                pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+            >
               <div
                 className="bg-muted/40 text-muted-foreground flex items-center
                   justify-between rounded-2xl p-4"
@@ -560,8 +651,8 @@ export function QuickSaleScreen({
               </div>
             </div>
           )}
-        </SheetContent>
-      </Sheet>
+        </DrawerContent>
+      </Drawer>
 
       <SaleCheckoutDialog
         open={isCheckoutOpen}
@@ -638,7 +729,7 @@ function ProductGrid({
     return (
       <Card>
         <CardContent className="p-6">
-          <Empty className="min-h-144">
+          <Empty className="min-h-120">
             <EmptyHeader>
               <EmptyMedia variant="icon">
                 <Search />
@@ -697,7 +788,10 @@ function ProductCard({
             : "hover:inset-ring-foreground/20 hover:bg-accent/40"
         )}
       >
-        <div className="bg-muted relative aspect-3/2 overflow-hidden">
+        <div
+          className="bg-muted relative aspect-video overflow-hidden
+            sm:aspect-3/2"
+        >
           {product.image ? (
             <Image
               src={product.image}
@@ -735,7 +829,10 @@ function ProductCard({
           <p className="line-clamp-2 text-sm leading-snug font-semibold">
             {product.name}
           </p>
-          <p className="text-foreground text-sm font-medium tabular-nums">
+          <p
+            className="text-foreground hidden text-sm font-medium tabular-nums
+              sm:block"
+          >
             {product.priceLabel}
           </p>
         </CardContent>
@@ -779,16 +876,195 @@ function OrderTypeSelector({
   )
 }
 
+function MobileSaleCart({
+  cart,
+  currency,
+  subtotal,
+  totalItems,
+  orderType,
+  scrollToBottomSignal,
+  isSoundMuted,
+  onOrderTypeChange,
+  onQuantityChange,
+  onClear,
+  onSoundMuteChange,
+  onCheckout
+}: {
+  cart: CartLine[]
+  currency: "MXN" | "USD"
+  subtotal: number
+  totalItems: number
+  orderType: SalesOrderType
+  scrollToBottomSignal: number
+  isSoundMuted: boolean
+  onOrderTypeChange: (value: SalesOrderType) => void
+  onQuantityChange: (key: string, nextQuantity: number) => void
+  onClear: () => void
+  onSoundMuteChange: (isMuted: boolean) => void
+  onCheckout: () => void
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+  const hasItems = cart.length > 0
+
+  const handleCheckout = () => {
+    setIsOpen(false)
+    onCheckout()
+  }
+
+  return (
+    <>
+      <div
+        className="bg-foreground text-background fixed inset-x-3
+          bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 mx-auto flex
+          h-17 max-w-md items-center gap-2 rounded-2xl p-2 pl-4 shadow-lg
+          md:hidden"
+      >
+        <button
+          type="button"
+          className="flex min-w-0 flex-1 items-center justify-between gap-3
+            self-stretch text-left"
+          onClick={() => setIsOpen(true)}
+          aria-label="Ver detalle de la venta"
+          aria-expanded={isOpen}
+        >
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-medium">
+              {hasItems
+                ? `${totalItems} ${totalItems === 1 ? "producto" : "productos"}`
+                : "Venta vacía"}
+            </span>
+            <span className="block truncate text-xs opacity-70">
+              {hasItems ? "Toca para revisar" : "Agrega productos para cobrar"}
+            </span>
+          </span>
+          <span className="flex shrink-0 items-center gap-2">
+            <span className="text-base font-semibold tabular-nums">
+              <TextMorph>{formatPrice(subtotal, currency)}</TextMorph>
+            </span>
+            <ChevronUp className="size-4 opacity-70" aria-hidden />
+          </span>
+        </button>
+        <Button
+          type="button"
+          size="icon"
+          className="size-13 shrink-0 rounded-full"
+          disabled={!hasItems}
+          onClick={handleCheckout}
+          aria-label="Completar venta"
+          data-cuelume-press
+        >
+          <ShoppingBag className="size-5" />
+        </Button>
+      </div>
+
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <DrawerContent
+          className="h-[min(88dvh,46rem)] overflow-hidden p-0 md:hidden"
+        >
+          <DrawerHeader
+            className="flex shrink-0 flex-row items-center justify-between gap-4
+              border-b px-4 py-3 text-left"
+          >
+            <div className="min-w-0">
+              <DrawerTitle>Venta actual</DrawerTitle>
+              <DrawerDescription className="mt-1 truncate">
+                {hasItems
+                  ? `${totalItems} ${totalItems === 1 ? "producto" : "productos"} · ${formatPrice(subtotal, currency)}`
+                  : "Agrega productos para comenzar"}
+              </DrawerDescription>
+            </div>
+            <div className="flex shrink-0 items-center gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-11"
+                onClick={onClear}
+                disabled={!hasItems}
+                aria-label="Limpiar venta"
+                data-cuelume-press
+              >
+                <Trash2 />
+              </Button>
+              <Swap
+                asChild
+                swapped={isSoundMuted}
+                onSwappedChange={onSoundMuteChange}
+                animation="scale"
+              >
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="size-11"
+                  aria-label={
+                    isSoundMuted ? "Activar sonidos" : "Silenciar sonidos"
+                  }
+                >
+                  <SwapOn>
+                    <VolumeX />
+                  </SwapOn>
+                  <SwapOff>
+                    <Volume2 />
+                  </SwapOff>
+                </Button>
+              </Swap>
+            </div>
+          </DrawerHeader>
+
+          <div className="flex min-h-0 flex-1 flex-col gap-4 px-4 py-3">
+            <OrderTypeSelector
+              value={orderType}
+              onValueChange={onOrderTypeChange}
+            />
+            <Separator />
+            <SaleCart
+              cart={cart}
+              currency={currency}
+              scrollToBottomSignal={scrollToBottomSignal}
+              onQuantityChange={onQuantityChange}
+              showRemoveButtons
+            />
+          </div>
+
+          <DrawerFooter
+            className="bg-background shrink-0 gap-3 border-t pt-3
+              pb-[max(1rem,env(safe-area-inset-bottom))]"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-muted-foreground text-sm">Total</span>
+              <span className="text-2xl font-semibold tabular-nums">
+                <TextMorph>{formatPrice(subtotal, currency)}</TextMorph>
+              </span>
+            </div>
+            <Button
+              className="h-12 text-base font-semibold"
+              disabled={!hasItems}
+              onClick={handleCheckout}
+              data-cuelume-press
+            >
+              <ShoppingBag data-icon="inline-start" />
+              <TextMorph>Completar venta</TextMorph>
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    </>
+  )
+}
+
 function SaleCart({
   cart,
   currency,
   scrollToBottomSignal,
-  onQuantityChange
+  onQuantityChange,
+  showRemoveButtons = false
 }: {
   cart: CartLine[]
   currency: "MXN" | "USD"
   scrollToBottomSignal: number
   onQuantityChange: (key: string, nextQuantity: number) => void
+  showRemoveButtons?: boolean
 }) {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const scrollResetTimeoutRef = useRef<number | null>(null)
@@ -850,7 +1126,8 @@ function SaleCart({
   return (
     <div
       ref={scrollContainerRef}
-      className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto pr-1"
+      className="scroll-fade scroll-fade-6 flex min-h-0 flex-1 flex-col gap-2
+        overflow-auto pr-1"
     >
       <AnimatePresence initial={false}>
         {cart.map(item => (
@@ -871,14 +1148,29 @@ function SaleCart({
                 <p className="truncate text-sm font-medium">
                   {item.productName}
                 </p>
-                {item.variantName && (
-                  <p
-                    className="text-muted-foreground truncate text-xs
-                      leading-loose"
-                  >
-                    {item.variantName}
-                  </p>
-                )}
+                <div className="flex min-w-0 shrink-0 items-start gap-1">
+                  {item.variantName && (
+                    <p
+                      className="text-muted-foreground truncate text-xs
+                        leading-loose"
+                    >
+                      {item.variantName}
+                    </p>
+                  )}
+                  {showRemoveButtons && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="-mt-2 -mr-2 size-11 shrink-0"
+                      onClick={() => onQuantityChange(item.key, 0)}
+                      aria-label={`Eliminar ${item.productName}`}
+                      data-cuelume-press
+                    >
+                      <Trash2 />
+                    </Button>
+                  )}
+                </div>
               </div>
 
               <div className="mt-2 flex items-center justify-between gap-3">

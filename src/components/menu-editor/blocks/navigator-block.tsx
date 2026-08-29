@@ -262,8 +262,8 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
               <ul
                 ref={ulRef}
                 className={cn(
-                  "no-scrollbar flex space-x-4 overflow-x-auto",
-                  isOverflowing ? "mask-fade justify-normal" : "justify-center"
+                  "no-scrollbar scroll-fade-x flex space-x-4 overflow-x-auto",
+                  isOverflowing ? "justify-normal" : "justify-center"
                 )}
               >
                 {ids.map((id, index) => (

@@ -6,6 +6,8 @@ import Mdx from "@/components/marketing/mdx"
 import Waitlist from "@/components/marketing/waitlist"
 import { Separator } from "@/components/ui/separator"
 
+export const instant = false
+
 // skipcq: JS-0116
 export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
   return allPosts.map(post => ({

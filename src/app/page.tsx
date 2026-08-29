@@ -15,6 +15,8 @@ import HowItWorks from "@/components/marketing/how-it-works"
 import Navbar from "@/components/marketing/nav-bar"
 import Pricing from "@/components/marketing/pricing"
 
+export const instant = false
+
 export const metadata: Metadata = {
   title: "Biztro | Crea y publica tu menú digital en minutos",
   description:

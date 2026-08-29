@@ -416,7 +416,7 @@ export default function PresetSelector({
             <DrawerTitle>Temas predefinidos</DrawerTitle>
           </DrawerHeader>
           <ScrollArea
-            className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y
+            className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade
               h-150"
           >
             {content}
@@ -434,7 +434,7 @@ export default function PresetSelector({
           <DialogTitle>Temas predefinidos</DialogTitle>
         </DialogHeader>
         <ScrollArea
-          className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y
+          className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade
             h-150"
         >
           {content}
