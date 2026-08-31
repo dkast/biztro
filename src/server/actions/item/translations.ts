@@ -9,6 +9,10 @@ import { isProMember } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
 import {
+  itemTranslationOutputSchema,
+  translationOutputSchema
+} from "@/lib/types/translation-ai"
+import {
   SUPPORTED_LOCALE_CODES,
   SUPPORTED_LOCALES,
   type SupportedLocaleCode
@@ -19,58 +23,9 @@ const translateMenuItemsInputSchema = z.object({
   locale: z.enum(SUPPORTED_LOCALE_CODES)
 })
 
-const categoryTranslationSchema = z.object({
-  categoryId: z.string().describe("Original category ID"),
-  name: z.string().describe("Translated category name")
-})
-
-const translationOutputSchema = z.object({
-  items: z.array(
-    z.object({
-      menuItemId: z.string().describe("Original menu item ID"),
-      name: z.string().describe("Translated item name"),
-      description: z
-        .string()
-        .optional()
-        .describe("Translated item description"),
-      variants: z.array(
-        z.object({
-          variantId: z.string().describe("Original variant ID"),
-          name: z.string().describe("Translated variant name"),
-          description: z
-            .string()
-            .optional()
-            .describe("Translated variant description")
-        })
-      )
-    })
-  ),
-  categories: z.array(categoryTranslationSchema)
-})
-
 const translateMenuItemForLocaleInputSchema = z.object({
   itemId: z.string(),
   locale: z.enum(SUPPORTED_LOCALE_CODES)
-})
-
-const itemTranslationOutputSchema = z.object({
-  item: z
-    .object({
-      menuItemId: z.string().describe("Original menu item ID"),
-      name: z.string().describe("Translated item name"),
-      description: z.string().optional().describe("Translated item description")
-    })
-    .nullable(),
-  variants: z.array(
-    z.object({
-      variantId: z.string().describe("Original variant ID"),
-      name: z.string().describe("Translated variant name"),
-      description: z
-        .string()
-        .optional()
-        .describe("Translated variant description")
-    })
-  )
 })
 
 /**
