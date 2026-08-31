@@ -1,75 +1,70 @@
 ---
 name: Biztro
-description: Digital menu management for hospitality teams — calm, fast, operationally clear.
+description: Calm, precise digital menu operations for hospitality teams.
 colors:
   background: "oklch(1 0 0)"
   foreground: "oklch(0.145 0 0)"
   card: "oklch(1 0 0)"
   card-foreground: "oklch(0.145 0 0)"
-  popover: "oklch(1 0 0)"
-  popover-foreground: "oklch(0.145 0 0)"
-  primary: "oklch(51.1% 0.262 276.966)"
+  primary: "oklch(68.5% 0.169 237.323)"
   primary-foreground: "oklch(0.969 0.016 293.756)"
   secondary: "oklch(0.97 0 0)"
   secondary-foreground: "oklch(0.205 0 0)"
   muted: "oklch(0.97 0 0)"
   muted-foreground: "oklch(0.556 0 0)"
-  accent: "oklch(0.97 0 0)"
-  accent-foreground: "oklch(0.205 0 0)"
   destructive: "oklch(0.577 0.245 27.325)"
   destructive-foreground: "oklch(0.985 0 0)"
   border: "oklch(0.922 0 0)"
   input: "oklch(0.922 0 0)"
-  ring: "oklch(67.3% 0.182 276.935)"
+  ring: "oklch(82.8% 0.111 230.318)"
   sidebar: "oklch(0.985 0.002 247.839)"
   sidebar-foreground: "oklch(43.9% 0 0)"
-  sidebar-border: "oklch(0.922 0 0)"
-  status-success: "oklch(0.696 0.17 162.48)"
-  status-warning: "oklch(0.828 0.189 84.429)"
-  status-info: "oklch(0.6 0.118 184.704)"
-  status-danger: "oklch(0.577 0.245 27.325)"
-  chart-1: "oklch(0.646 0.222 41.116)"
-  chart-2: "oklch(0.6 0.118 184.704)"
-  chart-3: "oklch(0.398 0.07 227.392)"
-  chart-4: "oklch(0.828 0.189 84.429)"
-  chart-5: "oklch(0.769 0.188 70.08)"
+  sidebar-accent: "oklch(0.922 0 0)"
+  sidebar-accent-foreground: "oklch(0.205 0 0)"
+  info: "var(--color-blue-500)"
+  success: "var(--color-emerald-500)"
+  warning: "var(--color-amber-500)"
+  dark-background: "oklch(0.145 0 0)"
+  dark-card: "oklch(0.205 0 0)"
 typography:
   display:
-    fontFamily: "var(--font-be-vietnam-pro), 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif"
-    fontSize: "clamp(1.875rem, 4vw, 2.5rem)"
-    fontWeight: 600
-    lineHeight: 1.1
-    letterSpacing: "-0.02em"
+    fontFamily: "var(--font-be-vietnam-pro), ui-sans-serif, system-ui, sans-serif"
+    fontSize: "2.25rem"
+    fontWeight: 500
+    lineHeight: 1.111
+    letterSpacing: "-0.025em"
     fontVariation: "'wdth' 112.5"
   headline:
-    fontFamily: "var(--font-be-vietnam-pro), 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "var(--font-inter), ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.5rem"
     fontWeight: 600
-    lineHeight: 1.2
-    letterSpacing: "-0.01em"
+    lineHeight: 1.333
+    letterSpacing: "-0.025em"
   title:
-    fontFamily: "var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.25rem"
+    fontFamily: "var(--font-inter), ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1rem"
     fontWeight: 600
-    lineHeight: 1
-    letterSpacing: "-0.01em"
+    lineHeight: 1.25
+    letterSpacing: "normal"
   body:
-    fontFamily: "var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "var(--font-inter), ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 400
-    lineHeight: 1.5
+    lineHeight: 1.429
     letterSpacing: "normal"
   label:
-    fontFamily: "var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "var(--font-inter), ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.75rem"
     fontWeight: 500
-    lineHeight: 1.25
-    letterSpacing: "0.01em"
+    lineHeight: 1.333
+    letterSpacing: "normal"
 rounded:
+  xs: "calc(0.65rem - 6px)"
   sm: "calc(0.65rem - 4px)"
   md: "calc(0.65rem - 2px)"
   lg: "0.65rem"
   xl: "calc(0.65rem + 4px)"
+  2xl: "1rem"
   full: "9999px"
 spacing:
   xs: "0.25rem"
@@ -81,31 +76,21 @@ components:
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.primary-foreground}"
+    typography: "{typography.body}"
     rounded: "{rounded.lg}"
     padding: "0.5rem 1rem"
     height: "2.5rem"
-    typography: "{typography.label}"
-  button-primary-hover:
-    backgroundColor: "{colors.primary}"
   button-outline:
     backgroundColor: "{colors.background}"
     textColor: "{colors.foreground}"
+    typography: "{typography.body}"
     rounded: "{rounded.lg}"
     padding: "0.5rem 1rem"
     height: "2.5rem"
-  button-ghost:
-    backgroundColor: "{colors.background}"
-    textColor: "{colors.foreground}"
-    rounded: "{rounded.lg}"
-    padding: "0.5rem 1rem"
-  button-destructive:
-    backgroundColor: "{colors.destructive}"
-    textColor: "{colors.destructive-foreground}"
-    rounded: "{rounded.lg}"
-    padding: "0.5rem 1rem"
   input-default:
     backgroundColor: "{colors.background}"
     textColor: "{colors.foreground}"
+    typography: "{typography.body}"
     rounded: "{rounded.md}"
     padding: "0.25rem 0.75rem"
     height: "2.25rem"
@@ -117,17 +102,9 @@ components:
   badge-neutral:
     backgroundColor: "{colors.muted}"
     textColor: "{colors.muted-foreground}"
+    typography: "{typography.label}"
     rounded: "{rounded.md}"
     padding: "0.25rem 0.5rem"
-    typography: "{typography.label}"
-  badge-success:
-    backgroundColor: "{colors.status-success}"
-    textColor: "{colors.background}"
-    rounded: "{rounded.md}"
-  badge-danger:
-    backgroundColor: "{colors.status-danger}"
-    textColor: "{colors.destructive-foreground}"
-    rounded: "{rounded.md}"
   sidebar-default:
     backgroundColor: "{colors.sidebar}"
     textColor: "{colors.sidebar-foreground}"
@@ -136,185 +113,193 @@ components:
 
 # Design System: Biztro
 
-## 1. Overview
+## Overview
 
 **Creative North Star: "The Mise en Place"**
 
-Biztro is the digital counterpart to a kitchen's _mise en place_ — every menu item, locale, price, and publish state in its right place, ready to act on the moment service starts. The interface earns trust by being calm, legible, and predictable. Operators come back to it many times per shift; nothing about the surface should compete with the task they're trying to finish.
+Biztro is the digital counterpart to a kitchen's mise en place: every menu item, locale, price, and publishing state has a clear place and is ready when service begins. The interface earns trust through calm density, explicit hierarchy, and familiar controls. It should feel fast without feeling rushed.
 
-The system is restrained by default. Surfaces are flat off‑white (`oklch(1 0 0)` light, `oklch(0.145 0 0)` dark) with subtle 1px borders (`oklch(0.922 0 0)`) doing the structural work that shadows would do in a flashier product. A single indigo primary (`oklch(51.1% 0.262 276.966)`) is reserved for the one action we want operators to commit to on each screen. Status colors (green, amber, red, blue, violet) carry meaning, never decoration; they live almost exclusively in badges, alerts, and the chart palette.
+The visual system is restrained but not anonymous. Clean neutral planes and fine structural lines keep long editing sessions legible, while a clear sky blue identifies commitment, selection, and focus. Warmth comes from the Be Vietnam Pro display face, measured spacing, and hospitality-specific content rather than decoration.
 
-This explicitly rejects the dashboard tropes the category trains for: no neon‑on‑black crypto aesthetic, no gradient hero metrics, no gamified achievement flourishes, no template‑SaaS marketing decoration bolted onto admin screens. Hospitality teams update menus between covers — the screen needs to behave like a clean prep station, not a billboard.
+The system supports light and dark themes as equal operating modes. Color, elevation, and motion communicate state; they do not compete with the work.
 
 **Key Characteristics:**
 
-- Flat surfaces, hairline borders, sparing shadows
-- One indigo accent — used like seasoning, not paint
-- Semantic color reserved for status, not theming
-- Two‑family typographic system (Be Vietnam Pro display, Inter UI)
-- Dual‑theme (light default, dark supported) — both equally first‑class
+- Flat neutral surfaces with fine borders and sparing shadows
+- A clear sky-blue action color used with discipline
+- Semantic color reserved for status and feedback
+- Be Vietnam Pro for expressive moments, Inter for operational UI
+- Compact mobile-first layouts that open into stable desktop workspaces
+- Explicit focus, validation, loading, and destructive states
 
-## 2. Colors
+## Colors
 
-A near‑monochrome canvas with a single committed indigo accent and a disciplined semantic palette for status. The system's identity comes from restraint, not from saturation.
+The palette is a cool near-monochrome field with a single clear sky-blue action color and conventional semantic colors for feedback.
 
 ### Primary
 
-- **Service Indigo** (`oklch(51.1% 0.262 276.966)`): The product's one chromatic voice. Reserved for the primary action on a screen (Save, Publish, Confirm), the active sidebar item, focus rings, and selected states. Never used as a background fill on large surfaces.
-- **Service Indigo (foreground)** (`oklch(0.969 0.016 293.756)`): The barely‑tinted near‑white that sits on Service Indigo — never `#fff`.
+- **Service Sky**: The product's active voice. Use it for primary actions, selection outlines, active controls, and progress that requires attention.
+- **Service Sky Foreground**: A softly tinted near-white used on Service Sky fills.
+- **Focus Mist**: The lighter ring color that keeps keyboard focus visible without turning it into a glow effect.
 
 ### Neutral
 
-- **Paper White** (`oklch(1 0 0)`): Page background in light theme, card surfaces.
-- **Ink** (`oklch(0.145 0 0)`): Body text and primary headings in light; page background in dark.
-- **Mist** (`oklch(0.97 0 0)`): Muted/secondary/accent surfaces — chip backgrounds, hover fills, table zebra rows.
-- **Stone** (`oklch(0.556 0 0)`): Muted body copy, helper text, placeholder text.
-- **Rule** (`oklch(0.922 0 0)`): All borders and input strokes. The system's structural workhorse.
-- **Sidebar Vellum** (`oklch(0.985 0.002 247.839)`): The one neutral with a faint cool tint — the navigation surface, separating it from card surfaces without raising the visual temperature.
+- **Paper**: The light-theme page, input, and card plane.
+- **Ink**: Primary text and the dark-theme page plane.
+- **Prep Surface**: The quiet secondary and hover fill used to group related controls.
+- **Stone Copy**: Supporting text, descriptions, placeholders, and low-priority metadata.
+- **Hairline**: The shared border and input stroke that separates surfaces without heavy framing.
+- **Cool Vellum**: The faintly blue-gray sidebar plane that distinguishes navigation from work content.
+- **Charcoal Surface**: The dark-theme raised surface for cards, popovers, and dialogs.
 
-### Status (semantic, reserved for badges and alerts)
+### Tertiary
 
-- **Service Green** (`oklch(0.696 0.17 162.48)`): Published, healthy, success.
-- **Amber Caution** (`oklch(0.828 0.189 84.429)`): Pending, warning, draft about to expire.
-- **Pepper Red** (`oklch(0.577 0.245 27.325)`): Destructive, error, blocking.
-- **Cool Blue** (`oklch(0.6 0.118 184.704)`): Information, secondary status.
-- **Violet** (used in badges only): Tag/category accents that need to read separately from primary.
+- **Pepper Red**: Destructive actions, errors, and blocking states.
+- **Service Green**: Successful, available, or healthy states.
+- **Amber Caution**: Warnings, pending states, and decisions that need review.
+- **Information Blue**: Explanatory and synchronization messages that do not require destructive urgency.
 
 ### Named Rules
 
-**The One Voice Rule.** Service Indigo is the only chromatic accent on the operational surface. It covers ≤10% of any given screen. If two indigo elements compete for attention on the same screen, one of them is wrong.
+**The One Action Color Rule.** Service Sky identifies commitment and active state; do not spread it across passive decoration.
 
-**The Status‑Only Rule.** Greens, ambers, reds, blues, and violets exist to communicate state, not to theme. Never use them as decorative backgrounds, gradient stops, or hero accents.
+**The Semantic Color Rule.** Green, amber, red, violet, pink, and secondary blues communicate meaning; they are not alternate brand themes.
 
-**The Tinted Neutral Rule.** Sidebar Vellum carries a 0.002 chroma cool tint. Every other neutral is true grayscale. Don't push tint into card surfaces or page backgrounds — the contrast between Vellum and Paper is what makes navigation read as a separate plane.
+## Typography
 
-## 3. Typography
+**Display Font:** Be Vietnam Pro (with ui-sans-serif and system fallbacks)
 
-**Display Font:** Be Vietnam Pro (with `ui-sans-serif`, `system-ui`, sans-serif fallback)
-**Body Font:** Inter (with `ui-sans-serif`, `system-ui`, sans-serif fallback)
+**Body Font:** Inter (with ui-sans-serif and system fallbacks)
 
-**Character:** Be Vietnam Pro is a humanist sans with subtle warmth and a slightly condensed cut at `wdth: 112.5` — operationally serious but not corporate-stiff. Inter handles dense UI labels, table cells, and form copy with the neutrality the work demands. The pairing is sharp where it needs voice (page titles, marketing) and quiet everywhere else (panels, lists, inputs).
+**Character:** Be Vietnam Pro adds a warm, contemporary hospitality voice to high-level moments. Inter stays neutral and highly legible across dense forms, tables, navigation, and status text.
 
 ### Hierarchy
 
-- **Display** (Be Vietnam Pro, 600, `clamp(1.875rem, 4vw, 2.5rem)`, line-height 1.1, tracking -0.02em): Page hero titles, marketing surfaces, section openers.
-- **Headline** (Be Vietnam Pro, 600, 1.5rem, line-height 1.2): Panel and dialog titles within the product.
-- **Title** (Inter, 600, 1.25rem, line-height 1, tracking -0.01em): Card titles, list section headers.
-- **Body** (Inter, 400, 0.875rem, line-height 1.5): Default UI text. Cap long-form passages at 65–75ch.
-- **Label** (Inter, 500, 0.75rem, line-height 1.25, tracking 0.01em): Form labels, badges, table headers, meta lines.
+- **Display** (500, 2.25rem, 1.111): Authentication, content, and high-emphasis onboarding headings. Use the width variation only with this family.
+- **Headline** (600, 1.5rem, 1.333): Responsive page titles and major section entry points.
+- **Title** (600, 1rem, 1.25): Panel headings, grouped settings, card titles, and dialog hierarchy.
+- **Body** (400, 0.875rem, 1.429): Default product copy, form content, table rows, and descriptions.
+- **Label** (500, 0.75rem, 1.333): Badges, compact metadata, field labels, and dense navigation annotations.
 
 ### Named Rules
 
-**The No-Gradient-Type Rule.** Type is solid color — Service Indigo, Ink, or Stone. Never `background-clip: text` with gradients. Emphasis comes from weight (500/600), size, or color shift, not from chrome.
+**The Operational Body Rule.** Inter owns controls and repeated reading; Be Vietnam Pro appears only where a page needs a distinct voice.
 
-**The Tracking Floor Rule.** Body text and smaller stays at neutral tracking. Negative tracking is reserved for Display, Headline, and Title (where the larger size warrants it). Don't tighten body for "polish" — it costs legibility on long shifts.
+**The Weight Before Color Rule.** Build hierarchy with size and 500/600 weights before introducing another text color.
 
-## 4. Elevation
+## Layout
 
-The system is **flat by default with hairline structure**. Depth is conveyed primarily by 1px borders (`{colors.border}`) and `inset-ring` strokes — not by shadow. Shadows appear only where an element has genuinely lifted off the page (popovers, dropdowns, modals, sheets) or to give an input the faintest physical presence.
+The application is mobile-first and edge-efficient. Page shells use 1rem horizontal padding on compact screens, 1.5rem from the small breakpoint, and 2rem on wider desktop headers. Task pages generally cap themselves between 42rem and 80rem, while dense editor surfaces can extend to 72rem and split into a flexible main column with an 18rem context rail.
+
+The desktop workspace pairs a 16rem collapsible sidebar with a flexible content plane. It contracts to a 3rem icon rail and becomes an 18rem sheet on mobile. Headers stay 4rem high; page titles, actions, and descriptions stack on compact widths and align horizontally when room permits.
+
+Spacing follows a 4px base rhythm. Use 8px for tightly related control anatomy, 16px for ordinary grouping, 24px for section separation and card padding, and 32px only between major regions. Prefer direct page sections separated by space or a hairline over nesting every group in a card.
+
+### Named Rules
+
+**The Stable Workspace Rule.** Desktop navigation may collapse, but the main work column must remain flexible and free of horizontal overflow.
+
+**The Mobile Stack Rule.** Actions stack before labels truncate; preserve readable state and full-width primary actions on compact screens.
+
+## Elevation & Depth
+
+Biztro is flat by default. Background shifts, inset rings, and 1px borders establish most hierarchy. Shadows are reserved for controls with a slight physical shelf and surfaces that genuinely leave the document plane.
 
 ### Shadow Vocabulary
 
-- **shadow-xs** (`box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05)`): Inputs, selects, textareas, toggle. The whisper-thin shelf that says "this accepts focus."
-- **shadow-sm** (`box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)`): Default cards, sidebar inset variant, tab active state.
-- **shadow-md** (`box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)`): Popovers, hover cards, dropdown items, tooltips.
-- **shadow-lg** (`box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)`): Dialogs, alert dialogs, sheets, command palette — the only surfaces that feel decisively above the page.
+- **Whisper** (`0 1px 2px 0 rgb(0 0 0 / 0.05)`): Inputs, compact controls, and restrained editor toolbars.
+- **Resting Surface** (`0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)`): Cards and floating sidebar variants.
+- **Overlay** (`0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)`): Dropdowns, popovers, hover cards, and tooltips.
+- **Modal** (`0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)`): Dialogs, sheets, and command surfaces.
 
 ### Named Rules
 
-**The Border-First Rule.** When in doubt, use a 1px `{colors.border}` instead of a shadow. Shadows are reserved for elements that genuinely escape their plane.
+**The Border Before Shadow Rule.** Use a neutral stroke to define a resting surface; add shadow only when its depth reflects behavior or stacking.
 
-**The No-Glow Rule.** No colored glows, no gradient halos, no decorative drop shadows behind hero numbers. Focus rings (a 3px `{colors.ring}/0.5` at offset 2) are the only colored emission allowed.
+**The No Decorative Glow Rule.** Colored halos and ambient glows do not belong on operational surfaces; focus rings are the only colored emission.
 
-## 5. Components
+## Shapes
+
+The form language is softly squared. The shared 0.65rem radius anchors cards and default buttons; controls step down by 2px or 4px as they become smaller. Large onboarding and editor groups may use a 1rem radius, while pills are reserved for intrinsically compact or binary shapes.
+
+Borders stay fine and neutral. Dashed borders indicate an empty drop zone or an optional creation area, not ordinary grouping. Circular geometry is reserved for avatars, status dots, and icon-only controls. Customer-facing menu heading shapes are an editor capability, not the operational application's default shape language.
+
+### Named Rules
+
+**The Nested Radius Rule.** Inner controls use a smaller radius than the surface that contains them.
+
+**The Pill With Purpose Rule.** Use full rounding for avatars, compact toggles, and true chips; default buttons and fields remain softly squared.
+
+## Components
 
 ### Buttons
 
-- **Shape:** Rounded (8.4px / `rounded-lg`). Slightly softer than rectangle, never pill outside of icon contexts.
-- **Primary:** Service Indigo background, near-white foreground, faint `inset-ring inset-ring-white/10` to add weight without a border. Default size 40px tall (`h-10`), 16px horizontal padding. Active state scales to 0.98 — the only motion baked into all buttons.
-- **Outline:** Transparent background, `inset-ring inset-ring-input` (the input border tone), foreground in Ink. Hovers to Mist accent fill.
-- **Ghost:** No background, foreground in Ink. Hovers to Mist. Used inside tables, list rows, and toolbars.
-- **Destructive:** Pepper Red background, near-white foreground. Reserved for irreversible actions; never the default for "remove" inside lists.
-- **Hover / Focus:** 90% opacity on the fill (`bg-primary/90`), `ring-2 ring-ring ring-offset-2` on focus-visible. Transitions colors only — never width/height/padding.
-- **Sizes:** xs (32px), sm (36px), default (40px), lg (44px), plus matching square `icon` variants.
+- **Character:** Compact, confident, and immediately legible.
+- **Primary:** Service Sky fill with the tinted near-white foreground, a subtle inset highlight, 40px default height, and 16px horizontal padding.
+- **Outline:** Paper fill with an input-tone inset ring; use for equal-but-secondary choices and safe cancellation.
+- **Ghost / Link:** Ghost buttons reveal a Prep Surface on hover. Links use Service Sky and gain an underline on hover.
+- **Destructive:** Pepper Red fill with a light foreground; reserve it for confirmed irreversible actions.
+- **States:** Focus uses a visible ring and offset. Disabled controls retain their geometry at half opacity. Pressing scales to 98% without changing layout.
+- **Sizes:** 32px extra-small, 36px small, 40px default, and 44px large, with matching square icon variants.
 
 ### Inputs / Fields
 
-- **Shape:** Rounded (10.4px / `rounded-md`), 36px tall (`h-9`).
-- **Style:** Transparent background, 1px `{colors.input}` border, `shadow-xs` for the smallest possible physical shelf.
-- **Focus:** Border shifts to `{colors.ring}`, plus a 3px `{colors.ring}/0.5` ring. Transitions `color, box-shadow` only.
-- **Error:** `aria-invalid` triggers a `{colors.destructive}/20` ring and `{colors.destructive}` border. No red fill, no shake — the ring is the signal.
-- **Dark theme:** Background drops to `{colors.input}/30` so the field still reads as a depression, not a stroked outline floating over the page.
+- **Style:** Transparent Paper surface, Hairline border, 36px height, 12px horizontal padding, and a Whisper shadow.
+- **Focus:** Shift the stroke to Focus Mist and add a 3px translucent ring.
+- **Invalid:** Use the destructive stroke and a restrained destructive ring; never fill the entire field red.
+- **Dark theme:** Introduce a faint input fill so the field remains distinct from the dark page.
 
 ### Cards / Containers
 
-- **Corner Style:** Rounded (10.4px / `rounded-lg`).
-- **Background:** Paper White (`{colors.card}`).
-- **Border:** 1px `{colors.border}`. Always present — borders are the structure.
-- **Shadow Strategy:** `shadow-sm` by default. No hover lift on cards in operational surfaces; cards are containers, not interactive objects.
-- **Internal Padding:** 24px (`p-6`) for header, content, footer.
-- **Title:** Title typography (1.25rem, 600). Description: body, Stone color.
+- **Style:** Card plane, shared large radius, subtle inset edge, and a very restrained resting shadow.
+- **Padding:** 24px for standard header, content, and footer regions; compact sidebar cards may reduce this to 12px.
+- **Behavior:** Cards are structural by default. Do not add hover lift unless the entire card is an explicit interactive target.
 
-### Badges (and the semantic palette)
+### Badges
 
-- **Shape:** Rounded-md, 8px horizontal × 4px vertical padding.
-- **Style:** Tinted background (50-shade), saturated foreground (700-shade), `inset-ring` of the same hue at 10% opacity. Each semantic color (gray, red, violet, green, yellow, blue, indigo, pink) gets its own variant.
-- **State:** Static — badges report, they don't toggle. Use `Toggle` or `Chip` for filterable states.
-- **Dark theme:** Background drops to 400/10, foreground lifts to 400, ring lifts to 400/20.
+- **Style:** 8px horizontal and 4px vertical padding, compact label type, softly squared corners, tinted background, saturated text, and a half-pixel inset ring.
+- **Variants:** Neutral, destructive, outline, violet, green, yellow, blue, indigo, and pink.
+- **Behavior:** Badges report state. Use toggles or buttons when the user can change the state directly.
 
 ### Alerts
 
-- **Shape:** Rounded-lg, 16px padding, 1px border in the variant's hue at 50% opacity.
-- **Variants:** `default` (neutral), `information` (Cool Blue), `success` (Service Green), `warning` (Amber Caution), `destructive` (Pepper Red).
-- **Anatomy:** Optional left-aligned 16px lucide icon at top-4/left-4, title at body weight 500 with tracking-tight, description at xs body.
+- **Style:** 16px padding, shared large radius, a semantic 50% border, and an optional 16px leading icon.
+- **Variants:** Neutral, destructive, information, success, and warning.
+- **Hierarchy:** Medium title, compact description, and no decorative illustration competing with the message.
 
-### Sidebar
+### Navigation
 
-- **Style:** 16rem wide, Sidebar Vellum background, 1px right border. Collapses to 3rem icon-only rail; mobile uses a Sheet drawer at 18rem.
-- **Items:** Inter label size (0.875rem), Stone foreground at rest, Ink on hover, Service Indigo on active with a Mist fill (`{colors.sidebar-accent}`).
-- **Persistence:** Open/closed state stored in `sidebar_state` cookie for 7 days. Keyboard shortcut `cmd/ctrl + b`.
+- **Style:** 16rem Cool Vellum sidebar with 32px menu rows, 8px internal padding, 4px row gaps, and compact Inter labels.
+- **Active / Hover:** Use the sidebar accent plane and stronger text. Active state adds weight, not a competing color block.
+- **Responsive:** Collapse to a 3rem icon rail on desktop or move into an 18rem sheet on mobile. Preserve tooltips for collapsed icon items.
 
 ### Dialogs / Sheets
 
-- **Shape:** Rounded-lg dialogs (sm:max-w-xl), rounded-xl sheets.
-- **Background:** `bg-background` with 1px border and `shadow-lg`. Overlay is `bg-black/50` (no blur — see Don'ts).
-- **Motion:** Fade + zoom (95% → 100%) on open, fade on close; 200ms duration. Sheets slide from edge with 300/500ms asymmetric duration.
+- **Style:** Background plane, Hairline border, 24px padding, shared large radius, and Modal shadow.
+- **Motion:** Dialogs fade and scale from 95% over 200ms. Sheets slide from their edge; drawers replace bottom sheets on compact task flows where touch dismissal is expected.
+- **Actions:** Stack in reverse order on mobile so the primary action remains visually last, then align to the end on larger screens.
 
-### Status Indicators (signature pattern)
-
-The product's defining UI moment: any menu item, location, or organization can be in one of `draft`, `pending`, `published`, or `archived`. These are surfaced as Badge variants with consistent color mapping site-wide:
-
-- `draft` → neutral gray badge
-- `pending` → amber badge
-- `published` → green badge with leading dot
-- `archived` → outline-only gray badge
-
-This mapping is non-negotiable across the product — operators learn it in their first session.
-
-## 6. Do's and Don'ts
+## Do's and Don'ts
 
 ### Do:
 
-- **Do** use Service Indigo for the one primary action per screen. If you have two "primary" buttons in view, the design is wrong.
-- **Do** use 1px `{colors.border}` borders to define every container edge. Borders are the structure of this system.
-- **Do** map status (`draft`/`pending`/`published`/`archived`) to the same badge variants everywhere. Operators learn the mapping once.
-- **Do** keep the focus ring at `ring-2 ring-ring ring-offset-2` on all interactive elements. Keyboard accessibility is part of the brand promise.
-- **Do** respect `prefers-reduced-motion` — fall back to opacity-only transitions, no scale or slide.
-- **Do** use semantic Alert variants (`destructive`, `warning`, `success`, `information`) for status messaging, never raw colored cards.
-- **Do** use the `xs` button-group treatment with `shadow-xs` for inline toolbars in editor surfaces.
-- **Do** keep body line length to 65–75ch in long-form (blog, docs, dialog descriptions).
+- **Do** use Service Sky for the primary action or active state, not for passive decoration.
+- **Do** use fine borders and neutral surface changes before reaching for shadows.
+- **Do** keep desktop task content within an intentional max-width while allowing editor surfaces to use the available workspace.
+- **Do** stack page actions and dialog actions on mobile before truncating important labels.
+- **Do** use the existing semantic badge and alert variants for status.
+- **Do** preserve visible focus rings and descriptive labels on every interactive path.
+- **Do** respect reduced-motion preferences whenever adding or extending motion.
+- **Do** use TextMorph only for saving and loading transitions.
 
 ### Don't:
 
-- **Don't** ship a crypto-style neon dashboard. No saturated gradients on dark backgrounds, no glow accents, no animated borders on operational surfaces.
-- **Don't** ship gamified flourishes — no achievement confetti on a Save, no streak counters, no playful empty-state mascots that don't help the operator do the next thing. (`canvas-confetti` is loaded but should be reserved for genuine first-time milestones, never routine actions.)
-- **Don't** layer template-SaaS marketing decoration over admin screens — no rainbow-gradient hero metrics, no animated beam borders around dashboard cards.
-- **Don't** use `border-left` greater than 1px as a colored stripe to flag status. Use the Badge palette or full borders.
-- **Don't** use `background-clip: text` with gradients on titles. Solid colors only.
-- **Don't** use glassmorphism (backdrop-blur on translucent panels) as a default style. The `glass` utility exists for one specific scroll-mask use case — not as a card treatment.
-- **Don't** mix shadow vocabulary mid-surface. Cards use `shadow-sm`; popovers use `shadow-md`; dialogs use `shadow-lg`. Never stack them.
-- **Don't** raise hover-elevation on cards in the operational app. Cards aren't buttons.
-- **Don't** use `#000` or `#fff` directly. Reach for `{colors.foreground}` and `{colors.background}` — every neutral is OKLCH-resolved.
-- **Don't** introduce a new accent hue for "delight" or "branding." If a screen needs more color, the answer is a Badge or Status indicator, not a new primary.
-- **Don't** use em dashes in UI copy. Use commas, colons, semicolons, or parentheses.
-- **Don't** wrap simple content in Cards by reflex. Most lists, tables, and form sections live directly on the page background separated by spacing and borders.
+- **Don't** use neon dashboards, glow effects, or saturated gradients as an operational background.
+- **Don't** turn routine saves or edits into gamified celebrations.
+- **Don't** wrap every section in a card; spacing and separators are often enough.
+- **Don't** raise resting cards on hover unless the entire surface is interactive.
+- **Don't** use semantic colors as decorative alternate themes.
+- **Don't** use backdrop blur as a default card treatment.
+- **Don't** use display typography for dense forms, tables, or navigation.
+- **Don't** introduce a new radius, shadow, or spacing step when an existing token fits.
+- **Don't** use em dashes in user-facing interface copy.

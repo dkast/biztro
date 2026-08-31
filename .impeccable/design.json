@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-31T03:47:00.000Z",
+  "title": "Design System: Biztro",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.25 0 0)", "oklch(0.4 0 0)", "oklch(0.55 0 0)", "oklch(0.7 0 0)", "oklch(0.82 0 0)", "oklch(0.92 0 0)", "oklch(1 0 0)"]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(0.145 0 0)",
+        "tonalRamp": ["oklch(0.145 0 0)", "oklch(0.25 0 0)", "oklch(0.4 0 0)", "oklch(0.55 0 0)", "oklch(0.7 0 0)", "oklch(0.82 0 0)", "oklch(0.92 0 0)", "oklch(0.985 0 0)"]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Card Plane",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.25 0 0)", "oklch(0.4 0 0)", "oklch(0.55 0 0)", "oklch(0.7 0 0)", "oklch(0.82 0 0)", "oklch(0.92 0 0)", "oklch(1 0 0)"]
+      },
+      "card-foreground": {
+        "role": "neutral",
+        "displayName": "Card Ink",
+        "canonical": "oklch(0.145 0 0)",
+        "tonalRamp": ["oklch(0.145 0 0)", "oklch(0.25 0 0)", "oklch(0.4 0 0)", "oklch(0.55 0 0)", "oklch(0.7 0 0)", "oklch(0.82 0 0)", "oklch(0.92 0 0)", "oklch(0.985 0 0)"]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Service Sky",
+        "canonical": "oklch(68.5% 0.169 237.323)",
+        "tonalRamp": ["oklch(0.15 0.06 237.323)", "oklch(0.27 0.1 237.323)", "oklch(0.39 0.14 237.323)", "oklch(0.52 0.169 237.323)", "oklch(0.685 0.169 237.323)", "oklch(0.78 0.13 237.323)", "oklch(0.87 0.08 237.323)", "oklch(0.95 0.035 237.323)"]
+      },
+      "primary-foreground": {
+        "role": "neutral",
+        "displayName": "Service Sky Foreground",
+        "canonical": "oklch(0.969 0.016 293.756)",
+        "tonalRamp": ["oklch(0.15 0.016 293.756)", "oklch(0.27 0.016 293.756)", "oklch(0.39 0.016 293.756)", "oklch(0.52 0.016 293.756)", "oklch(0.65 0.016 293.756)", "oklch(0.78 0.016 293.756)", "oklch(0.88 0.016 293.756)", "oklch(0.969 0.016 293.756)"]
+      },
+      "secondary": {
+        "role": "neutral",
+        "displayName": "Prep Surface",
+        "canonical": "oklch(0.97 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.27 0 0)", "oklch(0.39 0 0)", "oklch(0.52 0 0)", "oklch(0.65 0 0)", "oklch(0.78 0 0)", "oklch(0.88 0 0)", "oklch(0.97 0 0)"]
+      },
+      "secondary-foreground": {
+        "role": "neutral",
+        "displayName": "Prep Surface Ink",
+        "canonical": "oklch(0.205 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.205 0 0)", "oklch(0.33 0 0)", "oklch(0.46 0 0)", "oklch(0.6 0 0)", "oklch(0.73 0 0)", "oklch(0.85 0 0)", "oklch(0.95 0 0)"]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Surface",
+        "canonical": "oklch(0.97 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.27 0 0)", "oklch(0.39 0 0)", "oklch(0.52 0 0)", "oklch(0.65 0 0)", "oklch(0.78 0 0)", "oklch(0.88 0 0)", "oklch(0.97 0 0)"]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Stone Copy",
+        "canonical": "oklch(0.556 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.27 0 0)", "oklch(0.39 0 0)", "oklch(0.556 0 0)", "oklch(0.66 0 0)", "oklch(0.77 0 0)", "oklch(0.87 0 0)", "oklch(0.95 0 0)"]
+      },
+      "destructive": {
+        "role": "tertiary",
+        "displayName": "Pepper Red",
+        "canonical": "oklch(0.577 0.245 27.325)",
+        "tonalRamp": ["oklch(0.15 0.08 27.325)", "oklch(0.27 0.14 27.325)", "oklch(0.39 0.2 27.325)", "oklch(0.50 0.245 27.325)", "oklch(0.577 0.245 27.325)", "oklch(0.72 0.18 27.325)", "oklch(0.84 0.1 27.325)", "oklch(0.95 0.04 27.325)"]
+      },
+      "destructive-foreground": {
+        "role": "neutral",
+        "displayName": "Destructive Foreground",
+        "canonical": "oklch(0.985 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.27 0 0)", "oklch(0.39 0 0)", "oklch(0.52 0 0)", "oklch(0.65 0 0)", "oklch(0.78 0 0)", "oklch(0.89 0 0)", "oklch(0.985 0 0)"]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(0.922 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.27 0 0)", "oklch(0.39 0 0)", "oklch(0.52 0 0)", "oklch(0.65 0 0)", "oklch(0.78 0 0)", "oklch(0.87 0 0)", "oklch(0.922 0 0)"]
+      },
+      "input": {
+        "role": "neutral",
+        "displayName": "Input Stroke",
+        "canonical": "oklch(0.922 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.27 0 0)", "oklch(0.39 0 0)", "oklch(0.52 0 0)", "oklch(0.65 0 0)", "oklch(0.78 0 0)", "oklch(0.87 0 0)", "oklch(0.922 0 0)"]
+      },
+      "ring": {
+        "role": "primary",
+        "displayName": "Focus Mist",
+        "canonical": "oklch(82.8% 0.111 230.318)",
+        "tonalRamp": ["oklch(0.15 0.05 230.318)", "oklch(0.27 0.075 230.318)", "oklch(0.39 0.1 230.318)", "oklch(0.52 0.111 230.318)", "oklch(0.65 0.111 230.318)", "oklch(0.75 0.111 230.318)", "oklch(0.828 0.111 230.318)", "oklch(0.95 0.035 230.318)"]
+      },
+      "sidebar": {
+        "role": "neutral",
+        "displayName": "Cool Vellum",
+        "canonical": "oklch(0.985 0.002 247.839)",
+        "tonalRamp": ["oklch(0.15 0.002 247.839)", "oklch(0.27 0.002 247.839)", "oklch(0.39 0.002 247.839)", "oklch(0.52 0.002 247.839)", "oklch(0.65 0.002 247.839)", "oklch(0.78 0.002 247.839)", "oklch(0.89 0.002 247.839)", "oklch(0.985 0.002 247.839)"]
+      },
+      "sidebar-foreground": {
+        "role": "neutral",
+        "displayName": "Sidebar Stone",
+        "canonical": "oklch(43.9% 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.27 0 0)", "oklch(0.39 0 0)", "oklch(0.439 0 0)", "oklch(0.58 0 0)", "oklch(0.71 0 0)", "oklch(0.84 0 0)", "oklch(0.95 0 0)"]
+      },
+      "sidebar-accent": {
+        "role": "neutral",
+        "displayName": "Sidebar Active Plane",
+        "canonical": "oklch(0.922 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.27 0 0)", "oklch(0.39 0 0)", "oklch(0.52 0 0)", "oklch(0.65 0 0)", "oklch(0.78 0 0)", "oklch(0.87 0 0)", "oklch(0.922 0 0)"]
+      },
+      "sidebar-accent-foreground": {
+        "role": "neutral",
+        "displayName": "Sidebar Active Ink",
+        "canonical": "oklch(0.205 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.205 0 0)", "oklch(0.33 0 0)", "oklch(0.46 0 0)", "oklch(0.6 0 0)", "oklch(0.73 0 0)", "oklch(0.85 0 0)", "oklch(0.95 0 0)"]
+      },
+      "info": {
+        "role": "tertiary",
+        "displayName": "Information Blue",
+        "canonical": "var(--color-blue-500)",
+        "tonalRamp": ["oklch(0.2 0.08 250)", "oklch(0.32 0.13 250)", "oklch(0.44 0.18 250)", "oklch(0.56 0.21 250)", "oklch(0.66 0.19 250)", "oklch(0.76 0.14 250)", "oklch(0.86 0.08 250)", "oklch(0.95 0.03 250)"]
+      },
+      "success": {
+        "role": "tertiary",
+        "displayName": "Service Green",
+        "canonical": "var(--color-emerald-500)",
+        "tonalRamp": ["oklch(0.2 0.06 162)", "oklch(0.32 0.1 162)", "oklch(0.44 0.14 162)", "oklch(0.56 0.17 162)", "oklch(0.696 0.17 162)", "oklch(0.78 0.13 162)", "oklch(0.87 0.075 162)", "oklch(0.95 0.03 162)"]
+      },
+      "warning": {
+        "role": "tertiary",
+        "displayName": "Amber Caution",
+        "canonical": "var(--color-amber-500)",
+        "tonalRamp": ["oklch(0.2 0.06 84)", "oklch(0.32 0.1 84)", "oklch(0.44 0.15 84)", "oklch(0.56 0.18 84)", "oklch(0.68 0.19 84)", "oklch(0.78 0.189 84)", "oklch(0.87 0.12 84)", "oklch(0.95 0.045 84)"]
+      },
+      "dark-background": {
+        "role": "neutral",
+        "displayName": "Dark Ink",
+        "canonical": "oklch(0.145 0 0)",
+        "tonalRamp": ["oklch(0.145 0 0)", "oklch(0.25 0 0)", "oklch(0.4 0 0)", "oklch(0.55 0 0)", "oklch(0.7 0 0)", "oklch(0.82 0 0)", "oklch(0.92 0 0)", "oklch(0.985 0 0)"]
+      },
+      "dark-card": {
+        "role": "neutral",
+        "displayName": "Charcoal Surface",
+        "canonical": "oklch(0.205 0 0)",
+        "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.205 0 0)", "oklch(0.33 0 0)", "oklch(0.46 0 0)", "oklch(0.6 0 0)", "oklch(0.73 0 0)", "oklch(0.85 0 0)", "oklch(0.95 0 0)"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Hospitality Display",
+        "purpose": "High-emphasis authentication, content, and onboarding headings."
+      },
+      "headline": {
+        "displayName": "Page Headline",
+        "purpose": "Responsive product page titles and major section entries."
+      },
+      "title": {
+        "displayName": "Operational Title",
+        "purpose": "Panels, grouped settings, cards, and dialog hierarchy."
+      },
+      "body": {
+        "displayName": "Operational Body",
+        "purpose": "Default product copy, fields, tables, and descriptions."
+      },
+      "label": {
+        "displayName": "Compact Label",
+        "purpose": "Badges, field labels, navigation annotations, and metadata."
+      }
+    },
+    "shadows": [
+      {
+        "name": "whisper",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Inputs, compact controls, and restrained editor toolbars."
+      },
+      {
+        "name": "resting-surface",
+        "value": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        "purpose": "Cards and floating sidebar variants."
+      },
+      {
+        "name": "overlay",
+        "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+        "purpose": "Dropdowns, popovers, hover cards, and tooltips."
+      },
+      {
+        "name": "modal",
+        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "purpose": "Dialogs, sheets, and command surfaces."
+      }
+    ],
+    "motion": [
+      {
+        "name": "color-state",
+        "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Buttons, fields, and navigation state changes."
+      },
+      {
+        "name": "overlay-enter",
+        "value": "200ms ease-out",
+        "purpose": "Dialog fade and 95% to 100% scale."
+      },
+      {
+        "name": "sidebar-shift",
+        "value": "200ms linear",
+        "purpose": "Sidebar width and edge-position changes."
+      },
+      {
+        "name": "sheet-enter",
+        "value": "500ms ease-out",
+        "purpose": "Sheet entry from its attached edge."
+      },
+      {
+        "name": "sheet-exit",
+        "value": "300ms ease-in",
+        "purpose": "Sheet exit toward its attached edge."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      },
+      {
+        "name": "2xl",
+        "value": "1536px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The committed action on a task surface.",
+      "html": "<button class=\"ds-btn-primary\">Guardar cambios</button>",
+      "css": ".ds-btn-primary { display: inline-flex; height: 2.5rem; align-items: center; justify-content: center; gap: 0.5rem; border: 0; border-radius: var(--radius, 0.65rem); background: var(--primary, oklch(68.5% 0.169 237.323)); color: var(--primary-foreground, oklch(0.969 0.016 293.756)); padding: 0.5rem 1rem; font: 500 0.875rem/1.25rem var(--font-inter, ui-sans-serif, system-ui, sans-serif); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1); transition: color 150ms, background-color 150ms, box-shadow 150ms, transform 100ms; } .ds-btn-primary:hover { filter: brightness(0.95); } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: 2px solid var(--ring, oklch(82.8% 0.111 230.318)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "A secondary action with clear control geometry.",
+      "html": "<button class=\"ds-btn-outline\">Cancelar</button>",
+      "css": ".ds-btn-outline { display: inline-flex; height: 2.5rem; align-items: center; justify-content: center; gap: 0.5rem; border: 0; border-radius: var(--radius, 0.65rem); background: var(--background, oklch(1 0 0)); color: var(--foreground, oklch(0.145 0 0)); padding: 0.5rem 1rem; font: 500 0.875rem/1.25rem var(--font-inter, ui-sans-serif, system-ui, sans-serif); box-shadow: inset 0 0 0 1px var(--input, oklch(0.922 0 0)); transition: color 150ms, background-color 150ms, box-shadow 150ms, transform 100ms; } .ds-btn-outline:hover { background: var(--accent, oklch(0.97 0 0)); } .ds-btn-outline:active { transform: scale(0.98); } .ds-btn-outline:focus-visible { outline: 2px solid var(--ring, oklch(82.8% 0.111 230.318)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "The standard compact field for operational forms.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Nombre del producto</span><input class=\"ds-input\" placeholder=\"Ej. Tacos al pastor\" /></label>",
+      "css": ".ds-field { display: grid; gap: 0.5rem; color: var(--foreground, oklch(0.145 0 0)); font-family: var(--font-inter, ui-sans-serif, system-ui, sans-serif); } .ds-field-label { font-size: 0.75rem; line-height: 1rem; font-weight: 500; } .ds-input { height: 2.25rem; width: 100%; border: 1px solid var(--input, oklch(0.922 0 0)); border-radius: calc(var(--radius, 0.65rem) - 2px); background: transparent; color: inherit; padding: 0.25rem 0.75rem; font: 400 0.875rem/1.25rem var(--font-inter, ui-sans-serif, system-ui, sans-serif); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: color 150ms, border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: var(--muted-foreground, oklch(0.556 0 0)); } .ds-input:hover { border-color: color-mix(in oklch, var(--input, oklch(0.922 0 0)), var(--foreground, oklch(0.145 0 0)) 15%); } .ds-input:focus-visible { border-color: var(--ring, oklch(82.8% 0.111 230.318)); outline: 0; box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring, oklch(82.8% 0.111 230.318)) 50%, transparent); }"
+    },
+    {
+      "name": "Operational Card",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "A quiet container for related settings or status.",
+      "html": "<article class=\"ds-card\"><h3 class=\"ds-card-title\">Publicación</h3><p class=\"ds-card-copy\">Revisa el menú antes de hacerlo visible para tus clientes.</p></article>",
+      "css": ".ds-card { border-radius: var(--radius, 0.65rem); background: var(--card, oklch(1 0 0)); color: var(--card-foreground, oklch(0.145 0 0)); padding: 1.5rem; box-shadow: inset 0 0 0 1px color-mix(in oklch, currentColor 10%, transparent), 0 1px 3px rgb(0 0 0 / 0.05); font-family: var(--font-inter, ui-sans-serif, system-ui, sans-serif); } .ds-card-title { margin: 0; font-size: 1.25rem; line-height: 1; font-weight: 600; letter-spacing: -0.025em; } .ds-card-copy { margin: 0.5rem 0 0; color: var(--muted-foreground, oklch(0.556 0 0)); font-size: 0.875rem; line-height: 1.25rem; }"
+    },
+    {
+      "name": "Neutral Badge",
+      "kind": "chip",
+      "refersTo": "badge-neutral",
+      "description": "A compact, non-interactive state label.",
+      "html": "<span class=\"ds-badge-neutral\">Borrador</span>",
+      "css": ".ds-badge-neutral { display: inline-flex; align-items: center; border-radius: calc(var(--radius, 0.65rem) - 2px); background: oklch(0.985 0 0); color: oklch(0.439 0 0); padding: 0.25rem 0.5rem; font: 500 0.75rem/1rem var(--font-inter, ui-sans-serif, system-ui, sans-serif); box-shadow: inset 0 0 0 0.5px oklch(0.556 0 0 / 0.1); }"
+    },
+    {
+      "name": "Success Badge",
+      "kind": "chip",
+      "refersTo": "badge-success",
+      "description": "A semantic label for healthy or completed states.",
+      "html": "<span class=\"ds-badge-success\"><span class=\"ds-badge-dot\"></span>Publicado</span>",
+      "css": ".ds-badge-success { display: inline-flex; align-items: center; gap: 0.375rem; border-radius: calc(var(--radius, 0.65rem) - 2px); background: oklch(0.95 0.052 163); color: oklch(0.45 0.12 163); padding: 0.25rem 0.5rem; font: 500 0.75rem/1rem var(--font-inter, ui-sans-serif, system-ui, sans-serif); box-shadow: inset 0 0 0 0.5px oklch(0.596 0.145 163 / 0.2); } .ds-badge-dot { width: 0.375rem; height: 0.375rem; border-radius: 9999px; background: currentColor; }"
+    },
+    {
+      "name": "Warning Alert",
+      "kind": "custom",
+      "refersTo": "alert-warning",
+      "description": "A contained warning with a clear next step.",
+      "html": "<div class=\"ds-alert-warning\" role=\"alert\"><svg class=\"ds-alert-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M21.73 18 13.73 4a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/></svg><div><strong class=\"ds-alert-title\">Revisa antes de publicar</strong><p class=\"ds-alert-copy\">Hay cambios pendientes en este menú.</p></div></div>",
+      "css": ".ds-alert-warning { display: flex; gap: 0.75rem; width: 100%; border: 1px solid oklch(0.769 0.188 70.08 / 0.5); border-radius: var(--radius, 0.65rem); background: oklch(0.987 0.022 95.277); color: oklch(0.473 0.137 46.201); padding: 1rem; font-family: var(--font-inter, ui-sans-serif, system-ui, sans-serif); } .ds-alert-icon { width: 1rem; height: 1rem; flex: none; margin-top: 0.125rem; color: oklch(0.666 0.179 58.318); } .ds-alert-title { display: block; font-size: 0.875rem; line-height: 1rem; font-weight: 500; } .ds-alert-copy { margin: 0.25rem 0 0; font-size: 0.75rem; line-height: 1rem; }"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "sidebar-default",
+      "description": "The compact operational navigation plane.",
+      "html": "<nav class=\"ds-sidebar\"><a class=\"ds-nav-item ds-nav-item-active\" href=\"#\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\"/></svg><span>Menús</span></a><a class=\"ds-nav-item\" href=\"#\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z\"/><path d=\"M3 6h18\"/><path d=\"M16 10a4 4 0 0 1-8 0\"/></svg><span>Catálogo</span></a></nav>",
+      "css": ".ds-sidebar { display: grid; align-content: start; gap: 0.25rem; width: 16rem; min-height: 12rem; border-right: 1px solid var(--sidebar-border, oklch(0.922 0 0)); background: var(--sidebar, oklch(0.985 0.002 247.839)); color: var(--sidebar-foreground, oklch(0.439 0 0)); padding: 0.5rem; font-family: var(--font-inter, ui-sans-serif, system-ui, sans-serif); } .ds-nav-item { display: flex; height: 2rem; align-items: center; gap: 0.5rem; border-radius: calc(var(--radius, 0.65rem) - 2px); color: inherit; padding: 0.5rem; text-decoration: none; font-size: 0.875rem; line-height: 1.25rem; transition: color 150ms, background-color 150ms; } .ds-nav-item svg { width: 1rem; height: 1rem; flex: none; } .ds-nav-item:hover, .ds-nav-item-active { background: var(--sidebar-accent, oklch(0.922 0 0)); color: var(--sidebar-accent-foreground, oklch(0.205 0 0)); } .ds-nav-item-active { font-weight: 500; } .ds-nav-item:focus-visible { outline: 2px solid var(--sidebar-ring, oklch(82.8% 0.111 230.318)); outline-offset: 1px; }"
+    },
+    {
+      "name": "Dialog Surface",
+      "kind": "custom",
+      "refersTo": "dialog-default",
+      "description": "A decisive raised surface for focused choices.",
+      "html": "<section class=\"ds-dialog\" role=\"dialog\" aria-labelledby=\"ds-dialog-title\"><h2 id=\"ds-dialog-title\" class=\"ds-dialog-title\">Publicar menú</h2><p class=\"ds-dialog-copy\">Los clientes verán los cambios guardados.</p><div class=\"ds-dialog-actions\"><button class=\"ds-dialog-cancel\">Cancelar</button><button class=\"ds-dialog-confirm\">Publicar</button></div></section>",
+      "css": ".ds-dialog { width: min(32rem, calc(100% - 2rem)); border: 1px solid var(--border, oklch(0.922 0 0)); border-radius: var(--radius, 0.65rem); background: var(--background, oklch(1 0 0)); color: var(--foreground, oklch(0.145 0 0)); padding: 1.5rem; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); font-family: var(--font-inter, ui-sans-serif, system-ui, sans-serif); } .ds-dialog-title { margin: 0; font-size: 1.125rem; line-height: 1; font-weight: 600; } .ds-dialog-copy { margin: 0.75rem 0 0; color: var(--muted-foreground, oklch(0.556 0 0)); font-size: 0.875rem; line-height: 1.25rem; } .ds-dialog-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem; } .ds-dialog-cancel, .ds-dialog-confirm { height: 2.25rem; border: 0; border-radius: calc(var(--radius, 0.65rem) - 2px); padding: 0.375rem 0.75rem; font: 500 0.875rem/1.25rem var(--font-inter, ui-sans-serif, system-ui, sans-serif); } .ds-dialog-cancel { background: var(--background, oklch(1 0 0)); color: var(--foreground, oklch(0.145 0 0)); box-shadow: inset 0 0 0 1px var(--input, oklch(0.922 0 0)); } .ds-dialog-confirm { background: var(--primary, oklch(68.5% 0.169 237.323)); color: var(--primary-foreground, oklch(0.969 0.016 293.756)); } .ds-dialog-cancel:hover { background: var(--accent, oklch(0.97 0 0)); } .ds-dialog-confirm:hover { filter: brightness(0.95); } .ds-dialog button:focus-visible { outline: 2px solid var(--ring, oklch(82.8% 0.111 230.318)); outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Mise en Place",
+    "overview": "Biztro is the digital counterpart to a kitchen's mise en place: every menu item, locale, price, and publishing state has a clear place and is ready when service begins. The interface earns trust through calm density, explicit hierarchy, and familiar controls. It should feel fast without feeling rushed.\n\nThe visual system is restrained but not anonymous. Clean neutral planes and fine structural lines keep long editing sessions legible, while a clear sky blue identifies commitment, selection, and focus. Warmth comes from the Be Vietnam Pro display face, measured spacing, and hospitality-specific content rather than decoration.\n\nThe system supports light and dark themes as equal operating modes. Color, elevation, and motion communicate state; they do not compete with the work.",
+    "keyCharacteristics": [
+      "Flat neutral surfaces with fine borders and sparing shadows",
+      "A clear sky-blue action color used with discipline",
+      "Semantic color reserved for status and feedback",
+      "Be Vietnam Pro for expressive moments, Inter for operational UI",
+      "Compact mobile-first layouts that open into stable desktop workspaces",
+      "Explicit focus, validation, loading, and destructive states"
+    ],
+    "rules": [
+      {
+        "name": "The One Action Color Rule",
+        "body": "Service Sky identifies commitment and active state; do not spread it across passive decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Semantic Color Rule",
+        "body": "Green, amber, red, violet, pink, and secondary blues communicate meaning; they are not alternate brand themes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Operational Body Rule",
+        "body": "Inter owns controls and repeated reading; Be Vietnam Pro appears only where a page needs a distinct voice.",
+        "section": "typography"
+      },
+      {
+        "name": "The Weight Before Color Rule",
+        "body": "Build hierarchy with size and 500/600 weights before introducing another text color.",
+        "section": "typography"
+      },
+      {
+        "name": "The Stable Workspace Rule",
+        "body": "Desktop navigation may collapse, but the main work column must remain flexible and free of horizontal overflow.",
+        "section": "layout"
+      },
+      {
+        "name": "The Mobile Stack Rule",
+        "body": "Actions stack before labels truncate; preserve readable state and full-width primary actions on compact screens.",
+        "section": "layout"
+      },
+      {
+        "name": "The Border Before Shadow Rule",
+        "body": "Use a neutral stroke to define a resting surface; add shadow only when its depth reflects behavior or stacking.",
+        "section": "elevation"
+      },
+      {
+        "name": "The No Decorative Glow Rule",
+        "body": "Colored halos and ambient glows do not belong on operational surfaces; focus rings are the only colored emission.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Nested Radius Rule",
+        "body": "Inner controls use a smaller radius than the surface that contains them.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Pill With Purpose Rule",
+        "body": "Use full rounding for avatars, compact toggles, and true chips; default buttons and fields remain softly squared.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do use Service Sky for the primary action or active state, not for passive decoration.",
+      "Do use fine borders and neutral surface changes before reaching for shadows.",
+      "Do keep desktop task content within an intentional max-width while allowing editor surfaces to use the available workspace.",
+      "Do stack page actions and dialog actions on mobile before truncating important labels.",
+      "Do use the existing semantic badge and alert variants for status.",
+      "Do preserve visible focus rings and descriptive labels on every interactive path.",
+      "Do respect reduced-motion preferences whenever adding or extending motion.",
+      "Do use TextMorph only for saving and loading transitions."
+    ],
+    "donts": [
+      "Don't use neon dashboards, glow effects, or saturated gradients as an operational background.",
+      "Don't turn routine saves or edits into gamified celebrations.",
+      "Don't wrap every section in a card; spacing and separators are often enough.",
+      "Don't raise resting cards on hover unless the entire surface is interactive.",
+      "Don't use semantic colors as decorative alternate themes.",
+      "Don't use backdrop blur as a default card treatment.",
+      "Don't use display typography for dense forms, tables, or navigation.",
+      "Don't introduce a new radius, shadow, or spacing step when an existing token fits.",
+      "Don't use em dashes in user-facing interface copy."
+    ]
+  }
+}
