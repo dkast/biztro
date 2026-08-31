@@ -113,7 +113,7 @@
     "lodash.transform": "^4.6.0",
     "lucide-react": "^1.37.0",
     "lzutf8": "^0.6.3",
-    "motion": "^12.43.0",
+    "motion": "^13.1.1",
     "nanoid": "^6.0.1",
     "next": "^16.3.3",
     "next-axiom": "^1.10.0",
