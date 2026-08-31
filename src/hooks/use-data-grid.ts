@@ -14,20 +14,17 @@ import type {
 } from "@/types/data-grid"
 import { useDirection } from "@radix-ui/react-direction"
 import {
+  type ColumnFiltersState,
+  type RowSelectionState,
+  type SortingState,
+  type Updater
+} from "@tanstack/react-table"
+import {
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
-  useReactTable,
-  type ColumnDef,
-  type ColumnFiltersState,
-  type Row,
-  type RowSelectionState,
-  type SortingState,
-  type TableMeta,
-  type TableOptions,
-  type TableState,
-  type Updater
-} from "@tanstack/react-table"
+  useLegacyTable
+} from "@tanstack/react-table/legacy"
 import { useVirtualizer, type Virtualizer } from "@tanstack/react-virtual"
 
 import { useAsRef } from "@/hooks/use-as-ref"
@@ -44,6 +41,15 @@ import {
   scrollCellIntoView
 } from "@/lib/data-grid"
 import { getFilterFn } from "@/lib/data-grid-filters"
+import type {
+  ColumnDef,
+  Row,
+  RowData,
+  Table,
+  TableMeta,
+  TableOptions,
+  TableState
+} from "@/lib/types/tanstack-table"
 
 const DEFAULT_ROW_HEIGHT = "short"
 const OVERSCAN = 6
@@ -110,7 +116,7 @@ function useStore<T>(
   return React.useSyncExternalStore(store.subscribe, getSnapshot, getSnapshot)
 }
 
-interface UseDataGridProps<TData> extends Omit<
+interface UseDataGridProps<TData extends RowData> extends Omit<
   TableOptions<TData>,
   "pageCount" | "getCoreRowModel"
 > {
@@ -143,7 +149,7 @@ interface UseDataGridProps<TData> extends Omit<
   readOnly?: boolean
 }
 
-function useDataGrid<TData>({
+function useDataGrid<TData extends RowData>({
   data,
   columns,
   rowHeight: rowHeightProp = DEFAULT_ROW_HEIGHT,
@@ -154,7 +160,7 @@ function useDataGrid<TData>({
 }: UseDataGridProps<TData>) {
   const dir = useDirection(dirProp)
   const dataGridRef = React.useRef<HTMLDivElement>(null)
-  const tableRef = React.useRef<ReturnType<typeof useReactTable<TData>>>(null)
+  const tableRef = React.useRef<Table<TData>>(null)
   const rowVirtualizerRef =
     React.useRef<Virtualizer<HTMLDivElement, Element>>(null)
   const headerRef = React.useRef<HTMLDivElement>(null)
@@ -2010,16 +2016,23 @@ function useDataGrid<TData>({
         for (let i = startIndex; i <= endIndex; i++) {
           const row = rows[i]
           if (row) {
-            newRowSelection[row.id] = selected
+            if (selected) {
+              newRowSelection[row.id] = true
+            } else {
+              delete newRowSelection[row.id]
+            }
           }
         }
 
         onRowSelectionChange(newRowSelection)
       } else {
-        onRowSelectionChange({
-          ...currentState.rowSelection,
-          [currentRow.id]: selected
-        })
+        const newRowSelection = { ...currentState.rowSelection }
+        if (selected) {
+          newRowSelection[currentRow.id] = true
+        } else {
+          delete newRowSelection[currentRow.id]
+        }
+        onRowSelectionChange(newRowSelection)
       }
 
       store.setState("lastClickedRowIndex", rowIndex)
@@ -2166,12 +2179,18 @@ function useDataGrid<TData>({
     onPasteDialogOpenChange
   ])
 
-  const getMemoizedCoreRowModel = React.useMemo(() => getCoreRowModel(), [])
-  const getMemoizedFilteredRowModel = React.useMemo(
-    () => getFilteredRowModel(),
+  const getMemoizedCoreRowModel = React.useMemo(
+    () => getCoreRowModel<TData>(),
     []
   )
-  const getMemoizedSortedRowModel = React.useMemo(() => getSortedRowModel(), [])
+  const getMemoizedFilteredRowModel = React.useMemo(
+    () => getFilteredRowModel<TData>(),
+    []
+  )
+  const getMemoizedSortedRowModel = React.useMemo(
+    () => getSortedRowModel<TData>(),
+    []
+  )
 
   // Memoize state object to reduce shallow equality checks
   const tableState = React.useMemo<Partial<TableState>>(
@@ -2218,13 +2237,13 @@ function useDataGrid<TData>({
     tableMeta
   ])
 
-  const table = useReactTable(tableOptions)
+  const table = useLegacyTable(tableOptions)
 
   if (!tableRef.current) {
     tableRef.current = table
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: columnSizingInfo and columnSizing are used for calculating the column size vars
+  // biome-ignore lint/correctness/useExhaustiveDependencies: columnResizing and columnSizing are used for calculating the column size vars
   const columnSizeVars = React.useMemo(() => {
     const headers = table.getFlatHeaders()
     const colSizes: { [key: string]: number } = {}
@@ -2233,7 +2252,7 @@ function useDataGrid<TData>({
       colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
     }
     return colSizes
-  }, [table.getState().columnSizingInfo, table.getState().columnSizing])
+  }, [table.getState().columnResizing, table.getState().columnSizing])
 
   const isFirefox = React.useSyncExternalStore(
     React.useCallback(() => () => {}, []),
@@ -2251,8 +2270,8 @@ function useDataGrid<TData>({
     const columnPinning = table.getState().columnPinning
     return (
       isFirefox &&
-      ((columnPinning.left?.length ?? 0) > 0 ||
-        (columnPinning.right?.length ?? 0) > 0)
+      ((columnPinning.start?.length ?? 0) > 0 ||
+        (columnPinning.end?.length ?? 0) > 0)
     )
   }, [isFirefox, table.getState().columnPinning])
 

@@ -4,7 +4,6 @@ import { useCallback, useMemo, useRef, useState, type ChangeEvent } from "react"
 import toast from "react-hot-toast"
 import { type CellSelectOption } from "@/types/data-grid"
 import * as Sentry from "@sentry/nextjs"
-import type { ColumnDef } from "@tanstack/react-table"
 import { BorderBeam } from "border-beam"
 import {
   AlertCircle,
@@ -64,6 +63,7 @@ import { useDataGrid } from "@/hooks/use-data-grid"
 import { appConfig } from "@/app/config"
 import { SUPPORTED_UPLOAD_MIME_TYPES } from "@/lib/types/media"
 import { MenuItemStatus } from "@/lib/types/menu-item"
+import type { ColumnDef } from "@/lib/types/tanstack-table"
 import { cn } from "@/lib/utils"
 
 type EditableItem = MenuImportItem & { _id: string }

@@ -1,4 +1,6 @@
-import type { Cell, RowData, TableMeta } from "@tanstack/react-table"
+import type { CellData, RowData, TableFeatures } from "@tanstack/react-table"
+
+import type { Cell, TableMeta } from "@/lib/types/tanstack-table"
 
 export type Direction = "ltr" | "rtl"
 
@@ -62,7 +64,11 @@ export interface CellUpdate {
 }
 
 declare module "@tanstack/react-table" {
-  interface ColumnMeta<TData extends RowData, TValue> {
+  interface ColumnMeta<
+    in out TFeatures extends TableFeatures,
+    in out TData extends RowData,
+    TValue extends CellData = CellData
+  > {
     valueFormatter?: (value: TValue, row: TData) => string
     // skipcq: JS-0356
     label?: string
@@ -71,7 +77,10 @@ declare module "@tanstack/react-table" {
   }
 
   // biome-ignore lint/correctness/noUnusedVariables: TData is used in the TableMeta interface
-  interface TableMeta<TData extends RowData> {
+  interface TableMeta<
+    in out TFeatures extends TableFeatures,
+    in out TData extends RowData
+  > {
     dataGridRef?: React.RefObject<HTMLElement | null>
     cellMapRef?: React.RefObject<Map<string, HTMLDivElement>>
     focusedCell?: CellPosition | null
@@ -194,7 +203,7 @@ export interface SearchState {
   onNavigateToPrevMatch: () => void
 }
 
-export interface DataGridCellProps<TData> {
+export interface DataGridCellProps<TData extends RowData> {
   cell: Cell<TData, unknown>
   tableMeta: TableMeta<TData>
   rowIndex: number

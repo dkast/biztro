@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useDirection } from "@radix-ui/react-direction"
-import type { Table } from "@tanstack/react-table"
 import { Check, Settings2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -19,16 +18,17 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
+import type { RowData, Table } from "@/lib/types/tanstack-table"
 import { cn } from "@/lib/utils"
 
-interface DataGridViewMenuProps<TData> extends React.ComponentProps<
-  typeof PopoverContent
-> {
+interface DataGridViewMenuProps<
+  TData extends RowData
+> extends React.ComponentProps<typeof PopoverContent> {
   table: Table<TData>
   disabled?: boolean
 }
 
-export function DataGridViewMenu<TData>({
+export function DataGridViewMenu<TData extends RowData>({
   table,
   disabled,
   className,

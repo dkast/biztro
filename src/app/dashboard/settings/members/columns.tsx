@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { type ColumnDef, type Row } from "@tanstack/react-table"
 import {
   ChevronDown,
   ChevronsUpDown,
@@ -21,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import MemberDelete from "@/app/dashboard/settings/members/member-delete"
 import type { AuthMember } from "@/lib/auth"
+import type { ColumnDef, Row } from "@/lib/types/tanstack-table"
 import { getInitials } from "@/lib/utils"
 
 export function getColumns(canDeleteMember: boolean): ColumnDef<AuthMember>[] {

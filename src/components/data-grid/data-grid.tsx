@@ -16,11 +16,12 @@ import {
   getColumnBorderVisibility,
   getColumnPinningStyle
 } from "@/lib/data-grid"
+import type { RowData } from "@/lib/types/tanstack-table"
 import { cn } from "@/lib/utils"
 
 const EMPTY_CELL_SELECTION_SET = new Set<string>()
 
-interface DataGridProps<TData>
+interface DataGridProps<TData extends RowData>
   extends
     Omit<ReturnType<typeof useDataGrid<TData>>, "dir">,
     Omit<React.ComponentProps<"div">, "contextMenu"> {
@@ -29,7 +30,7 @@ interface DataGridProps<TData>
   stretchColumns?: boolean
 }
 
-export function DataGrid<TData>({
+export function DataGrid<TData extends RowData>({
   dataGridRef,
   headerRef,
   rowMapRef,

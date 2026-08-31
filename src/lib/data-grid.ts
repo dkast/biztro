@@ -6,7 +6,6 @@ import type {
   FileCellData,
   RowHeightValue
 } from "@/types/data-grid"
-import type { Column, Table } from "@tanstack/react-table"
 import {
   BaselineIcon,
   CalendarIcon,
@@ -26,6 +25,8 @@ import {
   Presentation,
   TextInitialIcon
 } from "lucide-react"
+
+import type { Column, RowData, Table } from "@/lib/types/tanstack-table"
 
 export function flexRender<TProps extends object>(
   Comp: ((props: TProps) => React.ReactNode) | string | undefined,
@@ -99,7 +100,7 @@ export function getLineCount(rowHeight: RowHeightValue): number {
   return lineCountMap[rowHeight]
 }
 
-export function getColumnBorderVisibility<TData>(params: {
+export function getColumnBorderVisibility<TData extends RowData>(params: {
   column: Column<TData>
   nextColumn?: Column<TData>
   isLastColumn: boolean
@@ -110,19 +111,19 @@ export function getColumnBorderVisibility<TData>(params: {
   const { column, nextColumn, isLastColumn } = params
 
   const isPinned = column.getIsPinned()
-  const isFirstRightPinnedColumn =
-    isPinned === "right" && column.getIsFirstColumn("right")
-  const isLastRightPinnedColumn =
-    isPinned === "right" && column.getIsLastColumn("right")
+  const isFirstEndPinnedColumn =
+    isPinned === "end" && column.getIsFirstColumn("end")
+  const isLastEndPinnedColumn =
+    isPinned === "end" && column.getIsLastColumn("end")
 
   const nextIsPinned = nextColumn?.getIsPinned()
-  const isBeforeRightPinned =
-    nextIsPinned === "right" && nextColumn?.getIsFirstColumn("right")
+  const isBeforeEndPinned =
+    nextIsPinned === "end" && nextColumn?.getIsFirstColumn("end")
 
   const showEndBorder =
-    !isBeforeRightPinned && (isLastColumn || !isLastRightPinnedColumn)
+    !isBeforeEndPinned && (isLastColumn || !isLastEndPinnedColumn)
 
-  const showStartBorder = isFirstRightPinnedColumn
+  const showStartBorder = isFirstEndPinnedColumn
 
   return {
     showEndBorder,
@@ -130,7 +131,7 @@ export function getColumnBorderVisibility<TData>(params: {
   }
 }
 
-export function getColumnPinningStyle<TData>(params: {
+export function getColumnPinningStyle<TData extends RowData>(params: {
   column: Column<TData>
   withBorder?: boolean
   dir?: Direction
@@ -138,32 +139,32 @@ export function getColumnPinningStyle<TData>(params: {
   const { column, dir = "ltr", withBorder = false } = params
 
   const isPinned = column.getIsPinned()
-  const isLastLeftPinnedColumn =
-    isPinned === "left" && column.getIsLastColumn("left")
-  const isFirstRightPinnedColumn =
-    isPinned === "right" && column.getIsFirstColumn("right")
+  const isLastStartPinnedColumn =
+    isPinned === "start" && column.getIsLastColumn("start")
+  const isFirstEndPinnedColumn =
+    isPinned === "end" && column.getIsFirstColumn("end")
 
   const isRtl = dir === "rtl"
 
-  const leftPosition =
-    isPinned === "left" ? `${column.getStart("left")}px` : undefined
-  const rightPosition =
-    isPinned === "right" ? `${column.getAfter("right")}px` : undefined
+  const startPosition =
+    isPinned === "start" ? `${column.getStart("start")}px` : undefined
+  const endPosition =
+    isPinned === "end" ? `${column.getAfter("end")}px` : undefined
 
   return {
     boxShadow: withBorder
-      ? isLastLeftPinnedColumn
+      ? isLastStartPinnedColumn
         ? isRtl
           ? "4px 0 4px -4px var(--border) inset"
           : "-4px 0 4px -4px var(--border) inset"
-        : isFirstRightPinnedColumn
+        : isFirstEndPinnedColumn
           ? isRtl
             ? "-4px 0 4px -4px var(--border) inset"
             : "4px 0 4px -4px var(--border) inset"
           : undefined
       : undefined,
-    left: isRtl ? rightPosition : leftPosition,
-    right: isRtl ? leftPosition : rightPosition,
+    insetInlineStart: startPosition,
+    insetInlineEnd: endPosition,
     opacity: isPinned ? 0.97 : 1,
     position: isPinned ? "sticky" : "relative",
     background: isPinned ? "var(--background)" : "var(--background)",
@@ -188,7 +189,7 @@ export function getScrollDirection(
   return undefined
 }
 
-export function scrollCellIntoView<TData>(params: {
+export function scrollCellIntoView<TData extends RowData>(params: {
   container: HTMLDivElement
   targetCell: HTMLDivElement
   tableRef: React.RefObject<Table<TData> | null>
@@ -206,24 +207,24 @@ export function scrollCellIntoView<TData>(params: {
   const isActuallyRtl = isRtl || hasNegativeScroll
 
   const currentTable = tableRef.current
-  const leftPinnedColumns = currentTable?.getLeftVisibleLeafColumns() ?? []
-  const rightPinnedColumns = currentTable?.getRightVisibleLeafColumns() ?? []
+  const startPinnedColumns = currentTable?.getStartVisibleLeafColumns() ?? []
+  const endPinnedColumns = currentTable?.getEndVisibleLeafColumns() ?? []
 
-  const leftPinnedWidth = leftPinnedColumns.reduce(
+  const startPinnedWidth = startPinnedColumns.reduce(
     (sum, c) => sum + c.getSize(),
     0
   )
-  const rightPinnedWidth = rightPinnedColumns.reduce(
+  const endPinnedWidth = endPinnedColumns.reduce(
     (sum, c) => sum + c.getSize(),
     0
   )
 
   const viewportLeft = isActuallyRtl
-    ? containerRect.left + rightPinnedWidth + viewportOffset
-    : containerRect.left + leftPinnedWidth + viewportOffset
+    ? containerRect.left + endPinnedWidth + viewportOffset
+    : containerRect.left + startPinnedWidth + viewportOffset
   const viewportRight = isActuallyRtl
-    ? containerRect.right - leftPinnedWidth - viewportOffset
-    : containerRect.right - rightPinnedWidth - viewportOffset
+    ? containerRect.right - startPinnedWidth - viewportOffset
+    : containerRect.right - endPinnedWidth - viewportOffset
 
   const isFullyVisible =
     cellRect.left >= viewportLeft && cellRect.right <= viewportRight
