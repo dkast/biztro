@@ -34,14 +34,14 @@ import {
 } from "@/server/actions/item/mutations"
 import type { getMenuItems } from "@/server/actions/item/queries"
 import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
-import type { Table } from "@/lib/types/tanstack-table"
+import type { DataTableInstance } from "@/lib/data-table"
 import { cn } from "@/lib/utils"
 
 function FloatingToolbar({
   table,
   categories
 }: {
-  table: Table<Awaited<ReturnType<typeof getMenuItems>>[0]>
+  table: DataTableInstance<Awaited<ReturnType<typeof getMenuItems>>[0]>
   categories: Category[]
 }) {
   const rows = table.getFilteredSelectedRowModel().rows

@@ -1,51 +1,35 @@
 import { useState } from "react"
-import { rankItem } from "@tanstack/match-sorter-utils"
 import type { SortingState } from "@tanstack/react-table"
-import {
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useLegacyTable
-} from "@tanstack/react-table/legacy"
+import { useTable } from "@tanstack/react-table"
 import { debounce, parseAsString, useQueryState } from "nuqs"
 
-import type { ColumnDef, FilterFn, RowData } from "@/lib/types/tanstack-table"
+import {
+  dataTableFeatures,
+  type DataTableColumnDef,
+  type RowData
+} from "@/lib/data-table"
 
 const globalFilterQuery = parseAsString.withDefault("").withOptions({
   limitUrlUpdates: debounce(300)
 })
-
-// oxlint-disable-next-line typescript/no-explicit-any
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  const itemRank = rankItem(row.getValue(columnId), value)
-  addMeta?.({ itemRank })
-  return itemRank.passed
-}
 
 export function useDataTable<TData extends RowData>({
   data,
   columns
 }: {
   data: TData[]
-  columns: ColumnDef<TData>[]
+  columns: DataTableColumnDef<TData>[]
 }) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useQueryState("q", globalFilterQuery)
 
-  const table = useLegacyTable({
+  const table = useTable({
+    features: dataTableFeatures,
     data,
     columns,
-    filterFns: {
-      fuzzy: fuzzyFilter
-    },
-    getCoreRowModel: getCoreRowModel<TData>(),
-    getPaginationRowModel: getPaginationRowModel<TData>(),
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: fuzzyFilter,
-    getSortedRowModel: getSortedRowModel<TData>(),
-    getFilteredRowModel: getFilteredRowModel<TData>(),
+    globalFilterFn: "fuzzy",
     state: {
       sorting,
       globalFilter
