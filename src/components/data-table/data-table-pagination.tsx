@@ -22,6 +22,8 @@ interface DataTablePaginationProps<TData> {
 export function DataTablePagination<TData>({
   table
 }: DataTablePaginationProps<TData>) {
+  "use no memo"
+
   return (
     <div className="flex items-center justify-between px-2">
       {/* <div className="text-muted-foreground flex-1 text-sm">

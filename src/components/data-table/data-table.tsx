@@ -47,6 +47,8 @@ export function DataTable<TData, TValue>({
   setGlobalFilter,
   floatinToolbar
 }: DataTableProps<TData, TValue>) {
+  "use no memo"
+
   const isMobile = useIsMobile()
 
   useEffect(() => {
