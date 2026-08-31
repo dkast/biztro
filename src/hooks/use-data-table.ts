@@ -10,6 +10,11 @@ import {
   type FilterFn,
   type SortingState
 } from "@tanstack/react-table"
+import { debounce, parseAsString, useQueryState } from "nuqs"
+
+const globalFilterQuery = parseAsString.withDefault("").withOptions({
+  limitUrlUpdates: debounce(300)
+})
 
 // oxlint-disable-next-line typescript/no-explicit-any
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
@@ -26,7 +31,7 @@ export function useDataTable<TData, TValue>({
   columns: ColumnDef<TData, TValue>[]
 }) {
   const [sorting, setSorting] = useState<SortingState>([])
-  const [globalFilter, setGlobalFilter] = useState<string>("")
+  const [globalFilter, setGlobalFilter] = useQueryState("q", globalFilterQuery)
 
   const table = useReactTable({
     data,

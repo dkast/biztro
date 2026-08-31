@@ -1137,7 +1137,8 @@ export default function ItemForm({
               >
                 <div className="flex items-center gap-2">
                   <TabsList
-                    className="bg-muted/40 grid grid-cols-2 rounded-xl p-1"
+                    className="bg-muted/40 grid w-full grid-cols-2 rounded-xl
+                      p-1 sm:w-fit"
                   >
                     <TabsTrigger value="details" className="rounded-lg">
                       Detalles
