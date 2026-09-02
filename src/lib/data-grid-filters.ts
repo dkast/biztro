@@ -8,7 +8,7 @@ import type {
   TextFilterOperator
 } from "@/types/data-grid"
 
-import type { FilterFn, Row, RowData } from "@/lib/types/tanstack-table"
+import type { FilterFn, Row, RowData } from "@/lib/data-grid-table"
 
 export const TEXT_FILTER_OPERATORS: ReadonlyArray<{
   label: string

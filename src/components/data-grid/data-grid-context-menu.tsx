@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useAsRef } from "@/hooks/use-as-ref"
 import { parseCellKey } from "@/lib/data-grid"
-import type { ColumnDef, RowData, TableMeta } from "@/lib/types/tanstack-table"
+import type { ColumnDef, RowData, TableMeta } from "@/lib/data-grid-table"
 
 interface DataGridContextMenuProps<TData extends RowData> {
   tableMeta: TableMeta<TData>

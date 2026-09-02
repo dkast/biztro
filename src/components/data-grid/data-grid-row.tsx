@@ -17,7 +17,7 @@ import {
   getColumnPinningStyle,
   getRowHeightValue
 } from "@/lib/data-grid"
-import type { Row, RowData, TableMeta } from "@/lib/types/tanstack-table"
+import type { Row, RowData, TableMeta } from "@/lib/data-grid-table"
 import { cn } from "@/lib/utils"
 
 interface DataGridRowProps<

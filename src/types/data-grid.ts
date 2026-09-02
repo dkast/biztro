@@ -1,6 +1,6 @@
-import type { CellData, RowData, TableFeatures } from "@tanstack/react-table"
+import type { CellData, RowData } from "@tanstack/react-table"
 
-import type { Cell, TableMeta } from "@/lib/types/tanstack-table"
+import type { Cell, TableMeta } from "@/lib/data-grid-table"
 
 export type Direction = "ltr" | "rtl"
 
@@ -63,88 +63,76 @@ export interface CellUpdate {
   value: unknown
 }
 
-declare module "@tanstack/react-table" {
-  interface ColumnMeta<
-    in out TFeatures extends TableFeatures,
-    in out TData extends RowData,
-    TValue extends CellData = CellData
-  > {
-    valueFormatter?: (value: TValue, row: TData) => string
-    // skipcq: JS-0356
-    label?: string
-    cell?: CellOpts
-    className?: string
-  }
+export interface DataGridColumnMeta<
+  TData extends RowData,
+  TValue extends CellData = CellData
+> {
+  valueFormatter?: (value: TValue, row: TData) => string
+  label?: string
+  cell?: CellOpts
+  className?: string
+}
 
-  // biome-ignore lint/correctness/noUnusedVariables: TData is used in the TableMeta interface
-  interface TableMeta<
-    in out TFeatures extends TableFeatures,
-    in out TData extends RowData
-  > {
-    dataGridRef?: React.RefObject<HTMLElement | null>
-    cellMapRef?: React.RefObject<Map<string, HTMLDivElement>>
-    focusedCell?: CellPosition | null
-    editingCell?: CellPosition | null
-    selectionState?: SelectionState
-    searchOpen?: boolean
-    getIsCellSelected?: (rowIndex: number, columnId: string) => boolean
-    getIsSearchMatch?: (rowIndex: number, columnId: string) => boolean
-    getIsActiveSearchMatch?: (rowIndex: number, columnId: string) => boolean
-    getVisualRowIndex?: (rowId: string) => number | undefined
-    rowHeight?: RowHeightValue
-    onRowHeightChange?: (value: RowHeightValue) => void
-    onRowSelect?: (
-      rowIndex: number,
-      checked: boolean,
-      shiftKey: boolean
-    ) => void
-    onDataUpdate?: (params: CellUpdate | Array<CellUpdate>) => void
-    onRowsDelete?: (rowIndices: number[]) => void | Promise<void>
-    onColumnClick?: (columnId: string) => void
-    onCellClick?: (
-      rowIndex: number,
-      columnId: string,
-      event?: React.MouseEvent
-    ) => void
-    onCellDoubleClick?: (rowIndex: number, columnId: string) => void
-    onCellMouseDown?: (
-      rowIndex: number,
-      columnId: string,
-      event: React.MouseEvent
-    ) => void
-    onCellMouseEnter?: (rowIndex: number, columnId: string) => void
-    onCellMouseUp?: () => void
-    onCellContextMenu?: (
-      rowIndex: number,
-      columnId: string,
-      event: React.MouseEvent
-    ) => void
-    onCellEditingStart?: (rowIndex: number, columnId: string) => void
-    onCellEditingStop?: (opts?: {
-      direction?: NavigationDirection
-      moveToNextRow?: boolean
-    }) => void
-    onCellsCopy?: () => void
-    onCellsCut?: () => void
-    onCellsPaste?: (expand?: boolean) => void
-    onSelectionClear?: () => void
-    onFilesUpload?: (params: {
-      files: File[]
-      rowIndex: number
-      columnId: string
-    }) => Promise<FileCellData[]>
-    onFilesDelete?: (params: {
-      fileIds: string[]
-      rowIndex: number
-      columnId: string
-    }) => void | Promise<void>
-    contextMenu?: ContextMenuState
-    onContextMenuOpenChange?: (open: boolean) => void
-    pasteDialog?: PasteDialogState
-    onPasteDialogOpenChange?: (open: boolean) => void
-    readOnly?: boolean
-    onPriceCellAction?: (row: TData) => void
-  }
+export interface DataGridTableMeta<TData extends RowData> {
+  dataGridRef?: React.RefObject<HTMLElement | null>
+  cellMapRef?: React.RefObject<Map<string, HTMLDivElement>>
+  focusedCell?: CellPosition | null
+  editingCell?: CellPosition | null
+  selectionState?: SelectionState
+  searchOpen?: boolean
+  getIsCellSelected?: (rowIndex: number, columnId: string) => boolean
+  getIsSearchMatch?: (rowIndex: number, columnId: string) => boolean
+  getIsActiveSearchMatch?: (rowIndex: number, columnId: string) => boolean
+  getVisualRowIndex?: (rowId: string) => number | undefined
+  rowHeight?: RowHeightValue
+  onRowHeightChange?: (value: RowHeightValue) => void
+  onRowSelect?: (rowIndex: number, checked: boolean, shiftKey: boolean) => void
+  onDataUpdate?: (params: CellUpdate | Array<CellUpdate>) => void
+  onRowsDelete?: (rowIndices: number[]) => void | Promise<void>
+  onColumnClick?: (columnId: string) => void
+  onCellClick?: (
+    rowIndex: number,
+    columnId: string,
+    event?: React.MouseEvent
+  ) => void
+  onCellDoubleClick?: (rowIndex: number, columnId: string) => void
+  onCellMouseDown?: (
+    rowIndex: number,
+    columnId: string,
+    event: React.MouseEvent
+  ) => void
+  onCellMouseEnter?: (rowIndex: number, columnId: string) => void
+  onCellMouseUp?: () => void
+  onCellContextMenu?: (
+    rowIndex: number,
+    columnId: string,
+    event: React.MouseEvent
+  ) => void
+  onCellEditingStart?: (rowIndex: number, columnId: string) => void
+  onCellEditingStop?: (opts?: {
+    direction?: NavigationDirection
+    moveToNextRow?: boolean
+  }) => void
+  onCellsCopy?: () => void
+  onCellsCut?: () => void
+  onCellsPaste?: (expand?: boolean) => void
+  onSelectionClear?: () => void
+  onFilesUpload?: (params: {
+    files: File[]
+    rowIndex: number
+    columnId: string
+  }) => Promise<FileCellData[]>
+  onFilesDelete?: (params: {
+    fileIds: string[]
+    rowIndex: number
+    columnId: string
+  }) => void | Promise<void>
+  contextMenu?: ContextMenuState
+  onContextMenuOpenChange?: (open: boolean) => void
+  pasteDialog?: PasteDialogState
+  onPasteDialogOpenChange?: (open: boolean) => void
+  readOnly?: boolean
+  onPriceCellAction?: (row: TData) => void
 }
 
 export interface CellPosition {

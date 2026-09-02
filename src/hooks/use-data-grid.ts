@@ -14,17 +14,12 @@ import type {
 } from "@/types/data-grid"
 import { useDirection } from "@radix-ui/react-direction"
 import {
+  useTable,
   type ColumnFiltersState,
   type RowSelectionState,
   type SortingState,
   type Updater
 } from "@tanstack/react-table"
-import {
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useLegacyTable
-} from "@tanstack/react-table/legacy"
 import { useVirtualizer, type Virtualizer } from "@tanstack/react-virtual"
 
 import { useAsRef } from "@/hooks/use-as-ref"
@@ -41,15 +36,16 @@ import {
   scrollCellIntoView
 } from "@/lib/data-grid"
 import { getFilterFn } from "@/lib/data-grid-filters"
-import type {
-  ColumnDef,
-  Row,
-  RowData,
-  Table,
-  TableMeta,
-  TableOptions,
-  TableState
-} from "@/lib/types/tanstack-table"
+import {
+  createDataGridFeatures,
+  type ColumnDef,
+  type Row,
+  type RowData,
+  type Table,
+  type TableMeta,
+  type TableOptions,
+  type TableState
+} from "@/lib/data-grid-table"
 
 const DEFAULT_ROW_HEIGHT = "short"
 const OVERSCAN = 6
@@ -118,7 +114,7 @@ function useStore<T>(
 
 interface UseDataGridProps<TData extends RowData> extends Omit<
   TableOptions<TData>,
-  "pageCount" | "getCoreRowModel"
+  "features"
 > {
   onDataChange?: (data: TData[]) => void
   onRowAdd?: (
@@ -159,6 +155,7 @@ function useDataGrid<TData extends RowData>({
   ...props
 }: UseDataGridProps<TData>) {
   const dir = useDirection(dirProp)
+  const [features] = React.useState(() => createDataGridFeatures<TData>())
   const dataGridRef = React.useRef<HTMLDivElement>(null)
   const tableRef = React.useRef<Table<TData>>(null)
   const rowVirtualizerRef =
@@ -2179,21 +2176,8 @@ function useDataGrid<TData extends RowData>({
     onPasteDialogOpenChange
   ])
 
-  const getMemoizedCoreRowModel = React.useMemo(
-    () => getCoreRowModel<TData>(),
-    []
-  )
-  const getMemoizedFilteredRowModel = React.useMemo(
-    () => getFilteredRowModel<TData>(),
-    []
-  )
-  const getMemoizedSortedRowModel = React.useMemo(
-    () => getSortedRowModel<TData>(),
-    []
-  )
-
   // Memoize state object to reduce shallow equality checks
-  const tableState = React.useMemo<Partial<TableState>>(
+  const tableState = React.useMemo<Partial<TableState<TData>>>(
     () => ({
       ...propsRef.current.state,
       sorting,
@@ -2206,6 +2190,7 @@ function useDataGrid<TData extends RowData>({
   const tableOptions = React.useMemo<TableOptions<TData>>(() => {
     return {
       ...propsRef.current,
+      features,
       data,
       columns,
       defaultColumn,
@@ -2216,13 +2201,11 @@ function useDataGrid<TData extends RowData>({
       onColumnFiltersChange,
       columnResizeMode: "onChange",
       columnResizeDirection: dir,
-      getCoreRowModel: getMemoizedCoreRowModel,
-      getFilteredRowModel: getMemoizedFilteredRowModel,
-      getSortedRowModel: getMemoizedSortedRowModel,
       meta: tableMeta
     }
   }, [
     propsRef,
+    features,
     data,
     columns,
     defaultColumn,
@@ -2231,13 +2214,10 @@ function useDataGrid<TData extends RowData>({
     onRowSelectionChange,
     onSortingChange,
     onColumnFiltersChange,
-    getMemoizedCoreRowModel,
-    getMemoizedFilteredRowModel,
-    getMemoizedSortedRowModel,
     tableMeta
   ])
 
-  const table = useLegacyTable(tableOptions)
+  const table = useTable(tableOptions)
 
   if (!tableRef.current) {
     tableRef.current = table
@@ -2252,7 +2232,7 @@ function useDataGrid<TData extends RowData>({
       colSizes[`--col-${header.column.id}-size`] = header.column.getSize()
     }
     return colSizes
-  }, [table.getState().columnResizing, table.getState().columnSizing])
+  }, [table.state.columnResizing, table.state.columnSizing])
 
   const isFirefox = React.useSyncExternalStore(
     React.useCallback(() => () => {}, []),
@@ -2267,13 +2247,13 @@ function useDataGrid<TData extends RowData>({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: columnPinning is used for calculating the adjustLayout
   const adjustLayout = React.useMemo(() => {
-    const columnPinning = table.getState().columnPinning
+    const columnPinning = table.state.columnPinning
     return (
       isFirefox &&
       ((columnPinning.start?.length ?? 0) > 0 ||
         (columnPinning.end?.length ?? 0) > 0)
     )
-  }, [isFirefox, table.getState().columnPinning])
+  }, [isFirefox, table.state.columnPinning])
 
   const rowVirtualizer = useVirtualizer({
     count: table.getRowModel().rows.length,
@@ -2610,7 +2590,7 @@ function useDataGrid<TData extends RowData>({
         const currentColumnId = currentState.focusedCell.columnId
 
         Promise.resolve(propsRef.current.onRowAdd())
-          .then(async result => {
+          .then(result => {
             if (result === null) return
 
             onSelectionClear()
@@ -3251,16 +3231,13 @@ function useDataGrid<TData extends RowData>({
     return () => cancelAnimationFrame(rafId)
   }, [
     rowHeight,
-    table.getState().columnFilters,
-    table.getState().columnOrder,
-    table.getState().columnPinning,
-    table.getState().columnSizing,
-    table.getState().columnVisibility,
-    table.getState().expanded,
-    table.getState().globalFilter,
-    table.getState().grouping,
-    table.getState().rowSelection,
-    table.getState().sorting
+    table.state.columnFilters,
+    table.state.columnOrder,
+    table.state.columnPinning,
+    table.state.columnSizing,
+    table.state.columnVisibility,
+    table.state.rowSelection,
+    table.state.sorting
   ])
 
   // Calculate virtual values outside of child render to avoid flushSync issues

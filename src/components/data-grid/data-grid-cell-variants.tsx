@@ -41,7 +41,7 @@ import {
   getUrlHref,
   parseLocalDate
 } from "@/lib/data-grid"
-import type { RowData } from "@/lib/types/tanstack-table"
+import type { RowData } from "@/lib/data-grid-table"
 import { cn } from "@/lib/utils"
 
 export function ShortTextCell<TData extends RowData>({

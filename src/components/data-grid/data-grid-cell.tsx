@@ -15,7 +15,7 @@ import {
   ShortTextCell,
   UrlCell
 } from "@/components/data-grid/data-grid-cell-variants"
-import type { RowData } from "@/lib/types/tanstack-table"
+import type { RowData } from "@/lib/data-grid-table"
 
 export const DataGridCell = React.memo(DataGridCellImpl, (prev, next) => {
   // Fast path: check stable primitive props first
