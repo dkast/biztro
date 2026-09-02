@@ -12,10 +12,10 @@ import {
 import { Button } from "@/components/ui/button"
 import CategoryDelete from "@/app/dashboard/menu-items/categories/category-delete"
 import CategoryEdit from "@/app/dashboard/menu-items/categories/category-edit"
+import type { DataTableColumnDef } from "@/lib/data-table"
 import { ActionType } from "@/lib/types/category"
-import type { ColumnDef } from "@/lib/types/tanstack-table"
 
-export const columns: ColumnDef<Category>[] = [
+export const columns: DataTableColumnDef<Category>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => {

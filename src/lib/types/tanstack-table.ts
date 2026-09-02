@@ -15,7 +15,7 @@ import type {
   LegacyTableOptions
 } from "@tanstack/react-table/legacy"
 
-// TODO(tanstack-v9): Remove this bridge when tables adopt explicit features.
+// TODO(tanstack-v9): Remove this bridge after the Dice UI data grid migrates.
 export type Table<TData extends RowData> = LegacyReactTable<TData>
 export type TableOptions<TData extends RowData> = LegacyTableOptions<TData>
 export type TableState = TanStackTableState<LegacyFeatures>

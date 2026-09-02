@@ -13,10 +13,10 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import type { RowData, Table } from "@/lib/types/tanstack-table"
+import type { DataTableInstance, RowData } from "@/lib/data-table"
 
 interface DataTablePaginationProps<TData extends RowData> {
-  table: Table<TData>
+  table: DataTableInstance<TData>
 }
 
 export function DataTablePagination<TData extends RowData>({
@@ -37,13 +37,13 @@ export function DataTablePagination<TData extends RowData>({
         <div className="hidden items-center space-x-2 sm:flex">
           <p className="text-sm font-medium">Registros por página</p>
           <Select
-            value={`${table.getState().pagination.pageSize}`}
+            value={`${table.state.pagination.pageSize}`}
             onValueChange={value => {
               table.setPageSize(Number(value))
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
+              <SelectValue placeholder={table.state.pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
               {[10, 20, 30, 40, 50].map(pageSize => (
@@ -58,7 +58,7 @@ export function DataTablePagination<TData extends RowData>({
           className="flex w-[100px] items-center justify-center text-sm
             font-medium"
         >
-          Página {table.getState().pagination.pageIndex + 1} de{" "}
+          Página {table.state.pagination.pageIndex + 1} de{" "}
           {table.getPageCount()}
         </div>
         <div className="flex items-center space-x-2">

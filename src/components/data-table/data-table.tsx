@@ -21,19 +21,19 @@ import {
 } from "@/components/ui/table"
 import { useIsMobile } from "@/hooks/use-mobile"
 import type {
-  ColumnDef,
-  Row,
-  RowData,
-  Table as TanStackTable
-} from "@/lib/types/tanstack-table"
+  DataTableColumnDef,
+  DataTableInstance,
+  DataTableRow,
+  RowData
+} from "@/lib/data-table"
 import { cn } from "@/lib/utils"
 import { DataTablePagination } from "./data-table-pagination"
 
 interface DataTableProps<TData extends RowData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
+  columns: DataTableColumnDef<TData, TValue>[]
   toolbar?: React.ReactNode
-  onRowClick?: (row: Row<TData>) => void
-  table: TanStackTable<TData>
+  onRowClick?: (row: DataTableRow<TData>) => void
+  table: DataTableInstance<TData>
   globalFilter: string
   setGlobalFilter: (value: string) => void
   floatinToolbar?: React.ReactNode

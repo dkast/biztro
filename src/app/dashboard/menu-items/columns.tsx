@@ -23,12 +23,12 @@ import {
 import type { getMenuItems } from "@/server/actions/item/queries"
 import ItemDelete from "@/app/dashboard/menu-items/item-delete"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
+import type { DataTableColumnDef, DataTableRow } from "@/lib/data-table"
 import { MenuItemStatus } from "@/lib/types/menu-item"
-import type { ColumnDef, Row } from "@/lib/types/tanstack-table"
 
 type MenuItemRow = Awaited<ReturnType<typeof getMenuItems>>[number]
 
-export const columns: ColumnDef<MenuItemRow>[] = [
+export const columns: DataTableColumnDef<MenuItemRow>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -204,7 +204,7 @@ export const columns: ColumnDef<MenuItemRow>[] = [
   }
 ]
 
-function ActionsColumn({ row }: { row: Row<MenuItemRow> }) {
+function ActionsColumn({ row }: { row: DataTableRow<MenuItemRow> }) {
   const item = row.original
   const [openDelete, setOpenDelete] = useState<boolean>(false)
 

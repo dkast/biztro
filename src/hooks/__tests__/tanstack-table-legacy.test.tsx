@@ -1,9 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server"
-import { NuqsTestingAdapter } from "nuqs/adapters/testing"
 import { describe, expect, it } from "vitest"
 
 import { useDataGrid } from "@/hooks/use-data-grid"
-import { useDataTable } from "@/hooks/use-data-table"
 import type { ColumnDef } from "@/lib/types/tanstack-table"
 
 interface Person {
@@ -29,36 +27,6 @@ const columns: ColumnDef<Person>[] = [
 ]
 
 describe("TanStack Table v9 legacy bridge", () => {
-  it("constructs the simple table with fuzzy filtering and pagination", () => {
-    function Probe() {
-      const { table, globalFilter } = useDataTable({ data, columns })
-
-      return (
-        <output
-          data-filter={globalFilter}
-          data-page-count={table.getPageCount()}
-          data-can-sort={table.getColumn("name")?.getCanSort()}
-        >
-          {table
-            .getRowModel()
-            .rows.map(row => row.original.name)
-            .join(",")}
-        </output>
-      )
-    }
-
-    const html = renderToStaticMarkup(
-      <NuqsTestingAdapter searchParams="?q=alp">
-        <Probe />
-      </NuqsTestingAdapter>
-    )
-
-    expect(html).toContain('data-filter="alp"')
-    expect(html).toContain('data-page-count="1"')
-    expect(html).toContain('data-can-sort="true"')
-    expect(html).toContain(">Alpha</output>")
-  })
-
   it("constructs the data grid with controlled filtering, sorting, and selection", () => {
     function Probe() {
       const { table } = useDataGrid({
