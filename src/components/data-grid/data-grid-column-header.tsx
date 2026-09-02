@@ -29,7 +29,7 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { getColumnVariant } from "@/lib/data-grid"
-import type { Header, RowData, Table } from "@/lib/types/tanstack-table"
+import type { Header, RowData, Table } from "@/lib/data-grid-table"
 import { cn } from "@/lib/utils"
 
 interface DataGridColumnHeaderProps<
@@ -54,7 +54,7 @@ export function DataGridColumnHeader<TData extends RowData, TValue>({
       ? column.columnDef.header
       : column.id
 
-  const isAnyColumnResizing = table.getState().columnResizing.isResizingColumn
+  const isAnyColumnResizing = table.state.columnResizing.isResizingColumn
 
   const cellVariant = column.columnDef.meta?.cell
   const columnVariant = getColumnVariant(cellVariant?.variant)

@@ -5,7 +5,7 @@ import type { DataGridCellProps } from "@/types/data-grid"
 
 import { useComposedRefs } from "@/lib/compose-refs"
 import { getCellKey } from "@/lib/data-grid"
-import type { RowData } from "@/lib/types/tanstack-table"
+import type { RowData } from "@/lib/data-grid-table"
 import { cn } from "@/lib/utils"
 
 interface DataGridCellWrapperProps<TData extends RowData>

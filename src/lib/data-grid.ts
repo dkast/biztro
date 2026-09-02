@@ -26,7 +26,7 @@ import {
   TextInitialIcon
 } from "lucide-react"
 
-import type { Column, RowData, Table } from "@/lib/types/tanstack-table"
+import type { Column, RowData, Table } from "@/lib/data-grid-table"
 
 export function flexRender<TProps extends object>(
   Comp: ((props: TProps) => React.ReactNode) | string | undefined,

@@ -13,7 +13,7 @@ import {
   DialogTitle
 } from "@/components/ui/dialog"
 import { useAsRef } from "@/hooks/use-as-ref"
-import type { RowData, TableMeta } from "@/lib/types/tanstack-table"
+import type { RowData, TableMeta } from "@/lib/data-grid-table"
 import { cn } from "@/lib/utils"
 
 interface DataGridPasteDialogProps<TData extends RowData> {

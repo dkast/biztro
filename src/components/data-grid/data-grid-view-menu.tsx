@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import type { RowData, Table } from "@/lib/types/tanstack-table"
+import type { RowData, Table } from "@/lib/data-grid-table"
 import { cn } from "@/lib/utils"
 
 interface DataGridViewMenuProps<

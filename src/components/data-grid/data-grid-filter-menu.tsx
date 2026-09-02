@@ -49,8 +49,8 @@ import {
   getDefaultOperator,
   getOperatorsForVariant
 } from "@/lib/data-grid-filters"
+import type { Column, RowData, Table } from "@/lib/data-grid-table"
 import { formatDate } from "@/lib/format"
-import type { Column, RowData, Table } from "@/lib/types/tanstack-table"
 import { cn } from "@/lib/utils"
 
 const FILTER_SHORTCUT_KEY = "f"
@@ -78,7 +78,7 @@ export function DataGridFilterMenu<TData extends RowData>({
   const [open, setOpen] = React.useState(false)
   const addButtonRef = React.useRef<HTMLButtonElement>(null)
 
-  const columnFilters = table.getState().columnFilters
+  const columnFilters = table.state.columnFilters
 
   const { columnLabels, columns, columnVariants } = React.useMemo(() => {
     const labels = new Map<string, string>()
