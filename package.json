@@ -127,7 +127,7 @@
     "react": "19.2.8",
     "react-aria": "^3.51.0",
     "react-contenteditable": "^3.3.7",
-    "react-day-picker": "^9.14.0",
+    "react-day-picker": "^10.0.1",
     "react-dom": "19.2.8",
     "react-email": "^6.9.3",
     "react-frame-component": "^5.3.2",
