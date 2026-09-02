@@ -96,8 +96,10 @@ export const auth = betterAuth({
     "http://localhost:3000"
   ],
   database: prismaAdapter(prisma, { provider: "sqlite" }),
-  experimental: {
-    joins: true
+  advanced: {
+    database: {
+      joins: true
+    }
   },
   // Intentionally not using a global `before` hook here. Instead we enforce
   // invite-only access at user creation time via a database hook below. This
@@ -276,6 +278,9 @@ export const auth = betterAuth({
             stripeWebhookSecret: stripeBillingConfig.stripeWebhookSecret,
             // Create a Stripe customer automatically when users sign up
             createCustomerOnSignUp: true,
+            organization: {
+              enabled: true
+            },
             subscription: {
               enabled: true,
               plans: [
@@ -324,11 +329,15 @@ type StripeBillingPortalResponse = {
 
 type StripeBillingApi = {
   listActiveSubscriptions: (options: {
-    query: { referenceId: string }
+    query: { referenceId: string; customerType: "organization" }
     headers: HeadersInit
   }) => Promise<StripeSubscription[]>
   createBillingPortal: (options: {
-    body: { referenceId: string; returnUrl: string }
+    body: {
+      referenceId: string
+      customerType: "organization"
+      returnUrl: string
+    }
     headers: HeadersInit
   }) => Promise<StripeBillingPortalResponse>
 }
