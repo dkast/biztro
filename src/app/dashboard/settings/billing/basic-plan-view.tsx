@@ -35,6 +35,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
       plan: Plan.PRO,
       annual: billingInterval === "yearly",
       referenceId: activeOrganization?.id,
+      customerType: "organization",
       successUrl: "/dashboard/settings/billing",
       cancelUrl: "/dashboard/settings/billing"
     })
