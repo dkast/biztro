@@ -3,7 +3,6 @@
 import * as React from "react"
 import { toast } from "react-hot-toast"
 import type { CellUpdate, ContextMenuState } from "@/types/data-grid"
-import type { ColumnDef, TableMeta } from "@tanstack/react-table"
 import { CopyIcon, EraserIcon, ScissorsIcon, Trash2Icon } from "lucide-react"
 
 import {
@@ -15,14 +14,15 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useAsRef } from "@/hooks/use-as-ref"
 import { parseCellKey } from "@/lib/data-grid"
+import type { ColumnDef, RowData, TableMeta } from "@/lib/types/tanstack-table"
 
-interface DataGridContextMenuProps<TData> {
+interface DataGridContextMenuProps<TData extends RowData> {
   tableMeta: TableMeta<TData>
-  columns: Array<ColumnDef<TData>>
+  columns: ReadonlyArray<ColumnDef<TData>>
   contextMenu: ContextMenuState
 }
 
-export function DataGridContextMenu<TData>({
+export function DataGridContextMenu<TData extends RowData>({
   tableMeta,
   columns,
   contextMenu
@@ -53,7 +53,7 @@ export function DataGridContextMenu<TData>({
   )
 }
 
-interface ContextMenuProps<TData>
+interface ContextMenuProps<TData extends RowData>
   extends
     Pick<
       TableMeta<TData>,
@@ -68,7 +68,7 @@ interface ContextMenuProps<TData>
     >,
     Required<Pick<TableMeta<TData>, "contextMenu">> {
   tableMeta: TableMeta<TData>
-  columns: Array<ColumnDef<TData>>
+  columns: ReadonlyArray<ColumnDef<TData>>
 }
 
 const ContextMenu = React.memo(ContextMenuImpl, (prev, next) => {
@@ -84,7 +84,7 @@ const ContextMenu = React.memo(ContextMenuImpl, (prev, next) => {
   return true
 }) as typeof ContextMenuImpl
 
-function ContextMenuImpl<TData>({
+function ContextMenuImpl<TData extends RowData>({
   tableMeta,
   columns,
   dataGridRef,

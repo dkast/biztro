@@ -1,7 +1,6 @@
 "use client"
 
 import { type Category } from "@/generated/prisma-client/client"
-import type { ColumnDef } from "@tanstack/react-table"
 import {
   ChevronDown,
   ChevronsUpDown,
@@ -14,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import CategoryDelete from "@/app/dashboard/menu-items/categories/category-delete"
 import CategoryEdit from "@/app/dashboard/menu-items/categories/category-edit"
 import { ActionType } from "@/lib/types/category"
+import type { ColumnDef } from "@/lib/types/tanstack-table"
 
 export const columns: ColumnDef<Category>[] = [
   {

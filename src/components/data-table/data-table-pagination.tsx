@@ -1,4 +1,3 @@
-import { type Table } from "@tanstack/react-table"
 import {
   ChevronLeft,
   ChevronRight,
@@ -14,12 +13,13 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import type { RowData, Table } from "@/lib/types/tanstack-table"
 
-interface DataTablePaginationProps<TData> {
+interface DataTablePaginationProps<TData extends RowData> {
   table: Table<TData>
 }
 
-export function DataTablePagination<TData>({
+export function DataTablePagination<TData extends RowData>({
   table
 }: DataTablePaginationProps<TData>) {
   "use no memo"

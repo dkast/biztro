@@ -15,6 +15,7 @@ import {
   ShortTextCell,
   UrlCell
 } from "@/components/data-grid/data-grid-cell-variants"
+import type { RowData } from "@/lib/types/tanstack-table"
 
 export const DataGridCell = React.memo(DataGridCellImpl, (prev, next) => {
   // Fast path: check stable primitive props first
@@ -46,7 +47,7 @@ export const DataGridCell = React.memo(DataGridCellImpl, (prev, next) => {
   return true
 }) as typeof DataGridCellImpl
 
-function DataGridCellImpl<TData>({
+function DataGridCellImpl<TData extends RowData>({
   cell,
   tableMeta,
   rowIndex,

@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import type { PasteDialogState } from "@/types/data-grid"
-import type { TableMeta } from "@tanstack/react-table"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -14,14 +13,15 @@ import {
   DialogTitle
 } from "@/components/ui/dialog"
 import { useAsRef } from "@/hooks/use-as-ref"
+import type { RowData, TableMeta } from "@/lib/types/tanstack-table"
 import { cn } from "@/lib/utils"
 
-interface DataGridPasteDialogProps<TData> {
+interface DataGridPasteDialogProps<TData extends RowData> {
   tableMeta: TableMeta<TData>
   pasteDialog: PasteDialogState
 }
 
-export function DataGridPasteDialog<TData>({
+export function DataGridPasteDialog<TData extends RowData>({
   tableMeta,
   pasteDialog
 }: DataGridPasteDialogProps<TData>) {
@@ -41,8 +41,8 @@ export function DataGridPasteDialog<TData>({
 
 interface PasteDialogProps
   extends
-    Pick<TableMeta<unknown>, "onPasteDialogOpenChange" | "onCellsPaste">,
-    Required<Pick<TableMeta<unknown>, "pasteDialog">> {}
+    Pick<TableMeta<object>, "onPasteDialogOpenChange" | "onCellsPaste">,
+    Required<Pick<TableMeta<object>, "pasteDialog">> {}
 
 const PasteDialog = React.memo(PasteDialogImpl, (prev, next) => {
   if (prev.pasteDialog.open !== next.pasteDialog.open) return false

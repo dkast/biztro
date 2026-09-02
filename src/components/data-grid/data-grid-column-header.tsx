@@ -3,10 +3,8 @@
 import * as React from "react"
 import type {
   ColumnSort,
-  Header,
   SortDirection,
-  SortingState,
-  Table
+  SortingState
 } from "@tanstack/react-table"
 import {
   ChevronDownIcon,
@@ -31,16 +29,18 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { getColumnVariant } from "@/lib/data-grid"
+import type { Header, RowData, Table } from "@/lib/types/tanstack-table"
 import { cn } from "@/lib/utils"
 
-interface DataGridColumnHeaderProps<TData, TValue> extends React.ComponentProps<
-  typeof DropdownMenuTrigger
-> {
+interface DataGridColumnHeaderProps<
+  TData extends RowData,
+  TValue
+> extends React.ComponentProps<typeof DropdownMenuTrigger> {
   header: Header<TData, TValue>
   table: Table<TData>
 }
 
-export function DataGridColumnHeader<TData, TValue>({
+export function DataGridColumnHeader<TData extends RowData, TValue>({
   header,
   table,
   className,
@@ -54,14 +54,14 @@ export function DataGridColumnHeader<TData, TValue>({
       ? column.columnDef.header
       : column.id
 
-  const isAnyColumnResizing = table.getState().columnSizingInfo.isResizingColumn
+  const isAnyColumnResizing = table.getState().columnResizing.isResizingColumn
 
   const cellVariant = column.columnDef.meta?.cell
   const columnVariant = getColumnVariant(cellVariant?.variant)
 
   const pinnedPosition = column.getIsPinned()
-  const isPinnedLeft = pinnedPosition === "left"
-  const isPinnedRight = pinnedPosition === "right"
+  const isPinnedStart = pinnedPosition === "start"
+  const isPinnedEnd = pinnedPosition === "end"
 
   const onSortingChange = React.useCallback(
     (direction: SortDirection) => {
@@ -90,12 +90,12 @@ export function DataGridColumnHeader<TData, TValue>({
     )
   }, [column.id, table])
 
-  const onLeftPin = React.useCallback(() => {
-    column.pin("left")
+  const onStartPin = React.useCallback(() => {
+    column.pin("start")
   }, [column])
 
-  const onRightPin = React.useCallback(() => {
-    column.pin("right")
+  const onEndPin = React.useCallback(() => {
+    column.pin("end")
   }, [column])
 
   const onUnpin = React.useCallback(() => {
@@ -184,7 +184,7 @@ export function DataGridColumnHeader<TData, TValue>({
             <>
               {column.getCanSort() && <DropdownMenuSeparator />}
 
-              {isPinnedLeft ? (
+              {isPinnedStart ? (
                 <DropdownMenuItem
                   className="[&_svg]:text-muted-foreground"
                   onClick={onUnpin}
@@ -195,13 +195,13 @@ export function DataGridColumnHeader<TData, TValue>({
               ) : (
                 <DropdownMenuItem
                   className="[&_svg]:text-muted-foreground"
-                  onClick={onLeftPin}
+                  onClick={onStartPin}
                 >
                   <PinIcon />
                   Anclar a la izquierda
                 </DropdownMenuItem>
               )}
-              {isPinnedRight ? (
+              {isPinnedEnd ? (
                 <DropdownMenuItem
                   className="[&_svg]:text-muted-foreground"
                   onClick={onUnpin}
@@ -212,7 +212,7 @@ export function DataGridColumnHeader<TData, TValue>({
               ) : (
                 <DropdownMenuItem
                   className="[&_svg]:text-muted-foreground"
-                  onClick={onRightPin}
+                  onClick={onEndPin}
                 >
                   <PinIcon />
                   Anclar a la derecha
@@ -261,18 +261,18 @@ const DataGridColumnResizer = React.memo(
 ) as typeof DataGridColumnResizerImpl
 
 interface DataGridColumnResizerProps<
-  TData,
+  TData extends RowData,
   TValue
 > extends DataGridColumnHeaderProps<TData, TValue> {
   label: string
 }
 
-function DataGridColumnResizerImpl<TData, TValue>({
+function DataGridColumnResizerImpl<TData extends RowData, TValue>({
   header,
   table,
   label
 }: DataGridColumnResizerProps<TData, TValue>) {
-  const defaultColumnDef = table._getDefaultColumnDef()
+  const defaultColumnDef = table.getDefaultColumnDef()
 
   const onDoubleClick = React.useCallback(() => {
     header.column.resetSize()

@@ -7,7 +7,8 @@ import type {
   SelectFilterOperator,
   TextFilterOperator
 } from "@/types/data-grid"
-import type { FilterFn, Row } from "@tanstack/react-table"
+
+import type { FilterFn, Row, RowData } from "@/lib/types/tanstack-table"
 
 export const TEXT_FILTER_OPERATORS: ReadonlyArray<{
   label: string
@@ -108,7 +109,7 @@ export function getOperatorsForVariant(variant: string): ReadonlyArray<{
   }
 }
 
-export function getFilterFn<TData>(): FilterFn<TData> {
+export function getFilterFn<TData extends RowData>(): FilterFn<TData> {
   return (row: Row<TData>, columnId: string, filterValue: unknown): boolean => {
     if (!filterValue || typeof filterValue !== "object") {
       return true

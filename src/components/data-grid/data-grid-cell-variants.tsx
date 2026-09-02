@@ -41,9 +41,10 @@ import {
   getUrlHref,
   parseLocalDate
 } from "@/lib/data-grid"
+import type { RowData } from "@/lib/types/tanstack-table"
 import { cn } from "@/lib/utils"
 
-export function ShortTextCell<TData>({
+export function ShortTextCell<TData extends RowData>({
   cell,
   tableMeta,
   rowIndex,
@@ -204,7 +205,7 @@ export function ShortTextCell<TData>({
   )
 }
 
-export function LongTextCell<TData>({
+export function LongTextCell<TData extends RowData>({
   cell,
   tableMeta,
   rowIndex,
@@ -411,7 +412,7 @@ export function LongTextCell<TData>({
   )
 }
 
-export function NumberCell<TData>({
+export function NumberCell<TData extends RowData>({
   cell,
   tableMeta,
   rowIndex,
@@ -592,7 +593,7 @@ function getRangeLabel<TData>(row: TData) {
   return `${formatPriceValue(min, currency)} – ${formatPriceValue(max, currency)}`
 }
 
-export function PriceCell<TData>({
+export function PriceCell<TData extends RowData>({
   cell,
   tableMeta,
   rowIndex,
@@ -698,7 +699,7 @@ export function PriceCell<TData>({
   )
 }
 
-export function UrlCell<TData>({
+export function UrlCell<TData extends RowData>({
   cell,
   tableMeta,
   rowIndex,
@@ -923,7 +924,7 @@ export function UrlCell<TData>({
   )
 }
 
-export function CheckboxCell<TData>({
+export function CheckboxCell<TData extends RowData>({
   cell,
   tableMeta,
   rowIndex,
@@ -1037,7 +1038,7 @@ export function CheckboxCell<TData>({
   )
 }
 
-export function SelectCell<TData>({
+export function SelectCell<TData extends RowData>({
   cell,
   tableMeta,
   rowIndex,
@@ -1171,7 +1172,7 @@ export function SelectCell<TData>({
   )
 }
 
-export function MultiSelectCell<TData>({
+export function MultiSelectCell<TData extends RowData>({
   cell,
   tableMeta,
   rowIndex,
@@ -1478,7 +1479,7 @@ export function MultiSelectCell<TData>({
   )
 }
 
-export function DateCell<TData>({
+export function DateCell<TData extends RowData>({
   cell,
   tableMeta,
   rowIndex,
@@ -1591,7 +1592,7 @@ export function DateCell<TData>({
   )
 }
 
-export function FileCell<TData>({
+export function FileCell<TData extends RowData>({
   cell,
   tableMeta,
   rowIndex,

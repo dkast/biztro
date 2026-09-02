@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { type ColumnDef, type Row } from "@tanstack/react-table"
 import {
   ChevronDown,
   ChevronsUpDown,
@@ -25,6 +24,7 @@ import type { getMenuItems } from "@/server/actions/item/queries"
 import ItemDelete from "@/app/dashboard/menu-items/item-delete"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
 import { MenuItemStatus } from "@/lib/types/menu-item"
+import type { ColumnDef, Row } from "@/lib/types/tanstack-table"
 
 type MenuItemRow = Awaited<ReturnType<typeof getMenuItems>>[number]
 

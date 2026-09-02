@@ -4,9 +4,7 @@ import * as React from "react"
 import type { CellPosition, Direction, RowHeightValue } from "@/types/data-grid"
 import type {
   ColumnPinningState,
-  Row,
-  TableMeta,
-  VisibilityState
+  ColumnVisibilityState
 } from "@tanstack/react-table"
 import type { VirtualItem } from "@tanstack/react-virtual"
 
@@ -19,16 +17,19 @@ import {
   getColumnPinningStyle,
   getRowHeightValue
 } from "@/lib/data-grid"
+import type { Row, RowData, TableMeta } from "@/lib/types/tanstack-table"
 import { cn } from "@/lib/utils"
 
-interface DataGridRowProps<TData> extends React.ComponentProps<"div"> {
+interface DataGridRowProps<
+  TData extends RowData
+> extends React.ComponentProps<"div"> {
   row: Row<TData>
   tableMeta: TableMeta<TData>
   virtualItem: VirtualItem
   measureElement: (node: Element | null) => void
   rowMapRef: React.RefObject<Map<number, HTMLDivElement>>
   rowHeight: RowHeightValue
-  columnVisibility: VisibilityState
+  columnVisibility: ColumnVisibilityState
   columnPinning: ColumnPinningState
   focusedCell: CellPosition | null
   editingCell: CellPosition | null
@@ -145,7 +146,7 @@ export const DataGridRow = React.memo(DataGridRowImpl, (prev, next) => {
   return true
 }) as typeof DataGridRowImpl
 
-function DataGridRowImpl<TData>({
+function DataGridRowImpl<TData extends RowData>({
   row,
   tableMeta,
   virtualItem,

@@ -2,7 +2,6 @@ import { useState } from "react"
 import { toast } from "react-hot-toast"
 import type { Category } from "@/generated/prisma-client/client"
 import * as Sentry from "@sentry/nextjs"
-import type { Table } from "@tanstack/react-table"
 import { Combine, Loader, Star, Trash2, X } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 
@@ -35,6 +34,7 @@ import {
 } from "@/server/actions/item/mutations"
 import type { getMenuItems } from "@/server/actions/item/queries"
 import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
+import type { Table } from "@/lib/types/tanstack-table"
 import { cn } from "@/lib/utils"
 
 function FloatingToolbar({
