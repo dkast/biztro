@@ -86,7 +86,7 @@
     "@visx/responsive": "4.0.1-alpha.0",
     "@visx/scale": "4.0.1-alpha.0",
     "@visx/shape": "4.0.1-alpha.0",
-    "ai": "^6.0.208",
+    "ai": "^7.0.85",
     "better-auth": "1.6.26",
     "bloom-menu": "^0.1.0",
     "border-beam": "^1.3.0",
