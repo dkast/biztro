@@ -311,14 +311,15 @@ describe("useDataGrid", () => {
     }
     const onDataChange = vi.fn()
     const onPaste = vi.fn()
-    const onFilesUpload = vi.fn(async () => [pastedFile])
+    const onFilesUpload = vi.fn(() => Promise.resolve([pastedFile]))
     const onFilesDelete = vi.fn()
 
     vi.stubGlobal("navigator", { clipboard, userAgent: "Vitest" })
     vi.stubGlobal(
       "requestAnimationFrame",
       (callback: FrameRequestCallback): number => {
-        callback(0)
+        const frameTimestamp: DOMHighResTimeStamp = 0
+        callback(frameTimestamp)
         return 1
       }
     )

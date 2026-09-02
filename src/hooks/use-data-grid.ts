@@ -2590,7 +2590,7 @@ function useDataGrid<TData extends RowData>({
         const currentColumnId = currentState.focusedCell.columnId
 
         Promise.resolve(propsRef.current.onRowAdd())
-          .then(async result => {
+          .then(result => {
             if (result === null) return
 
             onSelectionClear()
