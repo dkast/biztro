@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { type ColumnDef, type Row } from "@tanstack/react-table"
 import {
   ChevronDown,
   ChevronsUpDown,
@@ -21,9 +20,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import MemberDelete from "@/app/dashboard/settings/members/member-delete"
 import type { AuthMember } from "@/lib/auth"
+import type { DataTableColumnDef, DataTableRow } from "@/lib/data-table"
 import { getInitials } from "@/lib/utils"
 
-export function getColumns(canDeleteMember: boolean): ColumnDef<AuthMember>[] {
+export function getColumns(
+  canDeleteMember: boolean
+): DataTableColumnDef<AuthMember>[] {
   return [
     {
       accessorKey: "user.name",
@@ -94,7 +96,7 @@ function ActionsColumn({
   row,
   canDeleteMember
 }: {
-  row: Row<AuthMember>
+  row: DataTableRow<AuthMember>
   canDeleteMember: boolean
 }) {
   const member = row.original

@@ -35,7 +35,7 @@ export function ImageField({
   return (
     <div
       className={cn(
-        "group relative h-60 w-full overflow-hidden rounded-lg",
+        "group/image relative h-60 w-full overflow-hidden rounded-lg",
         className
       )}
     >
@@ -50,7 +50,7 @@ export function ImageField({
       />
       <div
         className="absolute inset-0 hidden bg-black/50 backdrop-blur
-          group-hover:block"
+          group-hover/image:block"
       >
         <div className="absolute inset-0 flex items-center justify-center">
           <Dialog open={open} onOpenChange={setOpen}>

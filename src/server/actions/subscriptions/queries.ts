@@ -19,7 +19,8 @@ export const getCurrentSubscription = async (organizationId: string) => {
   try {
     const subscriptions = await stripeBillingApi.listActiveSubscriptions({
       query: {
-        referenceId: organizationId
+        referenceId: organizationId,
+        customerType: "organization"
       },
       headers: await headers()
     })

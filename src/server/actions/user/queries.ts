@@ -215,7 +215,7 @@ export async function isProMember() {
 
   try {
     subscriptions = await stripeBillingApi.listActiveSubscriptions({
-      query: { referenceId: org.id },
+      query: { referenceId: org.id, customerType: "organization" },
       headers: await headers()
     })
   } catch (error) {

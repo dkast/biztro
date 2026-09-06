@@ -16,11 +16,12 @@ import {
   getColumnBorderVisibility,
   getColumnPinningStyle
 } from "@/lib/data-grid"
+import type { RowData } from "@/lib/data-grid-table"
 import { cn } from "@/lib/utils"
 
 const EMPTY_CELL_SELECTION_SET = new Set<string>()
 
-interface DataGridProps<TData>
+interface DataGridProps<TData extends RowData>
   extends
     Omit<ReturnType<typeof useDataGrid<TData>>, "dir">,
     Omit<React.ComponentProps<"div">, "contextMenu"> {
@@ -29,7 +30,7 @@ interface DataGridProps<TData>
   stretchColumns?: boolean
 }
 
-export function DataGrid<TData>({
+export function DataGrid<TData extends RowData>({
   dataGridRef,
   headerRef,
   rowMapRef,
@@ -60,8 +61,8 @@ export function DataGrid<TData>({
 }: DataGridProps<TData>) {
   const rows = table.getRowModel().rows
   const readOnly = tableMeta?.readOnly ?? false
-  const columnVisibility = table.getState().columnVisibility
-  const columnPinning = table.getState().columnPinning
+  const columnVisibility = table.state.columnVisibility
+  const columnPinning = table.state.columnPinning
 
   const onRowAddRef = useAsRef(onRowAddProp)
 
@@ -137,7 +138,7 @@ export function DataGrid<TData>({
               className="flex w-full"
             >
               {headerGroup.headers.map((header, colIndex) => {
-                const sorting = table.getState().sorting
+                const sorting = table.state.sorting
                 const currentSort = sorting.find(
                   sort => sort.id === header.column.id
                 )
