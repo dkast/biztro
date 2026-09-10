@@ -56,8 +56,8 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="relative isolate border-y border-taupe-200 py-24 sm:py-32
-        dark:border-taupe-800/40"
+      className="relative isolate border-y border-taupe-200 py-20 sm:py-28
+        lg:py-32 dark:border-taupe-800/40"
     >
       <div
         aria-hidden="true"

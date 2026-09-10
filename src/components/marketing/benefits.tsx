@@ -59,7 +59,7 @@ const BENEFITS = [
 
 export default function Benefits() {
   return (
-    <section id="benefits" className="relative pt-20 pb-28 sm:py-32">
+    <section id="benefits" className="relative py-20 sm:py-28 lg:py-32">
       <div
         className="absolute inset-0 h-full w-full items-center px-5 py-24
           dark:hidden"
@@ -77,10 +77,10 @@ export default function Benefits() {
           align="left"
           eyebrow="Por qué usar Biztro"
           title="Más control para tu negocio, mejor experiencia para tus clientes"
-          className="mx-auto mb-8 px-4 sm:mb-12 sm:px-6 lg:mb-16 lg:px-8"
+          className="mx-auto mb-10 px-4 sm:mb-14 sm:px-6 lg:px-8"
         />
         <div
-          className="mx-auto mt-8 grid max-w-6xl grid-cols-1 gap-8 px-4
+          className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4
             sm:grid-cols-3 sm:gap-12 sm:px-6 lg:gap-16 lg:px-8"
         >
           {BENEFITS.map((benefit, index) => (

@@ -20,6 +20,8 @@ export type FeaturesProps = {
   collapseDelay?: number
   ltr?: boolean
   linePosition?: "left" | "right" | "top" | "bottom"
+  /** When set, renders "{stepLabel} N" above each step title. */
+  stepLabel?: string
   data: CardDataProps[]
 }
 
@@ -27,6 +29,7 @@ export default function Features({
   collapseDelay = 5000,
   ltr = false,
   linePosition = "bottom",
+  stepLabel,
   data = []
 }: FeaturesProps) {
   const [currentIndex, setCurrentIndex] = useState<number>(-1)
@@ -222,6 +225,20 @@ export default function Features({
                         {item.icon}
                       </div>
 
+                      {stepLabel && (
+                        <span
+                          className={cn(
+                            `text-xs font-semibold tracking-widest uppercase
+                            transition-colors duration-200`,
+                            isActive
+                              ? "text-primary dark:text-taupe-200"
+                              : "text-taupe-400 dark:text-taupe-600"
+                          )}
+                        >
+                          {stepLabel} {index + 1}
+                        </span>
+                      )}
+
                       {/* Title */}
                       <h3
                         className={cn(
@@ -304,8 +321,8 @@ export default function Features({
       {/* ── Mobile carousel ── */}
       <ul
         ref={carouselRef}
-        className="flex snap-x snap-mandatory flex-nowrap overflow-x-auto py-8
-          [-ms-overflow-style:none] [scrollbar-width:none] md:hidden
+        className="flex snap-x snap-mandatory [scrollbar-width:none] flex-nowrap
+          overflow-x-auto py-8 [-ms-overflow-style:none] md:hidden
           [&::-webkit-scrollbar]:hidden"
         style={{ padding: "32px calc(50%)" }}
       >
@@ -341,6 +358,14 @@ export default function Features({
                   }}
                 />
               </div>
+              {stepLabel && (
+                <span
+                  className="text-xs font-semibold tracking-widest
+                    text-taupe-500 uppercase"
+                >
+                  {stepLabel} {index + 1}
+                </span>
+              )}
               <h2
                 className={cn(
                   "font-display text-base font-semibold transition-colors",

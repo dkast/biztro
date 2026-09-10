@@ -2,7 +2,7 @@ import type { CSSProperties } from "react"
 import { Rocket, ShoppingBag, Store } from "lucide-react"
 
 import Features from "@/components/flare-ui/features-horizontal"
-import { HowItWorksQr } from "@/components/marketing/how-it-works-qr"
+import { HowItWorksShare } from "@/components/marketing/how-it-works-qr"
 import TitleSection from "@/components/marketing/title-section"
 
 const data = [
@@ -36,51 +36,39 @@ export default function Component() {
   return (
     <section
       id="how-it-works"
-      className="mx-auto max-w-6xl px-4 pt-20 pb-8 sm:px-6 sm:py-32 sm:pb-28
-        lg:px-8"
+      className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-32"
       style={{ "--primary": "oklch(64.6% 0.222 41.116)" } as CSSProperties}
     >
       <TitleSection
+        align="left"
         eyebrow="Cómo funciona"
-        title="Publica tu menú en 3 pasos"
-        className="mb-8"
+        title="Publica tu menú en 3 pasos."
+        tagline="Configura tu negocio, agrega tus productos y comparte tu menú. Sin instalaciones ni conocimientos técnicos."
+        className="mb-10 sm:mb-14"
       />
-      <Features collapseDelay={6000} data={data} linePosition="bottom" />
+      <Features
+        collapseDelay={6000}
+        data={data}
+        linePosition="bottom"
+        stepLabel="Paso"
+      />
+
+      {/* Divider between the steps and the sharing scene */}
       <div
-        className="mx-auto mt-0 grid max-w-6xl grid-cols-1 gap-8 px-4 sm:mt-28
-          sm:grid-cols-2 sm:px-0"
+        className="my-16 flex items-center gap-4 sm:my-24"
+        aria-hidden="true"
       >
-        <div>
-          <h3
-            className="font-display mb-4 text-lg font-semibold text-taupe-950
-              sm:text-2xl lg:text-3xl dark:text-taupe-50"
-          >
-            Comparte tu menú con un código QR y un enlace
-          </h3>
-          <div
-            className="flex flex-col gap-3 text-taupe-700 sm:text-lg
-              dark:text-taupe-300"
-          >
-            <p>
-              Descarga tu código QR desde el editor en segundos. Después puedes
-              imprimirlo y colocarlo en mesas, mostrador o escaparate.
-            </p>
-            <p>
-              Tus clientes solo tienen que escanearlo con la cámara de su
-              teléfono para abrir tu menú al instante.{" "}
-              <span className="text-taupe-950 dark:text-taupe-50">
-                También puedes compartir el mismo enlace en redes sociales
-              </span>{" "}
-              o en tu sitio web.
-            </p>
-            <p>
-              El menú se adapta a celulares y tablets, se lee con claridad y no
-              requiere instalar ninguna app.
-            </p>
-          </div>
-        </div>
-        <HowItWorksQr />
+        <span className="h-px flex-1 bg-taupe-200 dark:bg-taupe-800" />
+        <span
+          className="text-xs font-semibold tracking-widest text-taupe-500
+            uppercase"
+        >
+          Listo para compartir
+        </span>
+        <span className="h-px flex-1 bg-taupe-200 dark:bg-taupe-800" />
       </div>
+
+      <HowItWorksShare />
     </section>
   )
 }
