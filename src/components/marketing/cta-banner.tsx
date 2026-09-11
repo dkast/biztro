@@ -10,9 +10,9 @@ export default function CTABanner() {
     >
       <div className="mx-auto w-full max-w-6xl px-4">
         <div
-          className="smooth-shadow-ring-xl smooth-ring-neutral-50/30 relative
+          className="smooth-shadow-ring-xl smooth-ring-orange-400/30 relative
             isolate flex flex-col items-center justify-center overflow-clip
-            rounded-xl bg-taupe-950 p-8 shadow-orange-400 xl:p-16"
+            rounded-xl p-8 shadow-orange-700 xl:p-16"
         >
           {/* Golden-hour gradient: cream bloom over warm ink */}
           <div
@@ -20,7 +20,7 @@ export default function CTABanner() {
             className="pointer-events-none absolute inset-0 -z-10"
             style={{
               background: `linear-gradient(
-                to bottom,
+                to right bottom,
                 var(--color-taupe-200) 0%,
                 oklch(80% 0.14 62) 20%,
                 oklch(64.6% 0.222 41.116) 36%,
@@ -33,7 +33,7 @@ export default function CTABanner() {
           {/* Print grain */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05]
+            className="pointer-events-none absolute inset-0 -z-10 opacity-50
               mix-blend-overlay"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")`
