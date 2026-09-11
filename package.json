@@ -139,6 +139,7 @@
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",
     "resend": "^6.22.1",
+    "shadow-plugin": "^2.1.0",
     "sharp": "^0.35.3",
     "shiki": "4.4.3",
     "stripe": "^22.5.0",

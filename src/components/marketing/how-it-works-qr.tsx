@@ -5,7 +5,6 @@ import Link from "next/link"
 import QRimage from "../../../public/qr-example.png"
 
 const exampleUrl = "https://la-bella-italia.biztro.co"
-const exampleHost = "la-bella-italia.biztro.co"
 
 const channels = [
   {
@@ -71,21 +70,20 @@ export function HowItWorksShare() {
 
       {/* QR scene */}
       <div
-        className="relative isolate overflow-hidden rounded-xl bg-taupe-200 px-6
-          py-12 ring-1 ring-taupe-300/60 sm:px-10 sm:py-14 dark:bg-taupe-800
-          dark:ring-taupe-700"
+        className="relative isolate overflow-hidden rounded-xl px-6 py-12 ring-1
+          ring-taupe-900/20 sm:px-10 sm:py-14 dark:ring-white/10"
       >
-        {/* Dot grid texture */}
+        <Image
+          src="/qr-background.jpg"
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 512px, 100vw"
+          className="-z-10 object-cover"
+        />
+        {/* Scrim so the card and chip stay legible over the photo */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10
-            [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]
-            opacity-40 dark:opacity-20"
-          style={{
-            backgroundImage:
-              "radial-gradient(var(--color-taupe-400) 1px, transparent 1px)",
-            backgroundSize: "18px 18px"
-          }}
+          className="pointer-events-none absolute inset-0 -z-10 bg-taupe-950/65"
         />
 
         {/* Published chip */}
@@ -115,12 +113,12 @@ export function HowItWorksShare() {
           prefetch={false}
           className="group mx-auto block w-fit rounded-xl outline-none
             focus-visible:ring-2 focus-visible:ring-orange-500/60
-            focus-visible:ring-offset-2 focus-visible:ring-offset-taupe-200"
+            focus-visible:ring-offset-2 focus-visible:ring-offset-taupe-950"
           aria-label="Abrir el menú de ejemplo"
         >
           <div
-            className="flex flex-col items-center gap-4 rounded-xl bg-white p-5
-              shadow-xl ring-1 shadow-taupe-900/15 ring-taupe-950/5
+            className="mt-7 flex flex-col items-center gap-4 rounded-xl bg-white
+              p-2 shadow-xl ring-1 shadow-taupe-900/15 ring-taupe-950/5
               transition-transform duration-300 ease-out
               group-hover:-translate-y-1 dark:bg-taupe-950 dark:shadow-black/40
               dark:ring-white/10"
@@ -132,38 +130,18 @@ export function HowItWorksShare() {
               height={200}
               className="block size-44 rounded-lg sm:size-52"
             />
-            <div className="flex flex-col items-center gap-1">
-              <span
-                className="font-display text-sm font-semibold tracking-tight
-                  text-taupe-950 dark:text-taupe-50"
-              >
-                Escanea para ver el menú
-              </span>
-              <span
-                className="inline-flex items-center gap-1.5 rounded-md
-                  bg-taupe-100 px-2 py-1 text-xs text-taupe-600
-                  dark:bg-taupe-800 dark:text-taupe-300"
-              >
-                <Link2 className="size-3" />
-                {exampleHost}
-              </span>
-            </div>
           </div>
         </Link>
 
-        <p
-          className="mt-6 text-center text-sm text-taupe-700
-            dark:text-taupe-300"
-        >
+        <p className="mt-6 text-center text-sm text-taupe-100">
           Escanea o{" "}
           <Link
             href={exampleUrl}
             target="_blank"
             rel="noopener noreferrer"
             prefetch={false}
-            className="inline-flex items-center gap-1 font-medium text-taupe-900
-              underline underline-offset-2 hover:text-taupe-950
-              dark:text-taupe-100 dark:hover:text-taupe-50"
+            className="inline-flex items-center gap-1 font-medium text-white
+              underline underline-offset-2 hover:text-orange-200"
           >
             abre el ejemplo
             <CornerRightUp className="size-3" />

@@ -79,12 +79,6 @@ function ScannerIllustration() {
       <div className="grid h-full w-full grid-cols-[1fr_auto_1.15fr] gap-3 p-5">
         {/* Source: photo of the printed menu */}
         <div className="relative flex min-h-0 flex-col">
-          <span
-            className="mb-2 text-[10px] font-medium tracking-wider
-              text-taupe-500 uppercase"
-          >
-            Menú impreso
-          </span>
           <div
             className="relative min-h-0 flex-1 overflow-hidden rounded-md
               bg-[oklch(96%_0.01_80)] shadow-lg ring-1 ring-black/10"
@@ -95,14 +89,13 @@ function ScannerIllustration() {
                 <div className="h-2.5 w-16 rounded-sm bg-taupe-400/60" />
                 <div className="h-1.5 w-10 rounded-sm bg-taupe-300/70" />
               </div>
-              {[0, 1, 2].map(i => (
+              {[0, 1].map(i => (
                 <div key={i} className="space-y-1.5">
                   <div className="h-1.5 w-12 rounded-sm bg-taupe-400/50" />
                   <div className="flex items-end gap-2">
                     <div className="h-1.5 flex-1 rounded-sm bg-taupe-300/70" />
                     <div className="h-1.5 w-6 rounded-sm bg-taupe-400/60" />
                   </div>
-                  <div className="h-1.5 w-4/5 rounded-sm bg-taupe-300/50" />
                 </div>
               ))}
             </div>
@@ -165,12 +158,6 @@ function ScannerIllustration() {
 
         {/* Target: extracted, editable products */}
         <div className="flex min-h-0 flex-col">
-          <span
-            className="mb-2 text-[10px] font-medium tracking-wider
-              text-taupe-500 uppercase"
-          >
-            Productos detectados
-          </span>
           <div className="flex min-h-0 flex-1 flex-col gap-2">
             {extractedItems.map((item, i) => {
               const start = 0.14 + i * 0.16
@@ -221,28 +208,6 @@ function ScannerIllustration() {
 
             {/* Progress */}
             <div className="mt-auto">
-              <div
-                className="mb-1.5 flex items-center justify-between text-[10px]
-                  text-taupe-400"
-              >
-                <span className="inline-flex items-center gap-1.5">
-                  <ScanText className="size-3 text-orange-400" />
-                  Extrayendo productos
-                </span>
-                <span className="tabular-nums">
-                  <motion.span
-                    animate={{ opacity: [1, 1, 0, 0, 1] }}
-                    transition={{
-                      duration: SCAN_CYCLE,
-                      repeat: Infinity,
-                      times: [0, 0.66, 0.68, 0.98, 1]
-                    }}
-                  >
-                    3
-                  </motion.span>
-                  /12
-                </span>
-              </div>
               <div className="h-1 overflow-hidden rounded-full bg-taupe-800">
                 <motion.div
                   className="h-full rounded-full bg-orange-500"

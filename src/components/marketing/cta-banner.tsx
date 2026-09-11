@@ -10,10 +10,35 @@ export default function CTABanner() {
     >
       <div className="mx-auto w-full max-w-6xl px-4">
         <div
-          className="flex flex-col items-center justify-center rounded-xl
-            bg-linear-to-br from-taupe-800 via-taupe-900 to-taupe-950 p-8
-            shadow-xl shadow-taupe-900/40 xl:p-16 dark:shadow-none"
+          className="smooth-shadow-ring-xl smooth-ring-neutral-50/30 relative
+            isolate flex flex-col items-center justify-center overflow-clip
+            rounded-xl bg-taupe-950 p-8 shadow-orange-400 xl:p-16"
         >
+          {/* Golden-hour gradient: cream bloom over warm ink */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 -z-10"
+            style={{
+              background: `linear-gradient(
+                to bottom,
+                var(--color-taupe-200) 0%,
+                oklch(80% 0.14 62) 20%,
+                oklch(64.6% 0.222 41.116) 36%,
+                oklch(45% 0.13 45) 54%,
+                var(--color-taupe-950) 86%,
+                var(--color-taupe-950) 100%
+              )`
+            }}
+          />
+          {/* Print grain */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05]
+              mix-blend-overlay"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")`
+            }}
+          />
           <div
             className="flex h-14 w-14 items-center justify-center rounded-xl
               bg-taupe-100 shadow-lg shadow-taupe-950/20"
