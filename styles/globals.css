@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "shadcn/tailwind.css";
 @import "gradient-border-plugin";
+@import "shadow-plugin";
 
 /* Text shadow utilities */
 @source inline("text-shadow-md text-shadow-lg/30");

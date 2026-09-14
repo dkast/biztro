@@ -102,14 +102,15 @@ const features = [
 export default function FeaturesBento() {
   return (
     <>
-      <section className="mx-auto mt-0 max-w-6xl px-4 sm:px-6 sm:px-8">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <TitleSection
+          eyebrow="Tu menú digital"
           title="Olvídate de los PDFs desactualizados."
           tagline="Edita precios, fotos y categorías desde el navegador, y tus cambios se publican al instante."
           align="left"
         />
       </section>
-      <section className="mx-auto mt-8 max-w-6xl px-4 sm:mt-12 sm:px-6 sm:px-8">
+      <section className="mx-auto mt-10 max-w-6xl px-4 sm:mt-14 sm:px-6 lg:px-8">
         <BentoGrid className="sm:grid-cols-2 sm:grid-rows-3">
           {features.map(feature => (
             <BentoCard key={feature.name} {...feature} />
