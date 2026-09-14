@@ -6,34 +6,35 @@ import Panel from "@/components/dashboard/page-panel"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ItemFormContent } from "@/app/dashboard/menu-items/[action]/[id]/item-form-content"
 
-export async function generateMetadata(props: {
-  params: Promise<{ action: string; id: string }>
-}): Promise<Metadata> {
-  const params = await props.params
-  const title = `${params.action === "new" ? "Crear" : "Editar"} Producto`
-  return {
-    title
-  }
+export const metadata: Metadata = {
+  title: "Producto"
 }
 
-export default async function ItemPage(props: {
+export default function ItemPage(props: {
   params: Promise<{ action: string; id: string }>
 }) {
-  await connection()
-
-  const params = await props.params
-
   return (
     <Panel className="rounded-lg sm:m-2 sm:h-[95%]">
       <div className="h-full overflow-x-auto">
         <div className="group is-dialog max-w-6xl px-4 py-2 sm:mx-auto sm:px-6">
           <Suspense fallback={<LoadingItemSkeleton />}>
-            <ItemFormContent action={params.action} id={params.id} />
+            <DynamicItemForm params={props.params} />
           </Suspense>
         </div>
       </div>
     </Panel>
   )
+}
+
+async function DynamicItemForm({
+  params
+}: {
+  params: Promise<{ action: string; id: string }>
+}) {
+  const { action, id } = await params
+  await connection()
+
+  return <ItemFormContent action={action} id={id} />
 }
 
 function LoadingItemSkeleton() {

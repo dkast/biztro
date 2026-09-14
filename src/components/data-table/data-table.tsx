@@ -1,12 +1,7 @@
 "use client"
 
 import React, { useEffect } from "react"
-import {
-  flexRender,
-  type ColumnDef,
-  type Row,
-  type Table as TanStackTable
-} from "@tanstack/react-table"
+import { flexRender } from "@tanstack/react-table"
 import { SearchX } from "lucide-react"
 
 import {
@@ -25,20 +20,26 @@ import {
   TableRow
 } from "@/components/ui/table"
 import { useIsMobile } from "@/hooks/use-mobile"
+import type {
+  DataTableColumnDef,
+  DataTableInstance,
+  DataTableRow,
+  RowData
+} from "@/lib/data-table"
 import { cn } from "@/lib/utils"
 import { DataTablePagination } from "./data-table-pagination"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
+interface DataTableProps<TData extends RowData, TValue> {
+  columns: DataTableColumnDef<TData, TValue>[]
   toolbar?: React.ReactNode
-  onRowClick?: (row: Row<TData>) => void
-  table: TanStackTable<TData>
+  onRowClick?: (row: DataTableRow<TData>) => void
+  table: DataTableInstance<TData>
   globalFilter: string
   setGlobalFilter: (value: string) => void
   floatinToolbar?: React.ReactNode
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends RowData, TValue>({
   columns,
   toolbar,
   onRowClick,

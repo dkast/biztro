@@ -3,7 +3,7 @@
 import * as React from "react"
 import type { FilterOperator, FilterValue } from "@/types/data-grid"
 import { useDirection } from "@radix-ui/react-direction"
-import type { Column, ColumnFilter, Table } from "@tanstack/react-table"
+import type { ColumnFilter } from "@tanstack/react-table"
 import {
   CalendarIcon,
   Check,
@@ -49,6 +49,7 @@ import {
   getDefaultOperator,
   getOperatorsForVariant
 } from "@/lib/data-grid-filters"
+import type { Column, RowData, Table } from "@/lib/data-grid-table"
 import { formatDate } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
@@ -57,14 +58,14 @@ const REMOVE_FILTER_SHORTCUTS = ["backspace", "delete"]
 const FILTER_DEBOUNCE_MS = 300
 const OPERATORS_WITHOUT_VALUE = ["isEmpty", "isNotEmpty", "isTrue", "isFalse"]
 
-interface DataGridFilterMenuProps<TData> extends React.ComponentProps<
-  typeof PopoverContent
-> {
+interface DataGridFilterMenuProps<
+  TData extends RowData
+> extends React.ComponentProps<typeof PopoverContent> {
   table: Table<TData>
   disabled?: boolean
 }
 
-export function DataGridFilterMenu<TData>({
+export function DataGridFilterMenu<TData extends RowData>({
   table,
   disabled,
   className,
@@ -77,7 +78,7 @@ export function DataGridFilterMenu<TData>({
   const [open, setOpen] = React.useState(false)
   const addButtonRef = React.useRef<HTMLButtonElement>(null)
 
-  const columnFilters = table.getState().columnFilters
+  const columnFilters = table.state.columnFilters
 
   const { columnLabels, columns, columnVariants } = React.useMemo(() => {
     const labels = new Map<string, string>()
@@ -308,7 +309,7 @@ export function DataGridFilterMenu<TData>({
   )
 }
 
-interface DataGridFilterItemProps<TData> {
+interface DataGridFilterItemProps<TData extends RowData> {
   filter: ColumnFilter
   index: number
   filterItemId: string
@@ -321,7 +322,7 @@ interface DataGridFilterItemProps<TData> {
   onFilterRemove: (filterId: string) => void
 }
 
-function DataGridFilterItem<TData>({
+function DataGridFilterItem<TData extends RowData>({
   filter,
   index,
   filterItemId,
@@ -553,7 +554,7 @@ function DataGridFilterItem<TData>({
   )
 }
 
-interface DataGridFilterInputProps<TData> {
+interface DataGridFilterInputProps<TData extends RowData> {
   variant: string
   operator: FilterOperator
   dir: "ltr" | "rtl"
@@ -566,7 +567,7 @@ interface DataGridFilterInputProps<TData> {
   onEndValueChange?: (value: string | number | string[] | undefined) => void
 }
 
-function DataGridFilterInput<TData>({
+function DataGridFilterInput<TData extends RowData>({
   variant,
   operator,
   dir,

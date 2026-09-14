@@ -1,5 +1,5 @@
 import { gateway, generateText, Output } from "ai"
-import { MockLanguageModelV3 } from "ai/test"
+import { MockLanguageModelV4 } from "ai/test"
 
 import { getMenuImportVisualCatalogPrompt } from "@/server/actions/menu-import/visual-catalog"
 import {
@@ -187,7 +187,7 @@ const mockedVisualPackage: MenuImportVisualPackage = {
 function createMockMenuImportModel(
   scenario: MenuImportFileInput["simulateScenario"]
 ) {
-  return new MockLanguageModelV3({
+  return new MockLanguageModelV4({
     doGenerate: () =>
       Promise.resolve({
         content: [
@@ -220,7 +220,7 @@ function createMockMenuImportModel(
 }
 
 function createMockVisualModel() {
-  return new MockLanguageModelV3({
+  return new MockLanguageModelV4({
     doGenerate: () =>
       Promise.resolve({
         content: [{ type: "text", text: JSON.stringify(mockedVisualPackage) }],
@@ -247,16 +247,11 @@ function getFileOrImageContent({
   fileBase64,
   mimeType
 }: Pick<MenuImportFileInput, "fileBase64" | "mimeType">) {
-  return mimeType === "application/pdf"
-    ? {
-        type: "file" as const,
-        data: fileBase64,
-        mediaType: mimeType
-      }
-    : {
-        type: "image" as const,
-        image: `data:${mimeType};base64,${fileBase64}`
-      }
+  return {
+    type: "file" as const,
+    data: fileBase64,
+    mediaType: mimeType
+  }
 }
 
 function normalizeExtractedMenuItem(item: MenuImportItem): MenuImportItem {

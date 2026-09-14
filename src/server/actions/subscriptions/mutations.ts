@@ -18,6 +18,7 @@ export const createStripePortal = async (referenceId: string) => {
     const data = await stripeBillingApi.createBillingPortal({
       body: {
         referenceId,
+        customerType: "organization",
         returnUrl: `${getBaseUrl()}/dashboard/settings/billing`
       },
       headers: await headers()
