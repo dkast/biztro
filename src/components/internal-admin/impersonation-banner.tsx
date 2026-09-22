@@ -37,10 +37,7 @@ export function ImpersonationBanner() {
   }
 
   return (
-    <Banner
-      className="impersonate-banner sticky inset-x-0 top-0 bg-orange-400
-        dark:bg-orange-600"
-    >
+    <Banner className="sticky inset-x-0 top-0 bg-orange-400 dark:bg-orange-600">
       <BannerIcon icon={AlertTriangle} className="shrink-0" />
       <BannerTitle>
         Estás usando la aplicación como {session.user.name}.

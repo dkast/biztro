@@ -31,7 +31,7 @@ function SalesClosingHourlyYAxis({ currency }: { currency: Currency }) {
       {ticks.map(tick => (
         <text
           key={tick}
-          className="fill-muted-foreground text-[10px] tabular-nums sm:text-xs"
+          className="fill-muted-foreground text-xs tabular-nums"
           dominantBaseline="middle"
           textAnchor="end"
           x={-12}
@@ -79,7 +79,7 @@ export function SalesClosingHourlyChart({
         aspectRatio="5 / 1"
         mobileAspectRatio="4 / 3"
         className="min-h-40 sm:min-h-0"
-        margin={{ top: 16, right: 12, bottom: 28, left: 72 }}
+        margin={{ top: 16, right: 12, bottom: 28, left: 88 }}
       >
         <SalesClosingHourlyYAxis currency={currency} />
         <Grid horizontal numTicksRows={3} />

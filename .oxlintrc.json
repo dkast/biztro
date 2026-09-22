@@ -62,11 +62,25 @@
     "typescript/prefer-as-const": "error",
     "typescript/prefer-namespace-keyword": "error",
     "typescript/triple-slash-reference": "error",
-    "shadcn/no-arbitrary-values": ["warn", { "allow": ["layout"] }],
-    "shadcn/no-unknown-classes": [
-      "warn",
+    "shadcn/no-arbitrary-values": [
+      "error",
       {
-        "allow": ["editor-*"]
+        "allow": [
+          "layout",
+          "border-[0.5px]",
+          "shadow-[0_18px_30px_rgba(0,0,0,0.08)]",
+          "pb-[max(1.25rem,env(safe-area-inset-bottom))]",
+          "pb-[max(1rem,env(safe-area-inset-bottom))]",
+          "tracking-[0.2em]",
+          "bg-radial-[at_0%_100%]",
+          "animate-[ping_1s_ease-in-out_5]"
+        ]
+      }
+    ],
+    "shadcn/no-unknown-classes": [
+      "error",
+      {
+        "allow": ["editor-*", "is-dialog", "layer-name", "font-mono"]
       }
     ]
   },
@@ -162,6 +176,12 @@
       "files": ["**/opengraph-image.tsx"],
       "rules": {
         "nextjs/no-img-element": "off"
+      }
+    },
+    {
+      "files": ["src/emails/**"],
+      "rules": {
+        "shadcn/no-arbitrary-values": "off"
       }
     },
     {
