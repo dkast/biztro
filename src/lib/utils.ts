@@ -2,17 +2,13 @@ import InviteUserEmail from "@/emails/invite"
 import type { OpeningHours } from "@/generated/prisma-client/client"
 import { parseTime } from "@internationalized/date"
 import * as Sentry from "@sentry/nextjs"
-import { clsx, type ClassValue } from "clsx"
 import { Resend } from "resend"
-import { twMerge } from "tailwind-merge"
 
 import { authClient } from "@/lib/auth-client"
 import { getUILabels } from "@/lib/ui-labels"
 import { env } from "@/env.mjs"
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+export { cn } from "cn"
 
 // Get initials from name string
 export function getInitials(name: string | undefined | null) {
