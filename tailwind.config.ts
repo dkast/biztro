@@ -1,4 +1,3 @@
-import typography from "@tailwindcss/typography"
 import { type Config } from "tailwindcss"
 import tailwindcssAnimate from "tailwindcss-animate"
 import colors from "tailwindcss/colors"
@@ -123,7 +122,7 @@ const config = {
       }
     }
   },
-  plugins: [typography, tailwindcssAnimate]
+  plugins: [tailwindcssAnimate]
 } satisfies Config
 
 export default config
