@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "jsPlugins": ["@shadcn/lint"],
   "plugins": ["nextjs", "typescript"],
   "categories": {
     "correctness": "off"
@@ -60,7 +61,14 @@
     "typescript/no-wrapper-object-types": "error",
     "typescript/prefer-as-const": "error",
     "typescript/prefer-namespace-keyword": "error",
-    "typescript/triple-slash-reference": "error"
+    "typescript/triple-slash-reference": "error",
+    "shadcn/no-arbitrary-values": ["warn", { "allow": ["layout"] }],
+    "shadcn/no-unknown-classes": [
+      "warn",
+      {
+        "allow": ["editor-*"]
+      }
+    ]
   },
   "overrides": [
     {
@@ -148,6 +156,30 @@
           }
         ],
         "typescript/no-empty-interface": "warn"
+      }
+    },
+    {
+      "files": ["**/opengraph-image.tsx"],
+      "rules": {
+        "nextjs/no-img-element": "off"
+      }
+    },
+    {
+      "files": [
+        "src/components/ui/**",
+        "src/components/marketing/**",
+        "src/components/magicui/**",
+        "src/components/flare-ui/**",
+        "src/components/kibo-ui/**",
+        "src/components/data-grid/**",
+        "src/components/theme-switcher/**",
+        "src/components/charts/**"
+      ],
+      "rules": {
+        "shadcn/no-restyle": "off",
+        "shadcn/no-arbitrary-values": "off",
+        "shadcn/require-static-classes": "off",
+        "shadcn/no-unknown-classes": "off"
       }
     }
   ]
