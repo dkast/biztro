@@ -220,8 +220,8 @@ export default function HeaderBlock({
       {/* Nested sticky keeps the actions pinned natively while the header scrolls */}
       <div className="pointer-events-none absolute inset-0 z-30">
         <div
-          className="sticky top-[calc(env(safe-area-inset-top)+0.75rem)] mt-3
-            flex h-10 justify-end px-3"
+          className="sticky mt-3 flex h-10 justify-end px-3"
+          style={{ top: "calc(env(safe-area-inset-top) + 0.75rem)" }}
         >
           <div className="pointer-events-auto">
             <PublicMenuActions />
