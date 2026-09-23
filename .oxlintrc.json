@@ -71,6 +71,8 @@
           "shadow-[0_18px_30px_rgba(0,0,0,0.08)]",
           "pb-[max(1.25rem,env(safe-area-inset-bottom))]",
           "pb-[max(1rem,env(safe-area-inset-bottom))]",
+          "pb-[max(0.5rem,env(safe-area-inset-bottom))]",
+          "pt-[env(safe-area-inset-top)]",
           "tracking-[0.2em]",
           "bg-radial-[at_0%_100%]",
           "animate-[ping_1s_ease-in-out_5]"

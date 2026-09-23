@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useNode } from "@craftjs/core"
 import { type RgbaColor } from "@uiw/react-color"
-import { motion, useScroll, useSpring, useTransform } from "motion/react"
+import { motion, useScroll, useTransform } from "motion/react"
 import Image from "next/image"
 
 import GradientBlur from "@/components/flare-ui/gradient-blur"
@@ -57,15 +57,14 @@ export default function HeaderBlock({
     hasContainerScrollRoot ? { container: scrollContainerRef } : {}
   )
 
-  const rawScrollY = useTransform(() =>
+  const scrollY = useTransform(() =>
     hasContainerScrollRoot ? containerScrollY.get() : viewportScrollY.get()
   )
 
-  const activeScrollY = useSpring(rawScrollY, {
-    stiffness: 400,
-    damping: 40,
-    restDelta: 0.5
-  })
+  const expandedHeight = showAddress || showSocialMedia ? 286 : 238
+  const collapsedHeight = 76
+  // Header scrolls natively this far, then sticks showing only the collapsed bar.
+  const collapseDistance = expandedHeight - collapsedHeight
 
   React.useEffect(() => {
     const headerNode = headerRef.current
@@ -87,7 +86,7 @@ export default function HeaderBlock({
     const publishHeaderOffset = () => {
       headerNode.ownerDocument.documentElement.style.setProperty(
         "--menu-header-offset",
-        `${headerNode.offsetHeight}px`
+        `${headerNode.offsetHeight - collapseDistance}px`
       )
     }
 
@@ -95,7 +94,7 @@ export default function HeaderBlock({
 
     const ResizeObserverClass = ownerWindow.ResizeObserver ?? ResizeObserver
     const resizeObserver = new ResizeObserverClass(publishHeaderOffset)
-    resizeObserver.observe(headerNode)
+    resizeObserver.observe(headerNode, { box: "border-box" })
 
     return () => {
       resizeObserver.disconnect()
@@ -103,7 +102,7 @@ export default function HeaderBlock({
         "--menu-header-offset"
       )
     }
-  }, [])
+  }, [collapseDistance])
 
   const textColor = rgbaToCss(accentColor, { r: 0, g: 0, b: 0, a: 1 })
   const background = rgbaToCss(backgroundColor, {
@@ -112,81 +111,66 @@ export default function HeaderBlock({
     b: 255,
     a: 1
   })
-  const expandedHeight = showAddress || showSocialMedia ? 286 : 238
-  const collapsedHeight = 76
+  const hasBanner = Boolean(showBanner && organization.banner)
 
-  const headerHeight = useTransform(
-    activeScrollY,
-    [0, SCROLL_END],
-    [expandedHeight, collapsedHeight]
+  // Only opacity/transform are scroll-driven; geometry comes from native sticky.
+  const progress = useTransform(scrollY, [0, collapseDistance], [0, 1])
+
+  // Staggered crossfade avoids both layers sitting at ~50% opacity together.
+  const expandedOpacity = useTransform(progress, [0, COLLAPSE_MID], [1, 0])
+  const expandedScale = useTransform(progress, [0, COLLAPSE_MID], [1, 0.95])
+
+  const collapsedOpacity = useTransform(progress, [COLLAPSE_MID, 1], [0, 1])
+  const collapsedY = useTransform(progress, [COLLAPSE_MID, 1], [8, 0])
+
+  const expandedPointerEvents = useTransform(progress, value =>
+    value < COLLAPSE_MID ? "auto" : "none"
+  )
+  const collapsedPointerEvents = useTransform(progress, value =>
+    value >= COLLAPSE_MID ? "auto" : "none"
   )
 
-  // Staggered crossfade: expanded fades out in the first half,
-  // collapsed fades in during the second half. This avoids both
-  // layers sitting at ~50% opacity simultaneously.
-  const expandedOpacity = useTransform(activeScrollY, [0, SCROLL_MID], [1, 0])
-  const expandedY = useTransform(activeScrollY, [0, SCROLL_MID], [0, -12])
-  const expandedScale = useTransform(activeScrollY, [0, SCROLL_MID], [1, 0.95])
-
-  const collapsedOpacity = useTransform(
-    activeScrollY,
-    [SCROLL_MID, SCROLL_END],
-    [0, 1]
-  )
-  const collapsedY = useTransform(
-    activeScrollY,
-    [SCROLL_MID, SCROLL_END],
-    [8, 0]
-  )
-
-  const expandedPointerEvents = useTransform(activeScrollY, value =>
-    value < SCROLL_MID ? "auto" : "none"
-  )
-  const collapsedPointerEvents = useTransform(activeScrollY, value =>
-    value >= SCROLL_MID ? "auto" : "none"
-  )
-
-  const bannerOverlayOpacity = useTransform(
-    activeScrollY,
-    [0, SCROLL_END],
-    [0, 0.3]
-  )
-
-  // Color gradient fades out as the header collapses so the raw banner
-  // image + progressive blur remains visible in the collapsed state.
-  // Driven by rawScrollY (no spring) so it reacts instantly on scroll-back,
-  // avoiding the jarring 1-second delay before blur reappears.
+  const bannerOverlayOpacity = useTransform(progress, [0, 1], [0, 0.3])
   const colorGradientOpacity = useTransform(
-    rawScrollY,
-    [0, SCROLL_MID, SCROLL_END],
+    progress,
+    [0, COLLAPSE_MID, 1],
     [1, 0.6, 0]
+  )
+  // Stops WebKit from compositing the backdrop-filter stack once invisible.
+  const colorGradientVisibility = useTransform(colorGradientOpacity, value =>
+    value <= 0 ? "hidden" : "visible"
   )
 
   return (
-    <motion.header
+    <header
       ref={ref => {
         headerRef.current = ref
         if (ref) {
           connect(ref)
         }
       }}
-      className="sticky top-0 z-30 overflow-visible"
+      className="sticky z-30 box-content overflow-visible
+        pt-[env(safe-area-inset-top)]"
       style={{
         color: textColor,
-        height: headerHeight
+        top: -collapseDistance,
+        height: expandedHeight
       }}
     >
-      <div className="pointer-events-none absolute inset-0 origin-top">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <BannerImage
           banner={organization.banner}
           isBannerVisible={showBanner ?? false}
           className="h-full"
         />
-        {showBanner && organization.banner && (
+        {hasBanner && (
           <>
             <motion.div
               className="absolute inset-x-0 bottom-0 h-2/3"
-              style={{ opacity: colorGradientOpacity }}
+              style={{
+                opacity: colorGradientOpacity,
+                visibility: colorGradientVisibility
+              }}
             >
               <GradientBlur className="inset-0" />
             </motion.div>
@@ -220,11 +204,28 @@ export default function HeaderBlock({
             />
           </>
         )}
+        {!hasBanner && (
+          // Covers the collapsed bar plus the status bar strip above it once stuck.
+          <motion.div
+            className="absolute inset-x-0 bottom-0"
+            style={{
+              height: `calc(${collapsedHeight}px + env(safe-area-inset-top))`,
+              backgroundColor: background,
+              opacity: collapsedOpacity
+            }}
+          />
+        )}
       </div>
 
-      <div className="pointer-events-none absolute top-3 right-3 z-30">
-        <div className="pointer-events-auto">
-          <PublicMenuActions />
+      {/* Nested sticky keeps the actions pinned natively while the header scrolls */}
+      <div className="pointer-events-none absolute inset-0 z-30">
+        <div
+          className="sticky top-[calc(env(safe-area-inset-top)+0.75rem)] mt-3
+            flex h-10 justify-end px-3"
+        >
+          <div className="pointer-events-auto">
+            <PublicMenuActions />
+          </div>
         </div>
       </div>
 
@@ -233,7 +234,6 @@ export default function HeaderBlock({
         <motion.div
           style={{
             opacity: expandedOpacity,
-            y: expandedY,
             scale: expandedScale,
             pointerEvents: expandedPointerEvents
           }}
@@ -274,22 +274,14 @@ export default function HeaderBlock({
         {/* Collapsed layout — fades in as user scrolls down */}
         <motion.div
           style={{
+            height: collapsedHeight,
             opacity: collapsedOpacity,
             y: collapsedY,
-            pointerEvents: collapsedPointerEvents,
-            backgroundColor: showBanner
-              ? undefined
-              : rgbaToCss(backgroundColor, {
-                  r: 255,
-                  g: 255,
-                  b: 255,
-                  a: 1
-                })
+            pointerEvents: collapsedPointerEvents
           }}
           className={cn(
-            "absolute inset-0 flex h-full items-center px-4 py-2",
-            showLogo ? "justify-start gap-3" : "justify-center",
-            showBanner ? "" : "backdrop-blur-md"
+            "absolute inset-x-0 bottom-0 flex items-center px-4 py-2",
+            showLogo ? "justify-start gap-3" : "justify-center"
           )}
         >
           <Logo
@@ -308,12 +300,11 @@ export default function HeaderBlock({
           </FontWrapper>
         </motion.div>
       </div>
-    </motion.header>
+    </header>
   )
 }
 
-const SCROLL_MID = 60
-const SCROLL_END = 120
+const COLLAPSE_MID = 0.5
 
 type ScrollRoot = Window | HTMLElement
 
