@@ -4,7 +4,7 @@ import Link from "next/link"
 export const metadata: Metadata = {
   title: "Política de privacidad",
   description:
-    "Política de privacidad de Cargo. Aprende cómo recopilamos, usamos y divulgamos información personal a través de nuestra plataforma en línea."
+    "Política de privacidad de Biztro. Aprende cómo recopilamos, usamos y divulgamos información personal a través de nuestra plataforma en línea."
 }
 
 export default function PrivacyPage() {

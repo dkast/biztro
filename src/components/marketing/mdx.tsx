@@ -6,7 +6,7 @@ interface MdxProps {
 
 const Mdx = ({ code }: MdxProps) => {
   return (
-    <div className="typeset typeset-reading lg:[--typeset-size:1.125rem]">
+    <div className="typeset typeset-reading">
       <MDXContent code={code} />
     </div>
   )

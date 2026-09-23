@@ -6,8 +6,8 @@
     --typeset-font-heading: var(--font-heading);
     --typeset-font-mono: var(--font-mono);
     --typeset-size: 1em;
-    --typeset-leading: 1.75;
-    --typeset-flow: 1.25em;
+    --typeset-leading: 1.6;
+    --typeset-flow: 2em;
   }
 }
 
@@ -16,7 +16,7 @@
     font-family: var(--typeset-font-body);
     font-size: calc(var(--typeset-size) * 1.125);
     line-height: var(--typeset-leading);
-    color: var(--color-foreground, currentColor);
+    color: var(--color-secondary-foreground, currentColor);
     overflow-wrap: break-word;
     margin-trim: block-start;
 
