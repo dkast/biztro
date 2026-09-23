@@ -451,9 +451,7 @@ export function QuickSaleScreen({
                 className="flex items-center justify-between gap-3
                   md:justify-end"
               >
-                <Badge variant="green">
-                  {filteredProducts.length} productos
-                </Badge>
+                <Badge variant="green">{filteredProducts.length} productos</Badge>
                 <Badge variant="blue">{cart.length} líneas</Badge>
               </div>
             </div>

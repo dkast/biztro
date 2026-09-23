@@ -53,7 +53,7 @@ function CollectionsYAxis({ currency }: { currency: Currency }) {
       {ticks.map(tick => (
         <text
           key={tick}
-          className="fill-muted-foreground text-[10px] tabular-nums sm:text-xs"
+          className="fill-muted-foreground text-xs tabular-nums"
           dominantBaseline="middle"
           textAnchor="end"
           x={-12}
@@ -112,7 +112,7 @@ export function SalesCollectionsChart({
         aspectRatio="4 / 1"
         mobileAspectRatio="4 / 3"
         className="min-h-72 sm:min-h-0"
-        margin={{ top: 20, right: 24, bottom: 36, left: 72 }}
+        margin={{ top: 20, right: 24, bottom: 36, left: 88 }}
         revealSignature={period}
         stacked
         stackGap={2}

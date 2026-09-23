@@ -44,10 +44,7 @@ export function SalesDashboardPeriodFilter({
         className
       )}
     >
-      <p
-        className="text-muted-foreground text-xs font-medium tracking-[0.01em]
-          sm:text-right"
-      >
+      <p className="text-muted-foreground text-xs font-medium sm:text-right">
         {label}
       </p>
       <ToggleGroup
@@ -58,7 +55,7 @@ export function SalesDashboardPeriodFilter({
             void setPeriod(value)
           }
         }}
-        className="bg-muted grid w-full grid-cols-2 gap-1 rounded-lg p-[3px]
+        className="bg-muted grid w-full grid-cols-2 gap-1 rounded-lg p-0.75
           sm:inline-flex sm:w-auto sm:flex-nowrap"
         variant="default"
         size="sm"

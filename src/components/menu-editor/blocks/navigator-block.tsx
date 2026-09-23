@@ -41,8 +41,10 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
   const [visibleId, setVisibleId] = useState<string | null>(null)
   const [isSticky, setIsSticky] = useState(false)
   const [isOverflowing, setIsOverflowing] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const observer = useRef<IntersectionObserver | null>(null)
+  const navigatingToRef = useRef<string | null>(null)
   const navRef = useRef<HTMLElement | null>(null)
   const ulRef = useRef<HTMLUListElement | null>(null)
   const scrollContainerRef = useRef<HTMLElement | null>(null)
@@ -71,12 +73,17 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
       const target = document.getElementById(id)
 
       if (target) {
+        // Lock the active tab so the list doesn't scrub through every section passed.
+        navigatingToRef.current = id
+        setVisibleId(id)
+
         // Calculate target scroll position accounting for the sticky nav height
         const navHeight = navRef.current?.offsetHeight ?? 0
         const headerOffset = getHeaderOffset()
         const extraSpacing = 8 // small breathing room so heading isn't flush with nav
         const targetRect = target.getBoundingClientRect()
         const scrollRoot = scrollContainerRef.current
+        releaseNavigationLock(scrollRoot ?? window, navigatingToRef)
 
         if (scrollRoot) {
           // Container scroll: compute offset relative to the scroll container
@@ -142,18 +149,28 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
   }, [])
 
   useEffect(() => {
+    const passedIds = new Set<string>()
+
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          setVisibleId(entry.target.id)
+          passedIds.add(entry.target.id)
+        } else {
+          passedIds.delete(entry.target.id)
         }
       })
+
+      if (navigatingToRef.current) return
+      const activeId = ids.findLast(id => passedIds.has(id)) ?? ids[0]
+      if (activeId) setVisibleId(activeId)
     }
 
+    // Root spans everything above 40% of the viewport, so the active section is
+    // the last heading that crossed that line, in either scroll direction.
     observer.current = new IntersectionObserver(handleIntersection, {
       root: null,
-      rootMargin: "0px 0px -30% 0px",
-      threshold: 1.0
+      rootMargin: "100000px 0px -60% 0px",
+      threshold: 0
     })
 
     ids.forEach(id => {
@@ -169,31 +186,28 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
   }, [ids])
 
   useEffect(() => {
-    const checkOverflow = () => {
-      if (ulRef.current) {
-        setIsOverflowing(ulRef.current.scrollWidth > ulRef.current.offsetWidth)
-      }
-    }
-
-    const handleScroll = () => {
-      if (ulRef.current) {
-        const isAtEnd =
-          ulRef.current.scrollLeft + ulRef.current.clientWidth >=
-          ulRef.current.scrollWidth
-        setIsOverflowing(!isAtEnd)
-      }
-    }
-
-    checkOverflow()
-    window.addEventListener("resize", checkOverflow)
     const ulElement = ulRef.current
-    ulElement?.addEventListener("scroll", handleScroll)
+
+    const updateScrollState = () => {
+      if (!ulElement) return
+      const { scrollLeft, scrollWidth, clientWidth } = ulElement
+      // 1px tolerance: iOS reports fractional scrollLeft at the end.
+      const hasOverflow = scrollWidth - clientWidth > 1
+      setIsOverflowing(hasOverflow)
+      setCanScrollRight(
+        hasOverflow && scrollLeft + clientWidth < scrollWidth - 1
+      )
+    }
+
+    updateScrollState()
+    window.addEventListener("resize", updateScrollState)
+    ulElement?.addEventListener("scroll", updateScrollState, { passive: true })
 
     return () => {
-      window.removeEventListener("resize", checkOverflow)
-      ulElement?.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("resize", updateScrollState)
+      ulElement?.removeEventListener("scroll", updateScrollState)
     }
-  }, [ids])
+  }, [ids, displayNames])
 
   // Auto-scroll navigation to keep active section in view.
   // Scroll only horizontally within the <ul> — never scroll the page vertically.
@@ -229,7 +243,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
           navRef.current = ref
         }}
         className={cn(
-          "sticky z-20 w-screen p-3 transition delay-150 ease-in-out sm:w-full",
+          "sticky z-20 w-screen p-3 transition-colors duration-200 sm:w-full",
           {
             "backdrop-blur-md": isSticky
           }
@@ -287,7 +301,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
                 ))}
               </ul>
               <AnimatePresence>
-                {isOverflowing && (
+                {canScrollRight && (
                   <motion.div
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -365,6 +379,20 @@ function getHeaderOffset() {
 }
 
 type ScrollRoot = Window | HTMLElement
+
+function releaseNavigationLock(
+  scrollRoot: ScrollRoot,
+  lockRef: React.RefObject<string | null>
+) {
+  const release = () => {
+    lockRef.current = null
+    scrollRoot.removeEventListener("scrollend", release)
+    window.clearTimeout(fallbackTimer)
+  }
+  // Fallback for engines without `scrollend` or when no scroll was needed.
+  const fallbackTimer = window.setTimeout(release, 1000)
+  scrollRoot.addEventListener("scrollend", release, { once: true })
+}
 
 function getScrollRoot(node: HTMLElement): ScrollRoot {
   let current: HTMLElement | null = node.parentElement
