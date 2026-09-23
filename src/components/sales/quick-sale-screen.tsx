@@ -452,9 +452,11 @@ export function QuickSaleScreen({
                   md:justify-end"
               >
                 <Badge variant="green">
-                  {filteredProducts.length} productos
+                  <TextMorph>{filteredProducts.length} productos</TextMorph>
                 </Badge>
-                <Badge variant="blue">{cart.length} líneas</Badge>
+                <Badge variant="blue">
+                  <TextMorph>{cart.length} líneas</TextMorph>
+                </Badge>
               </div>
             </div>
 
