@@ -22,6 +22,7 @@ import { normalizePublicMenuItems } from "@/lib/menu-search"
 import { extractMenuDataFromNodes } from "@/lib/sync-status"
 import { SubscriptionStatus } from "@/lib/types/billing"
 import { SUPPORTED_LOCALES } from "@/lib/types/translations"
+import { isColorDark } from "@/lib/utils"
 
 export const instant = false
 
@@ -65,9 +66,15 @@ export async function generateMetadata(
       org.description && org.description.length > 0
         ? org.description
         : (await parent).description
+    const statusBarStyle = await getStatusBarStyle(params.subdomain)
     return {
       title: org.name,
-      description
+      description,
+      appleWebApp: {
+        capable: true,
+        title: org.name,
+        statusBarStyle
+      }
     }
   } else {
     return {
@@ -189,7 +196,8 @@ export default async function SitePage(props: {
           </PublicMenuProvider>
           <div
             className="fixed inset-x-0 bottom-0 flex items-center
-              justify-between gap-x-4 p-2 text-xs"
+              justify-between gap-x-4 p-2
+              pb-[max(0.5rem,env(safe-area-inset-bottom))] text-xs"
             style={{
               color: `${rgbaToHex(textColor)}`
             }}
@@ -226,6 +234,22 @@ export default async function SitePage(props: {
       </TranslationProvider>
     </>
   )
+}
+
+// iOS only lets content draw under the status bar in Home Screen web app mode,
+// and "black-translucent" always renders white status bar text.
+async function getStatusBarStyle(subdomain: string) {
+  const siteMenu = await getActiveMenuByOrganizationSlug(subdomain)
+  const snapshot = siteMenu?.publishedData ?? siteMenu?.serialData
+  if (!siteMenu || !snapshot) return "default"
+
+  const renderData = await getCachedMenuRenderData(siteMenu.id, snapshot)
+  if (!renderData) return "default"
+
+  const { hasBanner, backgroundColor } = renderData
+  return hasBanner || isColorDark(rgbaToHex(backgroundColor))
+    ? "black-translucent"
+    : "default"
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -277,6 +301,7 @@ async function getCachedMenuRenderData(menuId: string, snapshot: string) {
 
   let backgroundColor: RgbaColor = { r: 255, g: 255, b: 255, a: 1 }
   let textColor: RgbaColor = { r: 0, g: 0, b: 0, a: 1 }
+  let hasBanner = false
 
   const keys = Object.keys(sanitizedNodes)
   keys.forEach(el => {
@@ -289,10 +314,23 @@ async function getCachedMenuRenderData(menuId: string, snapshot: string) {
     }
     if (displayName === "Cabecera") {
       textColor = props?.color as RgbaColor
+      const organization = isRecord(props?.organization)
+        ? props.organization
+        : undefined
+      hasBanner =
+        props?.showBanner === true &&
+        typeof organization?.banner === "string" &&
+        organization.banner.trim().length > 0
     }
   })
 
-  return { serializedNodes, backgroundColor, textColor, searchableItems }
+  return {
+    serializedNodes,
+    backgroundColor,
+    textColor,
+    searchableItems,
+    hasBanner
+  }
 }
 
 function sanitizeCraftNodes(nodes: Record<string, unknown>) {

@@ -58,7 +58,7 @@ export default function DefaultLayer({
             hasChildCanvases
               ? "ml-9 bg-gray-50 dark:bg-gray-800/70"
               : "m-0 bg-transparent",
-            "craft-layer-children relative"
+            "relative"
           )}
         >
           {children}

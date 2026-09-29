@@ -236,7 +236,7 @@ export default function ContainerSettings() {
               <DrawerHeader className="px-6 py-4">
                 <DrawerTitle>Seleccionar fondo</DrawerTitle>
               </DrawerHeader>
-              <div className="custom-scrollbar overflow-y-auto px-6 pb-6">
+              <div className="overflow-y-auto px-6 pb-6">
                 <BackgroundSelector
                   onClose={() => setOpen(false)}
                   uploadedBackgrounds={uploadedBackgrounds}

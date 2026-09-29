@@ -46,12 +46,12 @@ export default async function Page(props: {
         <Mdx code={post.body} />
       </section>
       <section>
-        <Separator className="my-10 w-20 bg-gray-300" />
+        <Separator className="bg-muted-foreground/40 my-10 w-20" />
         <div className="flex flex-col items-center gap-4 text-center">
           <h3 className="text-xl font-medium sm:text-2xl">
             ¿Quieres participar en nuestro programa beta?
           </h3>
-          <span className="text-gray-500">
+          <span className="text-muted-foreground">
             Únete a nuestra lista de espera para recibir una invitación
           </span>
           <div className="my-5">
@@ -83,11 +83,14 @@ function Header({
     <div className="mt-20 mb-10">
       <div className="space-y-6">
         <div
-          className="flex flex-row items-center gap-2 text-xs font-medium
-            text-gray-400 md:text-sm"
+          className="text-muted-foreground flex flex-row items-center gap-2
+            text-xs font-medium md:text-sm"
         >
           <time>{formattedDate}</time>
-          <Separator orientation="vertical" className="mx-2 h-5 bg-gray-300" />
+          <Separator
+            orientation="vertical"
+            className="bg-muted-foreground/40 mx-2 h-5"
+          />
           <span className="text-xs font-medium text-orange-500 md:text-sm">
             {category}
           </span>
@@ -105,7 +108,7 @@ function Header({
           />
           <div className="flex flex-col">
             <span className="text-sm leading-tight">{author}</span>
-            <span className="text-xs text-gray-400">{position}</span>
+            <span className="text-muted-foreground text-xs">{position}</span>
           </div>
         </div>
       </div>

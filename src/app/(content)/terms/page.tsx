@@ -3,15 +3,15 @@ import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "Términos de uso",
-  description: "Términos de uso de la aplicación Cargo."
+  description: "Términos de uso de la aplicación Biztro."
 }
 
 export default function TermsPage() {
   const application = "Biztro"
   return (
-    <section className="prose prose-gray dark:prose-invert mt-10">
+    <section className="typeset typeset-reading mt-10">
       <h1>Términos de uso</h1>
-      <h2 className="font-medium text-gray-500">
+      <h2 className="text-muted-foreground font-medium">
         A partir del 1 de junio de 2024
       </h2>
       <ol>
@@ -221,18 +221,20 @@ export default function TermsPage() {
           <p>
             <strong>Renuncia de Garantías.</strong> POR LA PRESENTE USTED
             RECONOCE QUE ESTÁ UTILIZANDO LA PLATAFORMA BAJO SU PROPIO RIESGO. LA
-            PLATAFORMA Y EL CONTENIDO DE {application} SE PROPORCIONAN &quot;TAL
-            CUAL&quot;, Y {application}, SUS AFILIADOS Y SUS PROVEEDORES DE
-            SERVICIOS TERCEROS POR EL PRESENTE RECHAZAN CUALQUIER GARANTÍA,
-            EXPRESA E IMPLÍCITA, INCLUYENDO, PERO NO LIMITADO A, CUALQUIER
-            GARANTÍA DE EXACTITUD, CONFIABILIDAD, COMERCIABILIDAD, NO
-            INFRACCIÓN, IDONEIDAD PARA UN PROPÓSITO PARTICULAR Y CUALQUIER OTRA
-            GARANTÍA, CONDICIÓN O DECLARACIÓN, YA SEA ORAL, POR ESCRITO O EN
-            FORMA ELECTRÓNICA. {application}, SUS AFILIADOS Y SUS TERCEROS
+            PLATAFORMA Y EL CONTENIDO DE {application.toUpperCase()} SE
+            PROPORCIONAN &quot;TAL CUAL&quot;, Y {application.toUpperCase()},
+            SUS AFILIADOS Y SUS PROVEEDORES DE SERVICIOS TERCEROS POR EL
+            PRESENTE RECHAZAN CUALQUIER GARANTÍA, EXPRESA E IMPLÍCITA,
+            INCLUYENDO, PERO NO LIMITADO A, CUALQUIER GARANTÍA DE EXACTITUD,
+            CONFIABILIDAD, COMERCIABILIDAD, NO INFRACCIÓN, IDONEIDAD PARA UN
+            PROPÓSITO PARTICULAR Y CUALQUIER OTRA GARANTÍA, CONDICIÓN O
+            DECLARACIÓN, YA SEA ORAL, POR ESCRITO O EN FORMA ELECTRÓNICA.{" "}
+            {application.toUpperCase()}, SUS AFILIADOS Y SUS TERCEROS
             PROVEEDORES DE SERVICIOS NO DECLARA NI GARANTIZAN QUE EL ACCESO A LA
             PLATAFORMA SERÁ ININTERRUMPIDO O QUE NO HABRÁ FALLAS, ERRORES U
             OMISIONES O PÉRDIDA DE INFORMACIÓN TRANSMITIDA, O QUE NO SE
-            TRANSMITIRÁN VIRUS A TRAVÉS DEL PLATAFORMA.
+            TRANSMITIRÁN VIRUS A TRAVÉS DEL PLATAFORMA DE{" "}
+            {application.toUpperCase()}.
           </p>
           <p>
             Debido a que algunos estados no permiten la renuncia de garantías
@@ -247,12 +249,12 @@ export default function TermsPage() {
             CONSECUENCIA, EN LA MEDIDA MÁXIMA PERMITIDA POR LA LEY APLICABLE,
             BAJO NINGUNA CIRCUNSTANCIA Y BAJO NINGUNA TEORÍA LEGAL (INCLUYENDO,
             SIN LIMITACIÓN, AGRAVIO, CONTRATO, RESPONSABILIDAD ESTRICTA O DE
-            OTRA MANERA), {application} (O SUS LICENCIANTES O PROVEEDORES) SERÁ
-            RESPONSABLE ANTE USTED POR CUALQUIER DAÑOS DIRECTOS, INDIRECTOS,
-            ESPECIALES, INCIDENTALES O CONSECUENCIALES DE CUALQUIER TIPO,
-            INCLUYENDO DAÑOS POR PÉRDIDA DE BENEFICIOS, PÉRDIDA DE BUENA
-            VOLUNTAD, PARO LABORAL, EXACTITUD DE LOS RESULTADOS O FALLA O MAL
-            FUNCIONAMIENTO DE LA COMPUTADORA.
+            OTRA MANERA), {application.toUpperCase()} (O SUS LICENCIANTES O
+            PROVEEDORES) SERÁ RESPONSABLE ANTE USTED POR CUALQUIER DAÑOS
+            DIRECTOS, INDIRECTOS, ESPECIALES, INCIDENTALES O CONSECUENCIALES DE
+            CUALQUIER TIPO, INCLUYENDO DAÑOS POR PÉRDIDA DE BENEFICIOS, PÉRDIDA
+            DE BUENA VOLUNTAD, PARO LABORAL, EXACTITUD DE LOS RESULTADOS O FALLA
+            O MAL FUNCIONAMIENTO DE LA COMPUTADORA.
           </p>
         </li>
         <li>

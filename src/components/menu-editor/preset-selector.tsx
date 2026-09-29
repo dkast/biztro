@@ -104,7 +104,7 @@ function PresetCard({
           </div>
           <FontWrapper fontFamily={font.fontText}>
             <span
-              className="line-clamp-1 text-[10px] leading-tight"
+              className="line-clamp-1 text-xs leading-tight"
               style={{ color: color.mutedColor }}
             >
               Descripción del platillo
@@ -135,9 +135,7 @@ function PresetCard({
         className="border-t border-gray-200 bg-white px-3 py-1.5
           dark:border-gray-800 dark:bg-gray-950"
       >
-        <span
-          className="text-[10px] text-pretty text-gray-500 dark:text-gray-400"
-        >
+        <span className="text-xs text-pretty text-gray-500 dark:text-gray-400">
           {preset.description}
         </span>
       </div>
@@ -270,9 +268,7 @@ function ImagePresetCard({
         className="border-t border-gray-200 bg-white px-3 py-1.5
           dark:border-gray-800 dark:bg-gray-950"
       >
-        <span
-          className="text-[10px] text-pretty text-gray-500 dark:text-gray-400"
-        >
+        <span className="text-xs text-pretty text-gray-500 dark:text-gray-400">
           {preset.description}
         </span>
       </div>

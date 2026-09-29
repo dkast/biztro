@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./typeset.css";
 @import "shadcn/tailwind.css";
 @import "gradient-border-plugin";
 @import "shadow-plugin";
@@ -8,6 +9,17 @@
 
 @theme {
   --font-display--font-variation-settings: "wdth" 112.5;
+}
+
+@layer components {
+  .typeset-reading {
+    --typeset-font-body: var(--font-inter);
+    --typeset-font-heading: var(--font-be-vietnam-pro);
+    --typeset-font-mono: ui-monospace, monospace;
+    --typeset-size: 1rem;
+    --typeset-leading: 1.75;
+    --typeset-flow: 1.25em;
+  }
 }
 
 /*
