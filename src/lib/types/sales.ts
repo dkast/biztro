@@ -5,6 +5,7 @@ import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
 import {
   paymentAmountSchema,
   paymentMethodSchema,
+  paymentMethodValues,
   type PaymentInput,
   type PaymentMethod,
   type PaymentOrigin,
@@ -154,6 +155,36 @@ export type SalesRecentSale = {
   paymentStatus: PaymentStatus
   items: number
   total: number
+}
+
+export const salesTransactionPaymentMethodSchema = z.enum([
+  ...paymentMethodValues,
+  "LEGACY"
+])
+
+export type SalesTransactionPaymentMethod = z.infer<
+  typeof salesTransactionPaymentMethodSchema
+>
+
+export type SalesTransaction = {
+  id: string
+  createdAt: string
+  customerName: string | null
+  orderType: SalesOrderType
+  status: SaleStatus
+  paymentStatus: PaymentStatus
+  paymentMethods: SalesTransactionPaymentMethod[]
+  voidedPaymentMethods: SalesTransactionPaymentMethod[]
+  items: number
+  total: number
+  currency: Currency
+}
+
+export type SalesTransactionsPage = {
+  transactions: SalesTransaction[]
+  totalCount: number
+  page: number
+  pageSize: number
 }
 
 export type SalesRevenueByOrderType = {

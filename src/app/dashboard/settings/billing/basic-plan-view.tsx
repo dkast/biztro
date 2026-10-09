@@ -111,7 +111,7 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
                     text-xs font-medium text-green-600 dark:bg-green-900
                     dark:text-green-300"
                 >
-                  -20%
+                  -16%
                 </span>
               </ToggleGroupItem>
             </ToggleGroup>
