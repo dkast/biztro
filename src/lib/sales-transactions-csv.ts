@@ -21,10 +21,18 @@ const salesTransactionsCsvHeaders = [
   "Moneda"
 ]
 
-const formulaPrefixPattern = /^[\u0000-\u0020]*[=+\-@]/
-
 function protectSpreadsheetText(value: string) {
-  return formulaPrefixPattern.test(value) ? `'${value}` : value
+  let index = 0
+  while (index < value.length && value.charCodeAt(index) <= 0x20) index += 1
+
+  const firstNonControlCharacter = value[index]
+  const hasFormulaPrefix =
+    firstNonControlCharacter === "=" ||
+    firstNonControlCharacter === "+" ||
+    firstNonControlCharacter === "-" ||
+    firstNonControlCharacter === "@"
+
+  return hasFormulaPrefix ? `'${value}` : value
 }
 
 function getPaymentMethodLabel(

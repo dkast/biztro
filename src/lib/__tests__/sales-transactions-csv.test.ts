@@ -83,6 +83,23 @@ describe("sales transaction CSV", () => {
     expect(parsed.data[0]?.Cliente).toBe("'\n=1+1, Café")
   })
 
+  it("protects formula prefixes after ASCII control characters", () => {
+    const csv = serializeSalesTransactionsCsv([
+      createTransaction({
+        id: "\u0000=1+1",
+        customerName: "\u001f@SUM(A1:A2)"
+      })
+    ])
+    const parsed = Papa.parse<Record<string, string>>(csv.slice(1), {
+      header: true,
+      skipEmptyLines: true
+    })
+
+    expect(parsed.errors).toEqual([])
+    expect(parsed.data[0]?.["ID de venta"]).toBe("'\u0000=1+1")
+    expect(parsed.data[0]?.Cliente).toBe("'\u001f@SUM(A1:A2)")
+  })
+
   it("allows exactly 10,000 rows and rejects larger exports", () => {
     expect(isSalesTransactionExportOverLimit(salesTransactionExportLimit)).toBe(
       false
