@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/nextjs"
 import { headers } from "next/headers"
+import { unstable_rethrow } from "next/navigation"
 import { NextResponse, type NextRequest } from "next/server"
 
 import { getSalesTransactions } from "@/server/sales/transactions"
@@ -72,6 +73,7 @@ export async function GET(request: NextRequest) {
       }
     })
   } catch (error) {
+    unstable_rethrow(error)
     console.error("Failed to export sales transactions", error)
     Sentry.captureException(error, {
       tags: {
