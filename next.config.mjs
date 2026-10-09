@@ -17,6 +17,7 @@ const config = {
   reactStrictMode: true,
   reactCompiler: true,
   experimental: {
+    agentUpgrade: "latest",
     turbopackFileSystemCacheForBuild: true,
     turbopackRustReactCompiler: true,
     serverActions: {
