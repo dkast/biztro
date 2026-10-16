@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams
     searchParams.delete("page")
+    searchParams.delete("pageSize")
     const parsed = parseSalesTransactionsSearchParams(searchParams)
     if (!parsed.valid) {
       return NextResponse.json(

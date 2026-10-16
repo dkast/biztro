@@ -58,6 +58,29 @@ describe("sales transaction filters", () => {
     ).toMatchObject({ valid: false })
   })
 
+  it("accepts only supported page sizes and defaults to 20", () => {
+    const defaults = parseSalesTransactionsSearchParams(
+      new URLSearchParams(),
+      testNow
+    )
+    expect(defaults.valid && defaults.filters.pageSize).toBe(20)
+
+    const fifty = parseSalesTransactionsSearchParams(
+      new URLSearchParams("pageSize=50"),
+      testNow
+    )
+    expect(fifty.valid && fifty.filters.pageSize).toBe(50)
+
+    for (const value of ["15", "100", "abc"]) {
+      expect(
+        parseSalesTransactionsSearchParams(
+          new URLSearchParams(`pageSize=${value}`),
+          testNow
+        )
+      ).toMatchObject({ valid: false })
+    }
+  })
+
   it("rejects invalid enums, duplicate values, and oversized search terms", () => {
     expect(
       parseSalesTransactionsSearchParams(

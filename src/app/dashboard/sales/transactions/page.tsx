@@ -16,8 +16,7 @@ import { getCurrentOrganization } from "@/server/actions/user/queries"
 import { getSalesTransactions } from "@/server/sales/transactions"
 import {
   hasActiveSalesTransactionFilters,
-  parseSalesTransactionsSearchParams,
-  salesTransactionPageSize
+  parseSalesTransactionsSearchParams
 } from "@/lib/sales-transactions"
 
 export const metadata: Metadata = {
@@ -52,7 +51,7 @@ export default async function SalesTransactionsPage(props: {
     ? await getSalesTransactions({
         organizationId: organization.id,
         filters: searchResult.filters,
-        pageSize: salesTransactionPageSize
+        pageSize: searchResult.filters.pageSize
       })
     : null
   const hasActiveFilters =

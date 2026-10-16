@@ -16,7 +16,8 @@ export const salesTransactionFilterValues = {
   paymentMethod: ["all", ...paymentMethodValues, "LEGACY"] as const
 }
 
-export const salesTransactionPageSize = 25
+export const salesTransactionPageSizeOptions = [10, 20, 30, 40, 50] as const
+export const salesTransactionPageSize = salesTransactionPageSizeOptions[1]
 export const salesTransactionExportLimit = 10_000
 export const salesTransactionExportFetchLimit = salesTransactionExportLimit + 1
 
@@ -33,7 +34,8 @@ export const defaultSalesTransactionFilters = {
   paymentStatus: "all",
   paymentMethod: "all",
   q: "",
-  page: 1
+  page: 1,
+  pageSize: salesTransactionPageSize
 } as const
 
 const salesTransactionsSearchSchema = z.object({
@@ -52,7 +54,13 @@ const salesTransactionsSearchSchema = z.object({
   page: z
     .string()
     .regex(/^[1-9]\d{0,4}$/)
-    .default("1")
+    .default("1"),
+  pageSize: z
+    .string()
+    .regex(/^\d{2}$/)
+    .default(String(salesTransactionPageSize))
+    .transform(Number)
+    .pipe(z.union(salesTransactionPageSizeOptions.map(size => z.literal(size))))
 })
 
 export type SalesTransactionDateRange =
@@ -68,6 +76,7 @@ export type SalesTransactionQueryState = {
   paymentMethod: (typeof salesTransactionFilterValues.paymentMethod)[number]
   q: string
   page: number
+  pageSize: (typeof salesTransactionPageSizeOptions)[number]
 }
 
 export type SalesTransactionFilters = Omit<

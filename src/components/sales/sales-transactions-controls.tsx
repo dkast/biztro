@@ -8,7 +8,16 @@ import {
   type ReactNode
 } from "react"
 import toast from "react-hot-toast"
-import { Download, LoaderCircle, SearchIcon, XIcon } from "lucide-react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Download,
+  LoaderCircle,
+  SearchIcon,
+  XIcon
+} from "lucide-react"
 import { useQueryStates } from "nuqs"
 
 import { SalesTransactionsDateRangeFilter } from "@/components/sales/sales-transactions-date-range-filter"
@@ -24,8 +33,16 @@ import {
   InputGroupInput
 } from "@/components/ui/input-group"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import {
   defaultSalesTransactionFilters,
   getSalesTransactionExportFilename,
+  salesTransactionPageSizeOptions,
   type SalesTransactionQueryState
 } from "@/lib/sales-transactions"
 import { salesTransactionsQueryParsers } from "@/lib/sales-transactions-query-parsers"
@@ -74,7 +91,10 @@ export function SalesTransactionsControlsProvider({
 
   const resetFilters = () => {
     startTransition(() => {
-      void setFilters({ ...defaultSalesTransactionFilters })
+      void setFilters({
+        ...defaultSalesTransactionFilters,
+        pageSize: filters.pageSize
+      })
     })
   }
 
@@ -226,7 +246,12 @@ function buildExportSearchParams(filters: SalesTransactionQueryState) {
         key === "paymentMethod") &&
       value === "all"
 
-    if (key !== "page" && value !== "" && !isDefaultEnumFilter) {
+    if (
+      key !== "page" &&
+      key !== "pageSize" &&
+      value !== "" &&
+      !isDefaultEnumFilter
+    ) {
       params.set(key, String(value))
     }
   }
@@ -315,40 +340,81 @@ export function SalesTransactionsPagination({
 }) {
   const { isPending, updateFilters } = useSalesTransactionsControls()
   const pageCount = Math.max(1, Math.ceil(totalCount / pageSize))
-  const firstResult = totalCount === 0 ? 0 : (page - 1) * pageSize + 1
-  const lastResult = Math.min(page * pageSize, totalCount)
+  const canGoPrevious = !isPending && page > 1
+  const canGoNext = !isPending && page < pageCount
 
   return (
-    <div
-      className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center"
-    >
-      <p className="text-muted-foreground flex-1 text-sm" aria-live="polite">
-        {totalCount === 0
-          ? "0 transacciones"
-          : `${firstResult}–${lastResult} de ${totalCount.toLocaleString("es-MX")} transacciones`}
-      </p>
-      <div className="flex items-center justify-between gap-3 sm:justify-end">
-        <p className="text-muted-foreground text-sm tabular-nums">
-          Página {page} de {pageCount}
-        </p>
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={isPending || page <= 1}
-            onClick={() => updateFilters({ page: page - 1 })}
+    <div className="flex items-center justify-between px-2">
+      <div className="flex-1 text-sm text-gray-500" aria-live="polite">
+        {totalCount.toLocaleString("es-MX")} registro(s) encontrado(s)
+      </div>
+      <div className="flex items-center space-x-6 lg:space-x-8">
+        <div className="hidden items-center space-x-2 sm:flex">
+          <p className="text-sm font-medium">Registros por página</p>
+          <Select
+            value={`${pageSize}`}
+            disabled={isPending}
+            onValueChange={value => {
+              const nextPageSize = salesTransactionPageSizeOptions.find(
+                option => `${option}` === value
+              )
+              if (nextPageSize) updateFilters({ pageSize: nextPageSize })
+            }}
           >
-            Anterior
+            <SelectTrigger className="h-8 w-[70px]">
+              <SelectValue placeholder={pageSize} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {salesTransactionPageSizeOptions.map(option => (
+                <SelectItem key={option} value={`${option}`}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div
+          className="flex w-[100px] items-center justify-center text-sm
+            font-medium"
+        >
+          Página {page} de {pageCount}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            className="hidden h-8 w-8 p-0 lg:flex"
+            onClick={() => updateFilters({ page: 1 })}
+            disabled={!canGoPrevious}
+          >
+            <span className="sr-only">Ir a primer página</span>
+            <ChevronsLeft className="h-4 w-4" />
           </Button>
           <Button
-            type="button"
             variant="outline"
-            size="sm"
-            disabled={isPending || page >= pageCount}
-            onClick={() => updateFilters({ page: page + 1 })}
+            className="h-8 w-8 p-0"
+            onClick={() => updateFilters({ page: page - 1 })}
+            disabled={!canGoPrevious}
           >
-            Siguiente
+            <span className="sr-only">Ir a página previa</span>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="h-8 w-8 p-0"
+            onClick={() => updateFilters({ page: page + 1 })}
+            disabled={!canGoNext}
+          >
+            <span className="sr-only">Ir a página siguiente</span>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="hidden h-8 w-8 p-0 lg:flex"
+            onClick={() => updateFilters({ page: pageCount })}
+            disabled={!canGoNext}
+          >
+            <span className="sr-only">Ir a última página</span>
+            <ChevronsRight className="h-4 w-4" />
           </Button>
         </div>
       </div>

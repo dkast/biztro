@@ -3,6 +3,7 @@
 import {
   debounce,
   parseAsInteger,
+  parseAsNumberLiteral,
   parseAsString,
   parseAsStringEnum
 } from "nuqs"
@@ -10,7 +11,8 @@ import {
 import {
   defaultSalesTransactionFilters,
   salesTransactionDateRangeValues,
-  salesTransactionFilterValues
+  salesTransactionFilterValues,
+  salesTransactionPageSizeOptions
 } from "@/lib/sales-transactions"
 
 export const salesTransactionsQueryParsers = {
@@ -34,5 +36,8 @@ export const salesTransactionsQueryParsers = {
   q: parseAsString
     .withDefault(defaultSalesTransactionFilters.q)
     .withOptions({ limitUrlUpdates: debounce(300) }),
-  page: parseAsInteger.withDefault(defaultSalesTransactionFilters.page)
+  page: parseAsInteger.withDefault(defaultSalesTransactionFilters.page),
+  pageSize: parseAsNumberLiteral(salesTransactionPageSizeOptions).withDefault(
+    defaultSalesTransactionFilters.pageSize
+  )
 }
