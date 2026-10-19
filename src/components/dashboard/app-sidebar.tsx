@@ -93,6 +93,7 @@ const navigation: NavigationItem[] = [
     items: [
       { title: "Ventas", url: "/dashboard/sales" },
       { title: "Punto de venta", url: "/dashboard/sales/new" },
+      { title: "Transacciones", url: "/dashboard/sales/transactions" },
       { title: "Cierre diario", url: "/dashboard/sales/closing" },
       { title: "Cartera", url: "/dashboard/sales/receivables" }
     ]

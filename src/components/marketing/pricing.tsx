@@ -111,7 +111,7 @@ export default function Pricing() {
                   className="ml-1 text-taupe-600 in-focus:text-white
                     dark:text-taupe-400"
                 >
-                  (−20%)
+                  (-16%)
                 </span>
               </TabsTrigger>
             </TabsList>

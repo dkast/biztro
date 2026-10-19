@@ -26,8 +26,8 @@ content, media management, subscriptions and a lightweight sales module.
   Chinese.
 - **Sales module** — register quick sales from the active catalog, support
   dine-in/takeout/delivery order types, void sales with reasons, inspect sale
-  details, view revenue dashboards, best sellers and recent activity, and export
-  daily closing reports to CSV.
+  details, filter and export transaction history to CSV, view revenue dashboards,
+  best sellers and recent activity, and export daily closing reports to CSV.
 - **Organization operations** — manage locations, opening hours, services,
   member settings, billing and Cloudflare R2-backed media assets.
 - **Public publishing** — serve public menus from organization slugs/subdomains
