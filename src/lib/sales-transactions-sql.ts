@@ -2,6 +2,30 @@ import { Prisma } from "@/generated/prisma-client/client"
 
 import type { SalesTransactionFilters } from "@/lib/sales-transactions"
 
+// SQLite's lower() and LIKE only fold ASCII, so the search term becomes a
+// case-sensitive GLOB pattern where each letter matches every Unicode case
+// variant, e.g. "álvaro" -> "*[áÁ][lL][vV][aA][rR][oO]*".
+export function buildSalesTransactionSearchPattern(value: string) {
+  const pattern = [...value.normalize("NFC")]
+    .map(character => {
+      const variants = [
+        ...new Set([
+          character,
+          character.toLowerCase(),
+          character.toUpperCase()
+        ])
+      ].filter(variant => [...variant].length === 1)
+
+      if (variants.length > 1) return `[${variants.join("")}]`
+      return character === "*" || character === "?" || character === "["
+        ? `[${character}]`
+        : character
+    })
+    .join("")
+
+  return `*${pattern}*`
+}
+
 function getPaymentStatusCondition(filters: SalesTransactionFilters) {
   const totalMinor = Prisma.sql`CAST(ROUND(cs."total" * 100) AS INTEGER)`
 
@@ -52,11 +76,11 @@ export function buildSalesTransactionsSql({
     candidateConditions.push(Prisma.sql`s."orderType" = ${filters.orderType}`)
   }
   if (filters.q) {
-    const query = filters.q.toLowerCase()
+    const pattern = buildSalesTransactionSearchPattern(filters.q)
     candidateConditions.push(
       Prisma.sql`(
-        instr(lower(s."id"), ${query}) > 0 OR
-        instr(lower(COALESCE(c."name", '')), ${query}) > 0
+        s."id" GLOB ${pattern} OR
+        COALESCE(c."name", '') GLOB ${pattern}
       )`
     )
   }

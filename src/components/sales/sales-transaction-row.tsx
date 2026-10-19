@@ -1,10 +1,12 @@
 "use client"
 
 import { ChevronRight } from "lucide-react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 import { TableCell, TableRow } from "@/components/ui/table"
 import { formatPrice } from "@/lib/currency"
+import { salesTransactionsTimeZone } from "@/lib/sales-transactions"
 import { paymentMethodLabels, paymentStatusLabels } from "@/lib/types/payments"
 import {
   salesOrderTypeLabels,
@@ -16,12 +18,14 @@ import { cn } from "@/lib/utils"
 const transactionDateFormatter = new Intl.DateTimeFormat("es-MX", {
   day: "numeric",
   month: "short",
-  year: "numeric"
+  year: "numeric",
+  timeZone: salesTransactionsTimeZone
 })
 
 const transactionTimeFormatter = new Intl.DateTimeFormat("es-MX", {
   hour: "numeric",
-  minute: "2-digit"
+  minute: "2-digit",
+  timeZone: salesTransactionsTimeZone
 })
 
 const statusDotClassNames = {
@@ -75,22 +79,16 @@ export function SalesTransactionRow({
   const paymentMethods = getPaymentMethodsLabel(transaction)
   const isVoid = transaction.status === "VOID"
 
-  const openSale = () =>
-    router.push(`/dashboard/sales/order/${transaction.id}`, { scroll: false })
+  const saleHref = `/dashboard/sales/order/${transaction.id}`
 
   return (
     <TableRow
-      role="link"
-      tabIndex={0}
-      aria-label={`Ver detalle de venta de ${customerName}, ${transactionDateFormatter.format(createdAt)} ${transactionTimeFormatter.format(createdAt)}`}
-      className="group focus-visible:bg-muted cursor-pointer
-        focus-visible:outline-none"
-      onClick={openSale}
-      onKeyDown={event => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault()
-          openSale()
+      className="group cursor-pointer"
+      onClick={event => {
+        if (event.target instanceof Element && event.target.closest("a")) {
+          return
         }
+        router.push(saleHref, { scroll: false })
       }}
     >
       <TableCell className="py-3 whitespace-nowrap">
@@ -145,11 +143,20 @@ export function SalesTransactionRow({
         </span>
       </TableCell>
       <TableCell className="w-8 py-3 pr-3 text-right">
-        <ChevronRight
-          aria-hidden
-          className="text-muted-foreground group-hover:text-foreground size-4
-            transition-colors"
-        />
+        <Link
+          href={saleHref}
+          scroll={false}
+          prefetch={false}
+          aria-label={`Ver detalle de venta de ${customerName}, ${transactionDateFormatter.format(createdAt)} ${transactionTimeFormatter.format(createdAt)}`}
+          className="focus-visible:ring-ring inline-flex rounded-sm
+            focus-visible:ring-2 focus-visible:outline-none"
+        >
+          <ChevronRight
+            aria-hidden
+            className="text-muted-foreground group-hover:text-foreground size-4
+              transition-colors"
+          />
+        </Link>
       </TableCell>
     </TableRow>
   )

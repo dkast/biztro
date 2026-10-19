@@ -14,6 +14,7 @@ import {
 import {
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow
@@ -27,7 +28,7 @@ export function SalesTransactionsTable({
   data: SalesTransactionsPage
   hasActiveFilters: boolean
 }) {
-  if (data.transactions.length === 0) {
+  if (data.totalCount === 0) {
     return (
       <Empty className="min-h-64 border-0 py-12">
         <EmptyHeader>
@@ -79,12 +80,23 @@ export function SalesTransactionsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.transactions.map(transaction => (
-              <SalesTransactionRow
-                key={transaction.id}
-                transaction={transaction}
-              />
-            ))}
+            {data.transactions.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className="text-muted-foreground py-8 text-center"
+                >
+                  No hay transacciones en esta página.
+                </TableCell>
+              </TableRow>
+            ) : (
+              data.transactions.map(transaction => (
+                <SalesTransactionRow
+                  key={transaction.id}
+                  transaction={transaction}
+                />
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

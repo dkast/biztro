@@ -18,7 +18,10 @@ import {
   formatSalesClosingDateValue,
   parseSalesClosingDateValue
 } from "@/lib/sales-closing-date"
-import type { SalesTransactionQueryState } from "@/lib/sales-transactions"
+import {
+  getSalesTransactionDateValue,
+  type SalesTransactionQueryState
+} from "@/lib/sales-transactions"
 import { cn } from "@/lib/utils"
 
 type DateRangeValue = Pick<SalesTransactionQueryState, "range" | "from" | "to">
@@ -35,9 +38,9 @@ const fullDateFormatter = new Intl.DateTimeFormat("es-MX", {
 })
 
 function startOfToday() {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  return today
+  return (
+    parseSalesClosingDateValue(getSalesTransactionDateValue()) ?? new Date()
+  )
 }
 
 function daysAgo(days: number) {

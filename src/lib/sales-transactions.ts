@@ -16,6 +16,70 @@ export const salesTransactionFilterValues = {
   paymentMethod: ["all", ...paymentMethodValues, "LEGACY"] as const
 }
 
+export const salesTransactionsTimeZone = "America/Mexico_City"
+
+const salesTransactionsZonedPartsFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: salesTransactionsTimeZone,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hourCycle: "h23"
+})
+
+function getZonedParts(date: Date) {
+  const parts: Record<string, number> = {}
+  for (const part of salesTransactionsZonedPartsFormatter.formatToParts(date)) {
+    if (part.type !== "literal") parts[part.type] = Number(part.value)
+  }
+  return parts as Record<
+    "year" | "month" | "day" | "hour" | "minute" | "second",
+    number
+  >
+}
+
+function getTimeZoneOffset(date: Date) {
+  const parts = getZonedParts(date)
+  const zonedTime = Date.UTC(
+    parts.year,
+    parts.month - 1,
+    parts.day,
+    parts.hour,
+    parts.minute,
+    parts.second
+  )
+  return zonedTime - (date.getTime() - date.getMilliseconds())
+}
+
+/** Calendar date (YYYY-MM-DD) of `date` in the reporting time zone. */
+export function getSalesTransactionDateValue(date = new Date()) {
+  const { year, month, day } = getZonedParts(date)
+  return formatSalesClosingDateValue(new Date(year, month - 1, day))
+}
+
+function addDaysToDateValue(value: string, days: number) {
+  const date = parseSalesClosingDateValue(value)
+  if (!date) return null
+  date.setDate(date.getDate() + days)
+  return formatSalesClosingDateValue(date)
+}
+
+/** Start of a calendar day (YYYY-MM-DD) in the reporting time zone. */
+export function getSalesTransactionDayStart(value: string | null | undefined) {
+  const date = parseSalesClosingDateValue(value)
+  if (!date) return null
+
+  const utcMidnight = Date.UTC(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  )
+  const guess = utcMidnight - getTimeZoneOffset(new Date(utcMidnight))
+  return new Date(utcMidnight - getTimeZoneOffset(new Date(guess)))
+}
+
 export const salesTransactionPageSizeOptions = [10, 20, 30, 40, 50] as const
 export const salesTransactionPageSize = salesTransactionPageSizeOptions[1]
 export const salesTransactionExportLimit = 10_000
@@ -119,10 +183,11 @@ function normalizeDateRange(
   if (range === "all") return { startDate: null, endDate: null }
 
   if (range === "custom") {
-    const startDate = parseSalesClosingDateValue(from)
-    const finalDate = parseSalesClosingDateValue(to)
+    const startDate = getSalesTransactionDayStart(from)
+    const nextDateValue = to ? addDaysToDateValue(to, 1) : null
+    const endDate = getSalesTransactionDayStart(nextDateValue)
 
-    if (!startDate || !finalDate) {
+    if (!from || !to || !startDate || !endDate) {
       return {
         startDate: null,
         endDate: null,
@@ -130,7 +195,7 @@ function normalizeDateRange(
       }
     }
 
-    if (startDate > finalDate) {
+    if (from > to) {
       return {
         startDate: null,
         endDate: null,
@@ -138,16 +203,12 @@ function normalizeDateRange(
       }
     }
 
-    finalDate.setDate(finalDate.getDate() + 1)
-    return { startDate, endDate: finalDate }
+    return { startDate, endDate }
   }
 
-  const today = new Date(now)
-  today.setHours(0, 0, 0, 0)
-  const startDate = new Date(today)
-  startDate.setDate(startDate.getDate() - 29)
-  const endDate = new Date(today)
-  endDate.setDate(endDate.getDate() + 1)
+  const today = getSalesTransactionDateValue(now)
+  const startDate = getSalesTransactionDayStart(addDaysToDateValue(today, -29))
+  const endDate = getSalesTransactionDayStart(addDaysToDateValue(today, 1))
 
   return { startDate, endDate }
 }
@@ -189,7 +250,7 @@ export function parseSalesTransactionsSearchParams(
 }
 
 export function getSalesTransactionExportFilename(now = new Date()) {
-  return `transacciones-${formatSalesClosingDateValue(now)}.csv`
+  return `transacciones-${getSalesTransactionDateValue(now)}.csv`
 }
 
 export function hasActiveSalesTransactionFilters(

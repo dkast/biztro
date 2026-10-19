@@ -1,13 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { CheckIcon, PlusCircleIcon } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Command,
+  CommandEmpty,
   CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
   CommandSeparator
@@ -37,6 +39,7 @@ export function SalesTransactionsFacetFilter<TValue extends string>({
   onChange: (value: TValue | "all") => void
 }) {
   const [open, setOpen] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
   const selectedOption = options.find(option => option.value === value)
 
   const select = (nextValue: TValue | "all") => {
@@ -72,9 +75,19 @@ export function SalesTransactionsFacetFilter<TValue extends string>({
           </>
         )}
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-52 gap-0 p-0">
+      <PopoverContent
+        align="start"
+        initialFocus={inputRef}
+        className="w-52 gap-0 p-0"
+      >
         <Command>
+          <CommandInput
+            ref={inputRef}
+            aria-label={`Filtrar opciones de ${title}`}
+            placeholder={title}
+          />
           <CommandList>
+            <CommandEmpty>Sin resultados.</CommandEmpty>
             <CommandGroup heading={title}>
               {options.map(option => {
                 const isSelected = option.value === value

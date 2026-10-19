@@ -5,7 +5,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { parseSalesTransactionsSearchParams } from "@/lib/sales-transactions"
 import { buildSalesTransactionsSql } from "@/lib/sales-transactions-sql"
 
-const testNow = new Date(2026, 9, 6, 12)
+// Noon on 2026-10-06 in the America/Mexico_City reporting time zone (UTC-6).
+const testNow = new Date("2026-10-06T18:00:00.000Z")
 
 type SqlRow = {
   id: string | null
@@ -17,7 +18,7 @@ type SqlRow = {
 }
 
 describe("sales transaction filters", () => {
-  it("defaults to the last 30 local calendar days, including today", () => {
+  it("defaults to the last 30 reporting calendar days, including today", () => {
     const result = parseSalesTransactionsSearchParams(
       new URLSearchParams(),
       testNow
@@ -26,8 +27,10 @@ describe("sales transaction filters", () => {
     expect(result.valid).toBe(true)
     if (!result.valid) return
 
-    expect(result.filters.startDate).toEqual(new Date(2026, 8, 7))
-    expect(result.filters.endDate).toEqual(new Date(2026, 9, 7))
+    expect(result.filters.startDate).toEqual(
+      new Date("2026-09-07T06:00:00.000Z")
+    )
+    expect(result.filters.endDate).toEqual(new Date("2026-10-07T06:00:00.000Z"))
     expect(result.filters.page).toBe(1)
   })
 
@@ -39,8 +42,12 @@ describe("sales transaction filters", () => {
 
     expect(result.valid).toBe(true)
     if (result.valid) {
-      expect(result.filters.startDate).toEqual(new Date(2026, 9, 2))
-      expect(result.filters.endDate).toEqual(new Date(2026, 9, 6))
+      expect(result.filters.startDate).toEqual(
+        new Date("2026-10-02T06:00:00.000Z")
+      )
+      expect(result.filters.endDate).toEqual(
+        new Date("2026-10-06T06:00:00.000Z")
+      )
     }
 
     expect(
@@ -159,7 +166,8 @@ describe("sales transactions SQL", () => {
     await prisma.$executeRaw`
       INSERT INTO "Customer" ("id", "organizationId", "name")
       VALUES ('customer-a', 'org-a', 'Ana Cocina'),
-        ('customer-b', 'org-b', 'Ana Cocina')
+        ('customer-b', 'org-b', 'Ana Cocina'),
+        ('customer-accent', 'org-a', 'Álvaro Núñez')
     `
     await prisma.$executeRaw`
       INSERT INTO "Sale"
@@ -169,6 +177,7 @@ describe("sales transactions SQL", () => {
         ('sale-b', 'org-a', '2026-10-05T12:00:00.000Z', NULL, 'TAKEOUT', 'COMPLETED', 10, 'USD'),
         ('sale-c', 'org-a', '2026-10-04T12:00:00.000Z', 'customer-a', 'DELIVERY', 'VOID', 5, 'MXN'),
         ('sale-zero', 'org-a', '2026-10-03T12:00:00.000Z', NULL, 'DINE_IN', 'COMPLETED', 0, 'MXN'),
+        ('sale-accent', 'org-a', '2026-10-02T03:00:00.000Z', 'customer-accent', 'TAKEOUT', 'COMPLETED', 0, 'MXN'),
         ('sale-other-org', 'org-b', '2026-10-05T12:00:00.000Z', 'customer-b', 'DINE_IN', 'COMPLETED', 20, 'MXN')
     `
     await prisma.$executeRaw`
@@ -238,7 +247,7 @@ describe("sales transactions SQL", () => {
 
   it("counts and paginates organization sales without multiplying split payments or items", async () => {
     const firstPage = await queryTransactions({ pageSize: 2 })
-    expect(firstPage.totalCount).toBe(4)
+    expect(firstPage.totalCount).toBe(5)
     expect(firstPage.rows.map(row => row.id)).toEqual(["sale-b", "sale-a"])
     expect(firstPage.rows[1]).toMatchObject({
       item_count: 3,
@@ -246,7 +255,7 @@ describe("sales transactions SQL", () => {
     })
 
     const secondPage = await queryTransactions({ page: 2, pageSize: 2 })
-    expect(secondPage.totalCount).toBe(4)
+    expect(secondPage.totalCount).toBe(5)
     expect(secondPage.rows.map(row => row.id)).toEqual(["sale-c", "sale-zero"])
   })
 
@@ -265,11 +274,12 @@ describe("sales transactions SQL", () => {
     const paid = await queryTransactions({
       search: "range=all&paymentStatus=PAID"
     })
-    expect(paid.totalCount).toBe(3)
+    expect(paid.totalCount).toBe(4)
     expect(paid.rows.map(row => row.id)).toEqual([
       "sale-b",
       "sale-c",
-      "sale-zero"
+      "sale-zero",
+      "sale-accent"
     ])
   })
 
@@ -288,6 +298,31 @@ describe("sales transactions SQL", () => {
     expect(otherOrganization.rows.map(row => row.id)).toEqual([
       "sale-other-org"
     ])
+  })
+
+  it("matches accented customer names regardless of letter case", async () => {
+    for (const q of ["Álvaro", "álvaro", "ÁLVARO", "núñez"]) {
+      const result = await queryTransactions({
+        search: `range=all&q=${encodeURIComponent(q)}`
+      })
+      expect(result.rows.map(row => row.id)).toEqual(["sale-accent"])
+    }
+
+    const wildcard = await queryTransactions({ search: "range=all&q=*" })
+    expect(wildcard.totalCount).toBe(0)
+  })
+
+  it("uses reporting time zone day boundaries for custom ranges", async () => {
+    // 2026-10-02T03:00Z is 2026-10-01 21:00 in America/Mexico_City.
+    const previousDay = await queryTransactions({
+      search: "range=custom&from=2026-10-01&to=2026-10-01"
+    })
+    expect(previousDay.rows.map(row => row.id)).toEqual(["sale-accent"])
+
+    const selectedDay = await queryTransactions({
+      search: "range=custom&from=2026-10-02&to=2026-10-02"
+    })
+    expect(selectedDay.rows.map(row => row.id)).toEqual([])
   })
 
   it("matches only the selected sale's payment methods and voided methods", async () => {

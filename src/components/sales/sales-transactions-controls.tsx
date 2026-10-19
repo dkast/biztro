@@ -3,6 +3,7 @@
 import {
   createContext,
   useContext,
+  useId,
   useState,
   useTransition,
   type ReactNode
@@ -74,27 +75,24 @@ export function SalesTransactionsControlsProvider({
 }: {
   children: ReactNode
 }) {
+  const [isPending, startTransition] = useTransition()
   const [filters, setFilters] = useQueryStates(salesTransactionsQueryParsers, {
     shallow: false,
-    scroll: false
+    scroll: false,
+    startTransition
   })
-  const [isPending, startTransition] = useTransition()
 
   const updateFilters = (updates: Partial<SalesTransactionQueryState>) => {
-    startTransition(() => {
-      void setFilters({
-        ...updates,
-        page: updates.page ?? 1
-      })
+    void setFilters({
+      ...updates,
+      page: updates.page ?? 1
     })
   }
 
   const resetFilters = () => {
-    startTransition(() => {
-      void setFilters({
-        ...defaultSalesTransactionFilters,
-        pageSize: filters.pageSize
-      })
+    void setFilters({
+      ...defaultSalesTransactionFilters,
+      pageSize: filters.pageSize
     })
   }
 
@@ -339,6 +337,8 @@ export function SalesTransactionsPagination({
   pageSize: number
 }) {
   const { isPending, updateFilters } = useSalesTransactionsControls()
+  const pageSizeLabelId = useId()
+  const pageSizeTriggerId = useId()
   const pageCount = Math.max(1, Math.ceil(totalCount / pageSize))
   const canGoPrevious = !isPending && page > 1
   const canGoNext = !isPending && page < pageCount
@@ -350,7 +350,9 @@ export function SalesTransactionsPagination({
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="hidden items-center space-x-2 sm:flex">
-          <p className="text-sm font-medium">Registros por página</p>
+          <p id={pageSizeLabelId} className="text-sm font-medium">
+            Registros por página
+          </p>
           <Select
             value={`${pageSize}`}
             disabled={isPending}
@@ -361,7 +363,11 @@ export function SalesTransactionsPagination({
               if (nextPageSize) updateFilters({ pageSize: nextPageSize })
             }}
           >
-            <SelectTrigger className="h-8 w-[70px]">
+            <SelectTrigger
+              id={pageSizeTriggerId}
+              aria-labelledby={`${pageSizeLabelId} ${pageSizeTriggerId}`}
+              className="h-8 w-[70px]"
+            >
               <SelectValue placeholder={pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
@@ -392,7 +398,9 @@ export function SalesTransactionsPagination({
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
-            onClick={() => updateFilters({ page: page - 1 })}
+            onClick={() =>
+              updateFilters({ page: Math.min(page - 1, pageCount) })
+            }
             disabled={!canGoPrevious}
           >
             <span className="sr-only">Ir a página previa</span>
