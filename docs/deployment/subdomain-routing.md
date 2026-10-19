@@ -124,9 +124,16 @@ Using `biztro.vercel.app` as the upstream avoids routing loops and avoids depend
 
 Deploy the following Worker and bind it to the route `*.biztro.co/*`.
 
+Configure the [scanner protection](#scanner-traffic-and-the-workers-daily-limit)
+below as well. The path guard in this code protects the upstream, but does not
+save Worker invocations.
+
 ```js
 const ORIGIN = "https://biztro.vercel.app"
 const ROOT_DOMAIN = "biztro.co"
+
+const SCANNER_PATHS =
+  /^\/(?:\.env(?:[./]|$)|@fs(?:\/|$)|__vite|api\/(?:proc\/self\/environ|console\/api_server)(?:\/|$)|userfiles(?:\/|$))/i
 
 const RESERVED_SUBDOMAINS = new Set([
   "www",
@@ -176,6 +183,11 @@ function toTenantPath(slug, pathname) {
 export default {
   async fetch(request) {
     const incomingUrl = new URL(request.url)
+
+    if (SCANNER_PATHS.test(incomingUrl.pathname)) {
+      return new Response("Not Found", { status: 404 })
+    }
+
     const slug = getSlug(incomingUrl.hostname)
 
     if (!slug) {
@@ -216,6 +228,135 @@ Attach the Worker to the following Cloudflare route:
 
 The wildcard DNS record must be proxied, otherwise the Worker route will never run.
 
+## Scanner Traffic and the Workers Daily Limit
+
+### Block before the Worker, not only inside it
+
+The Workers Free plan allows **100,000 requests per day across the account**,
+resetting at **00:00 UTC**. A request that reaches the Worker's `fetch` handler
+still counts when the handler immediately returns `404` or `429`. Blocking paths
+or calling a rate limiter inside the Worker reduces CPU work and upstream
+subrequests, **not incoming Worker invocations**.
+
+For this deployment, use a **zone WAF custom rule** to block scanner requests
+before they invoke the Worker. The production hostnames are already in the
+Cloudflare-managed `biztro.co` zone; this is not a `workers.dev`-only deployment.
+WAF custom rules are available on the Free zone plan (up to five rules). The
+expression below uses no paid-plan regular expression operator.
+
+The reported `.env`, Vite, and process-environment probes are consistent with
+automated vulnerability scanning. An IP belonging to Google Cloud/AS396982 does
+not establish that Google operates the scanner: it could be a cloud customer.
+Do not block all of Google Cloud or all `34.x` addresses based on that alone.
+
+### 1. Add a zone WAF custom rule
+
+In Cloudflare, open `biztro.co` -> `Security` -> `Security rules` -> create a
+`Custom rule` (older dashboard: `Security` -> `WAF` -> `Custom rules`).
+Name it `Block scanner paths`, select `Edit expression`, and paste:
+
+```text
+(
+  http.host eq "biztro.co"
+  or ends_with(http.host, ".biztro.co")
+)
+and
+(
+  lower(http.request.uri.path) eq "/.env"
+  or starts_with(lower(http.request.uri.path), "/.env.")
+  or starts_with(lower(http.request.uri.path), "/.env/")
+  or lower(http.request.uri.path) eq "/@fs"
+  or starts_with(lower(http.request.uri.path), "/@fs/")
+  or starts_with(lower(http.request.uri.path), "/__vite")
+  or lower(http.request.uri.path) eq "/api/proc/self/environ"
+  or starts_with(lower(http.request.uri.path), "/api/proc/self/environ/")
+  or lower(http.request.uri.path) eq "/api/console/api_server"
+  or starts_with(lower(http.request.uri.path), "/api/console/api_server/")
+  or lower(http.request.uri.path) eq "/userfiles"
+  or starts_with(lower(http.request.uri.path), "/userfiles/")
+)
+```
+
+Set the action to **Block** and deploy it before any broad custom rule that skips
+security checks. A WAF block normally returns `403`, not the Worker's `404`.
+This rule intentionally also protects the apex and reserved subdomains from
+these probes. It does not block normal `/api/`, `/_next/`, static asset, or menu
+paths. The Worker guard covers the same path families if a request reaches it;
+keep both lists aligned when adding scanner signatures.
+
+### 2. Disable unused public Worker URLs
+
+Zone WAF rules do not protect the Worker's direct `workers.dev` URL. Since this
+proxy is intended to be reached through `*.biztro.co/*`, disable that unused
+entry point:
+
+1. `Workers & Pages` -> `biztro-subdomain-proxy` -> `Settings` -> `Domains & Routes`.
+2. Disable the `workers.dev` route.
+3. Separately disable public version/preview URLs if enabled and not needed.
+   Disabling `workers.dev` alone does not disable explicitly enabled version URLs.
+4. Keep the production route `*.biztro.co/*` attached.
+
+If this Worker is later managed with Wrangler, persist these settings in its
+configuration so a deployment does not re-enable them:
+
+```jsonc
+{
+  "workers_dev": false,
+  "preview_urls": false
+}
+```
+
+These keys are configuration additions, not a complete Wrangler deployment file.
+There is no Wrangler deployment configuration in this repository; the Worker
+above is maintained through the dashboard.
+
+### 3. Rate limit only where needed
+
+If scanning continues on other paths, use a **zone WAF rate limiting rule** with
+request-side matching to reject excess traffic before the Worker, subject to
+the zone plan's available fields, periods, and actions. Scope it using observed
+abusive traffic and measure normal menu traffic before choosing a threshold.
+Exact offending IPs can be blocked temporarily with a separate custom rule,
+but IP-only blocks need maintenance as scanners rotate addresses.
+
+The Worker Rate Limiting API (`env.MY_RATE_LIMITER.limit()`) is optional upstream
+protection, not a fix for the daily invocation cap. Its limits are per key per
+Cloudflare location, eventually consistent, and applied only after the Worker
+starts. A `60` requests / `60` seconds per-IP limit would not normally reject an
+IP sending `40` requests/minute; five different IPs do not share one counter.
+Do not impose that limit on all menu requests without testing: assets and
+visitors sharing a restaurant's public IP can exhaust it together.
+
+### 4. Recover and verify
+
+- Adding a rule does not restore an already exhausted daily allowance. Wait for
+  the midnight UTC reset, or evaluate a Workers Paid upgrade for immediate
+  capacity. Review pricing before upgrading.
+- Do not switch this proxy to **fail open** as a quota workaround: bypassing it
+  removes the tenant-path rewrite and can serve the wrong content or fail at
+  the origin. Check the route's failure mode deliberately.
+- After deploying the WAF rule, request `/.env`, `/.env.local`, `/@fs/.env`,
+  `/api/proc/self/environ`, `/api/console/api_server`, `/userfiles/`, and
+  `/__vite_rsc_findSourceMapURL` on a real tenant hostname, including an
+  uppercase path and a query string. Expect a WAF block and a matching event in
+  `Security` -> `Events`, not an invocation of this Worker.
+- Correlate those requests with Worker logs/metrics; a `403` alone does not prove
+  the WAF blocked the request before the Worker. Check that scanner traffic
+  appears in security events while Worker invocation volume drops.
+- Confirm disabled `workers.dev` and public version/preview URLs no longer
+  execute the Worker.
+- Re-run the normal routing and asset checks below. Monitor request usage
+  across the account, since other Workers share the Free daily allowance.
+
+References:
+
+- [Workers limits and daily quota](https://developers.cloudflare.com/workers/platform/limits/#daily-requests)
+- [WAF custom rules and Free-plan availability](https://developers.cloudflare.com/waf/custom-rules/)
+- [WAF rate limiting rules](https://developers.cloudflare.com/waf/rate-limiting-rules/)
+- [Worker Rate Limiting API and locality](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/)
+- [Disable workers.dev](https://developers.cloudflare.com/workers/configuration/routing/workers-dev/#disabling-workersdev)
+- [Version URL configuration](https://developers.cloudflare.com/workers/versions-and-deployments/version-urls/)
+
 ## Exact Cloudflare Dashboard Click Path
 
 ### DNS record
@@ -254,6 +395,10 @@ The wildcard DNS record must be proxied, otherwise the Worker route will never r
 6. Zone: `biztro.co`
 7. Route pattern: `*.biztro.co/*`
 8. `Add route`
+
+After binding the route, complete the
+[scanner protection steps](#scanner-traffic-and-the-workers-daily-limit):
+deploy the zone WAF rule and disable unused public Worker URLs.
 
 ### SSL mode
 
