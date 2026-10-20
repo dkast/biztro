@@ -21,6 +21,7 @@
     "predev": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "db:dev": "turso dev --db-file local.db",
+    "db:seed": "prisma db seed",
     "email": "email dev --dir src/emails",
     "build:content": "contentlayer2 build",
     "stripe:listen": "stripe listen --forward-to localhost:3000/api/auth/stripe/webhook"
