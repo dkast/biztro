@@ -93,6 +93,8 @@ const navigation: NavigationItem[] = [
     items: [
       { title: "Ventas", url: "/dashboard/sales" },
       { title: "Punto de venta", url: "/dashboard/sales/new" },
+      { title: "Cocina", url: "/dashboard/sales/kitchen" },
+      { title: "Por cobrar", url: "/dashboard/sales/pending" },
       { title: "Transacciones", url: "/dashboard/sales/transactions" },
       { title: "Cierre diario", url: "/dashboard/sales/closing" },
       { title: "Cartera", url: "/dashboard/sales/receivables" }
@@ -138,11 +140,20 @@ export default function AppSidebar({
 
     return {
       ...item,
-      items: item.items.filter(
-        subItem =>
-          subItem.title !== "Cartera" ||
-          Boolean(paymentFeatureState?.hasCreditHistory)
-      )
+      items: item.items.filter(subItem => {
+        if (subItem.title === "Cartera") {
+          return Boolean(paymentFeatureState?.hasCreditHistory)
+        }
+
+        if (subItem.title === "Por cobrar") {
+          return (
+            paymentFeatureState?.paymentTiming === "PAY_ON_DELIVERY" ||
+            Boolean(paymentFeatureState?.openOrders)
+          )
+        }
+
+        return true
+      })
     }
   })
 

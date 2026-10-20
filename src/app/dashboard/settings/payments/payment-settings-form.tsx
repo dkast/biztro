@@ -20,9 +20,16 @@ import {
   FieldSet,
   FieldTitle
 } from "@/components/ui/field"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { saveOrganizationPaymentSettings } from "@/server/actions/organization/mutations"
+import {
+  paymentTimingDescriptions,
+  paymentTimingLabels,
+  paymentTimingValues,
+  type PaymentTiming
+} from "@/lib/types/order"
 import type { OrganizationPaymentSettings } from "@/lib/types/payments"
 
 const paymentMethodOptions = [
@@ -111,8 +118,8 @@ export default function PaymentSettingsForm({
           <LockKeyhole />
           <AlertTitle>Configuración de solo lectura</AlertTitle>
           <AlertDescription>
-            Solo el propietario del negocio puede cambiar los métodos de pago y
-            la política de crédito.
+            Solo el propietario del negocio puede cambiar los métodos de pago,
+            el momento del cobro y la política de crédito.
           </AlertDescription>
         </Alert>
       )}
@@ -154,6 +161,48 @@ export default function PaymentSettingsForm({
         <FieldDescription className="mt-4">
           Mantén activo al menos un método. Los métodos desactivados no
           aparecerán en nuevos cobros, pero permanecen en el historial.
+        </FieldDescription>
+      </FieldSet>
+
+      <Separator />
+
+      <FieldSet disabled={!canEdit || isExecuting}>
+        <FieldLegend>Momento del cobro</FieldLegend>
+        <FieldDescription>
+          Define si las órdenes se cobran antes de enviarse a cocina o cuando se
+          entregan al cliente.
+        </FieldDescription>
+        <RadioGroup
+          value={values.paymentTiming}
+          onValueChange={value =>
+            setValues(current => ({
+              ...current,
+              paymentTiming: value as PaymentTiming
+            }))
+          }
+          className="gap-2"
+        >
+          {paymentTimingValues.map(timing => (
+            <FieldLabel key={timing} htmlFor={`payment-timing-${timing}`}>
+              <Field orientation="horizontal" className="items-start gap-3">
+                <RadioGroupItem
+                  id={`payment-timing-${timing}`}
+                  value={timing}
+                  className="mt-0.5"
+                />
+                <FieldContent>
+                  <FieldTitle>{paymentTimingLabels[timing]}</FieldTitle>
+                  <FieldDescription>
+                    {paymentTimingDescriptions[timing]}
+                  </FieldDescription>
+                </FieldContent>
+              </Field>
+            </FieldLabel>
+          ))}
+        </RadioGroup>
+        <FieldDescription className="mt-2">
+          El cambio aplica a las nuevas órdenes. Las órdenes pendientes de cobro
+          se mantienen en Por cobrar.
         </FieldDescription>
       </FieldSet>
 

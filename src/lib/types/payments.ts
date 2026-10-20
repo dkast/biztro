@@ -1,6 +1,7 @@
 import { z } from "zod/v4"
 
 import { decimalToMinorUnits } from "@/lib/payments"
+import type { PaymentTiming } from "@/lib/types/order"
 
 export const paymentMethodValues = [
   "CASH",
@@ -29,6 +30,7 @@ export type OrganizationPaymentSettings = {
   acceptsCodi: boolean
   acceptsVoucher: boolean
   creditEnabled: boolean
+  paymentTiming: PaymentTiming
 }
 
 export type OrganizationPaymentMethodSettings = Pick<

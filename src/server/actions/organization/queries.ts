@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from "next/cache"
 
 import prisma from "@/lib/prisma"
 import { SubscriptionStatus } from "@/lib/types/billing"
+import type { PaymentTiming } from "@/lib/types/order"
 import type { OrganizationPaymentSettings } from "@/lib/types/payments"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
@@ -41,7 +42,7 @@ export async function getOrganizationPaymentSettings(
 
   cacheTag(`payment-settings-${organizationId}`)
 
-  return await prisma.organization.findUnique({
+  const settings = await prisma.organization.findUnique({
     where: { id: organizationId },
     select: {
       acceptsCash: true,
@@ -49,9 +50,14 @@ export async function getOrganizationPaymentSettings(
       acceptsTransfer: true,
       acceptsCodi: true,
       acceptsVoucher: true,
-      creditEnabled: true
+      creditEnabled: true,
+      paymentTiming: true
     }
   })
+
+  return settings
+    ? { ...settings, paymentTiming: settings.paymentTiming as PaymentTiming }
+    : null
 }
 
 /**

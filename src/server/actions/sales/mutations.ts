@@ -3,20 +3,26 @@
 import { updateTag } from "next/cache"
 
 import { isProMember } from "@/server/actions/user/queries"
-import { type Currency } from "@/lib/currency"
-import { currencyToMinorUnits, decimalToMinorUnits } from "@/lib/payments"
+import { cancelLinkedKitchenOrder } from "@/server/sales/orders"
+import {
+  createOrderRecord,
+  isUniqueConstraintError,
+  recordSale,
+  resolveCatalogItems,
+  withOrderNumberRetry
+} from "@/server/sales/record-sale"
+import {
+  checkSalePayments,
+  mergeCartItems,
+  normalizeOptionalText
+} from "@/lib/orders"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
-import { isPaymentMethodAccepted } from "@/lib/types/payments"
 import {
   completeSaleSchema,
   voidReasonLabels,
   voidSaleSchema
 } from "@/lib/types/sales"
-
-function roundMoney(value: number) {
-  return Math.round((value + Number.EPSILON) * 100) / 100
-}
 
 export const completeSale = authMemberActionClient
   .inputSchema(completeSaleSchema)
@@ -39,273 +45,115 @@ export const completeSale = authMemberActionClient
       }
     }
 
-    const itemsByKey = new Map<
-      string,
-      {
-        menuItemId: string
-        variantId?: string
-        quantity: number
-      }
-    >()
+    const requestId = parsedInput.requestId ?? null
+    const findDuplicate = async () => {
+      if (!requestId) return null
 
-    for (const item of parsedInput.items) {
-      const key = `${item.menuItemId}:${item.variantId ?? ""}`
-      const existing = itemsByKey.get(key)
+      const order = await prisma.order.findUnique({
+        where: { organizationId_requestId: { organizationId, requestId } },
+        select: {
+          number: true,
+          sale: { select: { id: true, orderType: true, total: true } },
+          items: { select: { quantity: true } }
+        }
+      })
 
-      if (existing) {
-        existing.quantity += item.quantity
-      } else {
-        itemsByKey.set(key, { ...item })
-      }
-    }
+      if (!order?.sale) return null
 
-    const cartItems = [...itemsByKey.values()]
-
-    if (cartItems.length === 0) {
       return {
-        failure: {
-          reason: "Agrega al menos un producto"
+        success: {
+          id: order.sale.id,
+          orderType: order.sale.orderType,
+          total: order.sale.total,
+          itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
+          orderNumber: order.number
         }
       }
     }
 
-    const menuItemIds = [...new Set(cartItems.map(item => item.menuItemId))]
+    const duplicate = await findDuplicate()
+    if (duplicate) return duplicate
 
-    const menuItems = await prisma.menuItem.findMany({
-      where: {
-        id: {
-          in: menuItemIds
-        },
-        organizationId,
-        status: "ACTIVE"
-      },
-      include: {
-        variants: {
-          orderBy: {
-            price: "asc"
-          }
-        }
-      }
-    })
-
-    if (menuItems.length !== menuItemIds.length) {
-      return {
-        failure: {
-          reason: "Uno o más productos ya no están disponibles"
-        }
-      }
-    }
-
-    const menuItemsById = new Map(menuItems.map(item => [item.id, item]))
-
-    const resolvedItems = cartItems.map(line => {
-      const menuItem = menuItemsById.get(line.menuItemId)
-
-      if (!menuItem) {
-        return null
-      }
-
-      const variants = menuItem.variants
-      const selectedVariant = line.variantId
-        ? variants.find(variant => variant.id === line.variantId)
-        : variants.length === 1
-          ? variants[0]
-          : null
-
-      if (!selectedVariant) {
-        return null
-      }
-
-      return {
-        menuItemId: menuItem.id,
-        variantId: selectedVariant.id,
-        productName: menuItem.name,
-        variantName: selectedVariant.name,
-        unitPrice: selectedVariant.price,
-        quantity: line.quantity,
-        lineTotal: roundMoney(selectedVariant.price * line.quantity),
-        currency: menuItem.currency as Currency
-      }
-    })
-
-    if (resolvedItems.some(item => !item)) {
-      return {
-        failure: {
-          reason: "No se pudo preparar uno o más productos"
-        }
-      }
-    }
-
-    const salesItems = resolvedItems as Array<{
-      menuItemId: string
-      variantId: string
-      productName: string
-      variantName: string
-      unitPrice: number
-      quantity: number
-      lineTotal: number
-      currency: Currency
-    }>
-
-    const saleCurrency = salesItems[0]?.currency
-    if (!saleCurrency) {
-      return {
-        failure: {
-          reason: "No se pudo determinar la moneda de la venta"
-        }
-      }
-    }
-
-    if (salesItems.some(item => item.currency !== saleCurrency)) {
-      return {
-        failure: {
-          reason: "No se pueden mezclar monedas en una sola venta"
-        }
-      }
-    }
-
-    const subtotal = roundMoney(
-      salesItems.reduce((sum, item) => sum + item.lineTotal, 0)
+    const resolved = await resolveCatalogItems(
+      prisma,
+      organizationId,
+      mergeCartItems(parsedInput.items)
     )
-    const total = subtotal
-    const totalMinor = currencyToMinorUnits(total)
-    const itemCount = salesItems.reduce((sum, item) => sum + item.quantity, 0)
-    const paymentsMinor = parsedInput.payments.reduce(
-      (sum, payment) => sum + decimalToMinorUnits(payment.amount),
+
+    if ("failure" in resolved) {
+      return { failure: { reason: resolved.failure } }
+    }
+
+    const paymentCheck = checkSalePayments({
+      total: resolved.total,
+      payments: parsedInput.payments,
+      customerId: parsedInput.customerId,
+      acceptsCredit: parsedInput.acceptsCredit
+    })
+
+    if ("failure" in paymentCheck) {
+      return { failure: { reason: paymentCheck.failure } }
+    }
+
+    const itemCount = resolved.items.reduce(
+      (sum, item) => sum + item.quantity,
       0
     )
 
-    if (paymentsMinor > totalMinor) {
-      return {
-        failure: {
-          reason: "Los pagos no pueden superar el total de la venta"
-        }
-      }
-    }
-
-    const balanceMinor = totalMinor - paymentsMinor
-
-    if (balanceMinor > 0 && !parsedInput.customerId) {
-      return {
-        failure: {
-          reason: "Selecciona un cliente para registrar saldo a crédito"
-        }
-      }
-    }
-
-    if (balanceMinor > 0 && !parsedInput.acceptsCredit) {
-      return {
-        failure: {
-          reason: "Confirma el saldo a crédito antes de completar la venta"
-        }
-      }
-    }
-
-    const saleResult = await prisma.$transaction(async tx => {
-      const organization = await tx.organization.findUnique({
-        where: { id: organizationId },
-        select: {
-          acceptsCash: true,
-          acceptsCard: true,
-          acceptsTransfer: true,
-          acceptsCodi: true,
-          acceptsVoucher: true,
-          creditEnabled: true
-        }
-      })
-
-      if (!organization) {
-        return { failure: "No se pudo obtener la organización actual" as const }
-      }
-
-      const disabledPayment = parsedInput.payments.find(
-        payment => !isPaymentMethodAccepted(organization, payment.method)
-      )
-
-      if (disabledPayment) {
-        return {
-          failure: "Uno o más métodos de pago no están habilitados" as const
-        }
-      }
-
-      if (balanceMinor > 0 && !organization.creditEnabled) {
-        return {
-          failure:
-            "El crédito no está habilitado para esta organización" as const
-        }
-      }
-
-      if (parsedInput.customerId) {
-        const customer = await tx.customer.findFirst({
-          where: {
-            id: parsedInput.customerId,
-            organizationId
-          },
-          select: { id: true }
-        })
-
-        if (!customer) {
-          return {
-            failure:
-              "El cliente seleccionado no pertenece a esta organización" as const
-          }
-        }
-      }
-
-      const createdSale = await tx.sale.create({
-        data: {
-          organizationId,
-          status: "COMPLETED",
-          orderType: parsedInput.orderType,
-          currency: saleCurrency,
-          subtotal,
-          total,
-          customerId: parsedInput.customerId,
-          completedAt: new Date(),
-          completedByUserId: member.user.id,
-          items: {
-            create: salesItems.map(item => ({
-              menuItemId: item.menuItemId,
-              variantId: item.variantId,
-              productName: item.productName,
-              variantName: item.variantName,
-              unitPrice: item.unitPrice,
-              quantity: item.quantity,
-              lineTotal: item.lineTotal
-            }))
-          }
-        },
-        include: {
-          items: true
-        }
-      })
-
-      if (parsedInput.payments.length > 0) {
-        for (const payment of parsedInput.payments) {
-          await tx.payment.create({
-            data: {
-              organizationId,
-              customerId: parsedInput.customerId,
-              currency: saleCurrency,
-              amountMinor: decimalToMinorUnits(payment.amount),
-              method: payment.method,
-              origin: "SALE",
-              reference: payment.reference || null,
-              notes: payment.notes || null,
-              createdByUserId: member.user.id,
-              allocations: {
-                create: {
-                  saleId: createdSale.id,
-                  amountMinor: decimalToMinorUnits(payment.amount)
-                }
-              }
-            }
+    let saleResult
+    try {
+      saleResult = await withOrderNumberRetry(() =>
+        prisma.$transaction(async tx => {
+          const organization = await tx.organization.findUnique({
+            where: { id: organizationId },
+            select: { paymentTiming: true }
           })
-        }
-      }
 
-      return { success: createdSale }
-    })
+          if (organization?.paymentTiming === "PAY_ON_DELIVERY") {
+            return {
+              failure:
+                "Este negocio ahora cobra al entregar. Recarga el punto de venta para enviar la orden a cocina." as const
+            }
+          }
+
+          const sale = await recordSale(tx, {
+            organizationId,
+            userId: member.user.id,
+            orderType: parsedInput.orderType,
+            currency: resolved.currency,
+            total: resolved.total,
+            items: resolved.items,
+            customerId: parsedInput.customerId,
+            payments: parsedInput.payments,
+            balanceMinor: paymentCheck.balanceMinor
+          })
+
+          if ("failure" in sale) return { failure: sale.failure }
+
+          const order = await createOrderRecord(tx, {
+            organizationId,
+            userId: member.user.id,
+            paymentTiming: "PAY_FIRST",
+            orderType: parsedInput.orderType,
+            currency: resolved.currency,
+            total: resolved.total,
+            items: resolved.items,
+            label: normalizeOptionalText(parsedInput.label),
+            notes: normalizeOptionalText(parsedInput.notes),
+            requestId,
+            saleId: sale.success.id
+          })
+
+          return { success: { ...sale.success, orderNumber: order.number } }
+        })
+      )
+    } catch (error) {
+      if (isUniqueConstraintError(error, "requestId")) {
+        const existing = await findDuplicate()
+        if (existing) return existing
+      }
+      throw error
+    }
 
     if ("failure" in saleResult) {
       return {
@@ -325,7 +173,8 @@ export const completeSale = authMemberActionClient
         id: saleResult.success.id,
         orderType: saleResult.success.orderType,
         total: saleResult.success.total,
-        itemCount
+        itemCount,
+        orderNumber: saleResult.success.orderNumber
       }
     }
   })
@@ -397,6 +246,7 @@ export const voidSale = authMemberActionClient
         })
       }
 
+      const voidedAt = new Date()
       const update = await tx.sale.updateMany({
         where: {
           id: parsedInput.saleId,
@@ -405,11 +255,21 @@ export const voidSale = authMemberActionClient
         },
         data: {
           status: "VOID",
-          voidedAt: new Date(),
+          voidedAt,
           voidedByUserId: member.user.id,
           voidReason
         }
       })
+
+      if (update.count === 1) {
+        await cancelLinkedKitchenOrder(tx, {
+          organizationId,
+          saleId: parsedInput.saleId,
+          userId: member.user.id,
+          reason: voidReason,
+          cancelledAt: voidedAt
+        })
+      }
 
       return { blocked: false, count: update.count }
     })
@@ -434,6 +294,7 @@ export const voidSale = authMemberActionClient
 
     updateTag(`sales-${organizationId}`)
     updateTag(`sale-${parsedInput.saleId}`)
+    updateTag(`orders-${organizationId}`)
     updateTag(`receivables-${organizationId}`)
 
     return {

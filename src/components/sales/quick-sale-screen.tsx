@@ -11,7 +11,9 @@ import {
 import toast from "react-hot-toast"
 import { bind, play, setEnabled } from "cuelume"
 import {
+  ChefHat,
   ChevronUp,
+  LoaderCircle,
   Search,
   ShoppingBag,
   Trash2,
@@ -19,6 +21,7 @@ import {
   VolumeX
 } from "lucide-react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
+import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
@@ -43,6 +46,8 @@ import {
   EmptyMedia,
   EmptyTitle
 } from "@/components/ui/empty"
+import { Field, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 import {
   InputGroup,
   InputGroupAddon,
@@ -57,11 +62,19 @@ import {
 } from "@/components/ui/number-input"
 import { Separator } from "@/components/ui/separator"
 import { Swap, SwapOff, SwapOn } from "@/components/ui/swap"
+import { Textarea } from "@/components/ui/textarea"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { submitOrder } from "@/server/actions/orders/mutations"
 import { useIsMobile } from "@/hooks/use-mobile"
 import useScrollDirection from "@/hooks/use-scroll-direction"
 import { formatPrice } from "@/lib/currency"
+import { formatOrderNumber } from "@/lib/orders"
 import type { CustomerOption } from "@/lib/types/customers"
+import type { PaymentTiming } from "@/lib/types/order"
+import {
+  orderLabelMaxLength,
+  orderNotesMaxLength
+} from "@/lib/types/order-context"
 import type { PaymentMethod } from "@/lib/types/payments"
 import {
   salesOrderTypeOptions,
@@ -161,13 +174,15 @@ export function QuickSaleScreen({
   isPro,
   customers,
   acceptedMethods,
-  creditEnabled
+  creditEnabled,
+  paymentTiming
 }: {
   catalog: SalesCatalogData
   isPro: boolean
   customers: CustomerOption[]
   acceptedMethods: PaymentMethod[]
   creditEnabled: boolean
+  paymentTiming: PaymentTiming
 }) {
   const router = useRouter()
   const [search, setSearch] = useState("")
@@ -185,6 +200,14 @@ export function QuickSaleScreen({
     useState<SalesCatalogProduct | null>(null)
   const [isSoundMuted, setIsSoundMuted] = useState(false)
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+  const [orderLabel, setOrderLabel] = useState("")
+  const [orderNotes, setOrderNotes] = useState("")
+  const [checkoutRequestId, setCheckoutRequestId] = useState("")
+  const requestAttemptRef = useRef<{
+    signature: string
+    requestId: string
+  } | null>(null)
+  const isPayOnDelivery = paymentTiming === "PAY_ON_DELIVERY"
 
   useEffect(() => {
     const isMuted = window.localStorage.getItem(soundMutedStorageKey) === "true"
@@ -359,6 +382,72 @@ export function QuickSaleScreen({
     )
   }
 
+  const cartItems = cart.map(item => ({
+    menuItemId: item.menuItemId,
+    variantId: item.variantId,
+    quantity: item.quantity
+  }))
+  const trimmedLabel = orderLabel.trim() || undefined
+  const trimmedNotes = orderNotes.trim() || undefined
+
+  // Reuse the request id while the order content is unchanged so retries after
+  // a lost response cannot create duplicate tickets or sales.
+  const getRequestId = () => {
+    const signature = JSON.stringify([
+      cartItems,
+      orderType,
+      trimmedLabel,
+      trimmedNotes
+    ])
+
+    if (requestAttemptRef.current?.signature !== signature) {
+      requestAttemptRef.current = {
+        signature,
+        requestId: crypto.randomUUID()
+      }
+    }
+
+    return requestAttemptRef.current.requestId
+  }
+
+  const resetOrderForm = () => {
+    requestAttemptRef.current = null
+    setCart([])
+    setSearch("")
+    setSelectedCategory("all")
+    setOrderType("DINE_IN")
+    setOrderLabel("")
+    setOrderNotes("")
+    setSelectedProduct(null)
+  }
+
+  const handleCheckoutCompleted = () => {
+    play("success")
+    resetOrderForm()
+    router.refresh()
+  }
+
+  const sendOrder = useAction(submitOrder, {
+    onSuccess: ({ data }) => {
+      if (data && "failure" in data) {
+        play("error")
+        toast.error(data.failure.reason ?? "No se pudo enviar la orden")
+      } else if (data && "success" in data) {
+        toast.success(
+          `Orden ${formatOrderNumber(data.success.number)} enviada a cocina`
+        )
+        handleCheckoutCompleted()
+      }
+
+      sendOrder.reset()
+    },
+    onError: () => {
+      play("error")
+      toast.error("No se pudo enviar la orden. Revisa tu conexión.")
+      sendOrder.reset()
+    }
+  })
+
   const handleCheckout = () => {
     if (cart.length === 0) {
       play("error")
@@ -366,21 +455,38 @@ export function QuickSaleScreen({
       return
     }
 
+    if (isPayOnDelivery) {
+      if (sendOrder.isPending) return
+
+      sendOrder.execute({
+        requestId: getRequestId(),
+        orderType,
+        items: cartItems,
+        label: trimmedLabel,
+        notes: trimmedNotes
+      })
+      return
+    }
+
+    setCheckoutRequestId(getRequestId())
     setIsCheckoutOpen(true)
   }
 
-  const handleCheckoutCompleted = () => {
-    play("success")
-    setCart([])
-    setSearch("")
-    setSelectedCategory("all")
-    setOrderType("DINE_IN")
-    setSelectedProduct(null)
-    router.refresh()
-  }
+  const submitLabel = isPayOnDelivery
+    ? sendOrder.isPending
+      ? "Enviando..."
+      : "Enviar a cocina"
+    : "Completar venta"
+  const SubmitIcon = isPayOnDelivery
+    ? sendOrder.isPending
+      ? LoaderCircle
+      : ChefHat
+    : ShoppingBag
 
   const clearCart = () => {
     setCart([])
+    setOrderLabel("")
+    setOrderNotes("")
     setSelectedProduct(null)
   }
 
@@ -532,6 +638,13 @@ export function QuickSaleScreen({
                 value={orderType}
                 onValueChange={setOrderType}
               />
+              <OrderContextFields
+                idPrefix="desktop"
+                label={orderLabel}
+                notes={orderNotes}
+                onLabelChange={setOrderLabel}
+                onNotesChange={setOrderNotes}
+              />
               <Separator />
               <SaleCart
                 cart={cart}
@@ -548,13 +661,16 @@ export function QuickSaleScreen({
               />
               <Button
                 className="h-12 text-base font-semibold"
-                disabled={cart.length === 0}
+                disabled={cart.length === 0 || sendOrder.isPending}
                 onClick={() => guardSaleCompletion(handleCheckout)}
                 data-cuelume-press
                 // data-cuelume-release
               >
-                <ShoppingBag data-icon="inline-start" />
-                <TextMorph>Completar venta</TextMorph>
+                <SubmitIcon
+                  data-icon="inline-start"
+                  className={cn(sendOrder.isPending && "animate-spin")}
+                />
+                <TextMorph>{submitLabel}</TextMorph>
               </Button>
             </CardContent>
           </Card>
@@ -567,9 +683,16 @@ export function QuickSaleScreen({
         subtotal={subtotal}
         totalItems={totalItems}
         orderType={orderType}
+        orderLabel={orderLabel}
+        orderNotes={orderNotes}
+        submitLabel={submitLabel}
+        isSubmitting={sendOrder.isPending}
+        isPayOnDelivery={isPayOnDelivery}
         scrollToBottomSignal={cartScrollSignal}
         isSoundMuted={isSoundMuted}
         onOrderTypeChange={setOrderType}
+        onOrderLabelChange={setOrderLabel}
+        onOrderNotesChange={setOrderNotes}
         onQuantityChange={updateQuantity}
         onClear={clearCart}
         onSoundMuteChange={handleSoundMuteChange}
@@ -659,12 +782,14 @@ export function QuickSaleScreen({
       <SaleCheckoutDialog
         open={isCheckoutOpen}
         onOpenChange={setIsCheckoutOpen}
-        orderType={orderType}
-        items={cart.map(item => ({
-          menuItemId: item.menuItemId,
-          variantId: item.variantId,
-          quantity: item.quantity
-        }))}
+        target={{
+          kind: "sale",
+          orderType,
+          items: cartItems,
+          label: trimmedLabel,
+          notes: trimmedNotes,
+          requestId: checkoutRequestId
+        }}
         total={subtotal}
         currency={currency}
         customers={customers}
@@ -878,15 +1003,71 @@ function OrderTypeSelector({
   )
 }
 
+function OrderContextFields({
+  idPrefix,
+  label,
+  notes,
+  onLabelChange,
+  onNotesChange
+}: {
+  idPrefix: string
+  label: string
+  notes: string
+  onLabelChange: (value: string) => void
+  onNotesChange: (value: string) => void
+}) {
+  return (
+    <div className="grid gap-3">
+      <Field className="gap-1.5">
+        <FieldLabel htmlFor={`${idPrefix}-order-label`}>
+          Mesa o nombre
+          <span className="text-muted-foreground font-normal">(opcional)</span>
+        </FieldLabel>
+        <Input
+          id={`${idPrefix}-order-label`}
+          value={label}
+          maxLength={orderLabelMaxLength}
+          placeholder="Mesa 4, Ana…"
+          autoComplete="off"
+          enterKeyHint="done"
+          onChange={event => onLabelChange(event.target.value)}
+        />
+      </Field>
+      <Field className="gap-1.5">
+        <FieldLabel htmlFor={`${idPrefix}-order-notes`}>
+          Notas para cocina
+          <span className="text-muted-foreground font-normal">(opcional)</span>
+        </FieldLabel>
+        <Textarea
+          id={`${idPrefix}-order-notes`}
+          value={notes}
+          rows={2}
+          maxLength={orderNotesMaxLength}
+          placeholder="Sin cebolla, salsa aparte…"
+          className="min-h-16 resize-none"
+          onChange={event => onNotesChange(event.target.value)}
+        />
+      </Field>
+    </div>
+  )
+}
+
 function MobileSaleCart({
   cart,
   currency,
   subtotal,
   totalItems,
   orderType,
+  orderLabel,
+  orderNotes,
+  submitLabel,
+  isSubmitting,
+  isPayOnDelivery,
   scrollToBottomSignal,
   isSoundMuted,
   onOrderTypeChange,
+  onOrderLabelChange,
+  onOrderNotesChange,
   onQuantityChange,
   onClear,
   onSoundMuteChange,
@@ -897,9 +1078,16 @@ function MobileSaleCart({
   subtotal: number
   totalItems: number
   orderType: SalesOrderType
+  orderLabel: string
+  orderNotes: string
+  submitLabel: string
+  isSubmitting: boolean
+  isPayOnDelivery: boolean
   scrollToBottomSignal: number
   isSoundMuted: boolean
   onOrderTypeChange: (value: SalesOrderType) => void
+  onOrderLabelChange: (value: string) => void
+  onOrderNotesChange: (value: string) => void
   onQuantityChange: (key: string, nextQuantity: number) => void
   onClear: () => void
   onSoundMuteChange: (isMuted: boolean) => void
@@ -950,12 +1138,18 @@ function MobileSaleCart({
           type="button"
           size="icon"
           className="size-13 shrink-0 rounded-full"
-          disabled={!hasItems}
+          disabled={!hasItems || isSubmitting}
           onClick={handleCheckout}
-          aria-label="Completar venta"
+          aria-label={submitLabel}
           data-cuelume-press
         >
-          <ShoppingBag className="size-5" />
+          {isSubmitting ? (
+            <LoaderCircle className="size-5 animate-spin" />
+          ) : isPayOnDelivery ? (
+            <ChefHat className="size-5" />
+          ) : (
+            <ShoppingBag className="size-5" />
+          )}
         </Button>
       </div>
 
@@ -1019,6 +1213,13 @@ function MobileSaleCart({
               value={orderType}
               onValueChange={onOrderTypeChange}
             />
+            <OrderContextFields
+              idPrefix="mobile"
+              label={orderLabel}
+              notes={orderNotes}
+              onLabelChange={onOrderLabelChange}
+              onNotesChange={onOrderNotesChange}
+            />
             <Separator />
             <SaleCart
               cart={cart}
@@ -1041,12 +1242,21 @@ function MobileSaleCart({
             </div>
             <Button
               className="h-12 text-base font-semibold"
-              disabled={!hasItems}
+              disabled={!hasItems || isSubmitting}
               onClick={handleCheckout}
               data-cuelume-press
             >
-              <ShoppingBag data-icon="inline-start" />
-              <TextMorph>Completar venta</TextMorph>
+              {isSubmitting ? (
+                <LoaderCircle
+                  data-icon="inline-start"
+                  className="animate-spin"
+                />
+              ) : isPayOnDelivery ? (
+                <ChefHat data-icon="inline-start" />
+              ) : (
+                <ShoppingBag data-icon="inline-start" />
+              )}
+              <TextMorph>{submitLabel}</TextMorph>
             </Button>
           </DrawerFooter>
         </DrawerContent>

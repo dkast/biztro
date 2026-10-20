@@ -51,8 +51,10 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import { settleOrder } from "@/server/actions/orders/mutations"
 import { completeSale } from "@/server/actions/sales/mutations"
 import { formatPrice, type Currency } from "@/lib/currency"
+import { formatOrderNumber } from "@/lib/orders"
 import type { CustomerOption } from "@/lib/types/customers"
 import {
   paymentMethodLabels,
@@ -125,11 +127,28 @@ function parseAmountMinor(value: string) {
     : null
 }
 
+export type SaleCheckoutTarget =
+  | {
+      kind: "sale"
+      orderType: SalesOrderType
+      items: SaleCartItemInput[]
+      label?: string
+      notes?: string
+      requestId: string
+    }
+  | { kind: "order"; orderId: string; orderNumber: number }
+
+type CheckoutResult = { orderNumber: number; total: number }
+
+type CheckoutActionData =
+  | { failure: { reason?: string } }
+  | { success: { total: number; orderNumber: number } }
+  | undefined
+
 export function SaleCheckoutDialog({
   open,
   onOpenChange,
-  orderType,
-  items,
+  target,
   total,
   currency,
   customers,
@@ -139,14 +158,13 @@ export function SaleCheckoutDialog({
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  orderType: SalesOrderType
-  items: SaleCartItemInput[]
+  target: SaleCheckoutTarget
   total: number
   currency: Currency
   customers: CustomerOption[]
   acceptedMethods: PaymentMethod[]
   creditEnabled: boolean
-  onCompleted: () => void
+  onCompleted: (result: CheckoutResult) => void
 }) {
   const defaultPaymentMethod = acceptedMethods[0] ?? "CASH"
   const [activeIndex, setActiveIndex] = useState(0)
@@ -209,32 +227,45 @@ export function SaleCheckoutDialog({
     setError(null)
   }
 
-  const { execute, isPending, reset } = useAction(completeSale, {
-    onSuccess: ({ data }) => {
-      if (data?.failure) {
-        setError(data.failure.reason ?? "No se pudo completar la venta")
-        setQuickMethod(null)
-        reset()
-        return
-      }
-
-      if (data?.success) {
-        toast.success(
-          `Venta completada, ${formatPrice(data.success.total, currency)}`
-        )
-        resetCheckout()
-        onOpenChange(false)
-        onCompleted()
-      }
-
-      reset()
-    },
-    onError: () => {
-      setError("No se pudo completar la venta")
+  const handleActionData = (data: CheckoutActionData, reset: () => void) => {
+    if (data && "failure" in data) {
+      setError(data.failure.reason ?? "No se pudo completar el cobro")
       setQuickMethod(null)
       reset()
+      return
     }
+
+    if (data && "success" in data) {
+      toast.success(
+        target.kind === "order"
+          ? `Orden ${formatOrderNumber(data.success.orderNumber)} cobrada, ${formatPrice(data.success.total, currency)}`
+          : `Venta completada, ${formatPrice(data.success.total, currency)}`
+      )
+      resetCheckout()
+      onOpenChange(false)
+      onCompleted(data.success)
+    }
+
+    reset()
+  }
+
+  const handleActionError = (reset: () => void) => {
+    setError("No se pudo completar el cobro")
+    setQuickMethod(null)
+    reset()
+  }
+
+  const saleAction = useAction(completeSale, {
+    onSuccess: ({ data }): void => handleActionData(data, saleAction.reset),
+    onError: (): void => handleActionError(saleAction.reset)
   })
+
+  const settleAction = useAction(settleOrder, {
+    onSuccess: ({ data }): void => handleActionData(data, settleAction.reset),
+    onError: (): void => handleActionError(settleAction.reset)
+  })
+
+  const isPending = saleAction.isPending || settleAction.isPending
 
   const submitSale = ({
     salePayments,
@@ -246,9 +277,23 @@ export function SaleCheckoutDialog({
     confirmsCredit: boolean
   }) => {
     setError(null)
-    execute({
-      orderType,
-      items,
+
+    if (target.kind === "order") {
+      settleAction.execute({
+        orderId: target.orderId,
+        customerId: saleCustomerId,
+        acceptsCredit: confirmsCredit,
+        payments: salePayments
+      })
+      return
+    }
+
+    saleAction.execute({
+      orderType: target.orderType,
+      items: target.items,
+      label: target.label,
+      notes: target.notes,
+      requestId: target.requestId,
       customerId: saleCustomerId,
       acceptsCredit: confirmsCredit,
       payments: salePayments
@@ -353,9 +398,14 @@ export function SaleCheckoutDialog({
 
           <div className="border-border border-b px-5 py-5 pr-14 sm:px-6">
             <DialogStackHeader>
-              <DialogStackTitle>¿Cómo pagará el cliente?</DialogStackTitle>
+              <DialogStackTitle>
+                {target.kind === "order"
+                  ? `Cobrar orden ${formatOrderNumber(target.orderNumber)}`
+                  : "¿Cómo pagará el cliente?"}
+              </DialogStackTitle>
               <DialogStackDescription>
-                Selecciona un método para cobrar el total de la venta.
+                Selecciona un método para cobrar el total
+                {target.kind === "order" ? " de la orden." : " de la venta."}
               </DialogStackDescription>
             </DialogStackHeader>
             <div className="mt-5 flex items-baseline justify-between gap-4">
