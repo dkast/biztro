@@ -3,6 +3,7 @@
 import { updateTag } from "next/cache"
 
 import { isProMember } from "@/server/actions/user/queries"
+import { publishOrderChange } from "@/server/orders/realtime"
 import { cancelLinkedKitchenOrder } from "@/server/sales/orders"
 import {
   createOrderRecord,
@@ -166,7 +167,9 @@ export const completeSale = authMemberActionClient
     updateTag(`sales-${organizationId}`)
     updateTag(`receivables-${organizationId}`)
     updateTag(`customers-${organizationId}`)
+    updateTag(`orders-${organizationId}`)
     if (parsedInput.customerId) updateTag(`customer-${parsedInput.customerId}`)
+    await publishOrderChange(organizationId, "created")
 
     return {
       success: {
@@ -296,6 +299,7 @@ export const voidSale = authMemberActionClient
     updateTag(`sale-${parsedInput.saleId}`)
     updateTag(`orders-${organizationId}`)
     updateTag(`receivables-${organizationId}`)
+    await publishOrderChange(organizationId, "cancellation")
 
     return {
       success: {

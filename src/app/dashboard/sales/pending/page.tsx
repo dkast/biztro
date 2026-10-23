@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { connection } from "next/server"
 
+import { OrderRealtimeProvider } from "@/components/orders/order-realtime-provider"
 import { PendingOrdersBoard } from "@/components/orders/pending-orders-board"
 import { getCustomerOptions } from "@/server/actions/customers/queries"
 import { getPaymentFeatureState } from "@/server/actions/payments/queries"
@@ -33,13 +34,16 @@ export default async function PendingOrdersPage() {
       className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-5 sm:px-6
         sm:py-6"
     >
-      <PendingOrdersBoard
-        data={data}
-        customers={customers}
-        acceptedMethods={paymentFeatureState.acceptedMethods}
-        creditEnabled={paymentFeatureState.creditEnabled}
-        paymentTiming={paymentFeatureState.paymentTiming}
-      />
+      <OrderRealtimeProvider key={organization.id}>
+        <PendingOrdersBoard
+          data={data}
+          customers={customers}
+          acceptedMethods={paymentFeatureState.acceptedMethods}
+          creditEnabled={paymentFeatureState.creditEnabled}
+          paymentTiming={paymentFeatureState.paymentTiming}
+          organizationId={organization.id}
+        />
+      </OrderRealtimeProvider>
     </div>
   )
 }

@@ -76,14 +76,19 @@ export const kitchenQueryParsers = {
 export function KitchenBoard({
   board,
   readyPage,
-  paymentTiming
+  paymentTiming,
+  organizationId
 }: {
   board: KitchenBoardData
   readyPage: KitchenReadyPage | null
   paymentTiming: PaymentTiming
+  organizationId: string
 }) {
   const [query, setQuery] = useQueryStates(kitchenQueryParsers)
-  const live = useLiveRefresh(readyPage?.serverTime ?? board.serverTime)
+  const live = useLiveRefresh(
+    readyPage?.serverTime ?? board.serverTime,
+    organizationId
+  )
 
   const { execute: executeAdvance, optimisticState: activeOrders } =
     useOptimisticAction(advanceKitchenOrder, {

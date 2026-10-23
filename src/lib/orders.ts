@@ -1,8 +1,6 @@
 import { currencyToMinorUnits, decimalToMinorUnits } from "@/lib/payments"
 import type { KitchenStatus } from "@/lib/types/order"
 
-export const kitchenRefreshIntervalMs = 5_000
-export const kitchenStaleAfterMs = 20_000
 export const kitchenReadyPageSize = 12
 
 const nextKitchenStatus = {

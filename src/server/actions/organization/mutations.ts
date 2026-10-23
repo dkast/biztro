@@ -7,6 +7,7 @@ import { z } from "zod/v4"
 
 import { getOrganizationBySlug } from "@/server/actions/organization/queries"
 import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
+import { publishOrderChange } from "@/server/orders/realtime"
 import { auth } from "@/lib/auth"
 import { calculateBalanceMinor, currencyToMinorUnits } from "@/lib/payments"
 import prisma from "@/lib/prisma"
@@ -372,11 +373,33 @@ export const saveOrganizationPaymentSettings = authMemberActionClient
     const result = await prisma.$transaction(async tx => {
       const organization = await tx.organization.findUnique({
         where: { id: organizationId },
-        select: { id: true }
+        select: {
+          id: true,
+          acceptsCash: true,
+          acceptsCard: true,
+          acceptsTransfer: true,
+          acceptsCodi: true,
+          acceptsVoucher: true,
+          creditEnabled: true,
+          paymentTiming: true
+        }
       })
 
       if (!organization) {
         return { failure: "No se pudo obtener la organización actual" as const }
+      }
+
+      const settingKeys = [
+        "acceptsCash",
+        "acceptsCard",
+        "acceptsTransfer",
+        "acceptsCodi",
+        "acceptsVoucher",
+        "creditEnabled",
+        "paymentTiming"
+      ] as const
+      if (settingKeys.every(key => organization[key] === parsedInput[key])) {
+        return { success: true as const, changed: false }
       }
 
       if (!parsedInput.creditEnabled) {
@@ -426,12 +449,13 @@ export const saveOrganizationPaymentSettings = authMemberActionClient
         data: parsedInput
       })
 
-      return { success: true as const }
+      return { success: true as const, changed: true }
     })
 
     if ("failure" in result) {
       return { failure: { reason: result.failure } }
     }
+    if (!result.changed) return { success: true }
 
     updateTag(`organization-${organizationId}`)
     updateTag("organization-current")
@@ -439,6 +463,7 @@ export const saveOrganizationPaymentSettings = authMemberActionClient
     updateTag(`payment-settings-${organizationId}`)
     updateTag(`sales-${organizationId}`)
     updateTag(`receivables-${organizationId}`)
+    await publishOrderChange(organizationId, "settings")
 
     return { success: true }
   })

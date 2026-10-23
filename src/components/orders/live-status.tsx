@@ -18,7 +18,8 @@ function formatAge(ageMs: number) {
 
 const stateCopy = {
   live: "En vivo",
-  syncing: "En vivo",
+  syncing: "Actualizando",
+  connecting: "Conectando",
   stale: "Sin actualizar",
   offline: "Sin conexión"
 } as const satisfies Record<LiveConnectionState, string>
@@ -49,7 +50,7 @@ export function LiveStatus({
           className={cn(
             "size-2.5 shrink-0 rounded-full",
             isHealthy && "bg-emerald-500",
-            state === "stale" && "bg-amber-500",
+            (state === "stale" || state === "connecting") && "bg-amber-500",
             state === "offline" && "bg-rose-500"
           )}
         />

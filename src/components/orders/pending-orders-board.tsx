@@ -46,15 +46,17 @@ export function PendingOrdersBoard({
   customers,
   acceptedMethods,
   creditEnabled,
-  paymentTiming
+  paymentTiming,
+  organizationId
 }: {
   data: PendingOrdersData
   customers: CustomerOption[]
   acceptedMethods: PaymentMethod[]
   creditEnabled: boolean
   paymentTiming: PaymentTiming
+  organizationId: string
 }) {
-  const live = useLiveRefresh(data.serverTime)
+  const live = useLiveRefresh(data.serverTime, organizationId)
   const [checkoutOrder, setCheckoutOrder] = useState<PendingOrder | null>(null)
   const [cancelTarget, setCancelTarget] = useState<PendingOrder | null>(null)
 

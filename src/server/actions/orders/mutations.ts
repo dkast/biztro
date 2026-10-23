@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs"
 import { refresh, updateTag } from "next/cache"
 
 import { isProMember } from "@/server/actions/user/queries"
+import { publishOrderChange } from "@/server/orders/realtime"
 import {
   createOrderRecord,
   isUniqueConstraintError,
@@ -143,6 +144,7 @@ export const submitOrder = authMemberActionClient
     if ("failure" in result) return { failure: { reason: result.failure } }
 
     updateTag(`orders-${organizationId}`)
+    await publishOrderChange(organizationId, "created")
 
     return result
   })
@@ -179,6 +181,7 @@ export const advanceKitchenOrder = authMemberActionClient
     }
 
     updateTag(`orders-${organizationId}`)
+    await publishOrderChange(organizationId, "preparation")
     refresh()
     return { success: { orderId: parsedInput.orderId, kitchenStatus: next } }
   })
@@ -208,6 +211,7 @@ export const restoreKitchenOrder = authMemberActionClient
     }
 
     updateTag(`orders-${organizationId}`)
+    await publishOrderChange(organizationId, "restored")
     refresh()
     return {
       success: {
@@ -223,7 +227,7 @@ export const acknowledgeOrderCancellation = authMemberActionClient
     const organizationId = member.organizationId
     if (!organizationId) return missingOrganization
 
-    await prisma.order.updateMany({
+    const update = await prisma.order.updateMany({
       where: {
         id: parsedInput.orderId,
         organizationId,
@@ -233,6 +237,10 @@ export const acknowledgeOrderCancellation = authMemberActionClient
       data: { cancellationAcknowledgedAt: new Date() }
     })
 
+    if (update.count > 0) {
+      updateTag(`orders-${organizationId}`)
+      await publishOrderChange(organizationId, "acknowledged")
+    }
     refresh()
     return { success: { orderId: parsedInput.orderId } }
   })
@@ -282,6 +290,7 @@ export const cancelOrder = authMemberActionClient
     if ("failure" in result) return { failure: { reason: result.failure } }
 
     updateTag(`orders-${organizationId}`)
+    await publishOrderChange(organizationId, "cancellation")
     refresh()
     return { success: { orderId: parsedInput.orderId } }
   })
@@ -389,6 +398,7 @@ export const settleOrder = authMemberActionClient
     updateTag(`customers-${organizationId}`)
     updateTag(`orders-${organizationId}`)
     if (parsedInput.customerId) updateTag(`customer-${parsedInput.customerId}`)
+    await publishOrderChange(organizationId, "settled")
     refresh()
 
     return {

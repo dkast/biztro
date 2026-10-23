@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { connection } from "next/server"
 
 import { KitchenBoard } from "@/components/kitchen/kitchen-board"
+import { OrderRealtimeProvider } from "@/components/orders/order-realtime-provider"
 import { SalesProBanner } from "@/components/sales/sales-pro-banner"
 import { getPaymentFeatureState } from "@/server/actions/payments/queries"
 import {
@@ -55,11 +56,14 @@ export default async function KitchenPage(props: {
         sm:px-6"
     >
       {!isPro && <SalesProBanner />}
-      <KitchenBoard
-        board={board}
-        readyPage={readyPage}
-        paymentTiming={paymentFeatureState?.paymentTiming ?? "PAY_FIRST"}
-      />
+      <OrderRealtimeProvider key={organization.id}>
+        <KitchenBoard
+          board={board}
+          readyPage={readyPage}
+          paymentTiming={paymentFeatureState?.paymentTiming ?? "PAY_FIRST"}
+          organizationId={organization.id}
+        />
+      </OrderRealtimeProvider>
     </div>
   )
 }
