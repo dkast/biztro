@@ -53,7 +53,8 @@ describe("payment policy", () => {
     acceptsTransfer: true,
     acceptsCodi: false,
     acceptsVoucher: false,
-    creditEnabled: false
+    creditEnabled: false,
+    paymentTiming: "PAY_FIRST"
   }
 
   it("accepts only enabled payment methods", () => {
