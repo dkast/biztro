@@ -360,6 +360,7 @@ function ActiveOrdersGrid({
               action={{
                 label:
                   order.kitchenStatus === "NEW" ? "Preparar" : "Marcar lista",
+                variant: order.kitchenStatus === "NEW" ? "warning" : "success",
                 icon:
                   order.kitchenStatus === "NEW" ? (
                     <Flame data-icon="inline-start" />

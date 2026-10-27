@@ -35,7 +35,7 @@ export type TicketAction = {
   icon: ReactNode
   onClick: () => void
   disabled?: boolean
-  variant?: "default" | "outline"
+  variant?: "default" | "outline" | "warning" | "success"
 }
 
 export function KitchenTicket({
