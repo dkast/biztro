@@ -72,8 +72,10 @@ beforeEach(() => {
     userId: "user_a",
     organizationId: "org_a"
   })
-  mocks.stream.mockImplementation(async () =>
-    eventResponse({ type: "connected", channel: "orders:org_a" })
+  mocks.stream.mockImplementation(() =>
+    Promise.resolve(
+      eventResponse({ type: "connected", channel: "orders:org_a" })
+    )
   )
 })
 
@@ -153,14 +155,16 @@ describe("organization order stream", () => {
         reason: "created"
       }
     }
-    mocks.stream.mockImplementation(async () => eventResponse(event))
+    mocks.stream.mockImplementation(() => Promise.resolve(eventResponse(event)))
     const response = await GET(request(["orders:org_a"]))
     expect(await response.text()).toBe(`data: ${JSON.stringify(event)}\n\n`)
   })
 
   it("disconnects and reports in-band Redis errors instead of staying falsely live", async () => {
-    mocks.stream.mockImplementation(async () =>
-      eventResponse({ type: "error", error: "Redis connection failed" })
+    mocks.stream.mockImplementation(() =>
+      Promise.resolve(
+        eventResponse({ type: "error", error: "Redis connection failed" })
+      )
     )
     const response = await GET(request(["orders:org_a"]))
     await expect(response.text()).rejects.toThrow(
@@ -176,11 +180,12 @@ describe("organization order stream", () => {
 
   it("cancels the upstream subscription when the browser closes its reader", async () => {
     const cancel = vi.fn()
-    mocks.stream.mockImplementation(
-      async () =>
+    mocks.stream.mockImplementation(() =>
+      Promise.resolve(
         new Response(new ReadableStream({ cancel }), {
           headers: { "Content-Type": "text/event-stream" }
         })
+      )
     )
     const response = await GET(request(["orders:org_a"]))
     await response.body?.cancel()
