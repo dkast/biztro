@@ -517,24 +517,6 @@ function SaleDetailLoadingSkeleton() {
   )
 }
 
-function SaleDetailSheetLoadingSkeleton() {
-  return (
-    <div
-      className="bg-background ml-auto flex h-[calc(100%-1rem)]
-        w-[calc(100%-1rem)] max-w-2xl flex-col gap-0 overflow-hidden rounded-lg
-        border"
-    >
-      <div className="flex flex-col gap-2 border-b px-5 py-4 sm:px-6 sm:py-5">
-        <Skeleton className="h-6 w-40" />
-        <Skeleton className="h-4 w-72" />
-      </div>
-      <div className="flex-1 overflow-y-auto px-5 py-4 sm:px-6 sm:py-5">
-        <SaleDetailLoadingSkeleton />
-      </div>
-    </div>
-  )
-}
-
 export {
   CategoriesLoadingSkeleton,
   DashboardFormSkeleton,
@@ -547,7 +529,6 @@ export {
   NewSaleLoadingSkeleton,
   PageSubtitleSkeleton,
   SaleDetailLoadingSkeleton,
-  SaleDetailSheetLoadingSkeleton,
   SalesClosingLoadingSkeleton,
   SalesOverviewLoadingSkeleton,
   SettingsBillingLoadingSkeleton,
