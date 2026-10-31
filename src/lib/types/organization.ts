@@ -1,6 +1,7 @@
 import { z } from "zod/v4"
 
 import { SubscriptionStatus } from "@/lib/types/billing"
+import { paymentTimingSchema } from "@/lib/types/order"
 
 export const orgSchema = z.object({
   id: z.string().optional(),
@@ -54,7 +55,8 @@ export const organizationPaymentSettingsSchema = z
     acceptsTransfer: z.boolean(),
     acceptsCodi: z.boolean(),
     acceptsVoucher: z.boolean(),
-    creditEnabled: z.boolean()
+    creditEnabled: z.boolean(),
+    paymentTiming: paymentTimingSchema
   })
   .refine(
     settings =>

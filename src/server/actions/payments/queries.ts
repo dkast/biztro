@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from "next/cache"
 
 import { calculateBalanceMinor, currencyToMinorUnits } from "@/lib/payments"
 import prisma from "@/lib/prisma"
+import type { PaymentTiming } from "@/lib/types/order"
 import {
   paymentMethodValues,
   type OrganizationPaymentSettings,
@@ -16,6 +17,7 @@ export type PaymentFeatureState = OrganizationPaymentSettings & {
   outstandingMinor: number
   customersWithBalance: number
   openSales: number
+  openOrders: number
 }
 
 function getAcceptedMethods(
@@ -42,6 +44,7 @@ export async function getPaymentFeatureState(
 
   cacheTag(`payment-settings-${organizationId}`)
   cacheTag(`receivables-${organizationId}`)
+  cacheTag(`orders-${organizationId}`)
 
   const organization = await prisma.organization.findUnique({
     where: { id: organizationId },
@@ -52,6 +55,8 @@ export async function getPaymentFeatureState(
       acceptsCodi: true,
       acceptsVoucher: true,
       creditEnabled: true,
+      paymentTiming: true,
+      _count: { select: { orders: { where: { status: "OPEN" } } } },
       sales: {
         where: { status: "COMPLETED" },
         select: {
@@ -81,7 +86,8 @@ export async function getPaymentFeatureState(
     acceptsTransfer: organization.acceptsTransfer,
     acceptsCodi: organization.acceptsCodi,
     acceptsVoucher: organization.acceptsVoucher,
-    creditEnabled: organization.creditEnabled
+    creditEnabled: organization.creditEnabled,
+    paymentTiming: organization.paymentTiming as PaymentTiming
   }
 
   let hasCreditHistory = false
@@ -121,6 +127,7 @@ export async function getPaymentFeatureState(
     hasCreditHistory,
     outstandingMinor,
     customersWithBalance: customersWithBalance.size,
-    openSales
+    openSales,
+    openOrders: organization._count.orders
   }
 }

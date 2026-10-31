@@ -21,6 +21,18 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import type { SaleDetail } from "@/lib/types/sales"
 
 export function SaleDetailSheet({ sale }: { sale: SaleDetail }) {
+  return (
+    <SaleDetailSheetFrame>
+      <SaleDetailView sale={sale} />
+    </SaleDetailSheetFrame>
+  )
+}
+
+export function SaleDetailSheetFrame({
+  children
+}: {
+  children: React.ReactNode
+}) {
   const router = useRouter()
   const isMobile = useIsMobile()
   const handleOpenChange = (open: boolean) => {
@@ -29,7 +41,7 @@ export function SaleDetailSheet({ sale }: { sale: SaleDetail }) {
 
   const detailBody = (
     <div className="flex-1 overflow-y-auto px-5 py-4 sm:px-6 sm:py-5">
-      <SaleDetailView sale={sale} />
+      {children}
     </div>
   )
 
