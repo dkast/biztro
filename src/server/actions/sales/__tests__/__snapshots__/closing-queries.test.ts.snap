@@ -1,0 +1,188 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`closing report query baseline > preserves the complete report across two-day boundaries 1`] = `
+{
+  "bestSellers": [
+    {
+      "productName": "Taco",
+      "quantity": 2,
+      "revenue": 100,
+    },
+  ],
+  "collectionBreakdown": [
+    {
+      "amount": 60,
+      "amountMinor": 6000,
+      "method": "CASH",
+      "origin": "RECEIVABLE",
+      "payments": 1,
+    },
+    {
+      "amount": 40,
+      "amountMinor": 4000,
+      "method": "CASH",
+      "origin": "SALE",
+      "payments": 1,
+    },
+  ],
+  "collectionChart": [
+    {
+      "CARD": 0,
+      "CASH": 100,
+      "CODI": 0,
+      "LEGACY": 0,
+      "TRANSFER": 0,
+      "VOUCHER": 0,
+      "label": "30 oct",
+    },
+  ],
+  "currency": "MXN",
+  "hasCreditHistory": true,
+  "hourly": [
+    {
+      "hour": 0,
+      "label": "12 a.m.",
+      "previousCollected": 50,
+      "previousCreditGenerated": 0,
+      "previousOrders": 1,
+      "previousPaidAtSale": 50,
+      "previousReceivableCollection": 0,
+      "previousRevenue": 50,
+      "previousSales": 50,
+      "todayCollected": 100,
+      "todayCreditGenerated": 60,
+      "todayOrders": 1,
+      "todayPaidAtSale": 40,
+      "todayReceivableCollection": 60,
+      "todayRevenue": 100,
+      "todaySales": 100,
+    },
+  ],
+  "previous": {
+    "averageTicket": 50,
+    "collected": 50,
+    "creditGenerated": 0,
+    "orders": 1,
+    "paidAtSale": 50,
+    "receivableCollection": 0,
+    "revenue": 50,
+    "sales": 50,
+  },
+  "previousDateValue": "2026-10-29",
+  "recentSales": [
+    {
+      "createdAt": "2026-10-30T00:00:00.000Z",
+      "id": "today",
+      "items": 2,
+      "orderType": "DINE_IN",
+      "paymentStatus": "PAID",
+      "status": "COMPLETED",
+      "total": 100,
+    },
+    {
+      "createdAt": "2026-10-30T00:00:00.000Z",
+      "id": "voided",
+      "items": 0,
+      "orderType": "DINE_IN",
+      "paymentStatus": "PENDING",
+      "status": "VOID",
+      "total": 30,
+    },
+  ],
+  "revenueByOrderType": [
+    {
+      "orderType": "DINE_IN",
+      "orders": 1,
+      "revenue": 100,
+    },
+    {
+      "orderType": "TAKEOUT",
+      "orders": 0,
+      "revenue": 0,
+    },
+    {
+      "orderType": "DELIVERY",
+      "orders": 0,
+      "revenue": 0,
+    },
+  ],
+  "selectedDateValue": "2026-10-30",
+  "todayAverageTicket": 100,
+  "todayCollected": 100,
+  "todayCreditGenerated": 60,
+  "todayOrders": 1,
+  "todayPaidAtSale": 40,
+  "todayReceivableCollection": 60,
+  "todayRevenue": 100,
+  "todaySales": 100,
+  "topProduct": {
+    "productName": "Taco",
+    "quantity": 2,
+    "revenue": 100,
+  },
+  "voidedAmount": 30,
+  "voidedSales": 1,
+}
+`;
+
+exports[`closing report query baseline > returns an empty report for an organization without sales 1`] = `
+{
+  "bestSellers": [],
+  "collectionBreakdown": [],
+  "collectionChart": [
+    {
+      "CARD": 0,
+      "CASH": 0,
+      "CODI": 0,
+      "LEGACY": 0,
+      "TRANSFER": 0,
+      "VOUCHER": 0,
+      "label": "30 oct",
+    },
+  ],
+  "currency": "MXN",
+  "hasCreditHistory": false,
+  "hourly": [],
+  "previous": {
+    "averageTicket": 0,
+    "collected": 0,
+    "creditGenerated": 0,
+    "orders": 0,
+    "paidAtSale": 0,
+    "receivableCollection": 0,
+    "revenue": 0,
+    "sales": 0,
+  },
+  "previousDateValue": "2026-10-29",
+  "recentSales": [],
+  "revenueByOrderType": [
+    {
+      "orderType": "DINE_IN",
+      "orders": 0,
+      "revenue": 0,
+    },
+    {
+      "orderType": "TAKEOUT",
+      "orders": 0,
+      "revenue": 0,
+    },
+    {
+      "orderType": "DELIVERY",
+      "orders": 0,
+      "revenue": 0,
+    },
+  ],
+  "selectedDateValue": "2026-10-30",
+  "todayAverageTicket": 0,
+  "todayCollected": 0,
+  "todayCreditGenerated": 0,
+  "todayOrders": 0,
+  "todayPaidAtSale": 0,
+  "todayReceivableCollection": 0,
+  "todayRevenue": 0,
+  "todaySales": 0,
+  "topProduct": null,
+  "voidedAmount": 0,
+  "voidedSales": 0,
+}
+`;
