@@ -106,9 +106,9 @@ export function PreviewToggle({ json }: { json?: string }) {
           transition={{ duration: 0.22 }}
         >
           <ToggleGroup
-            type="single"
-            value={effectiveMode}
-            onValueChange={value => {
+            spacing={1}
+            value={[effectiveMode]}
+            onValueChange={([value]) => {
               if (value) setMode(value as PreviewMode)
             }}
             className="rounded-xl bg-white/80 p-1 shadow ring-1 ring-gray-300/80
