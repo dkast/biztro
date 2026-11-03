@@ -85,9 +85,8 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="sm:col-start-2">
             <ToggleGroup
-              type="single"
-              value={billingInterval}
-              onValueChange={value =>
+              value={[billingInterval]}
+              onValueChange={([value]) =>
                 value && setBillingInterval(value as "monthly" | "yearly")
               }
               className="border-border w-full justify-center gap-0.5 rounded-lg
@@ -95,15 +94,15 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
             >
               <ToggleGroupItem
                 value="monthly"
-                className="data-[state=on]:bg-primary w-1/2 text-sm
-                  data-[state=on]:text-white"
+                className="data-pressed:bg-primary w-1/2 text-sm
+                  data-pressed:text-white"
               >
                 Mensual
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="yearly"
-                className="data-[state=on]:bg-primary w-1/2 text-sm
-                  data-[state=on]:text-white"
+                className="data-pressed:bg-primary w-1/2 text-sm
+                  data-pressed:text-white"
               >
                 Anual
                 <span

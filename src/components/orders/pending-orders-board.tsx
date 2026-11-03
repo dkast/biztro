@@ -7,6 +7,7 @@ import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import { TextMorph } from "torph/react"
 
+import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { KitchenTicket } from "@/components/kitchen/kitchen-ticket"
 import { LiveStatus } from "@/components/orders/live-status"
 import { useLiveRefresh } from "@/components/orders/use-live-refresh"
@@ -69,32 +70,24 @@ export function PendingOrdersBoard({
 
   return (
     <div className="flex flex-col gap-6">
-      <div
-        className="flex flex-col gap-3 sm:flex-row sm:items-center
-          sm:justify-between"
-      >
-        <div className="flex items-center gap-3">
-          <span
-            className="bg-muted flex size-10 items-center justify-center
-              rounded-lg"
-          >
-            <HandCoins aria-hidden className="size-5" />
-          </span>
-          <div>
-            <h1 className="text-2xl font-semibold">Por cobrar</h1>
-            <p className="text-muted-foreground text-sm">
-              {data.orders.length === 1
-                ? "1 orden sin cobrar"
-                : `${data.orders.length} órdenes sin cobrar`}
-            </p>
-          </div>
-        </div>
-        <LiveStatus
-          state={live.state}
-          ageMs={live.ageMs}
-          onRetry={live.refresh}
-        />
-      </div>
+      <PageSubtitle className="gap-3 sm:items-center">
+        <PageSubtitle.Icon icon={HandCoins} />
+        <PageSubtitle.Title as="h1" className="text-2xl leading-7">
+          Por cobrar
+        </PageSubtitle.Title>
+        <PageSubtitle.Description>
+          {data.orders.length === 1
+            ? "1 orden sin cobrar"
+            : `${data.orders.length} órdenes sin cobrar`}
+        </PageSubtitle.Description>
+        <PageSubtitle.Actions className="mt-0 md:ml-0">
+          <LiveStatus
+            state={live.state}
+            ageMs={live.ageMs}
+            onRetry={live.refresh}
+          />
+        </PageSubtitle.Actions>
+      </PageSubtitle>
 
       {data.orders.length === 0 ? (
         <Empty className="min-h-80 rounded-xl border">

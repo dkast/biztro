@@ -48,10 +48,9 @@ export function SalesDashboardPeriodFilter({
         {label}
       </p>
       <ToggleGroup
-        type="single"
-        value={period}
-        onValueChange={value => {
-          if (isSalesDashboardPeriod(value)) {
+        value={[period]}
+        onValueChange={([value]) => {
+          if (value && isSalesDashboardPeriod(value)) {
             void setPeriod(value)
           }
         }}
@@ -66,9 +65,9 @@ export function SalesDashboardPeriodFilter({
             value={option.value}
             aria-label={`Filtrar por ${option.label}`}
             className="text-foreground/70 hover:text-foreground
-              data-[state=on]:bg-background data-[state=on]:text-foreground
+              data-pressed:bg-background data-pressed:text-foreground
               justify-center rounded-md border border-transparent px-3
-              shadow-none hover:bg-transparent data-[state=on]:shadow-sm"
+              shadow-none hover:bg-transparent data-pressed:shadow-sm"
           >
             {option.label}
           </ToggleGroupItem>

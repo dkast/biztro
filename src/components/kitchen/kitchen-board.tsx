@@ -1,8 +1,10 @@
 "use client"
 
-import { useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
+import { bind, play, setEnabled } from "cuelume"
+import { useAtom } from "jotai"
 import {
   ChefHat,
   ChevronLeft,
@@ -10,12 +12,17 @@ import {
   CircleCheck,
   CookingPot,
   Flame,
+  GalleryHorizontal,
+  Grid3x2,
   OctagonX,
-  RotateCcw
+  RotateCcw,
+  Volume2,
+  VolumeX
 } from "lucide-react"
 import { useAction, useOptimisticAction } from "next-safe-action/hooks"
 import { parseAsInteger, parseAsStringLiteral, useQueryStates } from "nuqs"
 
+import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { KitchenTicket } from "@/components/kitchen/kitchen-ticket"
 import { LiveStatus } from "@/components/orders/live-status"
 import { useLiveRefresh } from "@/components/orders/use-live-refresh"
@@ -34,6 +41,7 @@ import {
   advanceKitchenOrder,
   restoreKitchenOrder
 } from "@/server/actions/orders/mutations"
+import { isSoundMutedAtom, kitchenRowsAtom } from "@/lib/atoms"
 import {
   formatOrderNumber,
   getKitchenBoardColumns,
@@ -53,6 +61,9 @@ import { cn } from "@/lib/utils"
 
 const kitchenViews = ["activas", "listas"] as const
 const kitchenFilters = ["todas", "nuevas", "preparando"] as const
+const kitchenRows = ["2", "1"] as const
+// Connected groups override item padding, so the touch-size padding needs the group variant.
+const kitchenToggleItemClass = "h-11 group-data-[spacing=0]/toggle-group:px-4"
 
 type KitchenFilter = (typeof kitchenFilters)[number]
 
@@ -85,10 +96,40 @@ export function KitchenBoard({
   organizationId: string
 }) {
   const [query, setQuery] = useQueryStates(kitchenQueryParsers)
+  const [rows, setRows] = useAtom(kitchenRowsAtom)
+  const [isSoundMuted, setIsSoundMuted] = useAtom(isSoundMutedAtom)
+  const knownOrderIds = useRef<Set<string> | null>(null)
+  const knownNoticeIds = useRef<Set<string> | null>(null)
   const live = useLiveRefresh(
     readyPage?.serverTime ?? board.serverTime,
     organizationId
   )
+
+  useEffect(() => {
+    setEnabled(!isSoundMuted)
+  }, [isSoundMuted])
+
+  useEffect(() => bind(), [])
+
+  // Compare against the previous snapshot so only tickets that arrive later make noise.
+  useEffect(() => {
+    const known = knownOrderIds.current
+    knownOrderIds.current = new Set(board.active.map(order => order.id))
+    if (
+      known &&
+      board.active.some(
+        order => order.kitchenStatus === "NEW" && !known.has(order.id)
+      )
+    )
+      play("attention")
+  }, [board.active])
+
+  useEffect(() => {
+    const known = knownNoticeIds.current
+    knownNoticeIds.current = new Set(board.cancellations.map(item => item.id))
+    if (known && board.cancellations.some(item => !known.has(item.id)))
+      play("warning")
+  }, [board.cancellations])
 
   const { execute: executeAdvance, optimisticState: activeOrders } =
     useOptimisticAction(advanceKitchenOrder, {
@@ -104,6 +145,7 @@ export function KitchenBoard({
         }),
       onSuccess: ({ data, input }) => {
         if (data?.failure) {
+          play("error")
           toast.error(data.failure.reason)
           return
         }
@@ -119,6 +161,7 @@ export function KitchenBoard({
         Sentry.captureException(error.serverError ?? error, {
           tags: { section: "kitchen-board" }
         })
+        play("error")
         toast.error("No se pudo actualizar la orden. Intenta de nuevo.")
       }
     })
@@ -127,12 +170,27 @@ export function KitchenBoard({
     restoreKitchenOrder,
     {
       onSuccess: ({ data }) => {
-        if (data?.failure) toast.error(data.failure.reason)
-        else toast.success("Orden de vuelta en preparación")
+        if (data?.failure) {
+          play("error")
+          toast.error(data.failure.reason)
+        } else {
+          play("navigate", { direction: "back", emphasis: "subtle" })
+          toast.success("Orden de vuelta en preparación")
+        }
       },
-      onError: () => toast.error("No se pudo regresar la orden a preparación")
+      onError: () => {
+        play("error")
+        toast.error("No se pudo regresar la orden a preparación")
+      }
     }
   )
+
+  const handleAdvance = (order: OrderTicket) => {
+    play(
+      getNextKitchenStatus(order.kitchenStatus) === "READY" ? "success" : "tap"
+    )
+    executeAdvance({ orderId: order.id, from: order.kitchenStatus })
+  }
 
   const counts = {
     todas: activeOrders.length,
@@ -150,29 +208,67 @@ export function KitchenBoard({
   const isReadyView = query.vista === "listas"
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
       <div
         className="flex flex-col gap-3 lg:flex-row lg:items-center
           lg:justify-between"
       >
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <h1 className="flex items-center gap-2 text-2xl font-semibold">
-            <ChefHat aria-hidden className="size-6" />
+        <PageSubtitle
+          className="gap-3 sm:flex-col sm:items-start lg:flex-row
+            lg:items-center"
+        >
+          <PageSubtitle.Icon icon={ChefHat} />
+          <PageSubtitle.Title as="h1" className="text-2xl leading-7">
             Cocina
-          </h1>
-          <LiveStatus
-            state={live.state}
-            ageMs={live.ageMs}
-            onRetry={live.refresh}
-          />
-        </div>
+          </PageSubtitle.Title>
+          <PageSubtitle.Actions className="mt-0 md:ml-0">
+            <LiveStatus
+              state={live.state}
+              ageMs={live.ageMs}
+              onRetry={live.refresh}
+            />
+          </PageSubtitle.Actions>
+        </PageSubtitle>
         <div className="flex flex-wrap items-center gap-2">
           {!isReadyView && (
             <ToggleGroup
-              type="single"
+              spacing={0}
               variant="outline"
-              value={query.estado}
-              onValueChange={value => {
+              value={[rows]}
+              onValueChange={([value]) => {
+                if (value) {
+                  setRows(value as (typeof kitchenRows)[number])
+                  void setQuery({ pagina: 1 })
+                }
+              }}
+              aria-label="Distribución de tickets"
+            >
+              <ToggleGroupItem
+                value="2"
+                className="size-11 p-0"
+                aria-label="Dos filas"
+                title="Dos filas"
+                data-cuelume-select
+              >
+                <Grid3x2 aria-hidden />
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="1"
+                className="size-11 p-0"
+                aria-label="Una fila con desplazamiento horizontal"
+                title="Una fila con desplazamiento horizontal"
+                data-cuelume-select
+              >
+                <GalleryHorizontal aria-hidden />
+              </ToggleGroupItem>
+            </ToggleGroup>
+          )}
+          {!isReadyView && (
+            <ToggleGroup
+              spacing={0}
+              variant="outline"
+              value={[query.estado]}
+              onValueChange={([value]) => {
                 if (value) {
                   void setQuery({ estado: value as KitchenFilter, pagina: 1 })
                 }
@@ -189,10 +285,10 @@ export function KitchenBoard({
             </ToggleGroup>
           )}
           <ToggleGroup
-            type="single"
+            spacing={0}
             variant="outline"
-            value={query.vista}
-            onValueChange={value => {
+            value={[query.vista]}
+            onValueChange={([value]) => {
               if (value) {
                 void setQuery({
                   vista: value as (typeof kitchenViews)[number],
@@ -202,13 +298,36 @@ export function KitchenBoard({
             }}
             aria-label="Vista"
           >
-            <ToggleGroupItem value="activas" className="h-11 px-4">
+            <ToggleGroupItem
+              value="activas"
+              className={kitchenToggleItemClass}
+              data-cuelume-select
+            >
               Activas
             </ToggleGroupItem>
-            <ToggleGroupItem value="listas" className="h-11 px-4">
+            <ToggleGroupItem
+              value="listas"
+              className={kitchenToggleItemClass}
+              data-cuelume-select
+            >
               Listas
             </ToggleGroupItem>
           </ToggleGroup>
+          <Button
+            type="button"
+            variant="outline"
+            className="size-11 p-0"
+            aria-label={isSoundMuted ? "Activar sonidos" : "Silenciar sonidos"}
+            title={isSoundMuted ? "Activar sonidos" : "Silenciar sonidos"}
+            onClick={() => {
+              const nextMuted = !isSoundMuted
+              setIsSoundMuted(nextMuted)
+              setEnabled(!nextMuted)
+              if (!nextMuted) play("toggle")
+            }}
+          >
+            {isSoundMuted ? <VolumeX aria-hidden /> : <Volume2 aria-hidden />}
+          </Button>
         </div>
       </div>
 
@@ -236,13 +355,12 @@ export function KitchenBoard({
           orders={visibleOrders}
           totalActive={activeOrders.length}
           page={query.pagina}
+          isSingleRow={rows === "1"}
           now={live.now}
           paymentTiming={paymentTiming}
           disabled={!live.canWrite}
           onPageChange={page => void setQuery({ pagina: page })}
-          onAdvance={order =>
-            executeAdvance({ orderId: order.id, from: order.kitchenStatus })
-          }
+          onAdvance={handleAdvance}
         />
       )}
     </div>
@@ -260,7 +378,8 @@ function showReadyToast(order: OrderTicket | undefined, onUndo: () => void) {
           type="button"
           size="sm"
           variant="outline"
-          className="h-10"
+          className="h-10 bg-transparent text-white inset-ring-white/30
+            hover:bg-white/15 hover:text-white"
           onClick={() => {
             toast.dismiss(currentToast.id)
             onUndo()
@@ -285,7 +404,11 @@ function FilterItem({
   count: number
 }) {
   return (
-    <ToggleGroupItem value={value} className="h-11 gap-2 px-4">
+    <ToggleGroupItem
+      value={value}
+      className={cn(kitchenToggleItemClass, "gap-2")}
+      data-cuelume-select
+    >
       {label}
       <span className="text-muted-foreground tabular-nums">{count}</span>
     </ToggleGroupItem>
@@ -296,6 +419,7 @@ function ActiveOrdersGrid({
   orders,
   totalActive,
   page,
+  isSingleRow,
   now,
   paymentTiming,
   disabled,
@@ -305,6 +429,7 @@ function ActiveOrdersGrid({
   orders: OrderTicket[]
   totalActive: number
   page: number
+  isSingleRow: boolean
   now: number
   paymentTiming: PaymentTiming
   disabled: boolean
@@ -325,19 +450,31 @@ function ActiveOrdersGrid({
     const observer = new ResizeObserver(measure)
     observer.observe(grid)
     return () => observer.disconnect()
-  }, [])
+  }, [isSingleRow])
 
   const pageSize = getKitchenPageSize(columns)
   const current = paginate(orders, page, pageSize)
   const isSingleColumn = columns === 1
+  const visibleOrders = isSingleRow ? orders : current.items
+  const hasFill = isSingleRow || !isSingleColumn
+  // Reveal part of the next ticket so the row reads as scrollable.
+  const visibleColumns =
+    visibleOrders.length > columns ? columns + 0.35 : columns
+  const ticketWidth = `calc((100% - ${columns} * 0.75rem) / ${visibleColumns})`
 
   return (
     <>
       <div
         ref={gridRef}
-        className={cn("grid gap-3", !isSingleColumn && "min-h-0 flex-1")}
+        className={cn(
+          hasFill && "min-h-0 flex-1",
+          isSingleRow
+            ? `relative flex snap-x snap-proximity gap-3 overflow-x-auto
+              overflow-y-hidden pb-2`
+            : "grid gap-3"
+        )}
         style={
-          isSingleColumn
+          isSingleRow || isSingleColumn
             ? undefined
             : {
                 gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
@@ -345,37 +482,46 @@ function ActiveOrdersGrid({
               }
         }
       >
-        {current.items.length === 0 ? (
+        {visibleOrders.length === 0 ? (
           <BoardEmptyState
             hasOrders={totalActive > 0}
             paymentTiming={paymentTiming}
           />
         ) : (
-          current.items.map(order => (
-            <KitchenTicket
+          visibleOrders.map(order => (
+            <div
               key={order.id}
-              ticket={order}
-              now={now}
-              fill={!isSingleColumn}
-              action={{
-                label:
-                  order.kitchenStatus === "NEW" ? "Preparar" : "Marcar lista",
-                variant: order.kitchenStatus === "NEW" ? "warning" : "success",
-                icon:
-                  order.kitchenStatus === "NEW" ? (
-                    <Flame data-icon="inline-start" />
-                  ) : (
-                    <CircleCheck data-icon="inline-start" />
-                  ),
-                disabled,
-                onClick: () => onAdvance(order)
-              }}
-            />
+              className={cn(
+                "min-w-0",
+                isSingleRow ? "flex shrink-0 snap-start" : "contents"
+              )}
+              style={isSingleRow ? { width: ticketWidth } : undefined}
+            >
+              <KitchenTicket
+                ticket={order}
+                now={now}
+                fill={hasFill}
+                action={{
+                  label:
+                    order.kitchenStatus === "NEW" ? "Preparar" : "Marcar lista",
+                  variant:
+                    order.kitchenStatus === "NEW" ? "warning" : "success",
+                  icon:
+                    order.kitchenStatus === "NEW" ? (
+                      <Flame data-icon="inline-start" />
+                    ) : (
+                      <CircleCheck data-icon="inline-start" />
+                    ),
+                  disabled,
+                  onClick: () => onAdvance(order)
+                }}
+              />
+            </div>
           ))
         )}
       </div>
 
-      {current.pageCount > 1 && (
+      {!isSingleRow && current.pageCount > 1 && (
         <Pager
           page={current.page}
           pageCount={current.pageCount}
@@ -399,7 +545,7 @@ function BoardEmptyState({
   paymentTiming: PaymentTiming
 }) {
   return (
-    <Empty className="col-span-full row-span-full rounded-xl border">
+    <Empty className="col-span-full row-span-full w-full rounded-xl border">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <CookingPot />

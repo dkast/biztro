@@ -12,6 +12,7 @@ import toast from "react-hot-toast"
 import { bind, play, setEnabled } from "cuelume"
 import {
   ChefHat,
+  ChevronDown,
   ChevronUp,
   LoaderCircle,
   Search,
@@ -31,6 +32,11 @@ import { SaleCheckoutDialog } from "@/components/sales/sale-checkout-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from "@/components/ui/collapsible"
 import {
   Drawer,
   DrawerContent,
@@ -816,9 +822,8 @@ function CategoryFilter({
     <div className="flex flex-col gap-2">
       <p className="text-muted-foreground text-sm font-medium">Categorías</p>
       <ToggleGroup
-        type="single"
-        value={value}
-        onValueChange={next => {
+        value={[value]}
+        onValueChange={([next]) => {
           if (next) onValueChange(next)
         }}
         className="flex w-full flex-wrap justify-start gap-2"
@@ -830,9 +835,9 @@ function CategoryFilter({
             key={option.value}
             value={option.value}
             data-cuelume-toggle
-            className="data-[state=on]:bg-primary
-              data-[state=on]:text-primary-foreground
-              dark:data-[state=on]:bg-primary/40 data-[state=on]:border-primary
+            className="data-pressed:bg-primary
+              data-pressed:text-primary-foreground
+              dark:data-pressed:bg-primary/40 data-pressed:border-primary
               rounded-full px-4"
           >
             {option.label}
@@ -979,9 +984,8 @@ function OrderTypeSelector({
     <div className="flex items-center justify-between gap-3">
       <p className="shrink-0 text-sm font-medium">Tipo de orden</p>
       <ToggleGroup
-        type="single"
-        value={value}
-        onValueChange={next => {
+        value={[value]}
+        onValueChange={([next]) => {
           if (next) onValueChange(next as SalesOrderType)
         }}
         className="flex gap-1.5"
@@ -1016,39 +1020,73 @@ function OrderContextFields({
   onLabelChange: (value: string) => void
   onNotesChange: (value: string) => void
 }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const summary = [label.trim(), notes.trim()].filter(Boolean).join(" · ")
+
   return (
-    <div className="grid gap-3">
-      <Field className="gap-1.5">
-        <FieldLabel htmlFor={`${idPrefix}-order-label`}>
-          Mesa o nombre
-          <span className="text-muted-foreground font-normal">(opcional)</span>
-        </FieldLabel>
-        <Input
-          id={`${idPrefix}-order-label`}
-          value={label}
-          maxLength={orderLabelMaxLength}
-          placeholder="Mesa 4, Ana…"
-          autoComplete="off"
-          enterKeyHint="done"
-          onChange={event => onLabelChange(event.target.value)}
-        />
-      </Field>
-      <Field className="gap-1.5">
-        <FieldLabel htmlFor={`${idPrefix}-order-notes`}>
-          Notas para cocina
-          <span className="text-muted-foreground font-normal">(opcional)</span>
-        </FieldLabel>
-        <Textarea
-          id={`${idPrefix}-order-notes`}
-          value={notes}
-          rows={2}
-          maxLength={orderNotesMaxLength}
-          placeholder="Sin cebolla, salsa aparte…"
-          className="min-h-16 resize-none"
-          onChange={event => onNotesChange(event.target.value)}
-        />
-      </Field>
-    </div>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger
+        className="group hover:bg-accent/40 focus-visible:border-ring
+          focus-visible:ring-ring/50 flex min-h-10 w-full items-center
+          justify-between gap-3 rounded-lg border px-3 text-left text-sm
+          transition-colors outline-none focus-visible:ring-3"
+      >
+        <span className="shrink-0 font-medium">Mesa y notas</span>
+        <span className="flex min-w-0 items-center gap-2">
+          <span
+            className={cn(
+              "truncate",
+              summary ? "text-foreground" : "text-muted-foreground"
+            )}
+          >
+            {summary || "Opcional"}
+          </span>
+          <ChevronDown
+            aria-hidden
+            className="text-muted-foreground size-4 shrink-0
+              transition-transform group-data-[state=open]:rotate-180
+              motion-reduce:transition-none"
+          />
+        </span>
+      </CollapsibleTrigger>
+      <CollapsibleContent
+        className="data-[state=open]:animate-in data-[state=open]:fade-in-0
+          data-[state=open]:slide-in-from-top-1 data-[state=open]:duration-150
+          motion-reduce:animate-none"
+      >
+        <div className="grid gap-3 pt-3">
+          <Field className="gap-1.5">
+            <FieldLabel htmlFor={`${idPrefix}-order-label`}>
+              Mesa o nombre
+            </FieldLabel>
+            <Input
+              id={`${idPrefix}-order-label`}
+              value={label}
+              maxLength={orderLabelMaxLength}
+              placeholder="Mesa 4, Ana…"
+              autoComplete="off"
+              enterKeyHint="done"
+              autoFocus
+              onChange={event => onLabelChange(event.target.value)}
+            />
+          </Field>
+          <Field className="gap-1.5">
+            <FieldLabel htmlFor={`${idPrefix}-order-notes`}>
+              Notas para cocina
+            </FieldLabel>
+            <Textarea
+              id={`${idPrefix}-order-notes`}
+              value={notes}
+              rows={2}
+              maxLength={orderNotesMaxLength}
+              placeholder="Sin cebolla, salsa aparte…"
+              className="min-h-16 resize-none"
+              onChange={event => onNotesChange(event.target.value)}
+            />
+          </Field>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   )
 }
 

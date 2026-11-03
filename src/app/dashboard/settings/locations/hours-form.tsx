@@ -265,7 +265,7 @@ export default function HoursForm({
               <Field>
                 <FieldLabel>Días de atención</FieldLabel>
                 <ToggleGroup
-                  type="multiple"
+                  multiple
                   variant="outline"
                   value={selectedDays}
                   onValueChange={setSelectedDays}
@@ -276,8 +276,8 @@ export default function HoursForm({
                       key={day}
                       value={day}
                       aria-label={DAY_FULL[day]}
-                      className="data-[state=on]:bg-primary/10
-                        data-[state=on]:border-primary min-w-10 px-3"
+                      className="data-pressed:bg-primary/10
+                        data-pressed:border-primary min-w-10 px-3"
                     >
                       {DAY_SHORT[day]}
                     </ToggleGroupItem>
@@ -370,7 +370,9 @@ export default function HoursForm({
                         >
                           <FieldLabel className="sr-only">Desde</FieldLabel>
                           <TimeField
-                            isDisabled={disabled || !watchedItems?.[index]?.allDay}
+                            isDisabled={
+                              disabled || !watchedItems?.[index]?.allDay
+                            }
                             value={
                               ctlField.value
                                 ? parseTime(ctlField.value)
@@ -395,7 +397,9 @@ export default function HoursForm({
                         >
                           <FieldLabel className="sr-only">Hasta</FieldLabel>
                           <TimeField
-                            isDisabled={disabled || !watchedItems?.[index]?.allDay}
+                            isDisabled={
+                              disabled || !watchedItems?.[index]?.allDay
+                            }
                             value={
                               ctlField.value
                                 ? parseTime(ctlField.value)
