@@ -253,6 +253,26 @@ async function getReceivablesDashboardSummary(organizationId: string) {
   }
 }
 
+async function hasSalesCreditHistory(organizationId: string) {
+  const rows = await prisma.$queryRaw<Array<{ found: number }>>`
+    SELECT 1 AS found
+    FROM "Sale" s
+    WHERE s."organizationId" = ${organizationId}
+      AND s."status" = 'COMPLETED'
+      AND s."customerId" IS NOT NULL
+      AND CAST(ROUND(s."total" * 100) AS INTEGER) > COALESCE((
+        SELECT SUM(pa."amountMinor")
+        FROM "PaymentAllocation" pa
+        INNER JOIN "Payment" p ON p."id" = pa."paymentId"
+        WHERE pa."saleId" = s."id"
+          AND p."status" = 'ACTIVE'
+          AND p."origin" = 'SALE'
+      ), 0)
+    LIMIT 1
+  `
+  return rows.length > 0
+}
+
 function startOfRollingPeriod(
   period: SalesDashboardPeriod,
   date = new Date()
@@ -1195,14 +1215,12 @@ export async function getSalesClosingData(
   const currency = await getOrganizationCurrency(organizationId)
   const [
     voidedTotals,
-    todaySalesRows,
-    previousSalesRows,
-    todayPayments,
-    previousPayments,
+    salesRows,
+    payments,
     bestSellers,
     revenueByOrderType,
     recentSales,
-    receivablesSummary
+    hasCreditHistory
   ] = await Promise.all([
     getVoidedSalesTotals(
       organizationId,
@@ -1212,26 +1230,14 @@ export async function getSalesClosingData(
     ),
     getSalesChartRows(
       organizationId,
-      selectedDayStart,
-      tomorrowStart,
-      currency
-    ),
-    getSalesChartRows(
-      organizationId,
       previousDayStart,
-      selectedDayStart,
-      currency
-    ),
-    getCollectionPaymentRows(
-      organizationId,
-      selectedDayStart,
       tomorrowStart,
       currency
     ),
     getCollectionPaymentRows(
       organizationId,
       previousDayStart,
-      selectedDayStart,
+      tomorrowStart,
       currency
     ),
     getBestSellers(organizationId, selectedDayStart, tomorrowStart, currency),
@@ -1245,8 +1251,21 @@ export async function getSalesClosingData(
       startDate: selectedDayStart,
       endDate: tomorrowStart
     }),
-    getReceivablesDashboardSummary(organizationId)
+    hasSalesCreditHistory(organizationId)
   ])
+
+  const todaySalesRows = salesRows.filter(
+    sale => sale.createdAt >= selectedDayStart
+  )
+  const previousSalesRows = salesRows.filter(
+    sale => sale.createdAt < selectedDayStart
+  )
+  const todayPayments = payments.filter(
+    payment => payment.createdAt >= selectedDayStart
+  )
+  const previousPayments = payments.filter(
+    payment => payment.createdAt < selectedDayStart
+  )
 
   const todayMetrics = getFinancialMetrics({
     sales: todaySalesRows,
@@ -1256,11 +1275,7 @@ export async function getSalesClosingData(
     sales: previousSalesRows,
     payments: previousPayments
   })
-  const hourly = getHourlySalesBuckets(
-    [...todaySalesRows, ...previousSalesRows],
-    [...todayPayments, ...previousPayments],
-    selectedDayStart
-  )
+  const hourly = getHourlySalesBuckets(salesRows, payments, selectedDayStart)
   const todayAverageTicket =
     todaySalesRows.length > 0
       ? roundMoney(todayMetrics.sales / todaySalesRows.length)
@@ -1289,7 +1304,7 @@ export async function getSalesClosingData(
       endDate: tomorrowStart,
       period: "7d"
     }),
-    hasCreditHistory: receivablesSummary.hasCreditHistory,
+    hasCreditHistory,
     voidedSales: voidedTotals.sales,
     voidedAmount: voidedTotals.amount,
     topProduct: bestSellers[0] ?? null,

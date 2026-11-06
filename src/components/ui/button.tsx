@@ -13,6 +13,10 @@ const buttonVariants = cva(
           "bg-primary text-primary-foreground hover:bg-primary/90 inset-ring inset-ring-white/10",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 inset-ring inset-ring-white/10",
+        warning:
+          "bg-amber-400 text-amber-950 hover:bg-amber-500 inset-ring inset-ring-white/10",
+        success:
+          "bg-emerald-400 text-emerald-950 hover:bg-emerald-500 inset-ring inset-ring-white/10",
         outline:
           "inset-ring inset-ring-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:

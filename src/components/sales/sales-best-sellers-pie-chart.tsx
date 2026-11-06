@@ -219,9 +219,8 @@ export function SalesBestSellersPieChart({
           </div>
 
           <ToggleGroup
-            type="single"
-            value={metric}
-            onValueChange={value => {
+            value={[metric]}
+            onValueChange={([value]) => {
               if (value === "quantity" || value === "revenue") {
                 setMetric(value)
                 setHoveredIndex(null)
@@ -239,9 +238,9 @@ export function SalesBestSellersPieChart({
                 value={option.value}
                 aria-label={`Mostrar ${option.label.toLowerCase()}`}
                 className="text-foreground/70 hover:text-foreground
-                  data-[state=on]:bg-background data-[state=on]:text-foreground
+                  data-pressed:bg-background data-pressed:text-foreground
                   rounded-lg border border-transparent px-3 shadow-none
-                  hover:bg-transparent data-[state=on]:shadow-sm"
+                  hover:bg-transparent data-pressed:shadow-sm"
               >
                 {option.label}
               </ToggleGroupItem>

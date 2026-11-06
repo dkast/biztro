@@ -9,6 +9,8 @@ export const env = createEnv({
   server: {
     TURSO_DATABASE_URL: z.url(),
     TURSO_AUTH_TOKEN: z.string().min(1),
+    UPSTASH_REDIS_REST_URL: z.url(),
+    UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
     NODE_ENV: z.enum(["development", "test", "production"]),
     AUTH_SECRET:
       process.env.NODE_ENV === "production"
@@ -60,6 +62,8 @@ export const env = createEnv({
   runtimeEnv: {
     TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
     TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     NODE_ENV: process.env.NODE_ENV,
     AUTH_SECRET: process.env.AUTH_SECRET,
     AUTH_URL: process.env.AUTH_URL,

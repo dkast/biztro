@@ -48,6 +48,7 @@ export default async function NewSalePage() {
         customers={customers}
         acceptedMethods={paymentFeatureState.acceptedMethods}
         creditEnabled={paymentFeatureState.creditEnabled}
+        paymentTiming={paymentFeatureState.paymentTiming}
       />
     </div>
   )

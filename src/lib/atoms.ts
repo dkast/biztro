@@ -20,4 +20,9 @@ export const onboardingCardsCollapsedAtom = atomWithStorage(
 
 export const isSoundMutedAtom = atomWithStorage("biztro:sounds-muted", false)
 
+export const kitchenRowsAtom = atomWithStorage<"2" | "1">(
+  "biztro:kitchen-rows",
+  "2"
+)
+
 export const colorListAtom = atom<ColorTheme[]>([])

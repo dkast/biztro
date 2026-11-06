@@ -3,6 +3,10 @@ import { z } from "zod/v4"
 import type { Currency } from "@/lib/currency"
 import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
 import {
+  orderContextSchema,
+  orderRequestIdSchema
+} from "@/lib/types/order-context"
+import {
   paymentAmountSchema,
   paymentMethodSchema,
   paymentMethodValues,
@@ -73,7 +77,8 @@ export const saleCartItemSchema = z.object({
   quantity: z.number().int().min(1)
 })
 
-export const completeSaleSchema = z.object({
+export const completeSaleSchema = orderContextSchema.extend({
+  requestId: orderRequestIdSchema.optional(),
   orderType: salesOrderTypeSchema.default("DINE_IN"),
   items: z.array(saleCartItemSchema).min(1, "Agrega al menos un producto"),
   customerId: z.string().min(1).optional(),
