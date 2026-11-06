@@ -9,7 +9,7 @@ import {
   useState
 } from "react"
 import toast from "react-hot-toast"
-import { bind, play, setEnabled } from "cuelume"
+import { bind, play, setEnabled, setTheme } from "cuelume"
 import {
   ChefHat,
   ChevronDown,
@@ -220,6 +220,7 @@ export function QuickSaleScreen({
 
     setIsSoundMuted(isMuted)
     setEnabled(!isMuted)
+    setTheme("press")
     bind()
   }, [])
 

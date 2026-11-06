@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
-import { bind, play, setEnabled } from "cuelume"
+import { bind, play, setEnabled, setTheme } from "cuelume"
 import { useAtom } from "jotai"
 import {
   ChefHat,
@@ -109,7 +109,10 @@ export function KitchenBoard({
     setEnabled(!isSoundMuted)
   }, [isSoundMuted])
 
-  useEffect(() => bind(), [])
+  useEffect(() => {
+    setTheme("press")
+    return bind()
+  }, [])
 
   // Compare against the previous snapshot so only tickets that arrive later make noise.
   useEffect(() => {
