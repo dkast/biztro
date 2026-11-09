@@ -17,6 +17,7 @@ import {
   LoaderCircle,
   Search,
   ShoppingBag,
+  SquarePen,
   Trash2,
   Volume2,
   VolumeX
@@ -171,6 +172,7 @@ type CartLine = SaleCartItemInput & {
   lineTotal: number
   image: string | null
   currency: "MXN" | "USD"
+  notes: string
 }
 
 const soundMutedStorageKey = "biztro:sounds-muted"
@@ -350,7 +352,8 @@ export function QuickSaleScreen({
           unitPrice: selectedVariant.price,
           lineTotal,
           image: product.image,
-          currency: product.currency
+          currency: product.currency,
+          notes: ""
         }
       ]
     })
@@ -389,10 +392,21 @@ export function QuickSaleScreen({
     )
   }
 
+  const updateItemNotes = (key: string, value: string) => {
+    setCart(current =>
+      current.map(item =>
+        item.key === key
+          ? { ...item, notes: value.slice(0, orderNotesMaxLength) }
+          : item
+      )
+    )
+  }
+
   const cartItems = cart.map(item => ({
     menuItemId: item.menuItemId,
     variantId: item.variantId,
-    quantity: item.quantity
+    quantity: item.quantity,
+    ...(item.notes.trim() ? { notes: item.notes.trim() } : {})
   }))
   const trimmedLabel = orderLabel.trim() || undefined
   const trimmedNotes = orderNotes.trim() || undefined
@@ -658,6 +672,7 @@ export function QuickSaleScreen({
                 currency={currency}
                 scrollToBottomSignal={cartScrollSignal}
                 onQuantityChange={updateQuantity}
+                onItemNotesChange={updateItemNotes}
               />
               <Separator />
               <SaleSummary
@@ -701,6 +716,7 @@ export function QuickSaleScreen({
         onOrderLabelChange={setOrderLabel}
         onOrderNotesChange={setOrderNotes}
         onQuantityChange={updateQuantity}
+        onItemNotesChange={updateItemNotes}
         onClear={clearCart}
         onSoundMuteChange={handleSoundMuteChange}
         onCheckout={() => guardSaleCompletion(handleCheckout)}
@@ -1108,6 +1124,7 @@ function MobileSaleCart({
   onOrderLabelChange,
   onOrderNotesChange,
   onQuantityChange,
+  onItemNotesChange,
   onClear,
   onSoundMuteChange,
   onCheckout
@@ -1128,6 +1145,7 @@ function MobileSaleCart({
   onOrderLabelChange: (value: string) => void
   onOrderNotesChange: (value: string) => void
   onQuantityChange: (key: string, nextQuantity: number) => void
+  onItemNotesChange: (key: string, value: string) => void
   onClear: () => void
   onSoundMuteChange: (isMuted: boolean) => void
   onCheckout: () => void
@@ -1265,6 +1283,7 @@ function MobileSaleCart({
               currency={currency}
               scrollToBottomSignal={scrollToBottomSignal}
               onQuantityChange={onQuantityChange}
+              onItemNotesChange={onItemNotesChange}
               showRemoveButtons
             />
           </div>
@@ -1309,16 +1328,35 @@ function SaleCart({
   currency,
   scrollToBottomSignal,
   onQuantityChange,
+  onItemNotesChange,
   showRemoveButtons = false
 }: {
   cart: CartLine[]
   currency: "MXN" | "USD"
   scrollToBottomSignal: number
   onQuantityChange: (key: string, nextQuantity: number) => void
+  onItemNotesChange: (key: string, value: string) => void
   showRemoveButtons?: boolean
 }) {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
   const scrollResetTimeoutRef = useRef<number | null>(null)
+  const [openNoteKeys, setOpenNoteKeys] = useState<ReadonlySet<string>>(
+    () => new Set()
+  )
+
+  const closeNote = (key: string) =>
+    setOpenNoteKeys(current => {
+      const next = new Set(current)
+      next.delete(key)
+      return next
+    })
+
+  const toggleNote = (key: string) =>
+    setOpenNoteKeys(current => {
+      const next = new Set(current)
+      if (!next.delete(key)) next.add(key)
+      return next
+    })
 
   useLayoutEffect(() => {
     const scrollContainer = scrollContainerRef.current
@@ -1384,7 +1422,6 @@ function SaleCart({
         {cart.map(item => (
           <motion.div
             key={item.key}
-            layout
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -1456,13 +1493,117 @@ function SaleCart({
                     />
                   </NumberInputGroup>
                 </NumberInput>
-                <p className="text-sm font-semibold tabular-nums">
-                  {formatPrice(item.lineTotal, currency)}
-                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant={item.notes.trim() ? "secondary" : "ghost"}
+                    size="icon-sm"
+                    aria-label={`${item.notes.trim() ? "Editar nota" : "Agregar nota"} de ${item.productName}`}
+                    aria-expanded={openNoteKeys.has(item.key)}
+                    title={item.notes.trim() ? "Editar nota" : "Agregar nota"}
+                    // Keeps the textarea focused so its blur doesn't race the toggle
+                    onMouseDown={event => event.preventDefault()}
+                    onClick={() => toggleNote(item.key)}
+                  >
+                    <SquarePen />
+                  </Button>
+                  <p className="text-sm font-semibold tabular-nums">
+                    {formatPrice(item.lineTotal, currency)}
+                  </p>
+                </div>
               </div>
+              <ItemNoteField
+                productName={item.productName}
+                variantName={item.variantName}
+                value={item.notes}
+                isOpen={openNoteKeys.has(item.key)}
+                onChange={value => onItemNotesChange(item.key, value)}
+                onOpen={() => toggleNote(item.key)}
+                onClose={() => closeNote(item.key)}
+              />
             </div>
           </motion.div>
         ))}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+const noteEase = [0.23, 1, 0.32, 1] as const
+
+// The editor and the preview share one grid cell so they crossfade in place
+// while their heights tween; only height, margin and opacity animate.
+function ItemNoteField({
+  productName,
+  variantName,
+  value,
+  isOpen,
+  onChange,
+  onOpen,
+  onClose
+}: {
+  productName: string
+  variantName?: string | null
+  value: string
+  isOpen: boolean
+  onChange: (value: string) => void
+  onOpen: () => void
+  onClose: () => void
+}) {
+  const shouldReduceMotion = useReducedMotion()
+  const trimmedValue = value.trim()
+  const mode = isOpen ? "editor" : trimmedValue ? "preview" : null
+
+  // py-1 gives the focus ring room inside the clipping wrapper; the margins
+  // cancel that padding at the bottom and keep an 8px gap at the top.
+  const motionProps = {
+    initial: { height: 0, opacity: 0, marginTop: 0, marginBottom: 0 },
+    animate: { height: "auto", opacity: 1, marginTop: 4, marginBottom: -4 },
+    exit: { height: 0, opacity: 0, marginTop: 0, marginBottom: 0 },
+    transition: {
+      duration: shouldReduceMotion ? 0 : 0.2,
+      ease: noteEase,
+      opacity: { duration: 0.15, ease: "easeOut" as const }
+    },
+    className: "col-start-1 row-start-1 -mx-1 overflow-hidden px-1"
+  }
+
+  return (
+    <div className="grid">
+      <AnimatePresence initial={false}>
+        {mode === "editor" && (
+          <motion.div key="editor" {...motionProps}>
+            <div className="py-1">
+              <Textarea
+                autoFocus
+                aria-label={`Nota para ${productName}${variantName ? ` ${variantName}` : ""}`}
+                placeholder="Sin cebolla, bien cocido…"
+                value={value}
+                maxLength={orderNotesMaxLength}
+                rows={1}
+                className="min-h-9 resize-none text-sm"
+                onChange={event => onChange(event.target.value)}
+                onBlur={onClose}
+              />
+            </div>
+          </motion.div>
+        )}
+        {mode === "preview" && (
+          <motion.div key="preview" {...motionProps}>
+            <div className="py-1">
+              <button
+                type="button"
+                className="text-muted-foreground hover:text-foreground
+                  focus-visible:ring-ring/50 block w-full truncate rounded-sm
+                  text-left text-xs outline-none focus-visible:ring-3"
+                onClick={onOpen}
+              >
+                <span className="sr-only">Nota: </span>
+                {trimmedValue}
+              </button>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   )

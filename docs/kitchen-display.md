@@ -29,6 +29,8 @@ after switching back to pay-first.
 - Voiding a sale from Transacciones also cancels its kitchen order.
 - POS submissions carry a request ID, so retrying after a lost response does not
   duplicate tickets, sales, or payments.
+- Item notes are stored on kitchen order items, not sales-history items.
+  Apply `20261109141200_add_order_item_notes` before using item notes.
 
 ## Kitchen board
 

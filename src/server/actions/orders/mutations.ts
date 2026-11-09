@@ -317,6 +317,7 @@ export const settleOrder = authMemberActionClient
             variantId: true,
             productName: true,
             variantName: true,
+            notes: true,
             unitPrice: true,
             quantity: true,
             lineTotal: true

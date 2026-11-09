@@ -106,6 +106,7 @@ export type OrderTicketItem = {
   productName: string
   variantName: string | null
   quantity: number
+  notes: string | null
 }
 
 export type OrderTicket = {

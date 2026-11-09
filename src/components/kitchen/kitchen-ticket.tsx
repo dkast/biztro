@@ -1,7 +1,7 @@
 "use client"
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react"
-import { AlertTriangle, Clock, NotebookPen } from "lucide-react"
+import { AlertTriangle, Clock, StickyNote } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -78,8 +78,8 @@ export function KitchenTicket({
     <article
       aria-label={ticket.label ? `${title}, ${ticket.label}` : title}
       className={cn(
-        `bg-card text-card-foreground flex min-w-0 flex-col overflow-hidden
-        rounded-xl border shadow-xs`,
+        `bg-card text-card-foreground flex w-full min-w-0 flex-col
+        overflow-hidden rounded-xl border shadow-xs`,
         fill && "h-full min-h-0",
         ticket.kitchenStatus === "PREPARING" &&
           "border-amber-400/70 dark:border-amber-500/50",
@@ -117,7 +117,7 @@ export function KitchenTicket({
       )}
 
       {(action || footer) && (
-        <div className="shrink-0 border-t p-3">
+        <div className="shrink-0 border-t px-4 py-3">
           {footer}
           {action && <TicketActionButton action={action} />}
         </div>
@@ -145,7 +145,7 @@ export function KitchenTicket({
             <TicketItems ticket={ticket} />
           </div>
           {action && (
-            <SheetFooter className="border-t p-4">
+            <SheetFooter className="border-t px-5 py-4">
               <TicketActionButton
                 action={{
                   ...action,
@@ -204,7 +204,7 @@ function TicketHeader({
           </span>
         </p>
       </div>
-      <div className="flex flex-wrap items-center gap-1.5">
+      <div className="flex flex-wrap items-center gap-2">
         <Badge variant={kitchenStatusBadgeVariants[ticket.kitchenStatus]}>
           {kitchenStatusLabels[ticket.kitchenStatus]}
         </Badge>
@@ -218,8 +218,8 @@ function TicketHeader({
 
 function TicketItems({ ticket }: { ticket: OrderTicket }) {
   return (
-    <div className="flex flex-col gap-3">
-      <ul className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-4">
+      <ul className="flex flex-col gap-3">
         {ticket.items.map(item => (
           <li key={item.id} className="flex gap-3">
             <span
@@ -228,32 +228,57 @@ function TicketItems({ ticket }: { ticket: OrderTicket }) {
             >
               {item.quantity}×
             </span>
-            <span className="min-w-0">
-              <span className="block text-lg leading-snug font-medium">
+            <div className="flex min-w-0 flex-1 flex-col">
+              <span className="text-lg leading-snug font-medium">
                 {item.productName}
               </span>
               {item.variantName && (
-                <span className="text-muted-foreground block text-sm">
+                <span className="text-muted-foreground text-sm">
                   {item.variantName}
                 </span>
               )}
-            </span>
+              {item.notes?.trim() && (
+                <TicketNote className="mt-1.5" srLabel="Nota del platillo: ">
+                  {item.notes}
+                </TicketNote>
+              )}
+            </div>
           </li>
         ))}
       </ul>
-      {ticket.notes && (
-        <div
-          className="flex gap-2 rounded-lg border border-amber-300 bg-amber-50
-            p-3 text-sm text-amber-950 dark:border-amber-500/40
-            dark:bg-amber-500/10 dark:text-amber-100"
-        >
-          <NotebookPen aria-hidden className="mt-0.5 size-4 shrink-0" />
-          <p className="min-w-0 break-words whitespace-pre-line">
-            <span className="sr-only">Notas: </span>
-            {ticket.notes}
-          </p>
-        </div>
+      {ticket.notes?.trim() && (
+        <TicketNote title="Para toda la orden">{ticket.notes}</TicketNote>
       )}
+    </div>
+  )
+}
+
+function TicketNote({
+  title,
+  srLabel,
+  className,
+  children
+}: {
+  title?: string
+  srLabel?: string
+  className?: string
+  children: ReactNode
+}) {
+  return (
+    <div
+      className={cn(
+        `flex gap-2 rounded-md border border-amber-300 bg-amber-50 px-2.5 py-1.5
+        text-sm font-medium text-amber-950 dark:border-amber-500/40
+        dark:bg-amber-500/10 dark:text-amber-100`,
+        className
+      )}
+    >
+      <StickyNote aria-hidden className="mt-0.5 size-4 shrink-0" />
+      <p className="min-w-0 break-words whitespace-pre-line">
+        {title && <span className="block font-semibold">{title}</span>}
+        {srLabel && <span className="sr-only">{srLabel}</span>}
+        {children}
+      </p>
     </div>
   )
 }

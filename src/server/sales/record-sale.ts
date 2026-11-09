@@ -3,7 +3,7 @@ import "server-only"
 import { Prisma } from "@/generated/prisma-client/client"
 
 import type { Currency } from "@/lib/currency"
-import type { CartItemInput } from "@/lib/orders"
+import { normalizeOptionalText, type CartItemInput } from "@/lib/orders"
 import { decimalToMinorUnits } from "@/lib/payments"
 import type prisma from "@/lib/prisma"
 import type { PaymentTiming } from "@/lib/types/order"
@@ -20,6 +20,7 @@ export type SnapshotItem = {
   variantId: string | null
   productName: string
   variantName: string | null
+  notes: string | null
   unitPrice: number
   quantity: number
   lineTotal: number
@@ -78,6 +79,7 @@ export async function resolveCatalogItems(
       variantId: selectedVariant.id,
       productName: menuItem.name,
       variantName: selectedVariant.name,
+      notes: normalizeOptionalText(line.notes),
       unitPrice: selectedVariant.price,
       quantity: line.quantity,
       lineTotal: roundMoney(selectedVariant.price * line.quantity)
@@ -275,6 +277,7 @@ export async function createOrderRecord(
           variantId: item.variantId,
           productName: item.productName,
           variantName: item.variantName,
+          notes: item.notes,
           unitPrice: item.unitPrice,
           quantity: item.quantity,
           lineTotal: item.lineTotal

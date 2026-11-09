@@ -13,6 +13,7 @@ import {
   normalizeOptionalText,
   paginate
 } from "@/lib/orders"
+import { saleCartItemSchema } from "@/lib/types/sales"
 
 describe("getNextKitchenStatus", () => {
   it("advances through the kitchen flow", () => {
@@ -152,6 +153,44 @@ describe("mergeCartItems", () => {
     ).toHaveLength(3)
   })
 
+  it("keeps identical items with different notes separate", () => {
+    expect(
+      mergeCartItems([
+        { menuItemId: "a", variantId: "v1", quantity: 1, notes: "Sin cebolla" },
+        { menuItemId: "a", variantId: "v1", quantity: 2, notes: "Salsa aparte" }
+      ])
+    ).toEqual([
+      {
+        menuItemId: "a",
+        variantId: "v1",
+        quantity: 1,
+        notes: "Sin cebolla"
+      },
+      {
+        menuItemId: "a",
+        variantId: "v1",
+        quantity: 2,
+        notes: "Salsa aparte"
+      }
+    ])
+  })
+
+  it("merges identical items when notes differ only by whitespace", () => {
+    expect(
+      mergeCartItems([
+        { menuItemId: "a", variantId: "v1", quantity: 1, notes: "  salsa  " },
+        { menuItemId: "a", variantId: "v1", quantity: 2, notes: "salsa" }
+      ])
+    ).toEqual([
+      {
+        menuItemId: "a",
+        variantId: "v1",
+        quantity: 3,
+        notes: "salsa"
+      }
+    ])
+  })
+
   it("does not mutate input objects", () => {
     const first = { menuItemId: "a", quantity: 1 }
     const second = { menuItemId: "a", quantity: 2 }
@@ -160,6 +199,32 @@ describe("mergeCartItems", () => {
     expect(result).toEqual([{ menuItemId: "a", quantity: 3 }])
     expect(first.quantity).toBe(1)
     expect(second.quantity).toBe(2)
+  })
+})
+
+describe("saleCartItemSchema", () => {
+  it("trims optional item notes", () => {
+    expect(
+      saleCartItemSchema.parse({
+        menuItemId: "a",
+        quantity: 1,
+        notes: "  Sin cebolla  "
+      })
+    ).toEqual({
+      menuItemId: "a",
+      quantity: 1,
+      notes: "Sin cebolla"
+    })
+  })
+
+  it("rejects item notes longer than the order note limit", () => {
+    expect(
+      saleCartItemSchema.safeParse({
+        menuItemId: "a",
+        quantity: 1,
+        notes: "a".repeat(301)
+      }).success
+    ).toBe(false)
   })
 })
 

@@ -33,7 +33,13 @@ const ticketSelect = {
   readyAt: true,
   items: {
     orderBy: { createdAt: "asc" },
-    select: { id: true, productName: true, variantName: true, quantity: true }
+    select: {
+      id: true,
+      productName: true,
+      variantName: true,
+      quantity: true,
+      notes: true
+    }
   }
 } satisfies Prisma.OrderSelect
 

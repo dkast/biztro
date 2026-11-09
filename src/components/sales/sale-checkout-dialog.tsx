@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import toast from "react-hot-toast"
+import * as Sentry from "@sentry/nextjs"
 import {
   ArrowLeft,
   ArrowRightLeft,
@@ -228,6 +229,12 @@ export function SaleCheckoutDialog({
   }
 
   const handleActionData = (data: CheckoutActionData, reset: () => void) => {
+    if (!data) {
+      Sentry.captureException(new Error("Checkout action returned no data"))
+      handleActionError(reset)
+      return
+    }
+
     if (data && "failure" in data) {
       setError(data.failure.reason ?? "No se pudo completar el cobro")
       setQuickMethod(null)
@@ -430,7 +437,7 @@ export function SaleCheckoutDialog({
                   total={total}
                   currency={currency}
                   isPending={isPending}
-                  isSelected={quickMethod === option.method}
+                  isSelected={isPending && quickMethod === option.method}
                   onClick={() => handleQuickPayment(option.method)}
                 />
               ))}

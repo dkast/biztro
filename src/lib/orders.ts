@@ -86,17 +86,24 @@ export type CartItemInput = {
   menuItemId: string
   variantId?: string
   quantity: number
+  notes?: string
 }
 
 export function mergeCartItems(items: readonly CartItemInput[]) {
   const itemsByKey = new Map<string, CartItemInput>()
 
   for (const item of items) {
-    const key = `${item.menuItemId}:${item.variantId ?? ""}`
+    const notes = item.notes?.trim() ?? ""
+    const key = JSON.stringify([item.menuItemId, item.variantId ?? "", notes])
     const existing = itemsByKey.get(key)
 
     if (existing) existing.quantity += item.quantity
-    else itemsByKey.set(key, { ...item })
+    else {
+      const mergedItem = { ...item }
+      if (notes) mergedItem.notes = notes
+      else delete mergedItem.notes
+      itemsByKey.set(key, mergedItem)
+    }
   }
 
   return [...itemsByKey.values()]
