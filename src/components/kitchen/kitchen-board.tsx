@@ -19,6 +19,7 @@ import {
   Volume2,
   VolumeX
 } from "lucide-react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { useAction, useOptimisticAction } from "next-safe-action/hooks"
 import { parseAsInteger, parseAsStringLiteral, useQueryStates } from "nuqs"
 
@@ -69,6 +70,12 @@ const kitchenFilters = ["todas", "nuevas", "preparando"] as const
 type KitchenRows = "2" | "1"
 // Connected groups override item padding, so the touch-size padding needs the group variant.
 const kitchenToggleItemClass = "h-11 group-data-[spacing=0]/toggle-group:px-4"
+
+const easeOut = [0.23, 1, 0.32, 1] as const
+const easeInOut = [0.77, 0, 0.175, 1] as const
+// Siblings slide into the freed slot while the finished ticket fades out.
+const reflowTransition = { layout: { duration: 0.22, ease: easeInOut } }
+const leaveTransition = { duration: 0.16, ease: easeOut }
 
 type KitchenFilter = (typeof kitchenFilters)[number]
 
@@ -129,6 +136,7 @@ function KitchenBoardContent({
   const [isSoundMuted, setIsSoundMuted] = useAtom(isSoundMutedAtom)
   const knownOrderIds = useRef<Set<string> | null>(null)
   const knownNoticeIds = useRef<Set<string> | null>(null)
+  const [leavingId, setLeavingId] = useState<string | null>(null)
   const live = useLiveRefresh(
     readyPage?.serverTime ?? board.serverTime,
     organizationId,
@@ -222,6 +230,7 @@ function KitchenBoardContent({
     play(
       getNextKitchenStatus(order.kitchenStatus) === "READY" ? "success" : "tap"
     )
+    setLeavingId(order.id)
     executeAdvance({ orderId: order.id, from: order.kitchenStatus })
   }
 
@@ -389,6 +398,7 @@ function KitchenBoardContent({
           totalActive={activeOrders.length}
           page={query.pagina}
           isSingleRow={rows === "1"}
+          leavingId={leavingId}
           now={live.now}
           paymentTiming={paymentTiming}
           disabled={!live.canWrite}
@@ -453,6 +463,7 @@ function ActiveOrdersGrid({
   totalActive,
   page,
   isSingleRow,
+  leavingId,
   now,
   paymentTiming,
   disabled,
@@ -463,6 +474,7 @@ function ActiveOrdersGrid({
   totalActive: number
   page: number
   isSingleRow: boolean
+  leavingId: string | null
   now: number
   paymentTiming: PaymentTiming
   disabled: boolean
@@ -471,6 +483,10 @@ function ActiveOrdersGrid({
 }) {
   const gridRef = useRef<HTMLDivElement | null>(null)
   const [columns, setColumns] = useState(3)
+  const shouldReduceMotion = useReducedMotion()
+  const leaveState = shouldReduceMotion
+    ? { opacity: 0, transition: leaveTransition }
+    : { opacity: 0, scale: 0.96, transition: leaveTransition }
 
   useLayoutEffect(() => {
     const grid = gridRef.current
@@ -500,9 +516,10 @@ function ActiveOrdersGrid({
       <div
         ref={gridRef}
         className={cn(
+          "relative",
           hasFill && "min-h-0 flex-1",
           isSingleRow
-            ? `relative flex snap-x snap-proximity gap-3 overflow-x-auto
+            ? `flex snap-x snap-proximity gap-3 overflow-x-auto
               overflow-y-hidden pb-2`
             : "grid gap-3"
         )}
@@ -515,18 +532,23 @@ function ActiveOrdersGrid({
               }
         }
       >
-        {visibleOrders.length === 0 ? (
-          <BoardEmptyState
-            hasOrders={totalActive > 0}
-            paymentTiming={paymentTiming}
-          />
-        ) : (
-          visibleOrders.map(order => (
-            <div
+        <AnimatePresence mode="popLayout" initial={false} custom={leavingId}>
+          {visibleOrders.map(order => (
+            <motion.div
               key={order.id}
+              layout={shouldReduceMotion ? false : "position"}
+              transition={reflowTransition}
+              variants={{
+                // Only the ticket the cook just finished animates out; filter and page changes stay instant.
+                exit: (leaving: string | null) =>
+                  leaving === order.id
+                    ? leaveState
+                    : { opacity: 1, transition: { duration: 0 } }
+              }}
+              exit="exit"
               className={cn(
-                "min-w-0",
-                isSingleRow ? "flex shrink-0 snap-start" : "contents"
+                "flex min-w-0",
+                isSingleRow ? "shrink-0 snap-start" : "min-h-0"
               )}
               style={isSingleRow ? { width: ticketWidth } : undefined}
             >
@@ -549,8 +571,14 @@ function ActiveOrdersGrid({
                   onClick: () => onAdvance(order)
                 }}
               />
-            </div>
-          ))
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        {visibleOrders.length === 0 && (
+          <BoardEmptyState
+            hasOrders={totalActive > 0}
+            paymentTiming={paymentTiming}
+          />
         )}
       </div>
 

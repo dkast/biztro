@@ -15,6 +15,7 @@ import {
   getKitchenReadyOrders,
   loadOrderSnapshot
 } from "@/server/sales/orders"
+import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
   title: "Cocina"
@@ -64,8 +65,13 @@ export default async function KitchenPage(props: {
 
   return (
     <div
-      className="flex w-full flex-col gap-3 px-4 py-4 sm:h-[calc(100dvh-4rem)]
-        sm:px-6"
+      className={cn(
+        "flex w-full flex-col gap-3 px-4 py-4 sm:px-6",
+        // The ready list scrolls with the page, so it can't be clamped to the viewport.
+        isReadyView
+          ? "sm:min-h-[calc(100dvh-4rem)]"
+          : "sm:h-[calc(100dvh-4rem)]"
+      )}
     >
       {!isPro && <SalesProBanner />}
       <OrderRealtimeProvider key={organization.id}>
