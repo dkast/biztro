@@ -3,11 +3,15 @@ import { notFound } from "next/navigation"
 import { connection } from "next/server"
 
 import { OrderRealtimeProvider } from "@/components/orders/order-realtime-provider"
-import { PendingOrdersBoard } from "@/components/orders/pending-orders-board"
+import {
+  PendingOrdersBoard,
+  type PendingOrdersSnapshot
+} from "@/components/orders/pending-orders-board"
 import { getCustomerOptions } from "@/server/actions/customers/queries"
-import { getPaymentFeatureState } from "@/server/actions/payments/queries"
+import { getPaymentSettingsState } from "@/server/actions/payments/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
-import { getPendingOrders } from "@/server/sales/orders"
+import { getPendingOrders, loadOrderSnapshot } from "@/server/sales/orders"
+import type { OrderSnapshotResult } from "@/lib/types/order"
 
 export const metadata: Metadata = {
   title: "Por cobrar"
@@ -19,15 +23,29 @@ export default async function PendingOrdersPage() {
   const organization = await getCurrentOrganization()
   if (!organization) notFound()
 
-  const paymentFeatureState = await getPaymentFeatureState(organization.id)
-  if (!paymentFeatureState) notFound()
+  const result = await loadOrderSnapshot("pending-snapshot", async () => {
+    const paymentSettings = await getPaymentSettingsState(organization.id)
+    if (!paymentSettings) return null
 
-  const [data, customers] = await Promise.all([
-    getPendingOrders(organization.id),
-    paymentFeatureState.creditEnabled
-      ? getCustomerOptions(organization.id)
-      : Promise.resolve([])
-  ])
+    const [data, customers] = await Promise.all([
+      getPendingOrders(organization.id),
+      paymentSettings.creditEnabled
+        ? getCustomerOptions(organization.id)
+        : Promise.resolve([])
+    ])
+
+    return {
+      data,
+      customers,
+      acceptedMethods: paymentSettings.acceptedMethods,
+      creditEnabled: paymentSettings.creditEnabled,
+      paymentTiming: paymentSettings.paymentTiming
+    }
+  })
+  const snapshot: OrderSnapshotResult<PendingOrdersSnapshot> =
+    result.status === "error"
+      ? result
+      : { status: "success", data: result.data ?? notFound() }
 
   return (
     <div
@@ -36,11 +54,7 @@ export default async function PendingOrdersPage() {
     >
       <OrderRealtimeProvider key={organization.id}>
         <PendingOrdersBoard
-          data={data}
-          customers={customers}
-          acceptedMethods={paymentFeatureState.acceptedMethods}
-          creditEnabled={paymentFeatureState.creditEnabled}
-          paymentTiming={paymentFeatureState.paymentTiming}
+          snapshot={snapshot}
           organizationId={organization.id}
         />
       </OrderRealtimeProvider>

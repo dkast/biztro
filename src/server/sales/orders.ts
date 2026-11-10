@@ -1,6 +1,8 @@
 import "server-only"
 
 import type { Prisma } from "@/generated/prisma-client/client"
+import * as Sentry from "@sentry/nextjs"
+import { unstable_rethrow } from "next/navigation"
 
 import type { Currency } from "@/lib/currency"
 import { kitchenReadyPageSize } from "@/lib/orders"
@@ -9,6 +11,7 @@ import type {
   KitchenBoardData,
   KitchenReadyPage,
   KitchenStatus,
+  OrderSnapshotResult,
   OrderStatus,
   OrderTicket,
   PaymentTiming,
@@ -59,6 +62,22 @@ function toTicket(order: TicketRow): OrderTicket {
     preparingAt: order.preparingAt?.toISOString() ?? null,
     readyAt: order.readyAt?.toISOString() ?? null,
     items: order.items
+  }
+}
+
+// Boards keep their last good snapshot, so query failures are returned instead of thrown.
+export async function loadOrderSnapshot<T>(
+  operation: string,
+  load: () => Promise<T>
+): Promise<OrderSnapshotResult<T>> {
+  try {
+    return { status: "success", data: await load() }
+  } catch (error) {
+    unstable_rethrow(error)
+    Sentry.captureException(error, {
+      tags: { section: "orders-realtime", operation }
+    })
+    return { status: "error" }
   }
 }
 
@@ -140,16 +159,40 @@ export async function getKitchenReadyOrders(
 export async function getPendingOrders(
   organizationId: string
 ): Promise<PendingOrdersData> {
-  const orders = await prisma.order.findMany({
-    where: { organizationId, status: "OPEN" },
-    orderBy: [{ submittedAt: "asc" }, { number: "asc" }],
-    take: maxActiveOrders,
-    select: { ...ticketSelect, currency: true, total: true }
-  })
+  const where = {
+    organizationId,
+    status: "OPEN"
+  } satisfies Prisma.OrderWhereInput
+  const orderBy = [
+    { submittedAt: "asc" },
+    { number: "asc" }
+  ] satisfies Prisma.OrderOrderByWithRelationInput[]
+  const select = { ...ticketSelect, currency: true, total: true }
+
+  // Ready tickets are collected first, so they claim the snapshot limit first.
+  const [totalCount, ready] = await Promise.all([
+    prisma.order.count({ where }),
+    prisma.order.findMany({
+      where: { ...where, kitchenStatus: "READY" },
+      orderBy,
+      take: maxActiveOrders,
+      select
+    })
+  ])
+  const inKitchen =
+    ready.length < maxActiveOrders
+      ? await prisma.order.findMany({
+          where: { ...where, kitchenStatus: { not: "READY" } },
+          orderBy,
+          take: maxActiveOrders - ready.length,
+          select
+        })
+      : []
 
   return {
     serverTime: new Date().toISOString(),
-    orders: orders.map(order => ({
+    totalCount,
+    orders: [...ready, ...inKitchen].map(order => ({
       ...toTicket(order),
       currency: order.currency as Currency,
       total: order.total
@@ -181,7 +224,7 @@ export async function cancelLinkedKitchenOrder(
 ) {
   const order = await tx.order.findFirst({
     where: { organizationId, saleId, status: { not: "CANCELLED" } },
-    select: { id: true, kitchenStatus: true }
+    select: { id: true }
   })
 
   if (!order) return
@@ -193,9 +236,8 @@ export async function cancelLinkedKitchenOrder(
       cancelledAt,
       cancelReason: reason,
       cancelledByUserId: userId,
-      // Delivered orders need no kitchen alert.
-      cancellationAcknowledgedAt:
-        order.kitchenStatus === "READY" ? cancelledAt : null
+      // READY means prepared, not delivered; kitchen must acknowledge it.
+      cancellationAcknowledgedAt: null
     }
   })
 }

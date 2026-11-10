@@ -25,7 +25,11 @@ export type { LiveConnectionState } from "@/lib/types/order-realtime"
 
 const { useRealtime } = createRealtime<typeof orderRealtimeSchema>()
 
-export function useLiveRefresh(serverTime: string, organizationId: string) {
+export function useLiveRefresh(
+  serverTime: string,
+  organizationId: string,
+  hasSnapshotError = false
+) {
   const router = useRouter()
   const [isRefreshing, startRefresh] = useTransition()
   const [isOnline, setIsOnline] = useState(true)
@@ -145,11 +149,28 @@ export function useLiveRefresh(serverTime: string, organizationId: string) {
 
   const refresh = useCallback(() => {
     if (!navigator.onLine || document.visibilityState !== "visible") return
-    if (status !== "connected" || hasConnectionError || hasRefreshError) {
+    // A timed-out refresh still holds the queue; reload instead of waiting on it.
+    if (isRefreshing && hasRefreshError) {
+      window.location.reload()
+      return
+    }
+    if (
+      status !== "connected" ||
+      hasConnectionError ||
+      hasRefreshError ||
+      hasSnapshotError
+    ) {
       setIsReconciled(false)
       setIsRestarting(true)
     } else queue.request()
-  }, [status, hasConnectionError, hasRefreshError, queue])
+  }, [
+    status,
+    hasConnectionError,
+    hasRefreshError,
+    hasSnapshotError,
+    isRefreshing,
+    queue
+  ])
 
   useEffect(() => {
     const updateActivity = () => {
@@ -187,7 +208,7 @@ export function useLiveRefresh(serverTime: string, organizationId: string) {
     status,
     isReconciled,
     isPending: isRefreshing || isQueued,
-    hasError: hasRefreshError || hasConnectionError
+    hasError: hasRefreshError || hasConnectionError || hasSnapshotError
   })
 
   return {

@@ -25,6 +25,10 @@ import { parseAsInteger, parseAsStringLiteral, useQueryStates } from "nuqs"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { KitchenTicket } from "@/components/kitchen/kitchen-ticket"
 import { LiveStatus } from "@/components/orders/live-status"
+import {
+  OrderSnapshotUnavailable,
+  useOrderSnapshot
+} from "@/components/orders/order-snapshot"
 import { useLiveRefresh } from "@/components/orders/use-live-refresh"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -54,6 +58,7 @@ import type {
   KitchenCancellationNotice,
   KitchenReadyPage,
   KitchenStatus,
+  OrderSnapshotResult,
   OrderTicket,
   PaymentTiming
 } from "@/lib/types/order"
@@ -84,16 +89,40 @@ export const kitchenQueryParsers = {
     .withOptions({ shallow: false, scroll: false })
 }
 
-export function KitchenBoard({
-  board,
-  readyPage,
-  paymentTiming,
-  organizationId
-}: {
+export type KitchenSnapshot = {
   board: KitchenBoardData
   readyPage: KitchenReadyPage | null
   paymentTiming: PaymentTiming
+}
+
+export function KitchenBoard({
+  snapshot,
+  organizationId
+}: {
+  snapshot: OrderSnapshotResult<KitchenSnapshot>
   organizationId: string
+}) {
+  const { data, hasError } = useOrderSnapshot(snapshot)
+  if (!data) return <OrderSnapshotUnavailable />
+
+  return (
+    <KitchenBoardContent
+      {...data}
+      organizationId={organizationId}
+      hasSnapshotError={hasError}
+    />
+  )
+}
+
+function KitchenBoardContent({
+  board,
+  readyPage,
+  paymentTiming,
+  organizationId,
+  hasSnapshotError
+}: KitchenSnapshot & {
+  organizationId: string
+  hasSnapshotError: boolean
 }) {
   const [query, setQuery] = useQueryStates(kitchenQueryParsers)
   const [rows, setRows] = useAtom(kitchenRowsAtom)
@@ -102,7 +131,8 @@ export function KitchenBoard({
   const knownNoticeIds = useRef<Set<string> | null>(null)
   const live = useLiveRefresh(
     readyPage?.serverTime ?? board.serverTime,
-    organizationId
+    organizationId,
+    hasSnapshotError
   )
 
   useEffect(() => {

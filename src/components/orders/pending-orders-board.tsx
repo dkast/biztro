@@ -10,6 +10,10 @@ import { TextMorph } from "torph/react"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { KitchenTicket } from "@/components/kitchen/kitchen-ticket"
 import { LiveStatus } from "@/components/orders/live-status"
+import {
+  OrderSnapshotUnavailable,
+  useOrderSnapshot
+} from "@/components/orders/order-snapshot"
 import { useLiveRefresh } from "@/components/orders/use-live-refresh"
 import { SaleCheckoutDialog } from "@/components/sales/sale-checkout-dialog"
 import { Button } from "@/components/ui/button"
@@ -36,28 +40,53 @@ import { formatOrderNumber } from "@/lib/orders"
 import type { CustomerOption } from "@/lib/types/customers"
 import {
   orderCancelReasonMaxLength,
+  type OrderSnapshotResult,
   type PaymentTiming,
   type PendingOrder,
   type PendingOrdersData
 } from "@/lib/types/order"
 import type { PaymentMethod } from "@/lib/types/payments"
 
-export function PendingOrdersBoard({
-  data,
-  customers,
-  acceptedMethods,
-  creditEnabled,
-  paymentTiming,
-  organizationId
-}: {
+export type PendingOrdersSnapshot = {
   data: PendingOrdersData
   customers: CustomerOption[]
   acceptedMethods: PaymentMethod[]
   creditEnabled: boolean
   paymentTiming: PaymentTiming
+}
+
+export function PendingOrdersBoard({
+  snapshot,
+  organizationId
+}: {
+  snapshot: OrderSnapshotResult<PendingOrdersSnapshot>
   organizationId: string
 }) {
-  const live = useLiveRefresh(data.serverTime, organizationId)
+  const { data, hasError } = useOrderSnapshot(snapshot)
+  if (!data) return <OrderSnapshotUnavailable />
+
+  return (
+    <PendingOrdersBoardContent
+      {...data}
+      organizationId={organizationId}
+      hasSnapshotError={hasError}
+    />
+  )
+}
+
+function PendingOrdersBoardContent({
+  data,
+  customers,
+  acceptedMethods,
+  creditEnabled,
+  paymentTiming,
+  organizationId,
+  hasSnapshotError
+}: PendingOrdersSnapshot & {
+  organizationId: string
+  hasSnapshotError: boolean
+}) {
+  const live = useLiveRefresh(data.serverTime, organizationId, hasSnapshotError)
   const [checkoutOrder, setCheckoutOrder] = useState<PendingOrder | null>(null)
   const [cancelTarget, setCancelTarget] = useState<PendingOrder | null>(null)
 
@@ -76,9 +105,11 @@ export function PendingOrdersBoard({
           Por cobrar
         </PageSubtitle.Title>
         <PageSubtitle.Description>
-          {data.orders.length === 1
+          {data.totalCount === 1
             ? "1 orden sin cobrar"
-            : `${data.orders.length} órdenes sin cobrar`}
+            : `${data.totalCount} órdenes sin cobrar`}
+          {data.totalCount > data.orders.length &&
+            ` · mostrando ${data.orders.length}, listas primero`}
         </PageSubtitle.Description>
         <PageSubtitle.Actions className="mt-0 md:ml-0">
           <LiveStatus

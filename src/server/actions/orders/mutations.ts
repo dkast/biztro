@@ -254,7 +254,7 @@ export const cancelOrder = authMemberActionClient
     const result = await prisma.$transaction(async tx => {
       const order = await tx.order.findFirst({
         where: { id: parsedInput.orderId, organizationId },
-        select: { status: true, kitchenStatus: true }
+        select: { status: true }
       })
 
       if (!order) return { failure: "La orden no existe" }
@@ -276,9 +276,8 @@ export const cancelOrder = authMemberActionClient
           cancelledAt,
           cancelReason: parsedInput.reason,
           cancelledByUserId: member.user.id,
-          // Delivered orders need no kitchen alert.
-          cancellationAcknowledgedAt:
-            order.kitchenStatus === "READY" ? cancelledAt : null
+          // READY means prepared, not delivered; kitchen must acknowledge it.
+          cancellationAcknowledgedAt: null
         }
       })
 

@@ -154,4 +154,8 @@ export type PendingOrder = OrderTicket & {
 export type PendingOrdersData = {
   serverTime: string
   orders: PendingOrder[]
+  totalCount: number
 }
+
+export type OrderSnapshotResult<T> =
+  { status: "success"; data: T } | { status: "error" }

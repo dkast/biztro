@@ -5,12 +5,16 @@ import { connection } from "next/server"
 import { KitchenBoard } from "@/components/kitchen/kitchen-board"
 import { OrderRealtimeProvider } from "@/components/orders/order-realtime-provider"
 import { SalesProBanner } from "@/components/sales/sales-pro-banner"
-import { getPaymentFeatureState } from "@/server/actions/payments/queries"
+import { getPaymentSettingsState } from "@/server/actions/payments/queries"
 import {
   getCurrentOrganization,
   isProMember
 } from "@/server/actions/user/queries"
-import { getKitchenBoard, getKitchenReadyOrders } from "@/server/sales/orders"
+import {
+  getKitchenBoard,
+  getKitchenReadyOrders,
+  loadOrderSnapshot
+} from "@/server/sales/orders"
 
 export const metadata: Metadata = {
   title: "Cocina"
@@ -39,16 +43,24 @@ export default async function KitchenPage(props: {
     10
   )
 
-  const [board, readyPage, paymentFeatureState] = await Promise.all([
-    getKitchenBoard(organization.id),
-    isReadyView
-      ? getKitchenReadyOrders(
-          organization.id,
-          Number.isFinite(readyPageParam) ? readyPageParam : 1
-        )
-      : Promise.resolve(null),
-    getPaymentFeatureState(organization.id)
-  ])
+  const snapshot = await loadOrderSnapshot("kitchen-snapshot", async () => {
+    const [board, readyPage, paymentSettings] = await Promise.all([
+      getKitchenBoard(organization.id),
+      isReadyView
+        ? getKitchenReadyOrders(
+            organization.id,
+            Number.isFinite(readyPageParam) ? readyPageParam : 1
+          )
+        : Promise.resolve(null),
+      getPaymentSettingsState(organization.id)
+    ])
+
+    return {
+      board,
+      readyPage,
+      paymentTiming: paymentSettings?.paymentTiming ?? "PAY_FIRST"
+    }
+  })
 
   return (
     <div
@@ -57,12 +69,7 @@ export default async function KitchenPage(props: {
     >
       {!isPro && <SalesProBanner />}
       <OrderRealtimeProvider key={organization.id}>
-        <KitchenBoard
-          board={board}
-          readyPage={readyPage}
-          paymentTiming={paymentFeatureState?.paymentTiming ?? "PAY_FIRST"}
-          organizationId={organization.id}
-        />
+        <KitchenBoard snapshot={snapshot} organizationId={organization.id} />
       </OrderRealtimeProvider>
     </div>
   )
