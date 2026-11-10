@@ -66,7 +66,7 @@ import { cn } from "@/lib/utils"
 
 const kitchenViews = ["activas", "listas"] as const
 const kitchenFilters = ["todas", "nuevas", "preparando"] as const
-const kitchenRows = ["2", "1"] as const
+type KitchenRows = "2" | "1"
 // Connected groups override item padding, so the touch-size padding needs the group variant.
 const kitchenToggleItemClass = "h-11 group-data-[spacing=0]/toggle-group:px-4"
 
@@ -270,7 +270,7 @@ function KitchenBoardContent({
               value={[rows]}
               onValueChange={([value]) => {
                 if (value) {
-                  setRows(value as (typeof kitchenRows)[number])
+                  setRows(value as KitchenRows)
                   void setQuery({ pagina: 1 })
                 }
               }}
