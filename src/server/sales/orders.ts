@@ -200,12 +200,6 @@ export async function getPendingOrders(
   }
 }
 
-export async function getOpenOrderCount(organizationId: string) {
-  if (!organizationId) return 0
-
-  return prisma.order.count({ where: { organizationId, status: "OPEN" } })
-}
-
 export async function cancelLinkedKitchenOrder(
   tx: Prisma.TransactionClient,
   {

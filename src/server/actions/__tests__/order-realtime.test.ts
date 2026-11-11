@@ -196,7 +196,7 @@ beforeEach(() => {
   publishOrderChange.mockResolvedValue(undefined)
   isProMember.mockResolvedValue(true)
   db.$transaction.mockImplementation(
-    async (run: (tx: typeof db) => Promise<unknown>) => run(db)
+    (run: (tx: typeof db) => Promise<unknown>) => run(db)
   )
   resolveCatalogItems.mockResolvedValue(catalog)
   db.order.findUnique.mockResolvedValue(null)

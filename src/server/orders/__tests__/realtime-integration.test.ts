@@ -12,7 +12,9 @@ const authContext = vi.hoisted(() => ({ organizationId: "" }))
 vi.mock("@/lib/auth", () => ({
   auth: {
     api: {
+      // skipcq: JS-0116 Mocks auth APIs that return promises.
       getSession: async () => ({ user: { id: "__validation_user" } }),
+      // skipcq: JS-0116 Mocks auth APIs that return promises.
       getActiveMember: async () => ({
         organizationId: authContext.organizationId
       })
@@ -49,7 +51,8 @@ it.runIf(process.env.RUN_UPSTASH_INTEGRATION === "1")(
     })
 
     async function readEvent(eventName: string) {
-      while (reader) {
+      if (!reader) throw new Error("Realtime reader is missing")
+      for (;;) {
         const result = await reader.read()
         if (result.done) throw new Error("Realtime stream closed early")
         const event = eventSchema.parse(
@@ -59,7 +62,6 @@ it.runIf(process.env.RUN_UPSTASH_INTEGRATION === "1")(
         )
         if (event.event === eventName || event.type === eventName) return event
       }
-      throw new Error("Realtime reader is missing")
     }
 
     try {

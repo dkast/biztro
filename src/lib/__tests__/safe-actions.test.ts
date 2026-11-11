@@ -26,6 +26,7 @@ vi.mock("@/server/actions/user/queries", () => ({
 describe("safe action server errors", () => {
   it("returns an explicit error instead of an empty success-shaped result", async () => {
     const error = new Error("Private database failure")
+    // skipcq: JS-0116 Safe action handlers must be async; this one only rejects.
     const action = actionClient.action(async () => {
       throw error
     })
