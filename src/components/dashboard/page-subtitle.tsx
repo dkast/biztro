@@ -19,6 +19,10 @@ type PageSubtitleTextProps = {
   className?: string
 }
 
+type PageSubtitleTitleProps = PageSubtitleTextProps & {
+  as?: "h1" | "h2"
+}
+
 function getSlot<T>(children: React.ReactNode, slot: React.ComponentType<T>) {
   return React.Children.toArray(children).find(
     child => React.isValidElement(child) && child.type === slot
@@ -70,11 +74,15 @@ function PageSubtitleIcon({ icon: Icon, className }: PageSubtitleIconProps) {
   )
 }
 
-function PageSubtitleTitle({ children, className }: PageSubtitleTextProps) {
+function PageSubtitleTitle({
+  as: Heading = "h2",
+  children,
+  className
+}: PageSubtitleTitleProps) {
   return (
-    <h2 className={cn("text-base leading-5 font-semibold", className)}>
+    <Heading className={cn("text-base leading-5 font-semibold", className)}>
       {children}
-    </h2>
+    </Heading>
   )
 }
 

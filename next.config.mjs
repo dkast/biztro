@@ -18,6 +18,7 @@ const config = {
   reactCompiler: true,
   experimental: {
     agentUpgrade: "latest",
+    requestInsights: process.env.NODE_ENV === "development",
     turbopackFileSystemCacheForBuild: true,
     turbopackRustReactCompiler: true,
     serverActions: {

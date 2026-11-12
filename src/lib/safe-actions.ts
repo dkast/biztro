@@ -12,6 +12,7 @@ export const actionClient = createSafeActionClient({
     const log = new Logger()
     log.error("Error in safe action", e)
     log.flush()
+    return "No se pudo completar la operación. Inténtalo de nuevo."
   }
 })
 

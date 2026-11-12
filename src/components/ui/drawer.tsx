@@ -5,7 +5,42 @@ import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer"
 
 import { cn } from "@/lib/utils"
 
-const Drawer = DrawerPrimitive.Root
+// Radix popups (Select, AlertDialog, etc.) portal outside the drawer, so Base UI
+// doesn't see them as nested layers. A press that starts on a Radix Select
+// trigger and ends on its item dispatches `click` on <body>, and Escape inside a
+// Radix layer bubbles to the document; both would dismiss the drawer. Only
+// dismiss when the event originates in the drawer's own portal.
+function isDrawerOwnEvent(event: Event) {
+  const target = event.target
+  return (
+    target instanceof Element &&
+    Boolean(target.closest("[data-base-ui-portal]"))
+  )
+}
+
+function Drawer({
+  onOpenChange,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
+  return (
+    <DrawerPrimitive.Root
+      onOpenChange={(open, eventDetails) => {
+        if (
+          !open &&
+          (eventDetails.reason === "outside-press" ||
+            eventDetails.reason === "escape-key") &&
+          !isDrawerOwnEvent(eventDetails.event)
+        ) {
+          eventDetails.cancel()
+          return
+        }
+
+        onOpenChange?.(open, eventDetails)
+      }}
+      {...props}
+    />
+  )
+}
 
 const DrawerTrigger = DrawerPrimitive.Trigger
 
@@ -13,7 +48,7 @@ const DrawerPortal = DrawerPrimitive.Portal
 
 const DrawerClose = DrawerPrimitive.Close
 
-const DrawerNested = DrawerPrimitive.Root
+const DrawerNested = Drawer
 
 const DrawerOverlay = React.forwardRef<
   React.ComponentRef<typeof DrawerPrimitive.Backdrop>,

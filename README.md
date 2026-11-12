@@ -136,6 +136,40 @@ bun run dev
 - `bun run build:content` — build Contentlayer content
 - `bun run stripe:listen` — forward Stripe webhooks to the local auth webhook
 
+## Closing report performance
+
+Development builds enable Next.js Request Insights. After loading
+`/dashboard/sales/closing`, use the dev server's `/_next/mcp`
+`get_request_insights` tool to inspect request durations, server fetches and
+cache behavior. Compare an initial load, a date change and a repeat client
+navigation with DevTools **Disable cache** off. Hard reloads with
+`Cache-Control: no-cache` bypass development caches.
+
+Run the isolated, in-memory database regression benchmark with:
+
+```sh
+bun run test src/server/actions/sales/__tests__/closing-queries.test.ts --reporter=verbose --silent=false
+```
+
+It reports elapsed report time, SQL statement count and individual statement
+durations through Prisma query events, plus per-operation timings and top-level
+result row counts, without logging SQL parameters or using the application
+database. Summed statement durations are not wall-clock latency
+because operations can overlap. Local SQLite timings do not predict remote
+Turso latency.
+
+The populated fixture went from 19 to 13 SQL statements (10 to 8 top-level
+database operations). Complete report snapshots verify identical financial
+output. Counts vary with relation data; they exclude page authentication and
+layout queries. Selected and previous-day financial rows share two range reads.
+Credit history uses a parameterized existence query instead of transferring
+historical sales/allocations, and still includes credit later settled through
+receivable payments.
+
+Private report caching is unchanged: client router reuse follows `stale: 30`;
+it is not a persistent cross-request production server cache. Request Insights
+is development-only.
+
 ## Feature flags
 
 - `FLAGS_ENABLE_SUBSCRIPTIONS=1` enables subscription-related UI and flows.

@@ -3,6 +3,11 @@ import { z } from "zod/v4"
 import type { Currency } from "@/lib/currency"
 import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
 import {
+  orderContextSchema,
+  orderNotesMaxLength,
+  orderRequestIdSchema
+} from "@/lib/types/order-context"
+import {
   paymentAmountSchema,
   paymentMethodSchema,
   paymentMethodValues,
@@ -70,10 +75,16 @@ export const salesOrderTypeOptions = salesOrderTypeValues.map(value => ({
 export const saleCartItemSchema = z.object({
   menuItemId: z.string().min(1),
   variantId: z.string().optional(),
-  quantity: z.number().int().min(1)
+  quantity: z.number().int().min(1),
+  notes: z
+    .string()
+    .trim()
+    .max(orderNotesMaxLength, "Usa máximo 300 caracteres")
+    .optional()
 })
 
-export const completeSaleSchema = z.object({
+export const completeSaleSchema = orderContextSchema.extend({
+  requestId: orderRequestIdSchema.optional(),
   orderType: salesOrderTypeSchema.default("DINE_IN"),
   items: z.array(saleCartItemSchema).min(1, "Agrega al menos un producto"),
   customerId: z.string().min(1).optional(),

@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from "next/cache"
 
 import { calculateBalanceMinor, currencyToMinorUnits } from "@/lib/payments"
 import prisma from "@/lib/prisma"
+import type { PaymentTiming } from "@/lib/types/order"
 import {
   paymentMethodValues,
   type OrganizationPaymentSettings,
@@ -16,6 +17,7 @@ export type PaymentFeatureState = OrganizationPaymentSettings & {
   outstandingMinor: number
   customersWithBalance: number
   openSales: number
+  openOrders: number
 }
 
 function getAcceptedMethods(
@@ -32,16 +34,28 @@ function getAcceptedMethods(
   return paymentMethodValues.filter(method => settings[settingKeys[method]])
 }
 
-export async function getPaymentFeatureState(
+export type PaymentSettingsState = OrganizationPaymentSettings & {
+  acceptedMethods: PaymentMethod[]
+  openOrders: number
+}
+
+type CreditSummary = {
+  hasCreditHistory: boolean
+  outstandingMinor: number
+  customersWithBalance: number
+  openSales: number
+}
+
+export async function getPaymentSettingsState(
   organizationId: string
-): Promise<PaymentFeatureState | null> {
+): Promise<PaymentSettingsState | null> {
   "use cache: private"
   cacheLife({ stale: 30 })
 
   if (!organizationId) return null
 
   cacheTag(`payment-settings-${organizationId}`)
-  cacheTag(`receivables-${organizationId}`)
+  cacheTag(`orders-${organizationId}`)
 
   const organization = await prisma.organization.findUnique({
     where: { id: organizationId },
@@ -52,24 +66,8 @@ export async function getPaymentFeatureState(
       acceptsCodi: true,
       acceptsVoucher: true,
       creditEnabled: true,
-      sales: {
-        where: { status: "COMPLETED" },
-        select: {
-          customerId: true,
-          total: true,
-          paymentAllocations: {
-            select: {
-              amountMinor: true,
-              payment: {
-                select: {
-                  status: true,
-                  origin: true
-                }
-              }
-            }
-          }
-        }
-      }
+      paymentTiming: true,
+      _count: { select: { orders: { where: { status: "OPEN" } } } }
     }
   })
 
@@ -81,15 +79,50 @@ export async function getPaymentFeatureState(
     acceptsTransfer: organization.acceptsTransfer,
     acceptsCodi: organization.acceptsCodi,
     acceptsVoucher: organization.acceptsVoucher,
-    creditEnabled: organization.creditEnabled
+    creditEnabled: organization.creditEnabled,
+    paymentTiming: organization.paymentTiming as PaymentTiming
   }
+
+  return {
+    ...settings,
+    acceptedMethods: getAcceptedMethods(settings),
+    openOrders: organization._count.orders
+  }
+}
+
+async function getCreditSummary(
+  organizationId: string
+): Promise<CreditSummary> {
+  "use cache: private"
+  cacheLife({ stale: 30 })
+
+  cacheTag(`receivables-${organizationId}`)
+
+  const sales = await prisma.sale.findMany({
+    where: { organizationId, status: "COMPLETED" },
+    select: {
+      customerId: true,
+      total: true,
+      paymentAllocations: {
+        select: {
+          amountMinor: true,
+          payment: {
+            select: {
+              status: true,
+              origin: true
+            }
+          }
+        }
+      }
+    }
+  })
 
   let hasCreditHistory = false
   let outstandingMinor = 0
   let openSales = 0
   const customersWithBalance = new Set<string>()
 
-  for (const sale of organization.sales) {
+  for (const sale of sales) {
     const totalMinor = currencyToMinorUnits(sale.total)
     let paidAtSaleMinor = 0
     let paidMinor = 0
@@ -116,11 +149,24 @@ export async function getPaymentFeatureState(
   }
 
   return {
-    ...settings,
-    acceptedMethods: getAcceptedMethods(settings),
     hasCreditHistory,
     outstandingMinor,
     customersWithBalance: customersWithBalance.size,
     openSales
   }
+}
+
+export async function getPaymentFeatureState(
+  organizationId: string
+): Promise<PaymentFeatureState | null> {
+  if (!organizationId) return null
+
+  const [settings, creditSummary] = await Promise.all([
+    getPaymentSettingsState(organizationId),
+    getCreditSummary(organizationId)
+  ])
+
+  if (!settings) return null
+
+  return { ...settings, ...creditSummary }
 }
