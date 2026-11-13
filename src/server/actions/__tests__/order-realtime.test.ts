@@ -42,7 +42,6 @@ const mocks = vi.hoisted(() => {
     resolveCatalogItems: vi.fn(),
     recordSale: vi.fn(),
     createOrderRecord: vi.fn(),
-    cancelLinkedKitchenOrder: vi.fn(),
     db: {
       $transaction: vi.fn(),
       order: {
@@ -52,7 +51,7 @@ const mocks = vi.hoisted(() => {
         update: vi.fn()
       },
       organization: { findUnique: vi.fn(), update: vi.fn() },
-      sale: { findMany: vi.fn(), updateMany: vi.fn() },
+      sale: { findFirst: vi.fn(), findMany: vi.fn(), updateMany: vi.fn() },
       payment: { findMany: vi.fn(), updateMany: vi.fn() }
     }
   }
@@ -79,9 +78,6 @@ vi.mock("@/server/actions/user/queries", () => ({
 }))
 vi.mock("@/server/orders/realtime", () => ({
   publishOrderChange: mocks.publishOrderChange
-}))
-vi.mock("@/server/sales/orders", () => ({
-  cancelLinkedKitchenOrder: mocks.cancelLinkedKitchenOrder
 }))
 vi.mock("@/server/sales/record-sale", async importOriginal => ({
   ...(await importOriginal<typeof RecordSale>()),
@@ -124,8 +120,7 @@ const {
   captureException,
   resolveCatalogItems,
   recordSale,
-  createOrderRecord,
-  cancelLinkedKitchenOrder
+  createOrderRecord
 } = mocks
 
 const catalog = {
@@ -451,24 +446,31 @@ describe("voidSale realtime publication", () => {
   const voidInput = { saleId: "sale_1", reason: "WRONG_ITEMS" as const }
 
   beforeEach(() => {
+    db.sale.findFirst.mockResolvedValue({ id: "sale_1" })
+    db.order.findFirst.mockResolvedValue(null)
     db.payment.findMany.mockResolvedValue([
       { id: "payment_1", allocations: [{ saleId: "sale_1" }] }
     ])
     db.sale.updateMany.mockResolvedValue({ count: 1 })
   })
 
-  it("publishes cancellation after the sale and linked order are voided", async () => {
+  it("voids a standalone sale immediately and publishes after commit", async () => {
     const result = await voidSale(voidInput)
 
-    expect(result.data).toEqual({ success: { id: "sale_1" } })
-    expect(cancelLinkedKitchenOrder).toHaveBeenCalledWith(
-      db,
-      expect.objectContaining({ organizationId: ORG_ID, saleId: "sale_1" })
+    expect(result.data).toEqual({
+      success: { id: "sale_1", cancellationPending: false }
+    })
+    expect(db.sale.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: "VOID" })
+      })
     )
+    expect(db.payment.updateMany).toHaveBeenCalled()
+    expect(db.order.update).not.toHaveBeenCalled()
     expect(updateTag).toHaveBeenCalledWith("sale-sale_1")
     expectPublishedAfterInvalidation("cancellation")
     expect(lastOrder(publishOrderChange)).toBeGreaterThan(
-      lastOrder(cancelLinkedKitchenOrder)
+      lastOrder(db.sale.updateMany)
     )
   })
 
@@ -493,13 +495,14 @@ describe("voidSale realtime publication", () => {
     const result = await voidSale(voidInput)
 
     expect(result.data).toHaveProperty("failure")
-    expect(cancelLinkedKitchenOrder).not.toHaveBeenCalled()
+    expect(db.order.update).not.toHaveBeenCalled()
+    expect(db.payment.updateMany).not.toHaveBeenCalled()
     expect(publishOrderChange).not.toHaveBeenCalled()
     expect(updateTag).not.toHaveBeenCalled()
   })
 
   it("does not publish when the transaction rolls back", async () => {
-    cancelLinkedKitchenOrder.mockRejectedValue(new Error("db down"))
+    db.sale.updateMany.mockRejectedValue(new Error("db down"))
 
     await expect(voidSale(voidInput)).rejects.toThrow("db down")
 
@@ -513,6 +516,66 @@ describe("voidSale realtime publication", () => {
 
     expect(result.data).toHaveProperty("failure")
     expect(publishOrderChange).not.toHaveBeenCalled()
+  })
+
+  it.each(["NEW", "PREPARING", "READY"])(
+    "keeps a prepaid %s order void pending without changing sale or payments",
+    async kitchenStatus => {
+      db.order.findFirst.mockResolvedValue({
+        id: "order_1",
+        status: "SETTLED",
+        kitchenStatus
+      })
+
+      const result = await voidSale(voidInput)
+
+      expect(result.data).toEqual({
+        success: { id: "sale_1", cancellationPending: true }
+      })
+      expect(db.order.update).toHaveBeenCalledWith({
+        where: { id: "order_1" },
+        data: {
+          status: "CANCELLED",
+          cancelledAt: expect.any(Date),
+          cancelReason: "Productos incorrectos",
+          cancelledByUserId: USER_ID,
+          cancellationAcknowledgedAt: null
+        }
+      })
+      expect(db.sale.updateMany).not.toHaveBeenCalled()
+      expect(db.payment.updateMany).not.toHaveBeenCalled()
+      expectPublishedAfterInvalidation("cancellation")
+    }
+  )
+
+  it("does not turn a repeated pending request into an immediate void", async () => {
+    db.order.findFirst.mockResolvedValue({ id: "order_1", status: "CANCELLED" })
+
+    const result = await voidSale(voidInput)
+
+    expect(result.data).toEqual({
+      failure: {
+        reason: "La cancelación ya está pendiente de confirmación de cocina"
+      }
+    })
+    expect(db.sale.updateMany).not.toHaveBeenCalled()
+    expect(db.payment.updateMany).not.toHaveBeenCalled()
+    expect(db.order.update).not.toHaveBeenCalled()
+    expect(publishOrderChange).not.toHaveBeenCalled()
+  })
+
+  it("does not modify payments when the sale is missing or belongs to another org", async () => {
+    db.sale.findFirst.mockResolvedValue(null)
+
+    const result = await voidSale(voidInput)
+
+    expect(result.data).toHaveProperty("failure")
+    expect(db.sale.findFirst).toHaveBeenCalledWith({
+      where: { id: "sale_1", organizationId: ORG_ID, status: "COMPLETED" },
+      select: { id: true }
+    })
+    expect(db.payment.updateMany).not.toHaveBeenCalled()
+    expect(db.order.update).not.toHaveBeenCalled()
   })
 })
 
@@ -675,6 +738,7 @@ describe("kitchen order realtime publication", () => {
 
 describe("acknowledgeOrderCancellation realtime publication", () => {
   it("publishes acknowledged when a cancellation is newly acknowledged", async () => {
+    db.order.findFirst.mockResolvedValue({ saleId: null })
     db.order.updateMany.mockResolvedValue({ count: 1 })
 
     const result = await acknowledgeOrderCancellation({ orderId: "order_1" })
@@ -698,6 +762,7 @@ describe("acknowledgeOrderCancellation realtime publication", () => {
   })
 
   it("keeps succeeding without publishing when nothing changed", async () => {
+    db.order.findFirst.mockResolvedValue(null)
     db.order.updateMany.mockResolvedValue({ count: 0 })
 
     const result = await acknowledgeOrderCancellation({ orderId: "order_1" })
@@ -706,6 +771,76 @@ describe("acknowledgeOrderCancellation realtime publication", () => {
     expect(publishOrderChange).not.toHaveBeenCalled()
     expect(updateTag).not.toHaveBeenCalled()
     expect(refresh).toHaveBeenCalled()
+  })
+
+  it("finalizes a prepaid void using the request actor and reason before acknowledgment", async () => {
+    db.order.findFirst.mockResolvedValue({
+      saleId: "sale_1",
+      cancelledByUserId: "requesting_user",
+      cancelReason: "Cliente canceló"
+    })
+    db.sale.findFirst.mockResolvedValue({ id: "sale_1" })
+    db.sale.updateMany.mockResolvedValue({ count: 1 })
+    db.payment.findMany.mockResolvedValue([
+      { id: "payment_1", allocations: [{ saleId: "sale_1" }] }
+    ])
+    db.order.updateMany.mockResolvedValue({ count: 1 })
+
+    const result = await acknowledgeOrderCancellation({ orderId: "order_1" })
+
+    expect(result.data).toEqual({ success: { orderId: "order_1" } })
+    const audit = {
+      status: "VOID",
+      voidedAt: expect.any(Date),
+      voidedByUserId: "requesting_user",
+      voidReason: "Cliente canceló"
+    }
+    expect(db.sale.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ data: audit })
+    )
+    expect(db.payment.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({ data: audit })
+    )
+    expect(lastOrder(db.order.updateMany)).toBeGreaterThan(
+      lastOrder(db.payment.updateMany)
+    )
+    expect(updateTag).toHaveBeenCalledWith("sale-sale_1")
+    expect(updateTag).toHaveBeenCalledWith(`sales-${ORG_ID}`)
+    expect(updateTag).toHaveBeenCalledWith(`receivables-${ORG_ID}`)
+    expectPublishedAfterInvalidation("acknowledged")
+  })
+
+  it("keeps the alert pending when shared payments prevent finalization", async () => {
+    db.order.findFirst.mockResolvedValue({ saleId: "sale_1" })
+    db.sale.findFirst.mockResolvedValue({ id: "sale_1" })
+    db.payment.findMany.mockResolvedValue([
+      {
+        id: "payment_1",
+        allocations: [{ saleId: "sale_1" }, { saleId: "sale_2" }]
+      }
+    ])
+
+    const result = await acknowledgeOrderCancellation({ orderId: "order_1" })
+
+    expect(result.data).toHaveProperty("failure")
+    expect(db.sale.updateMany).not.toHaveBeenCalled()
+    expect(db.payment.updateMany).not.toHaveBeenCalled()
+    expect(db.order.updateMany).not.toHaveBeenCalled()
+    expect(publishOrderChange).not.toHaveBeenCalled()
+  })
+
+  it("does not acknowledge or publish when finalization fails", async () => {
+    db.order.findFirst.mockResolvedValue({ saleId: "sale_1" })
+    db.sale.findFirst.mockResolvedValue({ id: "sale_1" })
+    db.payment.findMany.mockResolvedValue([])
+    db.sale.updateMany.mockRejectedValue(new Error("db down"))
+
+    await expect(
+      acknowledgeOrderCancellation({ orderId: "order_1" })
+    ).rejects.toThrow("db down")
+
+    expect(db.order.updateMany).not.toHaveBeenCalled()
+    expect(publishOrderChange).not.toHaveBeenCalled()
   })
 })
 

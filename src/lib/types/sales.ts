@@ -343,6 +343,8 @@ export type SaleDetail = {
   voidedAt: string | null
   voidedBy: SalesActor | null
   voidReason: string | null
+  cancellationPending: boolean
+  cancellationReason: string | null
   items: Array<{
     id: string
     productName: string
