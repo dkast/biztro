@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Ban, LoaderCircle } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
@@ -40,6 +40,19 @@ import {
   type VoidReason
 } from "@/lib/types/sales"
 
+export function SaleCancellationRefresh() {
+  const router = useRouter()
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === "visible") router.refresh()
+    }, 5000)
+    return () => window.clearInterval(interval)
+  }, [router])
+
+  return null
+}
+
 export function SaleVoidDialog({ saleId }: { saleId: string }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
@@ -56,7 +69,11 @@ export function SaleVoidDialog({ saleId }: { saleId: string }) {
       }
 
       if (data?.success) {
-        toast.success("Venta anulada")
+        toast.success(
+          data.success.cancellationPending
+            ? "Cancelación solicitada, pendiente de cocina"
+            : "Venta anulada"
+        )
         setOpen(false)
         setReason("")
         setReasonDetail("")
@@ -103,7 +120,9 @@ export function SaleVoidDialog({ saleId }: { saleId: string }) {
           <AlertDialogTitle>¿Anular esta venta?</AlertDialogTitle>
           <AlertDialogDescription>
             La venta y sus productos se conservarán para auditoría, pero dejará
-            de contar en las ventas y métricas.
+            de contar en las ventas y métricas. Si la venta tiene un pedido en
+            cocina, se solicitará la cancelación y la venta y sus pagos se
+            anularán cuando cocina la confirme.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <FieldGroup>
