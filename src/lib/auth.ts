@@ -130,7 +130,7 @@ export const auth = betterAuth({
           if (email) {
             const enabled = await isWaitlistEnabled(email)
 
-            if (!enabled) {
+            if (!enabled && process.env.NODE_ENV === "production") {
               // Block creation by throwing a distinct error that our before
               // middleware will map to a redirect.
               throw new Error("AccessDenied")

@@ -136,6 +136,29 @@ bun run dev
 - `bun run build:content` — build Contentlayer content
 - `bun run stripe:listen` — forward Stripe webhooks to the local auth webhook
 
+## Better Auth account schema compatibility
+
+Better Auth 1.7.3 and newer no longer write the `issuer` account field introduced
+in 1.7.0-1.7.2. Migration `20261116210000_relax_legacy_account_issuer` makes that
+legacy column nullable, preserves its stored values and restores uniqueness on
+`provider` and `providerAccountId`. It stops before changing permanent tables if
+those identity keys collide; review conflicting accounts manually rather than
+deleting or merging them automatically.
+
+The [linking error reference](https://better-auth.com/docs/reference/errors/unable_to_link_account)
+lists both provider trust configuration and database failures. Adding Google to
+`account.accountLinking.trustedProviders` does not fix a required `issuer` column.
+See the [1.7 upgrade guide](https://better-auth.com/docs/guides/1-7-upgrade-guide#relax-the-constraint)
+for the legacy constraint fix.
+
+Back up the target database and stop auth writers before applying migrations.
+Verify the datasource in `prisma.config.ts` targets the same database used by
+the app (`TURSO_DATABASE_URL`); client generation alone does not migrate it.
+For a local SQLite database, explicitly set `LOCAL_DATABASE_URL` to its file URL
+before running `bun run prisma:migrate`. For remote Turso, apply the migration
+through your Turso deployment workflow; do not assume the CLI's local fallback
+targets the remote database. Then run `bunx prisma generate` and restart the app.
+
 ## Closing report performance
 
 Development builds enable Next.js Request Insights. After loading

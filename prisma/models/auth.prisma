@@ -4,7 +4,8 @@ model Account {
   id                       String    @id @default(cuid())
   userId                   String
   provider                 String
-  issuer                   String
+  // Legacy Better Auth 1.7.0-1.7.2 data; newer versions do not write this field.
+  issuer                   String?
   providerAccountId        String
   refresh_token            String?
   refresh_token_expires_in DateTime?
@@ -20,7 +21,7 @@ model Account {
   createdAt DateTime
   updatedAt DateTime
 
-  @@unique([issuer, providerAccountId])
+  @@unique([provider, providerAccountId])
   @@index([userId])
 }
 
