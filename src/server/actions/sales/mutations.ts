@@ -4,7 +4,6 @@ import { updateTag } from "next/cache"
 
 import { isProMember } from "@/server/actions/user/queries"
 import { publishOrderChange } from "@/server/orders/realtime"
-import { cancelLinkedKitchenOrder } from "@/server/sales/orders"
 import {
   createOrderRecord,
   isUniqueConstraintError,
@@ -12,6 +11,7 @@ import {
   resolveCatalogItems,
   withOrderNumberRetry
 } from "@/server/sales/record-sale"
+import { voidSaleRecord } from "@/server/sales/void-sale"
 import {
   checkSalePayments,
   mergeCartItems,
@@ -200,82 +200,16 @@ export const voidSale = authMemberActionClient
         ? parsedInput.reasonDetail!.trim()
         : voidReasonLabels[parsedInput.reason]
 
-    const result = await prisma.$transaction(async tx => {
-      const activePayments = await tx.payment.findMany({
-        where: {
-          organizationId,
-          status: "ACTIVE",
-          allocations: {
-            some: {
-              saleId: parsedInput.saleId
-            }
-          }
-        },
-        select: {
-          id: true,
-          allocations: {
-            select: {
-              saleId: true
-            }
-          }
-        }
+    const result = await prisma.$transaction(tx =>
+      voidSaleRecord(tx, {
+        organizationId,
+        saleId: parsedInput.saleId,
+        userId: member.user.id,
+        reason: voidReason,
+        voidedAt: new Date(),
+        waitForKitchen: true
       })
-
-      const hasSharedActivePayments = activePayments.some(payment =>
-        payment.allocations.some(
-          allocation => allocation.saleId !== parsedInput.saleId
-        )
-      )
-
-      if (hasSharedActivePayments) {
-        return { blocked: true, count: 0 }
-      }
-
-      if (activePayments.length > 0) {
-        await tx.payment.updateMany({
-          where: {
-            id: {
-              in: activePayments.map(payment => payment.id)
-            },
-            organizationId,
-            status: "ACTIVE"
-          },
-          data: {
-            status: "VOID",
-            voidedAt: new Date(),
-            voidedByUserId: member.user.id,
-            voidReason
-          }
-        })
-      }
-
-      const voidedAt = new Date()
-      const update = await tx.sale.updateMany({
-        where: {
-          id: parsedInput.saleId,
-          organizationId,
-          status: "COMPLETED"
-        },
-        data: {
-          status: "VOID",
-          voidedAt,
-          voidedByUserId: member.user.id,
-          voidReason
-        }
-      })
-
-      if (update.count === 1) {
-        await cancelLinkedKitchenOrder(tx, {
-          organizationId,
-          saleId: parsedInput.saleId,
-          userId: member.user.id,
-          reason: voidReason,
-          cancelledAt: voidedAt
-        })
-      }
-
-      return { blocked: false, count: update.count }
-    })
+    )
 
     if (result.blocked) {
       return {
@@ -289,8 +223,9 @@ export const voidSale = authMemberActionClient
     if (result.count !== 1) {
       return {
         failure: {
-          reason:
-            "La venta no existe, no pertenece a esta organización o ya fue anulada"
+          reason: result.cancellationPending
+            ? "La cancelación ya está pendiente de confirmación de cocina"
+            : "La venta no existe, no pertenece a esta organización o ya fue anulada"
         }
       }
     }
@@ -303,7 +238,8 @@ export const voidSale = authMemberActionClient
 
     return {
       success: {
-        id: parsedInput.saleId
+        id: parsedInput.saleId,
+        cancellationPending: result.cancellationPending
       }
     }
   })

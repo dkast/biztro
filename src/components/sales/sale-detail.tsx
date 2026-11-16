@@ -1,7 +1,10 @@
 import { Ban, CalendarClock, UserRound } from "lucide-react"
 
 import { PaymentVoidDialog } from "@/components/payments/payment-void-dialog"
-import { SaleVoidDialog } from "@/components/sales/sale-void-dialog"
+import {
+  SaleCancellationRefresh,
+  SaleVoidDialog
+} from "@/components/sales/sale-void-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -31,7 +34,16 @@ function formatDateTime(value: string | null) {
   }).format(new Date(value))
 }
 
-function SaleStatusBadge({ status }: { status: SaleDetail["status"] }) {
+function SaleStatusBadge({
+  status,
+  cancellationPending
+}: {
+  status: SaleDetail["status"]
+  cancellationPending: boolean
+}) {
+  if (cancellationPending)
+    return <Badge variant="yellow">Cancelación pendiente</Badge>
+
   return (
     <Badge variant={status === "VOID" ? "destructive" : "green"}>
       {saleStatusLabels[status]}
@@ -56,11 +68,14 @@ function SalePaymentStatusBadge({
 }
 
 export function SaleDetailView({ sale }: { sale: SaleDetail }) {
+  const canVoid = sale.status === "COMPLETED" && !sale.cancellationPending
+
   return (
     <div
       className="@container/sale-detail flex flex-col gap-5 pb-4
         @3xl/sale-detail:gap-6"
     >
+      {sale.cancellationPending && <SaleCancellationRefresh />}
       <div
         className="flex flex-col items-center justify-between gap-4 sm:flex-row"
       >
@@ -69,7 +84,10 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
             Venta #{sale.id.slice(-8).toUpperCase()}
           </p>
           <div className="flex flex-wrap items-center gap-2">
-            <SaleStatusBadge status={sale.status} />
+            <SaleStatusBadge
+              status={sale.status}
+              cancellationPending={sale.cancellationPending}
+            />
             <SalePaymentStatusBadge status={sale.paymentStatus} />
             <Badge
               variant={
@@ -81,7 +99,7 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
             </Badge>
           </div>
         </div>
-        {sale.status === "COMPLETED" && <SaleVoidDialog saleId={sale.id} />}
+        {canVoid && <SaleVoidDialog saleId={sale.id} />}
       </div>
 
       <div
@@ -196,6 +214,20 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
                   </p>
                 </div>
               </div>
+              {sale.cancellationPending && (
+                <div className="flex items-start gap-3">
+                  <Ban className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <p className="font-medium">Cancelación pendiente</p>
+                    <p className="text-muted-foreground">
+                      {sale.cancellationReason ?? "Sin motivo registrado"}
+                    </p>
+                    <p className="text-muted-foreground">
+                      Cocina debe confirmar para anular la venta y sus pagos.
+                    </p>
+                  </div>
+                </div>
+              )}
               {sale.status === "VOID" && (
                 <div className="flex items-start gap-3">
                   <Ban className="text-muted-foreground mt-0.5 size-4 shrink-0" />
@@ -263,13 +295,12 @@ export function SaleDetailView({ sale }: { sale: SaleDetail }) {
                               Aplicado a {payment.allocationCount} ventas
                             </Badge>
                           )}
-                          {payment.status === "ACTIVE" &&
-                            sale.status === "COMPLETED" && (
-                              <PaymentVoidDialog
-                                paymentId={payment.id}
-                                allocationCount={payment.allocationCount}
-                              />
-                            )}
+                          {payment.status === "ACTIVE" && canVoid && (
+                            <PaymentVoidDialog
+                              paymentId={payment.id}
+                              allocationCount={payment.allocationCount}
+                            />
+                          )}
                         </div>
                         {payment.reference && (
                           <p className="text-muted-foreground">

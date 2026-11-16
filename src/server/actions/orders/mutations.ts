@@ -12,6 +12,7 @@ import {
   resolveCatalogItems,
   withOrderNumberRetry
 } from "@/server/sales/record-sale"
+import { voidSaleRecord } from "@/server/sales/void-sale"
 import type { Currency } from "@/lib/currency"
 import {
   checkSalePayments,
@@ -227,18 +228,56 @@ export const acknowledgeOrderCancellation = authMemberActionClient
     const organizationId = member.organizationId
     if (!organizationId) return missingOrganization
 
-    const update = await prisma.order.updateMany({
-      where: {
-        id: parsedInput.orderId,
-        organizationId,
-        status: "CANCELLED",
-        cancellationAcknowledgedAt: null
-      },
-      data: { cancellationAcknowledgedAt: new Date() }
+    const result = await prisma.$transaction(async tx => {
+      const order = await tx.order.findFirst({
+        where: {
+          id: parsedInput.orderId,
+          organizationId,
+          status: "CANCELLED",
+          cancellationAcknowledgedAt: null
+        },
+        select: { saleId: true, cancelReason: true, cancelledByUserId: true }
+      })
+      if (!order) return { count: 0, saleId: null }
+
+      const acknowledgedAt = new Date()
+      if (order.saleId) {
+        const voidResult = await voidSaleRecord(tx, {
+          organizationId,
+          saleId: order.saleId,
+          userId: order.cancelledByUserId ?? member.user.id,
+          reason: order.cancelReason ?? "Orden cancelada",
+          voidedAt: acknowledgedAt
+        })
+        if (voidResult.blocked) {
+          return {
+            failure:
+              "Anula primero los pagos activos compartidos con otras ventas antes de confirmar la cancelación"
+          }
+        }
+      }
+
+      const update = await tx.order.updateMany({
+        where: {
+          id: parsedInput.orderId,
+          organizationId,
+          status: "CANCELLED",
+          cancellationAcknowledgedAt: null
+        },
+        data: { cancellationAcknowledgedAt: acknowledgedAt }
+      })
+      return { count: update.count, saleId: order.saleId }
     })
 
-    if (update.count > 0) {
+    if ("failure" in result) return { failure: { reason: result.failure } }
+
+    if (result.count > 0) {
       updateTag(`orders-${organizationId}`)
+      if (result.saleId) {
+        updateTag(`sales-${organizationId}`)
+        updateTag(`sale-${result.saleId}`)
+        updateTag(`receivables-${organizationId}`)
+      }
       await publishOrderChange(organizationId, "acknowledged")
     }
     refresh()

@@ -1360,6 +1360,13 @@ export async function getSaleDetail(
       voidedAt: true,
       voidedByUserId: true,
       voidReason: true,
+      order: {
+        select: {
+          status: true,
+          cancelReason: true,
+          cancellationAcknowledgedAt: true
+        }
+      },
       items: {
         orderBy: {
           createdAt: "asc"
@@ -1482,6 +1489,11 @@ export async function getSaleDetail(
         })
       : null,
     voidReason: sale.voidReason,
+    cancellationPending:
+      sale.status === "COMPLETED" &&
+      sale.order?.status === "CANCELLED" &&
+      !sale.order.cancellationAcknowledgedAt,
+    cancellationReason: sale.order?.cancelReason ?? null,
     items: sale.items.map(item => ({
       ...item,
       unitPrice: roundMoney(item.unitPrice),
