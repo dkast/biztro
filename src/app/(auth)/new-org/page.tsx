@@ -1,11 +1,14 @@
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
 
-import ConfettiOnMount from "@/components/confetti-on-mount"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { getDefaultLocation } from "@/server/actions/location/queries"
 import { getOrganizationOnboardingStatus } from "@/server/actions/organization/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
+import {
+  NewOrgReveal,
+  NewOrgRevealContent
+} from "@/app/(auth)/new-org/new-org-reveal"
 import OnboardingWizard from "@/app/(auth)/new-org/onboarding-wizard"
 import { getCurrentUser } from "@/lib/session"
 
@@ -110,72 +113,75 @@ export default async function NewOrgPage(props: {
     : "organization"
 
   return (
-    <div className="relative flex min-h-dvh items-center">
-      {/* Light mode gradient */}
-      <div
-        className="absolute inset-0 z-0 dark:hidden"
-        style={{
-          background: `
+    <NewOrgReveal enabled={!currentOrg}>
+      <div className="relative flex min-h-dvh items-center">
+        {/* Light mode gradient */}
+        <div
+          className="absolute inset-0 z-0 dark:hidden"
+          style={{
+            background: `
           radial-gradient(ellipse 120% 80% at 70% 20%, rgba(255, 20, 147, 0.06), transparent 20%),
           radial-gradient(ellipse 100% 60% at 30% 10%, rgba(0, 200, 220, 0.05), transparent 30%),
           radial-gradient(ellipse 90% 70% at 50% 0%, rgba(138, 43, 226, 0.07), transparent 35%),
           radial-gradient(ellipse 110% 50% at 80% 30%, rgba(255, 180, 0, 0.04), transparent 10%),
           transparent
         `
-        }}
-      />
-      {/* Dark mode gradient */}
-      <div
-        className="absolute inset-0 z-0 hidden dark:block"
-        style={{
-          background: `
+          }}
+        />
+        {/* Dark mode gradient */}
+        <div
+          className="absolute inset-0 z-0 hidden dark:block"
+          style={{
+            background: `
           radial-gradient(ellipse 120% 80% at 70% 20%, rgba(255, 20, 147, 0.15), transparent 20%),
           radial-gradient(ellipse 100% 60% at 30% 10%, rgba(0, 255, 255, 0.12), transparent 30%),
           radial-gradient(ellipse 90% 70% at 50% 0%, rgba(138, 43, 226, 0.18), transparent 35%),
           radial-gradient(ellipse 110% 50% at 80% 30%, rgba(255, 215, 0, 0.08), transparent 10%),
           transparent
         `
-        }}
-      />
-      {!currentOrg && <ConfettiOnMount />}
-      <div
-        className="z-10 mx-auto flex w-full max-w-5xl flex-col gap-20 px-4 py-8
-          sm:px-6"
-      >
-        <PageSubtitle className="w-full max-w-3xl">
-          <PageSubtitle.Title
-            className="font-display text-2xl font-semibold text-balance
-              sm:text-4xl"
-          >
-            Bienvenido a Biztro
-          </PageSubtitle.Title>
-          <PageSubtitle.Description className="mt-2 text-pretty sm:text-base">
-            Completa esta configuración paso a paso. Puedes omitir cualquier
-            parte y volver más tarde desde el dashboard.
-          </PageSubtitle.Description>
-        </PageSubtitle>
-
-        <OnboardingWizard
-          organization={
-            currentOrg
-              ? {
-                  id: currentOrg.id,
-                  name: currentOrg.name,
-                  slug: currentOrg.slug,
-                  logo: currentOrg.logo ?? null,
-                  banner: currentOrg.banner ?? null
-                }
-              : null
-          }
-          initialLocation={location}
-          initialStep={initialStep}
-          mediaReady={mediaReady}
-          locationReady={locationReady}
-          hoursReady={hoursReady}
-          menuItemsReady={menuItemsReady}
-          showOrganizationStep={!currentOrg}
+          }}
         />
+        <div
+          className="z-10 mx-auto flex w-full max-w-5xl flex-col gap-20 px-4
+            py-8 sm:px-6"
+        >
+          <PageSubtitle className="w-full max-w-3xl">
+            <PageSubtitle.Title
+              className="font-display text-2xl font-semibold text-balance
+                sm:text-4xl"
+            >
+              ¡Bienvenido a Biztro! 🎉
+            </PageSubtitle.Title>
+            <PageSubtitle.Description className="mt-2 text-pretty sm:text-base">
+              Completa esta configuración paso a paso. Puedes omitir cualquier
+              parte y volver más tarde desde el dashboard.
+            </PageSubtitle.Description>
+          </PageSubtitle>
+
+          <NewOrgRevealContent>
+            <OnboardingWizard
+              organization={
+                currentOrg
+                  ? {
+                      id: currentOrg.id,
+                      name: currentOrg.name,
+                      slug: currentOrg.slug,
+                      logo: currentOrg.logo ?? null,
+                      banner: currentOrg.banner ?? null
+                    }
+                  : null
+              }
+              initialLocation={location}
+              initialStep={initialStep}
+              mediaReady={mediaReady}
+              locationReady={locationReady}
+              hoursReady={hoursReady}
+              menuItemsReady={menuItemsReady}
+              showOrganizationStep={!currentOrg}
+            />
+          </NewOrgRevealContent>
+        </div>
       </div>
-    </div>
+    </NewOrgReveal>
   )
 }
