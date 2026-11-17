@@ -4,6 +4,7 @@ import { useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import { BorderBeam } from "border-beam"
+import { TransitionLink } from "glimm/next"
 import { AlertCircle, FileSpreadsheet, FileText, Loader } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
@@ -217,9 +218,11 @@ function validateRow(row: CSVRow): string[] {
 
 export default function MenuImportOptions({
   aiImportHref,
+  sweepAiImport = false,
   onCsvSuccess
 }: {
   aiImportHref: string
+  sweepAiImport?: boolean
   onCsvSuccess?: (createdCount: number) => void
 }) {
   const [errors, setErrors] = useState<ImportError[]>([])
@@ -349,7 +352,7 @@ export default function MenuImportOptions({
           <p className="text-sm font-medium">Importando productos...</p>
         </div>
       )}
-      <BorderBeam size="pulse-inner" colorVariant="colorful" strength={0.3}>
+      <BorderBeam size="pulse-inner" colorVariant="colorful" strength={0.7}>
         <div
           className="bg-background relative rounded-2xl border p-4 ring-1
             ring-black/10 dark:ring-white/15"
@@ -370,9 +373,19 @@ export default function MenuImportOptions({
             </div>
           </div>
           <Button asChild variant="outline" disabled={isPending}>
-            <Link href={aiImportHref} prefetch={false}>
-              Importar menú con IA
-            </Link>
+            {sweepAiImport ? (
+              <TransitionLink
+                href={aiImportHref}
+                prefetch={false}
+                sweep={{ direction: "ltr" }}
+              >
+                Importar menú con IA
+              </TransitionLink>
+            ) : (
+              <Link href={aiImportHref} prefetch={false}>
+                Importar menú con IA
+              </Link>
+            )}
           </Button>
         </div>
       </BorderBeam>

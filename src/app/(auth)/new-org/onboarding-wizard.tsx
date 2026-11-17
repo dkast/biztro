@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { type Location } from "@/generated/prisma-client/client"
 import { type Body, type Meta, type UploadResult } from "@uppy/core"
+import { useTransitionRouter } from "glimm/next"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -173,6 +174,7 @@ export default function OnboardingWizard({
   showOrganizationStep?: boolean
 }) {
   const router = useRouter()
+  const transitionRouter = useTransitionRouter()
   const stepOrder = showOrganizationStep
     ? CREATION_STEP_ORDER
     : DEFAULT_STEP_ORDER
@@ -213,7 +215,7 @@ export default function OnboardingWizard({
   }
 
   const goToDashboard = () => {
-    router.push("/dashboard")
+    transitionRouter.push("/dashboard", { direction: "ltr" })
   }
 
   const handleOrganizationCreated = (
@@ -544,6 +546,7 @@ export default function OnboardingWizard({
             >
               <MenuImportOptions
                 aiImportHref={menuImportHref}
+                sweepAiImport
                 onCsvSuccess={handleMenuImported}
               />
               <div
