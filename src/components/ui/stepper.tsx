@@ -313,12 +313,17 @@ function Stepper(props: StepperProps) {
       hasValidation: () => !!propsRef.current.onValidate,
       addStep: (value, completed, disabled) => {
         const newStep: StepState = { value, completed, disabled }
-        stateRef.current.steps.set(value, newStep)
+        // Copy on write: consumers memoize on the Map identity (React Compiler)
+        const steps = new Map(stateRef.current.steps)
+        steps.set(value, newStep)
+        stateRef.current.steps = steps
         propsRef.current.onValueAdd?.(value)
         notify()
       },
       removeStep: value => {
-        stateRef.current.steps.delete(value)
+        const steps = new Map(stateRef.current.steps)
+        steps.delete(value)
+        stateRef.current.steps = steps
         propsRef.current.onValueRemove?.(value)
         notify()
       },
@@ -326,7 +331,9 @@ function Stepper(props: StepperProps) {
         const step = stateRef.current.steps.get(value)
         if (step) {
           const updatedStep: StepState = { ...step, completed, disabled }
-          stateRef.current.steps.set(value, updatedStep)
+          const steps = new Map(stateRef.current.steps)
+          steps.set(value, updatedStep)
+          stateRef.current.steps = steps
 
           if (completed !== step.completed) {
             propsRef.current.onValueComplete?.(value, completed)
