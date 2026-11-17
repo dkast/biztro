@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
 
 import ConfettiOnMount from "@/components/confetti-on-mount"
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -67,6 +68,8 @@ export const metadata = {
 export default async function NewOrgPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  await connection()
+
   const user = await getCurrentUser()
 
   if (!user) {
