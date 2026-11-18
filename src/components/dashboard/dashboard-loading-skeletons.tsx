@@ -227,10 +227,7 @@ function MenuImportLoadingSkeleton() {
   return (
     <div className="mx-auto w-full min-w-0 grow px-4 sm:px-6">
       <PageSubtitleSkeleton descriptionWidth="w-96" titleWidth="w-52" />
-      <div className="mt-10 flex flex-col gap-6">
-        <Skeleton className="h-48 rounded-lg" />
-        <DashboardFormSkeleton fieldCount={3} />
-      </div>
+      <Skeleton className="mt-6 h-120 rounded-md" />
     </div>
   )
 }

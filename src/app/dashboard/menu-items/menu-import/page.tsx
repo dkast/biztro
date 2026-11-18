@@ -48,7 +48,7 @@ export default async function PdfImportPage(props: {
           con IA
         </PageSubtitle.Description>
       </PageSubtitle>
-      <div className="mt-10">
+      <div className="mt-6">
         <MenuImportForm
           simulateEnabled={simulateEnabled}
           isPro={isPro}
