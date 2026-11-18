@@ -178,6 +178,10 @@ export default function MenuImportForm({
   // True from the file pick until the reveal sweep has left the grid; the
   // action bar waits for it so it arrives after the data.
   const [isRevealing, setIsRevealing] = useState(false)
+  // glimm's page effect keeps the stage inside a WebGL canvas, and a resize
+  // while idle leaves its texture incomplete (renders black). Turn it on only
+  // for the reveal sweep; the card exit delay gives the canvas time to mount.
+  const [isSweeping, setIsSweeping] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [simulateScenario, setSimulateScenario] =
     useState<SimulateScenario>("default")
@@ -342,13 +346,18 @@ export default function MenuImportForm({
       )
       setIsParsing(false)
     }
-    const onLeave = () => setIsRevealing(false)
+    const onLeave = () => {
+      setIsRevealing(false)
+      setIsSweeping(false)
+    }
 
     const scope = scopeRef.current
     if (!scope) {
       work().then(change, onFail).finally(onLeave)
       return
     }
+
+    setIsSweeping(true)
 
     // Let the card finish leaving first: the warp starts as soon as play()
     // runs and would otherwise distort it too.
@@ -741,8 +750,9 @@ export default function MenuImportForm({
             direction="ttb"
             curve={0.12}
             sweepMs={1600}
-            // Band only: the editable grid must stay live DOM, not a canvas.
-            pageEffect={true}
+            // Only during the sweep: the editable grid must stay live DOM, not
+            // a canvas, and an idle resize would render the canvas black.
+            pageEffect={isSweeping}
             style={{ position: "absolute", inset: 0 }}
           >
             {/* Opaque base: the sweep freezes this subtree and layers it over
