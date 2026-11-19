@@ -119,9 +119,8 @@ function MenuCard({ menu, isActive }: { menu: Menu; isActive: boolean }) {
       <motion.div
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="grid h-[250px] grid-rows-5 overflow-hidden rounded-lg
-          shadow-md hover:shadow-lg dark:border dark:border-gray-800
-          dark:bg-gray-800"
+        className="smooth-shadow-ring-sm hover:smooth-shadow-ring-md grid
+          h-[250px] grid-rows-5 overflow-hidden rounded-lg dark:bg-gray-800"
       >
         <Link
           href={`/menu-editor/${menu.id}`}

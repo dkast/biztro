@@ -355,8 +355,8 @@ export default function MenuImportOptions({
       )}
       <BorderBeam size="pulse-inner" colorVariant="colorful" strength={0.7}>
         <div
-          className="bg-background relative rounded-2xl border p-4 ring-1
-            ring-black/10 dark:ring-white/15"
+          className="dark:bg-background bg-accent relative rounded-2xl border
+            p-4 ring-1 ring-black/10 dark:ring-white/15"
         >
           <div className="mb-3 flex items-start gap-3">
             <FileText className="text-muted-foreground mt-1.5 size-4 shrink-0" />
@@ -391,10 +391,7 @@ export default function MenuImportOptions({
         </div>
       </BorderBeam>
 
-      <div
-        className="border-border/60 bg-background rounded-2xl border p-5
-          shadow-sm"
-      >
+      <div className="border-border bg-background rounded-2xl border p-5">
         <div className="mb-3 flex items-start gap-3">
           <FileSpreadsheet className="text-muted-foreground size-4 shrink-0" />
           <div>
