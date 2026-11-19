@@ -222,7 +222,7 @@ export function QuickSaleScreen({
 
     setIsSoundMuted(isMuted)
     setEnabled(!isMuted)
-    setTheme("press")
+    setTheme("default")
     bind()
   }, [])
 
@@ -617,8 +617,8 @@ export function QuickSaleScreen({
                   size="sm"
                   onClick={clearCart}
                   disabled={cart.length === 0}
-                  data-cuelume-press
-                  // data-cuelume-release
+                  data-cuelume-tap
+                  data-cuelume-emphasis="subtle"
                 >
                   <Trash2 data-icon="inline-start" />
                   Limpiar
@@ -681,7 +681,7 @@ export function QuickSaleScreen({
                 className="h-12 text-base font-semibold"
                 disabled={cart.length === 0 || sendOrder.isPending}
                 onClick={() => guardSaleCompletion(handleCheckout)}
-                data-cuelume-press
+                data-cuelume-tap
                 // data-cuelume-release
               >
                 {isPayOnDelivery && sendOrder.isPending ? (
@@ -923,8 +923,8 @@ function ProductCard({
       type="button"
       whileTap={{ scale: 0.98 }}
       onClick={() => onSelect(product)}
-      data-cuelume-press
-      // data-cuelume-release
+      data-cuelume-select
+      data-cuelume-emphasis="subtle"
       className={cn(
         "group block w-full cursor-pointer text-left focus-visible:outline-none"
       )}
@@ -1235,7 +1235,8 @@ function MobileSaleCart({
                 onClick={onClear}
                 disabled={!hasItems}
                 aria-label="Limpiar venta"
-                data-cuelume-press
+                data-cuelume-tap
+                data-cuelume-emphasis="subtle"
               >
                 <Trash2 />
               </Button>

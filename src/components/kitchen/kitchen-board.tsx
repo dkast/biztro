@@ -148,7 +148,7 @@ function KitchenBoardContent({
   }, [isSoundMuted])
 
   useEffect(() => {
-    setTheme("press")
+    setTheme("default")
     return bind()
   }, [])
 
