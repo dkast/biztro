@@ -10,11 +10,11 @@ import {
 } from "react"
 import toast from "react-hot-toast"
 import { bind, play, setEnabled, setTheme } from "cuelume"
+import { Ring } from "loading-dev"
 import {
   ChefHat,
   ChevronDown,
   ChevronUp,
-  LoaderCircle,
   Search,
   ShoppingBag,
   SquarePen,
@@ -498,11 +498,7 @@ export function QuickSaleScreen({
       ? "Enviando..."
       : "Enviar a cocina"
     : "Completar venta"
-  const SubmitIcon = isPayOnDelivery
-    ? sendOrder.isPending
-      ? LoaderCircle
-      : ChefHat
-    : ShoppingBag
+  const SubmitIcon = isPayOnDelivery ? ChefHat : ShoppingBag
 
   const clearCart = () => {
     setCart([])
@@ -688,10 +684,14 @@ export function QuickSaleScreen({
                 data-cuelume-press
                 // data-cuelume-release
               >
-                <SubmitIcon
-                  data-icon="inline-start"
-                  className={cn(sendOrder.isPending && "animate-spin")}
-                />
+                {isPayOnDelivery && sendOrder.isPending ? (
+                  <Ring size={16} />
+                ) : (
+                  <SubmitIcon
+                    data-icon="inline-start"
+                    className={cn(sendOrder.isPending && "animate-spin")}
+                  />
+                )}
                 <TextMorph>{submitLabel}</TextMorph>
               </Button>
             </CardContent>
@@ -1201,7 +1201,7 @@ function MobileSaleCart({
           data-cuelume-press
         >
           {isSubmitting ? (
-            <LoaderCircle className="size-5 animate-spin" />
+            <Ring size={20} />
           ) : isPayOnDelivery ? (
             <ChefHat className="size-5" />
           ) : (
@@ -1305,10 +1305,7 @@ function MobileSaleCart({
               data-cuelume-press
             >
               {isSubmitting ? (
-                <LoaderCircle
-                  data-icon="inline-start"
-                  className="animate-spin"
-                />
+                <Ring size={16} />
               ) : isPayOnDelivery ? (
                 <ChefHat data-icon="inline-start" />
               ) : (

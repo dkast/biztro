@@ -3,14 +3,8 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
-import {
-  Crown,
-  Languages,
-  Loader,
-  PlusCircle,
-  Sparkles,
-  Trash2
-} from "lucide-react"
+import { Ring } from "loading-dev"
+import { Crown, Languages, PlusCircle, Sparkles, Trash2 } from "lucide-react"
 import { useOptimisticAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -309,7 +303,7 @@ export default function TranslationsManager({
                     disabled={!selectedLocale || isTranslating}
                   >
                     {isTranslating ? (
-                      <Loader className="size-4 animate-spin" />
+                      <Ring size={16} />
                     ) : (
                       <Sparkles className="size-4 fill-current" />
                     )}
@@ -411,7 +405,7 @@ export default function TranslationsManager({
                       }}
                     >
                       {translatingLocale === translation.locale ? (
-                        <Loader className="size-4 animate-spin" />
+                        <Ring size={16} />
                       ) : (
                         <Sparkles className="size-4 fill-current" />
                       )}
@@ -428,7 +422,7 @@ export default function TranslationsManager({
                       aria-label={`Eliminar traducción al ${localeInfo?.label ?? translation.locale}`}
                     >
                       {deletingLocale === translation.locale ? (
-                        <Loader className="size-4 animate-spin" />
+                        <Ring size={16} />
                       ) : (
                         <Trash2 className="size-4" />
                       )}

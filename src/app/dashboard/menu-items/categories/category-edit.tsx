@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader } from "lucide-react"
+import { Ring } from "loading-dev"
 import { useAction } from "next-safe-action/hooks"
 import { usePostHog } from "posthog-js/react"
 import { TextMorph } from "torph/react"
@@ -244,7 +244,7 @@ function CategoryEditForm({
         className="w-full"
       >
         {(statusInsert === "executing" || statusUpdate === "executing") && (
-          <Loader className="mr-2 h-4 w-4 animate-spin" />
+          <Ring className="mr-2" size={16} />
         )}
         <TextMorph>
           {statusInsert === "executing" || statusUpdate === "executing"

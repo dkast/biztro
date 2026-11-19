@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { Ban, LoaderCircle } from "lucide-react"
+import { Ring } from "loading-dev"
+import { Ban } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 
@@ -180,9 +181,7 @@ export function SaleVoidDialog({ saleId }: { saleId: string }) {
             onClick={handleVoid}
             disabled={isPending}
           >
-            {isPending && (
-              <LoaderCircle data-icon="inline-start" className="animate-spin" />
-            )}
+            {isPending && <Ring size={16} />}
             Anular venta
           </Button>
         </AlertDialogFooter>

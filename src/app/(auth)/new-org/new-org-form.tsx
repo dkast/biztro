@@ -6,7 +6,7 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import slugify from "@sindresorhus/slugify"
 import { useQueryClient } from "@tanstack/react-query"
-import { Loader } from "lucide-react"
+import { Ring } from "loading-dev"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { type z } from "zod/v4"
@@ -195,7 +195,7 @@ export default function NewOrgForm({
       className={withCard ? "w-full" : undefined}
     >
       {status === "executing" ? (
-        <Loader className="mr-2 h-4 w-4 animate-spin" />
+        <Ring className="mr-2" size={16} />
       ) : (
         (submitLabel ?? "Continuar")
       )}

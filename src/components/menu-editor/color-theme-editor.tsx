@@ -9,14 +9,8 @@ import {
   type SwatchPresetColor
 } from "@uiw/react-color"
 import { extractColors } from "extract-colors/lib/worker-wrapper"
-import {
-  Contrast,
-  FilePlus,
-  Loader,
-  Save,
-  Trash2,
-  WandSparkles
-} from "lucide-react"
+import { Ring } from "loading-dev"
+import { Contrast, FilePlus, Save, Trash2, WandSparkles } from "lucide-react"
 import { nanoid } from "nanoid"
 // import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { useAction } from "next-safe-action/hooks"
@@ -536,7 +530,7 @@ export function ColorThemeEditor({
             disabled={isExtracting}
           >
             {isExtracting ? (
-              <Loader className="mr-2 size-4 animate-spin" />
+              <Ring className="mr-2" size={16} />
             ) : (
               <WandSparkles className="mr-2 size-4" />
             )}
@@ -579,7 +573,7 @@ export function ColorThemeEditor({
               onClick={handleUpdateTheme}
             >
               {status === "executing" || updateStatus === "executing" ? (
-                <Loader className="mr-2 size-4 animate-spin" />
+                <Ring className="mr-2" size={16} />
               ) : (
                 <Save className="mr-2 size-4" />
               )}
@@ -600,7 +594,7 @@ export function ColorThemeEditor({
               }}
             >
               {deleteStatus === "executing" ? (
-                <Loader className="mr-2 size-4 animate-spin" />
+                <Ring className="mr-2" size={16} />
               ) : (
                 <Trash2 className="mr-2 size-4" />
               )}

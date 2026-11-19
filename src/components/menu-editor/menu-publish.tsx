@@ -15,6 +15,7 @@ import {
 import { differenceInMinutes, formatDate, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
 import { useAtomValue, useSetAtom } from "jotai"
+import { Ring } from "loading-dev"
 import {
   Check,
   CircleHelp,
@@ -22,7 +23,6 @@ import {
   ExternalLink,
   Globe,
   GlobeIcon,
-  Loader,
   Play,
   QrCodeIcon
 } from "lucide-react"
@@ -378,7 +378,7 @@ export default function MenuPublish({
           onClick={() => handleUpdateSerialData()}
         >
           {statusSerialData === "executing" ? (
-            <Loader className="size-4 animate-spin" />
+            <Ring size={16} />
           ) : (
             <Check className="size-4" />
           )}
@@ -483,9 +483,7 @@ export default function MenuPublish({
                   className="mt-2 w-full"
                   onClick={() => handleUpdateStatus(MenuStatus.PUBLISHED)}
                 >
-                  {status === "executing" && (
-                    <Loader className="size-4 animate-spin" />
-                  )}
+                  {status === "executing" && <Ring size={16} />}
                   <TextMorph>
                     {status === "executing" ? "Publicando..." : "Publicar"}
                   </TextMorph>
@@ -556,9 +554,7 @@ export default function MenuPublish({
                       handleUpdateStatus(menu.status as MenuStatus)
                     }
                   >
-                    {status === "executing" && (
-                      <Loader className="size-4 animate-spin" />
-                    )}
+                    {status === "executing" && <Ring size={16} />}
                     <TextMorph>
                       {status === "executing"
                         ? "Publicando..."
@@ -573,9 +569,7 @@ export default function MenuPublish({
                       disabled={statusRevert === "executing"}
                       onClick={handleRevertToPublished}
                     >
-                      {statusRevert === "executing" && (
-                        <Loader className="size-4 animate-spin" />
-                      )}
+                      {statusRevert === "executing" && <Ring size={16} />}
                       <TextMorph>
                         {statusRevert === "executing"
                           ? "Revirtiendo..."
@@ -769,7 +763,7 @@ function QrCodeEditor({
               <div className="grid gap-3">
                 <Label htmlFor="logo">Mostrar Logo</Label>
                 {isLoading ? (
-                  <Loader className="size-4 animate-spin" />
+                  <Ring size={16} />
                 ) : (
                   <Switch
                     checked={showLogo}

@@ -5,7 +5,8 @@ import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as Sentry from "@sentry/nextjs"
-import { Loader, UserPlus } from "lucide-react"
+import { Ring } from "loading-dev"
+import { UserPlus } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { TextMorph } from "torph/react"
 import { z } from "zod/v4"
@@ -110,7 +111,7 @@ export default function MemberInvite({ isPro }: { isPro: boolean }) {
                 <div className="flex justify-end">
                   <Button type="submit" disabled={status === "executing"}>
                     {status === "executing" && (
-                      <Loader className="mr-2 size-4 animate-spin" />
+                      <Ring className="mr-2" size={16} />
                     )}
                     <TextMorph>
                       {status === "executing"

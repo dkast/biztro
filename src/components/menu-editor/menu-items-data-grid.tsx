@@ -3,7 +3,8 @@
 import * as React from "react"
 import { type CellSelectOption } from "@/types/data-grid"
 import * as Sentry from "@sentry/nextjs"
-import { Loader, ShoppingBag } from "lucide-react"
+import { Ring } from "loading-dev"
+import { ShoppingBag } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
 
@@ -607,7 +608,7 @@ export function MenuItemsDataGrid({
                   className="text-muted-foreground flex items-center gap-1
                     text-xs"
                 >
-                  <Loader className="size-4 animate-spin" />
+                  <Ring size={16} />
                   Guardando...
                 </motion.span>
               )}

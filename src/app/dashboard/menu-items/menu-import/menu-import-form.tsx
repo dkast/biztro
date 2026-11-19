@@ -12,11 +12,11 @@ import toast from "react-hot-toast"
 import { type CellSelectOption } from "@/types/data-grid"
 import * as Sentry from "@sentry/nextjs"
 import { GlimmScope, type GlimmScopeHandle } from "glimm/next"
+import { Ring } from "loading-dev"
 import {
   AlertCircle,
   CircleAlert,
   FileText,
-  Loader,
   Lock,
   SparklesIcon,
   Trash2,
@@ -808,9 +808,9 @@ export default function MenuImportForm({
             className="animate-in fade-in flex items-center gap-3 duration-200
               motion-reduce:animate-none"
           >
-            <Loader
-              className="text-primary size-5 shrink-0 animate-spin
-                motion-reduce:animate-none"
+            <Ring
+              className="text-primary shrink-0 motion-reduce:animate-none"
+              size={20}
             />
             <div className="flex min-w-0 flex-col">
               <p className="text-sm font-medium">Extrayendo productos...</p>
@@ -903,7 +903,7 @@ export default function MenuImportForm({
                       disabled={isMutating}
                     >
                       {isCreatingMenu ? (
-                        <Loader className="size-4 animate-spin" />
+                        <Ring size={16} />
                       ) : isPro ? (
                         <SparklesIcon className="size-4" />
                       ) : (
@@ -923,7 +923,7 @@ export default function MenuImportForm({
                   </TooltipContent>
                 </Tooltip>
                 <Button onClick={handleSave} disabled={isMutating}>
-                  {isSaving && <Loader className="size-4 animate-spin" />}
+                  {isSaving && <Ring size={16} />}
                   <TextMorph>
                     {isSaving
                       ? "Guardando..."

@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import toast from "react-hot-toast"
-import { Ban, HandCoins, LoaderCircle, ReceiptText } from "lucide-react"
+import { Ring } from "loading-dev"
+import { Ban, HandCoins, ReceiptText } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import { TextMorph } from "torph/react"
@@ -365,12 +366,7 @@ function CancelOrderDialog({
               className="h-11"
               disabled={isPending}
             >
-              {isPending && (
-                <LoaderCircle
-                  data-icon="inline-start"
-                  className="animate-spin"
-                />
-              )}
+              {isPending && <Ring size={16} />}
               <TextMorph>
                 {isPending ? "Cancelando..." : "Cancelar orden"}
               </TextMorph>

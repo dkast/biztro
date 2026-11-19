@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import toast from "react-hot-toast"
-import { Loader2, LockKeyhole } from "lucide-react"
+import { Ring } from "loading-dev"
+import { LockKeyhole } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
@@ -245,7 +246,7 @@ export default function PaymentSettingsForm({
           </p>
           {canEdit && (
             <Button disabled={isExecuting} type="submit">
-              {isExecuting && <Loader2 className="animate-spin" />}
+              {isExecuting && <Ring size={16} />}
               <TextMorph>{isExecuting ? "Guardando..." : "Guardar"}</TextMorph>
             </Button>
           )}

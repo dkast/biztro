@@ -13,10 +13,10 @@ import toast from "react-hot-toast"
 // import { DevTool } from "@hookform/devtools"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { Ring } from "loading-dev"
 import {
   Check,
   Languages,
-  Loader,
   PlusCircle,
   Sparkles,
   TriangleAlert,
@@ -1178,7 +1178,7 @@ export default function ItemForm({
                     type="submit"
                   >
                     {status === "executing" && (
-                      <Loader className="mr-2 size-4 animate-spin" />
+                      <Ring className="mr-2" size={16} />
                     )}
                     <TextMorph>
                       {status === "executing" ? "Guardando" : "Guardar"}
@@ -1616,7 +1616,7 @@ export default function ItemForm({
                                   to-indigo-500"
                               >
                                 {translateItemStatus === "executing" ? (
-                                  <Loader className="mr-2 size-4 animate-spin" />
+                                  <Ring className="mr-2" size={16} />
                                 ) : (
                                   <Sparkles className="mr-2 size-4 fill-current" />
                                 )}

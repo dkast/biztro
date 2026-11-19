@@ -5,7 +5,8 @@ import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import { BorderBeam } from "border-beam"
 import { TransitionLink } from "glimm/next"
-import { AlertCircle, FileSpreadsheet, FileText, Loader } from "lucide-react"
+import { Ring } from "loading-dev"
+import { AlertCircle, FileSpreadsheet, FileText } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import Papa from "papaparse"
@@ -348,7 +349,7 @@ export default function MenuImportOptions({
             justify-center gap-2 rounded-lg bg-white/80 text-gray-900
             backdrop-blur dark:bg-gray-950/80 dark:text-gray-100"
         >
-          <Loader className="size-6 animate-spin" />
+          <Ring size={24} />
           <p className="text-sm font-medium">Importando productos...</p>
         </div>
       )}

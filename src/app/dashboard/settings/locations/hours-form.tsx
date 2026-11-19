@@ -6,7 +6,8 @@ import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { parseTime } from "@internationalized/date"
-import { Info, Loader } from "lucide-react"
+import { Ring } from "loading-dev"
+import { Info } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { TextMorph } from "torph/react"
 import type { z } from "zod/v4"
@@ -434,7 +435,7 @@ export default function HoursForm({
               disabled={isExecuting || disabled}
               onClick={onSubmit}
             >
-              {isExecuting && <Loader className="mr-2 size-4 animate-spin" />}
+              {isExecuting && <Ring className="mr-2" size={16} />}
               <TextMorph>
                 {isExecuting
                   ? "Guardando..."

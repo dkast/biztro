@@ -3,7 +3,7 @@
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader } from "lucide-react"
+import { Ring } from "loading-dev"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
@@ -157,9 +157,7 @@ export function VariantCreateForm({
         )}
       />
       <Button disabled={status === "executing"} type="submit">
-        {status === "executing" && (
-          <Loader className="mr-2 size-4 animate-spin" />
-        )}
+        {status === "executing" && <Ring className="mr-2" size={16} />}
         <TextMorph>
           {status === "executing" ? "Creando..." : "Crear variante"}
         </TextMorph>

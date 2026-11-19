@@ -3,7 +3,8 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
-import { ChevronDown, Download, Loader, Upload } from "lucide-react"
+import { Ring } from "loading-dev"
+import { ChevronDown, Download, Upload } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Papa from "papaparse"
 
@@ -130,7 +131,7 @@ export default function ItemImport() {
               disabled={isExporting}
             >
               {isExporting ? (
-                <Loader className="size-4 animate-spin" />
+                <Ring size={16} />
               ) : (
                 <ChevronDown className="size-4" />
               )}
