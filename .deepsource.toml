@@ -1,6 +1,6 @@
 version = 1
 
-exclude_patterns = [".agents/**", "src/generated/**"]
+exclude_patterns = [".agents/**", "src/generated/**", "**/*.test.ts"]
 
 [[analyzers]]
 name = "javascript"
