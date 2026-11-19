@@ -164,9 +164,9 @@ export default function AppSidebar({
   return (
     <>
       <SidebarWorkgroup onNavigate={closeMobileSidebar} />
-      <SidebarContent className="no-scrollbar scroll-fade scroll-fade-6">
+      <SidebarContent className="no-scrollbar scroll-fade scroll-fade-16">
         <SidebarGroup>
-          <SidebarContent className="no-scrollbar scroll-fade scroll-fade-6">
+          <SidebarContent className="no-scrollbar scroll-fade scroll-fade-16">
             <SidebarMenu>
               {visibleNavigation.map(item => (
                 <Fragment key={item.title}>

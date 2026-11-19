@@ -573,6 +573,20 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* distortion-waves captures only computed styles that differ from a plain div,
+     so preflight's `border: 0 solid` serializes as `solid` without its 0 width
+     and every element gets a medium gray border in the wave picture. The root
+     matters too: the wave stretches the picture's edge pixels into the gap as
+     it pulls the view inward. Border utilities live in a later layer and still
+     apply. */
+  :where(
+    [data-distortion-wave],
+    [data-distortion-wave] *,
+    [data-distortion-wave] *::before,
+    [data-distortion-wave] *::after
+  ) {
+    border-style: none;
+  }
 }
 
 @utility hit-area-debug {

@@ -97,6 +97,7 @@
     "d3-array": "^3.2.5",
     "d3-shape": "^3.2.1",
     "date-fns": "^4.4.0",
+    "distortion-waves": "^0.1.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "extract-colors": "^4.2.1",
