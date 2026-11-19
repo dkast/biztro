@@ -725,7 +725,7 @@ function ReadyOrders({
             action={{
               label: "Volver a preparar",
               icon: <RotateCcw data-icon="inline-start" />,
-              variant: "outline",
+              variant: "warning",
               disabled,
               onClick: () => onRestore(order.id)
             }}
