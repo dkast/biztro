@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
+import { play, setEnabled, setTheme, unlock } from "cuelume"
 import { DistortionWave } from "distortion-waves"
 import { Ring } from "loading-dev"
 import {
@@ -418,6 +419,11 @@ export default function TranslationsManager({
   )
 }
 
+// Same preference the POS screen writes when sounds are muted.
+const soundMutedStorageKey = "biztro:sounds-muted"
+// Delay from the wave starting to the reveal visually landing; tune by ear.
+const waveRevealCueDelayMs = 300
+
 type TranslateLanguageWaveProps = {
   locales: { code: string; label: string }[]
   selectedLocale: string
@@ -449,6 +455,25 @@ function TranslateLanguageWave({
   // The button is disabled while translating, so hand focus back once done.
   useEffect(() => {
     if (isDone) actionButton.current?.focus()
+  }, [isDone])
+
+  useEffect(() => {
+    setEnabled(window.localStorage.getItem(soundMutedStorageKey) !== "true")
+    setTheme("default")
+  }, [])
+
+  const handleTranslate = () => {
+    // Translating takes a while, so unlock audio inside the click gesture.
+    void unlock()
+    onTranslate()
+  }
+
+  // onFinish only fires after the rim fade (~3.2s), well after the reveal lands,
+  // so time the cue to the reveal instead.
+  useEffect(() => {
+    if (!isDone) return
+    const timer = window.setTimeout(() => play("ready"), waveRevealCueDelayMs)
+    return () => window.clearTimeout(timer)
   }, [isDone])
 
   return (
@@ -503,7 +528,7 @@ function TranslateLanguageWave({
             ref={actionButton}
             size="lg"
             className="w-full text-base"
-            onClick={isDone ? onDone : onTranslate}
+            onClick={isDone ? onDone : handleTranslate}
             disabled={isDone ? false : !selectedLocale || isTranslating}
           >
             {isTranslating ? (
