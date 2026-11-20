@@ -3,7 +3,8 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
-import { CirclePlus, Loader } from "lucide-react"
+import { Ring } from "loading-dev"
+import { CirclePlus } from "lucide-react"
 import { motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
@@ -72,7 +73,7 @@ export default function MenuCreate() {
         }
       >
         {status === "executing" ? (
-          <Loader className="size-10 animate-spin" />
+          <Ring size={40} />
         ) : (
           <CirclePlus className="size-10" />
         )}

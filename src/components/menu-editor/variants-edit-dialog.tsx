@@ -3,7 +3,8 @@
 import * as React from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader, PlusCircle, Trash } from "lucide-react"
+import { Ring } from "loading-dev"
+import { PlusCircle, Trash } from "lucide-react"
 import { TextMorph } from "torph/react"
 import { z } from "zod/v4"
 
@@ -227,7 +228,7 @@ export function VariantsEditDialog({
             </Button>
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting && (
-                <Loader className="mr-2 size-4 animate-spin" />
+                <Ring className="mr-2" size={16} />
               )}
               <TextMorph>
                 {form.formState.isSubmitting ? "Guardando" : "Guardar cambios"}

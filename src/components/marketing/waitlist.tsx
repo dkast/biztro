@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2 } from "lucide-react"
+import { Ring } from "loading-dev"
 import { motion } from "motion/react"
 import { useAction } from "next-safe-action/hooks"
 import { TextMorph } from "torph/react"
@@ -82,9 +82,7 @@ export default function Waitlist() {
                 hover:bg-orange-500 focus:ring-2 focus:ring-orange-500
                 focus:outline-hidden"
             >
-              {status === "executing" && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
+              {status === "executing" && <Ring className="mr-2" size={16} />}
               <TextMorph>
                 {status === "executing" ? "Enviando..." : "Solicitar acceso"}
               </TextMorph>

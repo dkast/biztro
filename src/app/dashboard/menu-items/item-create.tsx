@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
-import { Loader, PlusCircle } from "lucide-react"
+import { Ring } from "loading-dev"
+import { PlusCircle } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { usePostHog } from "posthog-js/react"
@@ -78,7 +79,7 @@ export default function ItemCreate() {
         }
       >
         {status === "executing" || isPending ? (
-          <Loader className="size-4 animate-spin" />
+          <Ring size={16} />
         ) : (
           <PlusCircle className="size-4" />
         )}

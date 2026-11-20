@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import toast from "react-hot-toast"
-import { LoaderCircle, UserPlus } from "lucide-react"
+import { Ring } from "loading-dev"
+import { UserPlus } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 
 import { Button } from "@/components/ui/button"
@@ -125,9 +126,7 @@ export function CustomerQuickCreateDialog({
         </FieldGroup>
         <DialogFooter>
           <Button type="button" onClick={handleSubmit} disabled={isPending}>
-            {isPending && (
-              <LoaderCircle data-icon="inline-start" className="animate-spin" />
-            )}
+            {isPending && <Ring size={16} />}
             Crear cliente
           </Button>
         </DialogFooter>

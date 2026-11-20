@@ -227,10 +227,7 @@ function MenuImportLoadingSkeleton() {
   return (
     <div className="mx-auto w-full min-w-0 grow px-4 sm:px-6">
       <PageSubtitleSkeleton descriptionWidth="w-96" titleWidth="w-52" />
-      <div className="mt-10 flex flex-col gap-6">
-        <Skeleton className="h-48 rounded-lg" />
-        <DashboardFormSkeleton fieldCount={3} />
-      </div>
+      <Skeleton className="mt-6 h-120 rounded-md" />
     </div>
   )
 }
@@ -238,14 +235,34 @@ function MenuImportLoadingSkeleton() {
 function TranslationsLoadingSkeleton() {
   return (
     <div className="mx-auto grow px-4 sm:px-6">
-      <PageSubtitleSkeleton actionCount={1} titleWidth="w-52" />
-      <div className="mt-6 grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Skeleton key={index} className="h-11 rounded-lg" />
+      <PageSubtitleSkeleton
+        actionCount={1}
+        descriptionWidth="w-96"
+        titleWidth="w-52"
+      />
+      <div className="mt-10 flex flex-col gap-3">
+        <Skeleton className="h-5 w-40" />
+        <div className="flex flex-col gap-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between gap-4 rounded-lg
+                border p-4"
+            >
+              <div className="flex min-w-0 flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-6 rounded-sm" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-4 w-40 max-w-full" />
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <Skeleton className="h-9 w-28 rounded-md" />
+                <Skeleton className="size-10 rounded-lg" />
+              </div>
+            </div>
           ))}
         </div>
-        <DashboardTableSkeleton columnCount={3} rowCount={6} />
       </div>
     </div>
   )

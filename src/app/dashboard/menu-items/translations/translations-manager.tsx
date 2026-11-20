@@ -1,12 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
+import { play, setEnabled, setTheme, unlock } from "cuelume"
+import { DistortionWave } from "distortion-waves"
+import { Ring } from "loading-dev"
 import {
+  Check,
   Crown,
   Languages,
-  Loader,
   PlusCircle,
   Sparkles,
   Trash2
@@ -31,7 +34,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
@@ -86,6 +88,9 @@ export default function TranslationsManager({
   const [translatingLocale, setTranslatingLocale] = useState<string | null>(
     null
   )
+  const [completedCount, setCompletedCount] = useState<number | null>(null)
+  // The action callbacks can outlive the dialog, so they read the latest value.
+  const dialogOpenRef = useRef(false)
   const [deletingLocale, setDeletingLocale] = useState<string | null>(null)
   const router = useRouter()
 
@@ -150,16 +155,21 @@ export default function TranslationsManager({
         return
       }
 
-      const { locale, count } = response.data?.success ?? {}
-      const localeName = getLocaleLabel(locale)
+      const { locale, count = 0 } = response.data?.success ?? {}
 
-      toast.success(
-        `${count} producto${count !== 1 ? "s" : ""} traducido${count !== 1 ? "s" : ""} al ${localeName}`
-      )
       resetTranslate()
       router.refresh()
       setTranslatingLocale(null)
-      setDialogOpen(false)
+
+      // With the dialog open the wave is the reward; otherwise fall back to a toast.
+      if (dialogOpenRef.current && locale === selectedLocale) {
+        setCompletedCount(count)
+        return
+      }
+
+      toast.success(
+        `${count} producto${count !== 1 ? "s" : ""} traducido${count !== 1 ? "s" : ""} al ${getLocaleLabel(locale)}`
+      )
       setSelectedLocale("")
     },
     onError: (error: unknown) => {
@@ -221,16 +231,30 @@ export default function TranslationsManager({
   const isTranslating = translatingLocale !== null
   const isDeleting = deletingLocale !== null
 
+  // Keep the chosen locale listed while it is being added (or just was), so
+  // the select doesn't go blank under the wave.
   const translateSelectLocales =
-    isTranslating && selectedLocale
+    (isTranslating || completedCount !== null) &&
+    selectedLocale &&
+    !availableToAdd.some(locale => locale.code === selectedLocale)
       ? [
           {
             code: selectedLocale,
-            label: `${getLocaleLabel(selectedLocale)} (traduciendo)`
+            label:
+              SUPPORTED_LOCALES.find(locale => locale.code === selectedLocale)
+                ?.label ?? getLocaleLabel(selectedLocale)
           },
-          ...availableToAdd.filter(locale => locale.code !== selectedLocale)
+          ...availableToAdd
         ]
       : availableToAdd
+
+  const handleDialogOpenChange = (open: boolean) => {
+    dialogOpenRef.current = open
+    setDialogOpen(open)
+    if (open || isTranslating) return
+    setCompletedCount(null)
+    setSelectedLocale("")
+  }
 
   const handleTranslate = () => {
     if (!selectedLocale) return
@@ -247,77 +271,32 @@ export default function TranslationsManager({
           Genera traducciones de tus productos con IA para mostrar el menú en
           otros idiomas
         </PageSubtitle.Description>
-        {availableToAdd.length > 0 && (
+        {(availableToAdd.length > 0 || dialogOpen) && (
           <PageSubtitle.Actions>
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
               <Button
                 variant="default"
                 className="gap-2"
-                onClick={() => guardTranslation(() => setDialogOpen(true))}
+                onClick={() =>
+                  guardTranslation(() => handleDialogOpenChange(true))
+                }
               >
                 <PlusCircle className="size-4" />
                 Agregar idioma
               </Button>
-              <DialogContent className="sm:max-w-sm">
-                <DialogHeader>
-                  <DialogTitle>Traducir menú con IA</DialogTitle>
-                  <DialogDescription>
-                    Selecciona el idioma al que quieres traducir todos los
-                    productos activos de tu menú.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="py-2">
-                  <Select
-                    value={selectedLocale}
-                    onValueChange={setSelectedLocale}
-                    disabled={isTranslating}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue
-                        placeholder={
-                          isTranslating && selectedLocale
-                            ? `${getLocaleLabel(selectedLocale)} (traduciendo)`
-                            : "Selecciona un idioma"
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {translateSelectLocales.map(locale => (
-                        <SelectItem key={locale.code} value={locale.code}>
-                          <span className="flex items-center gap-2">
-                            <LanguageFlag locale={locale.code} />
-                            <span>{locale.label}</span>
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setDialogOpen(false)
-                      setSelectedLocale("")
-                    }}
-                    disabled={isTranslating}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    onClick={handleTranslate}
-                    disabled={!selectedLocale || isTranslating}
-                  >
-                    {isTranslating ? (
-                      <Loader className="size-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="size-4 fill-current" />
-                    )}
-                    <TextMorph>
-                      {isTranslating ? "Traduciendo..." : "Traducir con IA"}
-                    </TextMorph>
-                  </Button>
-                </DialogFooter>
+              <DialogContent
+                className="gap-0 overflow-hidden rounded-3xl p-0 sm:max-w-sm"
+              >
+                <TranslateLanguageWave
+                  locales={translateSelectLocales}
+                  selectedLocale={selectedLocale}
+                  selectedLabel={getLocaleLabel(selectedLocale)}
+                  isTranslating={isTranslating}
+                  completedCount={completedCount}
+                  onSelectLocale={setSelectedLocale}
+                  onTranslate={handleTranslate}
+                  onDone={() => handleDialogOpenChange(false)}
+                />
               </DialogContent>
             </Dialog>
           </PageSubtitle.Actions>
@@ -327,29 +306,23 @@ export default function TranslationsManager({
       {!isPro && availableToAdd.length > 0 && (
         <Banner
           inset
-          className="bg-linear-to-r/oklch from-sky-500 to-indigo-500 text-white"
+          className="bg-background text-foreground border-border border"
         >
-          <BannerIcon
-            icon={Crown}
-            className="border-white/20 bg-white/10 text-white"
-          />
+          <BannerIcon icon={Crown} className="text-amber-500" />
           <BannerTitle>
             La traducción automática de productos requiere el plan Pro.
             Actualiza para agregar idiomas al menú.
           </BannerTitle>
-          <BannerAction
-            asChild
-            className="border-white/20 bg-white/10 text-white hover:bg-white/20
-              hover:text-white"
-          >
-            <Link href="/dashboard/settings/billing" prefetch={false}>
+          <BannerAction asChild>
+            <Link
+              href="/dashboard/settings/billing"
+              prefetch={false}
+              className="hover:text-foreground"
+            >
               Actualizar a Pro
             </Link>
           </BannerAction>
-          <BannerClose
-            aria-label="Cerrar aviso"
-            className="text-white hover:bg-white/20 hover:text-white"
-          />
+          <BannerClose aria-label="Cerrar aviso" />
         </Banner>
       )}
 
@@ -411,7 +384,7 @@ export default function TranslationsManager({
                       }}
                     >
                       {translatingLocale === translation.locale ? (
-                        <Loader className="size-4 animate-spin" />
+                        <Ring size={16} />
                       ) : (
                         <Sparkles className="size-4 fill-current" />
                       )}
@@ -428,7 +401,7 @@ export default function TranslationsManager({
                       aria-label={`Eliminar traducción al ${localeInfo?.label ?? translation.locale}`}
                     >
                       {deletingLocale === translation.locale ? (
-                        <Loader className="size-4 animate-spin" />
+                        <Ring size={16} />
                       ) : (
                         <Trash2 className="size-4" />
                       )}
@@ -443,5 +416,200 @@ export default function TranslationsManager({
 
       {upgradeDialog}
     </div>
+  )
+}
+
+// Same preference the POS screen writes when sounds are muted.
+const soundMutedStorageKey = "biztro:sounds-muted"
+// Delay from the wave starting to the reveal visually landing; tune by ear.
+const waveRevealCueDelayMs = 300
+
+type TranslateLanguageWaveProps = {
+  locales: { code: string; label: string }[]
+  selectedLocale: string
+  selectedLabel: string
+  isTranslating: boolean
+  completedCount: number | null
+  onSelectLocale: (locale: string) => void
+  onTranslate: () => void
+  onDone: () => void
+}
+
+// The wave only plays once the translation has finished, as the reward. The
+// action button lives in the overlay so it stays sharp while the wave passes,
+// which is why both views reserve its height as bottom padding.
+function TranslateLanguageWave({
+  locales,
+  selectedLocale,
+  selectedLabel,
+  isTranslating,
+  completedCount,
+  onSelectLocale,
+  onTranslate,
+  onDone
+}: TranslateLanguageWaveProps) {
+  const iconBadge = useRef<HTMLSpanElement>(null)
+  const actionButton = useRef<HTMLButtonElement>(null)
+  const isDone = completedCount !== null
+
+  // The button is disabled while translating, so hand focus back once done.
+  useEffect(() => {
+    if (isDone) actionButton.current?.focus()
+  }, [isDone])
+
+  useEffect(() => {
+    setEnabled(window.localStorage.getItem(soundMutedStorageKey) !== "true")
+    setTheme("default")
+  }, [])
+
+  const handleTranslate = () => {
+    // Translating takes a while, so unlock audio inside the click gesture.
+    void unlock()
+    onTranslate()
+  }
+
+  // onFinish only fires after the rim fade (~3.2s), well after the reveal lands,
+  // so time the cue to the reveal instead.
+  useEffect(() => {
+    if (!isDone) return
+    const timer = window.setTimeout(() => play("ready"), waveRevealCueDelayMs)
+    return () => window.clearTimeout(timer)
+  }, [isDone])
+
+  return (
+    <DistortionWave
+      className="overflow-hidden rounded-3xl"
+      type="center"
+      // sRGB equivalent of Tailwind's bg-emerald-500; the wave expects hex.
+      palette="#00bb7f"
+      revealed={isDone}
+      source={iconBadge}
+      revealedContent={
+        <div
+          role="status"
+          className="bg-background flex h-full flex-col gap-6 p-6 pb-24"
+        >
+          <div className="flex flex-col items-center gap-2 text-center">
+            <span
+              className="mb-2 flex size-12 items-center justify-center
+                rounded-full bg-emerald-500 text-white"
+            >
+              <Check className="size-6" strokeWidth={3} />
+            </span>
+            <p className="text-2xl leading-8 font-semibold">Traducción lista</p>
+            <p className="text-muted-foreground text-sm">
+              Tu menú ya tiene traducción al {selectedLabel}
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
+            <div
+              className="border-input flex h-9 items-center gap-2 rounded-md
+                border px-3 text-sm"
+            >
+              {selectedLocale && <LanguageFlag locale={selectedLocale} />}
+              <span>
+                {locales.find(locale => locale.code === selectedLocale)
+                  ?.label ?? selectedLabel}
+              </span>
+            </div>
+            <ChecklistCard
+              rows={[
+                `${completedCount ?? 0} producto${completedCount === 1 ? "" : "s"} traducido${completedCount === 1 ? "" : "s"}`,
+                "Variantes y categorías incluidas",
+                "Actualízala cuando cambie tu menú"
+              ]}
+            />
+          </div>
+        </div>
+      }
+      overlay={
+        <div className="absolute inset-x-0 bottom-0 p-6">
+          <Button
+            ref={actionButton}
+            size="lg"
+            className="w-full text-base"
+            onClick={isDone ? onDone : handleTranslate}
+            disabled={isDone ? false : !selectedLocale || isTranslating}
+          >
+            {isTranslating ? (
+              <Ring size={16} />
+            ) : isDone ? null : (
+              <Sparkles className="size-4 fill-current" />
+            )}
+            <TextMorph>
+              {isDone
+                ? "Listo"
+                : isTranslating
+                  ? "Traduciendo..."
+                  : "Traducir con IA"}
+            </TextMorph>
+          </Button>
+        </div>
+      }
+    >
+      <div className="bg-background flex h-full flex-col gap-6 p-6 pb-24">
+        <DialogHeader className="items-center text-center sm:text-center">
+          <span
+            ref={iconBadge}
+            className="bg-muted text-muted-foreground mb-2 flex size-12
+              items-center justify-center rounded-full"
+          >
+            <Languages className="size-5" />
+          </span>
+          <DialogTitle className="text-2xl leading-8">
+            Traducir menú con IA
+          </DialogTitle>
+          <DialogDescription className="text-pretty">
+            Elige el idioma para los productos de tu menú
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <Select
+            value={selectedLocale}
+            onValueChange={onSelectLocale}
+            disabled={isTranslating}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Selecciona un idioma" />
+            </SelectTrigger>
+            <SelectContent>
+              {locales.map(locale => (
+                <SelectItem key={locale.code} value={locale.code}>
+                  <span className="flex items-center gap-2">
+                    <LanguageFlag locale={locale.code} />
+                    <span>{locale.label}</span>
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <ChecklistCard
+            rows={[
+              "Productos activos de tu menú",
+              "Variantes y categorías incluidas",
+              "Actualízala cuando cambie tu menú"
+            ]}
+          />
+        </div>
+      </div>
+    </DistortionWave>
+  )
+}
+
+function ChecklistCard({ rows }: { rows: string[] }) {
+  return (
+    <ul className="bg-muted divide-border divide-y rounded-2xl border px-4">
+      {rows.map(row => (
+        <li key={row} className="flex items-center gap-3 py-3 text-sm">
+          <span
+            className="bg-background flex size-6 shrink-0 items-center
+              justify-center rounded-full"
+          >
+            <Check className="size-3.5" />
+          </span>
+          {row}
+        </li>
+      ))}
+    </ul>
   )
 }

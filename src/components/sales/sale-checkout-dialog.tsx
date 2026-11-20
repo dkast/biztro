@@ -3,13 +3,13 @@
 import { useEffect, useMemo, useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
+import { Ring } from "loading-dev"
 import {
   ArrowLeft,
   ArrowRightLeft,
   Banknote,
   CreditCard,
   Landmark,
-  LoaderCircle,
   Plus,
   QrCode,
   Split,
@@ -710,10 +710,7 @@ export function SaleCheckoutDialog({
               }
             >
               {isPending ? (
-                <LoaderCircle
-                  data-icon="inline-start"
-                  className="animate-spin"
-                />
+                <Ring size={16} />
               ) : advancedMode === "credit" ? (
                 <WalletCards data-icon="inline-start" />
               ) : (
@@ -762,10 +759,7 @@ function QuickPaymentButton({
       onClick={onClick}
     >
       {isSelected ? (
-        <LoaderCircle
-          aria-hidden
-          className="text-primary size-5 animate-spin"
-        />
+        <Ring className="text-primary" size={20} />
       ) : (
         <Icon
           aria-hidden

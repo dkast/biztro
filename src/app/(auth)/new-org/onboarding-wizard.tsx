@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { type Location } from "@/generated/prisma-client/client"
 import { type Body, type Meta, type UploadResult } from "@uppy/core"
+import { useTransitionRouter } from "glimm/next"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -40,6 +41,7 @@ import type { getDefaultLocation } from "@/server/actions/location/queries"
 import NewOrgForm, {
   type BootstrappedOrganization
 } from "@/app/(auth)/new-org/new-org-form"
+import { OnboardingStepPanels } from "@/app/(auth)/new-org/onboarding-step-panels"
 import MenuImportOptions from "@/app/dashboard/menu-items/import-options"
 import HoursForm from "@/app/dashboard/settings/locations/hours-form"
 import LocationForm from "@/app/dashboard/settings/locations/location-form"
@@ -172,6 +174,7 @@ export default function OnboardingWizard({
   showOrganizationStep?: boolean
 }) {
   const router = useRouter()
+  const transitionRouter = useTransitionRouter()
   const stepOrder = showOrganizationStep
     ? CREATION_STEP_ORDER
     : DEFAULT_STEP_ORDER
@@ -212,7 +215,7 @@ export default function OnboardingWizard({
   }
 
   const goToDashboard = () => {
-    router.push("/dashboard")
+    transitionRouter.push("/dashboard", { direction: "ltr" })
   }
 
   const handleOrganizationCreated = (
@@ -327,234 +330,244 @@ export default function OnboardingWizard({
           ))}
         </StepperList>
 
-        <StepperContent value="organization">
-          {showOrganizationStep ? (
-            <StepShell
-              title="Crea tu negocio"
-              description="Empieza con el nombre y los datos básicos de tu negocio para seguir con la configuración."
-            >
-              <NewOrgForm
-                withCard={false}
-                submitLabel="Crear negocio y continuar"
-                onSuccess={handleOrganizationCreated}
-              />
-            </StepShell>
-          ) : null}
-        </StepperContent>
+        <OnboardingStepPanels activeStep={activeStep}>
+          <StepperContent value="organization">
+            {showOrganizationStep ? (
+              <StepShell
+                title="Crea tu negocio"
+                description="Empieza con el nombre y los datos básicos de tu negocio para seguir con la configuración."
+              >
+                <NewOrgForm
+                  withCard={false}
+                  submitLabel="Crear negocio y continuar"
+                  onSuccess={handleOrganizationCreated}
+                />
+              </StepShell>
+            ) : null}
+          </StepperContent>
 
-        <StepperContent value="logo">
-          <StepShell
-            title="Logo y portada"
-            description="Sube tu logo y una portada para tu sitio. Si todavía no los tienes, puedes seguir más tarde."
-          >
-            {currentOrganization ? (
-              <div className="space-y-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                  <Avatar className="size-24 rounded-3xl">
-                    {currentOrganization.logo ? (
-                      <AvatarImage
-                        src={currentOrganization.logo}
-                        className="rounded-3xl"
-                      />
-                    ) : null}
-                    <AvatarFallback className="text-3xl">
-                      {getInitials(currentOrganization.name)}
-                    </AvatarFallback>
-                  </Avatar>
+          <StepperContent value="logo">
+            <StepShell
+              title="Logo y portada"
+              description="Sube tu logo y una portada para tu sitio. Si todavía no los tienes, puedes seguir más tarde."
+            >
+              {currentOrganization ? (
+                <div className="space-y-6">
+                  <div
+                    className="flex flex-col gap-4 sm:flex-row sm:items-center"
+                  >
+                    <Avatar className="size-24 rounded-3xl">
+                      {currentOrganization.logo ? (
+                        <AvatarImage
+                          src={currentOrganization.logo}
+                          className="rounded-3xl"
+                        />
+                      ) : null}
+                      <AvatarFallback className="text-3xl">
+                        {getInitials(currentOrganization.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <p className="font-medium text-balance">
+                          {currentOrganization.name}
+                        </p>
+                        <p className="text-muted-foreground text-sm text-pretty">
+                          {hasUploadedMedia
+                            ? "Ya cargaste recursos visuales. Puedes reemplazarlos o seguir adelante."
+                            : "Recomendado: logo de 500×500 y portada de 1200×800, en JPG o PNG."}
+                        </p>
+                      </div>
+                      <Dialog
+                        open={isLogoDialogOpen}
+                        onOpenChange={setLogoDialogOpen}
+                      >
+                        <DialogTrigger asChild>
+                          <Button type="button" variant="outline">
+                            {hasLogo ? "Cambiar logo" : "Subir logo"}
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-xl">
+                          <DialogHeader>
+                            <DialogTitle>Subir imagen</DialogTitle>
+                          </DialogHeader>
+                          <FileUploader
+                            organizationId={currentOrganization.id}
+                            imageType={ImageType.LOGO}
+                            objectId={ImageType.LOGO}
+                            limitDimension={500}
+                            onUploadSuccess={handleLogoUploaded}
+                          />
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </div>
                   <div className="space-y-3">
                     <div className="space-y-1">
                       <p className="font-medium text-balance">
-                        {currentOrganization.name}
+                        Imagen de portada
                       </p>
                       <p className="text-muted-foreground text-sm text-pretty">
-                        {hasUploadedMedia
-                          ? "Ya cargaste recursos visuales. Puedes reemplazarlos o seguir adelante."
-                          : "Recomendado: logo de 500×500 y portada de 1200×800, en JPG o PNG."}
+                        Se mostrará en la parte principal de tu sitio.
+                        Recomendado: 1200×800 en JPG o PNG.
                       </p>
                     </div>
-                    <Dialog
-                      open={isLogoDialogOpen}
-                      onOpenChange={setLogoDialogOpen}
-                    >
-                      <DialogTrigger asChild>
-                        <Button type="button" variant="outline">
-                          {hasLogo ? "Cambiar logo" : "Subir logo"}
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-xl">
-                        <DialogHeader>
-                          <DialogTitle>Subir imagen</DialogTitle>
-                        </DialogHeader>
-                        <FileUploader
-                          organizationId={currentOrganization.id}
-                          imageType={ImageType.LOGO}
-                          objectId={ImageType.LOGO}
-                          limitDimension={500}
-                          onUploadSuccess={handleLogoUploaded}
-                        />
-                      </DialogContent>
-                    </Dialog>
+                    {currentOrganization.banner ? (
+                      <ImageField
+                        src={currentOrganization.banner}
+                        organizationId={currentOrganization.id}
+                        imageType={ImageType.BANNER}
+                        objectId={ImageType.BANNER}
+                        onUploadSuccess={handleBannerUploaded}
+                      />
+                    ) : (
+                      <EmptyImageField
+                        organizationId={currentOrganization.id}
+                        imageType={ImageType.BANNER}
+                        objectId={ImageType.BANNER}
+                        onUploadSuccess={handleBannerUploaded}
+                      />
+                    )}
+                  </div>
+                  <div
+                    className="flex flex-col gap-2 sm:flex-row sm:justify-end"
+                  >
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleLogoContinue}
+                      >
+                        Omitir por ahora
+                      </Button>
+                      <Button
+                        type="button"
+                        disabled={!hasUploadedMedia}
+                        onClick={handleLogoContinue}
+                      >
+                        Continuar
+                        <ArrowRight className="ml-2 size-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <p className="font-medium text-balance">
-                      Imagen de portada
-                    </p>
-                    <p className="text-muted-foreground text-sm text-pretty">
-                      Se mostrará en la parte principal de tu sitio.
-                      Recomendado: 1200×800 en JPG o PNG.
-                    </p>
-                  </div>
-                  {currentOrganization.banner ? (
-                    <ImageField
-                      src={currentOrganization.banner}
-                      organizationId={currentOrganization.id}
-                      imageType={ImageType.BANNER}
-                      objectId={ImageType.BANNER}
-                      onUploadSuccess={handleBannerUploaded}
-                    />
-                  ) : (
-                    <EmptyImageField
-                      organizationId={currentOrganization.id}
-                      imageType={ImageType.BANNER}
-                      objectId={ImageType.BANNER}
-                      onUploadSuccess={handleBannerUploaded}
-                    />
-                  )}
-                </div>
-                <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-                  <div className="flex flex-col gap-2 sm:flex-row">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleLogoContinue}
-                    >
-                      Omitir por ahora
-                    </Button>
-                    <Button
-                      type="button"
-                      disabled={!hasUploadedMedia}
-                      onClick={handleLogoContinue}
-                    >
-                      Continuar
-                      <ArrowRight className="ml-2 size-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-sm text-pretty">
-                Primero crea tu negocio para poder subir el logo.
-              </p>
-            )}
-          </StepShell>
-        </StepperContent>
+              ) : (
+                <p className="text-muted-foreground text-sm text-pretty">
+                  Primero crea tu negocio para poder subir el logo.
+                </p>
+              )}
+            </StepShell>
+          </StepperContent>
 
-        <StepperContent value="location">
-          <StepShell
-            title="Tu primera sucursal"
-            description="Agrega una ubicación principal. Podrás editarla más tarde desde configuración."
-          >
-            <LocationForm
-              data={location}
-              enabled
-              submitLabel={
-                location ? "Guardar cambios y continuar" : "Guardar y continuar"
-              }
-              onSuccess={handleLocationSaved}
-              secondaryAction={
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleLocationSkip}
-                >
-                  Omitir por ahora
-                </Button>
-              }
-            />
-          </StepShell>
-        </StepperContent>
-
-        <StepperContent value="hours">
-          <StepShell
-            title="Horarios de atención"
-            description="Configura cuándo abres. Si todavía no estás listo, puedes hacerlo después."
-          >
-            {location ? (
-              <HoursForm
-                data={hoursData}
-                locationId={location.id}
-                submitLabel="Guardar y continuar"
-                onSuccess={handleHoursSaved}
+          <StepperContent value="location">
+            <StepShell
+              title="Tu primera sucursal"
+              description="Agrega una ubicación principal. Podrás editarla más tarde desde configuración."
+            >
+              <LocationForm
+                data={location}
+                enabled
+                submitLabel={
+                  location
+                    ? "Guardar cambios y continuar"
+                    : "Guardar y continuar"
+                }
+                onSuccess={handleLocationSaved}
                 secondaryAction={
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={handleFinishHoursStep}
+                    onClick={handleLocationSkip}
                   >
                     Omitir por ahora
                   </Button>
                 }
               />
-            ) : (
-              <div
-                className="border-border/60 flex flex-col gap-4 rounded-2xl
-                  border border-dashed p-6"
-              >
-                <p className="text-muted-foreground text-sm text-pretty">
-                  Sin una sucursal no puedes guardar horarios todavía. Puedes
-                  seguir con la importación de productos y completar esto
-                  después desde configuración.
-                </p>
-                <div
-                  className="flex flex-col gap-2 sm:flex-row sm:justify-between"
-                >
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => moveToStep("location")}
-                  >
-                    <ArrowLeft className="mr-2 size-4" />
-                    Regresar
-                  </Button>
-                  <Button type="button" onClick={handleFinishHoursStep}>
-                    Continuar con productos
-                    <ArrowRight className="ml-2 size-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </StepShell>
-        </StepperContent>
+            </StepShell>
+          </StepperContent>
 
-        <StepperContent value="menu">
-          <StepShell
-            title="Importa tus productos"
-            description="Puedes subir un CSV aquí mismo o usar la importación con IA para extraer tus productos desde un PDF o una imagen."
-          >
-            <MenuImportOptions
-              aiImportHref={menuImportHref}
-              onCsvSuccess={handleMenuImported}
-            />
-            <div
-              className="mt-6 flex flex-col gap-2 sm:flex-row
-                sm:justify-between"
+          <StepperContent value="hours">
+            <StepShell
+              title="Horarios de atención"
+              description="Configura cuándo abres. Si todavía no estás listo, puedes hacerlo después."
             >
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => moveToStep(location ? "hours" : "location")}
+              {location ? (
+                <HoursForm
+                  data={hoursData}
+                  locationId={location.id}
+                  submitLabel="Guardar y continuar"
+                  onSuccess={handleHoursSaved}
+                  secondaryAction={
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleFinishHoursStep}
+                    >
+                      Omitir por ahora
+                    </Button>
+                  }
+                />
+              ) : (
+                <div
+                  className="border-border/60 flex flex-col gap-4 rounded-2xl
+                    border border-dashed p-6"
+                >
+                  <p className="text-muted-foreground text-sm text-pretty">
+                    Sin una sucursal no puedes guardar horarios todavía. Puedes
+                    seguir con la importación de productos y completar esto
+                    después desde configuración.
+                  </p>
+                  <div
+                    className="flex flex-col gap-2 sm:flex-row
+                      sm:justify-between"
+                  >
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => moveToStep("location")}
+                    >
+                      <ArrowLeft className="mr-2 size-4" />
+                      Regresar
+                    </Button>
+                    <Button type="button" onClick={handleFinishHoursStep}>
+                      Continuar con productos
+                      <ArrowRight className="ml-2 size-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </StepShell>
+          </StepperContent>
+
+          <StepperContent value="menu">
+            <StepShell
+              title="Importa tus productos"
+              description="Puedes subir un CSV aquí mismo o usar la importación con IA para extraer tus productos desde un PDF o una imagen."
+            >
+              <MenuImportOptions
+                aiImportHref={menuImportHref}
+                sweepAiImport
+                onCsvSuccess={handleMenuImported}
+              />
+              <div
+                className="mt-6 flex flex-col gap-2 sm:flex-row
+                  sm:justify-between"
               >
-                <ArrowLeft className="mr-2 size-4" />
-                Regresar
-              </Button>
-              <Button type="button" variant="outline" onClick={goToDashboard}>
-                Omitir por ahora
-              </Button>
-            </div>
-          </StepShell>
-        </StepperContent>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => moveToStep(location ? "hours" : "location")}
+                >
+                  <ArrowLeft className="mr-2 size-4" />
+                  Regresar
+                </Button>
+                <Button type="button" variant="outline" onClick={goToDashboard}>
+                  Omitir por ahora
+                </Button>
+              </div>
+            </StepShell>
+          </StepperContent>
+        </OnboardingStepPanels>
       </Stepper>
     </div>
   )

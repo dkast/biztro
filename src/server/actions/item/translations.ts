@@ -129,10 +129,61 @@ ${JSON.stringify(itemsPayload, null, 2)}`
         }
       }
 
-      // Upsert translations in the database — run all upserts in parallel
-      // batches within a single transaction to reduce sequential round-trips.
-      await prisma.$transaction(async tx => {
-        const itemUpserts = result.output.items.map(translatedItem =>
+      const output = result.output
+      const requestedItems = new Map(
+        itemsPayload.map(item => [
+          item.menuItemId,
+          new Set(item.variants.map(variant => variant.variantId))
+        ])
+      )
+      const translatedItems = new Map(
+        output.items.map(item => [item.menuItemId, item])
+      )
+      const translatedCategories = new Map(
+        output.categories.map(category => [category.categoryId, category])
+      )
+
+      const saved = await prisma.$transaction(async tx => {
+        // Model IDs are lookup keys only. Recheck the requested rows after generation.
+        const [currentItems, currentCategories] = await Promise.all([
+          tx.menuItem.findMany({
+            where: {
+              id: { in: [...requestedItems.keys()] },
+              organizationId: currentOrgId,
+              status: "ACTIVE"
+            },
+            select: { id: true, variants: { select: { id: true } } }
+          }),
+          tx.category.findMany({
+            where: {
+              id: {
+                in: categoriesPayload.map(category => category.categoryId)
+              },
+              organizationId: currentOrgId
+            },
+            select: { id: true }
+          })
+        ])
+
+        const validItems = currentItems.flatMap(item => {
+          const translatedItem = translatedItems.get(item.id)
+          const requestedVariants = requestedItems.get(item.id)
+          if (!translatedItem || !requestedVariants) return []
+
+          const variantsById = new Map(
+            translatedItem.variants.map(variant => [variant.variantId, variant])
+          )
+          const variants = item.variants.flatMap(({ id }) => {
+            const translation = variantsById.get(id)
+            return translation && requestedVariants.has(id) ? [translation] : []
+          })
+          return [{ ...translatedItem, variants }]
+        })
+
+        if (validItems.length === 0)
+          return { items: 0, variants: 0, categories: 0 }
+
+        const itemUpserts = validItems.map(translatedItem =>
           tx.menuItemTranslation.upsert({
             where: {
               menuItemId_locale: {
@@ -153,7 +204,7 @@ ${JSON.stringify(itemsPayload, null, 2)}`
           })
         )
 
-        const variantUpserts = result.output.items.flatMap(translatedItem =>
+        const variantUpserts = validItems.flatMap(translatedItem =>
           translatedItem.variants.map(translatedVariant =>
             tx.variantTranslation.upsert({
               where: {
@@ -176,37 +227,81 @@ ${JSON.stringify(itemsPayload, null, 2)}`
           )
         )
 
-        const categoryUpserts = result.output.categories.map(
-          translatedCategory =>
+        const categoryUpserts = currentCategories.flatMap(({ id }) => {
+          const translatedCategory = translatedCategories.get(id)
+          if (!translatedCategory) return []
+
+          return [
             tx.categoryTranslation.upsert({
               where: {
                 categoryId_locale: {
-                  categoryId: translatedCategory.categoryId,
+                  categoryId: id,
                   locale
                 }
               },
               update: { name: translatedCategory.name },
               create: {
-                categoryId: translatedCategory.categoryId,
+                categoryId: id,
                 locale,
                 name: translatedCategory.name
               }
             })
-        )
+          ]
+        })
 
         await Promise.all([
           ...itemUpserts,
           ...variantUpserts,
           ...categoryUpserts
         ])
+
+        return {
+          items: itemUpserts.length,
+          variants: variantUpserts.length,
+          categories: categoryUpserts.length
+        }
       })
+
+      const returned = {
+        items: output.items.length,
+        variants: output.items.reduce(
+          (count, item) => count + item.variants.length,
+          0
+        ),
+        categories: output.categories.length
+      }
+
+      if (
+        saved.items === 0 ||
+        saved.items !== returned.items ||
+        saved.variants !== returned.variants ||
+        saved.categories !== returned.categories
+      ) {
+        Sentry.captureMessage(
+          "Bulk menu translation skipped unmatched results",
+          {
+            level: "warning",
+            tags: { section: "menu-translate" },
+            extra: { locale, returned, saved }
+          }
+        )
+      }
+
+      if (saved.items === 0) {
+        return {
+          failure: {
+            reason:
+              "No se guardaron traducciones de productos. Intenta de nuevo."
+          }
+        }
+      }
 
       updateTag(`translations-${currentOrgId}`)
 
       return {
         success: {
           locale,
-          count: result.output.items.length
+          count: saved.items
         }
       }
     } catch (error) {

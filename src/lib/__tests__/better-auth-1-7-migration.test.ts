@@ -1,7 +1,11 @@
 import { readFileSync } from "node:fs"
-import { DatabaseSync } from "node:sqlite"
 import { fileURLToPath } from "node:url"
+import { PrismaLibSql } from "@prisma/adapter-libsql"
+import { prismaAdapter } from "better-auth/adapters/prisma"
+import { DatabaseSync } from "node:sqlite"
 import { afterEach, describe, expect, it } from "vitest"
+
+import { PrismaClient } from "../../generated/prisma-client/client"
 
 const migrationPath = fileURLToPath(
   new URL(
@@ -10,6 +14,13 @@ const migrationPath = fileURLToPath(
   )
 )
 const migrationSql = readFileSync(migrationPath, "utf8")
+const relaxIssuerSql = readFileSync(
+  new URL(
+    "../../../prisma/migrations/20261116210000_relax_legacy_account_issuer/migration.sql",
+    import.meta.url
+  ),
+  "utf8"
+)
 
 let database: DatabaseSync | undefined
 
@@ -109,6 +120,149 @@ function createPopulatedV16Database() {
 }
 
 describe("Better Auth 1.7 account identity migration", () => {
+  it("fixes Prisma adapter account creation that fails even when Google is trusted", async () => {
+    const db = createPopulatedV16Database()
+    db.exec(migrationSql)
+    const client = new PrismaClient({
+      adapter: new PrismaLibSql({ url: "file::memory:" })
+    })
+    const adapter = prismaAdapter(client, { provider: "sqlite" })({
+      account: {
+        fields: {
+          providerId: "provider",
+          accountId: "providerAccountId"
+        },
+        accountLinking: { trustedProviders: ["google"] }
+      }
+    })
+    const account = {
+      userId: "user-google",
+      providerId: "google",
+      accountId: "new-google-subject",
+      createdAt: new Date("2026-11-16T00:00:00.000Z"),
+      updatedAt: new Date("2026-11-16T00:00:00.000Z")
+    }
+    const getAccountTableSql = () => {
+      const row = db
+        .prepare(
+          `SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'Account'`
+        )
+        .get()
+      if (typeof row?.sql !== "string") throw new Error("Missing Account DDL")
+      return row.sql
+    }
+
+    try {
+      await client.$executeRawUnsafe(
+        `CREATE TABLE "User" ("id" TEXT PRIMARY KEY)`
+      )
+      await client.$executeRawUnsafe(
+        `INSERT INTO "User" VALUES ('user-google')`
+      )
+      await client.$executeRawUnsafe(getAccountTableSql())
+
+      await expect(
+        adapter.create({ model: "account", data: { ...account } })
+      ).rejects.toThrow(/constraint/i)
+
+      db.exec(relaxIssuerSql)
+      await client.$executeRawUnsafe(`DROP TABLE "Account"`)
+      await client.$executeRawUnsafe(getAccountTableSql())
+
+      await expect(
+        adapter.create({ model: "account", data: { ...account } })
+      ).resolves.toMatchObject(account)
+      await expect(
+        client.account.findUnique({
+          where: {
+            provider_providerAccountId: {
+              provider: "google",
+              providerAccountId: account.accountId
+            }
+          }
+        })
+      ).resolves.toMatchObject({
+        issuer: null,
+        provider: "google",
+        providerAccountId: account.accountId
+      })
+    } finally {
+      await client.$disconnect()
+    }
+  })
+
+  it("preserves existing data and allows account creation without issuer on current Better Auth", () => {
+    const db = createPopulatedV16Database()
+    db.exec(migrationSql)
+    const originalAccount = db
+      .prepare(`SELECT * FROM "Account" WHERE "id" = 'account-google'`)
+      .get()
+
+    db.exec(relaxIssuerSql)
+
+    expect(
+      db.prepare(`SELECT * FROM "Account" WHERE "id" = 'account-google'`).get()
+    ).toEqual(originalAccount)
+
+    const insertAccount = db.prepare(`
+      INSERT INTO "Account" (
+        "id", "userId", "provider", "providerAccountId", "createdAt", "updatedAt"
+      ) VALUES (?, 'user-google', ?, ?, '2026-11-16T00:00:00.000Z', '2026-11-16T00:00:00.000Z')
+    `)
+    insertAccount.run("new-google", "google", "new-subject")
+    insertAccount.run("other-provider", "other", "new-subject")
+
+    expect(
+      db
+        .prepare(`SELECT "issuer" FROM "Account" WHERE "id" = 'new-google'`)
+        .get()
+    ).toEqual({ issuer: null })
+    expect(() =>
+      insertAccount.run("duplicate-new", "google", "new-subject")
+    ).toThrow()
+    expect(() =>
+      insertAccount.run("duplicate-existing", "google", "google-sub-123")
+    ).toThrow()
+    expect(db.prepare(`PRAGMA foreign_key_check`).all()).toEqual([])
+    expect(db.prepare(`SELECT COUNT(*) AS count FROM "Session"`).get()).toEqual(
+      { count: 1 }
+    )
+
+    db.exec(`DELETE FROM "User" WHERE "id" = 'user-google'`)
+    expect(db.prepare(`SELECT COUNT(*) AS count FROM "Account"`).get()).toEqual(
+      { count: 0 }
+    )
+  })
+
+  it("rejects ambiguous provider identities before changing the legacy schema", () => {
+    const db = createPopulatedV16Database()
+    db.exec(migrationSql)
+    db.exec(`
+      INSERT INTO "Account" (
+        "id", "userId", "provider", "issuer", "providerAccountId", "createdAt", "updatedAt"
+      ) VALUES (
+        'ambiguous-google', 'user-google', 'google', 'https://other.example.com',
+        'google-sub-123', '2026-11-16T00:00:00.000Z', '2026-11-16T00:00:00.000Z'
+      )
+    `)
+    const originalAccounts = db
+      .prepare(`SELECT * FROM "Account" ORDER BY "id"`)
+      .all()
+
+    expect(() => db.exec(relaxIssuerSql)).toThrow()
+    expect(db.prepare(`SELECT * FROM "Account" ORDER BY "id"`).all()).toEqual(
+      originalAccounts
+    )
+    expect(
+      db
+        .prepare(
+          `SELECT "notnull" FROM pragma_table_info('Account') WHERE name = 'issuer'`
+        )
+        .get()
+    ).toEqual({ notnull: 1 })
+    expect(db.prepare(`PRAGMA foreign_keys`).get()).toEqual({ foreign_keys: 1 })
+  })
+
   it("preserves returning Google identity and existing session, organization, and subscription data", () => {
     const db = createPopulatedV16Database()
 

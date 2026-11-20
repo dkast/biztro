@@ -148,7 +148,7 @@ function KitchenBoardContent({
   }, [isSoundMuted])
 
   useEffect(() => {
-    setTheme("press")
+    setTheme("default")
     return bind()
   }, [])
 
@@ -725,7 +725,7 @@ function ReadyOrders({
             action={{
               label: "Volver a preparar",
               icon: <RotateCcw data-icon="inline-start" />,
-              variant: "outline",
+              variant: "warning",
               disabled,
               onClick: () => onRestore(order.id)
             }}

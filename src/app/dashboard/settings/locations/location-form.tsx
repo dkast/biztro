@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { type Location } from "@/generated/prisma-client/client"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader } from "lucide-react"
+import { Ring } from "loading-dev"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
 import { TextMorph } from "torph/react"
@@ -507,9 +507,7 @@ export default function LocationForm({
                 }
               >
                 {(statusUpdate === "executing" ||
-                  statusCreate === "executing") && (
-                  <Loader className="size-4 animate-spin" />
-                )}
+                  statusCreate === "executing") && <Ring size={16} />}
                 <TextMorph>
                   {statusUpdate === "executing" || statusCreate === "executing"
                     ? "Guardando..."

@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import toast from "react-hot-toast"
-import { AlertTriangle, Loader2 } from "lucide-react"
+import { Ring } from "loading-dev"
+import { AlertTriangle } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 import {
@@ -48,7 +49,7 @@ export function ImpersonationBanner() {
         disabled={isStopping}
         onClick={stopImpersonating}
       >
-        {isStopping && <Loader2 className="animate-spin" />}
+        {isStopping && <Ring size={16} />}
         Detener
       </BannerAction>
     </Banner>

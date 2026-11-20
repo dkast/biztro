@@ -119,6 +119,13 @@ Use `bun run <script>` unless the user requests otherwise.
 - Close intercepted modals with `router.back()` from `onOpenChange`; do not push the parent URL.
 - Use `src/app/dashboard/menu-items/@modal` and `src/app/dashboard/sales/@modal` as reference implementations. If a Next.js upgrade reintroduces duplicate interception rewrites in development, update the version-specific `patches/next@*.patch` rather than removing that required workaround.
 
+### glimm `GlimmScope` transitions
+
+- Where HTML-in-Canvas is available (Chrome 157+), `pageEffect` moves the scope's subtree into a WebGL canvas. Browsers without it (for example, the VS Code integrated browser) use the plain DOM path, so test these bugs in Chrome.
+- Never leave `pageEffect` on while idle. A resize reallocates glimm's texture but only rebuilds mipmaps during an active sweep, so the scope renders solid black after a resize. Enable it right before `play()` and turn it off in `onLeave`, which glimm always calls, including on abort or failure. Give the canvas a moment to mount before `play()` (for example, the import card's exit delay).
+- Give scope children an opaque background. glimm draws them without premultiplied alpha, so translucent backgrounds and gradients render as saturated blobs.
+- Reference implementations: `src/app/(auth)/new-org/new-org-reveal.tsx` and `src/app/dashboard/menu-items/menu-import/menu-import-form.tsx`.
+
 ## Practical repo guardrails
 
 - Prefer React Server Components; see Key Conventions for `use client` rules.

@@ -9,13 +9,13 @@ import {
   type ReactNode
 } from "react"
 import toast from "react-hot-toast"
+import { Ring } from "loading-dev"
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
   Download,
-  LoaderCircle,
   SearchIcon,
   XIcon
 } from "lucide-react"
@@ -217,10 +217,13 @@ export function SalesTransactionsFilterBar({
           </Button>
         )}
         {isPending && (
-          <LoaderCircle
+          <span
+            className="text-muted-foreground"
+            role="status"
             aria-label="Actualizando resultados"
-            className="text-muted-foreground size-4 animate-spin"
-          />
+          >
+            <Ring size={16} />
+          </span>
         )}
       </div>
 
@@ -318,7 +321,7 @@ export function SalesTransactionsExportButton({
       onClick={exportTransactions}
     >
       {isDownloading ? (
-        <LoaderCircle data-icon="inline-start" className="animate-spin" />
+        <Ring size={16} />
       ) : (
         <Download data-icon="inline-start" />
       )}

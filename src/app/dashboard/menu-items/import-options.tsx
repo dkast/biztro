@@ -4,7 +4,9 @@ import { useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import { BorderBeam } from "border-beam"
-import { AlertCircle, FileSpreadsheet, FileText, Loader } from "lucide-react"
+import { TransitionLink } from "glimm/next"
+import { Ring } from "loading-dev"
+import { AlertCircle, FileSpreadsheet, FileText } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import Papa from "papaparse"
@@ -217,9 +219,11 @@ function validateRow(row: CSVRow): string[] {
 
 export default function MenuImportOptions({
   aiImportHref,
+  sweepAiImport = false,
   onCsvSuccess
 }: {
   aiImportHref: string
+  sweepAiImport?: boolean
   onCsvSuccess?: (createdCount: number) => void
 }) {
   const [errors, setErrors] = useState<ImportError[]>([])
@@ -345,14 +349,14 @@ export default function MenuImportOptions({
             justify-center gap-2 rounded-lg bg-white/80 text-gray-900
             backdrop-blur dark:bg-gray-950/80 dark:text-gray-100"
         >
-          <Loader className="size-6 animate-spin" />
+          <Ring size={24} />
           <p className="text-sm font-medium">Importando productos...</p>
         </div>
       )}
-      <BorderBeam size="pulse-inner" colorVariant="colorful" strength={0.3}>
+      <BorderBeam size="pulse-inner" colorVariant="colorful" strength={0.7}>
         <div
-          className="bg-background relative rounded-2xl border p-4 ring-1
-            ring-black/10 dark:ring-white/15"
+          className="dark:bg-background bg-accent relative rounded-2xl border
+            p-4 ring-1 ring-black/10 dark:ring-white/15"
         >
           <div className="mb-3 flex items-start gap-3">
             <FileText className="text-muted-foreground mt-1.5 size-4 shrink-0" />
@@ -370,17 +374,24 @@ export default function MenuImportOptions({
             </div>
           </div>
           <Button asChild variant="outline" disabled={isPending}>
-            <Link href={aiImportHref} prefetch={false}>
-              Importar menú con IA
-            </Link>
+            {sweepAiImport ? (
+              <TransitionLink
+                href={aiImportHref}
+                prefetch={false}
+                sweep={{ direction: "ltr" }}
+              >
+                Importar menú con IA
+              </TransitionLink>
+            ) : (
+              <Link href={aiImportHref} prefetch={false}>
+                Importar menú con IA
+              </Link>
+            )}
           </Button>
         </div>
       </BorderBeam>
 
-      <div
-        className="border-border/60 bg-background rounded-2xl border p-5
-          shadow-sm"
-      >
+      <div className="border-border bg-background rounded-2xl border p-5">
         <div className="mb-3 flex items-start gap-3">
           <FileSpreadsheet className="text-muted-foreground size-4 shrink-0" />
           <div>

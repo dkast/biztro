@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
-import { Loader } from "lucide-react"
+import { Ring } from "loading-dev"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
@@ -254,9 +254,7 @@ export default function OrganizationForm({
           </div>
           <Field orientation="responsive">
             <Button disabled={status === "executing"} type="submit">
-              {status === "executing" && (
-                <Loader className="mr-2 animate-spin" />
-              )}
+              {status === "executing" && <Ring className="mr-2" size={16} />}
               <TextMorph>
                 {status === "executing" ? "Guardando..." : "Guardar"}
               </TextMorph>

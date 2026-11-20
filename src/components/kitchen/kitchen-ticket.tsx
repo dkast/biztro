@@ -20,15 +20,28 @@ import {
   getElapsedTone
 } from "@/lib/orders"
 import {
-  kitchenStatusBadgeVariants,
   kitchenStatusLabels,
+  type KitchenStatus,
   type OrderTicket
 } from "@/lib/types/order"
-import {
-  salesOrderTypeBadgeVariants,
-  salesOrderTypeLabels
-} from "@/lib/types/sales"
+import { salesOrderTypeLabels } from "@/lib/types/sales"
 import { cn } from "@/lib/utils"
+
+// Same hues as the action buttons (warning/success), which take the color of the status they move the ticket to.
+const kitchenStatusStyles = {
+  NEW: {
+    header: "bg-blue-600 text-white",
+    border: "border-blue-600"
+  },
+  PREPARING: {
+    header: "bg-amber-400 text-amber-950",
+    border: "border-amber-400"
+  },
+  READY: {
+    header: "bg-emerald-400 text-emerald-950",
+    border: "border-emerald-400"
+  }
+} as const satisfies Record<KitchenStatus, { header: string; border: string }>
 
 export type TicketAction = {
   label: string
@@ -81,10 +94,7 @@ export function KitchenTicket({
         `bg-card text-card-foreground flex w-full min-w-0 flex-col
         overflow-hidden rounded-xl border shadow-xs`,
         fill && "h-full min-h-0",
-        ticket.kitchenStatus === "PREPARING" &&
-          "border-amber-400/70 dark:border-amber-500/50",
-        ticket.kitchenStatus === "READY" &&
-          "border-emerald-500/70 dark:border-emerald-500/50"
+        kitchenStatusStyles[ticket.kitchenStatus].border
       )}
     >
       <TicketHeader ticket={ticket} minutes={minutes} tone={tone} />
@@ -173,10 +183,15 @@ function TicketHeader({
   tone: ReturnType<typeof getElapsedTone>
 }) {
   return (
-    <header className="flex shrink-0 flex-col gap-2 border-b px-4 py-3">
+    <header
+      className={cn(
+        "flex shrink-0 flex-col gap-2 px-4 py-3",
+        kitchenStatusStyles[ticket.kitchenStatus].header
+      )}
+    >
       <div className="flex items-center justify-between gap-3">
         <p className="flex min-w-0 items-baseline gap-2">
-          <span className="text-2xl leading-none font-semibold tabular-nums">
+          <span className="text-3xl leading-none font-bold tabular-nums">
             {formatOrderNumber(ticket.number)}
           </span>
           {ticket.label && (
@@ -187,10 +202,10 @@ function TicketHeader({
         </p>
         <p
           className={cn(
-            "flex shrink-0 items-center gap-1 text-sm font-medium tabular-nums",
-            tone === "normal" && "text-muted-foreground",
-            tone === "warning" && "text-amber-700 dark:text-amber-400",
-            tone === "critical" && "text-rose-700 dark:text-rose-400"
+            `flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-sm
+            font-semibold tabular-nums`,
+            tone === "warning" && "bg-white text-amber-800",
+            tone === "critical" && "bg-rose-600 text-white"
           )}
         >
           {tone === "critical" ? (
@@ -205,10 +220,13 @@ function TicketHeader({
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <Badge variant={kitchenStatusBadgeVariants[ticket.kitchenStatus]}>
+        <span className="text-base font-semibold tracking-wide uppercase">
           {kitchenStatusLabels[ticket.kitchenStatus]}
-        </Badge>
-        <Badge variant={salesOrderTypeBadgeVariants[ticket.orderType]}>
+        </span>
+        <Badge
+          variant="outline"
+          className="bg-white text-gray-950 dark:text-gray-950"
+        >
           {salesOrderTypeLabels[ticket.orderType]}
         </Badge>
       </div>

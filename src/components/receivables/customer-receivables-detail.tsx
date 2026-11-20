@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react"
 import toast from "react-hot-toast"
-import { Edit3, LoaderCircle, PlusCircle } from "lucide-react"
+import { Ring } from "loading-dev"
+import { Edit3, PlusCircle } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 
@@ -360,9 +361,7 @@ function CustomerEditDialog({
               })
             }}
           >
-            {isPending && (
-              <LoaderCircle data-icon="inline-start" className="animate-spin" />
-            )}
+            {isPending && <Ring size={16} />}
             Guardar cambios
           </Button>
         </DialogFooter>
@@ -554,9 +553,7 @@ function RegisterPaymentDialog({
         </FieldGroup>
         <DialogFooter>
           <Button type="button" onClick={handleSubmit} disabled={isPending}>
-            {isPending && (
-              <LoaderCircle data-icon="inline-start" className="animate-spin" />
-            )}
+            {isPending && <Ring size={16} />}
             Registrar abono
           </Button>
         </DialogFooter>

@@ -2,7 +2,8 @@ import { useState } from "react"
 import { toast } from "react-hot-toast"
 import type { Category } from "@/generated/prisma-client/client"
 import * as Sentry from "@sentry/nextjs"
-import { Combine, Loader, Star, Trash2, X } from "lucide-react"
+import { Ring } from "loading-dev"
+import { Combine, Star, Trash2, X } from "lucide-react"
 import { useAction } from "next-safe-action/hooks"
 
 import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
@@ -244,7 +245,7 @@ function FloatingToolbar({
               disabled={updateIsPending || !hasSelection}
             >
               {updateIsPending ? (
-                <Loader className="size-3.5 animate-spin" />
+                <Ring size={14} />
               ) : (
                 <Combine className="size-3.5" />
               )}
@@ -274,7 +275,7 @@ function FloatingToolbar({
           onClick={handleToggleFeature}
         >
           {featureIsPending ? (
-            <Loader className="size-3.5 animate-spin" />
+            <Ring size={14} />
           ) : (
             <Star className="size-3.5" />
           )}
@@ -289,7 +290,7 @@ function FloatingToolbar({
           onClick={() => setShowDeleteDialog(true)}
         >
           {deleteIsPending ? (
-            <Loader className="size-3.5 animate-spin" />
+            <Ring size={14} />
           ) : (
             <Trash2 className="size-3.5" />
           )}

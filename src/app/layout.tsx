@@ -1,6 +1,7 @@
 import React, { Suspense } from "react"
 import { VercelToolbar } from "@vercel/toolbar/next"
 import { Agentation } from "agentation"
+import { GlimmProvider } from "glimm/next"
 import { type Metadata, type Viewport } from "next"
 import { Be_Vietnam_Pro, Inter } from "next/font/google"
 
@@ -74,11 +75,13 @@ export default function RootLayout({
           }
         >
           <Providers>
-            <div className="flex min-h-dvh flex-col overscroll-auto">
-              {children}
-              {shouldInjectToolbar && <VercelToolbar />}
-              {shouldInjectToolbar && <Agentation />}
-            </div>
+            <GlimmProvider>
+              <div className="flex min-h-dvh flex-col overscroll-auto">
+                {children}
+                {shouldInjectToolbar && <VercelToolbar />}
+                {shouldInjectToolbar && <Agentation />}
+              </div>
+            </GlimmProvider>
           </Providers>
         </Suspense>
       </body>

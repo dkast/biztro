@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { Loader2 } from "lucide-react"
+import { Ring } from "loading-dev"
 
 export default function RevalidateStatus() {
   const queryClient = useQueryClient()
@@ -39,7 +39,7 @@ export default function RevalidateStatus() {
 
   return (
     <div className="my-2 flex items-center gap-2 text-gray-500">
-      <Loader2 className="size-4 animate-spin" />
+      <Ring size={16} />
       <span className="text-sm">Revalidando estado</span>
     </div>
   )

@@ -1,0 +1,49 @@
+{
+	"mcpServers": {
+		"chrome-devtools": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"chrome-devtools-mcp@latest",
+				"--browser-url=http://127.0.0.1:9222"
+			],
+			"tools": [
+				"*"
+			]
+		},
+		"motion": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"motion-ai"
+			],
+			"tools": [
+				"*"
+			]
+		},
+		"next-devtools": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"next-devtools-mcp@latest"
+			],
+			"tools": [
+				"*"
+			]
+		},
+		"shadcn": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"shadcn@latest",
+				"mcp"
+			],
+			"tools": [
+				"*"
+			]
+		}
+	}
+}

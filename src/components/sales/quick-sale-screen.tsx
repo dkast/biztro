@@ -10,11 +10,11 @@ import {
 } from "react"
 import toast from "react-hot-toast"
 import { bind, play, setEnabled, setTheme } from "cuelume"
+import { Ring } from "loading-dev"
 import {
   ChefHat,
   ChevronDown,
   ChevronUp,
-  LoaderCircle,
   Search,
   ShoppingBag,
   SquarePen,
@@ -222,7 +222,7 @@ export function QuickSaleScreen({
 
     setIsSoundMuted(isMuted)
     setEnabled(!isMuted)
-    setTheme("press")
+    setTheme("default")
     bind()
   }, [])
 
@@ -498,11 +498,7 @@ export function QuickSaleScreen({
       ? "Enviando..."
       : "Enviar a cocina"
     : "Completar venta"
-  const SubmitIcon = isPayOnDelivery
-    ? sendOrder.isPending
-      ? LoaderCircle
-      : ChefHat
-    : ShoppingBag
+  const SubmitIcon = isPayOnDelivery ? ChefHat : ShoppingBag
 
   const clearCart = () => {
     setCart([])
@@ -621,8 +617,8 @@ export function QuickSaleScreen({
                   size="sm"
                   onClick={clearCart}
                   disabled={cart.length === 0}
-                  data-cuelume-press
-                  // data-cuelume-release
+                  data-cuelume-tap
+                  data-cuelume-emphasis="subtle"
                 >
                   <Trash2 data-icon="inline-start" />
                   Limpiar
@@ -685,13 +681,17 @@ export function QuickSaleScreen({
                 className="h-12 text-base font-semibold"
                 disabled={cart.length === 0 || sendOrder.isPending}
                 onClick={() => guardSaleCompletion(handleCheckout)}
-                data-cuelume-press
+                data-cuelume-tap
                 // data-cuelume-release
               >
-                <SubmitIcon
-                  data-icon="inline-start"
-                  className={cn(sendOrder.isPending && "animate-spin")}
-                />
+                {isPayOnDelivery && sendOrder.isPending ? (
+                  <Ring size={16} />
+                ) : (
+                  <SubmitIcon
+                    data-icon="inline-start"
+                    className={cn(sendOrder.isPending && "animate-spin")}
+                  />
+                )}
                 <TextMorph>{submitLabel}</TextMorph>
               </Button>
             </CardContent>
@@ -923,8 +923,8 @@ function ProductCard({
       type="button"
       whileTap={{ scale: 0.98 }}
       onClick={() => onSelect(product)}
-      data-cuelume-press
-      // data-cuelume-release
+      data-cuelume-select
+      data-cuelume-emphasis="subtle"
       className={cn(
         "group block w-full cursor-pointer text-left focus-visible:outline-none"
       )}
@@ -1201,7 +1201,7 @@ function MobileSaleCart({
           data-cuelume-press
         >
           {isSubmitting ? (
-            <LoaderCircle className="size-5 animate-spin" />
+            <Ring size={20} />
           ) : isPayOnDelivery ? (
             <ChefHat className="size-5" />
           ) : (
@@ -1235,7 +1235,8 @@ function MobileSaleCart({
                 onClick={onClear}
                 disabled={!hasItems}
                 aria-label="Limpiar venta"
-                data-cuelume-press
+                data-cuelume-tap
+                data-cuelume-emphasis="subtle"
               >
                 <Trash2 />
               </Button>
@@ -1305,10 +1306,7 @@ function MobileSaleCart({
               data-cuelume-press
             >
               {isSubmitting ? (
-                <LoaderCircle
-                  data-icon="inline-start"
-                  className="animate-spin"
-                />
+                <Ring size={16} />
               ) : isPayOnDelivery ? (
                 <ChefHat data-icon="inline-start" />
               ) : (

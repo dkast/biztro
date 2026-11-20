@@ -2,7 +2,7 @@
 
 import React, { useState, useTransition } from "react"
 import toast from "react-hot-toast"
-import { Loader } from "lucide-react"
+import { Ring } from "loading-dev"
 import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
@@ -33,11 +33,7 @@ export function CustomerPortalButton({ referenceId }: { referenceId: string }) {
       onClick={handleStripePortal}
       className="transition-all"
     >
-      {isSubmitting || isPending ? (
-        <Loader className="size-4 animate-spin" />
-      ) : (
-        "Ir a Portal Clientes"
-      )}
+      {isSubmitting || isPending ? <Ring size={16} /> : "Ir a Portal Clientes"}
     </Button>
   )
 }
