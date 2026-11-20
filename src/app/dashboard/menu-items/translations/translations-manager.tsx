@@ -162,7 +162,7 @@ export default function TranslationsManager({
       setTranslatingLocale(null)
 
       // With the dialog open the wave is the reward; otherwise fall back to a toast.
-      if (dialogOpenRef.current) {
+      if (dialogOpenRef.current && locale === selectedLocale) {
         setCompletedCount(count)
         return
       }

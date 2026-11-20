@@ -380,9 +380,9 @@ export default function MenuImportForm({
   const canDropFile = !hasItems && !isParsing && !isMutating
 
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
-    if (!canDropFile) return
     event.preventDefault()
-    event.dataTransfer.dropEffect = "copy"
+    event.dataTransfer.dropEffect = canDropFile ? "copy" : "none"
+    if (!canDropFile) return
     setIsDragging(true)
   }
 
@@ -394,8 +394,8 @@ export default function MenuImportForm({
   }
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
-    if (!canDropFile) return
     event.preventDefault()
+    if (!canDropFile) return
     setIsDragging(false)
     const file = event.dataTransfer.files?.[0]
     if (file) startImport(file)
