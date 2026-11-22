@@ -1,435 +1,524 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import {
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Languages,
-  LockIcon,
-  ScanText,
-  Sparkles
-} from "lucide-react"
-import { AnimatePresence, motion, useInView } from "motion/react"
+import { useRef } from "react"
+import { Languages, ScanText } from "lucide-react"
+import { motion, useInView } from "motion/react"
 
+import {
+  Badge,
+  Bar,
+  Collapse,
+  Icon,
+  Meter,
+  Spinner,
+  Stage,
+  States,
+  Window,
+  type Act,
+  type Layout,
+  type Point
+} from "@/components/marketing/stageshow-kit"
 import TitleSection from "@/components/marketing/title-section"
 import { LanguageFlag } from "@/components/ui/language-flag"
 import { cn } from "@/lib/utils"
 
+import "./stageshow-biztro.css"
+
 /* ------------------------------------------------------------------ */
-/*  Shared browser chrome for dark illustrations                      */
+/*  Scene 1: Printed menu PDF dragged in -> structured editable rows  */
 /* ------------------------------------------------------------------ */
 
-function BrowserChrome({
-  url,
-  children
-}: {
-  url: string
-  children: React.ReactNode
-}) {
+type DragGhost = {
+  on: boolean
+  dropped: boolean
+  off: Point
+  at: Point
+}
+
+type ImportState = {
+  over: boolean
+  phase: "idle" | "parsing" | "done"
+  progress: number
+  rowsOpen: number
+  ghost: DragGhost
+}
+
+const importInitial: ImportState = {
+  over: false,
+  phase: "idle",
+  progress: 0,
+  rowsOpen: 0,
+  ghost: {
+    on: false,
+    dropped: false,
+    off: { x: 0, y: 0 },
+    at: { x: 0, y: 0 }
+  }
+}
+
+const importPoster: ImportState = {
+  over: false,
+  phase: "done",
+  progress: 1,
+  rowsOpen: 3,
+  ghost: {
+    on: false,
+    dropped: true,
+    off: { x: 0, y: 0 },
+    at: { x: 0, y: 0 }
+  }
+}
+
+const IMPORT_ITEMS = [
+  {
+    name: "Enchiladas suizas",
+    category: "Platos fuertes",
+    price: "$135",
+    score: "98%"
+  },
+  {
+    name: "Molletes clásicos",
+    category: "Desayunos",
+    price: "$95",
+    score: "96%"
+  },
+  {
+    name: "Café de olla",
+    category: "Bebidas",
+    price: "$45",
+    score: "99%"
+  }
+] as const
+
+async function importScript(a: Act<ImportState>) {
+  await a.wait(650)
+
+  // 1. Pick up the printed menu PDF
+  const icon = a.rect("pdf-icon")
+  const file = a.rect("pdf-file")
+  const grab = {
+    x: icon.x + icon.width * 0.55,
+    y: icon.y + icon.height * 0.55
+  }
+  await a.move(grab)
+  await a.wait(220)
+  const off = { x: grab.x - file.x, y: grab.y - file.y }
+
+  // 2. Drag it into the import window
+  const drop = a.rect("import-drop")
+  const target = {
+    x: drop.x + drop.width * 0.42,
+    y: drop.y + drop.height * 0.36
+  }
+  await a.drag(
+    target,
+    (at, _from, p) => {
+      a.put({
+        over: p > 0.45,
+        ghost: { on: true, dropped: false, off, at }
+      })
+    },
+    { duration: 1150, cursor: "preserve" }
+  )
+
+  // 3. Drop: parse progress and rows open top-to-bottom
+  await a.set(s => ({
+    over: false,
+    phase: "parsing",
+    progress: 0.25,
+    ghost: { ...s.ghost, dropped: true }
+  }))
+  await a.wait(420)
+  await a.set({ progress: 0.65, rowsOpen: 1 })
+  await a.wait(420)
+  await a.set({ progress: 0.9, rowsOpen: 2 })
+  await a.wait(420)
+  await a.set({ phase: "done", progress: 1, rowsOpen: 3 })
+
+  // 4. Hold the structured result
+  await a.wait(2400)
+
+  // 5. Caused reset: Cmd+Z clears the imported batch
+  await a.key("cmd+z")
+  await a.set({
+    rowsOpen: 0,
+    phase: "idle",
+    ghost: importInitial.ghost
+  })
+  await a.wait(620)
+  await a.snap({ progress: 0 })
+  await a.wait(320)
+}
+
+function PdfThumb({ small }: { small?: boolean }) {
   return (
-    <div
-      className="relative flex h-full w-full flex-col overflow-hidden rounded-xl
-        bg-taupe-900/80 shadow-2xl ring-1 ring-white/8"
-    >
-      <div
-        className="flex items-center gap-2 border-b border-white/6 px-3.5
-          py-2.5"
-      >
-        <div className="flex gap-1.5">
-          <span className="size-2.5 rounded-full bg-[#ff5f57]" />
-          <span className="size-2.5 rounded-full bg-[#febc2e]" />
-          <span className="size-2.5 rounded-full bg-[#28c840]" />
-        </div>
-        <div className="ml-2 flex items-center gap-0.5 text-taupe-500">
-          <ChevronLeft className="size-3.5" />
-          <ChevronRight className="size-3.5" />
-        </div>
-        <div
-          className="mx-2 flex flex-1 items-center justify-center gap-2
-            rounded-md bg-taupe-950/60 px-3 py-1 ring-1 ring-white/6"
-        >
-          <LockIcon className="size-3 text-taupe-700" />
-          <span className="truncate text-[11px] text-taupe-400">{url}</span>
-        </div>
-        <div className="w-20" />
-      </div>
-      <div className="relative min-h-0 flex-1 overflow-hidden">
-        <div className="absolute inset-0 h-full w-full">{children}</div>
-      </div>
+    <div className={small ? "ai-pdf-doc ai-pdf-doc--small" : "ai-pdf-doc"}>
+      {!small && <span className="ai-pdf-badge">PDF</span>}
+      <Bar w={small ? 18 : 38} h={small ? 3 : 4} r={2} tone={4} />
+      <Bar w={small ? 14 : 30} h={small ? 2 : 3} r={1.5} tone={3} />
+      <Bar w={small ? 16 : 34} h={small ? 2 : 3} r={1.5} tone={2} />
+      {!small && <Bar w={24} h={3} r={1.5} tone={2} />}
     </div>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/*  Illustration 1: printed menu -> structured products               */
-/* ------------------------------------------------------------------ */
-
-const SCAN_CYCLE = 9
-
-const extractedItems = [
-  { name: "Tacos al pastor", price: "$85", category: "Tacos" },
-  { name: "Enchiladas verdes", price: "$120", category: "Platos fuertes" },
-  { name: "Agua de horchata", price: "$35", category: "Bebidas" }
-]
-
-function ScannerIllustration() {
+function MenuImportStage() {
   return (
-    <BrowserChrome url="biztro.co/menu-items/menu-import">
-      <div className="grid h-full w-full grid-cols-[1fr_auto_1.15fr] gap-3 p-5">
-        {/* Source: photo of the printed menu */}
-        <div className="relative flex min-h-0 flex-col">
-          <div
-            className="relative min-h-0 flex-1 overflow-hidden rounded-md
-              bg-[oklch(96%_0.01_80)] shadow-lg ring-1 ring-black/10"
-          >
-            {/* Paper skeleton */}
-            <div className="space-y-3 px-3.5 pt-4 pb-5">
-              <div className="flex flex-col items-center gap-1 pb-2">
-                <div className="h-2.5 w-16 rounded-sm bg-taupe-400/60" />
-                <div className="h-1.5 w-10 rounded-sm bg-taupe-300/70" />
-              </div>
-              {[0, 1].map(i => (
-                <div key={i} className="space-y-1.5">
-                  <div className="h-1.5 w-12 rounded-sm bg-taupe-400/50" />
-                  <div className="flex items-end gap-2">
-                    <div className="h-1.5 flex-1 rounded-sm bg-taupe-300/70" />
-                    <div className="h-1.5 w-6 rounded-sm bg-taupe-400/60" />
-                  </div>
-                </div>
-              ))}
+    <Stage<ImportState>
+      width={512}
+      height={380}
+      compact={{ below: 440, width: 358, height: 348 }}
+      theme="dark"
+      initial={importInitial}
+      poster={importPoster}
+      play="loop"
+      script={importScript}
+      keys={{ wide: "bottom-left", compact: "top" }}
+      cursor={{
+        at: { at: "import-drop", x: 0.42, y: 0.36 }
+      }}
+      className="ai-stage"
+    >
+      {(s, _rect, layout: Layout) => {
+        const compact = layout === "compact"
+        const lifted = s.ghost.on && !s.ghost.dropped
+        const winStyle = compact
+          ? { left: 14, top: 68, width: 360, height: 304 }
+          : { left: 112, top: 20, width: 418, height: 384 }
+
+        return (
+          <>
+            <div
+              className={
+                compact ? "ai-desk-file ai-desk-file--compact" : "ai-desk-file"
+              }
+              data-target="pdf-file"
+              data-lifted={lifted || undefined}
+              style={compact ? { left: 14, top: 12 } : { left: 14, top: 106 }}
+            >
+              <span data-target="pdf-icon">
+                <PdfThumb small={compact} />
+              </span>
+              <span className="ai-pdf-name">carta-impresa.pdf</span>
             </div>
 
-            {/* Corner brackets */}
-            <div className="pointer-events-none absolute inset-2">
-              {[
-                "top-0 left-0 border-t-2 border-l-2",
-                "top-0 right-0 border-t-2 border-r-2",
-                "bottom-0 left-0 border-b-2 border-l-2",
-                "right-0 bottom-0 border-r-2 border-b-2"
-              ].map(pos => (
-                <span
-                  key={pos}
-                  className={cn(
-                    "absolute size-3.5 rounded-[2px] border-orange-500",
-                    pos
-                  )}
-                />
-              ))}
-            </div>
-
-            {/* Scan line + glow */}
-            <motion.div
-              className="absolute inset-x-0 h-px bg-linear-to-r from-transparent
-                via-orange-500 to-transparent"
-              animate={{ top: ["6%", "94%"] }}
-              transition={{
-                duration: SCAN_CYCLE * 0.55,
-                repeat: Infinity,
-                repeatDelay: SCAN_CYCLE * 0.45,
-                ease: "linear"
-              }}
-            />
-            <motion.div
-              className="absolute inset-x-0 h-10 -translate-y-full
-                bg-linear-to-b from-transparent to-orange-500/15"
-              animate={{ top: ["6%", "94%"] }}
-              transition={{
-                duration: SCAN_CYCLE * 0.55,
-                repeat: Infinity,
-                repeatDelay: SCAN_CYCLE * 0.45,
-                ease: "linear"
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Connector */}
-        <div className="flex items-center">
-          <motion.div
-            className="flex size-7 items-center justify-center rounded-full
-              bg-orange-500/15 ring-1 ring-orange-500/30"
-            animate={{ scale: [1, 1.12, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <Sparkles className="size-3.5 text-orange-400" />
-          </motion.div>
-        </div>
-
-        {/* Target: extracted, editable products */}
-        <div className="flex min-h-0 flex-col">
-          <div className="flex min-h-0 flex-1 flex-col gap-2">
-            {extractedItems.map((item, i) => {
-              const start = 0.14 + i * 0.16
-              return (
-                <motion.div
-                  key={item.name}
-                  className="flex items-center gap-2.5 rounded-md
-                    bg-taupe-800/70 px-3 py-2 ring-1 ring-white/8"
-                  animate={{
-                    opacity: [0, 0, 1, 1, 0],
-                    x: [10, 10, 0, 0, 0]
-                  }}
-                  transition={{
-                    duration: SCAN_CYCLE,
-                    repeat: Infinity,
-                    ease: "easeOut",
-                    times: [0, start, start + 0.05, 0.94, 1]
-                  }}
-                >
-                  <div className="size-7 shrink-0 rounded-sm bg-taupe-700/80" />
-                  <div className="min-w-0 flex-1">
-                    <p
-                      className="truncate text-[11px] font-medium
-                        text-taupe-100"
-                    >
-                      {item.name}
-                    </p>
-                    <p className="text-[9px] text-taupe-500">{item.category}</p>
-                  </div>
-                  <span className="text-[11px] font-semibold text-taupe-200">
-                    {item.price}
-                  </span>
-                  <motion.span
-                    className="flex size-4 items-center justify-center
-                      rounded-full bg-green-500/20 text-green-400"
-                    animate={{ scale: [0, 0, 1, 1, 1] }}
-                    transition={{
-                      duration: SCAN_CYCLE,
-                      repeat: Infinity,
-                      times: [0, start + 0.06, start + 0.1, 0.94, 1]
+            <Window
+              url="biztro.co/menu-items/menu-import"
+              className="ai-window"
+              style={winStyle}
+            >
+              <div
+                className="ai-import-body"
+                data-target="import-drop"
+                data-over={s.over || undefined}
+                data-compact={compact || undefined}
+              >
+                <div className="ai-import-head">
+                  <div className="ai-import-title">Importar menú</div>
+                  <States
+                    value={s.phase}
+                    align="end"
+                    states={{
+                      idle: (
+                        <span className="ai-import-status">
+                          {compact
+                            ? "Arrastra un PDF"
+                            : "Arrastra un PDF o foto"}
+                        </span>
+                      ),
+                      parsing: (
+                        <span className="ai-import-status">
+                          <Spinner size={12} />
+                          <Meter
+                            value={s.progress}
+                            className="ai-import-meter"
+                          />
+                        </span>
+                      ),
+                      done: (
+                        <Badge
+                          tone="success"
+                          icon={<Icon name="check" size={12} />}
+                        >
+                          3 platillos listos
+                        </Badge>
+                      )
                     }}
-                  >
-                    <Check className="size-2.5" strokeWidth={3} />
-                  </motion.span>
-                </motion.div>
-              )
-            })}
+                  />
+                </div>
 
-            {/* Progress */}
-            <div className="mt-auto">
-              <div className="h-1 overflow-hidden rounded-full bg-taupe-800">
-                <motion.div
-                  className="h-full rounded-full bg-orange-500"
-                  animate={{ width: ["0%", "0%", "70%", "70%", "0%"] }}
-                  transition={{
-                    duration: SCAN_CYCLE,
-                    repeat: Infinity,
-                    ease: "linear",
-                    times: [0, 0.08, 0.6, 0.94, 1]
-                  }}
-                />
+                <div className="ai-table" data-compact={compact || undefined}>
+                  <div className="ai-table-head">
+                    <span>Platillo</span>
+                    {!compact && <span>Categoría</span>}
+                    <span style={{ textAlign: "right" }}>Precio</span>
+                    <span style={{ textAlign: "right" }}>Exact.</span>
+                  </div>
+
+                  {IMPORT_ITEMS.map((item, idx) => (
+                    <Collapse
+                      key={item.name}
+                      open={s.rowsOpen > idx}
+                      reveal="drop"
+                    >
+                      <div className="ai-table-row">
+                        <span className="ai-dish-name">{item.name}</span>
+                        {!compact && (
+                          <span className="ai-dish-cat">{item.category}</span>
+                        )}
+                        <span className="ai-dish-price">{item.price}</span>
+                        <span className="ai-score-cell">
+                          <Badge tone="success">{item.score}</Badge>
+                        </span>
+                      </div>
+                    </Collapse>
+                  ))}
+
+                  {/* Quiet filler rows keep the table grounded before & after */}
+                  {[112, 86, 128].map((w, idx) => (
+                    <div key={idx} className="ai-table-row">
+                      <Bar w={w} h={7} r={3.5} tone={2} />
+                      {!compact && <Bar w={64} h={6} r={3} tone={1} />}
+                      <div style={{ display: "flex", justifyContent: "end" }}>
+                        <Bar w={32} h={7} r={3.5} tone={2} />
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "end" }}>
+                        <Bar w={34} h={16} r={8} tone={1} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </BrowserChrome>
+            </Window>
+
+            {s.ghost.on && (
+              <div
+                className="ai-drag-ghost"
+                style={{
+                  opacity: s.ghost.dropped ? 0 : 1,
+                  transform: `translate3d(${s.ghost.at.x - s.ghost.off.x}px, ${s.ghost.at.y - s.ghost.off.y}px, 0) scale(1.03) rotate(-1.5deg)`
+                }}
+              >
+                <PdfThumb small />
+                <span className="ai-pdf-name">carta-impresa.pdf</span>
+              </div>
+            )}
+          </>
+        )
+      }}
+    </Stage>
   )
 }
 
 /* ------------------------------------------------------------------ */
-/*  Illustration 2: one product, every language                       */
+/*  Scene 2: One menu, every language (cursor-driven language tabs)   */
 /* ------------------------------------------------------------------ */
 
-const translations = [
+const LOCALES = [
   {
-    locale: "es",
+    code: "es",
     label: "Español",
-    name: "Tacos al pastor",
+    short: "ES",
+    dish: "Tacos al pastor",
     description:
-      "Tortillas de maíz con cerdo marinado, piña, cebolla y cilantro."
+      "Tortillas de maíz con cerdo marinado, piña asada, cebolla y cilantro.",
+    drink: "Agua de horchata",
+    status: "Idioma original"
   },
   {
-    locale: "en",
+    code: "en",
     label: "Inglés",
-    name: "Pork tacos al pastor",
+    short: "EN",
+    dish: "Pork tacos al pastor",
     description:
-      "Corn tortillas with marinated pork, pineapple, onion and cilantro."
+      "Corn tortillas with marinated pork, roasted pineapple, onion and cilantro.",
+    drink: "Horchata rice drink",
+    status: "Inglés · 24 platillos"
   },
   {
-    locale: "fr",
+    code: "fr",
     label: "Francés",
-    name: "Tacos al pastor",
-    description: "Tortillas de maïs, porc mariné, ananas, oignon et coriandre."
-  },
-  {
-    locale: "de",
-    label: "Alemán",
-    name: "Tacos al Pastor",
+    short: "FR",
+    dish: "Tacos al pastor",
     description:
-      "Maistortillas mit mariniertem Schwein, Ananas, Zwiebel und Koriander."
+      "Tortillas de maïs, porc mariné, ananas rôti, oignon et coriandre.",
+    drink: "Boisson horchata",
+    status: "Francés · 24 platillos"
   },
   {
-    locale: "ja",
+    code: "ja",
     label: "Japonés",
-    name: "タコス・アル・パストール",
+    short: "JA",
+    dish: "タコス・アル・パストール",
     description:
-      "マリネした豚肉、パイナップル、玉ねぎ、コリアンダーのトルティーヤ。"
+      "マリネした豚肉、焼きパイナップル、玉ねぎ、コリアンダーのトルティーヤ。",
+    drink: "オルチャタ（お米のドリンク）",
+    status: "Japonés · 24 platillos"
   }
-]
+] as const
 
-function TranslationIllustration() {
-  const [index, setIndex] = useState(0)
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref)
+type LocaleIndex = 0 | 1 | 2 | 3
+type TranslationState = { index: LocaleIndex }
 
-  useEffect(() => {
-    if (!inView) return
-    const timer = setInterval(
-      () => setIndex(i => (i + 1) % translations.length),
-      2600
-    )
-    return () => clearInterval(timer)
-  }, [inView])
+const transInitial: TranslationState = { index: 0 }
+const transPoster: TranslationState = { index: 1 }
 
-  const active = translations[index]!
+async function translationScript(a: Act<TranslationState>) {
+  await a.wait(850)
 
+  for (const next of [1, 2, 3] as const) {
+    const target = `lang-${next}`
+    await a.move({ at: target, x: 0.78, y: 0.62 })
+    await a.click({ at: target, x: 0.78, y: 0.62 })
+    await a.set({ index: next })
+    await a.wait(next === 3 ? 2100 : 1850)
+  }
+
+  // Caused reset: return to Español
+  await a.move({ at: "lang-0", x: 0.78, y: 0.62 })
+  await a.click({ at: "lang-0", x: 0.78, y: 0.62 })
+  await a.set({ index: 0 })
+  await a.wait(500)
+}
+
+function TranslationStage() {
   return (
-    <BrowserChrome url="biztro.co/menu-items/translations">
-      <div ref={ref} className="flex h-full w-full flex-col gap-3 p-5">
-        {/* Language tabs */}
-        <div
-          className="flex items-center gap-1 rounded-lg bg-taupe-950/50 p-1
-            ring-1 ring-white/6"
-        >
-          {translations.map((t, i) => {
-            const isActive = i === index
-            return (
-              <button
-                key={t.locale}
-                type="button"
-                tabIndex={-1}
-                aria-hidden="true"
-                onClick={() => setIndex(i)}
-                className={cn(
-                  `relative flex flex-1 items-center justify-center gap-1.5
-                  rounded-md px-2 py-1.5 text-[10px] font-medium
-                  transition-colors duration-300`,
-                  isActive ? "text-taupe-50" : "text-taupe-500"
-                )}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="lang-tab"
-                    className="absolute inset-0 rounded-md bg-taupe-800 ring-1
-                      ring-white/10"
-                    transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
-                  />
-                )}
-                <span className="relative z-10 flex items-center gap-1.5">
-                  {t.locale === "es" ? (
-                    <span
-                      className="rounded-[3px] bg-taupe-600 px-1 text-[8px]
-                        leading-3 font-bold text-taupe-100"
-                    >
-                      ES
-                    </span>
-                  ) : (
-                    <LanguageFlag
-                      locale={t.locale}
-                      className="size-3 rounded-full"
-                    />
-                  )}
-                  <span className="hidden sm:inline">{t.label}</span>
-                </span>
-              </button>
-            )
-          })}
-        </div>
+    <Stage<TranslationState>
+      width={512}
+      height={380}
+      compact={{ below: 440, width: 358, height: 358 }}
+      theme="dark"
+      initial={transInitial}
+      poster={transPoster}
+      play="loop"
+      script={translationScript}
+      cursor={{ at: { at: "lang-0", x: 0.78, y: 0.62 } }}
+      className="ai-stage"
+    >
+      {(s, _rect, layout: Layout) => {
+        const compact = layout === "compact"
+        const winStyle = compact
+          ? { left: 14, top: 14, width: 360, height: 366 }
+          : { left: 20, top: 20, width: 510, height: 384 }
 
-        {/* Product card */}
-        <div
-          className="relative flex min-h-0 flex-1 flex-col overflow-hidden
-            rounded-lg bg-taupe-800/60 ring-1 ring-white/8"
-        >
-          <div className="flex gap-4 p-4">
-            <div
-              className="relative size-20 shrink-0 overflow-hidden rounded-md
-                bg-taupe-700/80 sm:size-24"
-            >
-              <span
-                className="absolute inset-x-2 bottom-2 h-6 rounded-sm
-                  bg-orange-500/30"
-              />
-              <span
-                className="absolute top-2 right-2 size-5 rounded-full
-                  bg-taupe-600"
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={active.locale}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <p
-                      className="font-display text-sm font-semibold
-                        text-taupe-50 sm:text-base"
-                    >
-                      {active.name}
-                    </p>
-                    <span
-                      className="shrink-0 text-sm font-semibold text-taupe-200"
-                    >
-                      $85
-                    </span>
-                  </div>
-                  <p
-                    className="mt-1 text-[11px] leading-relaxed text-taupe-400
-                      sm:text-xs"
-                  >
-                    {active.description}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
-
-          {/* Footer status */}
-          <div
-            className="mt-auto flex items-center justify-between border-t
-              border-white/6 px-4 py-2.5"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={active.locale}
-                className="inline-flex items-center gap-1.5 text-[10px]
-                  text-taupe-400"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                {index === 0 ? (
-                  <>
-                    <span className="size-1.5 rounded-full bg-taupe-500" />
-                    Idioma original
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="size-3 text-orange-400" />
-                    Traducido con IA
-                  </>
-                )}
-              </motion.span>
-            </AnimatePresence>
-            <span
-              className="inline-flex items-center gap-1 rounded-sm
-                bg-green-500/15 px-1.5 py-0.5 text-[10px] font-medium
-                text-green-400"
-            >
-              <Check className="size-3" strokeWidth={3} />
-              Publicado
+        const dishStates = Object.fromEntries(
+          LOCALES.map((loc, i) => [
+            String(i),
+            <span key={loc.code} className="ai-dish-card__title">
+              {loc.dish}
             </span>
-          </div>
-        </div>
-      </div>
-    </BrowserChrome>
+          ])
+        )
+
+        const descStates = Object.fromEntries(
+          LOCALES.map((loc, i) => [
+            String(i),
+            <span key={loc.code} className="ai-dish-card__desc">
+              {loc.description}
+            </span>
+          ])
+        )
+
+        const drinkStates = Object.fromEntries(
+          LOCALES.map((loc, i) => [
+            String(i),
+            <span key={loc.code} className="ai-secondary-row__name">
+              {loc.drink}
+            </span>
+          ])
+        )
+
+        const statusStates = Object.fromEntries(
+          LOCALES.map((loc, i) => [
+            String(i),
+            <span key={loc.code}>{loc.status}</span>
+          ])
+        )
+
+        return (
+          <Window
+            url="biztro.co/menu-items/translations"
+            className="ai-window"
+            style={winStyle}
+          >
+            <div className="ai-trans-body" data-compact={compact || undefined}>
+              <div className="ai-lang-bar">
+                <span
+                  className="ai-lang-pill"
+                  style={{
+                    transform: `translateX(calc(${s.index} * (100% + 4px)))`
+                  }}
+                />
+                {LOCALES.map((loc, i) => (
+                  <button
+                    key={loc.code}
+                    type="button"
+                    tabIndex={-1}
+                    aria-hidden="true"
+                    className="ai-lang-btn"
+                    data-target={`lang-${i}`}
+                    data-cursor="pointer"
+                    data-active={s.index === i || undefined}
+                  >
+                    {loc.code === "es" ? (
+                      <span className="ai-es-chip">ES</span>
+                    ) : (
+                      <LanguageFlag
+                        locale={loc.code}
+                        className="size-4 shrink-0 rounded-full"
+                      />
+                    )}
+                    <span>{compact ? loc.short : loc.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="ai-dish-card">
+                <div className="ai-dish-card__main">
+                  <div className="ai-dish-card__head">
+                    <States
+                      value={String(s.index)}
+                      align="start"
+                      states={dishStates}
+                    />
+                    <span className="ai-dish-card__price">$85</span>
+                  </div>
+                  <States
+                    value={String(s.index)}
+                    align="start"
+                    states={descStates}
+                  />
+                </div>
+                <div className="ai-dish-card__foot">
+                  <States
+                    value={String(s.index)}
+                    align="start"
+                    states={statusStates}
+                  />
+                  <Badge tone="success" icon={<Icon name="check" size={12} />}>
+                    Publicado
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="ai-secondary-row">
+                <States
+                  value={String(s.index)}
+                  align="start"
+                  states={drinkStates}
+                />
+                <span className="ai-secondary-row__price">$35</span>
+              </div>
+
+              <div className="ai-filler-row">
+                <Bar w={132} h={7} r={3.5} tone={2} />
+                <Bar w={36} h={7} r={3.5} tone={1} />
+              </div>
+            </div>
+          </Window>
+        )
+      }}
+    </Stage>
   )
 }
 
@@ -438,7 +527,7 @@ function TranslationIllustration() {
 /* ------------------------------------------------------------------ */
 
 function FeatureRow({
-  icon: Icon,
+  icon: IconComponent,
   step,
   title,
   description,
@@ -478,7 +567,7 @@ function FeatureRow({
             className="flex size-12 items-center justify-center rounded-xl
               bg-orange-500/15 text-orange-400 ring-1 ring-orange-500/25"
           >
-            <Icon className="size-6" />
+            <IconComponent className="size-6" />
           </div>
           <span
             className="text-xs font-semibold tracking-widest text-taupe-500
@@ -502,7 +591,7 @@ function FeatureRow({
       </motion.div>
 
       <motion.div
-        className={cn("aspect-4/3", reverse && "lg:order-1")}
+        className={cn("w-full", reverse && "lg:order-1")}
         initial={{ opacity: 0, y: 32 }}
         animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
         transition={{
@@ -526,7 +615,8 @@ export default function AIFeatures() {
   return (
     <section
       id="ai-features"
-      className="relative overflow-hidden bg-taupe-950 py-20 sm:py-28 lg:py-32"
+      className="biztro-ai relative overflow-hidden bg-taupe-950 py-20 sm:py-28
+        lg:py-32"
     >
       <div
         className="absolute inset-0"
@@ -553,7 +643,7 @@ export default function AIFeatures() {
             step="Importar"
             title="Digitaliza tu menú en segundos"
             description="Sube un PDF o una foto de tu menú impreso y la IA detecta platillos, precios y descripciones para convertirlos en contenido editable."
-            illustration={<ScannerIllustration />}
+            illustration={<MenuImportStage />}
             delay={0.1}
           />
 
@@ -562,7 +652,7 @@ export default function AIFeatures() {
             step="Traducir"
             title="Traducción para cada cliente"
             description="Traduce tu menú a varios idiomas para que cada comensal entienda lo que ofreces y se sienta bien atendido."
-            illustration={<TranslationIllustration />}
+            illustration={<TranslationStage />}
             reverse
             delay={0.1}
           />
