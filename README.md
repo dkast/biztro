@@ -5,10 +5,9 @@
 
 [![DeepSource](https://deepsource.io/gh/dkast/biztro.svg/?label=active+issues&show_trend=true&token=ka1uwQTdoJTIVeRZl6gI7ERb)](https://deepsource.io/gh/dkast/biztro/?ref=repository-badge)
 
-Biztro is a mobile-first, server-first Next.js application for restaurants that
-need to build, publish, translate and operate digital menus. It combines a visual
-menu editor, QR/public menu publishing, AI-assisted imports, multilingual menu
-content, media management, subscriptions and a lightweight sales module.
+Biztro helps restaurants create and publish digital menus and manage day-to-day
+sales. It combines a visual menu editor, public menus, AI-assisted menu tools,
+multilingual content, media management, subscriptions and restaurant operations.
 
 ## Product capabilities
 
@@ -28,10 +27,12 @@ content, media management, subscriptions and a lightweight sales module.
   dine-in/takeout/delivery order types, void sales with reasons, inspect sale
   details, filter and export transaction history to CSV, view revenue dashboards,
   best sellers and recent activity, and export daily closing reports to CSV.
+- **Order operations** — send orders to a live kitchen board, collect payment for
+  pending orders, and track customer balances and payments in receivables.
 - **Organization operations** — manage locations, opening hours, services,
   member settings, billing and Cloudflare R2-backed media assets.
-- **Public publishing** — serve public menus from organization slugs/subdomains
-  with host-based routing support.
+- **Public publishing** — publish mobile-friendly menus at organization
+  URLs/subdomains, with QR codes and supported menu translations.
 
 ## Core stack
 
@@ -39,6 +40,7 @@ content, media management, subscriptions and a lightweight sales module.
 - React 19 with React Server Components preferred
 - Tailwind CSS 4 + Shadcn UI + Radix UI primitives
 - Prisma 7 with the LibSQL adapter; Turso for local/dev database access
+- Upstash Redis and Realtime for order updates
 - Better Auth for authentication and organization membership
 - next-safe-action for server mutations
 - Zod for schemas and validation
@@ -59,15 +61,14 @@ content, media management, subscriptions and a lightweight sales module.
 - `prisma.config.ts` — Prisma adapter config
 - `prisma/schema.prisma` — application data model, including sales and
   translations
-- `prisma/models/auth.prisma` — Better Auth data model
+- `docs/kitchen-display.md` — kitchen queue and payment timing behavior
 - `docs/deployment/subdomain-routing.md` — Cloudflare + Vercel host-based
   subdomain deployment guide
-- `AGENTS.md` — contributor and agent conventions
 
 ## Quick start
 
-Use Bun for local development unless you are intentionally testing another
-runtime.
+Use Bun and Node.js 24 for local development. The local database command also
+requires the Turso CLI.
 
 1. Install dependencies
 
@@ -78,23 +79,24 @@ bun install
 2. Configure environment variables
 
 Create a `.env` file at the project root, or export variables in your shell.
-Required variables are validated in `src/env.mjs`.
+Configure the variables validated by `src/env.mjs` before starting the app:
 
-Common local requirements:
-
-- Turso/LibSQL: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`
-- Better Auth/Google OAuth: `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`,
-  `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`
-- Cloudflare R2: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_KEY_ID`,
-  `R2_BUCKET_NAME`, `R2_CUSTOM_DOMAIN`
-- Email: `RESEND_API_KEY`
-- Stripe: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
+- Database and realtime: `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`,
+  `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
+- Authentication: `BETTER_AUTH_URL`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`;
+  production also requires `BETTER_AUTH_SECRET` and `AUTH_SECRET`
+- Media and email: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_KEY_ID`,
+  `R2_BUCKET_NAME`, `R2_CUSTOM_DOMAIN`, `RESEND_API_KEY`
+- Billing and analytics: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`,
   `NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY`,
-  `NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY`
-- Analytics: `NEXT_PUBLIC_POSTHOG_KEY`; optional `POSTHOG_HOST` and
-  `POSTHOG_API_KEY`
-- AI features: optional `AI_GATEWAY_API_KEY`; required for real AI imports and
-  translations when not using simulation
+  `NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY`, `NEXT_PUBLIC_POSTHOG_KEY`
+- `AI_GATEWAY_API_KEY` is optional for startup; real AI imports and translations
+  require it.
+
+The local Turso server started below backs `local.db`. Set the runtime
+`TURSO_DATABASE_URL` to the local server's URL and `TURSO_AUTH_TOKEN` to a
+nonempty value. Prisma CLI uses `LOCAL_DATABASE_URL` (defaulting to
+`file:./local.db`), separate from the application's runtime connection.
 
 3. Generate Prisma client
 
@@ -115,7 +117,15 @@ bun run db:dev
 
 This starts a local Turso development database backed by `local.db`.
 
-5. Start the development server
+5. Apply migrations to the local database
+
+Make sure `LOCAL_DATABASE_URL` points to the local database, then run:
+
+```sh
+bun run prisma:migrate
+```
+
+6. Start the development server
 
 ```sh
 bun run dev
@@ -129,98 +139,21 @@ bun run dev
 - `bun run lint` — run Oxlint
 - `bun run lint:fix` — run Oxlint fixes
 - `bun run typecheck` — run TypeScript type checking
+- `bun run test` — run Vitest tests
 - `bun run format` — format source files with Prettier
 - `bun run prisma:migrate` — apply deployed Prisma migrations
 - `bun run db:dev` — start the local Turso database
 - `bun run email` — run React Email dev tooling
-- `bun run build:content` — build Contentlayer content
 - `bun run stripe:listen` — forward Stripe webhooks to the local auth webhook
-
-## Better Auth account schema compatibility
-
-Better Auth 1.7.3 and newer no longer write the `issuer` account field introduced
-in 1.7.0-1.7.2. Migration `20261116210000_relax_legacy_account_issuer` makes that
-legacy column nullable, preserves its stored values and restores uniqueness on
-`provider` and `providerAccountId`. It stops before changing permanent tables if
-those identity keys collide; review conflicting accounts manually rather than
-deleting or merging them automatically.
-
-The [linking error reference](https://better-auth.com/docs/reference/errors/unable_to_link_account)
-lists both provider trust configuration and database failures. Adding Google to
-`account.accountLinking.trustedProviders` does not fix a required `issuer` column.
-See the [1.7 upgrade guide](https://better-auth.com/docs/guides/1-7-upgrade-guide#relax-the-constraint)
-for the legacy constraint fix.
-
-Back up the target database and stop auth writers before applying migrations.
-Verify the datasource in `prisma.config.ts` targets the same database used by
-the app (`TURSO_DATABASE_URL`); client generation alone does not migrate it.
-For a local SQLite database, explicitly set `LOCAL_DATABASE_URL` to its file URL
-before running `bun run prisma:migrate`. For remote Turso, apply the migration
-through your Turso deployment workflow; do not assume the CLI's local fallback
-targets the remote database. Then run `bunx prisma generate` and restart the app.
-
-## Closing report performance
-
-Development builds enable Next.js Request Insights. After loading
-`/dashboard/sales/closing`, use the dev server's `/_next/mcp`
-`get_request_insights` tool to inspect request durations, server fetches and
-cache behavior. Compare an initial load, a date change and a repeat client
-navigation with DevTools **Disable cache** off. Hard reloads with
-`Cache-Control: no-cache` bypass development caches.
-
-Run the isolated, in-memory database regression benchmark with:
-
-```sh
-bun run test src/server/actions/sales/__tests__/closing-queries.test.ts --reporter=verbose --silent=false
-```
-
-It reports elapsed report time, SQL statement count and individual statement
-durations through Prisma query events, plus per-operation timings and top-level
-result row counts, without logging SQL parameters or using the application
-database. Summed statement durations are not wall-clock latency
-because operations can overlap. Local SQLite timings do not predict remote
-Turso latency.
-
-The populated fixture went from 19 to 13 SQL statements (10 to 8 top-level
-database operations). Complete report snapshots verify identical financial
-output. Counts vary with relation data; they exclude page authentication and
-layout queries. Selected and previous-day financial rows share two range reads.
-Credit history uses a parameterized existence query instead of transferring
-historical sales/allocations, and still includes credit later settled through
-receivable payments.
-
-Private report caching is unchanged: client router reuse follows `stale: 30`;
-it is not a persistent cross-request production server cache. Request Insights
-is development-only.
 
 ## Feature flags
 
 - `FLAGS_ENABLE_SUBSCRIPTIONS=1` enables subscription-related UI and flows.
 - `FLAGS_SIMULATE_PDF_AI=1` uses AI SDK mock responses for menu import during
-  development/testing. The flag defaults to simulated imports when unset.
+  development/testing. Unset or any other value uses real AI.
 
-When simulated imports are disabled, AI menu import, full-menu visual generation
-and menu translations require `AI_GATEWAY_API_KEY`.
+Real AI menu import and visual generation require `AI_GATEWAY_API_KEY`. Menu
+translations require it regardless of the simulation flag.
 
-## Conventions and notes
-
-- Prefer React Server Components and keep `use client` scopes small.
-- Use `next-safe-action` for server mutations and call `reset()` in client action
-  handlers after success or handled errors.
-- Use React Hook Form + Zod for forms and validation.
-- Manage URL search state with `nuqs`.
-- Keep authentication and route protection centralized in `src/proxy.ts`.
-- Treat `src/env.mjs` as the source of truth for environment variables.
-- Gate Pro-only creation/generation flows on the server. Client plan state is UX
-  only.
-- Prisma migrations live under `prisma/migrations`; run `bunx prisma generate`
-  after schema changes.
-
-## Deployment notes
-
-- Host-based public menu URLs such as `https://slug.biztro.co` are documented in
-  `docs/deployment/subdomain-routing.md`.
-- The current production approach uses Cloudflare wildcard DNS + TLS and a
-  Cloudflare Worker proxying to Vercel.
-
-For detailed contributor guidance and repository guardrails, see `AGENTS.md`.
+For contributor guidance and less frequently needed compatibility or performance
+notes, see `AGENTS.md` and [`docs/development-notes.md`](docs/development-notes.md).
