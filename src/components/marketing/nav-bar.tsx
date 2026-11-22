@@ -61,30 +61,27 @@ export default function Navbar({
         </Link>
         {showLinks && (
           <nav className="hidden space-x-6 text-sm md:flex">
-            <Link
+            <a
               href="#how-it-works"
-              prefetch={false}
               className="text-taupe-700 transition-colors hover:text-taupe-950
                 dark:text-taupe-300 dark:hover:text-taupe-50"
             >
               Cómo funciona
-            </Link>
-            <Link
+            </a>
+            <a
               href="#benefits"
-              prefetch={false}
               className="text-taupe-700 transition-colors hover:text-taupe-950
                 dark:text-taupe-300 dark:hover:text-taupe-50"
             >
               Beneficios
-            </Link>
-            <Link
+            </a>
+            <a
               href="#pricing"
-              prefetch={false}
               className="text-taupe-700 transition-colors hover:text-taupe-950
                 dark:text-taupe-300 dark:hover:text-taupe-50"
             >
               Precios
-            </Link>
+            </a>
           </nav>
         )}
         {children}

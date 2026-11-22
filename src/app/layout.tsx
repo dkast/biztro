@@ -58,7 +58,7 @@ export default function RootLayout({
   return (
     <html
       className={`${beVietnamPro.variable} ${inter.variable} overscroll-none
-        scroll-smooth antialiased`}
+        antialiased`}
       suppressHydrationWarning
       lang="es-MX"
     >
