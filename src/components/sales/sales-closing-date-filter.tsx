@@ -14,6 +14,7 @@ import {
 import {
   formatSalesClosingDateLabel,
   formatSalesClosingDateValue,
+  getSalesClosingDateValue,
   parseSalesClosingDateValue,
   resolveSalesClosingDateValue
 } from "@/lib/sales-closing-date"
@@ -49,6 +50,7 @@ export function SalesClosingDateFilter({
   )
 
   const [open, setOpen] = React.useState(false)
+  const todayValue = open ? getSalesClosingDateValue() : selectedDateValue
 
   React.useEffect(() => {
     if (dateValue !== resolvedDateValue) {
@@ -85,7 +87,7 @@ export function SalesClosingDateFilter({
           className="rounded-lg"
           selected={selectedDate ?? undefined}
           defaultMonth={selectedDate ?? new Date()}
-          disabled={date => date > new Date()}
+          disabled={date => formatSalesClosingDateValue(date) > todayValue}
           onSelect={date => {
             if (!date) return
 

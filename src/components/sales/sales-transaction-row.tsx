@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 
 import { TableCell, TableRow } from "@/components/ui/table"
 import { formatPrice } from "@/lib/currency"
-import { salesTransactionsTimeZone } from "@/lib/sales-transactions"
+import { salesReportingTimeZone } from "@/lib/sales-reporting-date"
 import { paymentMethodLabels, paymentStatusLabels } from "@/lib/types/payments"
 import {
   salesOrderTypeLabels,
@@ -19,13 +19,13 @@ const transactionDateFormatter = new Intl.DateTimeFormat("es-MX", {
   day: "numeric",
   month: "short",
   year: "numeric",
-  timeZone: salesTransactionsTimeZone
+  timeZone: salesReportingTimeZone
 })
 
 const transactionTimeFormatter = new Intl.DateTimeFormat("es-MX", {
   hour: "numeric",
   minute: "2-digit",
-  timeZone: salesTransactionsTimeZone
+  timeZone: salesReportingTimeZone
 })
 
 const statusDotClassNames = {

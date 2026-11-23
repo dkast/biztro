@@ -9,11 +9,6 @@ import {
   getPaymentStatus
 } from "@/lib/payments"
 import prisma from "@/lib/prisma"
-import {
-  formatSalesClosingDateValue,
-  getSalesClosingDateValue,
-  parseSalesClosingDateValue
-} from "@/lib/sales-closing-date"
 import type { SalesDashboardPeriod } from "@/lib/sales-dashboard-period"
 import {
   getCollectionBreakdown,
@@ -22,6 +17,12 @@ import {
   type CollectionPaymentRow,
   type FinancialSaleRow
 } from "@/lib/sales-reporting"
+import {
+  getSalesReportingDate,
+  getSalesReportingDateTime,
+  parseSalesReportingDate,
+  salesReportingTimeZone
+} from "@/lib/sales-reporting-date"
 import type {
   PaymentMethod,
   SalePaymentHistoryItem
@@ -135,29 +136,27 @@ function buildCollectionChartBuckets({
   })
 }
 
-function startOfDay(date = new Date()) {
-  const next = new Date(date)
-  next.setHours(0, 0, 0, 0)
-  return next
+function startOfDay(date: Date) {
+  return getSalesReportingDate(date).toDate(salesReportingTimeZone)
 }
 
-function startOfNextDay(date = new Date()) {
-  const next = startOfDay(date)
-  next.setDate(next.getDate() + 1)
-  return next
+function startOfNextDay(date: Date) {
+  return getSalesReportingDate(date)
+    .add({ days: 1 })
+    .toDate(salesReportingTimeZone)
 }
 
-function startOfMonth(date = new Date()) {
-  const next = new Date(date)
-  next.setDate(1)
-  next.setHours(0, 0, 0, 0)
-  return next
+function startOfMonth(date: Date) {
+  return getSalesReportingDate(date)
+    .set({ day: 1 })
+    .toDate(salesReportingTimeZone)
 }
 
-function startOfNextMonth(date = new Date()) {
-  const next = startOfMonth(date)
-  next.setMonth(next.getMonth() + 1)
-  return next
+function startOfNextMonth(date: Date) {
+  return getSalesReportingDate(date)
+    .set({ day: 1 })
+    .add({ months: 1 })
+    .toDate(salesReportingTimeZone)
 }
 
 function completedSalesWhere(
@@ -273,26 +272,19 @@ async function hasSalesCreditHistory(organizationId: string) {
   return rows.length > 0
 }
 
-function startOfRollingPeriod(
-  period: SalesDashboardPeriod,
-  date = new Date()
-): Date {
-  const next = startOfDay(date)
-
-  switch (period) {
-    case "7d":
-      next.setDate(next.getDate() - 6)
-      return next
-    case "1m":
-      next.setMonth(next.getMonth() - 1)
-      return next
-    case "3m":
-      next.setMonth(next.getMonth() - 3)
-      return next
-    case "1y":
-      next.setFullYear(next.getFullYear() - 1)
-      return next
+function startOfRollingPeriod(period: SalesDashboardPeriod, now: Date): Date {
+  const today = getSalesReportingDate(now)
+  if (period === "7d") {
+    return today.subtract({ days: 6 }).toDate(salesReportingTimeZone)
   }
+
+  // Keep the existing overflow behavior for months with fewer days.
+  const months = period === "1m" ? 1 : period === "3m" ? 3 : 12
+  return today
+    .set({ day: 1 })
+    .subtract({ months })
+    .add({ days: today.day - 1 })
+    .toDate(salesReportingTimeZone)
 }
 
 function getSalesChartBucketType(period: SalesDashboardPeriod) {
@@ -300,25 +292,23 @@ function getSalesChartBucketType(period: SalesDashboardPeriod) {
 }
 
 const salesChartDayLabelFormatter = new Intl.DateTimeFormat("es-MX", {
+  timeZone: salesReportingTimeZone,
   day: "numeric",
   month: "short"
 })
 
 const salesChartMonthLabelFormatter = new Intl.DateTimeFormat("es-MX", {
+  timeZone: salesReportingTimeZone,
   month: "short",
   year: "2-digit"
 })
 
 function getDayBucketKey(date: Date) {
-  return [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, "0"),
-    String(date.getDate()).padStart(2, "0")
-  ].join("-")
+  return getSalesReportingDate(date).toString()
 }
 
 function getMonthBucketKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
+  return getDayBucketKey(date).slice(0, 7)
 }
 
 function buildSalesChartBuckets({
@@ -686,12 +676,13 @@ async function getRecentSales(
 }
 
 const salesClosingHourLabelFormatter = new Intl.DateTimeFormat("es-MX", {
+  timeZone: "UTC",
   hour: "numeric",
   hour12: true
 })
 
 function getHourLabel(hour: number) {
-  return salesClosingHourLabelFormatter.format(new Date(2000, 0, 1, hour))
+  return salesClosingHourLabelFormatter.format(Date.UTC(2000, 0, 1, hour))
 }
 
 function getHourlySalesBuckets(
@@ -723,7 +714,7 @@ function getHourlySalesBuckets(
   }
 
   for (const sale of sales) {
-    const bucket = buckets.get(sale.createdAt.getHours())
+    const bucket = buckets.get(getSalesReportingDateTime(sale.createdAt).hour)
 
     if (!bucket) continue
 
@@ -756,7 +747,9 @@ function getHourlySalesBuckets(
   for (const payment of payments) {
     if (payment.status === "VOID") continue
 
-    const bucket = buckets.get(payment.createdAt.getHours())
+    const bucket = buckets.get(
+      getSalesReportingDateTime(payment.createdAt).hour
+    )
 
     if (!bucket) continue
 
@@ -1158,17 +1151,16 @@ export async function getSalesDashboardData(
 
 export async function getSalesClosingData(
   organizationId: string,
-  selectedDateValue = getSalesClosingDateValue()
+  selectedDateValue?: string
 ): Promise<SalesClosingData> {
   "use cache: private"
   cacheLife({ stale: 30 })
 
   const selectedDate =
-    parseSalesClosingDateValue(selectedDateValue) ?? new Date()
-  const normalizedSelectedDateValue = formatSalesClosingDateValue(selectedDate)
-  const previousDate = new Date(selectedDate)
-  previousDate.setDate(previousDate.getDate() - 1)
-  const normalizedPreviousDateValue = formatSalesClosingDateValue(previousDate)
+    parseSalesReportingDate(selectedDateValue) ?? getSalesReportingDate()
+  const normalizedSelectedDateValue = selectedDate.toString()
+  const previousDate = selectedDate.subtract({ days: 1 })
+  const normalizedPreviousDateValue = previousDate.toString()
 
   if (!organizationId) {
     return {
@@ -1208,9 +1200,11 @@ export async function getSalesClosingData(
 
   cacheTag(`sales-${organizationId}`)
 
-  const selectedDayStart = startOfDay(selectedDate)
-  const tomorrowStart = startOfNextDay(selectedDate)
-  const previousDayStart = startOfDay(previousDate)
+  const selectedDayStart = selectedDate.toDate(salesReportingTimeZone)
+  const tomorrowStart = selectedDate
+    .add({ days: 1 })
+    .toDate(salesReportingTimeZone)
+  const previousDayStart = previousDate.toDate(salesReportingTimeZone)
 
   const currency = await getOrganizationCurrency(organizationId)
   const [

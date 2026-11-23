@@ -71,7 +71,7 @@ exports[`closing report query baseline > preserves the complete report across tw
   "previousDateValue": "2026-10-29",
   "recentSales": [
     {
-      "createdAt": "2026-10-30T00:00:00.000Z",
+      "createdAt": "2026-10-30T06:00:00.000Z",
       "id": "today",
       "items": 2,
       "orderType": "DINE_IN",
@@ -80,7 +80,7 @@ exports[`closing report query baseline > preserves the complete report across tw
       "total": 100,
     },
     {
-      "createdAt": "2026-10-30T00:00:00.000Z",
+      "createdAt": "2026-10-30T06:00:00.000Z",
       "id": "voided",
       "items": 0,
       "orderType": "DINE_IN",

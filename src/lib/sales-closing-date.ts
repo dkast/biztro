@@ -1,3 +1,8 @@
+import {
+  getSalesReportingDate,
+  parseSalesReportingDate
+} from "@/lib/sales-reporting-date"
+
 const salesClosingDateFormatter = new Intl.DateTimeFormat("es-MX", {
   day: "numeric",
   month: "short",
@@ -8,37 +13,14 @@ const salesClosingDateLongFormatter = new Intl.DateTimeFormat("es-MX", {
   dateStyle: "long"
 })
 
-const salesClosingDateValuePattern = /^\d{4}-\d{2}-\d{2}$/
-
 function padDateSegment(value: number) {
   return String(value).padStart(2, "0")
 }
 
 export function parseSalesClosingDateValue(value: string | null | undefined) {
-  if (!value || !salesClosingDateValuePattern.test(value)) {
-    return null
-  }
-
-  const [yearValue, monthValue, dayValue] = value.split("-")
-  const year = Number(yearValue)
-  const month = Number(monthValue)
-  const day = Number(dayValue)
-
-  if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) {
-    return null
-  }
-
-  const parsedDate = new Date(year, month - 1, day)
-
-  if (
-    parsedDate.getFullYear() !== year ||
-    parsedDate.getMonth() !== month - 1 ||
-    parsedDate.getDate() !== day
-  ) {
-    return null
-  }
-
-  return parsedDate
+  const date = parseSalesReportingDate(value)
+  // The date picker expects a Date with the selected day in browser-local time.
+  return date ? new Date(date.year, date.month - 1, date.day) : null
 }
 
 export function formatSalesClosingDateValue(date: Date) {
@@ -50,7 +32,7 @@ export function formatSalesClosingDateValue(date: Date) {
 }
 
 export function getSalesClosingDateValue(date = new Date()) {
-  return formatSalesClosingDateValue(date)
+  return getSalesReportingDate(date).toString()
 }
 
 export function formatSalesClosingDateLabel(value: string) {
@@ -67,20 +49,14 @@ export function formatSalesClosingDateLongLabel(value: string) {
 
 export function resolveSalesClosingDateValue(
   value: string | null | undefined,
-  fallbackValue = getSalesClosingDateValue()
+  fallbackValue?: string
 ) {
-  const parsedDate = parseSalesClosingDateValue(value)
+  const today = getSalesReportingDate()
+  const parsedDate = parseSalesReportingDate(value)
 
-  if (!parsedDate) {
-    return fallbackValue
+  if (!parsedDate || parsedDate.compare(today) > 0) {
+    return fallbackValue ?? today.toString()
   }
 
-  const todayStart = new Date()
-  todayStart.setHours(0, 0, 0, 0)
-
-  if (parsedDate > todayStart) {
-    return fallbackValue
-  }
-
-  return formatSalesClosingDateValue(parsedDate)
+  return parsedDate.toString()
 }

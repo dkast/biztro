@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { TableCell, TableRow } from "@/components/ui/table"
 import { formatPrice, type Currency } from "@/lib/currency"
+import { salesReportingTimeZone } from "@/lib/sales-reporting-date"
 import { paymentStatusLabels } from "@/lib/types/payments"
 import {
   salesOrderTypeBadgeVariants,
@@ -16,6 +17,7 @@ import {
 
 function formatDateTime(value: string, variant: "dashboard" | "closing") {
   return new Intl.DateTimeFormat("es-MX", {
+    timeZone: salesReportingTimeZone,
     ...(variant === "dashboard"
       ? { dateStyle: "medium" as const, timeStyle: "short" as const }
       : { timeStyle: "short" as const })
