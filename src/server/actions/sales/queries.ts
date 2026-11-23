@@ -41,7 +41,8 @@ import {
   type SalesDashboardData,
   type SalesOrderType,
   type SalesRecentSale,
-  type SalesRevenueByOrderType
+  type SalesRevenueByOrderType,
+  type SalesVoidedReasonBreakdown
 } from "@/lib/types/sales"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
@@ -541,28 +542,42 @@ async function getVoidedSalesTotals(
   startDate: Date,
   endDate: Date,
   currency: Currency
-) {
-  const totals = await prisma.sale.aggregate({
-    where: {
-      organizationId,
-      status: "VOID",
-      currency,
-      createdAt: {
-        gte: startDate,
-        lt: endDate
-      }
-    },
-    _sum: {
-      total: true
-    },
-    _count: {
-      id: true
-    }
-  })
+): Promise<{
+  amount: number
+  sales: number
+  byReason: SalesVoidedReasonBreakdown[]
+}> {
+  const rows = await prisma.$queryRaw<
+    Array<{ reason: string | null; sales: number | bigint; amount: number }>
+  >`
+    SELECT
+      COALESCE(NULLIF(TRIM(s."voidReason"), ''), NULLIF(TRIM(o."cancelReason"), '')) AS reason,
+      COUNT(*) AS sales,
+      SUM(s."total") AS amount
+    FROM "Sale" s
+    LEFT JOIN "Order" o ON o."saleId" = s."id" AND o."organizationId" = s."organizationId"
+    WHERE s."organizationId" = ${organizationId}
+      AND s."status" = 'VOID'
+      AND s."currency" = ${currency}
+      AND (
+        (s."voidedAt" >= ${startDate} AND s."voidedAt" < ${endDate})
+        OR (s."voidedAt" IS NULL AND s."createdAt" >= ${startDate} AND s."createdAt" < ${endDate})
+      )
+    GROUP BY reason
+  `
+
+  const byReason = rows
+    .map(row => ({
+      reason: row.reason,
+      sales: Number(row.sales),
+      amount: roundMoney(row.amount)
+    }))
+    .sort((a, b) => b.sales - a.sales || b.amount - a.amount)
 
   return {
-    amount: roundMoney(totals._sum.total ?? 0),
-    sales: totals._count.id
+    amount: roundMoney(byReason.reduce((total, row) => total + row.amount, 0)),
+    sales: byReason.reduce((total, row) => total + row.sales, 0),
+    byReason
   }
 }
 
@@ -1057,6 +1072,8 @@ export async function getSalesDashboardData(
       periodPaidAtSale: 0,
       periodCreditGenerated: 0,
       periodReceivableCollection: 0,
+      periodVoidedSales: 0,
+      periodVoidedAmount: 0,
       collectionBreakdown: [],
       collectionChart: [],
       hasCreditHistory: false,
@@ -1082,7 +1099,8 @@ export async function getSalesDashboardData(
     periodPayments,
     bestSellers,
     recentSales,
-    receivablesSummary
+    receivablesSummary,
+    periodVoided
   ] = await Promise.all([
     getSalesChartRows(organizationId, periodStart, tomorrowStart, currency),
     getCollectionPaymentRows(
@@ -1099,7 +1117,8 @@ export async function getSalesDashboardData(
     ),
     getBestSellers(organizationId, periodStart, tomorrowStart, currency, 5),
     getRecentSales(organizationId, currency, undefined, 5),
-    getReceivablesDashboardSummary(organizationId)
+    getReceivablesDashboardSummary(organizationId),
+    getVoidedSalesTotals(organizationId, periodStart, tomorrowStart, currency)
   ])
 
   const todaySalesRows = periodSales.filter(
@@ -1135,6 +1154,8 @@ export async function getSalesDashboardData(
     periodPaidAtSale: periodMetrics.paidAtSale,
     periodCreditGenerated: periodMetrics.creditGenerated,
     periodReceivableCollection: periodMetrics.receivableCollection,
+    periodVoidedSales: periodVoided.sales,
+    periodVoidedAmount: periodVoided.amount,
     collectionBreakdown: getCollectionBreakdown(periodPayments),
     collectionChart: buildCollectionChartBuckets({
       payments: periodPayments,
@@ -1188,6 +1209,7 @@ export async function getSalesClosingData(
       hasCreditHistory: false,
       voidedSales: 0,
       voidedAmount: 0,
+      voidedByReason: [],
       topProduct: null,
       previous: {
         revenue: 0,
@@ -1307,6 +1329,7 @@ export async function getSalesClosingData(
     hasCreditHistory,
     voidedSales: voidedTotals.sales,
     voidedAmount: voidedTotals.amount,
+    voidedByReason: voidedTotals.byReason,
     topProduct: bestSellers[0] ?? null,
     previous: {
       revenue: previousMetrics.sales,

@@ -1,5 +1,6 @@
 import NumberFlow, { type Format } from "@number-flow/react"
 import { ShoppingCart, TrendingDown, TrendingUp } from "lucide-react"
+import Link from "next/link"
 
 import { SalesClosingCollectionsPieChart } from "@/components/sales/sales-closing-collections-pie-chart"
 import { SalesClosingHourlyChart } from "@/components/sales/sales-closing-hourly-chart"
@@ -34,7 +35,9 @@ import { paymentMethodLabels } from "@/lib/types/payments"
 import {
   salesOrderTypeBadgeVariants,
   salesOrderTypeLabels,
-  type SalesClosingData
+  voidReasonLabels,
+  type SalesClosingData,
+  type VoidReason
 } from "@/lib/types/sales"
 import { cn } from "@/lib/utils"
 
@@ -170,6 +173,13 @@ function getSummaryItems(data: SalesClosingData): SalesClosingSummaryItem[] {
     },
     ...items.slice(2)
   ]
+}
+
+function getVoidReasonLabel(reason: string | null) {
+  if (!reason) return "Sin motivo"
+  return Object.hasOwn(voidReasonLabels, reason)
+    ? voidReasonLabels[reason as VoidReason]
+    : reason
 }
 
 function getPaymentMethodLabel(method: string) {
@@ -542,6 +552,62 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
             )}
           </div>
         </section>
+        {data.voidedSales > 0 && (
+          <section className="order-6 min-w-0 space-y-3 xl:col-span-6">
+            <div
+              className="flex flex-col items-start gap-2 sm:flex-row
+                sm:items-center sm:justify-between sm:gap-4"
+            >
+              <div>
+                <h2 className="text-base font-semibold text-balance">
+                  Ventas anuladas
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {data.voidedSales}{" "}
+                  {data.voidedSales === 1 ? "venta" : "ventas"} ·{" "}
+                  {formatPrice(data.voidedAmount, data.currency)} anuladas el{" "}
+                  {selectedDateLabel}
+                </p>
+              </div>
+              <Link
+                className="text-sm font-medium underline-offset-4
+                  hover:underline"
+                href={`/dashboard/sales/transactions?status=VOID&range=custom&from=${data.selectedDateValue}&to=${data.selectedDateValue}`}
+                prefetch={false}
+              >
+                Ver transacciones anuladas
+              </Link>
+            </div>
+            <div className="border-border overflow-hidden rounded-lg border">
+              <Table className="min-w-88">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="h-9 px-3">Motivo</TableHead>
+                    <TableHead className="h-9 px-3 text-right">
+                      Ventas
+                    </TableHead>
+                    <TableHead className="h-9 px-3 text-right">Monto</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.voidedByReason.map(row => (
+                    <TableRow key={row.reason ?? "none"}>
+                      <TableCell className="px-3 py-2.5">
+                        {getVoidReasonLabel(row.reason)}
+                      </TableCell>
+                      <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                        {row.sales}
+                      </TableCell>
+                      <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                        {formatPrice(row.amount, data.currency)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </section>
+        )}
       </section>
     </div>
   )

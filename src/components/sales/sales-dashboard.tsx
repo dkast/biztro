@@ -163,6 +163,16 @@ export function SalesDashboard({ data }: { data: SalesDashboardData }) {
             </Item>
           ))}
         </ItemGroup>
+        {data.periodVoidedSales > 0 && (
+          <p className="text-muted-foreground text-sm">
+            Anuladas:{" "}
+            <span className="text-foreground font-medium tabular-nums">
+              {data.periodVoidedSales}{" "}
+              {data.periodVoidedSales === 1 ? "venta" : "ventas"} ·{" "}
+              {formatPrice(data.periodVoidedAmount, data.currency)}
+            </span>
+          </p>
+        )}
       </section>
 
       <section className="flex flex-col gap-5 sm:gap-6">
