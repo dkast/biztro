@@ -9,8 +9,13 @@ import {
   vi
 } from "vitest"
 
-import { getSalesClosingData } from "@/server/actions/sales/queries"
+import {
+  getSalesClosingData,
+  getSalesDashboardData
+} from "@/server/actions/sales/queries"
 import prisma from "@/lib/prisma"
+import { resolveSalesClosingDateValue } from "@/lib/sales-closing-date"
+import { parseSalesTransactionsSearchParams } from "@/lib/sales-transactions"
 
 const measurements = vi.hoisted(() => {
   vi.stubEnv("TZ", "UTC")
@@ -152,27 +157,127 @@ async function addPayment(
 }
 
 describe("closing report query baseline", () => {
+  it("uses the same local day as transactions for late-night sales and payments", async () => {
+    const evening = "2026-11-30T19:00:00-06:00"
+    const lateNight = "2026-11-30T23:30:00-06:00"
+    const midnight = "2026-12-01T00:00:00-06:00"
+    await addSale("evening", evening, 50)
+    await addSale("late-night", lateNight, 100)
+    await addSale("midnight", midnight, 200)
+    await addPayment("evening-payment", "evening", evening, 5000)
+    await addPayment("late-night-payment", "late-night", lateNight, 10000)
+    await addPayment("midnight-payment", "midnight", midnight, 20000)
+
+    vi.useFakeTimers({ toFake: ["Date"] })
+    try {
+      vi.setSystemTime(new Date(lateNight))
+      const localDate = "2026-11-30"
+      const transactions = parseSalesTransactionsSearchParams({
+        range: "custom",
+        from: localDate,
+        to: localDate
+      })
+      expect(transactions).toMatchObject({
+        valid: true,
+        filters: {
+          startDate: new Date("2026-11-30T00:00:00-06:00"),
+          endDate: new Date(midnight)
+        }
+      })
+
+      expect(resolveSalesClosingDateValue("2026-12-01")).toBe(localDate)
+      const closing = await getSalesClosingData("org")
+      expect(closing).toMatchObject({
+        selectedDateValue: localDate,
+        todayOrders: 2,
+        todaySales: 150,
+        todayCollected: 150,
+        previous: { orders: 0 }
+      })
+      expect(closing.hourly.find(bucket => bucket.hour === 19)).toMatchObject({
+        todayOrders: 1,
+        todayCollected: 50
+      })
+      expect(closing.hourly.find(bucket => bucket.hour === 23)).toMatchObject({
+        todayOrders: 1,
+        todayCollected: 100
+      })
+
+      const dashboard = await getSalesDashboardData("org", "7d")
+      expect(dashboard).toMatchObject({ todayOrders: 2, todayCollected: 150 })
+      expect(dashboard.chart.at(-1)).toMatchObject({
+        label: "30 nov",
+        orders: 2,
+        sales: 150
+      })
+      expect(dashboard.collectionChart.at(-1)).toMatchObject({
+        label: "30 nov",
+        CASH: 150
+      })
+
+      vi.setSystemTime(new Date(midnight))
+      const nextClosing = await getSalesClosingData("org")
+      expect(nextClosing).toMatchObject({
+        selectedDateValue: "2026-12-01",
+        todaySales: 200,
+        previous: { sales: 150 }
+      })
+      expect(
+        nextClosing.hourly.find(bucket => bucket.hour === 0)
+      ).toMatchObject({
+        todayOrders: 1,
+        todayCollected: 200
+      })
+
+      const yearly = await getSalesDashboardData("org", "1y")
+      expect(yearly.chart.slice(-2).map(bucket => bucket.sales)).toEqual([
+        150, 200
+      ])
+      expect(
+        yearly.collectionChart.slice(-2).map(bucket => bucket.CASH)
+      ).toEqual([150, 200])
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it("preserves the complete report across two-day boundaries", async () => {
-    await addSale("previous", "2026-10-29T00:00:00Z", 50)
-    await addSale("today", "2026-10-30T00:00:00Z", 100)
-    await addSale("tomorrow", "2026-10-31T00:00:00Z", 900)
-    await addSale("too-old", "2026-10-28T23:59:59Z", 800)
-    await addSale("other-org", "2026-10-30T00:00:00Z", 700, {
+    await addSale("previous", "2026-10-29T00:00:00-06:00", 50)
+    await addSale("today", "2026-10-30T00:00:00-06:00", 100)
+    await addSale("tomorrow", "2026-10-31T00:00:00-06:00", 900)
+    await addSale("too-old", "2026-10-28T23:59:59-06:00", 800)
+    await addSale("other-org", "2026-10-30T00:00:00-06:00", 700, {
       organizationId: "other"
     })
-    await addSale("other-currency", "2026-10-30T00:00:00Z", 600, {
+    await addSale("other-currency", "2026-10-30T00:00:00-06:00", 600, {
       currency: "USD"
     })
-    await addSale("voided", "2026-10-30T00:00:00Z", 30, { status: "VOID" })
-    await addPayment("previous-paid", "previous", "2026-10-29T00:00:00Z", 5000)
-    await addPayment("deposit", "today", "2026-10-30T00:00:00Z", 4000)
-    await addPayment("collected", "today", "2026-10-30T00:30:00Z", 6000, {
+    await addSale("voided", "2026-10-30T00:00:00-06:00", 30, { status: "VOID" })
+    await addPayment(
+      "previous-paid",
+      "previous",
+      "2026-10-29T00:00:00-06:00",
+      5000
+    )
+    await addPayment("deposit", "today", "2026-10-30T00:00:00-06:00", 4000)
+    await addPayment("collected", "today", "2026-10-30T00:30:00-06:00", 6000, {
       origin: "RECEIVABLE"
     })
-    await addPayment("void-payment", "today", "2026-10-30T00:30:00Z", 1000, {
-      status: "VOID"
-    })
-    await addPayment("tomorrow-paid", "tomorrow", "2026-10-31T00:00:00Z", 90000)
+    await addPayment(
+      "void-payment",
+      "today",
+      "2026-10-30T00:30:00-06:00",
+      1000,
+      {
+        status: "VOID"
+      }
+    )
+    await addPayment(
+      "tomorrow-paid",
+      "tomorrow",
+      "2026-10-31T00:00:00-06:00",
+      90000
+    )
     await prisma.$executeRaw`
       INSERT INTO SaleItem VALUES ('item', 'today', 'Taco', 2, 100)
     `
