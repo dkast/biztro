@@ -77,6 +77,12 @@ beforeAll(async () => {
     )
   `)
   await prisma.$executeRawUnsafe(`
+    CREATE TABLE "Order" (
+      id TEXT PRIMARY KEY, organizationId TEXT, saleId TEXT UNIQUE,
+      cancelReason TEXT
+    )
+  `)
+  await prisma.$executeRawUnsafe(`
     CREATE TABLE Payment (
       id TEXT PRIMARY KEY, organizationId TEXT, status TEXT, origin TEXT,
       currency TEXT, amountMinor INTEGER, method TEXT, createdAt DATETIME
@@ -101,7 +107,13 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-  for (const table of ["PaymentAllocation", "SaleItem", "Payment", "Sale"]) {
+  for (const table of [
+    "PaymentAllocation",
+    "SaleItem",
+    "Payment",
+    "Order",
+    "Sale"
+  ]) {
     await prisma.$executeRawUnsafe(`DELETE FROM "${table}"`)
   }
   measurements.statements.length = 0
@@ -237,6 +249,43 @@ describe("closing report query baseline", () => {
     expect(report.voidedAmount).toBe(70.5)
     expect(report.voidedByReason).toEqual([
       { reason: "WRONG_ITEMS", sales: 2, amount: 65.5 },
+      { reason: null, sales: 1, amount: 5 }
+    ])
+  })
+
+  it("uses the sale reason or falls back to the linked order reason", async () => {
+    const voidedAt = "2026-10-30T10:00:00Z"
+    await addSale("order-only", voidedAt, 20, { status: "VOID", voidedAt })
+    await addSale("sale-first", voidedAt, 30, {
+      status: "VOID",
+      voidedAt,
+      voidReason: "Productos incorrectos"
+    })
+    await addSale("other-detail", voidedAt, 40, {
+      status: "VOID",
+      voidedAt,
+      voidReason: "Cliente se fue"
+    })
+    await addSale("empty-reason", voidedAt, 10, {
+      status: "VOID",
+      voidedAt,
+      voidReason: " "
+    })
+    await addSale("no-reason", voidedAt, 5, { status: "VOID", voidedAt })
+    await prisma.$executeRaw`
+      INSERT INTO "Order" VALUES
+        ('o1', 'org', 'order-only', 'Cliente se fue'),
+        ('o2', 'org', 'sale-first', 'Otro motivo'),
+        ('o3', 'org', 'empty-reason', 'Cliente canceló')
+    `
+
+    const report = await getSalesClosingData("org", "2026-10-30")
+    expect(report.voidedSales).toBe(5)
+    expect(report.voidedAmount).toBe(105)
+    expect(report.voidedByReason).toEqual([
+      { reason: "Cliente se fue", sales: 2, amount: 60 },
+      { reason: "Productos incorrectos", sales: 1, amount: 30 },
+      { reason: "Cliente canceló", sales: 1, amount: 10 },
       { reason: null, sales: 1, amount: 5 }
     ])
   })

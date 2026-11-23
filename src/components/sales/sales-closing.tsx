@@ -176,9 +176,10 @@ function getSummaryItems(data: SalesClosingData): SalesClosingSummaryItem[] {
 }
 
 function getVoidReasonLabel(reason: string | null) {
-  return reason && reason in voidReasonLabels
+  if (!reason) return "Sin motivo"
+  return Object.hasOwn(voidReasonLabels, reason)
     ? voidReasonLabels[reason as VoidReason]
-    : "Sin motivo"
+    : reason
 }
 
 function getPaymentMethodLabel(method: string) {
@@ -582,7 +583,9 @@ export function SalesClosingReport({ data }: { data: SalesClosingData }) {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="h-9 px-3">Motivo</TableHead>
-                    <TableHead className="h-9 px-3 text-right">Ventas</TableHead>
+                    <TableHead className="h-9 px-3 text-right">
+                      Ventas
+                    </TableHead>
                     <TableHead className="h-9 px-3 text-right">Monto</TableHead>
                   </TableRow>
                 </TableHeader>

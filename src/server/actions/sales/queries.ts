@@ -547,31 +547,30 @@ async function getVoidedSalesTotals(
   sales: number
   byReason: SalesVoidedReasonBreakdown[]
 }> {
-  const range = { gte: startDate, lt: endDate }
-  const rows = await prisma.sale.groupBy({
-    by: ["voidReason"],
-    where: {
-      organizationId,
-      status: "VOID",
-      currency,
-      OR: [
-        { voidedAt: range },
-        { voidedAt: null, createdAt: range }
-      ]
-    },
-    _sum: {
-      total: true
-    },
-    _count: {
-      id: true
-    }
-  })
+  const rows = await prisma.$queryRaw<
+    Array<{ reason: string | null; sales: number | bigint; amount: number }>
+  >`
+    SELECT
+      COALESCE(NULLIF(TRIM(s."voidReason"), ''), NULLIF(TRIM(o."cancelReason"), '')) AS reason,
+      COUNT(*) AS sales,
+      SUM(s."total") AS amount
+    FROM "Sale" s
+    LEFT JOIN "Order" o ON o."saleId" = s."id" AND o."organizationId" = s."organizationId"
+    WHERE s."organizationId" = ${organizationId}
+      AND s."status" = 'VOID'
+      AND s."currency" = ${currency}
+      AND (
+        (s."voidedAt" >= ${startDate} AND s."voidedAt" < ${endDate})
+        OR (s."voidedAt" IS NULL AND s."createdAt" >= ${startDate} AND s."createdAt" < ${endDate})
+      )
+    GROUP BY reason
+  `
 
   const byReason = rows
     .map(row => ({
-      reason: row.voidReason,
-      sales: row._count.id,
-      amount: roundMoney(row._sum.total ?? 0)
+      reason: row.reason,
+      sales: Number(row.sales),
+      amount: roundMoney(row.amount)
     }))
     .sort((a, b) => b.sales - a.sales || b.amount - a.amount)
 
