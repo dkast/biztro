@@ -63,11 +63,16 @@ export function buildSalesTransactionsSql({
     Prisma.sql`s."organizationId" = ${organizationId}`
   ]
 
+  const dateColumn =
+    filters.status === "VOID"
+      ? Prisma.sql`COALESCE(s."voidedAt", s."createdAt")`
+      : Prisma.sql`s."createdAt"`
+
   if (filters.startDate) {
-    candidateConditions.push(Prisma.sql`s."createdAt" >= ${filters.startDate}`)
+    candidateConditions.push(Prisma.sql`${dateColumn} >= ${filters.startDate}`)
   }
   if (filters.endDate) {
-    candidateConditions.push(Prisma.sql`s."createdAt" < ${filters.endDate}`)
+    candidateConditions.push(Prisma.sql`${dateColumn} < ${filters.endDate}`)
   }
   if (filters.status !== "all") {
     candidateConditions.push(Prisma.sql`s."status" = ${filters.status}`)

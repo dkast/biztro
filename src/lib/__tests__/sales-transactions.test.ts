@@ -129,7 +129,8 @@ describe("sales transactions SQL", () => {
         "orderType" TEXT NOT NULL,
         "status" TEXT NOT NULL,
         "total" REAL NOT NULL,
-        "currency" TEXT NOT NULL
+        "currency" TEXT NOT NULL,
+        "voidedAt" TEXT
       )
     `
     await prisma.$executeRaw`

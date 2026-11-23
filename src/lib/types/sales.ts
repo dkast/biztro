@@ -253,6 +253,8 @@ export type SalesDashboardData = {
   periodPaidAtSale: number
   periodCreditGenerated: number
   periodReceivableCollection: number
+  periodVoidedSales: number
+  periodVoidedAmount: number
   collectionBreakdown: SalesCollectionBreakdown[]
   collectionChart: SalesCollectionChartBucket[]
   hasCreditHistory: boolean
@@ -297,6 +299,12 @@ export type SalesClosingComparison = {
   receivableCollection: number
 }
 
+export type SalesVoidedReasonBreakdown = {
+  reason: string | null
+  sales: number
+  amount: number
+}
+
 export type SalesClosingData = {
   selectedDateValue: string
   previousDateValue: string
@@ -314,6 +322,7 @@ export type SalesClosingData = {
   hasCreditHistory: boolean
   voidedSales: number
   voidedAmount: number
+  voidedByReason: SalesVoidedReasonBreakdown[]
   topProduct: SalesBestSeller | null
   previous: SalesClosingComparison
   bestSellers: SalesBestSeller[]

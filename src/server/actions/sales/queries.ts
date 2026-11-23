@@ -41,7 +41,8 @@ import {
   type SalesDashboardData,
   type SalesOrderType,
   type SalesRecentSale,
-  type SalesRevenueByOrderType
+  type SalesRevenueByOrderType,
+  type SalesVoidedReasonBreakdown
 } from "@/lib/types/sales"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
@@ -541,16 +542,22 @@ async function getVoidedSalesTotals(
   startDate: Date,
   endDate: Date,
   currency: Currency
-) {
-  const totals = await prisma.sale.aggregate({
+): Promise<{
+  amount: number
+  sales: number
+  byReason: SalesVoidedReasonBreakdown[]
+}> {
+  const range = { gte: startDate, lt: endDate }
+  const rows = await prisma.sale.groupBy({
+    by: ["voidReason"],
     where: {
       organizationId,
       status: "VOID",
       currency,
-      createdAt: {
-        gte: startDate,
-        lt: endDate
-      }
+      OR: [
+        { voidedAt: range },
+        { voidedAt: null, createdAt: range }
+      ]
     },
     _sum: {
       total: true
@@ -560,9 +567,18 @@ async function getVoidedSalesTotals(
     }
   })
 
+  const byReason = rows
+    .map(row => ({
+      reason: row.voidReason,
+      sales: row._count.id,
+      amount: roundMoney(row._sum.total ?? 0)
+    }))
+    .sort((a, b) => b.sales - a.sales || b.amount - a.amount)
+
   return {
-    amount: roundMoney(totals._sum.total ?? 0),
-    sales: totals._count.id
+    amount: roundMoney(byReason.reduce((total, row) => total + row.amount, 0)),
+    sales: byReason.reduce((total, row) => total + row.sales, 0),
+    byReason
   }
 }
 
@@ -1057,6 +1073,8 @@ export async function getSalesDashboardData(
       periodPaidAtSale: 0,
       periodCreditGenerated: 0,
       periodReceivableCollection: 0,
+      periodVoidedSales: 0,
+      periodVoidedAmount: 0,
       collectionBreakdown: [],
       collectionChart: [],
       hasCreditHistory: false,
@@ -1082,7 +1100,8 @@ export async function getSalesDashboardData(
     periodPayments,
     bestSellers,
     recentSales,
-    receivablesSummary
+    receivablesSummary,
+    periodVoided
   ] = await Promise.all([
     getSalesChartRows(organizationId, periodStart, tomorrowStart, currency),
     getCollectionPaymentRows(
@@ -1099,7 +1118,8 @@ export async function getSalesDashboardData(
     ),
     getBestSellers(organizationId, periodStart, tomorrowStart, currency, 5),
     getRecentSales(organizationId, currency, undefined, 5),
-    getReceivablesDashboardSummary(organizationId)
+    getReceivablesDashboardSummary(organizationId),
+    getVoidedSalesTotals(organizationId, periodStart, tomorrowStart, currency)
   ])
 
   const todaySalesRows = periodSales.filter(
@@ -1135,6 +1155,8 @@ export async function getSalesDashboardData(
     periodPaidAtSale: periodMetrics.paidAtSale,
     periodCreditGenerated: periodMetrics.creditGenerated,
     periodReceivableCollection: periodMetrics.receivableCollection,
+    periodVoidedSales: periodVoided.sales,
+    periodVoidedAmount: periodVoided.amount,
     collectionBreakdown: getCollectionBreakdown(periodPayments),
     collectionChart: buildCollectionChartBuckets({
       payments: periodPayments,
@@ -1188,6 +1210,7 @@ export async function getSalesClosingData(
       hasCreditHistory: false,
       voidedSales: 0,
       voidedAmount: 0,
+      voidedByReason: [],
       topProduct: null,
       previous: {
         revenue: 0,
@@ -1307,6 +1330,7 @@ export async function getSalesClosingData(
     hasCreditHistory,
     voidedSales: voidedTotals.sales,
     voidedAmount: voidedTotals.amount,
+    voidedByReason: voidedTotals.byReason,
     topProduct: bestSellers[0] ?? null,
     previous: {
       revenue: previousMetrics.sales,

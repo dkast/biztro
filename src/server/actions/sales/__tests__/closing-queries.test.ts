@@ -72,7 +72,8 @@ beforeAll(async () => {
   await prisma.$executeRawUnsafe(`
     CREATE TABLE Sale (
       id TEXT PRIMARY KEY, organizationId TEXT, customerId TEXT,
-      status TEXT, orderType TEXT, currency TEXT, total REAL, createdAt DATETIME
+      status TEXT, orderType TEXT, currency TEXT, total REAL, createdAt DATETIME,
+      voidedAt DATETIME, voidReason TEXT
     )
   `)
   await prisma.$executeRawUnsafe(`
@@ -120,13 +121,16 @@ async function addSale(
     organizationId = "org",
     customerId = "customer",
     currency = "MXN",
-    status = "COMPLETED"
+    status = "COMPLETED",
+    voidedAt = null as string | null,
+    voidReason = null as string | null
   } = {}
 ) {
   await prisma.$executeRaw`
     INSERT INTO Sale VALUES (
       ${id}, ${organizationId}, ${customerId}, ${status}, 'DINE_IN',
-      ${currency}, ${total}, ${new Date(date)}
+      ${currency}, ${total}, ${new Date(date)},
+      ${voidedAt ? new Date(voidedAt) : null}, ${voidReason}
     )
   `
 }
@@ -208,6 +212,33 @@ describe("closing report query baseline", () => {
     expect(nextDayReport.previous.collected).toBe(100)
     expect(nextDayReport.previous.creditGenerated).toBe(60)
     expect(await getSalesClosingData("org", "2026-10-30")).toEqual(report)
+  })
+
+  it("counts voided sales by void date with a reason breakdown", async () => {
+    await addSale("v-created-before", "2026-10-29T10:00:00Z", 40, {
+      status: "VOID",
+      voidedAt: "2026-10-30T10:00:00Z",
+      voidReason: "WRONG_ITEMS"
+    })
+    await addSale("v-same-day", "2026-10-30T09:00:00Z", 25.5, {
+      status: "VOID",
+      voidedAt: "2026-10-30T11:00:00Z",
+      voidReason: "WRONG_ITEMS"
+    })
+    await addSale("v-later", "2026-10-30T09:00:00Z", 10, {
+      status: "VOID",
+      voidedAt: "2026-10-31T11:00:00Z",
+      voidReason: "TEST_SALE"
+    })
+    await addSale("v-legacy", "2026-10-30T09:00:00Z", 5, { status: "VOID" })
+
+    const report = await getSalesClosingData("org", "2026-10-30")
+    expect(report.voidedSales).toBe(3)
+    expect(report.voidedAmount).toBe(70.5)
+    expect(report.voidedByReason).toEqual([
+      { reason: "WRONG_ITEMS", sales: 2, amount: 65.5 },
+      { reason: null, sales: 1, amount: 5 }
+    ])
   })
 
   it("returns an empty report for an organization without sales", async () => {

@@ -121,6 +121,13 @@ exports[`closing report query baseline > preserves the complete report across tw
     "revenue": 100,
   },
   "voidedAmount": 30,
+  "voidedByReason": [
+    {
+      "amount": 30,
+      "reason": null,
+      "sales": 1,
+    },
+  ],
   "voidedSales": 1,
 }
 `;
@@ -183,6 +190,7 @@ exports[`closing report query baseline > returns an empty report for an organiza
   "todaySales": 0,
   "topProduct": null,
   "voidedAmount": 0,
+  "voidedByReason": [],
   "voidedSales": 0,
 }
 `;
